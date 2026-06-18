@@ -84,8 +84,8 @@ export default function ExploreScreen({
       
       {/* Intro Header */}
       <div className="space-y-1.5 text-center max-w-2xl mx-auto py-4">
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">Outcome Intelligence Directories</h1>
-        <p className="text-xs sm:text-sm text-[#AAB2C0] leading-relaxed">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#24324A] tracking-tight uppercase font-display">Outcome Intelligence Directories</h1>
+        <p className="text-xs sm:text-sm text-[#6B7280] leading-relaxed font-semibold">
           Browse real-life crowd-sourced relationship dossiers grouped by issues, demographics, and active case logs.
         </p>
       </div>
@@ -96,32 +96,32 @@ export default function ExploreScreen({
           <div
             key={s.slug}
             onClick={() => setScreen({ type: 'situation', slug: s.slug })}
-            className="rounded-2xl border border-[#30363D] bg-[#161B22] p-5 cursor-pointer shadow-sm hover:border-[#4F8CFF] hover:scale-[1.01] transition-all flex flex-col justify-between"
+            className="rounded-2xl border border-[#E5E7EB] bg-white p-5 cursor-pointer shadow-sm hover:shadow-md hover:translate-y-[-1px] transition-all duration-300 flex flex-col justify-between group"
           >
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[9px] uppercase font-bold text-[#AAB2C0] bg-[#30363D] px-2 py-0.5 rounded">
+                <span className="text-[9px] uppercase font-bold text-[#24324A] bg-[#24324A]/5 px-2 py-0.5 rounded font-mono border border-[#24324A]/10">
                   {s.category}
                 </span>
-                <span className="text-[10px] text-[#4F8CFF] font-semibold">Active Timeline dossiers →</span>
+                <span className="text-[10px] text-[#C9A227] font-bold group-hover:underline">Active timelines →</span>
               </div>
-              <h3 className="text-sm font-bold text-white pt-1">{s.name}</h3>
-              <p className="text-xs text-[#AAB2C0] line-clamp-3 leading-relaxed">{s.description}</p>
+              <h3 className="text-sm font-bold text-[#24324A] pt-1 font-serif group-hover:text-[#C9A227] transition-all">{s.name}</h3>
+              <p className="text-xs text-[#6B7280] line-clamp-3 leading-relaxed font-sans">{s.description}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* SEO-Friendly Index Section */}
-      <section className="bg-[#161B22] border border-[#30363D] rounded-3xl p-5 sm:p-6 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#30363D] pb-5">
+      <section className="bg-white border border-[#E5E7EB] rounded-3xl p-5 sm:p-6 space-y-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#ECECEC] pb-5">
           <div className="space-y-1">
-            <h2 className="text-base font-black text-white flex items-center gap-2 uppercase tracking-wide">
-              <ShieldCheck className="h-5 w-5 text-[#F4B942]" />
+            <h2 className="text-base font-bold text-[#24324A] flex items-center gap-2 uppercase tracking-wide font-serif">
+              <ShieldCheck className="h-5 w-5 text-[#C9A227]" />
               🔓 Public Cryptographic case Index
             </h2>
-            <p className="text-[11px] text-[#AAB2C0]">
-              Index ledger of user-lodged relationship chronologies and trials. Completely anonymous and indexable for seo crawlers.
+            <p className="text-[11px] text-[#6B7280] font-medium">
+              Index ledger of user-lodged relationship chronologies and trials. Completely anonymous and indexable for search engines.
             </p>
           </div>
 
@@ -131,10 +131,10 @@ export default function ExploreScreen({
               <button
                 key={type}
                 onClick={() => setFilterType(type)}
-                className={`px-3 py-1 text-[10px] font-black uppercase rounded-lg border transition-all ${
+                className={`px-3 py-1 text-[10px] font-bold uppercase rounded-lg border transition-all ${
                   filterType === type
-                    ? 'bg-[#F4B942]/15 text-[#F4B942] border-[#F4B942]/30'
-                    : 'text-[#AAB2C0] border-[#30363D] hover:bg-[#1C2128]'
+                    ? 'bg-[#FFF8E1] text-[#C9A227] border-[#E8D79B]'
+                    : 'text-[#6B7280] border-[#E5E7EB] hover:bg-[#FAF8F2] bg-white'
                 }`}
               >
                 {type}s
@@ -150,13 +150,13 @@ export default function ExploreScreen({
             placeholder="Search index by unique Case Key, tags (e.g. Female, 20s), or issue words..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#F4B942]/60 rounded-xl py-2 px-3.5 pl-10 text-xs text-white placeholder-zinc-500 focus:outline-none transition-all font-sans"
+            className="w-full bg-white border border-[#E5E7EB] focus:border-[#24324A] rounded-xl py-2 px-3.5 pl-10 text-xs text-[#1F2937] placeholder-zinc-400 focus:outline-none transition-all font-sans font-medium hover:border-zinc-300"
           />
-          <Search className="h-4 w-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="h-4 w-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
         </div>
 
         {/* Ledger list */}
-        <div className="divide-y divide-[#30363D]/50">
+        <div className="divide-y divide-[#E5E7EB]">
           {filteredItems.length > 0 ? (
             filteredItems.map(item => (
               <div
@@ -171,47 +171,47 @@ export default function ExploreScreen({
                     setScreen({ type: 'court', slug: item.slug });
                   }
                 }}
-                className="py-4 hover:bg-[#1C2128]/40 px-2 rounded-xl transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+                className="py-4 hover:bg-[#FAF8F2]/60 px-2 rounded-xl transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
               >
                 <div className="space-y-1.5 max-w-3xl">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] font-extrabold text-[#F4B942] bg-[#F4B942]/10 border border-[#F4B942]/20 px-2 py-0.5 rounded-md">
+                    <span className="font-mono text-[10px] font-bold text-[#C9A227] bg-[#FFF8E1] border border-[#E8D79B] px-2 py-0.5 rounded-md">
                       {item.caseNumber}
                     </span>
                     <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md font-mono ${
-                      item.type === 'trial' ? 'bg-indigo-500/10 text-indigo-400' : 'bg-[#4F8CFF]/10 text-[#4F8CFF]'
+                      item.type === 'trial' ? 'bg-[#24324A]/5 text-[#24324A] border border-[#24324A]/10' : 'bg-zinc-100 text-[#6B7280] border border-zinc-200'
                     }`}>
                       {item.type}
                     </span>
-                    <span className="text-[10px] text-zinc-500 font-mono">
+                    <span className="text-[10px] text-zinc-400 font-mono">
                       {item.time}
                     </span>
                   </div>
-                  <h3 className="text-xs sm:text-sm font-bold text-white group-hover:text-[#4F8CFF] transition-colors">
+                  <h3 className="text-xs sm:text-sm font-semibold text-[#1F2937] group-hover:text-[#24324A] transition-colors font-serif">
                     "{item.title}"
                   </h3>
-                  <p className="text-xs text-[#AAB2C0] line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[#6B7280] line-clamp-2 leading-relaxed font-sans">
                     {item.description}
                   </p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-1.5 md:self-center">
                   {item.tags.map(t => (
-                    <span key={t} className="text-[9px] bg-[#30363D]/65 text-zinc-400 border border-[#30363D]/40 px-2 py-0.5 rounded-full font-sans">
+                    <span key={t} className="text-[9px] bg-[#F4F1E8] text-[#6B7280] border border-[#E5E7EB] px-2 py-0.5 rounded-full font-sans font-semibold">
                       {t}
                     </span>
                   ))}
-                  <div className="hidden md:flex h-7 w-7 rounded-full bg-[#30363D]/40 group-hover:bg-[#4F8CFF]/15 items-center justify-center text-zinc-400 group-hover:text-[#4F8CFF] transition-all">
+                  <div className="hidden md:flex h-7 w-7 rounded-full bg-zinc-100 group-hover:bg-[#24324A]/5 items-center justify-center text-zinc-400 group-hover:text-[#24324A] transition-all">
                     <ChevronRight className="h-4 w-4" />
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="py-12 text-center">
-              <AlertTriangle className="h-8 w-8 text-zinc-600 mx-auto mb-2" />
-              <p className="text-xs text-zinc-400 font-bold uppercase tracking-wider">No matching dossiers in offline index</p>
-              <p className="text-[10px] text-zinc-500 mt-1">Try resetting filter tabs or checking for typos.</p>
+            <div className="py-12 text-center bg-[#FAF8F2] rounded-xl my-4">
+              <AlertTriangle className="h-8 w-8 text-zinc-400 mx-auto mb-2" />
+              <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">No matching dossiers in offline index</p>
+              <p className="text-[10px] text-zinc-400 mt-1">Try resetting filter tabs or checking for typos.</p>
             </div>
           )}
         </div>
@@ -223,21 +223,21 @@ export default function ExploreScreen({
         {/* Court shortcut */}
         <div 
           onClick={() => setScreen({ type: 'court_list' })}
-          className="rounded-2xl border border-dashed border-[#F4B942]/20 bg-gradient-to-tr from-[#161B22] to-transparent p-5 cursor-pointer hover:border-[#F4B942] transition-colors"
+          className="rounded-2xl border border-dashed border-[#E8D79B] bg-white p-5 cursor-pointer hover:border-[#C9A227] hover:shadow-md transition-all shadow-sm"
         >
-          <Gavel className="h-8 w-8 text-[#F4B942] mb-3" />
-          <h3 className="text-sm font-bold text-white mb-1">Relationship Jury Courtroom</h3>
-          <p className="text-xs text-[#AAB2C0] leading-relaxed">Read or load trials of digital snooping, Instagram ex-likes, or in-law disagreements. Take the stand and cast your active verdict.</p>
+          <Gavel className="h-8 w-8 text-[#C9A227] mb-3" />
+          <h3 className="text-sm font-bold text-[#24324A] mb-1 font-serif">Relationship Jury Courtroom</h3>
+          <p className="text-xs text-[#6B7280] leading-relaxed font-sans">Read or load trials of digital snoopings, Instagram ex-likes, or in-law disagreements. Take the stand and cast your active verdict.</p>
         </div>
 
         {/* Q&A shortcut */}
         <div 
           onClick={() => setScreen({ type: 'question_list' })}
-          className="rounded-2xl border border-dashed border-purple-500/20 bg-gradient-to-tr from-[#161B22] to-transparent p-5 cursor-pointer hover:border-purple-500 transition-colors"
+          className="rounded-2xl border border-dashed border-purple-200 bg-white p-5 cursor-pointer hover:border-purple-400 hover:shadow-md transition-all shadow-sm"
         >
-          <Sparkles className="h-8 w-8 text-purple-400 mb-3" />
-          <h3 className="text-sm font-bold text-white mb-1">Peer Query Advisory</h3>
-          <p className="text-xs text-[#AAB2C0] leading-relaxed">Ask other relationship survivors directly. Analyze community poll choices and link outcomes directly to archived story timelines.</p>
+          <Sparkles className="h-8 w-8 text-purple-500 mb-3" />
+          <h3 className="text-sm font-bold text-[#24324A] mb-1 font-serif font-semibold">Peer Query Advisory</h3>
+          <p className="text-xs text-[#6B7280] leading-relaxed font-sans">Ask other relationship survivors directly. Analyze community poll choices and link outcomes directly to archived story timelines.</p>
         </div>
 
       </section>
@@ -245,4 +245,3 @@ export default function ExploreScreen({
     </div>
   );
 }
-
