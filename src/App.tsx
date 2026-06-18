@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Sparkles, Compass, HelpCircle, Heart, ShieldCheck, Gavel, Globe, Clock, PlusCircle, Bookmark, ArrowRight, ChevronRight, AlertTriangle, Monitor, RotateCcw, Share2, Info } from 'lucide-react';
+import { Sparkles, Compass, HelpCircle, Heart, ShieldCheck, Gavel, Globe, Clock, PlusCircle, Bookmark, ArrowRight, ChevronRight, AlertTriangle, Monitor, RotateCcw, Share2, Info, X, BookOpen, Copy } from 'lucide-react';
 
 // Reusable custom components
 import Navigation from './components/Navigation';
@@ -143,6 +143,8 @@ export default function App() {
   // Dynamic Comments and Connected Account Hooks
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [comments, setComments] = useState<StoryComment[]>([]);
+  const [showAuthTroubleshooter, setShowAuthTroubleshooter] = useState<boolean>(false);
+  const [guestNickName, setGuestNickName] = useState<string>('Wandering_Seeker');
 
   // Listen to Google Authentication State and Subscribe to Real-Time Collections
   useEffect(() => {
@@ -247,8 +249,16 @@ export default function App() {
       showToast(`🎉 Connected as: ${result.user.displayName || result.user.email}`);
     } catch (e: any) {
       console.error("Sign-in process exception info:", e);
-      // Gracefully detect cancelled/closed popups or browser blockers
+      // Intercept Firebase unauthorized-domain config failures
       if (
+        e?.code === 'auth/unauthorized-domain' ||
+        e?.message?.includes('unauthorized-domain') ||
+        e?.message?.includes('unauthorized domain') ||
+        e?.message?.includes('auth/unauthorized')
+      ) {
+        setShowAuthTroubleshooter(true);
+        showToast("🔑 Custom Domain Authorized Required: Displaying Troubleshooting Guide.");
+      } else if (
         e?.code === 'auth/popup-closed-by-user' ||
         e?.message?.includes('popup-closed-by-user') ||
         e?.message?.includes('cancelled-by-user')
@@ -260,9 +270,49 @@ export default function App() {
       ) {
         showToast("⚠️ Sign-in popup was blocked by your browser. Please allow popups to connect with Google.");
       } else {
+        // Also fallback to showing details if other unauthorized errors occur
+        if (e?.message?.includes("unauthorized") || e?.message?.includes("unauth")) {
+          setShowAuthTroubleshooter(true);
+        }
         showToast(`❌ Authentication aborted: ${e.message || "Please check your connection."}`);
       }
     }
+  };
+
+  const handleInstantGuestLogin = () => {
+    const finalNickName = guestNickName.trim() || 'Wandering_Seeker';
+    const guestUser = {
+      uid: `guest-${Date.now()}`,
+      displayName: finalNickName,
+      email: `${finalNickName.toLowerCase().replace(/[^a-z0-9]/g, '_')}@beforeregret.com`,
+      photoURL: "",
+      isAnonymous: true,
+      isGuest: true
+    };
+    setCurrentUser(guestUser);
+    
+    // Create local guest user profile info
+    const initialProfile: UserProfile = {
+      username: finalNickName,
+      storiesSubmitted: 0,
+      helpfulVotesReceived: 0,
+      followers: 0,
+      badges: ["Instant Guest"],
+      savedStories: [],
+      followedSituations: [],
+      followedTags: [],
+      followedQuestions: [],
+      recentActivity: [{
+        type: 'story_added',
+        detail: "Connected via Instant Guest Bypass Module",
+        date: "Just now"
+      }]
+    };
+    
+    // Store in global memory state
+    setStore(prev => ({ ...prev, user: initialProfile }));
+    setShowAuthTroubleshooter(false);
+    showToast(`⚡ Signed in instantly with Guest Avatar: ${finalNickName}!`);
   };
 
   const handleLogout = async () => {
@@ -792,66 +842,9 @@ export default function App() {
     showToast("⚖️ Survivor advice answer has been permanently expunged by administrator.");
   };
 
-  // DYNAMIC COMPUTE URL BAR STRING FOR DOMAIN SIMULATOR //
-  const getSimulatedUrl = () => {
-    const base = "https://beforeregret.com";
-    switch (currentScreen.type) {
-      case 'home':
-        return `${base}/`;
-      case 'explore':
-        return `${base}/situation/all`;
-      case 'situation':
-        return `${base}/situation/${currentScreen.slug || 'boyfriend-doesnt-want-marriage'}`;
-      case 'court_list':
-        return `${base}/court/all`;
-      case 'court':
-        return `${base}/court/${currentScreen.slug || 'girlfriend-checked-phone'}`;
-      case 'question_list':
-        return `${base}/question/all`;
-      case 'question':
-        return `${base}/question/${currentScreen.slug || 'should-i-stay-after-cheating'}`;
-      case 'profile':
-        return `${base}/profile/anonymous-space`;
-      case 'country':
-        return `${base}/country/${currentScreen.slug || 'usa'}`;
-      case 'tag':
-        return `${base}/tag/${currentScreen.slug || 'cheating'}`;
-      default:
-        return base;
-    }
-  };
-
   return (
     <div className={darkMode ? 'dark bg-[#0D1117] text-white min-h-screen flex flex-col' : 'bg-neutral-50 text-neutral-900 min-h-screen flex flex-col'}>
       
-      {/* 🚀 ELITE SaaS UTILITY: INTERACTIVE DOMAIN & BROWSER URL BAR SIMULATOR */}
-      <div className="bg-[#161B22] border-b border-[#30363D] px-4 py-2 flex items-center justify-between gap-3 select-none text-xs text-[#AAB2C0] shrink-0 sticky top-0 md:relative z-50">
-        <div className="flex items-center space-x-1.5 shrink-0">
-          <div className="h-3 w-3 rounded-full bg-red-500/85" />
-          <div className="h-3 w-3 rounded-full bg-yellow-500/85" />
-          <div className="h-3 w-3 rounded-full bg-green-500/85" />
-        </div>
-        
-        {/* URL segment bar */}
-        <div className="flex-1 max-w-xl mx-auto rounded-xl bg-[#0D1117] border border-[#30363D] px-3.5 py-1 flex items-center justify-between gap-2 font-mono text-[11px] text-zinc-400 select-all transition-all shadow-inner focus-within:border-cyan-500">
-          <div className="flex items-center gap-1.5 truncate">
-            <span className="text-zinc-600 font-bold">🔒 Secure</span>
-            <span className="truncate text-white/90">{getSimulatedUrl()}</span>
-          </div>
-          <button 
-            onClick={() => setScreen({ type: 'home' })}
-            className="hover:text-white"
-            title="Reset to home domain"
-          >
-            <RotateCcw className="h-3 w-3 text-zinc-500 hover:text-[#4F8CFF]" />
-          </button>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-1 shrink-0 font-bold text-[10px] uppercase bg-[#30363D]/40 border border-[#30363D] px-2 py-0.5 rounded text-[#AAB2C0]">
-          <Monitor className="h-3 w-3" /> <span>SEO Engine Connected</span>
-        </div>
-      </div>
-
       {/* Primary Top Nav */}
       <Navigation
         currentScreen={currentScreen}
@@ -1107,6 +1100,112 @@ export default function App() {
 
       {/* Persistent platform-wide Footer */}
       <Footer setScreen={setScreen} isAdmin={isAdmin} onToggleAdmin={handleToggleAdmin} />
+
+      {/* ⚙️ FIREBASE AUTH TROUBLESHOOTING & INSTANT GUEST PASS OVERLAY */}
+      {showAuthTroubleshooter && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+          <div className="w-full max-w-lg bg-[#161B22] border border-[#30363D] shadow-2xl rounded-3xl overflow-hidden text-left p-6 relative">
+            <button 
+              onClick={() => setShowAuthTroubleshooter(false)}
+              className="absolute top-4 right-4 p-1.5 rounded-xl text-zinc-500 hover:text-white hover:bg-[#30363D]/50 transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            
+            <div className="flex items-center gap-3 border-b border-[#30363D] pb-4 mb-4">
+              <div className="p-2.5 bg-yellow-500/10 border border-yellow-500/25 rounded-2xl text-yellow-400">
+                <AlertTriangle className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-md sm:text-lg font-black text-white uppercase tracking-wider">
+                  Firebase Domain Setup
+                </h3>
+                <p className="text-xs text-zinc-400 mt-0.5">Google Sign-In configuration required.</p>
+              </div>
+            </div>
+
+            <div className="space-y-4 text-xs sm:text-sm text-zinc-300">
+              <p className="leading-relaxed text-zinc-300">
+                The domain <code className="bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded font-mono text-xs">{window.location.hostname}</code> is not yet added to your Firebase authorized domains list.
+              </p>
+
+              {/* Instructions */}
+              <div className="bg-[#0D1117] border border-[#30363D] rounded-2xl p-4 space-y-3">
+                <h4 className="font-bold text-white uppercase text-xs flex items-center gap-1">
+                  <span>🛠️ How to authorize this domain (1-Minute):</span>
+                </h4>
+                <ol className="list-decimal pl-4.5 space-y-2 text-zinc-400 text-xs leading-relaxed">
+                  <li>
+                    Open your <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className="text-[#4F8CFF] hover:underline font-bold inline-flex items-center gap-0.5">Firebase Console <BookOpen className="h-3 w-3" /></a> for project <span className="font-mono text-zinc-300 font-semibold bg-[#161B22] px-1 rounded">universal-cogency-hnzsc</span>.
+                  </li>
+                  <li>
+                    Navigate to <strong className="text-zinc-300 font-bold">Authentication</strong> &gt; <strong className="text-zinc-300 font-bold">Settings</strong> (top tab).
+                  </li>
+                  <li>
+                    Select <strong className="text-zinc-300 font-bold">Authorized domains</strong> and click <strong className="text-[#4F8CFF] font-bold">Add domain</strong>.
+                  </li>
+                  <li>
+                    Paste the domain:
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <code className="bg-[#161B22] border border-[#30363D] rounded-xl px-3 py-1.5 text-[#F4B942] select-all font-mono text-[11px] block truncate max-w-[240px] sm:max-w-xs">
+                        {window.location.hostname}
+                      </code>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.hostname);
+                          showToast("📋 Copied hostname!");
+                        }}
+                        className="px-2.5 py-1.5 rounded-xl border border-[#30363D] hover:bg-[#30363D] transition-colors text-zinc-400 hover:text-white shrink-0 text-xs font-bold flex items-center gap-1"
+                        title="Copy domain name"
+                      >
+                        <Copy className="h-3 w-3" />
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+
+              {/* Instant Guest mode */}
+              <div className="border-t border-[#30363D] pt-4 mt-2">
+                <div className="bg-gradient-to-r from-[#4F8CFF]/10 to-indigo-500/10 border border-[#4F8CFF]/25 rounded-2xl p-4">
+                  <h4 className="font-extrabold text-white text-xs sm:text-sm uppercase tracking-wider flex items-center gap-1">
+                    <Sparkles className="h-4 w-4 text-[#4F8CFF]" /> Bypass with Instant Guest Profile
+                  </h4>
+                  <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                    Don't want to change console settings right now? Create an instant custom local session to submit timelines, voice verdicts, and test Firestore features with real-time sync.
+                  </p>
+
+                  <div className="mt-3.5 flex flex-col sm:flex-row gap-2">
+                    <input 
+                      type="text"
+                      value={guestNickName}
+                      onChange={(e) => setGuestNickName(e.target.value)}
+                      placeholder="Enter seeker nickname..."
+                      className="bg-[#0D1117] border border-[#30363D] rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-white focus:outline-none focus:border-[#4F8CFF] flex-1"
+                    />
+                    <button
+                      onClick={handleInstantGuestLogin}
+                      className="rounded-xl bg-gradient-to-r from-[#4F8CFF] to-indigo-600 hover:from-[#4F8CFF]/90 hover:to-indigo-600/90 text-xs font-black text-white px-4 py-2.5 shadow-lg shadow-[#4F8CFF]/15 hover:shadow-[#4F8CFF]/25 transition-all text-center shrink-0"
+                    >
+                      Instant Login ⚡
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                onClick={() => setShowAuthTroubleshooter(false)}
+                className="text-xs font-bold text-zinc-400 hover:text-white px-4 py-2 rounded-xl border border-[#30363D] hover:bg-[#30363D] transition-all"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
