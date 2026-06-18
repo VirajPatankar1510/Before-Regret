@@ -1,0 +1,6 @@
+{
+  "name": "BeforeRegret",
+  "description": "An premium relationship outcome intelligence platform for anonymously sharing situations, decisions, outcomes, regrets, and updates to see what happens before making life-altering choices.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

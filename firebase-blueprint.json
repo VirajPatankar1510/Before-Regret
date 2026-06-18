@@ -1,0 +1,79 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile document",
+      "type": "object",
+      "properties": {
+        "username": { "type": "string" },
+        "storiesSubmitted": { "type": "integer" },
+        "helpfulVotesReceived": { "type": "integer" },
+        "followers": { "type": "integer" },
+        "badges": { "type": "array" },
+        "savedStories": { "type": "array" },
+        "followedSituations": { "type": "array" },
+        "followedTags": { "type": "array" },
+        "followedQuestions": { "type": "array" },
+        "recentActivity": { "type": "array" }
+      },
+      "required": ["username"]
+    },
+    "Story": {
+      "title": "Story",
+      "description": "User submitted chronological relationship outcome timeline",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "situationSlug": { "type": "string" },
+        "situationName": { "type": "string" },
+        "age": { "type": "integer" },
+        "gender": { "type": "string" },
+        "country": { "type": "string" },
+        "relationshipDuration": { "type": "string" },
+        "decisionMade": { "type": "string", "enum": ["Stayed", "Left", "Married", "Moved Together", "Other"] },
+        "currentOutcome": { "type": "string", "enum": ["Still Together", "Married", "Engaged", "Separated", "Divorced", "Complicated"] },
+        "regretScore": { "type": "integer" },
+        "wouldDoAgain": { "type": "string", "enum": ["Yes", "No", "Not Sure"] },
+        "fullStory": { "type": "string" },
+        "timeline": { "type": "array" },
+        "userName": { "type": "string" },
+        "helpfulVotes": { "type": "integer" },
+        "dateAdded": { "type": "string" },
+        "updates": { "type": "array" },
+        "tags": { "type": "array" }
+      },
+      "required": ["id", "title", "situationSlug", "situationName", "fullStory"]
+    },
+    "StoryComment": {
+      "title": "Story Comment",
+      "description": "Peer response or mentoring advice comment.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "storyId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorPhoto": { "type": "string" },
+        "text": { "type": "string" },
+        "dateAdded": { "type": "string" }
+      },
+      "required": ["id", "storyId", "authorName", "authorId", "text", "dateAdded"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile data stored by system user identification coordinate"
+    },
+    "/stories/{storyId}": {
+      "schema": "Story",
+      "description": "Public database of relationship chronicles"
+    },
+    "/comments/{commentId}": {
+      "schema": "StoryComment",
+      "description": "Mentoring feedbacks and peer responses left on stories"
+    }
+  }
+}
