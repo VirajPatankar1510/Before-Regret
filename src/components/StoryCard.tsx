@@ -19,6 +19,7 @@ interface StoryCardProps {
   onAddComment?: (storyId: string, text: string) => void;
   currentUser?: any;
   onGoogleLogin?: () => void;
+  highlighted?: boolean;
 }
 
 export default function StoryCard({
@@ -36,7 +37,8 @@ export default function StoryCard({
   comments = [],
   onAddComment,
   currentUser,
-  onGoogleLogin
+  onGoogleLogin,
+  highlighted = false
 }: StoryCardProps) {
   const [isCopied, setIsCopied] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -83,7 +85,14 @@ export default function StoryCard({
   const storyComments = comments.filter(c => c.storyId === story.id);
 
   return (
-    <div className="rounded-2xl border border-[#30363D] bg-[#161B22] p-5 sm:p-6 shadow-md transition-all hover:border-[#30363D]/80">
+    <div 
+      id={`story-${story.id}`}
+      className={`rounded-2xl border p-5 sm:p-6 shadow-md transition-all duration-700 ${
+        highlighted 
+          ? 'border-[#F4B942] bg-[#1d232c] ring-2 ring-[#F4B942]/40 shadow-[#F4B942]/10 scale-[1.01]' 
+          : 'border-[#30363D] bg-[#161B22] hover:border-[#30363D]/80'
+      }`}
+    >
       
       {/* Header Info */}
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[#30363D] pb-3 mb-4 text-xs text-[#AAB2C0]">
@@ -95,6 +104,11 @@ export default function StoryCard({
           <span className="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-mono">
              Chronicle: #{story.id.slice(0, 5)}
           </span>
+          {story.caseNumber && (
+            <span className="text-[10px] bg-[#F4B942]/10 text-[#F4B942] border border-[#F4B942]/30 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-mono font-bold animate-pulse">
+               ⚖️ {story.caseNumber}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <span>{story.gender} ({story.age})</span>

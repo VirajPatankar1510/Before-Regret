@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Menu, X, PlusCircle, Gavel, FileText, User, Sparkles, LogIn, ChevronRight, Compass, Sun, Moon, BookOpen, Heart, AlertTriangle } from 'lucide-react';
-import { PRESEEDED_SITUATIONS, PRESEEDED_COURT_CASES, PRESEEDED_QUESTIONS, COUNTRIES_DATA } from '../data/mockData';
+import { Search, Menu, X, PlusCircle, Gavel, FileText, User, Sparkles, ChevronRight, Compass, Sun, Moon, BookOpen, Heart, AlertTriangle } from 'lucide-react';
+import { PRESEEDED_SITUATIONS, PRESEEDED_QUESTIONS, COUNTRIES_DATA } from '../data/mockData';
+import { Story, CourtCase } from '../types';
 
 interface NavigationProps {
   currentScreen: { type: string; slug?: string };
@@ -8,8 +9,9 @@ interface NavigationProps {
   darkMode: boolean;
   setDarkMode: (val: boolean) => void;
   onOpenSubmit: () => void;
-  currentUser?: any;
-  onGoogleLogin?: () => void;
+  onCaseRetrieve: (caseNum: string) => void;
+  stories: Story[];
+  courtCases: CourtCase[];
 }
 
 export default function Navigation({ 
@@ -18,8 +20,9 @@ export default function Navigation({
   darkMode, 
   setDarkMode, 
   onOpenSubmit,
-  currentUser,
-  onGoogleLogin
+  onCaseRetrieve,
+  stories,
+  courtCases
 }: NavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,20 +43,28 @@ export default function Navigation({
   const getSuggestions = () => {
     if (!searchQuery.trim()) return [];
 
-    const query = searchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase().trim();
     const results: { type: 'situation' | 'court' | 'question' | 'country' | 'tag'; label: string; slug: string }[] = [];
+
+    // Search by Case Number first (high priority)
+    courtCases.forEach(c => {
+      const caseNum = c.caseNumber || '';
+      if (caseNum.toLowerCase().includes(query) || c.title.toLowerCase().includes(query)) {
+        results.push({ type: 'court', label: `⚖️ ${caseNum ? `[${caseNum}]` : 'Court'}: ${c.title}`, slug: c.slug });
+      }
+    });
+
+    stories.forEach(s => {
+      const caseNum = s.caseNumber || '';
+      if (caseNum.toLowerCase().includes(query) || s.title.toLowerCase().includes(query)) {
+        results.push({ type: 'situation', label: `📂 ${caseNum ? `[${caseNum}]` : 'Chronicle'}: ${s.title}`, slug: s.situationSlug });
+      }
+    });
 
     // Search situations
     PRESEEDED_SITUATIONS.forEach(s => {
       if (s.name.toLowerCase().includes(query) || s.description.toLowerCase().includes(query)) {
         results.push({ type: 'situation', label: s.name, slug: s.slug });
-      }
-    });
-
-    // Search court cases
-    PRESEEDED_COURT_CASES.forEach(c => {
-      if (c.title.toLowerCase().includes(query) || c.description.toLowerCase().includes(query)) {
-        results.push({ type: 'court', label: `Court: ${c.title}`, slug: c.slug });
       }
     });
 
@@ -143,48 +154,52 @@ export default function Navigation({
           {/* Action Trigger Elements Right */}
           <div className="flex items-center space-x-2 shrink-0">
             
-            {/* Google Login / Profile Avatar trigger */}
-            {currentUser ? (
-              <button
-                onClick={() => setScreen({ type: 'profile' })}
-                className={`p-2 rounded-xl flex items-center gap-1.5 transition-colors ${
-                  currentScreen.type === 'profile' ? 'text-[#4F8CFF] bg-[#161B22]' : 'text-[#AAB2C0] hover:text-white hover:bg-[#161B22]'
-                }`}
-                title={`Logged in as ${currentUser.displayName || currentUser.email}`}
+            {/* 🔑 Cryptographic Case Retrieval Input */}
+            <div className="flex items-center gap-1.5 bg-[#161B22] border border-[#30363D] hover:border-[#F4B942]/60 rounded-xl px-2.5 py-1.5 transition-all text-xs">
+              <span className="text-[9px] text-[#F4B942] font-mono font-extrabold tracking-widest hidden sm:inline shrink-0 select-none">RETRIEVE CASE</span>
+              <input
+                type="text"
+                placeholder="CASE ID..."
+                className="bg-transparent border-none text-[11px] text-white w-[75px] xs:w-[90px] focus:outline-none placeholder-zinc-500 font-mono font-extrabold uppercase"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const val = (e.target as HTMLInputElement).value.trim();
+                    if (val) {
+                      onCaseRetrieve(val);
+                      (e.target as HTMLInputElement).value = '';
+                    }
+                  }
+                }}
+              />
+              <button 
+                onClick={(e) => {
+                  const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                  const val = input.value.trim();
+                  if (val) {
+                    onCaseRetrieve(val);
+                    input.value = '';
+                  }
+                }}
+                className="text-zinc-500 hover:text-[#F4B942] transition-colors shrink-0 p-0.5"
+                title="Search Case Reference Code"
               >
-                {currentUser.photoURL ? (
-                  <img src={currentUser.photoURL} alt="Avatar" className="h-5 w-5 rounded-full" referrerPolicy="no-referrer" />
-                ) : (
-                  <User className="h-4 w-4" />
-                )}
-                <span className="hidden sm:inline text-xs font-bold">My Profile & Replies</span>
+                <Search className="h-3 w-3" />
               </button>
-            ) : (
-              <button
-                onClick={onGoogleLogin}
-                className="p-1 px-2 sm:p-2 sm:px-3 rounded-xl flex items-center gap-1.1 sm:gap-1.5 text-[#F4B942] hover:text-white hover:bg-[#161B22] border border-[#F4B942]/40 hover:border-[#F4B942] transition-colors"
-                title="Google Login"
-              >
-                <LogIn className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline text-xs font-bold">Google Login</span>
-                <span className="inline sm:hidden text-xs font-bold">Login</span>
-              </button>
-            )}
+            </div>
 
             {/* Submit CTA */}
             <button
               onClick={onOpenSubmit}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#4F8CFF] to-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-lg shadow-[#4F8CFF]/15 hover:from-[#4F8CFF]/90 hover:to-indigo-600/90 transition-all active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#4F8CFF] to-indigo-600 px-3 py-1.5 text-xs font-bold text-white shadow-lg shadow-[#4F8CFF]/15 hover:from-[#4F8CFF]/90 hover:to-indigo-600/90 transition-all active:scale-[0.98]"
             >
-              <PlusCircle className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Submit Story</span>
-              <span className="inline sm:hidden">Submit</span>
+              <PlusCircle className="h-3 w-3" />
+              <span className="hidden xs:inline">Submit</span>
             </button>
 
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl text-[#AAB2C0] hover:text-white hover:bg-[#161B22] lg:hidden"
+              className="p-2 rounded-xl text-[#AAB2C0] hover:text-white hover:bg-[#161B22] lg:hidden animate-fadeIn"
             >
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -213,14 +228,11 @@ export default function Navigation({
             ))}
           </div>
 
-           {currentUser && (
-            <div className="border-t border-[#30363D] pt-3 flex items-center justify-between">
-              <span className="text-[11px] text-[#AAB2C0]">
-                Connected: {currentUser.displayName || currentUser.email}
-              </span>
-              <span className="inline-block h-2 w-2 rounded-full animate-pulse bg-emerald-400" />
-            </div>
-          )}
+          <div className="border-t border-[#30363D] pt-3 text-center">
+            <span className="text-[10px] uppercase font-mono font-bold text-zinc-500 tracking-wider">
+              🔒 100% Secure Cryptographic Session
+            </span>
+          </div>
         </div>
       )}
     </nav>
