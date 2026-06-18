@@ -17,6 +17,7 @@ import ExploreScreen from './pages/ExploreScreen';
 import ProfileScreen from './pages/ProfileScreen';
 import CountryScreen from './pages/CountryScreen';
 import TagScreen from './pages/TagScreen';
+import CompareScreen from './pages/CompareScreen';
 // Core State and Seeding
 import { getInitialState, saveState } from './data/store';
 import { PRESEEDED_SITUATIONS, COUNTRIES_DATA } from './data/mockData';
@@ -39,13 +40,89 @@ import {
   fetchUserProfileFromFirestore 
 } from './lib/firestoreService';
 
+// RESTful Route Pathname Helpers for Clean Semantic Dynamic pSEO
+export function parsePath(pathname: string): { type: string; slug?: string } {
+  const parts = pathname.split('/').filter(Boolean);
+  
+  if (parts.length === 0) {
+    return { type: 'home' };
+  }
+  
+  const first = parts[0].toLowerCase();
+  
+  if (first === 'explore') {
+    return { type: 'explore' };
+  }
+  if (first === 'decision') {
+    return { type: 'situation', slug: parts[1] || 'boyfriend-doesnt-want-marriage' };
+  }
+  if (first === 'compare') {
+    return { type: 'compare', slug: parts[1] || 'boyfriend-doesnt-want-marriage-vs-stayed-after-cheating' };
+  }
+  if (first === 'court') {
+    if (parts[1]) {
+      return { type: 'court', slug: parts[1] };
+    }
+    return { type: 'court_list' };
+  }
+  if (first === 'boards') {
+    if (parts[1]) {
+      return { type: 'question', slug: parts[1] };
+    }
+    return { type: 'question_list' };
+  }
+  if (first === 'profile') {
+    return { type: 'profile' };
+  }
+  if (first === 'country') {
+    return { type: 'country', slug: parts[1] || 'usa' };
+  }
+  if (first === 'tag') {
+    return { type: 'tag', slug: parts[1] || 'cheating' };
+  }
+  if (first === 'lodge' || first === 'submit' || first === 'submit-story') {
+    return { type: 'submit_story' };
+  }
+
+  // Fallback
+  return { type: 'home' };
+}
+
+export function getRelativePath(screen: { type: string; slug?: string }): string {
+  switch (screen.type) {
+    case 'home':
+      return '/';
+    case 'explore':
+      return '/explore';
+    case 'situation':
+      return `/decision/${screen.slug || 'boyfriend-doesnt-want-marriage'}`;
+    case 'compare':
+      return `/compare/${screen.slug || 'boyfriend-doesnt-want-marriage-vs-stayed-after-cheating'}`;
+    case 'court_list':
+      return '/court';
+    case 'court':
+      return `/court/${screen.slug}`;
+    case 'question_list':
+      return '/boards';
+    case 'question':
+      return `/boards/${screen.slug}`;
+    case 'profile':
+      return '/profile';
+    case 'country':
+      return `/country/${screen.slug || 'usa'}`;
+    case 'tag':
+      return `/tag/${screen.slug || 'cheating'}`;
+    case 'submit_story':
+      return '/lodge';
+    default:
+      return '/';
+  }
+}
+
 export default function App() {
   const [store, setStore] = useState(() => getInitialState());
   const [currentScreen, setScreen] = useState<{ type: string; slug?: string }>(() => {
-    const params = new URLSearchParams(window.location.search);
-    const page = params.get('page') || 'home';
-    const slug = params.get('slug') || undefined;
-    return { type: page, slug };
+    return parsePath(window.location.pathname);
   });
   const [isAdmin, setIsAdmin] = useState(() => {
     return localStorage.getItem('before_regret_admin_mode') === 'true';
@@ -53,59 +130,125 @@ export default function App() {
 
   // Dynamically update document title and URL parameters for SEO and native back/forward behaviors!
   useEffect(() => {
-    const params = new URLSearchParams();
-    params.set('page', currentScreen.type);
-    if (currentScreen.slug) {
-      params.set('slug', currentScreen.slug);
-    }
-    
-    // Set dynamic page title for SEO search crawlers
+    // Determine dynamic page metadata based on clean routes
     let title = "BeforeRegret — See what happened before making the same decision.";
+    let description = "BeforeRegret is an interactive ledger of crowdsourced anonymous relationship timeline chronicles on marriage, cheating, and commitment regrets.";
     const displaySlug = currentScreen.slug ? currentScreen.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
     
     switch (currentScreen.type) {
       case 'home':
         title = "BeforeRegret — Relationship Decisional Outcomes & Lessons";
+        description = "Analyze crowd-sourced anonymous timeline chronicles on marriage, cheating, cohabitation, and family commitments before making major life decisions.";
         break;
       case 'explore':
         title = "Explore Decisional Outcomes | BeforeRegret";
+        description = "Browse real relationship categories and outcome dossiers grouped by decision, gender, age, and country.";
         break;
-      case 'situation':
-        title = `Should I ${displaySlug}? Real Outcomes & Data | BeforeRegret`;
+      case 'situation': {
+        const currentSit = PRESEEDED_SITUATIONS.find(s => s.slug === currentScreen.slug);
+        const sName = currentSit ? currentSit.name : (displaySlug || 'Relationship Decision');
+        title = `Should I ${sName}? Real Outcomes & Regrets | BeforeRegret`;
+        description = `Access crowd-sourced demographics, average regret curves, and 100% anonymous chronicles on "${sName}".`;
         break;
-
+      }
+      case 'compare': {
+        const parts = (currentScreen.slug || 'boyfriend-doesnt-want-marriage-vs-stayed-after-cheating').split('-vs-');
+        const d1 = parts[0]?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Decision Alpha';
+        const d2 = parts[1]?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Decision Beta';
+        title = `Compare ${d1} vs ${d2} | Relationship Decision Ledger`;
+        description = `Raw side-by-side comparative analysis of ${d1} vs ${d2}. Check relationship split rates, average regret ratings, and demographic stats.`;
+        break;
+      }
       case 'court_list':
         title = "Peers Jury Tribunal - Give Judgement on Relationship Evidence | BeforeRegret";
+        description = "Deliberate and vote on user-lodged relationship conflict trials. Defend arguments as an anonymous juror citizen.";
         break;
-      case 'court':
-        title = `Relationship Jury Trial: "${displaySlug}" | BeforeRegret`;
+      case 'court': {
+        const courtCaseObj = store.courtCases.find(c => c.slug === currentScreen.slug);
+        const cTitle = courtCaseObj ? courtCaseObj.title : (displaySlug || 'Relationship Case');
+        title = `Relationship Jury Trial: "${cTitle}" | BeforeRegret`;
+        description = `Review active relationship trial: "${cTitle}" in the public citizens tribunal. Vote on verdict options and write arguments.`;
         break;
+      }
       case 'question_list':
         title = "Community Advice Boards - Ask Survivor Veterans | BeforeRegret";
+        description = "Browse advice and questions from individuals facing major relationship crises answered by veteran survivors.";
         break;
-      case 'question':
-        title = `Survivor Advice Q&A: "${displaySlug}" | BeforeRegret`;
+      case 'question': {
+        const questionObj = store.questions.find(q => q.slug === currentScreen.slug);
+        const qTitle = questionObj ? questionObj.title : (displaySlug || 'Relationship Board');
+        title = `Survivor Q&A advice: "${qTitle}" | BeforeRegret`;
+        description = `Ask seasoned survivors and read Q&A advice for: "${qTitle}". Read community responses and view active polls.`;
         break;
+      }
       case 'profile':
         title = "My Profile & Peer Advice Logs | BeforeRegret";
+        description = "Your personal dashboard, private bookmarked cases, and submitted relationship chronological outcome logs.";
         break;
-      case 'country':
-        title = `Relationship Decisions, Regrets & Outcomes in ${displaySlug} | BeforeRegret`;
+      case 'country': {
+        const countryName = currentScreen.slug ? currentScreen.slug.toUpperCase() : 'Global';
+        title = `Relationship Decisions, Regrets & Outcomes in ${countryName} | BeforeRegret`;
+        description = `Explore demographic logs, regret curves, and relationship split rates from citizens facing relationship decisions in ${countryName}.`;
         break;
+      }
       case 'tag':
         title = `Choice Outcomes matching "${displaySlug}" | BeforeRegret`;
+        description = `Analyze community outcomes, average regrets, and survivor guidelines classified under dynamic category keyword: #${displaySlug}.`;
         break;
       case 'submit_story':
         title = "Submit Your Anonymous Relationship Decision Timeline | BeforeRegret";
+        description = "Lodge your anonymous relationship chronicle to the public registry. 100% cloud secure, private, and cookie-based logging, no login needed.";
         break;
     }
     
     document.title = title;
 
-    // Push state so each screen feels like a genuine native webpage with back/forward history!
-    const newRelativePathQuery = `${window.location.pathname}?${params.toString()}`;
-    if (window.location.search !== `?${params.toString()}`) {
-      window.history.pushState({ type: currentScreen.type, slug: currentScreen.slug }, '', newRelativePathQuery);
+    // Set Programmatic SEO meta tags for search engine crawlers
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', description);
+    } else {
+      const el = document.createElement('meta');
+      el.name = 'description';
+      el.content = description;
+      document.head.appendChild(el);
+    }
+
+    const setOgTag = (property: string, content: string) => {
+      let el = document.querySelector(`meta[property="${property}"]`);
+      if (el) {
+        el.setAttribute('content', content);
+      } else {
+        el = document.createElement('meta');
+        el.setAttribute('property', property);
+        el.setAttribute('content', content);
+        document.head.appendChild(el);
+      }
+    };
+
+    const path = getRelativePath(currentScreen);
+    const origin = window.location.origin || 'https://beforeregret.org';
+    const canonicalUrl = `${origin}${path}`;
+
+    setOgTag('og:title', title);
+    setOgTag('og:description', description);
+    setOgTag('og:url', canonicalUrl);
+    setOgTag('og:type', 'website');
+    setOgTag('og:site_name', 'BeforeRegret');
+
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (canonicalLink) {
+      canonicalLink.setAttribute('href', canonicalUrl);
+    } else {
+      canonicalLink = document.createElement('link');
+      canonicalLink.setAttribute('rel', 'canonical');
+      canonicalLink.setAttribute('href', canonicalUrl);
+      document.head.appendChild(canonicalLink);
+    }
+
+    // Push states to native HTML5 REST history pathnames
+    if (window.location.pathname !== path) {
+      window.history.pushState({ type: currentScreen.type, slug: currentScreen.slug }, '', path);
     }
   }, [currentScreen]);
 
@@ -127,10 +270,7 @@ export default function App() {
       if (event.state && event.state.type) {
         setScreen({ type: event.state.type, slug: event.state.slug });
       } else {
-        const params = new URLSearchParams(window.location.search);
-        const page = params.get('page') || 'home';
-        const slug = params.get('slug') || undefined;
-        setScreen({ type: page, slug });
+        setScreen(parsePath(window.location.pathname));
       }
     };
 
@@ -956,7 +1096,10 @@ export default function App() {
         {currentScreen.type === 'explore' && (
           <ExploreScreen
             situations={liveSituations}
+            stories={store.stories}
+            courtCases={store.courtCases}
             setScreen={setScreen}
+            onCaseRetrieve={handleCaseRetrieve}
           />
         )}
 
@@ -982,6 +1125,15 @@ export default function App() {
             currentUser={currentUser}
             onGoogleLogin={handleGoogleLogin}
             highlightedStoryId={highlightedStoryId}
+          />
+        )}
+
+        {currentScreen.type === 'compare' && (
+          <CompareScreen
+            slug1={(currentScreen.slug || '').split('-vs-')[0] || 'boyfriend-doesnt-want-marriage'}
+            slug2={(currentScreen.slug || '').split('-vs-')[1] || 'stayed-after-cheating'}
+            situations={liveSituations}
+            setScreen={setScreen}
           />
         )}
 

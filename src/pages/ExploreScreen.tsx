@@ -1,21 +1,93 @@
-import React from 'react';
-import { Compass, FileText, ChevronRight, Gavel, Sparkles, AlertTriangle, HelpCircle, Heart, Tag } from 'lucide-react';
-import { Situation } from '../types';
+import React, { useState } from 'react';
+import { Compass, FileText, ChevronRight, Gavel, Sparkles, AlertTriangle, HelpCircle, Heart, Tag, Search, ShieldCheck, Clock, ArrowRight } from 'lucide-react';
+import { Situation, Story, CourtCase } from '../types';
 
 interface ExploreScreenProps {
   situations: Situation[];
+  stories?: Story[];
+  courtCases?: CourtCase[];
   setScreen: (screen: { type: string; slug?: string }) => void;
+  onCaseRetrieve?: (caseNum: string) => void;
 }
 
-export default function ExploreScreen({ situations, setScreen }: ExploreScreenProps) {
-  
+export default function ExploreScreen({ 
+  situations, 
+  stories = [], 
+  courtCases = [], 
+  setScreen,
+  onCaseRetrieve
+}: ExploreScreenProps) {
+  const [filterType, setFilterType] = useState<'all' | 'chronicle' | 'trial'>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Combine both user timelines & court trials for unified indexing
+  const indexedItems: {
+    id: string;
+    caseNumber?: string;
+    title: string;
+    type: 'chronicle' | 'trial';
+    description: string;
+    time: string;
+    slug?: string;
+    parentSlug?: string;
+    tags: string[];
+  }[] = [];
+
+  // 1. Add Story timelines
+  stories.forEach(s => {
+    // Find parent category matching the situation
+    const sit = situations.find(x => x.slug === s.situationSlug);
+    indexedItems.push({
+      id: s.id,
+      caseNumber: s.caseNumber || `CASE-S${s.id.slice(0, 4).toUpperCase()}`,
+      title: s.title,
+      type: 'chronicle',
+      description: s.fullStory || '',
+      time: s.dateAdded || 'Archived',
+      slug: s.situationSlug,
+      parentSlug: s.situationSlug,
+      tags: [s.gender, `${s.age}y/o`, ...(sit ? [sit.category] : [])]
+    });
+  });
+
+  // 2. Add Court trials
+  courtCases.forEach(c => {
+    indexedItems.push({
+      id: c.slug,
+      caseNumber: c.caseNumber || `CASE-C${c.slug.slice(0, 4).toUpperCase()}`,
+      title: c.title,
+      type: 'trial',
+      description: c.description || '',
+      time: c.postTime || 'Deliberation',
+      slug: c.slug,
+      parentSlug: undefined,
+      tags: c.tags || ['Relationship Trial']
+    });
+  });
+
+  // Sort by Case Number descending/random but stable
+  const sortedItems = [...indexedItems].sort((a, b) => b.caseNumber!.localeCompare(a.caseNumber!));
+
+  // Filter based on search input & tabs
+  const filteredItems = sortedItems.filter(item => {
+    const matchesTab = filterType === 'all' || item.type === filterType;
+    const matchesSearch = 
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.caseNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.tags.some(t => t.toLowerCase().includes(searchTerm.toLowerCase()));
+    return matchesTab && matchesSearch;
+  });
+
   return (
     <div className="space-y-8 pb-16 animate-fadeIn">
       
       {/* Intro Header */}
       <div className="space-y-1.5 text-center max-w-2xl mx-auto py-4">
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Outcome Intelligence Directories</h1>
-        <p className="text-xs sm:text-sm text-[#AAB2C0] leading-relaxed">Browse pre-collected dossiers of real life relationship situations grouped by primary issues and geo-demographic patterns.</p>
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">Outcome Intelligence Directories</h1>
+        <p className="text-xs sm:text-sm text-[#AAB2C0] leading-relaxed">
+          Browse real-life crowd-sourced relationship dossiers grouped by issues, demographics, and active case logs.
+        </p>
       </div>
 
       {/* Categories Grid (Bento) */}
@@ -36,11 +108,114 @@ export default function ExploreScreen({ situations, setScreen }: ExploreScreenPr
               <h3 className="text-sm font-bold text-white pt-1">{s.name}</h3>
               <p className="text-xs text-[#AAB2C0] line-clamp-3 leading-relaxed">{s.description}</p>
             </div>
-
-            
           </div>
         ))}
       </div>
+
+      {/* SEO-Friendly Index Section */}
+      <section className="bg-[#161B22] border border-[#30363D] rounded-3xl p-5 sm:p-6 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#30363D] pb-5">
+          <div className="space-y-1">
+            <h2 className="text-base font-black text-white flex items-center gap-2 uppercase tracking-wide">
+              <ShieldCheck className="h-5 w-5 text-[#F4B942]" />
+              🔓 Public Cryptographic case Index
+            </h2>
+            <p className="text-[11px] text-[#AAB2C0]">
+              Index ledger of user-lodged relationship chronologies and trials. Completely anonymous and indexable for seo crawlers.
+            </p>
+          </div>
+
+          {/* Quick Filter Controls */}
+          <div className="flex items-center gap-1.5 self-start sm:self-center">
+            {(['all', 'chronicle', 'trial'] as const).map(type => (
+              <button
+                key={type}
+                onClick={() => setFilterType(type)}
+                className={`px-3 py-1 text-[10px] font-black uppercase rounded-lg border transition-all ${
+                  filterType === type
+                    ? 'bg-[#F4B942]/15 text-[#F4B942] border-[#F4B942]/30'
+                    : 'text-[#AAB2C0] border-[#30363D] hover:bg-[#1C2128]'
+                }`}
+              >
+                {type}s
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Local Index Search */}
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search index by unique Case Key, tags (e.g. Female, 20s), or issue words..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#F4B942]/60 rounded-xl py-2 px-3.5 pl-10 text-xs text-white placeholder-zinc-500 focus:outline-none transition-all font-sans"
+          />
+          <Search className="h-4 w-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+
+        {/* Ledger list */}
+        <div className="divide-y divide-[#30363D]/50">
+          {filteredItems.length > 0 ? (
+            filteredItems.map(item => (
+              <div
+                key={item.id}
+                onClick={() => {
+                  if (item.type === 'chronicle') {
+                    setScreen({ type: 'situation', slug: item.slug });
+                    if (onCaseRetrieve) {
+                      setTimeout(() => onCaseRetrieve(item.caseNumber || ''), 300);
+                    }
+                  } else {
+                    setScreen({ type: 'court', slug: item.slug });
+                  }
+                }}
+                className="py-4 hover:bg-[#1C2128]/40 px-2 rounded-xl transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+              >
+                <div className="space-y-1.5 max-w-3xl">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] font-extrabold text-[#F4B942] bg-[#F4B942]/10 border border-[#F4B942]/20 px-2 py-0.5 rounded-md">
+                      {item.caseNumber}
+                    </span>
+                    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md font-mono ${
+                      item.type === 'trial' ? 'bg-indigo-500/10 text-indigo-400' : 'bg-[#4F8CFF]/10 text-[#4F8CFF]'
+                    }`}>
+                      {item.type}
+                    </span>
+                    <span className="text-[10px] text-zinc-500 font-mono">
+                      {item.time}
+                    </span>
+                  </div>
+                  <h3 className="text-xs sm:text-sm font-bold text-white group-hover:text-[#4F8CFF] transition-colors">
+                    "{item.title}"
+                  </h3>
+                  <p className="text-xs text-[#AAB2C0] line-clamp-2 leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5 md:self-center">
+                  {item.tags.map(t => (
+                    <span key={t} className="text-[9px] bg-[#30363D]/65 text-zinc-400 border border-[#30363D]/40 px-2 py-0.5 rounded-full font-sans">
+                      {t}
+                    </span>
+                  ))}
+                  <div className="hidden md:flex h-7 w-7 rounded-full bg-[#30363D]/40 group-hover:bg-[#4F8CFF]/15 items-center justify-center text-zinc-400 group-hover:text-[#4F8CFF] transition-all">
+                    <ChevronRight className="h-4 w-4" />
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="py-12 text-center">
+              <AlertTriangle className="h-8 w-8 text-zinc-600 mx-auto mb-2" />
+              <p className="text-xs text-zinc-400 font-bold uppercase tracking-wider">No matching dossiers in offline index</p>
+              <p className="text-[10px] text-zinc-500 mt-1">Try resetting filter tabs or checking for typos.</p>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Extra Directories shortcuts */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -70,3 +245,4 @@ export default function ExploreScreen({ situations, setScreen }: ExploreScreenPr
     </div>
   );
 }
+
