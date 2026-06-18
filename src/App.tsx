@@ -5,6 +5,7 @@ import { Sparkles, Compass, HelpCircle, Heart, ShieldCheck, Gavel, Globe, Clock,
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import SubmitStoryForm from './components/SubmitStoryForm';
+import SubmitQuestionForm from './components/SubmitQuestionForm';
 import RegisterCaseForm from './components/RegisterCaseForm';
 import AdminPanel from './components/AdminPanel';
 
@@ -18,6 +19,7 @@ import ProfileScreen from './pages/ProfileScreen';
 import CountryScreen from './pages/CountryScreen';
 import TagScreen from './pages/TagScreen';
 import CompareScreen from './pages/CompareScreen';
+import RegretStoriesScreen from './pages/RegretStoriesScreen';
 // Core State and Seeding
 import { getInitialState, saveState } from './data/store';
 import { PRESEEDED_SITUATIONS, COUNTRIES_DATA } from './data/mockData';
@@ -74,6 +76,9 @@ export function parsePath(pathname: string): { type: string; slug?: string } {
   if (first === 'profile') {
     return { type: 'profile' };
   }
+  if (first === 'regrets') {
+    return { type: 'regret_stories' };
+  }
   if (first === 'country') {
     return { type: 'country', slug: parts[1] || 'usa' };
   }
@@ -81,7 +86,7 @@ export function parsePath(pathname: string): { type: string; slug?: string } {
     return { type: 'tag', slug: parts[1] || 'cheating' };
   }
   if (first === 'lodge' || first === 'submit' || first === 'submit-story') {
-    return { type: 'submit_story' };
+    return { type: 'question_list' };
   }
 
   // Fallback
@@ -94,6 +99,8 @@ export function getRelativePath(screen: { type: string; slug?: string }): string
       return '/';
     case 'explore':
       return '/explore';
+    case 'regret_stories':
+      return '/regrets';
     case 'situation':
       return `/decision/${screen.slug || 'boyfriend-doesnt-want-marriage'}`;
     case 'compare':
@@ -113,7 +120,7 @@ export function getRelativePath(screen: { type: string; slug?: string }): string
     case 'tag':
       return `/tag/${screen.slug || 'cheating'}`;
     case 'submit_story':
-      return '/lodge';
+      return '/boards';
     default:
       return '/';
   }
@@ -196,8 +203,8 @@ export default function App() {
         description = `Analyze community outcomes, average regrets, and survivor guidelines classified under dynamic category keyword: #${displaySlug}.`;
         break;
       case 'submit_story':
-        title = "Submit Your Anonymous Relationship Decision Timeline | BeforeRegret";
-        description = "Lodge your anonymous relationship chronicle to the public registry. 100% cloud secure, private, and cookie-based logging, no login needed.";
+        title = "Lodge Relationship Advice Board Request | BeforeRegret";
+        description = "Get constructive, real-world advice comments from timeline survivors anonymous and secure.";
         break;
     }
     
@@ -285,6 +292,7 @@ export default function App() {
   const [comments, setComments] = useState<StoryComment[]>([]);
   const [showAuthTroubleshooter, setShowAuthTroubleshooter] = useState<boolean>(false);
   const [guestNickName, setGuestNickName] = useState<string>('Wandering_Seeker');
+  const [showSubmitQuestion, setShowSubmitQuestion] = useState<boolean>(false);
 
   // Listen to Google Authentication State and Subscribe to Real-Time Collections
   useEffect(() => {
@@ -943,7 +951,7 @@ export default function App() {
       if (idx === -1) return prev;
 
       const updatedQuestions = [...prev.questions];
-      const question = updatedQuestions[idx];
+      const question = { ...updatedQuestions[idx] };
 
       const newAnswer = {
         id: 'ans_' + Date.now().toString(),
@@ -955,14 +963,121 @@ export default function App() {
       };
 
       question.answers = [newAnswer, ...question.answers];
+      updatedQuestions[idx] = question;
 
-      return {
+      const newState = {
         ...prev,
         questions: updatedQuestions
       };
+      saveState(newState);
+      return newState;
     });
 
     showToast("🎓 Answer broadcasted onto peer-help logs!");
+  };
+
+  const handleAddAnswerComment = (qSlug: string, ansId: string, text: string) => {
+    setStore(prev => {
+      const qIdx = prev.questions.findIndex(q => q.slug === qSlug);
+      if (qIdx === -1) return prev;
+
+      const updatedQuestions = [...prev.questions];
+      const question = { ...updatedQuestions[qIdx] };
+
+      const ansIdx = question.answers.findIndex(a => a.id === ansId);
+      if (ansIdx === -1) return prev;
+
+      const answer = { ...question.answers[ansIdx] };
+      const comments = answer.comments ? [...answer.comments] : [];
+
+      const newComment = {
+        id: 'cmt_' + Date.now().toString(),
+        author: prev.user.username,
+        text,
+        date: 'Just now'
+      };
+
+      answer.comments = [...comments, newComment];
+      question.answers = [...question.answers];
+      question.answers[ansIdx] = answer;
+      updatedQuestions[qIdx] = question;
+
+      const newState = {
+        ...prev,
+        questions: updatedQuestions
+      };
+      saveState(newState);
+      return newState;
+    });
+
+    showToast("💬 Discussion comment posted under advice!");
+  };
+
+  const handleUpvoteAnswer = (qSlug: string, ansId: string) => {
+    setStore(prev => {
+      const qIdx = prev.questions.findIndex(q => q.slug === qSlug);
+      if (qIdx === -1) return prev;
+
+      const updatedQuestions = [...prev.questions];
+      const question = { ...updatedQuestions[qIdx] };
+
+      const ansIdx = question.answers.findIndex(a => a.id === ansId);
+      if (ansIdx === -1) return prev;
+
+      const answer = { ...question.answers[ansIdx] };
+      answer.votes += 1;
+
+      question.answers = [...question.answers];
+      question.answers[ansIdx] = answer;
+      updatedQuestions[qIdx] = question;
+
+      const newState = {
+        ...prev,
+        questions: updatedQuestions
+      };
+      saveState(newState);
+      return newState;
+    });
+
+    showToast("👍 Upvote saved!");
+  };
+
+  const handleCreateQuestion = (newQuestion: {
+    title: string;
+    description: string;
+    category: string;
+    tags: string[];
+    pollOptions: string[];
+  }) => {
+    const slug = newQuestion.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '') + '-' + Math.floor(100 + Math.random() * 900);
+
+    const formattedPollOptions = newQuestion.pollOptions.map(o => ({ text: o, votes: 0 }));
+
+    const questionObj: Question = {
+      slug,
+      title: newQuestion.title,
+      description: newQuestion.description,
+      category: newQuestion.category,
+      storiesCount: 0,
+      tags: newQuestion.tags.length > 0 ? newQuestion.tags : ["user-submitted", newQuestion.category.toLowerCase().replace(/\s+/g, '-')],
+      pollOptions: formattedPollOptions,
+      answers: []
+    };
+
+    setStore(prev => {
+      const updatedQuestions = [questionObj, ...prev.questions];
+      const newState = {
+        ...prev,
+        questions: updatedQuestions
+      };
+      saveState(newState);
+      return newState;
+    });
+
+    showToast("✓ Advice request successfully broadcasted!");
   };
 
   const handleDeleteStory = (storyId: string) => {
@@ -1065,7 +1180,6 @@ export default function App() {
         setScreen={setScreen}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
-        onOpenSubmit={() => setScreen({ type: 'submit_story' })}
         onCaseRetrieve={handleCaseRetrieve}
         stories={store.stories}
         courtCases={store.courtCases}
@@ -1088,7 +1202,6 @@ export default function App() {
             questions={store.questions}
             latestStories={store.stories}
             setScreen={setScreen}
-            onOpenSubmit={() => setScreen({ type: 'submit_story' })}
             onCaseRetrieve={handleCaseRetrieve}
           />
         )}
@@ -1108,7 +1221,6 @@ export default function App() {
             situation={liveSituations.find(s => s.slug === currentScreen.slug) || liveSituations[0]}
             allStories={store.stories}
             setScreen={setScreen}
-            onOpenSubmit={() => setScreen({ type: 'submit_story' })}
             onVoteHelpful={handleVoteHelpful}
             onToggleBookmark={handleToggleBookmark}
             onAddUpdate={handleAddStoryUpdate}
@@ -1205,27 +1317,54 @@ export default function App() {
 
         {currentScreen.type === 'question_list' && (
           <div className="space-y-6 pb-16 animate-fadeIn">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-                <HelpCircle className="h-6 w-6 text-purple-400" /> Community Advice Boards
-              </h1>
-              <p className="text-xs text-[#AAB2C0]">Explore hard relationship questions answered directly by veteran survivors.</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {store.questions.map(q => (
-                <div
-                  key={q.slug}
-                  onClick={() => setScreen({ type: 'question', slug: q.slug })}
-                  className="rounded-2xl border border-[#30363D] bg-[#161B22] p-5 cursor-pointer hover:border-purple-500 transition-all"
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#161B22] border border-[#30363D] p-5 rounded-3xl">
+              <div>
+                <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                  <HelpCircle className="h-6 w-6 text-purple-400" /> Community Advice Boards
+                </h1>
+                <p className="text-xs text-[#AAB2C0]">Explore hard relationship questions answered directly by veteran survivors or submit your own dilemma.</p>
+              </div>
+              {!showSubmitQuestion && (
+                <button
+                  onClick={() => setShowSubmitQuestion(true)}
+                  className="rounded-xl bg-purple-600 hover:bg-purple-700 font-extrabold text-xs text-white px-4 py-2.5 shadow-lg shadow-purple-500/10 transition-all active:scale-[0.98] self-start sm:self-center"
                 >
-                  <span className="text-[9px] font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded">
-                    {q.category}
-                  </span>
-                  <h3 className="text-sm font-bold text-white mt-2 leading-snug">"{q.title}"</h3>
-                  <p className="text-xs text-[#AAB2C0] line-clamp-3 leading-relaxed mt-1.5 font-serif">{q.description}</p>
-                </div>
-              ))}
+                  + Post Advice Request
+                </button>
+              )}
             </div>
+
+            {showSubmitQuestion ? (
+              <SubmitQuestionForm
+                onClose={() => setShowSubmitQuestion(false)}
+                onSubmit={(newQ) => {
+                  handleCreateQuestion(newQ);
+                  setShowSubmitQuestion(false);
+                }}
+              />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {store.questions.map(q => (
+                  <div
+                    key={q.slug}
+                    onClick={() => setScreen({ type: 'question', slug: q.slug })}
+                    className="rounded-2xl border border-[#30363D] bg-[#161B22] p-5 cursor-pointer hover:border-purple-500 transition-all duration-200 hover:scale-[1.01] flex flex-col justify-between h-48"
+                  >
+                    <div className="space-y-2">
+                      <span className="text-[9px] font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded">
+                        {q.category}
+                      </span>
+                      <h3 className="text-sm font-bold text-white leading-snug line-clamp-2">"{q.title}"</h3>
+                      <p className="text-xs text-[#AAB2C0] line-clamp-3 leading-relaxed font-serif">{q.description}</p>
+                    </div>
+                    <div className="border-t border-[#30363D]/40 pt-2.5 mt-2 flex items-center justify-between text-[10px] text-zinc-550">
+                      <span>{q.answers.length} community advices</span>
+                      <span className="text-purple-400 font-semibold">View thread →</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -1235,10 +1374,22 @@ export default function App() {
             setScreen={setScreen}
             onVoteQuestionPoll={handleVoteQuestionPoll}
             onAddQuestionAnswer={handleAddQuestionAnswer}
+            onAddAnswerComment={handleAddAnswerComment}
+            onUpvoteAnswer={handleUpvoteAnswer}
             userVotedQuestions={userVotedQuestions}
             isAdmin={isAdmin}
             onDeleteAnswer={handleDeleteAnswer}
             onDeleteQuestion={handleDeleteQuestion}
+          />
+        )}
+
+        {currentScreen.type === 'regret_stories' && (
+          <RegretStoriesScreen
+            stories={store.stories}
+            situations={liveSituations}
+            onVoteHelpful={handleVoteHelpful}
+            onSubmitStory={handleAddStory}
+            setScreen={setScreen}
           />
         )}
 
@@ -1301,29 +1452,6 @@ export default function App() {
             currentUser={currentUser}
             onGoogleLogin={handleGoogleLogin}
           />
-        )}
-
-        {currentScreen.type === 'submit_story' && (
-          <div className="w-full max-w-2xl mx-auto bg-[#161B22] rounded-3xl border border-[#30363D] shadow-2xl p-4 sm:p-6 select-none animate-fadeIn">
-            <div className="mb-4 sm:mb-6 border-b border-[#30363D]/60 pb-3 flex items-center justify-between">
-              <div>
-                <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <Sparkles className="h-5 w-5 text-[#4F8CFF]" /> Archive Relationship Timeline
-                </h2>
-                <p className="text-[11px] text-[#AAB2C0] mt-0.5">Your fully anonymous timeline logs helps others analyze situational regrets before making decisions.</p>
-              </div>
-              <button
-                onClick={() => setScreen({ type: 'home' })}
-                className="text-xs font-bold text-zinc-500 hover:text-white px-2 py-1 rounded-lg border border-[#30363D] hover:bg-[#30363D]/30 transition-colors"
-              >
-                Go Back
-              </button>
-            </div>
-            <SubmitStoryForm
-              onClose={() => setScreen({ type: 'home' })}
-              onSubmit={handleAddStory}
-            />
-          </div>
         )}
       </main>
 

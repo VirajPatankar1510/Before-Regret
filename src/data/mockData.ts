@@ -791,7 +791,21 @@ export const PRESEEDED_QUESTIONS: Question[] = [
         text: "We survived it, but only because he entered 1-on-1 therapy for 2 years to answer 'why' he cheated. If they just say 'I was drunk,' they will cheat again. Do not stay unless they undergo deep psychological restructuring.",
         votes: 142,
         isOutcomeVerified: true,
-        date: "2026-06-01"
+        date: "2026-06-01",
+        comments: [
+          {
+            id: "qc1_1",
+            author: "wonder_heart",
+            text: "This is so true. Alcohol is never an excuse, it just lowers inhibitions.",
+            date: "2026-06-02"
+          },
+          {
+            id: "qc1_2",
+            author: "hopeful_clover",
+            text: "Did you go to couples therapy too or just individual?",
+            date: "2026-06-03"
+          }
+        ]
       },
       {
         id: "qa2",
@@ -799,7 +813,15 @@ export const PRESEEDED_QUESTIONS: Question[] = [
         text: "I stayed. He cheated 4 years later with my cousin. Leaving at year 2 would have spared me a catastrophic amount of therapy bills. Learn from my regret.",
         votes: 98,
         isOutcomeVerified: true,
-        date: "2026-06-05"
+        date: "2026-06-05",
+        comments: [
+          {
+            id: "qc2_1",
+            author: "shocked_observer",
+            text: "Oh my god, your cousin? That is a double betrayal. I am so sorry.",
+            date: "2026-06-06"
+          }
+        ]
       }
     ]
   }

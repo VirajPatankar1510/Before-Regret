@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Menu, X, PlusCircle, Gavel, FileText, User, Sparkles, ChevronRight, Compass, Sun, Moon, BookOpen, Heart, AlertTriangle } from 'lucide-react';
+import { Search, Menu, X, Gavel, FileText, User, Sparkles, ChevronRight, Compass, Sun, Moon, BookOpen, Heart, AlertTriangle } from 'lucide-react';
 import { PRESEEDED_SITUATIONS, PRESEEDED_QUESTIONS, COUNTRIES_DATA } from '../data/mockData';
 import { Story, CourtCase } from '../types';
 
@@ -8,7 +8,6 @@ interface NavigationProps {
   setScreen: (screen: { type: string; slug?: string }) => void;
   darkMode: boolean;
   setDarkMode: (val: boolean) => void;
-  onOpenSubmit: () => void;
   onCaseRetrieve: (caseNum: string) => void;
   stories: Story[];
   courtCases: CourtCase[];
@@ -19,7 +18,6 @@ export default function Navigation({
   setScreen, 
   darkMode, 
   setDarkMode, 
-  onOpenSubmit,
   onCaseRetrieve,
   stories,
   courtCases
@@ -106,8 +104,7 @@ export default function Navigation({
     { label: 'Explore', screen: { type: 'explore' }, icon: Compass },
     { label: 'Become a Judge', screen: { type: 'court_list' }, icon: Gavel },
     { label: 'Advice Boards', screen: { type: 'question_list' }, icon: Sparkles },
-    { label: 'Low regret stories', screen: { type: 'tag', slug: 'successful-stories' }, icon: Heart },
-    { label: 'High Regret stories', screen: { type: 'tag', slug: 'cheating' }, icon: AlertTriangle },
+    { label: 'Regret Registry', screen: { type: 'regret_stories' }, icon: Heart },
   ];
 
   return (
@@ -132,8 +129,9 @@ export default function Navigation({
 
           {/* Navigation Menu Links Desktop */}
           <div className="hidden lg:flex items-center space-x-1 shrink-0">
-            {menuItems.slice(0, 3).map(item => {
-              const active = currentScreen.type === item.screen.type && (!item.screen.slug || currentScreen.slug === item.screen.slug);
+            {menuItems.map(item => {
+              const screenCast = item.screen as { type: string; slug?: string };
+              const active = currentScreen.type === screenCast.type && (!screenCast.slug || currentScreen.slug === screenCast.slug);
               return (
                 <button
                   key={item.label}
@@ -186,15 +184,6 @@ export default function Navigation({
                 <Search className="h-3 w-3" />
               </button>
             </div>
-
-            {/* Submit CTA */}
-            <button
-              onClick={onOpenSubmit}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#4F8CFF] to-indigo-600 px-3 py-1.5 text-xs font-bold text-white shadow-lg shadow-[#4F8CFF]/15 hover:from-[#4F8CFF]/90 hover:to-indigo-600/90 transition-all active:scale-[0.98]"
-            >
-              <PlusCircle className="h-3 w-3" />
-              <span className="hidden xs:inline">Submit</span>
-            </button>
 
             {/* Mobile Menu Toggle */}
             <button

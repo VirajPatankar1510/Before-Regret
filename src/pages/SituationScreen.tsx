@@ -17,7 +17,6 @@ interface SituationScreenProps {
   situation: Situation;
   allStories: Story[];
   setScreen: (screen: { type: string; slug?: string }) => void;
-  onOpenSubmit: () => void;
   onVoteHelpful: (id: string) => void;
   onToggleBookmark: (id: string) => void;
   onAddUpdate: (storyId: string, text: string, regretScore: number, daysAfter: number) => void;
@@ -40,7 +39,6 @@ export default function SituationScreen({
   situation,
   allStories,
   setScreen,
-  onOpenSubmit,
   onVoteHelpful,
   onToggleBookmark,
   onAddUpdate,
@@ -118,10 +116,10 @@ export default function SituationScreen({
             </p>
           </div>
           <button
-            onClick={onOpenSubmit}
-            className="inline-flex self-start sm:self-center items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#4F8CFF] to-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-md active:scale-95 transition-all"
+            onClick={() => setScreen({ type: 'question_list' })}
+            className="inline-flex self-start sm:self-center items-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-md active:scale-95 transition-all hover:brightness-110"
           >
-            <PlusCircle className="h-4 w-4" /> Share Your Timeline
+            <HelpCircle className="h-4 w-4" /> Seek Community Advice
           </button>
         </div>
       </div>
@@ -236,10 +234,10 @@ export default function SituationScreen({
                   </p>
                   <div className="flex justify-center gap-3 pt-2">
                     <button
-                      onClick={onOpenSubmit}
-                      className="rounded-xl bg-[#4F8CFF] hover:bg-[#4F8CFF]/90 font-bold px-4 py-2 text-xs text-white transition-all shadow active:scale-95"
+                      onClick={() => setScreen({ type: 'question_list' })}
+                      className="rounded-xl bg-purple-600 hover:bg-purple-700 font-bold px-4 py-2 text-xs text-white transition-all shadow active:scale-95"
                     >
-                      Share My Timeline
+                      Get Community Advice
                     </button>
                     <button
                       onClick={() => setFilterCountry('All')}

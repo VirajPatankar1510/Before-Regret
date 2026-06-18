@@ -10,11 +10,10 @@ interface HomeScreenProps {
   questions: Question[];
   latestStories: Story[];
   setScreen: (screen: { type: string; slug?: string }) => void;
-  onOpenSubmit: () => void;
   onCaseRetrieve?: (caseNum: string) => void;
 }
 
-export default function HomeScreen({ situations, courtCases, questions, latestStories, setScreen, onOpenSubmit, onCaseRetrieve }: HomeScreenProps) {
+export default function HomeScreen({ situations, courtCases, questions, latestStories, setScreen, onCaseRetrieve }: HomeScreenProps) {
   const [searchInput, setSearchInput] = useState('');
   const [myCases, setMyCases] = useState<{ caseNumber: string; title: string; slug?: string; situationSlug?: string; type: 'story' | 'court' }[]>(() => {
     try {
@@ -205,7 +204,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             <p className="text-xs text-[#AAB2C0]">Not sure what dossier applies to you? Navigate our archives dynamically using our advisor engine.</p>
           </div>
         </div>
-        <DecisionalCompass setScreen={setScreen} />
+        <DecisionalCompass setScreen={setScreen} stories={latestStories} />
       </section>
 
       {/* SECTION 3: TRENDING SITUATIONS CARDS */}
