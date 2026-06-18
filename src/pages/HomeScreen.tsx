@@ -11,14 +11,34 @@ interface HomeScreenProps {
   latestStories: Story[];
   setScreen: (screen: { type: string; slug?: string }) => void;
   onOpenSubmit: () => void;
+  onCaseRetrieve?: (caseNum: string) => void;
 }
 
-export default function HomeScreen({ situations, courtCases, questions, latestStories, setScreen, onOpenSubmit }: HomeScreenProps) {
+export default function HomeScreen({ situations, courtCases, questions, latestStories, setScreen, onOpenSubmit, onCaseRetrieve }: HomeScreenProps) {
   const [searchInput, setSearchInput] = useState('');
+  const [myCases, setMyCases] = useState<{ caseNumber: string; title: string; slug?: string; situationSlug?: string; type: 'story' | 'court' }[]>(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('beforeregret_my_cases');
+        return saved ? JSON.parse(saved) : [];
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return [];
+  });
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchInput.trim()) return;
+    const query = searchInput.trim();
+    if (!query) return;
+    
+    // Intercept Case Reference IDs typed in landing search bar
+    if ((query.toUpperCase().startsWith('CASE-') || /^[SC]\d{4}$/i.test(query)) && onCaseRetrieve) {
+      onCaseRetrieve(query);
+      setSearchInput('');
+      return;
+    }
     
     // Redirect to explore page with search filter
     setScreen({ type: 'explore' });
@@ -107,6 +127,74 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
         </div>
 
       </section>
+
+      {/* SECTION 1.5: 🔒 YOUR DEVICE SECURE CASE REGISTRY */}
+      {myCases.length > 0 && (
+        <section className="space-y-4 animate-slideIn">
+          <div className="flex items-center justify-between border-b border-[#30363D] pb-3">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-emerald-400 animate-pulse" />
+              <div>
+                <h2 className="text-base sm:text-lg font-black text-white flex items-center gap-1.5 uppercase tracking-wider font-sans">
+                  🔒 Private Dispute Registry
+                </h2>
+                <p className="text-xs text-[#AAB2C0]">
+                  Cases created on this browser. These are saved completely offline inside your browser for premium secrecy.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                if (window.confirm("Clear local device case index? This will forget list logs on this screen but does not delete them online.")) {
+                  localStorage.removeItem('beforeregret_my_cases');
+                  setMyCases([]);
+                }
+              }}
+              className="text-[10px] text-zinc-500 hover:text-red-400 uppercase tracking-widest font-black transition-colors"
+            >
+              Forget List
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {myCases.map(item => (
+              <div 
+                key={item.caseNumber}
+                className="bg-[#161B22] border-2 border-[#30363D] hover:border-[#F4B942]/45 rounded-2xl p-4 flex flex-col justify-between transition-all group scale-100 active:scale-[0.99] cursor-pointer"
+                onClick={() => {
+                  if (item.type === 'story') {
+                    setScreen({ type: 'situation', slug: item.situationSlug });
+                    if (onCaseRetrieve) {
+                      onCaseRetrieve(item.caseNumber);
+                    }
+                  } else {
+                    setScreen({ type: 'court', slug: item.slug });
+                  }
+                }}
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 text-[10px] font-bold">
+                    <span className="font-mono text-[#F4B942] bg-[#F4B942]/10 px-2.5 py-0.5 rounded-lg tracking-wider border border-[#F4B942]/15">
+                      {item.caseNumber}
+                    </span>
+                    <span className="uppercase text-zinc-400">
+                      {item.type === 'court' ? '⚖️ Jury Court' : '📂 Chronicle'}
+                    </span>
+                  </div>
+                  <h3 className="text-xs font-black text-white mt-3 group-hover:text-[#4F8CFF] transition-colors leading-relaxed line-clamp-2">
+                    {item.title}
+                  </h3>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-[#30363D]/60 mt-4 pt-2.5 text-[10px] font-bold text-[#4F8CFF] group-hover:translate-x-0.5 transition-transform">
+                  <span>Retrieve Dossier</span>
+                  <ArrowRight className="h-3 w-3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* NEW: PERSONALIZED MOOD CONCERT / INTERACTIVE DECISION COMPASS */}
       <section className="space-y-4">

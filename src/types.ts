@@ -23,6 +23,7 @@ export interface StoryComment {
 
 export interface Story {
   id: string;
+  caseNumber?: string; // Unique, searchable identifier
   userId?: string; // Optional track of authenticated Google User
   title: string;
   situationSlug: string;
@@ -77,6 +78,7 @@ export interface CourtArgument {
 
 export interface CourtCase {
   slug: string;
+  caseNumber?: string; // Unique, searchable identifier
   title: string;
   description: string;
   postTime: string;

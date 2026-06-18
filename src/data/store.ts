@@ -27,36 +27,45 @@ const DEFAULT_USER: UserProfile = {
 
 // Initialize helper
 export function getInitialState(): StoreState {
-  if (typeof window === 'undefined') {
-    return {
-      stories: PRESEEDED_STORIES,
-      courtCases: PRESEEDED_COURT_CASES,
-      questions: PRESEEDED_QUESTIONS,
-      user: DEFAULT_USER
-    };
-  }
+  let stories = PRESEEDED_STORIES;
+  let courtCases = PRESEEDED_COURT_CASES;
+  let questions = PRESEEDED_QUESTIONS;
+  let user = DEFAULT_USER;
 
-  const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      // Ensure we merge seed data if any is added in development
-      const stories = parsed.stories || PRESEEDED_STORIES;
-      const courtCases = parsed.courtCases || PRESEEDED_COURT_CASES;
-      const questions = parsed.questions || PRESEEDED_QUESTIONS;
-      const user = parsed.user || DEFAULT_USER;
-      return { stories, courtCases, questions, user };
-    } catch (e) {
-      console.error("Error reading localStorage", e);
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.stories) stories = parsed.stories;
+        if (parsed.courtCases) courtCases = parsed.courtCases;
+        if (parsed.questions) questions = parsed.questions;
+        if (parsed.user) user = parsed.user;
+      } catch (e) {
+        console.error("Error reading localStorage", e);
+      }
     }
   }
 
-  return {
-    stories: PRESEEDED_STORIES,
-    courtCases: PRESEEDED_COURT_CASES,
-    questions: PRESEEDED_QUESTIONS,
-    user: DEFAULT_USER
-  };
+  // Backfill deterministic Case Numbers for preseeded stories
+  stories = stories.map((s, idx) => {
+    if (!s.caseNumber) {
+      const stableNum = 1001 + idx;
+      s.caseNumber = `CASE-S${stableNum}`;
+    }
+    return s;
+  });
+
+  // Backfill deterministic Case Numbers for preseeded court cases
+  courtCases = courtCases.map((c, idx) => {
+    if (!c.caseNumber) {
+      const stableNum = 2001 + idx;
+      c.caseNumber = `CASE-C${stableNum}`;
+    }
+    return c;
+  });
+
+  return { stories, courtCases, questions, user };
 }
 
 // Save state helper

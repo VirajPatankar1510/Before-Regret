@@ -33,6 +33,7 @@ interface SituationScreenProps {
   onAddComment?: (storyId: string, text: string) => void;
   currentUser?: any;
   onGoogleLogin?: () => void;
+  highlightedStoryId?: string | null;
 }
 
 export default function SituationScreen({
@@ -54,7 +55,8 @@ export default function SituationScreen({
   comments = [],
   onAddComment,
   currentUser,
-  onGoogleLogin
+  onGoogleLogin,
+  highlightedStoryId = null
 }: SituationScreenProps) {
   
   // Sidebar Filters states
@@ -288,6 +290,7 @@ export default function SituationScreen({
                   onAddComment={onAddComment}
                   currentUser={currentUser}
                   onGoogleLogin={onGoogleLogin}
+                  highlighted={story.id === highlightedStoryId}
                 />
               ))}
             </div>

@@ -368,6 +368,44 @@ export default function App() {
   };
 
 
+  const handleCaseRetrieve = (caseNum: string) => {
+    const trimmed = caseNum.trim().toUpperCase();
+    if (!trimmed) return;
+
+    // Search court cases first
+    const foundCourt = store.courtCases.find(
+      c => c.caseNumber?.toUpperCase() === trimmed || c.slug?.toUpperCase() === trimmed || trimmed.includes(c.caseNumber?.toUpperCase() || '---')
+    );
+
+    if (foundCourt) {
+      setScreen({ type: 'court', slug: foundCourt.slug });
+      showToast(`⚖️ Court Case ${foundCourt.caseNumber} retrieved successfully!`);
+      return;
+    }
+
+    // Search stories
+    const foundStory = store.stories.find(
+      s => s.caseNumber?.toUpperCase() === trimmed || s.id?.toUpperCase() === trimmed || trimmed.includes(s.caseNumber?.toUpperCase() || '---')
+    );
+
+    if (foundStory) {
+      setScreen({ type: 'situation', slug: foundStory.situationSlug });
+      setHighlightedStoryId(foundStory.id);
+      showToast(`📂 Chronicle ${foundStory.caseNumber} retrieved! viewing inside folder.`);
+      
+      // Attempt smooth scroll
+      setTimeout(() => {
+        const element = document.getElementById(`story-${foundStory.id}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500);
+      return;
+    }
+
+    showToast(`❌ Case ID "${caseNum}" not found. Verify character spelling.`);
+  };
+
   const handleToggleAdmin = (status: boolean) => {
     setIsAdmin(status);
     localStorage.setItem('before_regret_admin_mode', String(status));
@@ -379,6 +417,8 @@ export default function App() {
   };
   const [darkMode, setDarkMode] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [newlyLodgedCase, setNewlyLodgedCase] = useState<{ title: string; caseNumber: string; type: 'story' | 'court' } | null>(null);
+  const [highlightedStoryId, setHighlightedStoryId] = useState<string | null>(null);
 
   // Keep track of what cases and polls the user has already voted on
   const [userVotedCases, setUserVotedCases] = useState<{ [slug: string]: string }>(() => {
@@ -457,9 +497,24 @@ export default function App() {
 
   // CORE STATE WORKFLOW CALLBACK ACTIONS //
   const handleAddStory = async (newStory: Story) => {
-    if (currentUser) {
-      newStory.userId = currentUser.uid;
-      newStory.userName = currentUser.displayName || newStory.userName;
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const caseNumber = `CASE-S${randomNum}`;
+    
+    newStory.id = newStory.id || 'story_' + Math.random().toString(36).substring(2, 9);
+    newStory.caseNumber = caseNumber;
+
+    // Save to local storage private list
+    try {
+      const myCases = JSON.parse(localStorage.getItem('beforeregret_my_cases') || '[]');
+      myCases.push({
+        caseNumber: caseNumber,
+        title: newStory.title,
+        slug: newStory.situationSlug,
+        type: 'story'
+      });
+      localStorage.setItem('beforeregret_my_cases', JSON.stringify(myCases));
+    } catch (e) {
+      console.error(e);
     }
 
     // Save story model securely to cloud firestore database
@@ -474,7 +529,7 @@ export default function App() {
         recentActivity: [
           {
             type: 'story_added',
-            detail: `Archived chronological outcome log for "${newStory.title}"`,
+            detail: `Archived chronological outcome log for "${newStory.title}" as Case ${caseNumber}`,
             date: 'Just now'
           },
           ...prev.user.recentActivity
@@ -494,8 +549,8 @@ export default function App() {
       };
     });
 
-    showToast("🎉 Anonymous relationship timeline archived successfully! Peer jurors can now review your outcomes.");
-    setScreen({ type: 'situation', slug: newStory.situationSlug });
+    setNewlyLodgedCase({ title: newStory.title, caseNumber: caseNumber, type: 'story' });
+    showToast(`🎉 Chronicle Registered successfully under Case Key: ${caseNumber}!`);
   };
 
   const handleVoteHelpful = (storyId: string) => {
@@ -676,12 +731,16 @@ export default function App() {
       ? `${baseSlug}-${Date.now().toString().slice(-4)}`
       : baseSlug;
 
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const caseNumber = `CASE-C${randomNum}`;
+
     const newCase: CourtCase = {
       slug: uniqueSlug,
+      caseNumber: caseNumber,
       title: caseData.title,
       description: caseData.description,
       postTime: new Date().toISOString().split('T')[0],
-      author: currentUser ? (currentUser.displayName || currentUser.email || "anonymous_litigant") : "anonymous_seeking",
+      author: "anonymous_litigant",
       votes: {
         me: 0,
         partner: 0,
@@ -692,12 +751,27 @@ export default function App() {
       tags: caseData.tags
     };
 
+    // Save to local storage private list
+    try {
+      const myCases = JSON.parse(localStorage.getItem('beforeregret_my_cases') || '[]');
+      myCases.push({
+        caseNumber: caseNumber,
+        title: newCase.title,
+        slug: newCase.slug,
+        type: 'court'
+      });
+      localStorage.setItem('beforeregret_my_cases', JSON.stringify(myCases));
+    } catch (e) {
+      console.error(e);
+    }
+
     setStore(prev => ({
       ...prev,
       courtCases: [newCase, ...prev.courtCases]
     }));
 
-    showToast("⚖️ Court case registered successfully! Jurors can now render verdict opinions.");
+    setNewlyLodgedCase({ title: newCase.title, caseNumber: caseNumber, type: 'court' });
+    showToast(`⚖️ Court case registered successfully under Case Key: ${caseNumber}!`);
   };
 
   const handleVoteQuestionPoll = (slug: string, optionText: string) => {
@@ -852,8 +926,9 @@ export default function App() {
         darkMode={darkMode}
         setDarkMode={setDarkMode}
         onOpenSubmit={() => setScreen({ type: 'submit_story' })}
-        currentUser={currentUser}
-        onGoogleLogin={handleGoogleLogin}
+        onCaseRetrieve={handleCaseRetrieve}
+        stories={store.stories}
+        courtCases={store.courtCases}
       />
 
       {/* Floating interactive notification toasts */}
@@ -874,6 +949,7 @@ export default function App() {
             latestStories={store.stories}
             setScreen={setScreen}
             onOpenSubmit={() => setScreen({ type: 'submit_story' })}
+            onCaseRetrieve={handleCaseRetrieve}
           />
         )}
 
@@ -905,6 +981,7 @@ export default function App() {
             onAddComment={handleAddComment}
             currentUser={currentUser}
             onGoogleLogin={handleGoogleLogin}
+            highlightedStoryId={highlightedStoryId}
           />
         )}
 
@@ -1203,6 +1280,71 @@ export default function App() {
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* ⚖️ Newly Lodged Case Success Modal */}
+      {newlyLodgedCase && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn text-zinc-300">
+          <div className="w-full max-w-sm bg-[#161B22] border-2 border-[#F4B942]/30 shadow-2xl rounded-3xl p-6 text-center relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#F4B942] to-amber-500" />
+            
+            <div className="mx-auto w-14 h-14 bg-[#F4B942]/10 border border-[#F4B942]/30 rounded-2xl flex items-center justify-center text-[#F4B942] mb-4">
+              <Gavel className="h-6 w-6" />
+            </div>
+
+            <h3 className="text-base font-extrabold text-white uppercase tracking-wider">
+              Dispute Lodged in Registry
+            </h3>
+            <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+              Your case has been logged securely. Your extreme privacy is 100% protected.
+            </p>
+
+            {/* Case Number Badge */}
+            <div className="my-5 bg-[#0D1117] border border-[#30363D] rounded-xl p-3.5">
+              <span className="text-[9px] uppercase font-bold text-zinc-500 tracking-widest font-mono block mb-1">YOUR UNIQUE CASE ID</span>
+              <div className="flex items-center justify-center gap-1.5">
+                <code className="text-lg font-black text-[#F4B942] font-mono tracking-wider select-all">
+                  {newlyLodgedCase.caseNumber}
+                </code>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(newlyLodgedCase.caseNumber);
+                    showToast("📋 Case Number Copied to Clipboard!");
+                  }}
+                  className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#30363D] text-zinc-400 hover:text-white border border-[#30363D] transition-all"
+                  title="Copy Case Number"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-[#1C2128] border border-[#30363D]/60 rounded-xl p-3 text-left text-[10px] text-zinc-400 leading-relaxed mb-4">
+              <p className="font-bold text-zinc-200">💡 No Logins or Passwords Required:</p>
+              <p className="mt-1">
+                To protect complete privacy, accounts are not used. Write down or copy your case ID. You can put this in the <strong className="text-white font-bold">RETRIEVE CASE</strong> search bar in the top navigation anytime to locate your case in an instant.
+              </p>
+            </div>
+
+            <button
+              onClick={() => {
+                const temp = newlyLodgedCase;
+                setNewlyLodgedCase(null);
+                if (temp.type === 'story') {
+                  const targetStory = store.stories.find(s => s.caseNumber === temp.caseNumber);
+                  setScreen({ type: 'situation', slug: targetStory?.situationSlug || 'boyfriend-doesnt-want-marriage' });
+                  if (targetStory) {
+                    setHighlightedStoryId(targetStory.id);
+                  }
+                } else {
+                  setScreen({ type: 'court', slug: store.courtCases.find(c => c.caseNumber === temp.caseNumber)?.slug || 'court_list' });
+                }
+              }}
+              className="w-full py-2 rounded-xl bg-gradient-to-r from-[#4F8CFF] to-indigo-600 hover:from-[#4F8CFF]/90 hover:to-indigo-600/90 text-xs font-bold text-white transition-all uppercase tracking-wider"
+            >
+              Enter Case Dossier
+            </button>
           </div>
         </div>
       )}

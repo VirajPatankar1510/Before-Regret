@@ -187,6 +187,163 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
       { country: 'Australia', count: 1800, avgRegret: 5.1 },
       { country: 'Germany', count: 1200, avgRegret: 5.6 }
     ]
+  },
+  {
+    slug: 'long-distance-relationship',
+    name: "Long Distance Relationship",
+    category: 'Long Distance',
+    description: "Vetted data and authentic chronicles concerning geographic separation, dual-location careers, time-zone conflicts, and the psychological and financial toll of staying together while living apart.",
+    stats: {
+      storyCount: 16421,
+      avgRegret: 4.9,
+      wouldDoAgainPercent: 54,
+      stillTogetherPercent: 32,
+      marriedPercent: 18,
+      separatedPercent: 50,
+      avgRelationshipLength: "3.4 Years"
+    },
+    decisionBreakdown: [
+      { name: 'Stayed Long Distance', percentage: 55 },
+      { name: 'One Relocated/Moved', percentage: 35 },
+      { name: 'Broke Up Early', percentage: 10 }
+    ],
+    outcomeBreakdown: [
+      { name: 'Grew Apart (Broke Up)', value: 50 },
+      { name: 'Successfully Closed Gap', value: 30 },
+      { name: 'Relocated but Regretted Move', value: 12 },
+      { name: 'Ghosted / Indefinite Limbo', value: 8 }
+    ],
+    regretOverTime: [
+      { period: '1 Month', level: 2.3 },
+      { period: '6 Months', level: 3.8 },
+      { period: '1 Year', level: 5.1 },
+      { period: '2 Years', level: 6.2 },
+      { period: '5 Years', level: 4.9 }
+    ],
+    countryBreakdown: [
+      { country: 'United States', count: 7200, avgRegret: 4.8 },
+      { country: 'Canada', count: 2100, avgRegret: 5.1 },
+      { country: 'United Kingdom', count: 1800, avgRegret: 4.7 },
+      { country: 'Germany', count: 1100, avgRegret: 5.0 },
+      { country: 'Australia', count: 900, avgRegret: 5.2 }
+    ]
+  },
+  {
+    slug: 'different-religion-marriage',
+    name: "Different Religion Marriage",
+    category: 'Marriage',
+    description: "Friction analysis of interfaith marriages, family tradition friction, child raising debates, holiday struggles, and expectations surrounding religious conversion.",
+    stats: {
+      storyCount: 9140,
+      avgRegret: 5.1,
+      wouldDoAgainPercent: 62,
+      stillTogetherPercent: 55,
+      marriedPercent: 44,
+      separatedPercent: 31,
+      avgRelationshipLength: "8.5 Years"
+    },
+    decisionBreakdown: [
+      { name: 'Compromised on Dual Faiths', percentage: 65 },
+      { name: 'One Partner Converted', percentage: 20 },
+      { name: 'Refused Faith Compromises', percentage: 15 }
+    ],
+    outcomeBreakdown: [
+      { name: 'Happy / Collaborative Interfaith', value: 48 },
+      { name: 'Deep Stress over Children\'s Faith', value: 24 },
+      { name: 'Family/In-Law Ostracization', value: 16 },
+      { name: 'Eventually Divorced over Faith', value: 12 }
+    ],
+    regretOverTime: [
+      { period: '1 Month', level: 1.8 },
+      { period: '6 Months', level: 2.5 },
+      { period: '1 Year', level: 4.1 },
+      { period: '2 Years', level: 5.2 },
+      { period: '5 Years', level: 5.9 }
+    ],
+    countryBreakdown: [
+      { country: 'India', count: 3200, avgRegret: 6.5 },
+      { country: 'United States', count: 2800, avgRegret: 4.5 },
+      { country: 'United Kingdom', count: 1100, avgRegret: 4.9 },
+      { country: 'Canada', count: 900, avgRegret: 4.7 }
+    ]
+  },
+  {
+    slug: 'marriage-ultimatum',
+    name: "Marriage Ultimatum",
+    category: 'Ultimatums',
+    description: "The long-term success rates, levels of underlying resentment, and divorce statistics of relationships where one partner issued a hard 'marry me or I leave' timeline.",
+    stats: {
+      storyCount: 11210,
+      avgRegret: 7.9,
+      wouldDoAgainPercent: 21,
+      stillTogetherPercent: 22,
+      marriedPercent: 15,
+      separatedPercent: 63,
+      avgRelationshipLength: "4.9 Years"
+    },
+    decisionBreakdown: [
+      { name: 'Issued Ultimatum but Stayed', percentage: 18 },
+      { name: 'Partner Agreed under pressure', percentage: 52 },
+      { name: 'Broke up as result', percentage: 30 }
+    ],
+    outcomeBreakdown: [
+      { name: 'Divorced inside 3 Years', value: 45 },
+      { name: 'Broke up on the Spot', value: 30 },
+      { name: 'Underlying Chronic Resentment', value: 18 },
+      { name: 'Collaborative / Happy Marriage', value: 7 }
+    ],
+    regretOverTime: [
+      { period: '1 Month', level: 3.1 },
+      { period: '6 Months', level: 5.6 },
+      { period: '1 Year', level: 7.1 },
+      { period: '2 Years', level: 8.0 },
+      { period: '5 Years', level: 8.5 }
+    ],
+    countryBreakdown: [
+      { country: 'United States', count: 5400, avgRegret: 7.8 },
+      { country: 'United Kingdom', count: 1800, avgRegret: 7.6 },
+      { country: 'Canada', count: 1100, avgRegret: 8.1 },
+      { country: 'Australia', count: 900, avgRegret: 8.0 }
+    ]
+  },
+  {
+    slug: 'ignored-red-flags',
+    name: "Ignored Red Flags",
+    category: 'Red Flags',
+    description: "Retrospective analysis of partners who overlooked early signs of jealousy, love bombing, manipulation, white lies, or narcissism hoping love or time would cure it.",
+    stats: {
+      storyCount: 29110,
+      avgRegret: 8.7,
+      wouldDoAgainPercent: 9,
+      stillTogetherPercent: 4,
+      marriedPercent: 2,
+      separatedPercent: 94,
+      avgRelationshipLength: "5.1 Years"
+    },
+    decisionBreakdown: [
+      { name: 'Excused/Ignored flags', percentage: 75 },
+      { name: 'Set boundaries but caved', percentage: 20 },
+      { name: 'Addressed and corrected', percentage: 5 }
+    ],
+    outcomeBreakdown: [
+      { name: 'Traumatic separation/Broke up', value: 70 },
+      { name: 'Wasted multiple years in loops', value: 20 },
+      { name: 'chronic passive toxic endurance', value: 8 },
+      { name: 'Partner fully changed (Rare)', value: 2 }
+    ],
+    regretOverTime: [
+      { period: '1 Month', level: 4.8 },
+      { period: '6 Months', level: 6.9 },
+      { period: '1 Year', level: 8.1 },
+      { period: '2 Years', level: 8.9 },
+      { period: '5 Years', level: 9.4 }
+    ],
+    countryBreakdown: [
+      { country: 'United States', count: 14100, avgRegret: 8.6 },
+      { country: 'United Kingdom', count: 4200, avgRegret: 8.5 },
+      { country: 'Canada', count: 3100, avgRegret: 8.8 },
+      { country: 'Australia', count: 2100, avgRegret: 8.7 }
+    ]
   }
 ];
 
