@@ -79,9 +79,9 @@ export default function SituationScreen({
   });
 
   const getRegretColor = (score: number) => {
-    if (score >= 8) return 'text-[#FF5D5D]';
-    if (score >= 5.5) return 'text-[#F4B942]';
-    return 'text-[#2ECC71]';
+    if (score >= 8) return 'text-[#C0392B]';
+    if (score >= 5.5) return 'text-[#D97706]';
+    return 'text-[#2E7D32]';
   };
 
   const storiesCountries = Array.from(new Set(situationStories.map(s => s.country)));
@@ -93,31 +93,31 @@ export default function SituationScreen({
     <div className="space-y-6 pb-16 animate-fadeIn">
       
       {/* BREADCRUMB */}
-      <div className="flex items-center space-x-1.5 text-[11px] text-[#AAB2C0] select-none">
-        <button onClick={() => setScreen({ type: 'home' })} className="hover:text-white transition-colors">BeforeRegret</button>
-        <ChevronRight className="h-3 w-3 text-zinc-600" />
-        <button onClick={() => setScreen({ type: 'explore' })} className="hover:text-white transition-colors">Situations</button>
-        <ChevronRight className="h-3 w-3 text-zinc-600" />
-        <span className="text-[#4F8CFF] font-semibold truncate max-w-[200px]">{situation.name}</span>
+      <div className="flex items-center space-x-1.5 text-[11px] text-[#6B7280] select-none font-medium font-mono">
+        <button onClick={() => setScreen({ type: 'home' })} className="hover:text-[#24324A] transition-colors">BeforeRegret</button>
+        <ChevronRight className="h-3 w-3 text-zinc-300" />
+        <button onClick={() => setScreen({ type: 'explore' })} className="hover:text-[#24324A] transition-colors">Situations</button>
+        <ChevronRight className="h-3 w-3 text-zinc-300" />
+        <span className="text-[#C9A227] font-semibold truncate max-w-[200px]">{situation.name}</span>
       </div>
 
       {/* HEADER SECTION */}
-      <div className="rounded-2xl border border-[#30363D] bg-gradient-to-r from-[#161B22] to-[#0D1117] p-5 sm:p-6 shadow-sm">
+      <div className="rounded-2xl border border-[#E5E7EB] bg-white p-5 sm:p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1.5">
-            <span className="text-[10px] uppercase font-bold text-[#4F8CFF] bg-[#4F8CFF]/10 border border-[#4F8CFF]/20 px-2.5 py-0.5 rounded-full">
+            <span className="text-[10px] uppercase font-bold text-[#24324A] bg-[#24324A]/5 border border-[#24324A]/10 px-2.5 py-0.5 rounded-full inline-block">
               Category: {situation.category}
             </span>
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#24324A] tracking-tight leading-snug font-serif">
               {situation.name}
             </h1>
-            <p className="text-xs text-[#AAB2C0] max-w-2xl leading-relaxed">
+            <p className="text-xs text-[#6B7280] max-w-2xl leading-relaxed font-sans font-medium">
               {situation.description}
             </p>
           </div>
           <button
             onClick={() => setScreen({ type: 'question_list' })}
-            className="inline-flex self-start sm:self-center items-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-md active:scale-95 transition-all hover:brightness-110"
+            className="inline-flex self-start sm:self-center items-center gap-1.5 rounded-xl bg-[#24324A] hover:bg-[#1C273A] px-4 py-2.5 text-xs font-bold text-white shadow-sm active:scale-95 transition-all shrink-0"
           >
             <HelpCircle className="h-4 w-4" /> Seek Community Advice
           </button>
@@ -125,17 +125,17 @@ export default function SituationScreen({
       </div>
 
       {/* STATISTICS DASHBOARD */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 font-semibold font-sans">
         {[
           { label: "Avg Regret Index", val: `${situation.stats.avgRegret}/10`, color: getRegretColor(situation.stats.avgRegret) },
-          { label: "Still Unmarried", val: `${situation.stats.stillTogetherPercent}%`, color: "white" },
-          { label: "Married %", val: `${situation.stats.marriedPercent}%`, color: "white" },
-          { label: "Separated %", val: `${situation.stats.separatedPercent}%`, color: "white" },
-          { label: "Avg Relationship", val: situation.stats.avgRelationshipLength, color: "white" }
+          { label: "Still Unmarried", val: `${situation.stats.stillTogetherPercent}%`, color: "text-[#1F2937]" },
+          { label: "Married %", val: `${situation.stats.marriedPercent}%`, color: "text-[#1F2937]" },
+          { label: "Separated %", val: `${situation.stats.separatedPercent}%`, color: "text-[#1F2937]" },
+          { label: "Avg Relationship", val: situation.stats.avgRelationshipLength, color: "text-[#1F2937]" }
         ].map((block, idx) => (
-          <div key={idx} className="rounded-xl border border-[#30363D] bg-[#161B22] p-4 text-center flex flex-col justify-center">
-            <span className="text-[9px] uppercase font-bold tracking-wider text-[#AAB2C0] leading-none block mb-2">{block.label}</span>
-            <span className={`text-md sm:text-lg font-black leading-none ${block.color}`}>{block.val}</span>
+          <div key={idx} className="rounded-xl border border-[#E5E7EB] bg-white p-4 text-center flex flex-col justify-center shadow-xs">
+            <span className="text-[9px] uppercase font-bold tracking-wider text-[#6B7280] leading-none block mb-2 font-mono">{block.label}</span>
+            <span className={`text-md sm:text-lg font-bold leading-none ${block.color}`}>{block.val}</span>
           </div>
         ))}
       </div>
@@ -148,17 +148,17 @@ export default function SituationScreen({
         countryData={situation.countryBreakdown}
       />
 
-      <div className="border-t border-[#30363D]" />
+      <div className="border-t border-[#ECECEC]" />
 
       {/* FILTER & FEED CONTAINER */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* Filters Sidebar */}
         <div className="lg:col-span-3 space-y-4">
-          <div className="rounded-2xl border border-[#30363D] bg-[#161B22] p-4 space-y-5">
-            <div className="flex items-center justify-between border-b border-[#30363D] pb-3">
-              <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                <SlidersHorizontal className="h-3.5 w-3.5 text-[#4F8CFF]" /> Dynamic Filters
+          <div className="rounded-2xl border border-[#E5E7EB] bg-white p-4 space-y-5 shadow-sm">
+            <div className="flex items-center justify-between border-b border-[#ECECEC] pb-3">
+              <span className="text-xs font-bold text-[#24324A] uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                <SlidersHorizontal className="h-3.5 w-3.5 text-[#24324A]" /> Dynamic Filters
               </span>
               {(filterCountry !== 'All' || filterGender !== 'All') && (
                 <button
@@ -170,7 +170,7 @@ export default function SituationScreen({
                     setMaxRegret(10);
                     setMinAge(18);
                   }}
-                  className="text-[10px] text-[#FF5D5D] hover:underline"
+                  className="text-[10px] text-[#C0392B] hover:underline font-bold"
                 >
                   Reset
                 </button>
@@ -179,11 +179,11 @@ export default function SituationScreen({
 
             {/* Filter Country */}
             <div className="space-y-1">
-              <label className="text-[10px] uppercase font-bold text-[#AAB2C0]">Country of Origin</label>
+              <label className="text-[10px] uppercase font-bold text-[#6B7280] font-mono">Country of Origin</label>
               <select
                 value={filterCountry}
                 onChange={(e) => setFilterCountry(e.target.value)}
-                className="w-full rounded-lg border border-[#30363D] bg-[#0E131B] p-2 text-xs text-white focus:outline-none focus:border-[#4F8CFF]"
+                className="w-full rounded-lg border border-[#E5E7EB] bg-white p-2 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] font-semibold"
               >
                 <option value="All">All Countries ({countriesList.length})</option>
                 {countriesList.map(c => <option key={c} value={c}>{c}</option>)}
@@ -192,14 +192,16 @@ export default function SituationScreen({
 
             {/* Filter Gender */}
             <div className="space-y-1">
-              <label className="text-[10px] uppercase font-bold text-[#AAB2C0]">Gender</label>
+              <label className="text-[10px] uppercase font-bold text-[#6B7280] font-mono">Gender</label>
               <div className="flex flex-wrap gap-1">
                 {['All', 'Female', 'Male'].map(gender => (
                   <button
                     key={gender}
                     onClick={() => setFilterGender(gender)}
                     className={`rounded px-2.5 py-1 text-[10px] font-bold border transition-all ${
-                      filterGender === gender ? 'bg-[#4F8CFF]/15 border-[#4F8CFF] text-white' : 'bg-[#0E131B] border-[#30363D] text-[#AAB2C0]'
+                      filterGender === gender 
+                        ? 'bg-[#FFF8E1] border-[#C9A227] text-[#C9A227]' 
+                        : 'bg-white border-[#E5E7EB] text-[#6B7280]'
                     }`}
                   >
                     {gender}
@@ -210,38 +212,37 @@ export default function SituationScreen({
 
           </div>
 
-
         </div>
 
         {/* Feed Columns */}
         <div className="lg:col-span-9 space-y-4">
           
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            <h3 className="text-sm font-bold text-[#24324A] uppercase tracking-wider font-mono">
               Timeline Chronicles ({filteredStories.length} matched)
             </h3>
-            <span className="text-xs text-[#AAB2C0]">Sorted by votes</span>
+            <span className="text-xs text-[#6B7280] font-medium">Sorted by votes</span>
           </div>
 
           {filteredStories.length === 0 ? (
-            <div className="text-center rounded-2xl border border-dashed border-[#30363D] p-10 space-y-4 bg-[#161B22]/20">
+            <div className="text-center rounded-2xl border border-dashed border-[#E5E7EB] p-10 space-y-4 bg-white shadow-sm">
               {filterCountry !== 'All' ? (
                 <>
-                  <Globe className="h-8 w-8 text-indigo-400 mx-auto animate-pulse" />
-                  <p className="text-sm font-bold text-white">No custom local chronicles recorded yet</p>
-                  <p className="text-xs text-[#AAB2C0] max-w-sm mx-auto leading-relaxed">
-                    No anonymous timelines matching your criteria have been committed from <b className="text-[#4F8CFF]">{filterCountry}</b> yet. Be the first to share your outcome!
+                  <Globe className="h-8 w-8 text-[#C9A227] mx-auto animate-pulse" />
+                  <p className="text-sm font-bold text-[#24324A]">No custom local chronicles recorded yet</p>
+                  <p className="text-xs text-[#6B7280] max-w-sm mx-auto leading-relaxed font-medium">
+                    No anonymous timelines matching your criteria have been committed from <b className="text-[#24324A]">{filterCountry}</b> yet. Be the first to share your outcome!
                   </p>
                   <div className="flex justify-center gap-3 pt-2">
                     <button
                       onClick={() => setScreen({ type: 'question_list' })}
-                      className="rounded-xl bg-purple-600 hover:bg-purple-700 font-bold px-4 py-2 text-xs text-white transition-all shadow active:scale-95"
+                      className="rounded-xl bg-[#24324A] hover:bg-[#1C273A] font-bold px-4 py-2 text-xs text-white transition-all shadow-xs"
                     >
                       Get Community Advice
                     </button>
                     <button
                       onClick={() => setFilterCountry('All')}
-                      className="rounded-xl border border-[#30363D] hover:bg-zinc-800 px-4 py-2 text-xs text-[#AAB2C0] hover:text-white transition-all"
+                      className="rounded-xl border border-[#E5E7EB] hover:bg-neutral-50 px-4 py-2 text-xs text-[#6B7280] transition-all font-bold"
                     >
                       Compare Global Entries
                     </button>
@@ -249,9 +250,9 @@ export default function SituationScreen({
                 </>
               ) : (
                 <>
-                  <AlertCircle className="h-8 w-8 text-[#F4B942] mx-auto animate-pulse" />
-                  <p className="text-xs text-white font-bold">No exact demographic matches found matching filters.</p>
-                  <p className="text-xs text-[#AAB2C0]">Try clearing or widening your constraints to examine comparable outcomes.</p>
+                  <AlertCircle className="h-8 w-8 text-[#C9A227] mx-auto" />
+                  <p className="text-xs text-[#24324A] font-bold">No exact demographic matches found matching filters.</p>
+                  <p className="text-xs text-[#6B7280] font-medium">Try clearing or widening your constraints to examine comparable outcomes.</p>
                   <button
                     onClick={() => {
                       setFilterCountry('All');
@@ -261,7 +262,7 @@ export default function SituationScreen({
                       setMaxRegret(10);
                       setMinAge(18);
                     }}
-                    className="rounded-lg bg-[#30363D] hover:bg-neutral-700 font-semibold px-3.5 py-1.5 text-xs text-white"
+                    className="rounded-lg bg-[#24324A] hover:bg-[#1C273A] font-bold px-3.5 py-1.5 text-xs text-white shadow-xs"
                   >
                     Clear Filters
                   </button>

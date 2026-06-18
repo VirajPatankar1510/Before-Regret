@@ -1172,7 +1172,7 @@ export default function App() {
   };
 
   return (
-    <div className={darkMode ? 'dark bg-[#0D1117] text-white min-h-screen flex flex-col' : 'bg-neutral-50 text-neutral-900 min-h-screen flex flex-col'}>
+    <div className="bg-[#FAF8F2] text-[#1F2937] min-h-screen flex flex-col font-sans">
       
       {/* Primary Top Nav */}
       <Navigation

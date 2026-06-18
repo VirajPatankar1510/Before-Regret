@@ -50,23 +50,23 @@ export default function StoryCard({
   const [newCommentText, setNewCommentText] = useState("");
 
   const getRegretColor = (score: number) => {
-    if (score >= 8) return 'bg-[#FF5D5D]/10 text-[#FF5D5D] border-[#FF5D5D]/20';
-    if (score >= 5) return 'bg-[#F4B942]/10 text-[#F4B942] border-[#F4B942]/20';
-    return 'bg-[#2ECC71]/10 text-[#2ECC71] border-[#2ECC71]/20';
+    if (score >= 8) return 'bg-[#C0392B]/5 text-[#C0392B] border-[#C0392B]/10';
+    if (score >= 5) return 'bg-[#D97706]/5 text-[#D97706] border-[#D97706]/10';
+    return 'bg-[#2E7D32]/5 text-[#2E7D32] border-[#2E7D32]/10';
   };
 
   const getDecisionColor = (decision: string) => {
     switch (decision) {
       case 'Left':
-        return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+        return 'bg-purple-50 text-purple-700 border-purple-200';
       case 'Stayed':
-        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
       case 'Married':
-        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       case 'Moved Together':
-        return 'bg-blue-500/10 text-[#4F8CFF] border-[#4F8CFF]/20';
+        return 'bg-blue-50 text-blue-700 border-blue-200';
       default:
-        return 'bg-[#30363D] text-[#AAB2C0] border-[#30363D]';
+        return 'bg-zinc-50 text-[#6B7280] border-[#E5E7EB]';
     }
   };
 
@@ -87,25 +87,25 @@ export default function StoryCard({
   return (
     <div 
       id={`story-${story.id}`}
-      className={`rounded-2xl border p-5 sm:p-6 shadow-md transition-all duration-700 ${
+      className={`rounded-2xl border p-5 sm:p-6 shadow-sm transition-all duration-700 hover:shadow-md hover:translate-y-[-2px] ${
         highlighted 
-          ? 'border-[#F4B942] bg-[#1d232c] ring-2 ring-[#F4B942]/40 shadow-[#F4B942]/10 scale-[1.01]' 
-          : 'border-[#30363D] bg-[#161B22] hover:border-[#30363D]/80'
+          ? 'border-[#C9A227] bg-[#FAF8F2] ring-2 ring-[#C9A227]/40 shadow-[#C9A227]/10 scale-[1.01]' 
+          : 'border-[#E5E7EB] bg-white'
       }`}
     >
       
       {/* Header Info */}
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[#30363D] pb-3 mb-4 text-xs text-[#AAB2C0]">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[#E5E7EB] pb-3 mb-4 text-xs text-[#6B7280]">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#30363D] text-white">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#24324A]/10 text-[#24324A]">
             <User className="h-3.5 w-3.5" />
           </span>
-          <span className="font-semibold text-white">@{story.userName}</span>
-          <span className="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-mono">
+          <span className="font-semibold text-[#1F2937]">@{story.userName}</span>
+          <span className="text-[10px] bg-[#24324A]/5 text-[#24324A] border border-[#24324A]/10 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-mono">
              Chronicle: #{story.id.slice(0, 5)}
           </span>
           {story.caseNumber && (
-            <span className="text-[10px] bg-[#F4B942]/10 text-[#F4B942] border border-[#F4B942]/30 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-mono font-bold animate-pulse">
+            <span className="text-[10px] bg-[#FFF8E1] text-[#C9A227] border border-[#E8D79B] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-mono font-bold">
                ⚖️ {story.caseNumber}
             </span>
           )}
@@ -113,7 +113,7 @@ export default function StoryCard({
         <div className="flex items-center gap-2">
           <span>{story.gender} ({story.age})</span>
           <span>•</span>
-          <button onClick={() => onSelectCountry(story.country)} className="font-semibold text-white hover:underline hover:text-[#4F8CFF] flex items-center gap-1">
+          <button onClick={() => onSelectCountry(story.country)} className="font-semibold text-[#1F2937] hover:underline hover:text-[#24324A] flex items-center gap-1">
             <Globe className="h-3 w-3" /> {story.country}
           </button>
           <span>•</span>
@@ -298,7 +298,7 @@ export default function StoryCard({
           {/* Share Trigger */}
           <button
             onClick={handleShare}
-            className="inline-flex items-center gap-1 text-[#AAB2C0] hover:text-white bg-[#0D1117] p-1.5 sm:p-2 rounded-xl border border-[#30363D] text-[11px]"
+            className="inline-flex items-center gap-1 text-[#6B7280] hover:text-[#24324A] bg-white p-1.5 sm:p-2 rounded-xl border border-[#E5E7EB] text-[11px]"
           >
             <Share2 className="h-3.5 w-3.5" />
             <span className="hidden sm:inline font-semibold text-[11px]">Get Link</span>
@@ -307,7 +307,7 @@ export default function StoryCard({
           {/* Report Trigger */}
           <button
             onClick={() => alert("Thank you. An anonymous moderator has queued this post for review within 24 hours.")}
-            className="text-zinc-500 hover:text-red-400 p-1.5 sm:p-2"
+            className="text-zinc-400 hover:text-red-600 p-1.5 sm:p-2"
             title="Flag as False or Personal Data Violations"
           >
             <AlertCircle className="h-3.5 w-3.5" />
@@ -318,39 +318,39 @@ export default function StoryCard({
 
       {/* Expanded Comments / Advice Area */}
       {showComments && (
-        <div className="mt-4 border-t border-[#30363D]/60 pt-4 space-y-4">
+        <div className="mt-4 border-t border-[#E5E7EB] pt-4 space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#AAB2C0] flex items-center gap-1.5">
-              <MessageCircle className="h-3.5 w-3.5 text-[#4F8CFF]" /> Peer Outcome Advice & Responses
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#24324A] flex items-center gap-1.5">
+              <MessageCircle className="h-3.5 w-3.5 text-[#C9A227]" /> Peer Outcome Advice & Responses
             </h4>
-            <span className="text-[10px] text-zinc-500 font-mono">
+            <span className="text-[10px] text-zinc-400 font-mono">
               Safe community guidance space
             </span>
           </div>
 
           {/* Comment List */}
           {storyComments.length === 0 ? (
-            <div className="text-center py-6 border border-dashed border-[#30363D] rounded-xl text-zinc-500">
-              <p className="text-xs">No peer responses yet for this timeline chronicle.</p>
-              <p className="text-[10px] text-zinc-600 mt-1">Be the first to provide helpful guidance or analyze their post-decision logic!</p>
+            <div className="text-center py-6 border border-dashed border-[#E5E7EB] rounded-xl text-zinc-400 bg-[#FAF8F2]">
+              <p className="text-xs font-medium text-[#6B7280]">No peer responses yet for this timeline chronicle.</p>
+              <p className="text-[10px] text-zinc-500 mt-1">Be the first to provide helpful guidance or analyze their post-decision logic!</p>
             </div>
           ) : (
             <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
               {storyComments.map((c) => (
-                <div key={c.id} className="rounded-xl border border-[#30363D]/40 bg-[#0E131B]/60 p-3 text-xs flex gap-3">
+                <div key={c.id} className="rounded-xl border border-[#E5E7EB] bg-[#FAF8F2] p-3 text-xs flex gap-3 shadow-sm">
                   {c.authorPhoto ? (
                     <img src={c.authorPhoto} alt={c.authorName} className="h-6 w-6 rounded-full shrink-0" referrerPolicy="no-referrer" />
                   ) : (
-                    <div className="h-6 w-6 rounded-full bg-gradient-to-tr from-[#4F8CFF] to-pink-500 text-[10px] font-bold flex items-center justify-center text-white shrink-0 uppercase font-mono">
+                    <div className="h-6 w-6 rounded-full bg-[#24324A] text-[10px] font-bold flex items-center justify-center text-white shrink-0 uppercase font-mono">
                       {c.authorName.slice(0, 2)}
                     </div>
                   )}
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="font-extrabold text-[#4F8CFF]">@{c.authorName}</span>
-                      <span className="text-[10px] text-zinc-500">{c.dateAdded}</span>
+                      <span className="font-semibold text-[#24324A]">@{c.authorName}</span>
+                      <span className="text-[10px] text-zinc-400">{c.dateAdded}</span>
                     </div>
-                    <p className="text-neutral-200 leading-relaxed font-serif whitespace-pre-wrap">{c.text}</p>
+                    <p className="text-[#374151] leading-relaxed font-serif whitespace-pre-wrap">{c.text}</p>
                   </div>
                 </div>
               ))}
@@ -367,7 +367,7 @@ export default function StoryCard({
               }
               setNewCommentText("");
             }}
-            className="flex gap-2 items-end pt-2 border-t border-[#30363D]/40"
+            className="flex gap-2 items-end pt-2 border-t border-[#E5E7EB]"
           >
             <div className="flex-1 space-y-1.5">
               {currentUser ? (
@@ -375,16 +375,16 @@ export default function StoryCard({
                   value={newCommentText}
                   onChange={(e) => setNewCommentText(e.target.value)}
                   placeholder="Share your mentoring opinion, cautionary warning, or supportive advice..."
-                  className="w-full rounded-xl border border-[#30363D] bg-[#0E131B] p-2.5 text-xs text-white focus:outline-none focus:border-[#4F8CFF] min-h-[60px]"
+                  className="w-full rounded-xl border border-[#E5E7EB] bg-white p-2.5 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] min-h-[60px]"
                   required
                 />
               ) : (
-                <div className="w-full rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-xs text-[#F4B942] flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="w-full rounded-xl border border-[#E8D79B] bg-[#FFF8E1] p-3 text-xs text-[#C9A227] flex flex-col sm:flex-row items-center justify-between gap-3 font-semibold">
                   <span>🔒 You must Google Login to submit advice responses on peer timeline chronicles.</span>
                   <button
                     type="button"
                     onClick={onGoogleLogin}
-                    className="px-3 py-1.5 bg-[#F4B942] hover:bg-[#F4B942]/90 text-neutral-900 font-extrabold text-[10px] rounded-lg shadow-md shrink-0 transition-all uppercase tracking-wide flex items-center gap-1"
+                    className="px-3 py-1.5 bg-[#C9A227] hover:bg-[#1C273A] text-white font-bold text-[10px] rounded-lg shadow-sm shrink-0 transition-all uppercase tracking-wide flex items-center gap-1"
                   >
                     <LogIn className="h-3 w-3" /> Connect with Google
                   </button>
@@ -394,7 +394,7 @@ export default function StoryCard({
             {currentUser && (
               <button
                 type="submit"
-                className="rounded-xl bg-[#4F8CFF] hover:bg-[#4F8CFF]/90 px-4 py-2.5 text-xs font-black text-white shrink-0 shadow-lg shadow-[#4F8CFF]/15 transition-all h-[44px] flex items-center"
+                className="rounded-xl bg-[#24324A] hover:bg-[#1C273A] px-4 py-2.5 text-xs font-bold text-white shrink-0 shadow-md transition-all h-[44px] flex items-center"
               >
                 Respond
               </button>
@@ -405,17 +405,17 @@ export default function StoryCard({
 
       {/* Share Toast Modal Overlay */}
       {showShareModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4" onClick={() => setShowShareModal(false)}>
-          <div className="w-full max-w-sm rounded-2xl border border-[#30363D] bg-[#161B22] p-5 text-center text-white" onClick={e => e.stopPropagation()}>
-            <Sparkles className="h-8 w-8 mx-auto text-[#4F8CFF] mb-2 animate-bounce" />
-            <h4 className="text-sm font-bold">Share Decisional Story</h4>
-            <p className="text-xs text-[#AAB2C0] mt-1 mb-4">Direct link generated! Copy and paste this URL to share with others anonymously:</p>
-            <div className="rounded-xl bg-[#0D1117] p-2 text-xs font-mono select-all break-all border border-[#30363D] mb-4 text-[#4F8CFF]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4" onClick={() => setShowShareModal(false)}>
+          <div className="w-full max-w-sm rounded-2xl border border-[#E5E7EB] bg-white p-5 text-center text-[#1F2937] shadow-xl" onClick={e => e.stopPropagation()}>
+            <Sparkles className="h-8 w-8 mx-auto text-[#C9A227] mb-2" />
+            <h4 className="text-sm font-bold text-[#24324A]">Share Decisional Story</h4>
+            <p className="text-xs text-[#6B7280] mt-1 mb-4">Direct link generated! Copy and paste this URL to share with others anonymously:</p>
+            <div className="rounded-xl bg-[#FAF8F2] p-2 text-xs font-mono select-all break-all border border-[#E5E7EB] mb-4 text-[#24324A] font-semibold">
               https://beforeregret.com/story/{story.id}
             </div>
             <button
               onClick={() => setShowShareModal(false)}
-              className="w-full rounded-xl bg-zinc-600 hover:bg-neutral-700 py-2 text-xs font-bold transition-all text-white"
+              className="w-full rounded-xl bg-zinc-200 hover:bg-zinc-300 py-2 text-xs font-bold transition-all text-[#1F2937]"
             >
               Close
             </button>

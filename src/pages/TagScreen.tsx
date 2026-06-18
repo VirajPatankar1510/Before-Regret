@@ -63,38 +63,38 @@ export default function TagScreen({
   const relatedTags = ['marriage', 'cheating', 'long-distance', 'commitment', 'children', 'privacy', 'forgiveness'].filter(t => t !== tagLabel);
 
   return (
-    <div className="space-y-6 pb-16 animate-fadeIn text-white">
+    <div className="space-y-6 pb-16 animate-fadeIn">
       
       {/* Back button */}
       <button
         onClick={() => setScreen({ type: 'home' })}
-        className="text-xs text-[#AAB2C0] hover:text-white inline-flex items-center gap-1 font-semibold border border-[#30363D] bg-[#161B22] px-3 py-1.5 rounded-xl transition-all"
+        className="text-xs text-[#6B7280] hover:text-[#24324A] inline-flex items-center gap-1 font-semibold border border-[#E5E7EB] bg-white px-3 py-1.5 rounded-xl transition-all hover:border-zinc-300 shadow-sm"
       >
         <ArrowLeft className="h-3.5 w-3.5" /> Return to Board Home
       </button>
 
       {/* Hero Display header */}
-      <div className="rounded-2xl border border-[#30363D] bg-gradient-to-r from-purple-900/10 to-[#161B22] p-5 sm:p-6 shadow-md relative">
+      <div className="rounded-2xl border border-[#E5E7EB] bg-white p-5 sm:p-6 shadow-sm relative">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5 text-purple-400">
+            <div className="flex items-center gap-1.5 text-purple-600">
               <Tag className="h-5 w-5" />
-              <span className="text-[10px] uppercase font-bold tracking-widest leading-none">Tag Directory Archives</span>
+              <span className="text-[10px] uppercase font-bold tracking-widest leading-none font-mono">Tag Directory Archives</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-black text-white">#{tagLabel} Archive Indexes</h1>
-            <p className="text-xs text-[#AAB2C0] leading-relaxed">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#24324A] font-serif">#{tagLabel} Archive Indexes</h1>
+            <p className="text-xs text-[#6B7280] leading-relaxed font-medium">
               Consolidating community situations, active poll questions, jury trials, and multi-year outcomes associated with this relationship keyword.
             </p>
           </div>
           
-          <div className="flex gap-2 shrink-0">
-            <div className="bg-[#0D1117] rounded-xl border border-[#30363D] px-3.5 py-2 text-center">
-              <span className="text-[9px] text-[#AAB2C0] block uppercase font-bold">Matched Cases</span>
-              <span className="text-sm font-black text-[#4F8CFF]">{totalCount} dossiers</span>
+          <div className="flex gap-2 shrink-0 font-semibold font-mono">
+            <div className="bg-[#FAF8F2] rounded-xl border border-[#E5E7EB] px-3.5 py-2 text-center shadow-xs">
+              <span className="text-[9px] text-[#6B7280] block uppercase font-bold">Matched Cases</span>
+              <span className="text-xs font-bold text-[#24324A]">{totalCount} dossiers</span>
             </div>
-            <div className="bg-[#0D1117] rounded-xl border border-[#30363D] px-3.5 py-2 text-center">
-              <span className="text-[9px] text-[#AAB2C0] block uppercase font-bold">Avg Regret index</span>
-              <span className="text-sm font-black text-red-400">{avgRegret}/10</span>
+            <div className="bg-[#FAF8F2] rounded-xl border border-[#E5E7EB] px-3.5 py-2 text-center shadow-xs">
+              <span className="text-[9px] text-[#6B7280] block uppercase font-bold">Avg Regret index</span>
+              <span className="text-xs font-bold text-[#C0392B]">{avgRegret}/10</span>
             </div>
           </div>
         </div>
@@ -105,12 +105,12 @@ export default function TagScreen({
         
         {/* Left Side: Filter feed */}
         <div className="lg:col-span-8 space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-white">Stories Indexed under #{tagLabel}</h3>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[#24324A] font-serif">Stories Indexed under #{tagLabel}</h3>
 
           {taggedStories.length === 0 ? (
-            <div className="text-center rounded-xl border border-dashed border-[#30363D] p-10 text-zinc-500 bg-[#161B22]/10">
-              <p className="text-xs font-bold">No active stories found matching #{tagLabel} currently.</p>
-              <p className="text-[10px] text-zinc-650 mt-1">Submit your situation timeline first to pre-seed this archive tag.</p>
+            <div className="text-center rounded-xl border border-dashed border-[#E5E7EB] p-10 text-zinc-400 bg-white shadow-xs font-semibold">
+              <p className="text-xs font-bold text-[#24324A] font-serif">No active stories found matching #{tagLabel} currently.</p>
+              <p className="text-[10px] text-zinc-500 mt-1">Submit your situation timeline first to pre-seed this archive tag.</p>
             </div>
           ) : (
             <div className="space-y-5">
@@ -139,12 +139,12 @@ export default function TagScreen({
         </div>
 
         {/* Right Side: Linked Questions or Related tags */}
-        <div className="lg:col-span-4 space-y-4">
+        <div className="lg:col-span-4 space-y-4 font-semibold">
           
           {/* Tagged Court trials */}
           {taggedCourtCases.length > 0 && (
-            <div className="rounded-xl border border-[#30363D] bg-[#161B22] p-4 space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#F4B942] flex items-center gap-1">
+            <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 space-y-3 shadow-sm">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A227] flex items-center gap-1 font-mono">
                 <Gavel className="h-4 w-4" /> Related Court Trials
               </h3>
               <div className="space-y-2">
@@ -152,7 +152,7 @@ export default function TagScreen({
                   <div
                     key={c.slug}
                     onClick={() => setScreen({ type: 'court', slug: c.slug })}
-                    className="rounded bg-[#0D1117] p-2.5 text-xs font-semibold cursor-pointer hover:border-zinc-500 border border-transparent transition-all"
+                    className="rounded bg-[#FAF8F2] p-2.5 text-xs text-[#1F2937] hover:text-[#C9A227] cursor-pointer hover:border-zinc-300 border border-[#E5E7EB] transition-all font-serif italic"
                   >
                     "{c.title}"
                   </div>
@@ -162,19 +162,19 @@ export default function TagScreen({
           )}
 
           {/* Tagged Questions */}
-          <div className="rounded-xl border border-[#30363D] bg-[#161B22] p-4 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1">
+          <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 space-y-3 shadow-sm">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-purple-600 flex items-center gap-1 font-mono">
               <HelpCircle className="h-4 w-4" /> Related Advice Questions
             </h3>
             {taggedQuestions.length === 0 ? (
-              <p className="text-[10px] text-[#AAB2C0]">No questions found tagged #{tagLabel} yet.</p>
+              <p className="text-[10px] text-[#6B7280] font-mono">No questions found tagged #{tagLabel} yet.</p>
             ) : (
               <div className="space-y-2.5">
                 {taggedQuestions.map(q => (
                   <div
                     key={q.slug}
                     onClick={() => setScreen({ type: 'question', slug: q.slug })}
-                    className="rounded bg-[#0D1117] p-2.5 text-xs font-medium cursor-pointer hover:text-purple-400 transition-colors"
+                    className="rounded bg-[#FAF8F2] p-2.5 text-xs text-[#1F2937] cursor-pointer hover:text-purple-600 border border-[#E5E7EB] transition-all font-serif italic"
                   >
                     "{q.title}"
                   </div>
@@ -184,14 +184,14 @@ export default function TagScreen({
           </div>
 
           {/* Related tags array */}
-          <div className="rounded-xl border border-[#30363D] bg-[#161B22] p-4 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white">Compare Related Tags</h3>
+          <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 space-y-3 shadow-sm">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A] font-mono">Compare Related Tags</h3>
             <div className="flex flex-wrap gap-1.5">
               {relatedTags.map(tag => (
                 <button
                   key={tag}
                   onClick={() => onSelectTag(tag)}
-                  className="rounded-lg bg-[#0D1117] border border-[#30363D] hover:border-purple-400 text-[11px] text-[#AAB2C0] hover:text-white px-2.5 py-1 transition-all"
+                  className="rounded-lg bg-[#FAF8F2] border border-[#E5E7EB] hover:border-[#24324A] text-[11px] text-[#6B7280] hover:text-[#1F2937] px-2.5 py-1 transition-all"
                 >
                   #{tag}
                 </button>

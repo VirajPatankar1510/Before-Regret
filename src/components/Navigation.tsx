@@ -108,27 +108,27 @@ export default function Navigation({
   ];
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[#30363D] bg-[#0D1117] text-white">
+    <nav className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white text-[#1F2937] shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
           
           {/* Logo */}
           <div 
             onClick={() => setScreen({ type: 'home' })}
-            className="flex cursor-pointer items-center space-x-2 shrink-0 select-none"
+            className="flex cursor-pointer items-center space-x-2.5 shrink-0 select-none"
             id="logo-desktop"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#4F8CFF] to-pink-500 font-extrabold text-white text-xl">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#24324A] font-extrabold text-[#F7E9B4] text-lg shadow-inner">
               BR
             </div>
             <div className="block">
-              <span className="font-extrabold text-sm sm:text-lg tracking-tight text-white">Before<span className="text-[#4F8CFF]">Regret</span></span>
-              <p className="text-[8px] sm:text-[9px] text-[#AAB2C0] leading-none">Before you stay. Before you leave.</p>
+              <span className="font-extrabold text-sm sm:text-lg tracking-tight text-[#24324A]">Before<span className="text-[#C9A227]">Regret</span></span>
+              <p className="text-[8px] sm:text-[9px] text-[#6B7280] leading-none font-medium">Before you stay. Before you leave.</p>
             </div>
           </div>
 
           {/* Navigation Menu Links Desktop */}
-          <div className="hidden lg:flex items-center space-x-1 shrink-0">
+          <div className="hidden lg:flex items-center space-x-3 shrink-0">
             {menuItems.map(item => {
               const screenCast = item.screen as { type: string; slug?: string };
               const active = currentScreen.type === screenCast.type && (!screenCast.slug || currentScreen.slug === screenCast.slug);
@@ -136,29 +136,29 @@ export default function Navigation({
                 <button
                   key={item.label}
                   onClick={() => setScreen(item.screen)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    active ? 'text-[#4F8CFF] bg-[#161B22]' : 'text-[#AAB2C0] hover:text-white hover:bg-[#161B22]/50'
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all ${
+                    active 
+                      ? 'text-[#24324A] bg-[#F4F1E8] border border-[#E5E7EB]' 
+                      : 'text-[#6B7280] hover:text-[#24324A] hover:bg-[#FAF8F2]'
                   }`}
                 >
-                  <item.icon className="h-4 w-4" />
+                  <item.icon className={`h-4 w-4 ${active ? 'text-[#C9A227]' : 'text-[#9CA3AF]'}`} />
                   {item.label}
                 </button>
               );
             })}
           </div>
 
-
-
           {/* Action Trigger Elements Right */}
           <div className="flex items-center space-x-2 shrink-0">
             
             {/* 🔑 Cryptographic Case Retrieval Input */}
-            <div className="flex items-center gap-1.5 bg-[#161B22] border border-[#30363D] hover:border-[#F4B942]/60 rounded-xl px-2.5 py-1.5 transition-all text-xs">
-              <span className="text-[9px] text-[#F4B942] font-mono font-extrabold tracking-widest hidden sm:inline shrink-0 select-none">RETRIEVE CASE</span>
+            <div className="flex items-center gap-1.5 bg-[#FAF8F2] border border-[#E5E7EB] hover:border-[#C9A227]/60 rounded-xl px-2.5 py-1.5 transition-all text-xs focus-within:ring-2 focus-within:ring-[#24324A]/10">
+              <span className="text-[9px] text-[#C9A227] font-mono font-extrabold tracking-widest hidden sm:inline shrink-0 select-none">RETRIEVE CASE</span>
               <input
                 type="text"
                 placeholder="CASE ID..."
-                className="bg-transparent border-none text-[11px] text-white w-[75px] xs:w-[90px] focus:outline-none placeholder-zinc-500 font-mono font-extrabold uppercase"
+                className="bg-transparent border-none text-[11px] text-[#1F2937] w-[75px] xs:w-[90px] focus:outline-none placeholder-zinc-400 font-mono font-extrabold uppercase"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     const val = (e.target as HTMLInputElement).value.trim();
@@ -178,7 +178,7 @@ export default function Navigation({
                     input.value = '';
                   }
                 }}
-                className="text-zinc-500 hover:text-[#F4B942] transition-colors shrink-0 p-0.5"
+                className="text-[#6B7280] hover:text-[#24324A] transition-colors shrink-0 p-0.5"
                 title="Search Case Reference Code"
               >
                 <Search className="h-3 w-3" />
@@ -188,7 +188,7 @@ export default function Navigation({
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl text-[#AAB2C0] hover:text-white hover:bg-[#161B22] lg:hidden animate-fadeIn"
+              className="p-2 rounded-xl text-[#6B7280] hover:text-[#1F2937] hover:bg-[#FAF8F2] lg:hidden animate-fadeIn"
             >
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -198,7 +198,7 @@ export default function Navigation({
 
       {/* Mobile Drawer Menu */}
       {isOpen && (
-        <div className="border-t border-[#30363D] bg-[#0E131B] py-3 lg:hidden px-4 space-y-3">
+        <div className="border-t border-[#E5E7EB] bg-[#FAF8F2] py-4 lg:hidden px-4 space-y-3 shadow-lg">
           
           {/* Navigation Links */}
           <div className="grid grid-cols-2 gap-2">
@@ -209,18 +209,12 @@ export default function Navigation({
                   setScreen(item.screen);
                   setIsOpen(false);
                 }}
-                className="flex items-center gap-2 rounded-xl bg-[#161B22] px-3 py-2.5 text-left text-xs font-semibold text-[#AAB2C0] hover:text-white hover:bg-[#30363D] transition-all"
+                className="flex items-center gap-2 rounded-xl bg-white border border-[#E5E7EB] px-3 py-2.5 text-left text-xs font-semibold text-[#6B7280] hover:text-[#24324A] hover:bg-[#F4F1E8] transition-all"
               >
-                <item.icon className="h-3.5 w-3.5 shrink-0 text-[#4F8CFF]" />
+                <item.icon className="h-3.5 w-3.5 shrink-0 text-[#C9A227]" />
                 <span className="truncate">{item.label}</span>
               </button>
             ))}
-          </div>
-
-          <div className="border-t border-[#30363D] pt-3 text-center">
-            <span className="text-[10px] uppercase font-mono font-bold text-zinc-500 tracking-wider">
-              🔒 100% Secure Cryptographic Session
-            </span>
           </div>
         </div>
       )}
