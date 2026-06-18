@@ -93,6 +93,13 @@ export interface CourtCase {
   tags: string[];
 }
 
+export interface QuestionAnswerComment {
+  id: string;
+  author: string;
+  text: string;
+  date: string;
+}
+
 export interface QuestionAnswer {
   id: string;
   author: string;
@@ -100,6 +107,7 @@ export interface QuestionAnswer {
   votes: number;
   isOutcomeVerified: boolean; // has submitted a story
   date: string;
+  comments?: QuestionAnswerComment[]; // Comments below this specific advice!
 }
 
 export interface Question {

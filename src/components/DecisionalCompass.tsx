@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { HelpCircle, ChevronRight, RefreshCw, Compass, AlertCircle, Heart, Star, Flame, MapPin, Smile, BookOpen, Users } from 'lucide-react';
+import { Story } from '../types';
 
 interface DecisionalCompassProps {
   setScreen: (screen: { type: string; slug?: string }) => void;
+  stories: Story[];
 }
 
-export default function DecisionalCompass({ setScreen }: DecisionalCompassProps) {
+export default function DecisionalCompass({ setScreen, stories }: DecisionalCompassProps) {
   const [step, setStep] = useState<number>(0);
   const [answers, setAnswers] = useState<{
     area: string;
@@ -101,6 +103,38 @@ export default function DecisionalCompass({ setScreen }: DecisionalCompassProps)
   };
 
   const verdict = getVerdict();
+
+  const getMatchedStories = () => {
+    const { area } = answers;
+    if (!area) return [];
+    return stories.filter(s => {
+      const matchArea = area.toLowerCase();
+      const slug = s.situationSlug ? s.situationSlug.toLowerCase() : '';
+      const tags = s.tags ? s.tags.map(t => t.toLowerCase()) : [];
+
+      if (matchArea.includes('commitment') || matchArea.includes('marriage')) {
+        return slug.includes('marriage') || slug.includes('commitment') || tags.includes('marriage') || tags.includes('marriage-delay') || tags.includes('commitment');
+      }
+      if (matchArea.includes('trust') || matchArea.includes('forgiveness')) {
+        return slug.includes('cheating') || slug.includes('trust') || tags.includes('cheating') || tags.includes('forgiveness');
+      }
+      if (matchArea.includes('distance') || matchArea.includes('relocation')) {
+        return slug.includes('distance') || slug.includes('moving') || tags.includes('long-distance') || tags.includes('moving');
+      }
+      if (matchArea.includes('disapproval') || matchArea.includes('family')) {
+        return slug.includes('religion') || slug.includes('disapproval') || tags.includes('disapproval') || tags.includes('religion');
+      }
+      if (matchArea.includes('incompatibility') || matchArea.includes('kids')) {
+        return slug.includes('kids') || slug.includes('children') || tags.includes('children') || tags.includes('kids');
+      }
+      return false;
+    });
+  };
+
+  const matchedStoriesArr = getMatchedStories();
+  const matchedStoriesAvgRegret = matchedStoriesArr.length > 0 
+    ? (matchedStoriesArr.reduce((acc, s) => acc + s.regretScore, 0) / matchedStoriesArr.length).toFixed(1)
+    : undefined;
 
   return (
     <div className="rounded-2xl border border-indigo-500/50 bg-gradient-to-br from-[#131924] to-[#0D131F] p-5 sm:p-6 shadow-[0_0_35px_rgba(99,102,241,0.25)] ring-1 ring-indigo-500/30 relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(99,102,241,0.35)] hover:border-indigo-400" id="decisional-compass-widget">
@@ -259,6 +293,51 @@ export default function DecisionalCompass({ setScreen }: DecisionalCompassProps)
                 </div>
               </div>
             </div>
+
+            {/* Live Crowd Chronicles Feed under the completed report */}
+            {matchedStoriesArr.length > 0 && (
+              <div className="rounded-xl border border-slate-800 bg-[#161B22]/60 p-4 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-800/60 pb-2">
+                  <h5 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                    <Heart className="h-3.5 w-3.5 text-pink-500 fill-pink-500/10" /> Live Match Chronicles ({matchedStoriesArr.length})
+                  </h5>
+                  {matchedStoriesAvgRegret && (
+                    <span className="text-[10px] font-black text-pink-400 bg-pink-500/10 border border-pink-500/20 px-2 py-0.5 rounded-md font-mono">
+                      Avg Match Regret Score: {matchedStoriesAvgRegret}/10
+                    </span>
+                  )}
+                </div>
+                <div className="max-h-40 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+                  {matchedStoriesArr.slice(0, 3).map((s) => (
+                    <div 
+                      key={s.id} 
+                      onClick={() => setScreen({ type: 'situation', slug: s.situationSlug })}
+                      className="group cursor-pointer rounded-lg bg-slate-900 border border-slate-800/80 hover:border-pink-500/40 p-2.5 transition-all text-left flex items-start justify-between gap-3"
+                    >
+                      <div className="space-y-0.5">
+                        <span className="text-[9px] font-mono font-bold text-zinc-500 group-hover:text-pink-400 transition-colors uppercase">
+                          {s.caseNumber || 'CASE-USER'} • {s.gender || 'Anonymous'}, {s.age || 'N/A'}y/o
+                        </span>
+                        <p className="text-[11px] font-extrabold text-white leading-normal truncate max-w-[280px] sm:max-w-[420px]">
+                          "{s.title}"
+                        </p>
+                      </div>
+                      <span className="text-[10px] font-mono font-black text-pink-400 bg-pink-500/10 px-2 py-0.5 rounded shrink-0 self-center">
+                        Regret: {s.regretScore}/10
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="text-center pt-1 border-t border-slate-800/30">
+                  <button 
+                    onClick={() => setScreen({ type: 'regret_stories' })}
+                    className="text-[10px] text-zinc-400 hover:text-white font-bold uppercase tracking-wider transition-all hover:underline flex items-center gap-1 mx-auto"
+                  >
+                    View All Live Chronicles In Regret Registry <ChevronRight className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Flatten Illustration inside the completed report */}
             <div className="rounded-xl border border-slate-800 bg-gradient-to-r from-indigo-950/10 to-[#101520] p-4 flex flex-col sm:flex-row items-center gap-4">
