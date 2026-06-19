@@ -55,7 +55,7 @@ export default function Navigation({
     stories.forEach(s => {
       const caseNum = s.caseNumber || '';
       if (caseNum.toLowerCase().includes(query) || s.title.toLowerCase().includes(query)) {
-        results.push({ type: 'situation', label: `📂 ${caseNum ? `[${caseNum}]` : 'Chronicle'}: ${s.title}`, slug: s.situationSlug });
+        results.push({ type: 'situation', label: `📂 ${caseNum ? `[${caseNum}]` : 'Case Story'}: ${s.title}`, slug: s.situationSlug });
       }
     });
 
@@ -106,7 +106,6 @@ export default function Navigation({
     { label: 'Advice Boards', screen: { type: 'question_list' }, icon: Sparkles },
     { label: 'Red Flag Meter', screen: { type: 'red_flag_meter' }, icon: AlertTriangle },
     { label: 'Regret Registry', screen: { type: 'regret_stories' }, icon: Heart },
-    { label: 'My Profile', screen: { type: 'profile' }, icon: User },
   ];
 
   return (

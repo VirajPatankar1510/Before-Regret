@@ -67,7 +67,29 @@ export default function SituationScreen({
   const [maxRegret, setMaxRegret] = useState(10);
   const [minAge, setMinAge] = useState(18);
 
-  const situationStories = allStories.filter(s => s.situationSlug === situation.slug);
+  // Gather stories whose situationSlug matches the situation's slug
+  let situationStories = allStories.filter(s => s.situationSlug === situation.slug);
+
+  // Smart fallback: if a custom query or situation doesn't have direct preseeded slug matches,
+  // search all available stories in the database for overlapping keywords to serve as relevant examples.
+  if (situationStories.length === 0) {
+    const keywords = situation.name.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .split(/\s+/)
+      .filter(w => w.length > 2 && !['and', 'the', 'for', 'with', 'but', 'not', 'your', 'from'].includes(w));
+    
+    if (keywords.length > 0) {
+      situationStories = allStories.filter(s => {
+        const textToSearch = `${s.title} ${s.situationName || ''} ${s.fullStory} ${(s.tags || []).join(' ')}`.toLowerCase();
+        return keywords.some(keyword => textToSearch.includes(keyword));
+      });
+    }
+
+    // Default global fallback if still empty so the user never sees an completely blank portal
+    if (situationStories.length === 0) {
+      situationStories = allStories.slice(0, 3);
+    }
+  }
 
   // Apply Sidebar Filters
   const filteredStories = situationStories.filter(s => {
@@ -150,6 +172,110 @@ export default function SituationScreen({
         countryData={situation.countryBreakdown}
       />
 
+      {/* PEER REGRET LOG PRECEDENTS (MERGE OUTCOME INTEL DIRECTORY WITH REGRET REGISTRY) */}
+      {situationStories.length > 0 && (
+        <div className="bg-[#111827] text-white rounded-3xl border border-zinc-800 p-5 sm:p-6 space-y-5 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-[10px] uppercase font-mono font-extrabold tracking-widest text-[#F4B942] bg-[#F4B942]/10 border border-[#F4B942]/20 px-2.5 py-0.5 rounded-md inline-block">
+                Registry-Mapped Outcomes
+              </span>
+              <h3 className="text-md font-bold text-white flex items-center gap-1.5 font-serif">
+                Real-Life Submissions Backing the Analytical Charts
+              </h3>
+              <p className="text-[11px] text-[#AAB2C0] font-sans font-medium">
+                These are real peer-submitted stories contributing in real-time to the percentages and averages graphed above.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                const element = document.getElementById("peer-stories-title");
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+              className="text-xs font-bold text-[#4F8CFF] hover:text-white transition-colors flex items-center gap-1 shrink-0 font-mono"
+            >
+              Browse All Match Feeds &rarr;
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {situationStories.slice(0, 3).map((story) => {
+              const previewText = story.fullStory.length > 130 
+                ? story.fullStory.substring(0, 130) + '...'
+                : story.fullStory;
+              
+              const quoteClass = story.regretScore >= 8 
+                ? 'border-l-2 border-rose-500 bg-rose-500/5' 
+                : story.regretScore >= 5.5 
+                  ? 'border-l-2 border-amber-500 bg-amber-500/5' 
+                  : 'border-l-2 border-emerald-500 bg-emerald-500/5';
+
+              return (
+                <div 
+                  key={story.id} 
+                  className="bg-[#161B22] border border-[#30363D] hover:border-[#4F8CFF] p-4.5 rounded-2xl flex flex-col justify-between space-y-4 transition-all hover:scale-[1.01]"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[10px] font-bold font-mono text-[#AAB2C0]">
+                        #{story.id.slice(0, 5)} · {story.gender === 'Female' ? 'F' : 'M'}, {story.age}
+                      </span>
+                      <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded font-mono ${
+                        story.regretScore >= 8 ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 
+                        story.regretScore >= 5.5 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 
+                        'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                      }`}>
+                        Regret: {story.regretScore}/10
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-bold text-white line-clamp-1">
+                        {story.title}
+                      </p>
+                      <div className={`p-3 rounded-xl text-[11px] text-[#AAB2C0] italic leading-relaxed ${quoteClass} line-clamp-3`}>
+                        "{previewText}"
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#30363D] flex items-center justify-between text-[10px]">
+                    <div className="flex flex-col">
+                      <span className="text-[9px] text-[#8491A5] uppercase font-mono leading-none">Decision Outcome</span>
+                      <span className="font-bold text-white leading-tight mt-1">{story.decisionMade} &rarr; {story.currentOutcome}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const targetCard = document.getElementById(`story-${story.id}`);
+                        if (targetCard) {
+                          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          // Highlight the card temporarily
+                          targetCard.classList.add('ring-4', 'ring-[#C9A227]/40');
+                          setTimeout(() => {
+                            targetCard.classList.remove('ring-4', 'ring-[#C9A227]/40');
+                          }, 3000);
+                        } else {
+                          // Fallback scroll to stories feed
+                          const element = document.getElementById("peer-stories-title");
+                          if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }
+                        }
+                      }}
+                      className="bg-[#21262D] hover:bg-[#30363D] text-white border border-[#30363D] hover:border-[#4F8CFF] rounded-xl px-3 py-1.5 transition-all text-[10px] font-bold cursor-pointer shrink-0"
+                    >
+                      Inspect Profile
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="border-t border-[#ECECEC]" />
 
       {/* FILTER & FEED CONTAINER */}
@@ -219,9 +345,11 @@ export default function SituationScreen({
         {/* Feed Columns */}
         <div className="lg:col-span-9 space-y-4">
           
+
+
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[#24324A] uppercase tracking-wider font-mono">
-              Timeline Chronicles ({filteredStories.length} matched)
+            <h3 id="peer-stories-title" className="text-sm font-bold text-[#24324A] uppercase tracking-wider font-mono">
+              Timeline Stories ({filteredStories.length} matched)
             </h3>
             <span className="text-xs text-[#6B7280] font-medium">Sorted by votes</span>
           </div>
@@ -231,7 +359,7 @@ export default function SituationScreen({
               {filterCountry !== 'All' ? (
                 <>
                   <Globe className="h-8 w-8 text-[#C9A227] mx-auto animate-pulse" />
-                  <p className="text-sm font-bold text-[#24324A]">No custom local chronicles recorded yet</p>
+                  <p className="text-sm font-bold text-[#24324A]">No custom local stories recorded yet</p>
                   <p className="text-xs text-[#6B7280] max-w-sm mx-auto leading-relaxed font-medium">
                     No anonymous timelines matching your criteria have been committed from <b className="text-[#24324A]">{filterCountry}</b> yet. Be the first to share your outcome!
                   </p>

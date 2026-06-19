@@ -192,7 +192,7 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
     slug: 'long-distance-relationship',
     name: "Long Distance Relationship",
     category: 'Long Distance',
-    description: "Vetted data and authentic chronicles concerning geographic separation, dual-location careers, time-zone conflicts, and the psychological and financial toll of staying together while living apart.",
+    description: "Vetted data and authentic stories concerning geographic separation, dual-location careers, time-zone conflicts, and the psychological and financial toll of staying together while living apart.",
     stats: {
       storyCount: 16421,
       avgRegret: 4.9,
@@ -690,6 +690,135 @@ export const PRESEEDED_STORIES: Story[] = [
         dateAdded: "2026-09-18",
         text: "He sent a photo of his newborn baby with a beautiful note. We saved each other from decades of bitter resenting. Standing by your dealbreakers is the ultimate form of self-love.",
         regretScore: 1
+      }
+    ]
+  },
+  {
+    id: 's9',
+    title: "Spent 4 years in a long-distance relationship expecting a magical closing of the gap. We broke up within 3 months of moving in together.",
+    situationSlug: 'long-distance-relationship',
+    situationName: "Long Distance Relationship",
+    age: 27,
+    gender: "Female",
+    country: "United States",
+    relationshipDuration: "4 Years",
+    decisionMade: "Moved Together",
+    currentOutcome: "Separated",
+    regretScore: 7,
+    wouldDoAgain: "No",
+    dateAdded: "2025-04-12",
+    tags: ["long-distance", "moving-in", "reality-check"],
+    fullStory: "We were long-distance between Boston and Los Angeles for four years during college and early career. Every visit was like a vacation—expensive dinners, beach walks, and 100% focused romance. We thought we were incredibly strong because we survived the separation. \n\nThen, I transferred my job to LA, and we got an apartment. The fantasy crashed immediately. He was messy, passive-aggressive, and spent his weekends playing video games instead of doing the 'romantic' things we did on visits. And I realized we didn't actually know each other's daily habits at all. We loved the long-distance idea of each other, but the physical reality wasn't compatible. We broke up in 3 months. I regret moving across the country without a trial run first.",
+    userName: "distance_illusion",
+    helpfulVotes: 512,
+    timeline: [
+      { year: "2021", stage: "Long Distance Began", description: "Started long-distance dating between Boston and LA." },
+      { year: "2024", stage: "Decision Made (Relocated)", description: "Decided to relocate to LA to live together." },
+      { year: "2025", stage: "Broke Up", description: "Discovered extreme lifestyle incompatibility and split up." }
+    ],
+    updates: [
+      {
+        daysAfter: 30,
+        dateAdded: "2025-05-12",
+        text: "Moving to my own studio apartment in LA now. It's tough but at least I have my own space and can rebuild my life on my own terms.",
+        regretScore: 5
+      }
+    ]
+  },
+  {
+    id: 's10',
+    title: "Married with different religions. Thought we could just love each other. The holiday cycles and children discussions are breaking us.",
+    situationSlug: 'different-religion-marriage',
+    situationName: "Different Religion Marriage",
+    age: 35,
+    gender: "Male",
+    country: "India",
+    relationshipDuration: "8 Years",
+    decisionMade: "Married",
+    currentOutcome: "Complicated",
+    regretScore: 6,
+    wouldDoAgain: "No",
+    dateAdded: "2025-03-01",
+    tags: ["marriage", "religion", "family-friction"],
+    fullStory: "I am Hindu and she is Christian. When we got married, we agreed we would respect each other's beliefs and let our future kids choose. It sounded progressive and simple. But then we had kids. \n\nHer family insisted on baptism, while my parents wanted traditional ceremonies. Every holiday became an intense tug-of-war. We are constantly arguing about what values, scriptures, and dietary laws to teach our 5-year-old child. It's exhausting because faith is deep-rooted, and neither of us wants to compromise our heritage. If you choose an interfaith marriage, agree on the exact child-raising protocols in writing before wedding, otherwise it will become a source of daily tension.",
+    userName: "interfaith_weary",
+    helpfulVotes: 440,
+    timeline: [
+      { year: "2018", stage: "Married", description: "Got married, agreed to a mutual respect arrangement." },
+      { year: "2021", stage: "First Child Born", description: "In-laws and parents began demanding specific religious rites." },
+      { year: "2026", stage: "Constant Friction", description: "Daily arguments regarding nursery teachings and holiday plans." }
+    ],
+    updates: [
+      {
+        daysAfter: 90,
+        dateAdded: "2025-06-01",
+        text: "We just scheduled regular family mediation sessions. It's helping establish boundaries for the grandparents, who were adding 90% of the fuel to the fire.",
+        regretScore: 4
+      }
+    ]
+  },
+  {
+    id: 's11',
+    title: "Gave him a marriage ultimatum after 5 years. He checked the boxes resentfully and we divorced inside 2 years.",
+    situationSlug: 'marriage-ultimatum',
+    situationName: "Marriage Ultimatum",
+    age: 33,
+    gender: "Female",
+    country: "United States",
+    relationshipDuration: "7 Years",
+    decisionMade: "Married",
+    currentOutcome: "Divorced",
+    regretScore: 8,
+    wouldDoAgain: "No",
+    dateAdded: "2024-10-15",
+    tags: ["marriage", "ultimatum", "divorce"],
+    fullStory: "He kept dodging engagement talks, so I gave him a hard ultimatum: propose by my 30th birthday or we split. He looked terrified but went out and bought a ring. We married a year later. \n\nBut the magic was dead. He treated the wedding like a financial chore, showed zero interest in planning, and would passively bring up 'being forced into things' during every minor argument. He grew cold and distant because he felt his agency was stripped. We divorced in 2 years. I learned that an forced commitment is worse than a clean breakup. If you have to demand a commitment, it's not genuine.",
+    userName: "ultimatum_casualty",
+    helpfulVotes: 810,
+    timeline: [
+      { year: "2018", stage: "Dating Peak", description: "Living together, very happy but no ring." },
+      { year: "2022", stage: "Decision Made (Ultimatum)", description: "Gave proposal deadline. He proposed out of fear of loss." },
+      { year: "2023", stage: "Married", description: "Sparsely attended wedding with constant underlying tension." },
+      { year: "2025", stage: "Divorced", description: "Agreed to split to end the permanent passive aggression." }
+    ],
+    updates: [
+      {
+        daysAfter: 180,
+        dateAdded: "2025-04-15",
+        text: "The divorce is final. I feel a massive weight lifted off my shoulders. I don't have to walk on eggshells or apologize for wanting commitment anymore.",
+        regretScore: 1
+      }
+    ]
+  },
+  {
+    id: 's12',
+    title: "Ignored early red flags because the chemistry was off-the-charts. Ended up isolated and financially ruined.",
+    situationSlug: 'ignored-red-flags',
+    situationName: "Ignored Red Flags",
+    age: 29,
+    gender: "Male",
+    country: "Australia",
+    relationshipDuration: "3 Years",
+    decisionMade: "Stayed",
+    currentOutcome: "Separated",
+    regretScore: 9,
+    wouldDoAgain: "No",
+    dateAdded: "2025-05-20",
+    tags: ["red-flags", "control", "manipulation", "finances"],
+    fullStory: "In the first month, she was love-bombing me constantly—talking about future houses, kids, and soulmates. She also hated when I saw my friends and would start crying saying she felt neglected. She was beautiful, and the romance was intense, so I assumed she was just deeply in love. \n\nOver 3 years, she slowly pruned away all my support systems. She convinced me to co-sign a massive car loan for her, then maxed out my credit cards. When I confronted her, she'd flip it on me, calling me unsupportive. By the time I left, I sat in an empty house with ruined credit and no friends left. Never excuse control for passion. Hard boundaries on week one are vital.",
+    userName: "passion_blinded",
+    helpfulVotes: 915,
+    timeline: [
+      { year: "2022", stage: "Love Bombing Stage", description: "Extreme affection paired with early isolation demands." },
+      { year: "2024", stage: "Financial Co-Signing", description: "Co-signed car loan, transferred my emergency funds to her credit line." },
+      { year: "2025", stage: "The Break", description: "Woke up to the toxic cycles, family helped me escape." }
+    ],
+    updates: [
+      {
+        daysAfter: 30,
+        dateAdded: "2025-06-20",
+        text: "I'm working two jobs to pay down the co-signed debt, but I've reconnected with my best friend. They welcomed me back immediately. There is life after toxic relationships.",
+        regretScore: 4
       }
     ]
   }

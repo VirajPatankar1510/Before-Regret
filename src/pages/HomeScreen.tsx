@@ -32,8 +32,18 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
       return;
     }
     
-    // Redirect to explore page with search filter
-    setScreen({ type: 'explore' });
+    // Check if the query matches any PRESEEDED_SITUATIONS directly by name
+    const queryLower = query.toLowerCase();
+    const matchedSituation = PRESEEDED_SITUATIONS.find(s => 
+      s.name.toLowerCase().includes(queryLower) || s.slug.toLowerCase().includes(queryLower)
+    );
+
+    if (matchedSituation) {
+      setScreen({ type: 'situation', slug: matchedSituation.slug });
+    } else {
+      // Redirect to explore page with search filter
+      setScreen({ type: 'explore', slug: query });
+    }
   };
 
   const getRegretLevelString = (score: number) => {

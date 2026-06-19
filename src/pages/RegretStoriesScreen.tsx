@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Heart, 
   Clock, 
@@ -30,6 +30,7 @@ interface RegretStoriesScreenProps {
   setScreen: (screen: { type: string; slug?: string }) => void;
   isAdmin?: boolean;
   onDeleteStory?: (id: string) => void;
+  initialSituationSlug?: string;
 }
 
 export default function RegretStoriesScreen({
@@ -39,12 +40,20 @@ export default function RegretStoriesScreen({
   onSubmitStory,
   setScreen,
   isAdmin = false,
-  onDeleteStory
+  onDeleteStory,
+  initialSituationSlug = 'All'
 }: RegretStoriesScreenProps) {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [filterCategory, setFilterCategory] = useState<string>('All');
   const [filterDecision, setFilterDecision] = useState<string>('All');
+  const [filterSituation, setFilterSituation] = useState<string>(initialSituationSlug || 'All');
   const [sortBy, setSortBy] = useState<'recent' | 'highest' | 'lowest' | 'helpful'>('recent');
+
+  useEffect(() => {
+    if (initialSituationSlug && initialSituationSlug !== 'All') {
+      setFilterSituation(initialSituationSlug);
+    }
+  }, [initialSituationSlug]);
   
   // Track open/collapsed state of full stories
   const [expandedStories, setExpandedStories] = useState<{ [id: string]: boolean }>({});
@@ -75,7 +84,9 @@ export default function RegretStoriesScreen({
     const decision = story.decisionMade || 'other';
     const matchesDecision = filterDecision === 'All' || decision.toLowerCase() === filterDecision.toLowerCase();
 
-    return matchesCategory && matchesDecision;
+    const matchesSituation = filterSituation === 'All' || story.situationSlug === filterSituation;
+
+    return matchesCategory && matchesDecision && matchesSituation;
   });
 
   const sortedStories = [...filteredStories].sort((a, b) => {
@@ -109,7 +120,7 @@ export default function RegretStoriesScreen({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-[#E5E7EB] p-5 rounded-3xl relative overflow-hidden shadow-sm">
         <div className="absolute top-0 right-0 w-32 h-32 bg-[#24324A]/5 rounded-full blur-2xl pointer-events-none" />
         <div>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#24324A] bg-[#24324A]/5 px-2 py-0.5 rounded-md font-mono">Anonymous Chronicles</span>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-[#24324A] bg-[#24324A]/5 px-2 py-0.5 rounded-md font-mono">Anonymous Stories</span>
           <h1 className="text-xl sm:text-2xl font-black text-[#24324A] flex items-center gap-2 mt-1 uppercase tracking-tight font-display">
             <Heart className="h-6 w-6 text-[#C0392B] fill-[#C0392B]/10" /> Shared Regrets Registry
           </h1>
@@ -135,7 +146,7 @@ export default function RegretStoriesScreen({
             <FileText className="h-5.5 w-5.5" />
           </div>
           <div>
-            <span className="text-[10px] text-zinc-400 font-bold block uppercase tracking-wider">CHRONICLES</span>
+            <span className="text-[10px] text-zinc-400 font-bold block uppercase tracking-wider">STORIES</span>
             <span className="text-md sm:text-xl font-bold text-[#24324A]">{totalStoriesCount} Submitted</span>
           </div>
         </div>
@@ -158,7 +169,7 @@ export default function RegretStoriesScreen({
           <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB]">
             <div>
               <h2 className="text-base sm:text-lg font-bold text-[#24324A] uppercase tracking-wider flex items-center gap-1.5">
-                <PlusCircle className="text-[#C9A227] h-5.5 w-5.5 animate-pulse" /> Register Your Regret Chronicle
+                <PlusCircle className="text-[#C9A227] h-5.5 w-5.5 animate-pulse" /> Register Your Regret Story
               </h2>
               <p className="text-xs text-[#6B7280]">Explain your timeline milestones, final choices, and live regret score anonymously.</p>
             </div>
@@ -186,6 +197,20 @@ export default function RegretStoriesScreen({
           
           <div className="flex items-center gap-1.5">
             <Filter className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+            <span className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider hidden sm:inline">Situation:</span>
+            <select
+              value={filterSituation}
+              onChange={(e) => setFilterSituation(e.target.value)}
+              className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-1.5 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] focus:ring-4 focus:ring-[#24324A]/5 font-semibold max-w-[180px] sm:max-w-[220px] truncate"
+            >
+              <option value="All">All Situations</option>
+              {situations.map(sit => (
+                <option key={sit.slug} value={sit.slug}>{sit.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1.5">
             <span className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider hidden sm:inline">Category:</span>
             <select
               value={filterCategory}
@@ -249,7 +274,7 @@ export default function RegretStoriesScreen({
       <div className="space-y-4">
         {sortedStories.length === 0 ? (
           <div className="rounded-2xl border border-[#E5E7EB] bg-white py-12 text-center text-xs text-[#6B7280] shadow-sm">
-            No regret chronicles match your filter criteria. Share your timeline or select another option filter.
+            No regret stories match your filter criteria. Share your timeline or select another option filter.
           </div>
         ) : (
           sortedStories.map(story => {
@@ -328,9 +353,9 @@ export default function RegretStoriesScreen({
                         className="inline-flex items-center gap-1 text-[11px] text-[#C9A227] hover:text-[#24324A] font-bold transition-colors mt-1 hover:underline"
                       >
                         {isExpanded ? (
-                          <>Collapse Chronicle <ChevronUp className="h-3.5 w-3.5" /></>
+                          <>Collapse Story <ChevronUp className="h-3.5 w-3.5" /></>
                         ) : (
-                          <>Read Full Regret Chronicle <ChevronDown className="h-3.5 w-3.5" /></>
+                          <>Read Full Regret Story <ChevronDown className="h-3.5 w-3.5" /></>
                         )}
                       </button>
                     )}
@@ -373,7 +398,7 @@ export default function RegretStoriesScreen({
                             type="button"
                             onClick={() => setStoryIdToDeleteConfirm(story.id)}
                             className="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-[#C0392B] border border-red-100 px-3 py-1.5 rounded-lg font-bold transition-all shadow-2xs cursor-pointer"
-                            title="Administrator Override: Delete Chronicle"
+                            title="Administrator Override: Delete Story"
                           >
                             <Trash2 className="h-3.5 w-3.5" /> Delete
                           </button>

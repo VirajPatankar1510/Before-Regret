@@ -146,7 +146,7 @@ export default function CountryScreen({
 
       {/* Local Stories */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-[#24324A] font-mono">Latest Chronicles from {countryInfo.name}</h3>
+        <h3 className="text-sm font-bold uppercase tracking-wider text-[#24324A] font-mono">Latest Stories from {countryInfo.name}</h3>
 
         {countryStories.length === 0 ? (
           <div className="text-center rounded-xl border border-dashed border-[#E5E7EB] p-10 bg-white shadow-xs text-zinc-400 font-medium">

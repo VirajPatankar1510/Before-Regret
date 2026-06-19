@@ -294,12 +294,12 @@ export default function DecisionalCompass({ setScreen, stories }: DecisionalComp
               </div>
             </div>
 
-            {/* Live Crowd Chronicles Feed under the completed report */}
+            {/* Live Crowd Stories Feed under the completed report */}
             {matchedStoriesArr.length > 0 && (
               <div className="rounded-xl border border-slate-800 bg-[#161B22]/60 p-4 space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-800/60 pb-2">
                   <h5 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                    <Heart className="h-3.5 w-3.5 text-pink-500 fill-pink-500/10" /> Live Match Chronicles ({matchedStoriesArr.length})
+                    <Heart className="h-3.5 w-3.5 text-pink-500 fill-pink-500/10" /> Live Match Stories ({matchedStoriesArr.length})
                   </h5>
                   {matchedStoriesAvgRegret && (
                     <span className="text-[10px] font-black text-pink-400 bg-pink-500/10 border border-pink-500/20 px-2 py-0.5 rounded-md font-mono">
@@ -333,7 +333,7 @@ export default function DecisionalCompass({ setScreen, stories }: DecisionalComp
                     onClick={() => setScreen({ type: 'regret_stories' })}
                     className="text-[10px] text-zinc-400 hover:text-white font-bold uppercase tracking-wider transition-all hover:underline flex items-center gap-1 mx-auto"
                   >
-                    View All Live Chronicles In Regret Registry <ChevronRight className="h-3 w-3" />
+                    View All Live Stories In Regret Registry <ChevronRight className="h-3 w-3" />
                   </button>
                 </div>
               </div>
@@ -351,7 +351,7 @@ export default function DecisionalCompass({ setScreen, stories }: DecisionalComp
               <div className="space-y-1.5 flex-1">
                 <h5 className="text-xs font-bold text-white uppercase tracking-wide">What does the database suggest?</h5>
                 <p className="text-[11px] text-[#AAB2C0] leading-relaxed">
-                  We have mapped thousands of real, chronologically-tracked stories matching this exact milestone. Explore real-life updates from partners who chose each path.
+                  We have mapped thousands of real, anonymized stories matching this exact milestone. Explore real-life updates from partners who chose each path.
                 </p>
                 
                 <div className="flex flex-wrap gap-2 pt-1.5">

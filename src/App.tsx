@@ -15,7 +15,6 @@ import SituationScreen from './pages/SituationScreen';
 import CourtScreen from './pages/CourtScreen';
 import QuestionScreen from './pages/QuestionScreen';
 import ExploreScreen from './pages/ExploreScreen';
-import ProfileScreen from './pages/ProfileScreen';
 import CountryScreen from './pages/CountryScreen';
 import TagScreen from './pages/TagScreen';
 import CompareScreen from './pages/CompareScreen';
@@ -78,9 +77,6 @@ export function parsePath(pathname: string): { type: string; slug?: string } {
     }
     return { type: 'question_list' };
   }
-  if (first === 'profile') {
-    return { type: 'profile' };
-  }
   if (first === 'regrets') {
     return { type: 'regret_stories' };
   }
@@ -118,8 +114,6 @@ export function getRelativePath(screen: { type: string; slug?: string }): string
       return '/boards';
     case 'question':
       return `/boards/${screen.slug}`;
-    case 'profile':
-      return '/profile';
     case 'country':
       return `/country/${screen.slug || 'usa'}`;
     case 'tag':
@@ -144,13 +138,13 @@ export default function App() {
   useEffect(() => {
     // Determine dynamic page metadata based on clean routes
     let title = "BeforeRegret — See what happened before making the same decision.";
-    let description = "BeforeRegret is an interactive ledger of crowdsourced anonymous relationship timeline chronicles on marriage, cheating, and commitment regrets.";
+    let description = "BeforeRegret is an interactive ledger of crowdsourced anonymous relationship timeline stories on marriage, cheating, and commitment regrets.";
     const displaySlug = currentScreen.slug ? currentScreen.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
     
     switch (currentScreen.type) {
       case 'home':
         title = "BeforeRegret — Relationship Decisional Outcomes & Lessons";
-        description = "Analyze crowd-sourced anonymous timeline chronicles on marriage, cheating, cohabitation, and family commitments before making major life decisions.";
+        description = "Analyze crowd-sourced anonymous timeline stories on marriage, cheating, cohabitation, and family commitments before making major life decisions.";
         break;
       case 'explore':
         title = "Explore Decisional Outcomes | BeforeRegret";
@@ -160,7 +154,7 @@ export default function App() {
         const currentSit = PRESEEDED_SITUATIONS.find(s => s.slug === currentScreen.slug);
         const sName = currentSit ? currentSit.name : (displaySlug || 'Relationship Decision');
         title = `Should I ${sName}? Real Outcomes & Regrets | BeforeRegret`;
-        description = `Access crowd-sourced demographics, average regret curves, and 100% anonymous chronicles on "${sName}".`;
+        description = `Access crowd-sourced demographics, average regret curves, and 100% anonymous stories on "${sName}".`;
         break;
       }
       case 'compare': {
@@ -193,10 +187,6 @@ export default function App() {
         description = `Ask seasoned survivors and read Q&A advice for: "${qTitle}". Read community responses and view active polls.`;
         break;
       }
-      case 'profile':
-        title = "My Profile & Peer Advice Logs | BeforeRegret";
-        description = "Your personal dashboard, private bookmarked cases, and submitted relationship chronological outcome logs.";
-        break;
       case 'country': {
         const countryName = currentScreen.slug ? currentScreen.slug.toUpperCase() : 'Global';
         title = `Relationship Decisions, Regrets & Outcomes in ${countryName} | BeforeRegret`;
@@ -585,7 +575,7 @@ export default function App() {
     if (exactStory) {
       setScreen({ type: 'situation', slug: exactStory.situationSlug });
       setHighlightedStoryId(exactStory.id);
-      showToast(`📂 Chronicle ${exactStory.caseNumber} retrieved! viewing inside folder.`);
+      showToast(`📂 Case ${exactStory.caseNumber} retrieved! viewing inside folder.`);
       
       // Attempt smooth scroll
       setTimeout(() => {
@@ -627,7 +617,7 @@ export default function App() {
       if (foundStory) {
         setScreen({ type: 'situation', slug: foundStory.situationSlug });
         setHighlightedStoryId(foundStory.id);
-        showToast(`📂 Chronicle ${foundStory.caseNumber} retrieved! viewing inside folder.`);
+        showToast(`📂 Case ${foundStory.caseNumber} retrieved! viewing inside folder.`);
         
         // Attempt smooth scroll
         setTimeout(() => {
@@ -656,7 +646,7 @@ export default function App() {
     if (fallbackStory) {
       setScreen({ type: 'situation', slug: fallbackStory.situationSlug });
       setHighlightedStoryId(fallbackStory.id);
-      showToast(`📂 Chronicle ${fallbackStory.caseNumber} retrieved!`);
+      showToast(`📂 Case ${fallbackStory.caseNumber} retrieved!`);
       
       setTimeout(() => {
         const element = document.getElementById(`story-${fallbackStory.id}`);
@@ -811,7 +801,7 @@ export default function App() {
         recentActivity: [
           {
             type: 'story_added',
-            detail: `Archived chronological outcome log for "${newStory.title}" as Case ${caseNumber}`,
+            detail: `Archived dynamic outcome log for "${newStory.title}" as Case ${caseNumber}`,
             date: 'Just now'
           },
           ...prev.user.recentActivity
@@ -831,7 +821,7 @@ export default function App() {
       };
     });
 
-    showToast(`🎉 Your regret chronicle was successfully submitted to the registry.`);
+    showToast(`🎉 Your regret story was successfully submitted to the registry.`);
   };
 
   const handleVoteHelpful = (storyId: string) => {
@@ -888,7 +878,7 @@ export default function App() {
         ? prev.user.savedStories.filter(id => id !== storyId)
         : [...prev.user.savedStories, storyId];
 
-      const detailMsg = isSaved ? "Removed timeline bookmark" : "Bookmarked chronicled timeline";
+      const detailMsg = isSaved ? "Removed timeline bookmark" : "Bookmarked timeline story";
 
       const updatedUser: UserProfile = {
         ...prev.user,
@@ -903,7 +893,7 @@ export default function App() {
         ]
       };
 
-      showToast(isSaved ? "Bookmark cleared." : "📁 Timeline bookmarked. View from your anonymous profile board.");
+      showToast(isSaved ? "Bookmark cleared." : "📁 Timeline bookmarked successfully.");
 
       return {
         ...prev,
@@ -1340,7 +1330,7 @@ export default function App() {
       saveState(newState);
       return newState;
     });
-    showToast("⚖️ Chronicle story post has been permanently expunged by administrator.");
+    showToast("⚖️ User story post has been permanently expunged by administrator.");
   };
 
   const handleEditStory = (storyId: string, newTitle: string, newStoryText: string) => {
@@ -1362,7 +1352,7 @@ export default function App() {
       saveState(newState);
       return newState;
     });
-    showToast("✍️ Chronicle story post updated successfully by administrator.");
+    showToast("✍️ User story post updated successfully by administrator.");
   };
 
   const handleDeleteCourtCase = (slug: string) => {
@@ -1510,6 +1500,7 @@ export default function App() {
             courtCases={store.courtCases}
             setScreen={setScreen}
             onCaseRetrieve={handleCaseRetrieve}
+            initialSearchTerm={currentScreen.slug}
           />
         )}
 
@@ -1722,6 +1713,7 @@ export default function App() {
             setScreen={setScreen}
             isAdmin={isAdmin}
             onDeleteStory={handleDeleteStory}
+            initialSituationSlug={currentScreen.slug}
           />
         )}
 
@@ -1735,19 +1727,6 @@ export default function App() {
             userVotedFlags={userVotedFlags}
             currentUser={currentUser}
             onGoogleLogin={handleGoogleLogin}
-          />
-        )}
-
-        {currentScreen.type === 'profile' && (
-          <ProfileScreen
-            user={store.user}
-            allStories={store.stories}
-            setScreen={setScreen}
-            onRemoveBookmark={handleToggleBookmark}
-            currentUser={currentUser}
-            onGoogleLogin={handleGoogleLogin}
-            onLogout={handleLogout}
-            comments={comments}
           />
         )}
 
