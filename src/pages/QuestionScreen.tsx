@@ -111,7 +111,7 @@ export default function QuestionScreen({
           "{question.title}"
         </h1>
 
-        <p className="text-xs sm:text-sm text-[#374151] leading-relaxed font-serif pl-3 border-l-2 border-purple-500 bg-purple-50/50 py-2.5 rounded-r-xl italic">
+        <p className="text-base text-[#374151] leading-relaxed font-serif pl-3 border-l-2 border-purple-500 bg-purple-50/50 py-2.5 rounded-r-xl not-italic">
           {question.description}
         </p>
 
@@ -251,7 +251,7 @@ export default function QuestionScreen({
                       </div>
                     </div>
                     
-                    <p className="text-[#374151] leading-relaxed text-xs sm:text-sm font-serif italic pl-2 border-l-2 border-purple-400">
+                    <p className="text-[#374151] leading-relaxed text-sm font-serif not-italic pl-2 border-l-2 border-purple-400">
                       "{ans.text}"
                     </p>
 

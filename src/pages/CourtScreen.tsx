@@ -123,7 +123,7 @@ export default function CourtScreen({
           <span className="text-[#2E7D32] font-bold">{totalVotes.toLocaleString()} jurors voted</span>
         </div>
 
-        <p className="text-xs sm:text-sm text-[#374151] leading-relaxed font-serif pl-3 border-l-2 border-[#C9A227] italic">
+        <p className="text-base text-[#374151] leading-relaxed font-serif pl-3 border-l-2 border-[#C9A227] not-italic">
           {courtCase.description}
         </p>
 
@@ -282,7 +282,7 @@ export default function CourtScreen({
                         )}
                       </div>
                     </div>
-                    <p className="text-[#374151] leading-relaxed font-serif text-[12.5px]">"{arg.text}"</p>
+                    <p className="text-[#374151] leading-relaxed font-serif text-sm not-italic">"{arg.text}"</p>
                     <div className="flex justify-end gap-3 text-[10px] text-zinc-400 mt-2 font-medium">
                        <span>Was this analysis helpful?</span>
                        <button 

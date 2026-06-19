@@ -244,7 +244,7 @@ export default function StoryCard({
           </div>
 
           {/* Full Body Text */}
-          <div className="mt-4 text-xs sm:text-sm text-[#3c3c3c] leading-relaxed whitespace-pre-wrap pl-1 font-serif max-w-3xl">
+          <div className="mt-4 text-base text-[#3c3c3c] leading-relaxed whitespace-pre-wrap pl-1 font-serif max-w-3xl">
             {story.fullStory}
           </div>
         </>
@@ -359,7 +359,7 @@ export default function StoryCard({
                       <span className="font-semibold text-[#24324A]">@{c.authorName}</span>
                       <span className="text-[10px] text-zinc-400">{c.dateAdded}</span>
                     </div>
-                    <p className="text-[#374151] leading-relaxed font-serif whitespace-pre-wrap">{c.text}</p>
+                    <p className="text-sm text-[#374151] leading-relaxed font-serif whitespace-pre-wrap">{c.text}</p>
                   </div>
                 </div>
               ))}
