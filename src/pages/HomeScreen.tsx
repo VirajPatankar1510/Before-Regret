@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, Flame, AlertTriangle, ShieldCheck, Heart, Sparkles, MessageSquare, ChevronRight, TrendingUp, Gavel, Globe, Users, Clock, HelpCircle, Compass, BarChart3, Star, ArrowRight } from 'lucide-react';
 import { Situation, Story, CourtCase, Question } from '../types';
 import { MOST_REGRETTED_DECISIONS, MOST_SUCCESSFUL_DECISIONS, POPULAR_SEARCHES, PRESEEDED_SITUATIONS } from '../data/mockData';
+import AdSenseWidget from '../components/AdSenseWidget';
 
 interface HomeScreenProps {
   situations: Situation[];
@@ -119,7 +120,8 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
 
       </section>
 
-
+      {/* Google Ad Unit */}
+      <AdSenseWidget slot="2666879134" />
 
       {/* SECTION 3: TRENDING SITUATIONS CARDS */}
       <section className="space-y-4">
