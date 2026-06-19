@@ -17,6 +17,7 @@ interface StoryCardProps {
   onEditStory?: (id: string, newTitle: string, newStoryText: string) => void;
   comments?: StoryComment[];
   onAddComment?: (storyId: string, text: string) => void;
+  onDeleteComment?: (commentId: string) => void;
   currentUser?: any;
   onGoogleLogin?: () => void;
   highlighted?: boolean;
@@ -36,6 +37,7 @@ export default function StoryCard({
   onEditStory,
   comments = [],
   onAddComment,
+  onDeleteComment,
   currentUser,
   onGoogleLogin,
   highlighted = false
@@ -216,7 +218,7 @@ export default function StoryCard({
         <>
           {/* Main Story Meta and Title */}
           <div className="space-y-3">
-            <h3 className="text-base sm:text-lg font-bold text-white tracking-tight leading-snug hover:text-[#4F8CFF] cursor-pointer">
+            <h3 className="text-base sm:text-lg font-bold text-[#000000] tracking-tight leading-snug hover:text-[#4F8CFF] cursor-pointer">
               "{story.title}"
             </h3>
 
@@ -357,7 +359,19 @@ export default function StoryCard({
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-[#24324A]">@{c.authorName}</span>
-                      <span className="text-[10px] text-zinc-400">{c.dateAdded}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-zinc-400">{c.dateAdded}</span>
+                        {isAdmin && (
+                          <button
+                            type="button"
+                            onClick={() => onDeleteComment?.(c.id)}
+                            className="bg-red-50 hover:bg-red-100 text-[#C0392B] border border-red-100 p-1 rounded-md transition-colors"
+                            title="Moderator: Delete response"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <p className="text-sm text-[#374151] leading-relaxed font-serif whitespace-pre-wrap">{c.text}</p>
                   </div>
@@ -379,35 +393,20 @@ export default function StoryCard({
             className="flex gap-2 items-end pt-2 border-t border-[#E5E7EB]"
           >
             <div className="flex-1 space-y-1.5">
-              {currentUser ? (
-                <textarea
-                  value={newCommentText}
-                  onChange={(e) => setNewCommentText(e.target.value)}
-                  placeholder="Share your mentoring opinion, cautionary warning, or supportive advice..."
-                  className="w-full rounded-xl border border-[#E5E7EB] bg-white p-2.5 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] min-h-[60px]"
-                  required
-                />
-              ) : (
-                <div className="w-full rounded-xl border border-[#E8D79B] bg-[#FFF8E1] p-3 text-xs text-[#C9A227] flex flex-col sm:flex-row items-center justify-between gap-3 font-semibold">
-                  <span>🔒 You must Google Login to submit advice responses on peer timeline chronicles.</span>
-                  <button
-                    type="button"
-                    onClick={onGoogleLogin}
-                    className="px-3 py-1.5 bg-[#C9A227] hover:bg-[#1C273A] text-white font-bold text-[10px] rounded-lg shadow-sm shrink-0 transition-all uppercase tracking-wide flex items-center gap-1"
-                  >
-                    <LogIn className="h-3 w-3" /> Connect with Google
-                  </button>
-                </div>
-              )}
+              <textarea
+                value={newCommentText}
+                onChange={(e) => setNewCommentText(e.target.value)}
+                placeholder="Share your mentoring opinion, cautionary warning, or supportive advice..."
+                className="w-full rounded-xl border border-[#E5E7EB] bg-white p-2.5 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] min-h-[60px]"
+                required
+              />
             </div>
-            {currentUser && (
-              <button
-                type="submit"
-                className="rounded-xl bg-[#24324A] hover:bg-[#1C273A] px-4 py-2.5 text-xs font-bold text-white shrink-0 shadow-md transition-all h-[44px] flex items-center"
-              >
-                Respond
-              </button>
-            )}
+            <button
+              type="submit"
+              className="rounded-xl bg-[#24324A] hover:bg-[#1C273A] px-4 py-2.5 text-xs font-bold text-white shrink-0 shadow-md transition-all h-[44px] flex items-center"
+            >
+              Respond
+            </button>
           </form>
         </div>
       )}

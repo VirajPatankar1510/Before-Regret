@@ -22,6 +22,7 @@ interface TagScreenProps {
   onEditStory?: (id: string, title: string, text: string) => void;
   comments?: StoryComment[];
   onAddComment?: (storyId: string, text: string) => void;
+  onDeleteComment?: (commentId: string) => void;
   currentUser?: any;
   onGoogleLogin?: () => void;
 }
@@ -45,6 +46,7 @@ export default function TagScreen({
   onEditStory,
   comments = [],
   onAddComment,
+  onDeleteComment,
   currentUser,
   onGoogleLogin
 }: TagScreenProps) {
@@ -130,6 +132,7 @@ export default function TagScreen({
                   onEditStory={onEditStory}
                   comments={comments}
                   onAddComment={onAddComment}
+                  onDeleteComment={onDeleteComment}
                   currentUser={currentUser}
                   onGoogleLogin={onGoogleLogin}
                 />

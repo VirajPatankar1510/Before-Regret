@@ -105,6 +105,7 @@ export default function Navigation({
     { label: 'Become a Judge', screen: { type: 'court_list' }, icon: Gavel },
     { label: 'Advice Boards', screen: { type: 'question_list' }, icon: Sparkles },
     { label: 'Regret Registry', screen: { type: 'regret_stories' }, icon: Heart },
+    { label: 'My Profile', screen: { type: 'profile' }, icon: User },
   ];
 
   return (

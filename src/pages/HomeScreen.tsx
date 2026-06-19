@@ -302,7 +302,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-[#24324A] flex items-center gap-1.5 font-display">
-              <MessageSquare className="h-5 w-5 text-[#24324A]" /> Community Q&A Panels
+              <MessageSquare className="h-5 w-5 text-[#24324A]" /> Need suggestions for your situation?
             </h2>
             <p className="text-xs text-[#6B7280]">Answering the hard questions: 'Should I? How long? Is it a warning?'</p>
           </div>

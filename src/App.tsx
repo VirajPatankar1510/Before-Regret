@@ -38,6 +38,7 @@ import {
   fetchStoriesFromFirestore, 
   saveCommentToFirestore, 
   fetchCommentsFromFirestore, 
+  deleteCommentFromFirestore,
   saveUserProfileToFirestore, 
   fetchUserProfileFromFirestore,
   deleteStoryFromFirestore,
@@ -528,17 +529,17 @@ export default function App() {
   };
 
   const handleAddComment = async (storyId: string, text: string) => {
-    if (!currentUser) {
-      showToast("🔒 Please login with Google to leave advice responses.");
-      return;
-    }
     const commentId = 'comment_' + Math.random().toString(36).substring(2, 9);
+    const authorId = currentUser ? currentUser.uid : 'guest_' + Math.random().toString(36).substring(2, 9);
+    const authorName = currentUser ? (currentUser.displayName || 'Google Seeker') : `@${guestNickName.trim() || 'Wandering_Seeker'}`;
+    const authorPhoto = currentUser ? (currentUser.photoURL || undefined) : undefined;
+
     const newComment: StoryComment = {
       id: commentId,
       storyId: storyId,
-      authorId: currentUser.uid,
-      authorName: currentUser.displayName || 'Google Seeker',
-      authorPhoto: currentUser.photoURL || undefined,
+      authorId: authorId,
+      authorName: authorName,
+      authorPhoto: authorPhoto,
       text: text,
       dateAdded: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     };
@@ -549,6 +550,17 @@ export default function App() {
       return [...filtered, newComment];
     });
     showToast("💬 Response advice registered successfully!");
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      await deleteCommentFromFirestore(commentId);
+      setComments(prev => prev.filter(c => c.id !== commentId));
+      showToast("🗑️ Response advice comment deleted!");
+    } catch (err: any) {
+      console.error("Error deleting comment:", err);
+      showToast(`❌ Delete failed: ${err.message}`);
+    }
   };
 
 
@@ -1311,15 +1323,18 @@ export default function App() {
 
   const handleDeleteAnswer = (qSlug: string, ansId: string) => {
     setStore(prev => {
-      const updatedQuestions = prev.questions.map(q => {
-        if (q.slug === qSlug) {
-          return {
-            ...q,
-            answers: q.answers.filter(a => a.id !== ansId)
-          };
-        }
-        return q;
+      const qIdx = prev.questions.findIndex(q => q.slug === qSlug);
+      if (qIdx === -1) return prev;
+
+      const updatedQuestions = [...prev.questions];
+      const question = { ...updatedQuestions[qIdx] };
+      question.answers = question.answers.filter(a => a.id !== ansId);
+      updatedQuestions[qIdx] = question;
+
+      saveQuestionToFirestore(question).catch(err => {
+        console.error("Firestore advice answer delete error:", err);
       });
+
       const newState = {
         ...prev,
         questions: updatedQuestions
@@ -1328,6 +1343,38 @@ export default function App() {
       return newState;
     });
     showToast("⚖️ Survivor advice answer has been permanently expunged by administrator.");
+  };
+
+  const handleDeleteAnswerComment = (qSlug: string, ansId: string, commentId: string) => {
+    setStore(prev => {
+      const qIdx = prev.questions.findIndex(q => q.slug === qSlug);
+      if (qIdx === -1) return prev;
+
+      const updatedQuestions = [...prev.questions];
+      const question = { ...updatedQuestions[qIdx] };
+
+      const ansIdx = question.answers.findIndex(a => a.id === ansId);
+      if (ansIdx === -1) return prev;
+
+      const answer = { ...question.answers[ansIdx] };
+      answer.comments = (answer.comments || []).filter(c => c.id !== commentId);
+      
+      question.answers = [...question.answers];
+      question.answers[ansIdx] = answer;
+      updatedQuestions[qIdx] = question;
+
+      saveQuestionToFirestore(question).catch(err => {
+        console.error("Firestore reply comment delete error:", err);
+      });
+
+      const newState = {
+        ...prev,
+        questions: updatedQuestions
+      };
+      saveState(newState);
+      return newState;
+    });
+    showToast("🗑️ Discussion comment deleted by administrator.");
   };
 
   return (
@@ -1393,6 +1440,7 @@ export default function App() {
             onEditStory={handleEditStory}
             comments={comments}
             onAddComment={handleAddComment}
+            onDeleteComment={handleDeleteComment}
             currentUser={currentUser}
             onGoogleLogin={handleGoogleLogin}
             highlightedStoryId={highlightedStoryId}
@@ -1569,6 +1617,7 @@ export default function App() {
               isAdmin={isAdmin}
               onDeleteAnswer={handleDeleteAnswer}
               onDeleteQuestion={handleDeleteQuestion}
+              onDeleteAnswerComment={handleDeleteAnswerComment}
             />
           );
         })()}
@@ -1616,6 +1665,7 @@ export default function App() {
             onEditStory={handleEditStory}
             comments={comments}
             onAddComment={handleAddComment}
+            onDeleteComment={handleDeleteComment}
             currentUser={currentUser}
             onGoogleLogin={handleGoogleLogin}
           />
@@ -1641,6 +1691,7 @@ export default function App() {
             onEditStory={handleEditStory}
             comments={comments}
             onAddComment={handleAddComment}
+            onDeleteComment={handleDeleteComment}
             currentUser={currentUser}
             onGoogleLogin={handleGoogleLogin}
           />

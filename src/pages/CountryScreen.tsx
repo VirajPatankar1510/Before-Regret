@@ -21,6 +21,7 @@ interface CountryScreenProps {
   onEditStory?: (id: string, title: string, text: string) => void;
   comments?: StoryComment[];
   onAddComment?: (storyId: string, text: string) => void;
+  onDeleteComment?: (commentId: string) => void;
   currentUser?: any;
   onGoogleLogin?: () => void;
 }
@@ -42,6 +43,7 @@ export default function CountryScreen({
   onEditStory,
   comments = [],
   onAddComment,
+  onDeleteComment,
   currentUser,
   onGoogleLogin
 }: CountryScreenProps) {
@@ -169,6 +171,7 @@ export default function CountryScreen({
                 onEditStory={onEditStory}
                 comments={comments}
                 onAddComment={onAddComment}
+                onDeleteComment={onDeleteComment}
                 currentUser={currentUser}
                 onGoogleLogin={onGoogleLogin}
               />
