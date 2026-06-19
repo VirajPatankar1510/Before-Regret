@@ -1,12 +1,13 @@
-import { Story, CourtCase, Question, UserProfile, StoryUpdate, CourtArgument } from '../types';
-import { PRESEEDED_STORIES, PRESEEDED_COURT_CASES, PRESEEDED_QUESTIONS } from './mockData';
+import { Story, CourtCase, Question, UserProfile, StoryUpdate, CourtArgument, RedFlagCase } from '../types';
+import { PRESEEDED_STORIES, PRESEEDED_COURT_CASES, PRESEEDED_QUESTIONS, PRESEEDED_RED_FLAG_CASES } from './mockData';
 
-const LOCAL_STORAGE_KEY = 'before_regret_platform_store';
+const LOCAL_STORAGE_KEY = 'before_regret_platform_store2'; // new key to avoid mismatch with old stored structures
 
 interface StoreState {
   stories: Story[];
   courtCases: CourtCase[];
   questions: Question[];
+  redFlagCases: RedFlagCase[];
   user: UserProfile;
 }
 
@@ -30,6 +31,7 @@ export function getInitialState(): StoreState {
   let stories = PRESEEDED_STORIES;
   let courtCases = PRESEEDED_COURT_CASES;
   let questions = PRESEEDED_QUESTIONS;
+  let redFlagCases = PRESEEDED_RED_FLAG_CASES;
   let user = DEFAULT_USER;
 
   if (typeof window !== 'undefined') {
@@ -40,6 +42,7 @@ export function getInitialState(): StoreState {
         if (parsed.stories) stories = parsed.stories;
         if (parsed.courtCases) courtCases = parsed.courtCases;
         if (parsed.questions) questions = parsed.questions;
+        if (parsed.redFlagCases) redFlagCases = parsed.redFlagCases;
         if (parsed.user) user = parsed.user;
       } catch (e) {
         console.error("Error reading localStorage", e);
@@ -65,7 +68,16 @@ export function getInitialState(): StoreState {
     return c;
   });
 
-  return { stories, courtCases, questions, user };
+  // Backfill deterministic Case Numbers for preseeded red flag cases
+  redFlagCases = redFlagCases.map((r, idx) => {
+    if (!r.caseNumber) {
+      const stableNum = 3001 + idx;
+      r.caseNumber = `CASE-F${stableNum}`;
+    }
+    return r;
+  });
+
+  return { stories, courtCases, questions, redFlagCases, user };
 }
 
 // Save state helper

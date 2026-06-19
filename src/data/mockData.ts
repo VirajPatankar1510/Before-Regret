@@ -1,4 +1,4 @@
-import { Situation, Story, CourtCase, Question } from '../types';
+import { Situation, Story, CourtCase, Question, RedFlagCase } from '../types';
 
 export const POPULAR_SEARCHES = [
   "Stayed after cheating",
@@ -851,5 +851,98 @@ export const COUNTRIES_DATA = [
     topRegrets: ["Giving up professional status in move", "Living in isolated suburbs for a partner"],
     commonOutcomes: "Moves for love that involve switching provinces report higher mid-term financial tension.",
     storiesCount: 8900
+  }
+];
+
+export const PRESEEDED_RED_FLAG_CASES: RedFlagCase[] = [
+  {
+    id: "rf_1",
+    title: "My boyfriend still talks to his ex every day.",
+    description: "They split up 3 years ago and claim they are 'civil friends.' They like each other's gym posts and selfies. When I explained that seeing her constant likes makes me uncomfortable, he accused me of controlling him and said his friendships predate me. Is it a red flag that he prioritizes an ex's social media connection over my peace of mind?",
+    category: "Exes & Socials",
+    votes: {
+      green: 12,
+      yellow: 24,
+      red: 64
+    },
+    author: "anxious_peachy",
+    dateAdded: "2026-06-18",
+    comments: [
+      {
+        id: "rfc1_c1",
+        author: "counselor_jen",
+        text: "Healthy friendships with exes are possible, but dismissing your feelings as 'controlling' is a yellow/red flag. The dismissal itself is a bigger worry than the social connection.",
+        date: "2026-06-18"
+      },
+      {
+        id: "rfc1_c2",
+        author: "veteran_love",
+        text: "If they talk every single day and swap gym selfies, that crosses a line. Complete separation is usually required for healing unless they share a kid.",
+        date: "2026-06-19"
+      }
+    ]
+  },
+  {
+    id: "rf_2",
+    title: "My partner keeps their phone face-down at all times and brings it to the bathroom",
+    description: "Even when we are sitting on the couch watching a movie, they put their phone face down. When they go to the bathroom, they always bring it. I've never snooped on their phone, but this constant defensiveness of their screen makes me feel insecure. When I asked, they said they just value their privacy.",
+    category: "Trust & Privacy",
+    votes: {
+      green: 8,
+      yellow: 45,
+      red: 110
+    },
+    author: "quiet_observer",
+    dateAdded: "2026-06-17",
+    comments: [
+      {
+        id: "rfc2_c1",
+        author: "tech_detective",
+        text: "Privacy is choosing what you share. Secrecy is hiding things you know would hurt your partner. This sounds a lot like secrecy.",
+        date: "2026-06-17"
+      }
+    ]
+  },
+  {
+    id: "rf_3",
+    title: "My boyfriend gets extremely passive-aggressive when I plan a girls' night out",
+    description: "He doesn't say I can't go, but he sighs loudly, jokes about me 'abandoning him,' and takes forever to reply to my texts while I am out. The next day, he is distant and silent.",
+    category: "Control & Habits",
+    votes: {
+      green: 3,
+      yellow: 18,
+      red: 87
+    },
+    author: "girl_interrupted",
+    dateAdded: "2026-06-16",
+    comments: [
+      {
+        id: "rfc3_c1",
+        author: "healing_coach",
+        text: "This is a form of guilt-tripping and emotional manipulation. It doesn't have to be loud control to be toxic.",
+        date: "2026-06-16"
+      }
+    ]
+  },
+  {
+    id: "rf_4",
+    title: "My partner wants us to share location 24/7",
+    description: "They say it is purely for safety and convenience, so we know when each other is driving home. They shared theirs with me first. I feel super anxious being continuously tracked and would prefer privacy, but they say not wanting to share means I have something to hide.",
+    category: "Trust & Privacy",
+    votes: {
+      green: 34,
+      yellow: 72,
+      red: 54
+    },
+    author: "lost_gps",
+    dateAdded: "2026-06-15",
+    comments: [
+      {
+        id: "rfc4_c1",
+        author: "sensible_soul",
+        text: "Some couples love this, but forcing it with the 'nothing to hide' argument is manipulative. Privacy and trust can co-exist happily.",
+        date: "2026-06-15"
+      }
+    ]
   }
 ];

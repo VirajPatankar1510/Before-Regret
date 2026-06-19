@@ -120,6 +120,33 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
 
       </section>
 
+      {/* SECTION: RED FLAG METER PROMO BANNER */}
+      <section 
+        onClick={() => setScreen({ type: 'red_flag_meter' })}
+        className="rounded-2xl border-2 border-dashed border-rose-200 bg-gradient-to-r from-rose-50/50 to-amber-50/30 p-5 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:border-rose-300 hover:shadow-md transition-all animate-fadeIn"
+      >
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-1 bg-rose-500 text-white rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider font-mono">
+            🔥 Fresh Release
+          </div>
+          <h2 className="text-lg font-extrabold text-[#24324A] font-display">
+            The Community <span className="text-rose-500">Red Flag Meter</span>
+          </h2>
+          <p className="text-xs text-[#6B7280] leading-relaxed max-w-2xl font-medium">
+            "My boyfriend still talks to his ex every day." Green Flag? Yellow Flag? Red Flag? Cast anonymous assessments and evaluate live consensus statistics on questionable dating behaviors.
+          </p>
+        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setScreen({ type: 'red_flag_meter' });
+          }}
+          className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1 transition-all shadow-sm shrink-0 uppercase tracking-widest font-mono"
+        >
+          Check warning flags <ArrowRight className="h-4 w-4" />
+        </button>
+      </section>
+
       {/* Google Ad Unit */}
       <AdSenseWidget slot="2666879134" />
 
