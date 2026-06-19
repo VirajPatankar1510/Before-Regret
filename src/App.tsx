@@ -296,6 +296,7 @@ export default function App() {
   const [showAuthTroubleshooter, setShowAuthTroubleshooter] = useState<boolean>(false);
   const [guestNickName, setGuestNickName] = useState<string>('Wandering_Seeker');
   const [showSubmitQuestion, setShowSubmitQuestion] = useState<boolean>(false);
+  const [isQuestionsLoaded, setIsQuestionsLoaded] = useState<boolean>(false);
 
   // Listen to Google Authentication State and Subscribe to Real-Time Collections
   useEffect(() => {
@@ -385,6 +386,13 @@ export default function App() {
       snapshot.forEach((snapDoc) => {
         fsQuestions.push(snapDoc.data() as Question);
       });
+      if (snapshot.empty) {
+        import('./data/mockData').then(({ PRESEEDED_QUESTIONS }) => {
+          PRESEEDED_QUESTIONS.forEach(q => {
+            saveQuestionToFirestore(q).catch(err => console.error("Seed error:", err));
+          });
+        });
+      }
       setStore(prev => {
         const combined = [...fsQuestions, ...prev.questions];
         const uniqueQuestions = combined.filter((q, idx, self) => 
@@ -392,8 +400,10 @@ export default function App() {
         );
         return { ...prev, questions: uniqueQuestions };
       });
+      setIsQuestionsLoaded(true);
     }, (error) => {
       console.error("Firestore questions subscription error: ", error);
+      setIsQuestionsLoaded(true);
     });
 
     // Cleanup all subscriptions on unmount
@@ -1517,20 +1527,51 @@ export default function App() {
           </div>
         )}
 
-        {currentScreen.type === 'question' && (
-          <QuestionScreen
-            question={store.questions.find(q => q.slug === currentScreen.slug) || store.questions[0]}
-            setScreen={setScreen}
-            onVoteQuestionPoll={handleVoteQuestionPoll}
-            onAddQuestionAnswer={handleAddQuestionAnswer}
-            onAddAnswerComment={handleAddAnswerComment}
-            onUpvoteAnswer={handleUpvoteAnswer}
-            userVotedQuestions={userVotedQuestions}
-            isAdmin={isAdmin}
-            onDeleteAnswer={handleDeleteAnswer}
-            onDeleteQuestion={handleDeleteQuestion}
-          />
-        )}
+        {currentScreen.type === 'question' && (() => {
+          const found = store.questions.find(q => q.slug === currentScreen.slug);
+          if (!found) {
+            if (!isQuestionsLoaded) {
+              return (
+                <div className="flex flex-col items-center justify-center p-20 text-center space-y-4">
+                  <div className="h-10 w-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-sm text-zinc-400 font-medium font-mono">Connecting with database registry...</p>
+                </div>
+              );
+            } else {
+              return (
+                <div className="flex flex-col items-center justify-center p-16 text-center space-y-6 max-w-md mx-auto">
+                  <div className="h-14 w-14 rounded-full bg-red-400/10 text-red-500 flex items-center justify-center">
+                    <AlertTriangle className="h-7 w-7" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-extrabold text-white">Advice Board Request Expired</h2>
+                    <p className="text-xs text-[#AAB2C0]/85 mt-2">The requested timeline advice dilemma does not exist or has been deleted by an administrator.</p>
+                  </div>
+                  <button
+                    onClick={() => setScreen({ type: 'question_list' })}
+                    className="px-4 py-2 text-xs font-bold bg-[#1e142e] border border-purple-500/20 text-purple-400 rounded-xl hover:border-purple-500/40 transition-colors"
+                  >
+                    Back to Advice Boards
+                  </button>
+                </div>
+              );
+            }
+          }
+          return (
+            <QuestionScreen
+              question={found}
+              setScreen={setScreen}
+              onVoteQuestionPoll={handleVoteQuestionPoll}
+              onAddQuestionAnswer={handleAddQuestionAnswer}
+              onAddAnswerComment={handleAddAnswerComment}
+              onUpvoteAnswer={handleUpvoteAnswer}
+              userVotedQuestions={userVotedQuestions}
+              isAdmin={isAdmin}
+              onDeleteAnswer={handleDeleteAnswer}
+              onDeleteQuestion={handleDeleteQuestion}
+            />
+          );
+        })()}
 
         {currentScreen.type === 'regret_stories' && (
           <RegretStoriesScreen
