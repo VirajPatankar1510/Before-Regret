@@ -139,5 +139,28 @@ export interface UserProfile {
   }[];
 }
 
+export interface RedFlagComment {
+  id: string;
+  author: string;
+  text: string;
+  date: string;
+}
+
+export interface RedFlagCase {
+  id: string;
+  caseNumber?: string;
+  title: string;
+  description: string;
+  category: 'Communication' | 'Exes & Socials' | 'Trust & Privacy' | 'Control & Habits' | 'Other';
+  votes: {
+    green: number;
+    yellow: number;
+    red: number;
+  };
+  comments?: RedFlagComment[];
+  author: string;
+  dateAdded: string;
+}
+
 
 

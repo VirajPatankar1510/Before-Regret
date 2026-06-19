@@ -20,10 +20,11 @@ import CountryScreen from './pages/CountryScreen';
 import TagScreen from './pages/TagScreen';
 import CompareScreen from './pages/CompareScreen';
 import RegretStoriesScreen from './pages/RegretStoriesScreen';
+import RedFlagMeterScreen from './pages/RedFlagMeterScreen';
 // Core State and Seeding
 import { getInitialState, saveState } from './data/store';
 import { PRESEEDED_SITUATIONS, COUNTRIES_DATA } from './data/mockData';
-import { Story, CourtCase, Question, UserProfile, StoryComment } from './types';
+import { Story, CourtCase, Question, UserProfile, StoryComment, RedFlagCase } from './types';
 
 // Real Firebase / Firestore Backend Connection
 import { auth, googleProvider, signInWithPopup, signOut, onAuthStateChanged, db } from './lib/firebase';
@@ -700,6 +701,11 @@ export default function App() {
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [userVotedFlags, setUserVotedFlags] = useState<{ [caseId: string]: 'green' | 'yellow' | 'red' }>(() => {
+    const saved = localStorage.getItem('before_regret_flag_votes');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   // Sync state changes to storage
   useEffect(() => {
     saveState(store);
@@ -712,6 +718,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('before_regret_question_votes', JSON.stringify(userVotedQuestions));
   }, [userVotedQuestions]);
+
+  useEffect(() => {
+    localStorage.setItem('before_regret_flag_votes', JSON.stringify(userVotedFlags));
+  }, [userVotedFlags]);
 
   // Dynamically calculate and merge situation stats with user submissions in real-time!
   const liveSituations = useMemo(() => {
@@ -962,6 +972,87 @@ export default function App() {
 
     setUserVotedCases(prev => ({ ...prev, [slug]: side }));
     showToast("⚖️ Verdict logged. You can now analyze peer jury ratios.");
+  };
+
+  const handleVoteFlag = (caseId: string, flagType: 'green' | 'yellow' | 'red') => {
+    setStore(prev => {
+      const idx = prev.redFlagCases.findIndex(c => c.id === caseId);
+      if (idx === -1) return prev;
+
+      const updated = [...prev.redFlagCases];
+      updated[idx] = {
+        ...updated[idx],
+        votes: {
+          ...updated[idx].votes,
+          [flagType]: updated[idx].votes[flagType] + 1
+        }
+      };
+
+      return {
+        ...prev,
+        redFlagCases: updated
+      };
+    });
+
+    setUserVotedFlags(prev => ({ ...prev, [caseId]: flagType }));
+    showToast("🏁 Flag vote registered! Viewing live statistics.");
+  };
+
+  const handleAddFlagComment = (caseId: string, text: string) => {
+    setStore(prev => {
+      const idx = prev.redFlagCases.findIndex(c => c.id === caseId);
+      if (idx === -1) return prev;
+
+      const updated = [...prev.redFlagCases];
+      const commentObj = {
+        id: 'flag_cmt_' + Date.now().toString(),
+        author: prev.user.username,
+        text,
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      updated[idx] = {
+        ...updated[idx],
+        comments: [...(updated[idx].comments || []), commentObj]
+      };
+
+      return {
+        ...prev,
+        redFlagCases: updated
+      };
+    });
+    showToast("💬 Comment posted to Warning board.");
+  };
+
+  const handleAddFlagCase = (
+    title: string, 
+    description: string, 
+    category: 'Communication' | 'Exes & Socials' | 'Trust & Privacy' | 'Control & Habits' | 'Other'
+  ) => {
+    setStore(prev => {
+      const caseId = 'rf_' + Date.now().toString();
+      const nextNum = 3001 + prev.redFlagCases.length;
+      const caseNumber = `CASE-F${nextNum}`;
+      
+      const newCase: RedFlagCase = {
+        id: caseId,
+        caseNumber,
+        title,
+        description,
+        category,
+        votes: { green: 0, yellow: 0, red: 0 },
+        comments: [],
+        author: prev.user.username,
+        dateAdded: new Date().toISOString().split('T')[0]
+      };
+
+      showToast(`🏁 Lodged Category ${category} Dilemma: ${caseNumber}`);
+
+      return {
+        ...prev,
+        redFlagCases: [newCase, ...prev.redFlagCases]
+      };
+    });
   };
 
   const handleAddCourtArgument = (slug: string, side: 'Me' | 'Partner' | 'Both' | 'Neither', text: string) => {
@@ -1631,6 +1722,19 @@ export default function App() {
             setScreen={setScreen}
             isAdmin={isAdmin}
             onDeleteStory={handleDeleteStory}
+          />
+        )}
+
+        {currentScreen.type === 'red_flag_meter' && (
+          <RedFlagMeterScreen
+            redFlagCases={store.redFlagCases || []}
+            setScreen={setScreen}
+            onVoteFlag={handleVoteFlag}
+            onAddFlagComment={handleAddFlagComment}
+            onAddFlagCase={handleAddFlagCase}
+            userVotedFlags={userVotedFlags}
+            currentUser={currentUser}
+            onGoogleLogin={handleGoogleLogin}
           />
         )}
 
