@@ -1,21 +1,28 @@
 import express from "express";
 import path from "path";
-import { createServer as createViteServer } from "vite";
+import fs from "fs";
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Let's add standard headers / CORS or pre-emptive middleware if needed, but not required.
+  // Extremely robust check to determine if the server is running in production mode
+  const isProd = 
+    process.env.NODE_ENV === "production" || 
+    !fs.existsSync(path.join(process.cwd(), "server.ts")) ||
+    (typeof __filename !== "undefined" && (__filename.includes("dist") || __filename.endsWith(".cjs"))) ||
+    (fs.existsSync(path.join(process.cwd(), "dist")) && process.env.VITE_DEV !== "true");
 
-  // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
+  if (!isProd) {
+    console.log("Starting server in development mode with Vite middleware...");
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
+    console.log("Starting server in production mode, serving built static assets...");
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
@@ -24,7 +31,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT} (isProd=${isProd})`);
   });
 }
 
