@@ -20,6 +20,13 @@ service cloud.firestore {
       allow delete: if request.auth != null;
     }
 
+    // Questions collection - publicly readable and writable to support community advice requests
+    match /questions/{questionId} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if request.auth != null;
+    }
+
     // User profiles - readable and writable to support profile synchronization
     match /users/{userId} {
       allow read, write: if true;

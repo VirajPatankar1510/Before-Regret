@@ -60,6 +60,22 @@
         "dateAdded": { "type": "string" }
       },
       "required": ["id", "storyId", "authorName", "authorId", "text", "dateAdded"]
+    },
+    "Question": {
+      "title": "Advice Request / Question",
+      "description": "User submitted question seeking advice from survivors",
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "answers": { "type": "array" },
+        "pollOptions": { "type": "array" },
+        "storiesCount": { "type": "integer" },
+        "tags": { "type": "array" }
+      },
+      "required": ["slug", "title", "description", "category"]
     }
   },
   "firestore": {
@@ -74,6 +90,10 @@
     "/comments/{commentId}": {
       "schema": "StoryComment",
       "description": "Mentoring feedbacks and peer responses left on stories"
+    },
+    "/questions/{questionId}": {
+      "schema": "Question",
+      "description": "Public database of user submitted advice requests"
     }
   }
 }
