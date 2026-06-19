@@ -16,7 +16,8 @@ import {
   FileText,
   Frown,
   CheckCircle,
-  HelpCircle
+  HelpCircle,
+  Trash2
 } from 'lucide-react';
 import { Story, Situation } from '../types';
 import SubmitStoryForm from '../components/SubmitStoryForm';
@@ -27,6 +28,8 @@ interface RegretStoriesScreenProps {
   onVoteHelpful: (id: string) => void;
   onSubmitStory: (story: Story) => void;
   setScreen: (screen: { type: string; slug?: string }) => void;
+  isAdmin?: boolean;
+  onDeleteStory?: (id: string) => void;
 }
 
 export default function RegretStoriesScreen({
@@ -34,7 +37,9 @@ export default function RegretStoriesScreen({
   situations,
   onVoteHelpful,
   onSubmitStory,
-  setScreen
+  setScreen,
+  isAdmin = false,
+  onDeleteStory
 }: RegretStoriesScreenProps) {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [filterCategory, setFilterCategory] = useState<string>('All');
@@ -43,6 +48,9 @@ export default function RegretStoriesScreen({
   
   // Track open/collapsed state of full stories
   const [expandedStories, setExpandedStories] = useState<{ [id: string]: boolean }>({});
+
+  // Track admin delete state
+  const [storyIdToDeleteConfirm, setStoryIdToDeleteConfirm] = useState<string | null>(null);
 
   const toggleExpand = (id: string) => {
     setExpandedStories(prev => ({ ...prev, [id]: !prev[id] }));
@@ -165,7 +173,6 @@ export default function RegretStoriesScreen({
             onClose={() => setShowSubmitModal(false)}
             onSubmit={(newStory) => {
               onSubmitStory(newStory);
-              setShowSubmitModal(false);
             }}
           />
         </div>
@@ -330,13 +337,49 @@ export default function RegretStoriesScreen({
                   </div>
 
                   {/* Helpful Vote CTA & Timestamp */}
-                  <div className="flex items-center justify-between pt-2 border-t border-[#ECECEC] text-[11px] text-zinc-400 font-medium">
-                    <button
-                      onClick={() => onVoteHelpful(story.id)}
-                      className="inline-flex items-center gap-1.5 bg-white border border-[#E5E7EB] hover:border-[#24324A] hover:bg-neutral-50 px-3 py-1.5 rounded-lg text-[#1F2937] font-semibold transition-all"
-                    >
-                      <ThumbsUp className="h-3.5 w-3.5 text-[#C0392B]" /> Helpful Outcome Review ({story.helpfulVotes})
-                    </button>
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#ECECEC] text-[11px] text-zinc-400 font-medium">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => onVoteHelpful(story.id)}
+                        className="inline-flex items-center gap-1.5 bg-white border border-[#E5E7EB] hover:border-[#24324A] hover:bg-neutral-50 px-3 py-1.5 rounded-lg text-[#1F2937] font-semibold transition-all cursor-pointer"
+                      >
+                        <ThumbsUp className="h-3.5 w-3.5 text-[#C0392B]" /> Helpful Outcome Review ({story.helpfulVotes})
+                      </button>
+
+                      {isAdmin && onDeleteStory && (
+                        storyIdToDeleteConfirm === story.id ? (
+                          <div className="inline-flex items-center gap-1 bg-red-50 border border-red-200 p-0.5 rounded-lg">
+                            <span className="text-[10px] text-red-700 px-1.5 font-bold">Are you sure?</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onDeleteStory(story.id);
+                                setStoryIdToDeleteConfirm(null);
+                              }}
+                              className="px-2 py-1 rounded bg-[#C0392B] text-white font-extrabold hover:bg-red-700 text-[10px] cursor-pointer"
+                            >
+                              Yes, Delete
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setStoryIdToDeleteConfirm(null)}
+                              className="px-2 py-1 rounded bg-zinc-200 text-zinc-700 font-bold hover:bg-zinc-300 text-[10px] cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setStoryIdToDeleteConfirm(story.id)}
+                            className="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-[#C0392B] border border-red-100 px-3 py-1.5 rounded-lg font-bold transition-all shadow-2xs cursor-pointer"
+                            title="Administrator Override: Delete Chronicle"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" /> Delete
+                          </button>
+                        )
+                      )}
+                    </div>
                     <span className="flex items-center gap-1 font-mono">
                       <Calendar className="h-3.5 w-3.5" /> Filed: {story.dateAdded || 'Archived'}
                     </span>

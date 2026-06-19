@@ -35,6 +35,7 @@ export interface Story {
   decisionMade: 'Stayed' | 'Left' | 'Married' | 'Moved Together' | 'Other';
   currentOutcome: 'Still Together' | 'Married' | 'Engaged' | 'Separated' | 'Divorced' | 'Complicated';
   regretScore: number; // 1-10
+  regretType?: 'Past' | 'Current';
   wouldDoAgain: 'Yes' | 'No' | 'Not Sure';
   fullStory: string;
   timeline: TimelineNode[];

@@ -210,7 +210,7 @@ export default function ExploreScreen({
           ) : (
             <div className="py-12 text-center bg-[#FAF8F2] rounded-xl my-4">
               <AlertTriangle className="h-8 w-8 text-zinc-400 mx-auto mb-2" />
-              <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">No matching dossiers in offline index</p>
+              <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">No matching stories or cases in offline index</p>
               <p className="text-[10px] text-zinc-400 mt-1">Try resetting filter tabs or checking for typos.</p>
             </div>
           )}

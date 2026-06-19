@@ -7,7 +7,8 @@ import {
   getDocs, 
   query, 
   where,
-  orderBy
+  orderBy,
+  deleteDoc
 } from "firebase/firestore";
 import { Story, StoryComment, UserProfile } from "../types";
 
@@ -82,6 +83,16 @@ export async function fetchStoriesFromFirestore(): Promise<Story[]> {
     return stories;
   } catch (error) {
     handleFirestoreError(error, OperationType.LIST, pathForGetDocs);
+  }
+}
+
+export async function deleteStoryFromFirestore(storyId: string): Promise<void> {
+  const pathForDelete = `stories/${storyId}`;
+  try {
+    const storyRef = doc(db, "stories", storyId);
+    await deleteDoc(storyRef);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, pathForDelete);
   }
 }
 
