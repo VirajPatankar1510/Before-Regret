@@ -10,7 +10,7 @@ import {
   orderBy,
   deleteDoc
 } from "firebase/firestore";
-import { Story, StoryComment, UserProfile } from "../types";
+import { Story, StoryComment, UserProfile, Question } from "../types";
 
 export enum OperationType {
   CREATE = 'create',
@@ -148,5 +148,31 @@ export async function fetchUserProfileFromFirestore(uid: string): Promise<UserPr
     return null;
   } catch (error) {
     handleFirestoreError(error, OperationType.GET, pathForGetDoc);
+  }
+}
+
+// Advice Requests / Questions
+export async function saveQuestionToFirestore(question: Question): Promise<void> {
+  const pathForWrite = `questions/${question.slug}`;
+  try {
+    const questionRef = doc(db, "questions", question.slug);
+    await setDoc(questionRef, question);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, pathForWrite);
+  }
+}
+
+export async function fetchQuestionsFromFirestore(): Promise<Question[]> {
+  const pathForGetDocs = "questions";
+  try {
+    const questionsCol = collection(db, "questions");
+    const snapshot = await getDocs(questionsCol);
+    const questions: Question[] = [];
+    snapshot.forEach((snapshotDoc) => {
+      questions.push(snapshotDoc.data() as Question);
+    });
+    return questions;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, pathForGetDocs);
   }
 }

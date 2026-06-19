@@ -40,7 +40,9 @@ import {
   fetchCommentsFromFirestore, 
   saveUserProfileToFirestore, 
   fetchUserProfileFromFirestore,
-  deleteStoryFromFirestore
+  deleteStoryFromFirestore,
+  saveQuestionToFirestore,
+  fetchQuestionsFromFirestore
 } from './lib/firestoreService';
 
 // RESTful Route Pathname Helpers for Clean Semantic Dynamic pSEO
@@ -376,11 +378,30 @@ export default function App() {
       console.error("Firestore comments subscription error: ", error);
     });
 
+    // 4. Real-Time Subscription to Questions / Advice Requests
+    const questionsCol = collection(db, "questions");
+    const unsubscribeQuestions = onSnapshot(questionsCol, (snapshot) => {
+      const fsQuestions: Question[] = [];
+      snapshot.forEach((snapDoc) => {
+        fsQuestions.push(snapDoc.data() as Question);
+      });
+      setStore(prev => {
+        const combined = [...fsQuestions, ...prev.questions];
+        const uniqueQuestions = combined.filter((q, idx, self) => 
+          self.findIndex(t => t.slug === q.slug) === idx
+        );
+        return { ...prev, questions: uniqueQuestions };
+      });
+    }, (error) => {
+      console.error("Firestore questions subscription error: ", error);
+    });
+
     // Cleanup all subscriptions on unmount
     return () => {
       unsubscribeAuth();
       unsubscribeStories();
       unsubscribeComments();
+      unsubscribeQuestions();
     };
   }, []);
 
@@ -1013,17 +1034,27 @@ export default function App() {
       if (idx === -1) return prev;
 
       const updatedQuestions = [...prev.questions];
-      const question = updatedQuestions[idx];
+      const question = { ...updatedQuestions[idx] };
 
       const optIdx = question.pollOptions.findIndex(o => o.text === optionText);
       if (optIdx !== -1) {
-        question.pollOptions[optIdx].votes += 1;
+        const updatedPoll = [...question.pollOptions];
+        updatedPoll[optIdx] = { ...updatedPoll[optIdx], votes: updatedPoll[optIdx].votes + 1 };
+        question.pollOptions = updatedPoll;
       }
 
-      return {
+      updatedQuestions[idx] = question;
+
+      saveQuestionToFirestore(question).catch(err => {
+        console.error("Firestore poll vote save error:", err);
+      });
+
+      const newState = {
         ...prev,
         questions: updatedQuestions
       };
+      saveState(newState);
+      return newState;
     });
 
     setUserVotedQuestions(prev => ({ ...prev, [slug]: optionText }));
@@ -1049,6 +1080,10 @@ export default function App() {
 
       question.answers = [newAnswer, ...question.answers];
       updatedQuestions[idx] = question;
+
+      saveQuestionToFirestore(question).catch(err => {
+        console.error("Firestore advice answer save error:", err);
+      });
 
       const newState = {
         ...prev,
@@ -1087,6 +1122,10 @@ export default function App() {
       question.answers[ansIdx] = answer;
       updatedQuestions[qIdx] = question;
 
+      saveQuestionToFirestore(question).catch(err => {
+        console.error("Firestore reply comment save error:", err);
+      });
+
       const newState = {
         ...prev,
         questions: updatedQuestions
@@ -1115,6 +1154,10 @@ export default function App() {
       question.answers = [...question.answers];
       question.answers[ansIdx] = answer;
       updatedQuestions[qIdx] = question;
+
+      saveQuestionToFirestore(question).catch(err => {
+        console.error("Firestore answer upvote save error:", err);
+      });
 
       const newState = {
         ...prev,
@@ -1151,6 +1194,10 @@ export default function App() {
       pollOptions: formattedPollOptions,
       answers: []
     };
+
+    saveQuestionToFirestore(questionObj).catch(err => {
+      console.error("Firestore custom question create error:", err);
+    });
 
     setStore(prev => {
       const updatedQuestions = [questionObj, ...prev.questions];
