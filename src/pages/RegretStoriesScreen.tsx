@@ -318,7 +318,7 @@ export default function RegretStoriesScreen({
 
                   {/* Timeline Text Narrative */}
                   <div className="space-y-2">
-                    <p className={`text-xs sm:text-sm text-[#374151] leading-relaxed font-serif pl-3 border-l-2 border-[#C9A227] bg-[#FAF8F2]/50 italic pr-2 py-2 rounded-r-xl ${!isExpanded ? 'line-clamp-4' : ''}`}>
+                    <p className={`text-base text-[#374151] leading-relaxed font-serif pl-3 border-l-2 border-[#C9A227] bg-[#FAF8F2]/50 not-italic pr-2 py-2 rounded-r-xl ${!isExpanded ? 'line-clamp-4' : ''}`}>
                       "{story.fullStory}"
                     </p>
                     

@@ -108,7 +108,7 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
         {/* Topic Title */}
         <div className="space-y-1.5">
           <label className="text-xs font-black uppercase text-slate-350 tracking-wider flex items-center justify-between">
-            <span>What's Your Dilemma / Dilemma Summary Title? <span className="text-red-400">*</span></span>
+            <span className="text-white">What's Your Dilemma / Dilemma Summary Title? <span className="text-red-400">*</span></span>
             <span className="text-[10px] text-zinc-500 font-mono font-normal">Min 15 chars</span>
           </label>
           <input
@@ -125,7 +125,7 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
           
           {/* Category */}
           <div className="space-y-1.5">
-            <label className="text-xs font-black uppercase text-slate-350 tracking-wider">
+            <label className="text-xs font-black uppercase text-white tracking-wider">
               Primary Advice category <span className="text-red-400">*</span>
             </label>
             <select
@@ -158,7 +158,7 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
         {/* Story details */}
         <div className="space-y-1.5">
           <label className="text-xs font-black uppercase text-slate-350 tracking-wider flex items-center justify-between">
-            <span>Dilemma Context & Timeline Details <span className="text-red-400">*</span></span>
+            <span className="text-white">Dilemma Context & Timeline Details <span className="text-red-400">*</span></span>
             <span className="text-[10px] text-zinc-500 font-mono font-normal">Min 50 chars</span>
           </label>
           <textarea
@@ -174,10 +174,10 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
         {/* Poll Options */}
         <div className="space-y-3 border-t border-[#30363D]/40 pt-4">
           <div>
-            <span className="text-xs font-black uppercase text-slate-350 tracking-wider flex items-center gap-1">
+            <span className="text-xs font-black uppercase text-white tracking-wider flex items-center gap-1">
               <Sparkles className="h-3 w-3 text-purple-400" /> Build Advice Poll Survey
             </span>
-            <p className="text-[10px] text-zinc-500">Provide options that the public can click dynamically to guide your outcome choice.</p>
+            <p className="text-[10px] text-zinc-400">Provide options that the public can click dynamically to guide your outcome choice.</p>
           </div>
 
           <div className="space-y-2">
