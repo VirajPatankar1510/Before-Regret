@@ -117,7 +117,7 @@ export default function StoryCard({
             <Globe className="h-3 w-3" /> {story.country}
           </button>
           <span>•</span>
-          <span>Duration: {story.relationshipDuration}</span>
+          <span>{story.regretType === 'Current' ? 'Ongoing Since' : 'Duration'}: {story.relationshipDuration}</span>
         </div>
       </div>
 
@@ -231,11 +231,20 @@ export default function StoryCard({
               <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border ${getRegretColor(story.regretScore)}`}>
                 Regret: {story.regretScore}/10
               </span>
+              {story.regretType && (
+                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border uppercase tracking-wider ${
+                  story.regretType === 'Current' 
+                    ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' 
+                    : 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
+                }`}>
+                  {story.regretType} Regret
+                </span>
+              )}
             </div>
           </div>
 
           {/* Full Body Text */}
-          <div className="mt-4 text-xs sm:text-sm text-neutral-200 leading-relaxed whitespace-pre-wrap pl-1 font-serif max-w-3xl">
+          <div className="mt-4 text-xs sm:text-sm text-[#3c3c3c] leading-relaxed whitespace-pre-wrap pl-1 font-serif max-w-3xl">
             {story.fullStory}
           </div>
         </>
@@ -247,7 +256,7 @@ export default function StoryCard({
           <button
             key={t}
             onClick={() => onSelectTag(t)}
-            className="text-[10px] font-semibold text-[#AAB2C0] bg-[#30363D]/30 border border-[#30363D] hover:border-[#4F8CFF] hover:text-white px-2 py-0.5 rounded-md transition-colors"
+            className="text-[10px] font-semibold text-zinc-600 bg-white border border-[#E5E7EB] hover:border-[#4F8CFF] hover:text-[#4F8CFF] px-2 py-0.5 rounded-md transition-colors"
           >
             #{t}
           </button>

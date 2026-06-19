@@ -39,7 +39,8 @@ import {
   saveCommentToFirestore, 
   fetchCommentsFromFirestore, 
   saveUserProfileToFirestore, 
-  fetchUserProfileFromFirestore 
+  fetchUserProfileFromFirestore,
+  deleteStoryFromFirestore
 } from './lib/firestoreService';
 
 // RESTful Route Pathname Helpers for Clean Semantic Dynamic pSEO
@@ -346,15 +347,16 @@ export default function App() {
       snapshot.forEach((snapDoc) => {
         fsStories.push(snapDoc.data() as Story);
       });
-      if (fsStories.length > 0) {
-        setStore(prev => {
-          const combined = [...fsStories, ...prev.stories];
-          const uniqueStories = combined.filter((s, idx, self) => 
-            self.findIndex(t => t.id === s.id) === idx
-          );
-          return { ...prev, stories: uniqueStories };
-        });
-      }
+      setStore(prev => {
+        // Keep ONLY local preseeded stories that do not start with 'usr_'
+        const preseededStories = prev.stories.filter(s => !s.id.startsWith('usr_'));
+        // Standard user-submitted stories from Firestore are merged cleanly
+        const combined = [...fsStories, ...preseededStories];
+        const uniqueStories = combined.filter((s, idx, self) => 
+          self.findIndex(t => t.id === s.id) === idx
+        );
+        return { ...prev, stories: uniqueStories };
+      });
     }, (error) => {
       console.error("Firestore stories subscription error: ", error);
     });
@@ -511,39 +513,109 @@ export default function App() {
     };
 
     await saveCommentToFirestore(newComment);
-    setComments(prev => [...prev, newComment]);
+    setComments(prev => {
+      const filtered = prev.filter(c => c.id !== newComment.id);
+      return [...filtered, newComment];
+    });
     showToast("💬 Response advice registered successfully!");
   };
 
 
   const handleCaseRetrieve = (caseNum: string) => {
-    const trimmed = caseNum.trim().toUpperCase();
+    const trimmed = caseNum.trim().toUpperCase().replace(/\s+/g, '');
     if (!trimmed) return;
 
-    // Search court cases first
-    const foundCourt = store.courtCases.find(
-      c => c.caseNumber?.toUpperCase() === trimmed || c.slug?.toUpperCase() === trimmed || trimmed.includes(c.caseNumber?.toUpperCase() || '---')
+    // Direct exact matches first
+    const exactCourt = store.courtCases.find(
+      c => c.caseNumber?.toUpperCase() === trimmed || c.slug?.toUpperCase() === trimmed
     );
-
-    if (foundCourt) {
-      setScreen({ type: 'court', slug: foundCourt.slug });
-      showToast(`⚖️ Court Case ${foundCourt.caseNumber} retrieved successfully!`);
+    if (exactCourt) {
+      setScreen({ type: 'court', slug: exactCourt.slug });
+      showToast(`⚖️ Court Case ${exactCourt.caseNumber} retrieved successfully!`);
       return;
     }
 
-    // Search stories
-    const foundStory = store.stories.find(
-      s => s.caseNumber?.toUpperCase() === trimmed || s.id?.toUpperCase() === trimmed || trimmed.includes(s.caseNumber?.toUpperCase() || '---')
+    const exactStory = store.stories.find(
+      s => s.caseNumber?.toUpperCase() === trimmed || s.id?.toUpperCase() === trimmed
     );
-
-    if (foundStory) {
-      setScreen({ type: 'situation', slug: foundStory.situationSlug });
-      setHighlightedStoryId(foundStory.id);
-      showToast(`📂 Chronicle ${foundStory.caseNumber} retrieved! viewing inside folder.`);
+    if (exactStory) {
+      setScreen({ type: 'situation', slug: exactStory.situationSlug });
+      setHighlightedStoryId(exactStory.id);
+      showToast(`📂 Chronicle ${exactStory.caseNumber} retrieved! viewing inside folder.`);
       
       // Attempt smooth scroll
       setTimeout(() => {
-        const element = document.getElementById(`story-${foundStory.id}`);
+        const element = document.getElementById(`story-${exactStory.id}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500);
+      return;
+    }
+
+    // Now do smart fuzzy/shorthand matches
+    // E.g., someone types "S1234", "C2001", "1234", "CASE-S1234", "CASE-C2001"
+    const cleaned = trimmed.replace('CASE-', ''); // Remove CASE- prefix if present. e.g. "S1234", "C2001", "1234"
+    
+    // If it starts with S or is numeric and corresponds to stories (since preseeded stories are S1001-S1030 vs court C2001-C2010 etc)
+    const isStoryPattern = cleaned.startsWith('S') || (/^\d+$/.test(cleaned) && parseInt(cleaned, 10) < 2000);
+    const isCourtPattern = cleaned.startsWith('C') || (/^\d+$/.test(cleaned) && parseInt(cleaned, 10) >= 2000);
+
+    const numericPart = cleaned.replace(/^[SC]/, ''); // e.g. "1234"
+
+    if (isCourtPattern) {
+      const foundCourt = store.courtCases.find(c => {
+        const cNumClean = (c.caseNumber || '').toUpperCase().replace('CASE-', '').replace('C', '');
+        return cNumClean === numericPart;
+      });
+      if (foundCourt) {
+        setScreen({ type: 'court', slug: foundCourt.slug });
+        showToast(`⚖️ Court Case ${foundCourt.caseNumber} retrieved successfully!`);
+        return;
+      }
+    }
+
+    if (isStoryPattern) {
+      const foundStory = store.stories.find(s => {
+        const sNumClean = (s.caseNumber || '').toUpperCase().replace('CASE-', '').replace('S', '');
+        return sNumClean === numericPart;
+      });
+      if (foundStory) {
+        setScreen({ type: 'situation', slug: foundStory.situationSlug });
+        setHighlightedStoryId(foundStory.id);
+        showToast(`📂 Chronicle ${foundStory.caseNumber} retrieved! viewing inside folder.`);
+        
+        // Attempt smooth scroll
+        setTimeout(() => {
+          const element = document.getElementById(`story-${foundStory.id}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 500);
+        return;
+      }
+    }
+
+    // Fallback: search any case containing the input
+    const fallbackCourt = store.courtCases.find(
+      c => c.caseNumber?.toUpperCase().includes(cleaned) || c.title.toLowerCase().includes(cleaned.toLowerCase())
+    );
+    if (fallbackCourt) {
+      setScreen({ type: 'court', slug: fallbackCourt.slug });
+      showToast(`⚖️ Court Case ${fallbackCourt.caseNumber} retrieved successfully!`);
+      return;
+    }
+
+    const fallbackStory = store.stories.find(
+      s => s.caseNumber?.toUpperCase().includes(cleaned) || s.title.toLowerCase().includes(cleaned.toLowerCase())
+    );
+    if (fallbackStory) {
+      setScreen({ type: 'situation', slug: fallbackStory.situationSlug });
+      setHighlightedStoryId(fallbackStory.id);
+      showToast(`📂 Chronicle ${fallbackStory.caseNumber} retrieved!`);
+      
+      setTimeout(() => {
+        const element = document.getElementById(`story-${fallbackStory.id}`);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
@@ -565,7 +637,13 @@ export default function App() {
   };
   const [darkMode, setDarkMode] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [newlyLodgedCase, setNewlyLodgedCase] = useState<{ title: string; caseNumber: string; type: 'story' | 'court' } | null>(null);
+  const [newlyLodgedCase, setNewlyLodgedCase] = useState<{ 
+    title: string; 
+    caseNumber: string; 
+    type: 'story' | 'court';
+    id?: string;
+    slug?: string;
+  } | null>(null);
   const [highlightedStoryId, setHighlightedStoryId] = useState<string | null>(null);
 
   // Keep track of what cases and polls the user has already voted on
@@ -669,7 +747,10 @@ export default function App() {
     await saveStoryToFirestore(newStory);
 
     setStore(prev => {
-      const updatedStories = [newStory, ...prev.stories];
+      const combined = [newStory, ...prev.stories];
+      const updatedStories = combined.filter((s, idx, self) => 
+        self.findIndex(t => t.id === s.id) === idx
+      );
       
       const updatedUser: UserProfile = {
         ...prev.user,
@@ -697,8 +778,7 @@ export default function App() {
       };
     });
 
-    setNewlyLodgedCase({ title: newStory.title, caseNumber: caseNumber, type: 'story' });
-    showToast(`🎉 Chronicle Registered successfully under Case Key: ${caseNumber}!`);
+    showToast(`🎉 Your regret chronicle was successfully submitted to the registry.`);
   };
 
   const handleVoteHelpful = (storyId: string) => {
@@ -918,7 +998,12 @@ export default function App() {
       courtCases: [newCase, ...prev.courtCases]
     }));
 
-    setNewlyLodgedCase({ title: newCase.title, caseNumber: caseNumber, type: 'court' });
+    setNewlyLodgedCase({ 
+      title: newCase.title, 
+      caseNumber: caseNumber, 
+      type: 'court',
+      slug: newCase.slug
+    });
     showToast(`⚖️ Court case registered successfully under Case Key: ${caseNumber}!`);
   };
 
@@ -1081,12 +1166,19 @@ export default function App() {
   };
 
   const handleDeleteStory = (storyId: string) => {
+    // Delete from Firestore storage
+    deleteStoryFromFirestore(storyId).catch(err => {
+      console.error("Firestore story delete error:", err);
+    });
+
     setStore(prev => {
       const updatedStories = prev.stories.filter(s => s.id !== storyId);
-      return {
+      const newState = {
         ...prev,
         stories: updatedStories
       };
+      saveState(newState);
+      return newState;
     });
     showToast("⚖️ Chronicle story post has been permanently expunged by administrator.");
   };
@@ -1103,10 +1195,12 @@ export default function App() {
         }
         return s;
       });
-      return {
+      const newState = {
         ...prev,
         stories: updatedStories
       };
+      saveState(newState);
+      return newState;
     });
     showToast("✍️ Chronicle story post updated successfully by administrator.");
   };
@@ -1114,10 +1208,12 @@ export default function App() {
   const handleDeleteCourtCase = (slug: string) => {
     setStore(prev => {
       const updatedCases = prev.courtCases.filter(c => c.slug !== slug);
-      return {
+      const newState = {
         ...prev,
         courtCases: updatedCases
       };
+      saveState(newState);
+      return newState;
     });
     showToast("⚖️ Court case trial has been permanently expunged by administrator.");
   };
@@ -1133,10 +1229,12 @@ export default function App() {
         }
         return c;
       });
-      return {
+      const newState = {
         ...prev,
         courtCases: updatedCases
       };
+      saveState(newState);
+      return newState;
     });
     showToast("⚖️ Juror argument has been permanently expunged by administrator.");
   };
@@ -1144,10 +1242,12 @@ export default function App() {
   const handleDeleteQuestion = (slug: string) => {
     setStore(prev => {
       const updatedQuestions = prev.questions.filter(q => q.slug !== slug);
-      return {
+      const newState = {
         ...prev,
         questions: updatedQuestions
       };
+      saveState(newState);
+      return newState;
     });
     showToast("⚖️ Survival Q&A thread has been permanently expunged by administrator.");
   };
@@ -1163,10 +1263,12 @@ export default function App() {
         }
         return q;
       });
-      return {
+      const newState = {
         ...prev,
         questions: updatedQuestions
       };
+      saveState(newState);
+      return newState;
     });
     showToast("⚖️ Survivor advice answer has been permanently expunged by administrator.");
   };
@@ -1390,6 +1492,8 @@ export default function App() {
             onVoteHelpful={handleVoteHelpful}
             onSubmitStory={handleAddStory}
             setScreen={setScreen}
+            isAdmin={isAdmin}
+            onDeleteStory={handleDeleteStory}
           />
         )}
 
@@ -1612,18 +1716,23 @@ export default function App() {
                 const temp = newlyLodgedCase;
                 setNewlyLodgedCase(null);
                 if (temp.type === 'story') {
-                  const targetStory = store.stories.find(s => s.caseNumber === temp.caseNumber);
-                  setScreen({ type: 'situation', slug: targetStory?.situationSlug || 'boyfriend-doesnt-want-marriage' });
-                  if (targetStory) {
-                    setHighlightedStoryId(targetStory.id);
+                  setScreen({ type: 'situation', slug: temp.slug || 'boyfriend-doesnt-want-marriage' });
+                  if (temp.id) {
+                    setHighlightedStoryId(temp.id);
+                    setTimeout(() => {
+                      const element = document.getElementById(`story-${temp.id}`);
+                      if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }
+                    }, 600);
                   }
                 } else {
-                  setScreen({ type: 'court', slug: store.courtCases.find(c => c.caseNumber === temp.caseNumber)?.slug || 'court_list' });
+                  setScreen({ type: 'court', slug: temp.slug || 'court_list' });
                 }
               }}
-              className="w-full py-2 rounded-xl bg-gradient-to-r from-[#4F8CFF] to-indigo-600 hover:from-[#4F8CFF]/90 hover:to-indigo-600/90 text-xs font-bold text-white transition-all uppercase tracking-wider"
+              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-xs font-black text-white transition-all uppercase tracking-wider shadow-md hover:shadow-lg cursor-pointer"
             >
-              Enter Case Dossier
+              Go to My Submitted Case Dossier ➔
             </button>
           </div>
         </div>

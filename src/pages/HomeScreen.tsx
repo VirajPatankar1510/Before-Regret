@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Search, Flame, AlertTriangle, ShieldCheck, Heart, Sparkles, MessageSquare, ChevronRight, TrendingUp, Gavel, Globe, Users, Clock, HelpCircle, Compass, BarChart3, Star, ArrowRight } from 'lucide-react';
 import { Situation, Story, CourtCase, Question } from '../types';
 import { MOST_REGRETTED_DECISIONS, MOST_SUCCESSFUL_DECISIONS, POPULAR_SEARCHES, PRESEEDED_SITUATIONS } from '../data/mockData';
-import DecisionalCompass from '../components/DecisionalCompass';
 
 interface HomeScreenProps {
   situations: Situation[];
@@ -15,25 +14,18 @@ interface HomeScreenProps {
 
 export default function HomeScreen({ situations, courtCases, questions, latestStories, setScreen, onCaseRetrieve }: HomeScreenProps) {
   const [searchInput, setSearchInput] = useState('');
-  const [myCases, setMyCases] = useState<{ caseNumber: string; title: string; slug?: string; situationSlug?: string; type: 'story' | 'court' }[]>(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem('beforeregret_my_cases');
-        return saved ? JSON.parse(saved) : [];
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return [];
-  });
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const query = searchInput.trim();
     if (!query) return;
     
-    // Intercept Case Reference IDs typed in landing search bar
-    if ((query.toUpperCase().startsWith('CASE-') || /^[SC]\d{4}$/i.test(query)) && onCaseRetrieve) {
+    // Intercept Case Reference IDs typed in landing search bar (e.g. CASE-S1234, S1234, C2002, 8583)
+    const isCaseQuery = query.toUpperCase().startsWith('CASE-') || 
+                        /^[SC]\d+$/i.test(query) || 
+                        (/^\d+$/.test(query) && query.length >= 4);
+
+    if (isCaseQuery && onCaseRetrieve) {
       onCaseRetrieve(query);
       setSearchInput('');
       return;
@@ -127,85 +119,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
 
       </section>
 
-      {/* SECTION 1.5: 🔒 YOUR DEVICE SECURE CASE REGISTRY */}
-      {myCases.length > 0 && (
-        <section className="space-y-4 animate-slideIn">
-          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-[#2E7D32]" />
-              <div>
-                <h2 className="text-base sm:text-lg font-bold text-[#24324A] flex items-center gap-1.5 uppercase tracking-wider font-sans">
-                  🔒 Private Dispute Registry
-                </h2>
-                <p className="text-xs text-[#6B7280]">
-                  Cases created on this browser. These are saved completely offline inside your browser for premium secrecy.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => {
-                if (window.confirm("Clear local device case index? This will forget list logs on this screen but does not delete them online.")) {
-                  localStorage.removeItem('beforeregret_my_cases');
-                  setMyCases([]);
-                }
-              }}
-              className="text-[10px] text-red-600 hover:text-red-700 uppercase tracking-widest font-black transition-colors"
-            >
-              Forget List
-            </button>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {myCases.map(item => (
-              <div 
-                key={item.caseNumber}
-                className="bg-white border-2 border-[#E5E7EB] hover:border-[#C9A227]/45 rounded-2xl p-4 flex flex-col justify-between transition-all shadow-sm hover:shadow-md group scale-100 active:scale-[0.99] cursor-pointer"
-                onClick={() => {
-                  if (item.type === 'story') {
-                    setScreen({ type: 'situation', slug: item.situationSlug });
-                    if (onCaseRetrieve) {
-                      onCaseRetrieve(item.caseNumber);
-                    }
-                  } else {
-                    setScreen({ type: 'court', slug: item.slug });
-                  }
-                }}
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2 text-[10px] font-bold">
-                    <span className="font-mono text-[#C9A227] bg-[#F7E9B4] px-2.5 py-0.5 rounded-lg tracking-wider border border-[#E8D79B]">
-                      {item.caseNumber}
-                    </span>
-                    <span className="uppercase text-[#6B7280]">
-                      {item.type === 'court' ? '⚖️ Jury Court' : '📂 Chronicle'}
-                    </span>
-                  </div>
-                  <h3 className="text-xs font-bold text-[#24324A] mt-3 group-hover:text-[#C9A227] transition-colors leading-relaxed line-clamp-2">
-                    {item.title}
-                  </h3>
-                </div>
-
-                <div className="flex items-center justify-between border-t border-[#ECECEC] mt-4 pt-2.5 text-[10px] font-bold text-[#24324A] group-hover:translate-x-0.5 transition-transform">
-                  <span>Retrieve Dossier</span>
-                  <ArrowRight className="h-3 w-3" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* NEW: PERSONALIZED MOOD CONCERT / INTERACTIVE DECISION COMPASS */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-[#C9A227] animate-pulse" />
-          <div>
-            <h2 className="text-lg sm:text-xl font-bold text-[#24324A] leading-snug">Personalized Outcome Diagnostic</h2>
-            <p className="text-xs text-[#6B7280]">Not sure what dossier applies to you? Navigate our archives dynamically using our advisor engine.</p>
-          </div>
-        </div>
-        <DecisionalCompass setScreen={setScreen} stories={latestStories} />
-      </section>
 
       {/* SECTION 3: TRENDING SITUATIONS CARDS */}
       <section className="space-y-4">
