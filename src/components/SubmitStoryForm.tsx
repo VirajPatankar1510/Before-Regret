@@ -2,6 +2,70 @@ import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Check, Sparkles, FileText, AlertCircle, RefreshCw, Calendar, Eye, Heart, ShieldCheck } from 'lucide-react';
 import { Story, TimelineNode } from '../types';
 
+export interface SituationOption {
+  category: string; // The popular search text option
+  slug: string; // The slug corresponding with the predefined situation
+  name: string; // The readable display name
+  listCategory: 'Cheating' | 'Marriage' | 'Long Distance' | 'Children & Family' | 'Careers & Moving' | 'Ultimatums' | 'Red Flags';
+}
+
+export const SITUATION_OPTIONS: SituationOption[] = [
+  {
+    category: "Stayed after cheating",
+    slug: "stayed-after-cheating",
+    name: "Stayed After Cheating",
+    listCategory: "Cheating"
+  },
+  {
+    category: "Long distance relationship",
+    slug: "long-distance-relationship",
+    name: "Long Distance Relationship",
+    listCategory: "Long Distance"
+  },
+  {
+    category: "Partner doesn't want kids",
+    slug: "partner-doesnt-want-kids",
+    name: "Partner Doesn't Want Kids",
+    listCategory: "Children & Family"
+  },
+  {
+    category: "Different religion marriage",
+    slug: "different-religion-marriage",
+    name: "Different Religion Marriage",
+    listCategory: "Marriage"
+  },
+  {
+    category: "Marriage ultimatum",
+    slug: "marriage-ultimatum",
+    name: "Marriage Ultimatum",
+    listCategory: "Ultimatums"
+  },
+  {
+    category: "Moved for love",
+    slug: "moved-for-love",
+    name: "Moved For Love",
+    listCategory: "Careers & Moving"
+  },
+  {
+    category: "Ignored red flags",
+    slug: "ignored-red-flags",
+    name: "Ignored Red Flags",
+    listCategory: "Red Flags"
+  },
+  {
+    category: "Boyfriend doesn't want marriage",
+    slug: "boyfriend-doesnt-want-marriage",
+    name: "Boyfriend Doesn't Want Marriage",
+    listCategory: "Marriage"
+  },
+  {
+    category: "Other relationship issue",
+    slug: "custom-situation",
+    name: "Other Custom Issue",
+    listCategory: "Marriage"
+  }
+];
+
 interface SubmitStoryFormProps {
   onClose: () => void;
   onSubmit: (story: Story) => void;
@@ -12,7 +76,7 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Form State
-  const [situationCategory, setSituationCategory] = useState('Marriage');
+  const [situationCategory, setSituationCategory] = useState('Stayed after cheating');
   const [customSituation, setCustomSituation] = useState('');
   const [age, setAge] = useState<number>(26);
   const [country, setCountry] = useState('United States');
@@ -99,8 +163,18 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
     const newStory: Story = {
       id: 'usr_' + Date.now().toString(),
       title: title.trim(),
-      situationSlug: customSituation.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '') || 'custom-situation',
-      situationName: customSituation || `Dealing with ${situationCategory}`,
+      situationSlug: (() => {
+        if (customSituation.trim()) {
+          return customSituation.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+        }
+        const opt = SITUATION_OPTIONS.find(o => o.category === situationCategory);
+        return opt ? opt.slug : 'custom-situation';
+      })(),
+      situationName: (() => {
+        if (customSituation.trim()) return customSituation.trim();
+        const opt = SITUATION_OPTIONS.find(o => o.category === situationCategory);
+        return opt ? opt.name : `Dealing with ${situationCategory}`;
+      })(),
       age,
       gender,
       country,
@@ -117,7 +191,10 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
       dateAdded: new Date().toISOString().split('T')[0],
       updates: [],
       tags: [
-        situationCategory.toLowerCase(),
+        (() => {
+          const opt = SITUATION_OPTIONS.find(o => o.category === situationCategory);
+          return opt ? opt.listCategory.toLowerCase() : 'marriage';
+        })(),
         decisionMade.toLowerCase(),
         currentOutcome.toLowerCase(),
         regretType.toLowerCase() + '-regret'
@@ -157,7 +234,7 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
             <div>
               <span className="text-[10px] uppercase font-bold tracking-widest text-[#4F8CFF] font-mono">Step {step} of {totalSteps}</span>
               <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 font-serif">
-                <Sparkles className="h-4 w-4 text-[#F4B942]" /> Share Regret Chronicle
+                <Sparkles className="h-4 w-4 text-[#F4B942]" /> Share Regret Story
               </h2>
             </div>
             <button
@@ -192,16 +269,21 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {['Marriage', 'Cheating', 'Long Distance', 'Children & Family', 'Careers & Moving', 'Ultimatums', 'Red Flags'].map(cat => (
+                {SITUATION_OPTIONS.map(opt => (
                   <button
-                    key={cat}
+                    key={opt.category}
                     type="button"
-                    onClick={() => setSituationCategory(cat)}
-                    className={`rounded-xl border p-2.5 text-left text-xs font-semibold block transition-colors cursor-pointer ${
-                      situationCategory === cat ? 'bg-[#4F8CFF]/15 border-[#4F8CFF] text-white' : 'bg-[#0D1117] border-[#30363D] text-[#AAB2C0] hover:text-white hover:border-zinc-500'
+                    onClick={() => {
+                      setSituationCategory(opt.category);
+                      if (opt.slug !== 'custom-situation') {
+                        setCustomSituation('');
+                      }
+                    }}
+                    className={`rounded-xl border p-2 text-left text-[11px] font-semibold block leading-tight transition-all cursor-pointer ${
+                      situationCategory === opt.category ? 'bg-[#4F8CFF]/15 border-[#4F8CFF] text-white' : 'bg-[#0D1117] border-[#30363D] text-[#AAB2C0] hover:text-white hover:border-zinc-500'
                     }`}
                   >
-                    {cat}
+                    {opt.category}
                   </button>
                 ))}
               </div>
@@ -451,7 +533,7 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
             <div className="space-y-3 animate-fadeIn">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-white">Chronicle Narrative & Advice</h3>
+                  <h3 className="text-xs sm:text-sm font-bold text-white">Story Narrative & Advice</h3>
                   <p className="text-[10px] text-zinc-400">Share warning flags, family impacts or crucial takeaways for comparable peers.</p>
                 </div>
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded font-mono ${fullStory.trim().length >= 100 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-[#FF5D5D]'}`}>

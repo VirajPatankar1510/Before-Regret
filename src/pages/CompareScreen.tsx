@@ -232,7 +232,7 @@ export default function CompareScreen({ slug1, slug2, situations, setScreen }: C
         <Heart className="h-6 w-6 text-[#C9A227] mx-auto" />
         <h3 className="text-xs font-bold text-[#24324A] uppercase tracking-wider font-mono">Unbiased Survivor Experience Logging</h3>
         <p className="text-[11px] text-[#6B7280] leading-relaxed font-medium">
-          Both decisions carry severe long-term mental adjustments. Do not rush. Let peer logs of timeline chronicles guide your judgment. Write down your own outcome to backfill our secure ledger for other peer citizens.
+          Both decisions carry severe long-term mental adjustments. Do not rush. Let peer logs of timeline stories guide your judgment. Write down your own outcome to backfill our secure ledger for other peer citizens.
         </p>
       </div>
 

@@ -99,12 +99,9 @@ export default function StoryCard({
       {/* Header Info */}
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[#E5E7EB] pb-3 mb-4 text-xs text-[#6B7280]">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#24324A]/10 text-[#24324A]">
-            <User className="h-3.5 w-3.5" />
-          </span>
           <span className="font-semibold text-[#1F2937]">@{story.userName}</span>
           <span className="text-[10px] bg-[#24324A]/5 text-[#24324A] border border-[#24324A]/10 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-mono">
-             Chronicle: #{story.id.slice(0, 5)}
+             Story ID: #{story.id.slice(0, 5)}
           </span>
           {story.caseNumber && (
             <span className="text-[10px] bg-[#FFF8E1] text-[#C9A227] border border-[#E8D79B] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-mono font-bold">
@@ -342,7 +339,7 @@ export default function StoryCard({
           {/* Comment List */}
           {storyComments.length === 0 ? (
             <div className="text-center py-6 border border-dashed border-[#E5E7EB] rounded-xl text-zinc-400 bg-[#FAF8F2]">
-              <p className="text-xs font-medium text-[#6B7280]">No peer responses yet for this timeline chronicle.</p>
+              <p className="text-xs font-medium text-[#6B7280]">No peer responses yet for this timeline story.</p>
               <p className="text-[10px] text-zinc-500 mt-1">Be the first to provide helpful guidance or analyze their post-decision logic!</p>
             </div>
           ) : (

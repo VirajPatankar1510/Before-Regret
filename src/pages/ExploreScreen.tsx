@@ -8,6 +8,7 @@ interface ExploreScreenProps {
   courtCases?: CourtCase[];
   setScreen: (screen: { type: string; slug?: string }) => void;
   onCaseRetrieve?: (caseNum: string) => void;
+  initialSearchTerm?: string;
 }
 
 export default function ExploreScreen({ 
@@ -15,17 +16,18 @@ export default function ExploreScreen({
   stories = [], 
   courtCases = [], 
   setScreen,
-  onCaseRetrieve
+  onCaseRetrieve,
+  initialSearchTerm = ''
 }: ExploreScreenProps) {
-  const [filterType, setFilterType] = useState<'all' | 'chronicle' | 'trial'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 'story' | 'trial'>('all');
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
 
   // Combine both user timelines & court trials for unified indexing
   const indexedItems: {
     id: string;
     caseNumber?: string;
     title: string;
-    type: 'chronicle' | 'trial';
+    type: 'story' | 'trial';
     description: string;
     time: string;
     slug?: string;
@@ -41,7 +43,7 @@ export default function ExploreScreen({
       id: s.id,
       caseNumber: s.caseNumber || `CASE-S${s.id.slice(0, 4).toUpperCase()}`,
       title: s.title,
-      type: 'chronicle',
+      type: 'story',
       description: s.fullStory || '',
       time: s.dateAdded || 'Archived',
       slug: s.situationSlug,
@@ -121,13 +123,13 @@ export default function ExploreScreen({
               🔓 Public Cryptographic case Index
             </h2>
             <p className="text-[11px] text-[#6B7280] font-medium">
-              Index ledger of user-lodged relationship chronologies and trials. Completely anonymous and indexable for search engines.
+              Index ledger of user-lodged relationship stories and trials. Completely anonymous and indexable for search engines.
             </p>
           </div>
 
           {/* Quick Filter Controls */}
           <div className="flex items-center gap-1.5 self-start sm:self-center">
-            {(['all', 'chronicle', 'trial'] as const).map(type => (
+            {(['all', 'story', 'trial'] as const).map(type => (
               <button
                 key={type}
                 onClick={() => setFilterType(type)}
@@ -162,7 +164,7 @@ export default function ExploreScreen({
               <div
                 key={item.id}
                 onClick={() => {
-                  if (item.type === 'chronicle') {
+                  if (item.type === 'story') {
                     setScreen({ type: 'situation', slug: item.slug });
                     if (onCaseRetrieve) {
                       setTimeout(() => onCaseRetrieve(item.caseNumber || ''), 300);

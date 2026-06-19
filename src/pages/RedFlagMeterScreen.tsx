@@ -371,7 +371,7 @@ export default function RedFlagMeterScreen({
                 onClick={() => setIsSubmitOpen(!isSubmitOpen)}
                 className="bg-rose-500 hover:bg-rose-600 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1 hover:scale-[1.02] cursor-pointer shrink-0"
               >
-                <Plus className="h-4 w-4" /> Log Warning Sign
+                <Plus className="h-4 w-4" /> Check Your Situation
               </button>
             </div>
           </div>

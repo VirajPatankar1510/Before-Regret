@@ -78,7 +78,7 @@ export default function AdminPanel({ isAdmin, onToggleAdmin }: AdminPanelProps) 
                     Master override is **active**. Direct editing and item excision/deletion triggers are now injected inline on:
                   </p>
                   <ul className="list-disc pl-4 space-y-0.5 text-[10px] font-mono text-zinc-400">
-                    <li>Chronicle Story Posts</li>
+                    <li>User Story Posts</li>
                     <li>Jury Opinions & Arguments</li>
                     <li>Survival Q&A Answers</li>
                   </ul>
