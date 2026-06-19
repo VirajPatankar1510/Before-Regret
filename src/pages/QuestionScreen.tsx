@@ -13,6 +13,7 @@ interface QuestionProps {
   isAdmin?: boolean;
   onDeleteAnswer?: (qSlug: string, ansId: string) => void;
   onDeleteQuestion?: (qSlug: string) => void;
+  onDeleteAnswerComment?: (qSlug: string, ansId: string, commentId: string) => void;
 }
 
 export default function QuestionScreen({ 
@@ -25,7 +26,8 @@ export default function QuestionScreen({
   userVotedQuestions,
   isAdmin = false,
   onDeleteAnswer,
-  onDeleteQuestion
+  onDeleteQuestion,
+  onDeleteAnswerComment
 }: QuestionProps) {
   const [answerContent, setAnswerContent] = useState('');
   const [showQuestionDeleteConfirm, setShowQuestionDeleteConfirm] = useState(false);
@@ -279,7 +281,19 @@ export default function QuestionScreen({
                             <div key={comment.id} className="bg-[#FAF8F2] p-2 rounded-lg border border-[#E5E7EB] text-xs">
                               <div className="flex items-center justify-between text-[10px] text-zinc-400 mb-0.5 font-mono">
                                 <span className="font-bold text-[#1F2937]">@{comment.author}</span>
-                                <span>{comment.date}</span>
+                                <div className="flex items-center gap-1.5">
+                                  <span>{comment.date}</span>
+                                  {isAdmin && (
+                                    <button
+                                      type="button"
+                                      onClick={() => onDeleteAnswerComment?.(question.slug, ans.id, comment.id)}
+                                      className="bg-red-50 hover:bg-red-100 text-[#C0392B] border border-red-100 p-0.5 rounded transition-colors"
+                                      title="Moderator: Delete comment"
+                                    >
+                                      <Trash2 className="h-2.5 w-2.5" />
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                               <p className="text-[#374151] pl-0.5 font-sans leading-relaxed">{comment.text}</p>
                             </div>

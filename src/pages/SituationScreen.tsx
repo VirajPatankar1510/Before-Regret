@@ -30,6 +30,7 @@ interface SituationScreenProps {
   onEditStory?: (id: string, title: string, text: string) => void;
   comments?: StoryComment[];
   onAddComment?: (storyId: string, text: string) => void;
+  onDeleteComment?: (commentId: string) => void;
   currentUser?: any;
   onGoogleLogin?: () => void;
   highlightedStoryId?: string | null;
@@ -52,6 +53,7 @@ export default function SituationScreen({
   onEditStory,
   comments = [],
   onAddComment,
+  onDeleteComment,
   currentUser,
   onGoogleLogin,
   highlightedStoryId = null
@@ -287,6 +289,7 @@ export default function SituationScreen({
                   onEditStory={onEditStory}
                   comments={comments}
                   onAddComment={onAddComment}
+                  onDeleteComment={onDeleteComment}
                   currentUser={currentUser}
                   onGoogleLogin={onGoogleLogin}
                   highlighted={story.id === highlightedStoryId}

@@ -107,6 +107,16 @@ export async function saveCommentToFirestore(comment: StoryComment): Promise<voi
   }
 }
 
+export async function deleteCommentFromFirestore(commentId: string): Promise<void> {
+  const pathForDelete = `comments/${commentId}`;
+  try {
+    const commentRef = doc(db, "comments", commentId);
+    await deleteDoc(commentRef);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, pathForDelete);
+  }
+}
+
 export async function fetchCommentsFromFirestore(storyId?: string): Promise<StoryComment[]> {
   const pathForGetDocs = "comments";
   try {
