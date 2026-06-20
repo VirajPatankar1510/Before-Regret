@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Sparkles, Compass, HelpCircle, Heart, ShieldCheck, Gavel, Globe, Clock, PlusCircle, Bookmark, ArrowRight, ChevronRight, AlertTriangle, Monitor, RotateCcw, Share2, Info, X, BookOpen, Copy } from 'lucide-react';
+import { Sparkles, Compass, HelpCircle, Heart, ShieldCheck, Gavel, Globe, Clock, PlusCircle, Bookmark, ArrowRight, ChevronRight, AlertTriangle, Monitor, RotateCcw, Share2, Info, X, BookOpen, Copy, Plus } from 'lucide-react';
 
 // Reusable custom components
 import Navigation from './components/Navigation';
@@ -135,6 +135,7 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(() => {
     return localStorage.getItem('before_regret_admin_mode') === 'true';
   });
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
   // Dynamically update document title and URL parameters for SEO and native back/forward behaviors!
   useEffect(() => {
@@ -1136,7 +1137,7 @@ export default function App() {
     }
   };
 
-  const handleRegisterCourtCase = (caseData: { title: string; description: string; tags: string[] }) => {
+  const handleRegisterCourtCase = (caseData: { title: string; description: string; tags: string[]; deliberationDays: number }) => {
     const baseSlug = caseData.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -1163,7 +1164,9 @@ export default function App() {
         neither: 0
       },
       arguments: [],
-      tags: caseData.tags
+      tags: caseData.tags,
+      deliberationDays: caseData.deliberationDays || 3,
+      createdAt: new Date().toISOString()
     };
 
     // Save to local storage private list
@@ -1192,6 +1195,7 @@ export default function App() {
       slug: newCase.slug
     });
     showToast(`⚖️ Court case registered successfully under Case Key: ${caseNumber}!`);
+    setIsRegisterModalOpen(false);
 
     saveCourtCaseToFirestore(newCase).catch(err => {
       console.error("Error saving registered court case to Firestore:", err);
@@ -1609,52 +1613,80 @@ export default function App() {
 
         {currentScreen.type === 'court_list' && (
           <div className="space-y-6 pb-16 animate-fadeIn">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-                <Gavel className="h-6 w-6 text-[#F4B942]" /> Before Regret Court
-              </h1>
-              <p className="text-xs text-[#AAB2C0]">Step into our anonymous space. Review relationship evidence, defend sides, and cast peer perspective votes.</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#161B22] border border-[#30363D] p-5 sm:p-6 rounded-3xl shadow-sm">
+              <div className="space-y-1">
+                <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2" style={{ color: '#2c2c2c' }}>
+                  <Gavel className="h-6 w-6 text-[#F4B942]" /> Before Regret Court
+                </h1>
+                <p className="text-xs text-[#AAB2C0]">Step into our anonymous space. Review relationship evidence, defend sides, and cast peer perspective votes.</p>
+              </div>
+              <button
+                onClick={() => setIsRegisterModalOpen(true)}
+                className="shrink-0 bg-[#F4B942] hover:bg-[#E0A52D] text-[#0D1117] font-black text-xs uppercase tracking-wider px-5 py-3 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer font-sans"
+                id="open-register-case"
+              >
+                <Plus className="h-4 w-4" /> Submit New Case
+              </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Active Cases Grid */}
-              <div className="lg:col-span-2 space-y-4">
-                <h2 className="text-xs uppercase font-extrabold tracking-wider text-[#AAB2C0] px-1">
-                  Active Cases Under Deliberation ({store.courtCases.length})
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {store.courtCases.map(c => (
-                    <div
-                      key={c.slug}
-                      onClick={() => setScreen({ type: 'court', slug: c.slug })}
-                      className="rounded-2xl border border-[#30363D] bg-[#161B22] p-5 cursor-pointer hover:border-[#F4B942] transition-all hover:scale-[1.01] flex flex-col justify-between"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-[9px] uppercase font-mono font-bold text-[#F4B942] bg-[#F4B942]/10 px-2 py-0.5 rounded">
-                            {c.caseNumber || 'CASE-C2011'}
-                          </span>
-                          <span className="text-[9px] text-[#AAB2C0] font-mono">
-                            ⚖️ {(c.votes.me || 0) + (c.votes.partner || 0) + (c.votes.both || 0) + (c.votes.neither || 0)} votes
-                          </span>
-                        </div>
-                        <h3 className="text-sm font-bold text-white mt-1 leading-snug">"{c.title}"</h3>
-                        <p className="text-xs text-[#AAB2C0] line-clamp-3 leading-relaxed mt-1.5 font-serif">{c.description}</p>
+            <div className="space-y-4">
+              <h2 className="text-xs uppercase font-extrabold tracking-wider text-[#AAB2C0] px-1 flex items-center justify-between">
+                <span>Active Cases Under Deliberation ({store.courtCases.length})</span>
+                <span className="text-[10px] text-zinc-500 font-mono normal-case">Deliberation duration: 1 min to 14 days</span>
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {store.courtCases.map(c => (
+                  <div
+                    key={c.slug}
+                    onClick={() => setScreen({ type: 'court', slug: c.slug })}
+                    className="rounded-2xl border border-[#30363D] bg-[#161B22] p-5 cursor-pointer hover:border-[#F4B942] transition-all hover:scale-[1.01] flex flex-col justify-between shadow-sm animate-fadeIn"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[9px] uppercase font-mono font-bold text-[#F4B942] bg-[#F4B942]/10 px-2 py-0.5 rounded">
+                          {c.caseNumber || 'CASE-C2011'}
+                        </span>
+                        <span className="text-[9px] text-[#AAB2C0] font-mono">
+                          ⚖️ {(c.votes.me || 0) + (c.votes.partner || 0) + (c.votes.both || 0) + (c.votes.neither || 0)} votes
+                        </span>
                       </div>
-                      <div className="mt-4 border-t border-[#30363D]/45 pt-3 flex items-center justify-between text-[10px] text-zinc-500">
-                        <span>Cast Vote →</span>
-                        <span className="font-mono">{c.postTime}</span>
-                      </div>
+                      <h3 className="text-sm font-bold text-white mt-1 leading-snug">"{c.title}"</h3>
+                      <p className="text-xs text-[#AAB2C0] line-clamp-3 leading-relaxed mt-1.5 font-serif">{c.description}</p>
                     </div>
-                  ))}
+                    <div className="mt-4 border-t border-[#30363D]/45 pt-3 flex items-center justify-between text-[10px] text-zinc-500">
+                      <span className="text-[#F4B942] font-semibold">Cast Vote →</span>
+                      <span className="font-mono">{c.postTime}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* REGISTER MODAL OVERLAY */}
+            {isRegisterModalOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+                <div className="relative w-full max-w-2xl bg-[#161B22] border-2 border-[#30363D] rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4">
+                  <button
+                    onClick={() => setIsRegisterModalOpen(false)}
+                    className="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-[#30363D] transition-all cursor-pointer animate-pulse"
+                    id="close-registration-modal"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                  <div className="pr-8">
+                    <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                      <Gavel className="h-5 w-5 text-[#F4B942]" /> Submit Case to Court
+                    </h2>
+                    <p className="text-xs text-[#AAB2C0] mt-1 font-sans">
+                      Register your relationship dispute anonymously. Peers will deliberate, debate evidence, and deliver an objective perspective.
+                    </p>
+                  </div>
+                  <div className="pt-2">
+                    <RegisterCaseForm onSubmit={handleRegisterCourtCase} />
+                  </div>
                 </div>
               </div>
-
-              {/* Register Case Panel */}
-              <div className="space-y-4">
-                <RegisterCaseForm onSubmit={handleRegisterCourtCase} />
-              </div>
-            </div>
+            )}
           </div>
         )}
 

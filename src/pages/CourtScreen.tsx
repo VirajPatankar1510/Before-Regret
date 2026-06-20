@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gavel, Users, Clock, Vote, Check, ShieldAlert, Award, MessageSquare, Plus, ArrowLeft, Shield, Trash2 } from 'lucide-react';
+import { Gavel, Users, Clock, Vote, Check, ShieldAlert, Award, MessageSquare, Plus, ArrowLeft, Shield, Trash2, Calendar, Lock, Unlock, Download, Copy, ExternalLink, Sparkles, Share2, X } from 'lucide-react';
 import { CourtCase, CourtArgument } from '../types';
 
 interface CourtScreenProps {
@@ -27,6 +27,20 @@ export default function CourtScreen({
   const [selectedSide, setSelectedSide] = useState<'Me' | 'Partner' | 'Both' | 'Neither'>('Me');
   const [showCaseDeleteConfirm, setShowCaseDeleteConfirm] = useState(false);
 
+  const [now, setNow] = useState(new Date());
+  const [simExpired, setSimExpired] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [certificateUnlocked, setCertificateUnlocked] = useState(false);
+  
+
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const userVote = userVotedCases[courtCase.slug];
   const totalVotes = courtCase.votes.me + courtCase.votes.partner + courtCase.votes.both + courtCase.votes.neither;
 
@@ -44,6 +58,29 @@ export default function CourtScreen({
     ];
     list.sort((a,b) => b.val - a.val);
     return list[0].side;
+  };
+
+  // Check if case is real or pre-seeded mockup, and handle timer expired logic
+  const isRealCase = !!courtCase.createdAt;
+  const deliberationDays = courtCase.deliberationDays || 3;
+  const createdDate = courtCase.createdAt ? new Date(courtCase.createdAt) : null;
+  const expirationTime = createdDate ? (createdDate.getTime() + deliberationDays * 24 * 60 * 60 * 1000) : 0;
+  
+  const isExpired = !isRealCase || simExpired || (createdDate ? now.getTime() >= expirationTime : true);
+
+  const getRemainingTimeText = () => {
+    if (isExpired) return "00d 00h 00m 00s";
+    if (!createdDate) return "00d 00h 00m 00s";
+    
+    const diff = expirationTime - now.getTime();
+    if (diff <= 0) return "00d 00h 00m 00s";
+
+    const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+    const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+    const seconds = Math.floor((diff % (60 * 1000)) / 1000);
+
+    return `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
   };
 
   const handleArgSubmit = (e: React.FormEvent) => {
@@ -137,6 +174,277 @@ export default function CourtScreen({
         </div>
       </div>
 
+      {/* SECTION: DELIBERATION COUNTDOWN TIMER PANEL */}
+      <div className={`rounded-2xl border p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm relative overflow-hidden transition-all duration-300 ${
+        isExpired 
+          ? 'bg-zinc-50 border-zinc-200 text-zinc-700' 
+          : 'bg-[#FFFDF4] border-[#E8D79B] text-[#785E14] animate-fadeIn'
+      }`}>
+        {/* Subtle decorative elements for premium marketer touch */}
+        {!isExpired && <div className="absolute top-0 right-0 h-10 w-10 bg-[#F4B942]/10 rounded-full blur-xl animate-pulse" />}
+
+        <div className="space-y-1 z-10 flex-1">
+          <div className="flex items-center gap-2">
+            {isExpired ? (
+              <span className="flex items-center gap-1 text-[9px] sm:text-xs font-bold text-zinc-500 font-mono uppercase bg-zinc-200/50 px-2.5 py-0.5 rounded border border-zinc-300">
+                <Lock className="h-3 w-3" /> Perspectives Sealed
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-[9px] sm:text-xs font-bold text-[#C9A227] font-mono uppercase bg-[#FFF8E1] px-2.5 py-0.5 rounded border border-[#E8D79B] animate-pulse">
+                <Clock className="h-3 w-3" /> Deliberation In Progress
+              </span>
+            )}
+            <span className="text-[10px] text-zinc-500 font-mono font-medium">
+              Trial Duration: {deliberationDays < 1 ? "1 Minute" : `${deliberationDays} Days`}
+            </span>
+          </div>
+          <h2 className="text-sm font-bold font-serif leading-tight">
+            {isExpired 
+              ? "Perspectives have been finalized and verified by the Peer Jury. This decision docket is archive-sealed."
+              : "Peer Jurors are on the stand sharing balanced insights. Cast your perspectives below before values lock!"
+            }
+          </h2>
+          <p className="text-xs text-zinc-500 leading-normal font-sans">
+            Once deliberation ends, if you hold the clean hand consensus, a verified social sharing credential becomes available.
+          </p>
+        </div>
+
+        {/* Live numerical countdown */}
+        <div className="bg-[#1F2937] text-white p-4 rounded-xl flex flex-col items-center justify-center font-mono min-w-[200px] border border-zinc-700 shadow-md">
+          <span className="text-[9px] uppercase tracking-widest text-[#AAB2C0] font-sans font-extrabold mb-1.5 flex items-center gap-1">
+            {isExpired ? "Deliberation Closed" : "Remaining Deliberation"}
+          </span>
+          <span className={`text-base font-black tracking-wider ${isExpired ? "text-rose-400 font-mono" : "text-[#FFF8E1]"}`}>
+            {getRemainingTimeText()}
+          </span>
+          
+          {/* Simulation fast-forward triggers for testing */}
+          {!isExpired && isRealCase && (
+            <button
+              onClick={() => {
+                setSimExpired(true);
+                setCertificateUnlocked(false);
+              }}
+              className="mt-2 text-[9px] uppercase font-bold text-[#F4B942] bg-[#F4B942]/10 hover:bg-[#F4B942]/20 px-2 py-1 rounded transition-all border border-[#F4B942]/20 flex items-center gap-1 active:scale-95 cursor-pointer"
+              title="Skip the 3-day wait to instantly test the certificate!"
+            >
+              <Sparkles className="h-2.5 w-2.5" /> Skip Deliberation (Dev Mode)
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* SECTION: TRIBUNAL CLEAN HANDS CERTIFICATE */}
+      {isExpired && currentVerdict() !== 'Me' && (
+        <div className="relative rounded-3xl border border-[#30363D] bg-[#161B22] p-5 sm:p-7 shadow-xl space-y-6 transition-all duration-300 animate-fadeIn text-left">
+          {/* Close Certificate Plaque (X) Badge */}
+          {certificateUnlocked && (
+            <button
+              onClick={() => setCertificateUnlocked(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-all hover:bg-zinc-800 cursor-pointer z-50 focus:outline-none"
+              title="Close Certificate Plaque"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#30363D]/60 pb-5">
+            <div className="space-y-1 text-left">
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#F4B942] bg-[#F4B942]/10 border border-[#F4B942]/30 px-3 py-1 rounded-full font-mono">
+                <Award className="h-4 w-4 animate-pulse text-[#F4B942]" /> Official Boundary Clearance
+              </span>
+              <h3 className="text-lg font-black text-white font-sans tracking-tight pt-1">
+                Jury Boundary Authentication Registry ⚖️
+              </h3>
+              <p className="text-xs text-[#AAB2C0] max-w-xl leading-relaxed">
+                Peer deliberation consensus determines you held proper, healthy relationship boundaries in this dispute. Export this verified certificate to validate your healthy boundaries!
+              </p>
+            </div>
+            
+            <div className="shrink-0 flex items-center gap-2.5">
+              {!certificateUnlocked ? (
+                <button
+                  onClick={() => {
+                    setCertificateUnlocked(true);
+                    setCopied(false);
+                  }}
+                  className="bg-[#F4B942] hover:bg-[#E0A52D] text-[#0D1117] font-black text-xs uppercase tracking-wider px-5 py-3 rounded-2xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer font-sans"
+                >
+                  <Sparkles className="h-4 w-4" /> Retrieve Certificate
+                </button>
+              ) : (
+                <div className="flex flex-wrap items-center gap-2 no-print">
+                  {/* Download (PDF/Print) Button */}
+                  <button
+                    onClick={() => window.print()}
+                    className="bg-[#F4B942] hover:bg-[#E0A52D] text-[#0D1117] font-black text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all shadow active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                    title="Print or Save Certificate as high-res PDF"
+                  >
+                    <Download className="h-4 w-4" /> Download/Print
+                  </button>
+
+                  {/* Share Certificate Button */}
+                  <button
+                    onClick={async () => {
+                      const shareTitle = 'Before Regret Jury - Verified Boundary Clearance';
+                      const shareText = `I just received my social proof boundary badge on Before Regret Jury! ⚖️ Consensual clean hands score: ${100 - getPercent(courtCase.votes.me)}%. Docket Code: ${courtCase.caseNumber || 'CASE-C2011'}. View the official jury findings here:`;
+                      const shareUrl = window.location.href;
+
+                      if (navigator.share) {
+                        try {
+                          await navigator.share({
+                            title: shareTitle,
+                            text: shareText,
+                            url: shareUrl,
+                          });
+                        } catch (err) {
+                          // Ignore abort errors
+                        }
+                      } else {
+                        navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 3000);
+                      }
+                    }}
+                    className="bg-zinc-800 hover:bg-zinc-750 text-white font-extrabold text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl border border-zinc-700 transition-all shadow active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Share2 className="h-4 w-4 text-[#F4B942]" /> {copied ? "Copied Link!" : "Share Link"}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {certificateUnlocked && (
+            <div className="space-y-6 animate-fadeIn">
+              {/* PRINT STYLE COMPONENT OVERRIDE */}
+              <style dangerouslySetInnerHTML={{ __html: `
+                @media print {
+                  body * {
+                    visibility: hidden !important;
+                  }
+                  #certificate-print-area, #certificate-print-area * {
+                    visibility: visible !important;
+                  }
+                  #certificate-print-area {
+                    position: fixed !important;
+                    left: 2% !important;
+                    top: 2% !important;
+                    width: 96% !important;
+                    max-width: 850px !important;
+                    border: 12px double #C29B38 !important;
+                    background-color: #FAFAF6 !important;
+                    color: #1E293B !important;
+                    box-shadow: none !important;
+                    transform: none !important;
+                    z-index: 9999999 !important;
+                    border-radius: 0px !important;
+                    padding: 3rem !important;
+                    font-family: Georgia, Garamond, serif !important;
+                  }
+                  .no-print {
+                    display: none !important;
+                  }
+                }
+              `}} />
+
+              {/* AUTHENTIC HIGH-PRESTIGE CERTIFICATE OF BOUNDARY INTEGRITY */}
+              <div 
+                id="certificate-print-area"
+                className="relative rounded-3xl border-8 border-double border-[#C29B38] bg-[#FAFAF6] text-[#1E293B] p-6 sm:p-10 space-y-6 text-center max-w-2xl mx-auto shadow-2xl overflow-hidden transition-all duration-300 select-none pb-8"
+              >
+                {/* Vintage Watermark Flourish backdrop */}
+                <div className="absolute -bottom-8 -right-8 opacity-[0.03] select-none pointer-events-none transform rotate-12 scale-125">
+                  <Award className="h-96 w-96 text-amber-900" />
+                </div>
+
+                {/* Classical Golden Wax Foil Stamp/Seal */}
+                <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-10 select-none pointer-events-none">
+                  <div className="relative flex items-center justify-center">
+                    {/* Golden jagged seal back */}
+                    <div className="absolute w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 shadow-md border-2 border-white animate-pulse opacity-95" />
+                    {/* Inner gold concentric seal */}
+                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 border border-amber-300 flex flex-col items-center justify-center text-[7.5px] font-black text-amber-950 font-serif tracking-tighter uppercase leading-none shadow-inner">
+                      <span>VERIFIED</span>
+                      <span className="text-[10px] my-0.5">⚖️</span>
+                      <span className="font-bold">CLEAN HANDS</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Certificate Heading */}
+                <div className="space-y-1 pt-4 text-center">
+                  <span className="block text-[8px] sm:text-[9.5px] uppercase tracking-[0.22em] font-mono font-bold text-amber-800">
+                    National Assembly of Peer Arbitrators & Mediators
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight font-serif text-slate-900 uppercase">
+                    Decree of Boundary Integrity
+                  </h2>
+                  <div className="h-0.5 bg-gradient-to-r from-transparent via-[#C29B38] to-transparent w-3/4 mx-auto mt-2" />
+                </div>
+
+                {/* Formal statement of credential */}
+                <div className="space-y-4 font-serif text-slate-800 leading-relaxed text-xs sm:text-sm italic px-3 max-w-xl mx-auto">
+                  <p className="not-italic font-sans text-[8.5px] tracking-widest text-[#B45309] font-black uppercase">
+                    REGISTRY CODE: <span className="font-mono text-slate-950 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">{courtCase.caseNumber || 'CASE-C2011'}</span>
+                  </p>
+                  
+                  <p className="text-[13px] leading-relaxed">
+                    "This formal decree attests that relationship delegates of the Before Regret Court have fully reviewed, tested, and deliberated upon the boundary conditions presented in relationship controversy:"
+                  </p>
+
+                  <div className="not-italic bg-stone-100/70 border border-stone-200 rounded-xl p-3 max-w-md mx-auto my-3 text-left">
+                    <span className="block text-[7.5px] font-mono uppercase tracking-widest text-stone-400 font-bold mb-1">DOCKET CASE OVERVIEW</span>
+                    <span className="font-sans font-extrabold text-slate-900 text-xs sm:text-sm leading-snug">
+                      "{courtCase.title}"
+                    </span>
+                  </div>
+
+                  <p className="text-[13px] leading-relaxed">
+                    By standard democratic consensus, the jury hereby declares the respondent to be cleared of relationship overreach. The respondent's physical and mental boundaries are validated as standard, constructive, and highly dignified.
+                  </p>
+                </div>
+
+                {/* High-Fidelity Jury consensus statistics */}
+                <div className="grid grid-cols-2 gap-3 border-t border-b border-amber-700/10 py-5 max-w-sm mx-auto bg-stone-50 rounded-xl px-2">
+                  <div className="text-center flex flex-col justify-center">
+                    <span className="text-[8px] uppercase tracking-wider text-slate-500 block font-sans font-bold">Consensus Ratio</span>
+                    <span className="text-xl font-black text-[#B45309] font-mono leading-none pt-0.5">
+                      {100 - getPercent(courtCase.votes.me)}% Clear
+                    </span>
+                    <span className="text-[7px] uppercase text-zinc-400 tracking-wider mt-1 block font-mono">Proper Boundary Ratio</span>
+                  </div>
+                  <div className="text-center border-l border-[#30363D]/10 flex flex-col justify-center">
+                    <span className="text-[8px] uppercase tracking-wider text-slate-500 block font-sans font-bold">Assembly Audited</span>
+                    <span className="text-xl font-black text-slate-900 font-mono leading-none pt-0.5">
+                      {totalVotes.toLocaleString()} Peers
+                    </span>
+                    <span className="text-[7px] uppercase text-zinc-400 tracking-wider mt-1 block font-mono">Active Citizens Verified</span>
+                  </div>
+                </div>
+
+                {/* Signatures & Seal Registry Footer */}
+                <div className="flex justify-between items-end pt-6 max-w-md mx-auto text-[8px] text-zinc-500 font-mono uppercase tracking-widest">
+                  <div className="text-center w-28 border-t border-zinc-300 pt-2">
+                    <span className="font-serif italic font-bold text-slate-800 tracking-wider font-extrabold lowercase text-[10px] block mb-0.5">@before_regret</span>
+                    <span className="block text-[7px] text-zinc-400">Assembly Overseer</span>
+                  </div>
+                  <div className="text-center w-28 border-t border-zinc-300 pt-2">
+                    <span className="font-sans font-black text-slate-800 tracking-normal block mb-0.5">PEER JURY SECURE</span>
+                    <span className="block text-[7px] text-zinc-400">Consensus Confirmed</span>
+                  </div>
+                </div>
+
+                {/* Official Stamp Watermark Footer */}
+                <div className="text-[6.5px] uppercase font-mono tracking-[0.25em] text-zinc-400 text-center pt-2 select-none">
+                  INTEGRITY REGISTRY VALUE • STATE ID {courtCase.slug.substring(0, 8).toUpperCase() || 'VERID-99'}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* COURT POLL / VOTE OPTIONS */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
         
@@ -144,11 +452,17 @@ export default function CourtScreen({
         <div className="md:col-span-5 rounded-2xl border border-[#E5E7EB] bg-white p-5 space-y-4 shadow-sm">
           <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Cast Your Jury Perspective</h3>
           
-          {userVote ? (
+          {(userVote || isExpired) ? (
             <div className="space-y-3">
-              <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-center text-[#2E7D32] font-bold mb-2 flex items-center justify-center gap-1.5 shadow-sm">
-                <Check className="h-4 w-4" /> verdict registered! Current court breakdown:
-              </div>
+              {isExpired ? (
+                <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-center text-[#9F5F1B] font-bold mb-2 flex items-center justify-center gap-1.5 shadow-sm">
+                  <Lock className="h-4 w-4" strokeWidth="2.5" /> final deliberation results sealed!
+                </div>
+              ) : (
+                <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-center text-[#2E7D32] font-bold mb-2 flex items-center justify-center gap-1.5 shadow-sm">
+                  <Check className="h-4 w-4" /> verdict registered! Current court breakdown:
+                </div>
+              )}
 
               {[
                 { label: "Blame Me (Poster)", key: 'me', val: courtCase.votes.me, color: 'bg-[#24324A]' },
@@ -191,7 +505,7 @@ export default function CourtScreen({
                 <button
                   key={opt.key}
                   onClick={() => onVoteCourt(courtCase.slug, opt.key as any)}
-                  className="w-full text-left rounded-xl border border-[#E5E7EB] bg-white p-3 text-xs font-bold text-[#1F2937] hover:border-[#24324A] hover:bg-[#FAF8F2] transition-all flex items-center justify-between shadow-sm"
+                  className="w-full text-left rounded-xl border border-[#E5E7EB] bg-white p-3 text-xs font-bold text-[#1F2937] hover:border-[#24324A] hover:bg-[#FAF8F2] transition-all flex items-center justify-between shadow-sm cursor-pointer"
                   id={`court-vote-${opt.key}`}
                 >
                   <span>{opt.label}</span>
