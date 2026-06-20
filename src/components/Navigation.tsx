@@ -11,6 +11,7 @@ interface NavigationProps {
   onCaseRetrieve: (caseNum: string) => void;
   stories: Story[];
   courtCases: CourtCase[];
+  onOpenLedger?: () => void;
 }
 
 export default function Navigation({ 
@@ -20,7 +21,8 @@ export default function Navigation({
   setDarkMode, 
   onCaseRetrieve,
   stories,
-  courtCases
+  courtCases,
+  onOpenLedger
 }: NavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -153,6 +155,18 @@ export default function Navigation({
           {/* Action Trigger Elements Right */}
           <div className="flex items-center space-x-2 shrink-0">
             
+            {/* Ledger Button */}
+            {onOpenLedger && (
+              <button
+                onClick={onOpenLedger}
+                className="inline-flex items-center gap-1 bg-[#FAF8F5] border border-[#C9A227]/45 hover:border-[#C9A227] hover:bg-[#FAF8F2] text-[#24324A] text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-xs cursor-pointer select-none"
+                title="View My Submission Ledger"
+              >
+                <FileText className="h-4 w-4 text-[#C9A227]" />
+                <span className="hidden md:inline">My Ledger Booklet</span>
+              </button>
+            )}
+
             {/* 🔑 Cryptographic Case Retrieval Input */}
             <div className="flex items-center gap-1.5 bg-[#FAF8F2] border border-[#E5E7EB] hover:border-[#C9A227]/60 rounded-xl px-2.5 py-1.5 transition-all text-xs focus-within:ring-2 focus-within:ring-[#24324A]/10">
               <span className="text-[9px] text-[#C9A227] font-mono font-extrabold tracking-widest hidden sm:inline shrink-0 select-none">RETRIEVE CASE</span>
@@ -217,6 +231,20 @@ export default function Navigation({
               </button>
             ))}
           </div>
+
+          {/* Ledger block on mobile */}
+          {onOpenLedger && (
+            <button
+              onClick={() => {
+                onOpenLedger();
+                setIsOpen(false);
+              }}
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#FAF8F5] border border-[#C9A227] px-4 py-3 text-center text-xs font-bold text-[#24324A] hover:bg-[#FAF8F2] transition-colors shadow-xs"
+            >
+              <FileText className="h-4 w-4 text-[#C9A227]" />
+              <span>Configure Submission Ledger 📑</span>
+            </button>
+          )}
         </div>
       )}
     </nav>

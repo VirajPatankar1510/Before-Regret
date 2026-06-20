@@ -132,6 +132,8 @@ export interface UserProfile {
   followedSituations: string[]; // situation slugs
   followedTags: string[]; // tag slugs
   followedQuestions: string[]; // question slugs
+  submittedStories?: string[]; // IDs of submitted stories
+  submittedRedFlags?: string[]; // IDs of submitted red flag cases
   recentActivity: {
     type: 'story_added' | 'story_updated' | 'court_voted' | 'helpful_voted' | 'bookmarked';
     detail: string;

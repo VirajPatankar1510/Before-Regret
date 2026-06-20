@@ -21,6 +21,8 @@ const DEFAULT_USER: UserProfile = {
   followedSituations: [],
   followedTags: ['marriage', 'cheating'],
   followedQuestions: [],
+  submittedStories: [],
+  submittedRedFlags: [],
   recentActivity: [
     { type: 'court_voted', detail: 'Voted on court case "Girlfriend Checked My Phone"', date: '2 hours ago' }
   ]

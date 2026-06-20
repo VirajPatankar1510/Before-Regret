@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Flag, ArrowLeft, MessageSquare, Search, Plus, Check, Clock, Sparkles, AlertTriangle, ShieldCheck, HelpCircle } from 'lucide-react';
 import { RedFlagCase, RedFlagComment } from '../types';
 
@@ -11,6 +11,7 @@ interface RedFlagMeterScreenProps {
   userVotedFlags: { [caseId: string]: 'green' | 'yellow' | 'red' };
   currentUser?: any;
   onGoogleLogin?: () => void;
+  initialCaseId?: string;
 }
 
 export default function RedFlagMeterScreen({
@@ -21,9 +22,16 @@ export default function RedFlagMeterScreen({
   onAddFlagCase,
   userVotedFlags,
   currentUser,
-  onGoogleLogin
+  onGoogleLogin,
+  initialCaseId
 }: RedFlagMeterScreenProps) {
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialCaseId) {
+      setSelectedCaseId(initialCaseId);
+    }
+  }, [initialCaseId]);
   
   // Search and Filtering
   const [searchQuery, setSearchQuery] = useState('');
