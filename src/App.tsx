@@ -684,6 +684,7 @@ export default function App() {
     type: 'story' | 'court';
     id?: string;
     slug?: string;
+    passwordPin?: string;
   } | null>(null);
   const [highlightedStoryId, setHighlightedStoryId] = useState<string | null>(null);
 
@@ -1149,6 +1150,7 @@ export default function App() {
 
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const caseNumber = `CASE-C${randomNum}`;
+    const passwordPin = Math.floor(1000 + Math.random() * 9000).toString();
 
     const newCase: CourtCase = {
       slug: uniqueSlug,
@@ -1166,7 +1168,8 @@ export default function App() {
       arguments: [],
       tags: caseData.tags,
       deliberationDays: caseData.deliberationDays || 3,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      passwordPin: passwordPin
     };
 
     // Save to local storage private list
@@ -1192,7 +1195,8 @@ export default function App() {
       title: newCase.title, 
       caseNumber: caseNumber, 
       type: 'court',
-      slug: newCase.slug
+      slug: newCase.slug,
+      passwordPin: passwordPin
     });
     showToast(`⚖️ Court case registered successfully under Case Key: ${caseNumber}!`);
     setIsRegisterModalOpen(false);
@@ -1616,7 +1620,7 @@ export default function App() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#161B22] border border-[#30363D] p-5 sm:p-6 rounded-3xl shadow-sm">
               <div className="space-y-1">
                 <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2" style={{ color: '#2c2c2c' }}>
-                  <Gavel className="h-6 w-6 text-[#F4B942]" /> Before Regret Court
+                  <Gavel className="h-6 w-6 text-[#F4B942]" /> BR Court
                 </h1>
                 <p className="text-xs text-[#AAB2C0]">Step into our anonymous space. Review relationship evidence, defend sides, and cast peer perspective votes.</p>
               </div>
@@ -2011,29 +2015,56 @@ export default function App() {
             </p>
 
             {/* Case Number Badge */}
-            <div className="my-5 bg-[#0D1117] border border-[#30363D] rounded-xl p-3.5">
+            <div className="my-4 bg-[#0D1117] border border-[#30363D] rounded-xl p-3">
               <span className="text-[9px] uppercase font-bold text-zinc-500 tracking-widest font-mono block mb-1">YOUR UNIQUE CASE ID</span>
-              <div className="flex items-center justify-center gap-1.5">
-                <code className="text-lg font-black text-[#F4B942] font-mono tracking-wider select-all">
+              <div className="flex items-center justify-center gap-1.5 mb-3">
+                <code className="text-base font-black text-[#F4B942] font-mono tracking-wider select-all">
                   {newlyLodgedCase.caseNumber}
                 </code>
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(newlyLodgedCase.caseNumber);
-                    showToast("📋 Case Number Copied to Clipboard!");
+                    showToast("📋 Case Number Copied!");
                   }}
                   className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#30363D] text-zinc-400 hover:text-white border border-[#30363D] transition-all"
                   title="Copy Case Number"
                 >
-                  <Copy className="h-3.5 w-3.5" />
+                  <Copy className="h-3 w-3" />
                 </button>
               </div>
+
+              {newlyLodgedCase.passwordPin && (
+                <>
+                  <div className="border-t border-[#30363D]/60 pt-2.5">
+                    <span className="text-[9px] uppercase font-bold text-zinc-500 tracking-widest font-mono block mb-1">YOUR CASE PIN (PASSWORD)</span>
+                    <div className="flex items-center justify-center gap-1.5">
+                      <code className="text-base font-black text-emerald-400 font-mono tracking-widest select-all">
+                        {newlyLodgedCase.passwordPin}
+                      </code>
+                      <button
+                        onClick={() => {
+                          const copyText = newlyLodgedCase.passwordPin || '';
+                          navigator.clipboard.writeText(copyText);
+                          showToast("📋 Case PIN Copied!");
+                        }}
+                        className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#30363D] text-zinc-400 hover:text-white border border-[#30363D] transition-all"
+                        title="Copy Case PIN"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </button>
+                    </div>
+                    <span className="text-[9px] font-bold text-[#E0A52D] leading-tight block mt-2 px-1">
+                      ⚠️ Write down this PIN now! For absolute privacy, this cannot be retrieved or reset if lost. You need it to customize your name on the certificate.
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="bg-[#1C2128] border border-[#30363D]/60 rounded-xl p-3 text-left text-[10px] text-zinc-400 leading-relaxed mb-4">
-              <p className="font-bold text-zinc-200">💡 No Logins or Passwords Required:</p>
+              <p className="font-bold text-zinc-200">💡 Registry Guidelines:</p>
               <p className="mt-1">
-                To protect complete privacy, accounts are not used. Write down or copy your case ID. You can put this in the <strong className="text-white font-bold">RETRIEVE CASE</strong> search bar in the top navigation anytime to locate your case in an instant.
+                To protect privacy, profiles are not stored. Write down your case ID. You can find your case page using the <strong className="text-white font-bold">RETRIEVE CASE</strong> option in the top bar. Use the PIN to lock in your custom name on your certificate.
               </p>
             </div>
 

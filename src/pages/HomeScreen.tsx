@@ -287,7 +287,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
               <Gavel className="h-4 w-4" />
             </span>
             <div>
-              <h3 className="text-base font-extrabold text-[#24324A] font-display">Before Regret Court Cases</h3>
+              <h3 className="text-base font-extrabold text-[#24324A] font-display">BR Court Cases</h3>
               <p className="text-xs text-[#6B7280]">Anonymously vote on active relationship dilemmas. Who is wrong?</p>
             </div>
           </div>
