@@ -8,6 +8,7 @@ import SubmitStoryForm from './components/SubmitStoryForm';
 import SubmitQuestionForm from './components/SubmitQuestionForm';
 import RegisterCaseForm from './components/RegisterCaseForm';
 import AdminPanel from './components/AdminPanel';
+import MySubmissionsLedger from './components/MySubmissionsLedger';
 
 // Simulated screen components
 import HomeScreen from './pages/HomeScreen';
@@ -319,6 +320,8 @@ export default function App() {
               followedSituations: [],
               followedTags: [],
               followedQuestions: [],
+              submittedStories: [],
+              submittedRedFlags: [],
               recentActivity: [{
                 type: 'story_added',
                 detail: "Connected Google Account Credentials anonymously",
@@ -475,6 +478,8 @@ export default function App() {
       followedSituations: [],
       followedTags: [],
       followedQuestions: [],
+      submittedStories: [],
+      submittedRedFlags: [],
       recentActivity: [{
         type: 'story_added',
         detail: "Connected via Instant Guest Bypass Module",
@@ -588,14 +593,15 @@ export default function App() {
     }
 
     // Now do smart fuzzy/shorthand matches
-    // E.g., someone types "S1234", "C2001", "1234", "CASE-S1234", "CASE-C2001"
-    const cleaned = trimmed.replace('CASE-', ''); // Remove CASE- prefix if present. e.g. "S1234", "C2001", "1234"
+    // E.g., someone types "S1234", "C2001", "F3001", "1234", "CASE-S1234", "CASE-C2001", "CASE-F3001"
+    const cleaned = trimmed.replace('CASE-', ''); // Remove CASE- prefix if present. e.g. "S1234", "C2001", "1234", "F3001"
     
     // If it starts with S or is numeric and corresponds to stories (since preseeded stories are S1001-S1030 vs court C2001-C2010 etc)
     const isStoryPattern = cleaned.startsWith('S') || (/^\d+$/.test(cleaned) && parseInt(cleaned, 10) < 2000);
-    const isCourtPattern = cleaned.startsWith('C') || (/^\d+$/.test(cleaned) && parseInt(cleaned, 10) >= 2000);
+    const isCourtPattern = cleaned.startsWith('C') || (/^\d+$/.test(cleaned) && parseInt(cleaned, 10) >= 2000 && parseInt(cleaned, 10) < 3000);
+    const isRedFlagPattern = cleaned.startsWith('F') || (/^\d+$/.test(cleaned) && parseInt(cleaned, 10) >= 3000);
 
-    const numericPart = cleaned.replace(/^[SC]/, ''); // e.g. "1234"
+    const numericPart = cleaned.replace(/^[SCF]/, ''); // e.g. "1234"
 
     if (isCourtPattern) {
       const foundCourt = store.courtCases.find(c => {
@@ -630,6 +636,18 @@ export default function App() {
       }
     }
 
+    if (isRedFlagPattern) {
+      const foundFlag = store.redFlagCases.find(f => {
+        const fNumClean = (f.caseNumber || '').toUpperCase().replace('CASE-', '').replace('F', '');
+        return fNumClean === numericPart;
+      });
+      if (foundFlag) {
+        setScreen({ type: 'red_flag_meter', slug: foundFlag.id });
+        showToast(`🏁 Red Flag Dilemma ${foundFlag.caseNumber} retrieved successfully!`);
+        return;
+      }
+    }
+
     // Fallback: search any case containing the input
     const fallbackCourt = store.courtCases.find(
       c => c.caseNumber?.toUpperCase().includes(cleaned) || c.title.toLowerCase().includes(cleaned.toLowerCase())
@@ -657,6 +675,15 @@ export default function App() {
       return;
     }
 
+    const fallbackRedFlag = store.redFlagCases.find(
+      f => f.caseNumber?.toUpperCase().includes(cleaned) || f.title.toLowerCase().includes(cleaned.toLowerCase())
+    );
+    if (fallbackRedFlag) {
+      setScreen({ type: 'red_flag_meter', slug: fallbackRedFlag.id });
+      showToast(`🏁 Red Flag Dilemma ${fallbackRedFlag.caseNumber} retrieved!`);
+      return;
+    }
+
     showToast(`❌ Case ID "${caseNum}" not found. Verify character spelling.`);
   };
 
@@ -670,6 +697,7 @@ export default function App() {
     }
   };
   const [darkMode, setDarkMode] = useState(true);
+  const [isLedgerOpen, setIsLedgerOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [newlyLodgedCase, setNewlyLodgedCase] = useState<{ 
     title: string; 
@@ -798,6 +826,7 @@ export default function App() {
       const updatedUser: UserProfile = {
         ...prev.user,
         storiesSubmitted: prev.user.storiesSubmitted + 1,
+        submittedStories: [...(prev.user.submittedStories || []), newStory.id],
         recentActivity: [
           {
             type: 'story_added',
@@ -1038,9 +1067,23 @@ export default function App() {
 
       showToast(`🏁 Lodged Category ${category} Dilemma: ${caseNumber}`);
 
+      const updatedUser: UserProfile = {
+        ...prev.user,
+        submittedRedFlags: [...(prev.user.submittedRedFlags || []), caseId],
+        recentActivity: [
+          {
+            type: 'story_added',
+            detail: `Filed Red Flag Assessment for "${title}" as Case ${caseNumber}`,
+            date: 'Just now'
+          },
+          ...prev.user.recentActivity
+        ]
+      };
+
       return {
         ...prev,
-        redFlagCases: [newCase, ...prev.redFlagCases]
+        redFlagCases: [newCase, ...prev.redFlagCases],
+        user: updatedUser
       };
     });
   };
@@ -1470,6 +1513,30 @@ export default function App() {
         onCaseRetrieve={handleCaseRetrieve}
         stories={store.stories}
         courtCases={store.courtCases}
+        onOpenLedger={() => setIsLedgerOpen(true)}
+      />
+
+      {/* Anonymous Submissions Ledger Modal */}
+      <MySubmissionsLedger
+        isOpen={isLedgerOpen}
+        onClose={() => setIsLedgerOpen(false)}
+        user={store.user}
+        stories={store.stories}
+        redFlagCases={store.redFlagCases}
+        setScreen={setScreen}
+        onSelectStory={(storyId) => {
+          const found = store.stories.find(s => s.id === storyId);
+          if (found) {
+            setScreen({ type: 'situation', slug: found.situationSlug });
+            setHighlightedStoryId(storyId);
+            setTimeout(() => {
+              const el = document.getElementById(`story-${storyId}`);
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 600);
+          }
+        }}
       />
 
       {/* Floating interactive notification toasts */}
@@ -1727,6 +1794,7 @@ export default function App() {
             userVotedFlags={userVotedFlags}
             currentUser={currentUser}
             onGoogleLogin={handleGoogleLogin}
+            initialCaseId={currentScreen.slug}
           />
         )}
 
