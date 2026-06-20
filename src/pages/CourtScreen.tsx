@@ -31,6 +31,16 @@ export default function CourtScreen({
   const [simExpired, setSimExpired] = useState(false);
   const [copied, setCopied] = useState(false);
   const [certificateUnlocked, setCertificateUnlocked] = useState(false);
+
+  // Certificate dynamic personalization states
+  const [certHeroText, setCertHeroText] = useState('BOUNDARY DEFENDER');
+  const [certVerdict, setCertVerdict] = useState('NOT GUILTY');
+  const [certQuote, setCertQuote] = useState('The Court finds your actions reasonable and your boundaries justified.');
+  const [certPercent, setCertPercent] = useState<number | null>(null);
+  const [certArchetype, setCertArchetype] = useState('BOUNDARY DEFENDER');
+  const [certConfidence, setCertConfidence] = useState('HIGH');
+  const [certJurors, setCertJurors] = useState<number | null>(null);
+  const [certIsGeneratingImage, setCertIsGeneratingImage] = useState(false);
   
 
 
@@ -40,6 +50,21 @@ export default function CourtScreen({
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  React.useEffect(() => {
+    if (certificateUnlocked) {
+      const voteCleanHands = totalVotes > 0 ? (100 - getPercent(courtCase.votes.me)) : 92;
+      setCertPercent(voteCleanHands);
+      setCertJurors(totalVotes || 1284);
+      
+      const customQuoteText = voteCleanHands >= 80 
+        ? `The Court finds your actions highly reasonable, your boundaries completely justified, and your standards pristine.` 
+        : voteCleanHands >= 50 
+          ? `The Court finds your boundaries justified and guides both parties to uphold respectful communications.`
+          : `The Court identifies reasonable concern and recommends establishing healthier boundaries to avoid regret.`;
+      setCertQuote(customQuoteText);
+    }
+  }, [certificateUnlocked]);
 
   const userVote = userVotedCases[courtCase.slug];
   const totalVotes = courtCase.votes.me + courtCase.votes.partner + courtCase.votes.both + courtCase.votes.neither;
@@ -88,6 +113,34 @@ export default function CourtScreen({
     if (!argumentText.trim()) return;
     onAddArgument(courtCase.slug, selectedSide, argumentText);
     setArgumentText('');
+  };
+
+  const handleDownloadImage = async () => {
+    const el = document.getElementById('certificate-print-area');
+    if (!el) return;
+    try {
+      setCertIsGeneratingImage(true);
+      // Let states settle
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const { toPng } = await import('html-to-image');
+      const dataUrl = await toPng(el, {
+        pixelRatio: 2.0,
+        cacheBust: true,
+        style: {
+          transform: 'scale(1)',
+          margin: '0',
+          borderRadius: '24px' // Matches the rounded structure of our card
+        }
+      });
+      const link = document.createElement('a');
+      link.download = `Relationship_Court_Certificate_${courtCase.caseNumber || 'CASE'}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error('Error rendering image:', error);
+    } finally {
+      setCertIsGeneratingImage(false);
+    }
   };
 
   return (
@@ -200,13 +253,10 @@ export default function CourtScreen({
           </div>
           <h2 className="text-sm font-bold font-serif leading-tight">
             {isExpired 
-              ? "Perspectives have been finalized and verified by the Peer Jury. This decision docket is archive-sealed."
+              ? "Perspectives have been finalized and decided by the Peer Jury."
               : "Peer Jurors are on the stand sharing balanced insights. Cast your perspectives below before values lock!"
             }
           </h2>
-          <p className="text-xs text-zinc-500 leading-normal font-sans">
-            Once deliberation ends, if you hold the clean hand consensus, a verified social sharing credential becomes available.
-          </p>
         </div>
 
         {/* Live numerical countdown */}
@@ -251,64 +301,50 @@ export default function CourtScreen({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#30363D]/60 pb-5">
             <div className="space-y-1 text-left">
               <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#F4B942] bg-[#F4B942]/10 border border-[#F4B942]/30 px-3 py-1 rounded-full font-mono">
-                <Award className="h-4 w-4 animate-pulse text-[#F4B942]" /> Official Boundary Clearance
+                <Award className="h-4 w-4 animate-pulse text-[#F4B942]" /> Boundary Certificate
               </span>
               <h3 className="text-lg font-black text-white font-sans tracking-tight pt-1">
-                Jury Boundary Authentication Registry ⚖️
+                Jury Boundary Certificate ⚖️
               </h3>
               <p className="text-xs text-[#AAB2C0] max-w-xl leading-relaxed">
-                Peer deliberation consensus determines you held proper, healthy relationship boundaries in this dispute. Export this verified certificate to validate your healthy boundaries!
+                Peer deliberation consensus determines you held proper, healthy relationship boundaries in this dispute. Export this certificate to validate your healthy boundaries!
               </p>
             </div>
             
-            <div className="shrink-0 flex items-center gap-2.5">
+            <div className="shrink-0 flex items-center gap-2.5 font-sans">
               {!certificateUnlocked ? (
                 <button
                   onClick={() => {
                     setCertificateUnlocked(true);
                     setCopied(false);
                   }}
-                  className="bg-[#F4B942] hover:bg-[#E0A52D] text-[#0D1117] font-black text-xs uppercase tracking-wider px-5 py-3 rounded-2xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer font-sans"
+                  className="bg-[#F4B942] hover:bg-[#E0A52D] text-[#0D1117] font-black text-xs uppercase tracking-wider px-5 py-3 rounded-2xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <Sparkles className="h-4 w-4" /> Retrieve Certificate
+                  <Sparkles className="h-4 w-4" /> View Certificate
                 </button>
               ) : (
                 <div className="flex flex-wrap items-center gap-2 no-print">
-                  {/* Download (PDF/Print) Button */}
+                  {/* Download Image (PNG) Button */}
                   <button
-                    onClick={() => window.print()}
-                    className="bg-[#F4B942] hover:bg-[#E0A52D] text-[#0D1117] font-black text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all shadow active:scale-95 flex items-center gap-1.5 cursor-pointer"
-                    title="Print or Save Certificate as high-res PDF"
+                    onClick={handleDownloadImage}
+                    disabled={certIsGeneratingImage}
+                    className="bg-[#F4B942] hover:bg-[#E0A52D] disabled:bg-zinc-750 disabled:text-zinc-500 text-[#0D1117] font-black text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all shadow active:scale-95 flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
+                    title="Download high-resolution PNG image of your certificate"
                   >
-                    <Download className="h-4 w-4" /> Download/Print
+                    <Download className="h-4 w-4" />
+                    {certIsGeneratingImage ? "Downloading..." : "Download Certificate"}
                   </button>
 
-                  {/* Share Certificate Button */}
+                  {/* Copy Link Button */}
                   <button
-                    onClick={async () => {
-                      const shareTitle = 'Before Regret Jury - Verified Boundary Clearance';
-                      const shareText = `I just received my social proof boundary badge on Before Regret Jury! ⚖️ Consensual clean hands score: ${100 - getPercent(courtCase.votes.me)}%. Docket Code: ${courtCase.caseNumber || 'CASE-C2011'}. View the official jury findings here:`;
-                      const shareUrl = window.location.href;
-
-                      if (navigator.share) {
-                        try {
-                          await navigator.share({
-                            title: shareTitle,
-                            text: shareText,
-                            url: shareUrl,
-                          });
-                        } catch (err) {
-                          // Ignore abort errors
-                        }
-                      } else {
-                        navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 3000);
-                      }
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 3005);
                     }}
-                    className="bg-zinc-800 hover:bg-zinc-750 text-white font-extrabold text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl border border-zinc-700 transition-all shadow active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                    className="bg-zinc-800 hover:bg-zinc-700 text-white font-extrabold text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl border border-[#30363D] transition-all shadow active:scale-95 flex items-center gap-1.5 cursor-pointer"
                   >
-                    <Share2 className="h-4 w-4 text-[#F4B942]" /> {copied ? "Copied Link!" : "Share Link"}
+                    <Copy className="h-4 w-4 text-[#F4B942]" /> {copied ? "Copied Link!" : "Copy Link"}
                   </button>
                 </div>
               )}
@@ -348,96 +384,168 @@ export default function CourtScreen({
                 }
               `}} />
 
-              {/* AUTHENTIC HIGH-PRESTIGE CERTIFICATE OF BOUNDARY INTEGRITY */}
+              {/* HIGH-FIDELITY DESIGNED RELATIONSHIP COURT CERTIFICATE IN SINGLE CANVAS CARD */}
               <div 
                 id="certificate-print-area"
-                className="relative rounded-3xl border-8 border-double border-[#C29B38] bg-[#FAFAF6] text-[#1E293B] p-6 sm:p-10 space-y-6 text-center max-w-2xl mx-auto shadow-2xl overflow-hidden transition-all duration-300 select-none pb-8"
+                className="relative rounded-[24px] border-8 border-double border-[#C29B38] bg-[#FAFAF6] text-[#1E293B] p-6 sm:p-10 space-y-6 text-center max-w-2xl mx-auto shadow-2xl overflow-hidden transition-all duration-300 select-none pb-8"
               >
-                {/* Vintage Watermark Flourish backdrop */}
+                {/* Dual-line elegant outer border ornaments */}
+                <div className="absolute inset-2 sm:inset-3 border border-[#C29B38]/40 pointer-events-none rounded-[16px]" />
+                <div className="absolute top-2.5 left-2.5 w-6 h-6 border-t border-l border-[#C29B38] rounded-tl pointer-events-none" />
+                <div className="absolute top-2.5 right-2.5 w-6 h-6 border-t border-r border-[#C29B38] rounded-tr pointer-events-none" />
+                <div className="absolute bottom-2.5 left-2.5 w-6 h-6 border-b border-l border-[#C29B38] rounded-bl pointer-events-none" />
+                <div className="absolute bottom-2.5 right-2.5 w-6 h-6 border-b border-r border-[#C29B38] rounded-br pointer-events-none" />
+
+                {/* Soft pastel corner watercolor waves */}
+                <div className="absolute bottom-0 left-0 w-44 h-44 bg-gradient-to-tr from-[#FDFBF7] to-amber-100/40 rounded-tr-[100%] pointer-events-none select-none z-0 filter blur-sm animate-pulse" />
+                <div className="absolute bottom-0 right-0 w-44 h-44 bg-gradient-to-tl from-[#FDFBF7] to-teal-100/30 rounded-tl-[100%] pointer-events-none select-none z-0 filter blur-sm" />
+
+                {/* Left bottom heart outline contour illustration */}
+                <div className="absolute bottom-6 left-6 text-[#E0A994]/20 pointer-events-none z-0 select-none">
+                  <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                </div>
+
+                {/* Right bottom heart outline contour illustration */}
+                <div className="absolute bottom-6 right-6 text-[#8CBDB0]/20 pointer-events-none z-0 select-none">
+                  <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                </div>
+
+                {/* Vintage Gavel / Scales Watermark backdrop */}
                 <div className="absolute -bottom-8 -right-8 opacity-[0.03] select-none pointer-events-none transform rotate-12 scale-125">
                   <Award className="h-96 w-96 text-amber-900" />
                 </div>
 
-                {/* Classical Golden Wax Foil Stamp/Seal */}
+                {/* Golden Wax Foil Stamp/Seal */}
                 <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-10 select-none pointer-events-none">
                   <div className="relative flex items-center justify-center">
-                    {/* Golden jagged seal back */}
+                    {/* Golden jagged rosette seal background */}
                     <div className="absolute w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 shadow-md border-2 border-white animate-pulse opacity-95" />
                     {/* Inner gold concentric seal */}
-                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 border border-amber-300 flex flex-col items-center justify-center text-[7.5px] font-black text-amber-950 font-serif tracking-tighter uppercase leading-none shadow-inner">
-                      <span>VERIFIED</span>
-                      <span className="text-[10px] my-0.5">⚖️</span>
-                      <span className="font-bold">CLEAN HANDS</span>
+                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 border border-amber-300 flex flex-col items-center justify-center text-[7px] font-black text-amber-950 font-serif tracking-tighter uppercase leading-none shadow-inner">
+                      <span className="text-[5.5px] font-bold text-amber-950/80">COMMUNITY</span>
+                      <span className="text-[11px] my-0.5 font-sans font-black tracking-normal">
+                        {certPercent !== null ? certPercent : (totalVotes > 0 ? (100 - getPercent(courtCase.votes.me)) : 92)}%
+                      </span>
+                      <span className="text-[5.5px] font-bold text-amber-950/85">
+                        {certVerdict || "NOT GUILTY"}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Certificate Heading */}
-                <div className="space-y-1 pt-4 text-center">
-                  <span className="block text-[8px] sm:text-[9.5px] uppercase tracking-[0.22em] font-mono font-bold text-amber-800">
-                    National Assembly of Peer Arbitrators & Mediators
-                  </span>
-                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight font-serif text-slate-900 uppercase">
-                    Decree of Boundary Integrity
+                <div className="space-y-1.5 pt-4 text-center">
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="text-amber-600 text-xs">⚖️</span>
+                    <span className="block text-[8px] sm:text-[9.5px] uppercase tracking-[0.22em] font-mono font-bold text-amber-800">
+                      RELATIONSHIP COURT
+                    </span>
+                    <span className="text-amber-600 text-xs">⚖️</span>
+                  </div>
+                  <h2 className="text-[9px] sm:text-[10.5px] text-[#A67C1E] tracking-[0.1em] font-serif uppercase font-bold italic leading-none">
+                    — Community Decision —
                   </h2>
-                  <div className="h-0.5 bg-gradient-to-r from-transparent via-[#C29B38] to-transparent w-3/4 mx-auto mt-2" />
                 </div>
 
-                {/* Formal statement of credential */}
-                <div className="space-y-4 font-serif text-slate-800 leading-relaxed text-xs sm:text-sm italic px-3 max-w-xl mx-auto">
-                  <p className="not-italic font-sans text-[8.5px] tracking-widest text-[#B45309] font-black uppercase">
-                    REGISTRY CODE: <span className="font-mono text-slate-950 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">{courtCase.caseNumber || 'CASE-C2011'}</span>
-                  </p>
-                  
-                  <p className="text-[13px] leading-relaxed">
-                    "This formal decree attests that relationship delegates of the Before Regret Court have fully reviewed, tested, and deliberated upon the boundary conditions presented in relationship controversy:"
-                  </p>
+                {/* Shield Icon, Badge Header and ribbon block */}
+                <div className="flex flex-col items-center space-y-3 pt-2">
+                  {/* Rounded Shield and heart */}
+                  <div className="relative flex items-center justify-center h-12 w-12 bg-[#4AA3A2] border-2 border-[#C29B38] rounded-xl shadow-md rotate-45 transform">
+                    <div className="-rotate-45 transform">
+                      <svg className="w-5 h-5 text-white fill-white" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                      </svg>
+                    </div>
+                  </div>
 
-                  <div className="not-italic bg-stone-100/70 border border-stone-200 rounded-xl p-3 max-w-md mx-auto my-3 text-left">
-                    <span className="block text-[7.5px] font-mono uppercase tracking-widest text-stone-400 font-bold mb-1">DOCKET CASE OVERVIEW</span>
-                    <span className="font-sans font-extrabold text-slate-900 text-xs sm:text-sm leading-snug">
-                      "{courtCase.title}"
+                  {/* Title with decorative rays */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-amber-600/40 text-xs font-serif select-none">🗲</span>
+                    <h3 className="text-xl sm:text-2xl font-black tracking-widest text-[#1B2B3E] uppercase font-sans leading-none">
+                      {certHeroText}
+                    </h3>
+                    <span className="text-amber-600/40 text-xs font-serif select-none">🗲</span>
+                  </div>
+
+                  {/* Highlighted prominent verdict box */}
+                  <div className="relative inline-block bg-gradient-to-r from-[#1E293B] to-[#334155] px-10 py-4 rounded-2xl border-2 border-[#C29B38] shadow-xl transform -skew-x-2 hover:skew-x-0 transition-transform duration-300">
+                    <span className="text-[10px] sm:text-[11px] font-black text-[#C29B38] uppercase tracking-[0.25em] block mb-1.5 font-mono">
+                      PEER VERDICT DELIVERED
+                    </span>
+                    <span className="text-2xl sm:text-3xl font-extrabold text-white uppercase tracking-widest block font-sans px-3">
+                      ★ {certVerdict || "NOT GUILTY"} ★
                     </span>
                   </div>
-
-                  <p className="text-[13px] leading-relaxed">
-                    By standard democratic consensus, the jury hereby declares the respondent to be cleared of relationship overreach. The respondent's physical and mental boundaries are validated as standard, constructive, and highly dignified.
-                  </p>
                 </div>
 
-                {/* High-Fidelity Jury consensus statistics */}
-                <div className="grid grid-cols-2 gap-3 border-t border-b border-amber-700/10 py-5 max-w-sm mx-auto bg-stone-50 rounded-xl px-2">
-                  <div className="text-center flex flex-col justify-center">
-                    <span className="text-[8px] uppercase tracking-wider text-slate-500 block font-sans font-bold">Consensus Ratio</span>
-                    <span className="text-xl font-black text-[#B45309] font-mono leading-none pt-0.5">
-                      {100 - getPercent(courtCase.votes.me)}% Clear
-                    </span>
-                    <span className="text-[7px] uppercase text-zinc-400 tracking-wider mt-1 block font-mono">Proper Boundary Ratio</span>
-                  </div>
-                  <div className="text-center border-l border-[#30363D]/10 flex flex-col justify-center">
-                    <span className="text-[8px] uppercase tracking-wider text-slate-500 block font-sans font-bold">Assembly Audited</span>
-                    <span className="text-xl font-black text-slate-900 font-mono leading-none pt-0.5">
-                      {totalVotes.toLocaleString()} Peers
-                    </span>
-                    <span className="text-[7px] uppercase text-zinc-400 tracking-wider mt-1 block font-mono">Active Citizens Verified</span>
+                {/* Formal Statement & Quote decoration */}
+                <div className="space-y-4 font-serif text-slate-800 leading-relaxed text-xs sm:text-sm px-3 max-w-xl mx-auto pt-2">
+                  <div className="max-w-md mx-auto space-y-1 py-1 text-center px-4 relative">
+                    <span className="text-xl text-amber-500 font-serif leading-none block">“</span>
+                    <p className="text-xs sm:text-sm font-semibold italic text-[#2F3E50] leading-relaxed max-w-sm mx-auto font-serif">
+                      {certQuote}
+                    </p>
+                    <span className="text-xl text-amber-500 font-serif leading-none block -mt-1">”</span>
                   </div>
                 </div>
 
-                {/* Signatures & Seal Registry Footer */}
-                <div className="flex justify-between items-end pt-6 max-w-md mx-auto text-[8px] text-zinc-500 font-mono uppercase tracking-widest">
-                  <div className="text-center w-28 border-t border-zinc-300 pt-2">
-                    <span className="font-serif italic font-bold text-slate-800 tracking-wider font-extrabold lowercase text-[10px] block mb-0.5">@before_regret</span>
-                    <span className="block text-[7px] text-zinc-400">Assembly Overseer</span>
+                {/* Three-column premium statistics table */}
+                <div className="grid grid-cols-3 gap-1 border-t border-b border-amber-700/10 py-5 max-w-xl mx-auto bg-stone-50/50 rounded-xl px-2">
+                  <div className="flex flex-col items-center text-center space-y-1">
+                    <div className="h-7 w-7 rounded-full bg-[#E07A5F] flex items-center justify-center text-white shadow-sm shrink-0">
+                      <Users className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="leading-tight">
+                      <span className="text-[7.5px] uppercase tracking-wider text-stone-500 block font-sans font-bold">REVIEWED BY</span>
+                      <span className="text-xs font-black text-slate-800 font-sans block pt-0.5">
+                        {(certJurors !== null ? certJurors : (totalVotes || 1284)).toLocaleString()}
+                      </span>
+                      <span className="text-[6.5px] uppercase tracking-widest text-stone-400 font-bold block">RELATIONSHIP JURORS</span>
+                    </div>
                   </div>
-                  <div className="text-center w-28 border-t border-zinc-300 pt-2">
-                    <span className="font-sans font-black text-slate-800 tracking-normal block mb-0.5">PEER JURY SECURE</span>
-                    <span className="block text-[7px] text-zinc-400">Consensus Confirmed</span>
+
+                  <div className="flex flex-col items-center text-center space-y-1 border-l border-r border-[#30363D]/10">
+                    <div className="h-7 w-7 rounded-full bg-[#4AA3A2] flex items-center justify-center text-white shadow-sm shrink-0">
+                      <Shield className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="leading-tight">
+                      <span className="text-[7.5px] uppercase tracking-wider text-stone-500 block font-sans font-bold">CONFIDENCE</span>
+                      <span className="text-xs font-black text-slate-800 font-sans block pt-0.5 uppercase">
+                        {certConfidence}
+                      </span>
+                      <span className="text-[8px] text-amber-500 block mt-0.5 leading-none">★★★★★</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-center text-center space-y-1">
+                    <div className="h-7 w-7 rounded-full bg-[#8165A9] flex items-center justify-center text-white shadow-sm shrink-0">
+                      <Award className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="leading-tight">
+                      <span className="text-[7.5px] uppercase tracking-wider text-stone-500 block font-sans font-bold">ARC ARCHETYPE</span>
+                      <span className="text-xs font-black text-[#5C458A] font-sans block pt-0.5 uppercase tracking-tighter">
+                        {certArchetype}
+                      </span>
+                      <span className="text-[6.5px] uppercase tracking-widest text-stone-400 font-bold block">COURT RECORD</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Official Stamp Watermark Footer */}
-                <div className="text-[6.5px] uppercase font-mono tracking-[0.25em] text-zinc-400 text-center pt-2 select-none">
-                  INTEGRITY REGISTRY VALUE • STATE ID {courtCase.slug.substring(0, 8).toUpperCase() || 'VERID-99'}
+                {/* Simplified Certificate Footer */}
+                <div className="flex flex-col items-center justify-center gap-1 pt-6 mx-auto">
+                  <span className="text-[9.5px] uppercase tracking-[0.18em] text-[#A67C1E] font-bold font-mono">
+                    check my case on:
+                  </span>
+                  <div className="bg-[#12161A] text-white rounded-full px-6 py-2 shadow border border-zinc-800 text-[9.5px] uppercase tracking-[0.25em] font-sans font-black select-none leading-none shrink-0 mt-0.5">
+                    BeforeRegret.com
+                  </div>
+                  <span className="text-[9px] uppercase tracking-widest text-[#B45309] font-black font-sans mt-2">
+                    my case id: <span className="font-mono text-slate-950 bg-amber-100/50 px-2.5 py-0.5 rounded border border-amber-300">{courtCase.caseNumber || 'CASE-C2011'}</span>
+                  </span>
                 </div>
               </div>
             </div>
