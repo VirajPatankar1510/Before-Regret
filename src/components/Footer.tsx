@@ -65,7 +65,7 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
               </li>
               <li>
                 <button onClick={() => setScreen({ type: 'court_list' })} className="hover:text-white transition-colors text-left">
-                  Relationship Court
+                  Before Regret Court
                 </button>
               </li>
               <li>

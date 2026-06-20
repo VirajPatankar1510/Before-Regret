@@ -76,17 +76,17 @@ export default function RegisterCaseForm({ onSubmit }: RegisterCaseFormProps) {
 
       <div className="mb-4">
         <h2 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
-          <Scale className="h-4 w-4 text-[#F4B942]" /> Register Your Case for Peer Jury
+          <Scale className="h-4 w-4 text-[#F4B942]" /> Submit to Before Regret Court
         </h2>
         <p className="text-[11px] text-[#AAB2C0] mt-1 leading-normal">
-          Submitting an ambiguous dispute lets thousands of active community jurors vote on who holds the healthier boundary.
+          Submitting a relationship boundary dispute lets thousands of active community peers share perspectives on who holds the healthier boundary.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Moniker Display */}
         <div className="flex items-center justify-between bg-[#0D1117] px-3 py-2 rounded-xl border border-[#30363D]/40 text-xs">
-          <span className="text-[#AAB2C0] font-mono text-[10px]">LITIGANT MONIKER</span>
+          <span className="text-[#AAB2C0] font-mono text-[10px]">PEER MONIKER</span>
           <div className="flex items-center gap-1.5 font-bold text-[#F4B942] font-mono text-[11px]">
             <span>@{anonymousName}</span>
             <button
@@ -103,7 +103,7 @@ export default function RegisterCaseForm({ onSubmit }: RegisterCaseFormProps) {
         {/* Case Title Input */}
         <div>
           <label className="text-[10px] uppercase font-bold text-[#AAB2C0] font-mono block mb-1">
-            Case Title / Primary Accusation *
+            Case Title / Relationship Dispute *
           </label>
           <input
             type="text"
@@ -158,7 +158,7 @@ export default function RegisterCaseForm({ onSubmit }: RegisterCaseFormProps) {
               required
             />
             <span className="text-[10.5px] text-[#AAB2C0] leading-snug font-sans">
-              I understand that registering this case opens it for public juror vetting. All information is anonymous, shared publicly on this tribunal list, and cannot be retracted after submission.
+              I understand that registering this case opens it for public peer perspective sharing. All information is anonymous, shared publicly on this decision list, and cannot be retracted after submission.
             </span>
           </label>
         </div>
@@ -173,7 +173,7 @@ export default function RegisterCaseForm({ onSubmit }: RegisterCaseFormProps) {
               : 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-[#30363D]/40'
           }`}
         >
-          <Gavel className="h-4 w-4" /> Log Case & Engage Jurors
+          <Gavel className="h-4 w-4" /> Share Case for Perspectives
         </button>
       </form>
     </div>

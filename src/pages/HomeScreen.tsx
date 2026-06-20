@@ -21,9 +21,9 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
     const query = searchInput.trim();
     if (!query) return;
     
-    // Intercept Case Reference IDs typed in landing search bar (e.g. CASE-S1234, S1234, C2002, 8583)
+    // Intercept Case Reference IDs typed in landing search bar (e.g. CASE-S1234, S1234, C2002, F3001, 8583)
     const isCaseQuery = query.toUpperCase().startsWith('CASE-') || 
-                        /^[SC]\d+$/i.test(query) || 
+                        /^[SCF]\d+$/i.test(query) || 
                         (/^\d+$/.test(query) && query.length >= 4);
 
     if (isCaseQuery && onCaseRetrieve) {
@@ -287,8 +287,8 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
               <Gavel className="h-4 w-4" />
             </span>
             <div>
-              <h3 className="text-base font-extrabold text-[#24324A] font-display">Relationship Court Cases</h3>
-              <p className="text-xs text-[#6B7280]">Anonymously vote on active relationship dilemmas. Who is the asshole?</p>
+              <h3 className="text-base font-extrabold text-[#24324A] font-display">Before Regret Court Cases</h3>
+              <p className="text-xs text-[#6B7280]">Anonymously vote on active relationship dilemmas. Who is wrong?</p>
             </div>
           </div>
           <button
@@ -311,7 +311,9 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
                 className="rounded-xl border border-[#E5E7EB] bg-white p-4 cursor-pointer hover:border-[#C9A227] hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div className="space-y-1.5">
-                  <span className="text-[9px] uppercase font-mono text-[#C9A227] font-bold">Jury Deliberation</span>
+                  <span className="text-[9px] uppercase font-mono text-[#C9A227] font-bold">
+                    {c.caseNumber || 'CASE-C2011'} • Jury Deliberation
+                  </span>
                   <h4 className="text-sm font-bold text-[#1F2937] line-clamp-2 leading-snug">"{c.title}"</h4>
                   <p className="text-xs text-[#6B7280] line-clamp-3 leading-relaxed font-serif">{c.description}</p>
                 </div>

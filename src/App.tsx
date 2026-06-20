@@ -8,7 +8,6 @@ import SubmitStoryForm from './components/SubmitStoryForm';
 import SubmitQuestionForm from './components/SubmitQuestionForm';
 import RegisterCaseForm from './components/RegisterCaseForm';
 import AdminPanel from './components/AdminPanel';
-import MySubmissionsLedger from './components/MySubmissionsLedger';
 
 // Simulated screen components
 import HomeScreen from './pages/HomeScreen';
@@ -44,7 +43,9 @@ import {
   fetchUserProfileFromFirestore,
   deleteStoryFromFirestore,
   saveQuestionToFirestore,
-  fetchQuestionsFromFirestore
+  fetchQuestionsFromFirestore,
+  saveCourtCaseToFirestore,
+  saveRedFlagCaseToFirestore
 } from './lib/firestoreService';
 
 // RESTful Route Pathname Helpers for Clean Semantic Dynamic pSEO
@@ -291,53 +292,26 @@ export default function App() {
   const [showSubmitQuestion, setShowSubmitQuestion] = useState<boolean>(false);
   const [isQuestionsLoaded, setIsQuestionsLoaded] = useState<boolean>(false);
 
-  // Listen to Google Authentication State and Subscribe to Real-Time Collections
+  // Initialize local guest user session on mount
   useEffect(() => {
-    // 1. Listen to Authentication State
-    const unsubscribeAuth = onAuthStateChanged(auth, async (fbUser) => {
-      setCurrentUser(fbUser);
-      if (fbUser) {
-        showToast(`👋 Connected to Google Account: ${fbUser.displayName || fbUser.email}`);
-        
-        try {
-          const dbProfile = await fetchUserProfileFromFirestore(fbUser.uid);
-          if (dbProfile) {
-            setStore(prev => ({
-              ...prev,
-              user: {
-                ...dbProfile,
-                username: fbUser.displayName || dbProfile.username || 'Google Seeker'
-              }
-            }));
-          } else {
-            const initialProfile: UserProfile = {
-              username: fbUser.displayName || 'Google Seeker',
-              storiesSubmitted: 0,
-              helpfulVotesReceived: 0,
-              followers: 0,
-              badges: ["Google Connected"],
-              savedStories: [],
-              followedSituations: [],
-              followedTags: [],
-              followedQuestions: [],
-              submittedStories: [],
-              submittedRedFlags: [],
-              recentActivity: [{
-                type: 'story_added',
-                detail: "Connected Google Account Credentials anonymously",
-                date: "Just now"
-              }]
-            };
-            await saveUserProfileToFirestore(fbUser.uid, initialProfile);
-            setStore(prev => ({ ...prev, user: initialProfile }));
-          }
-        } catch (err) {
-          console.error("Error loading user profile from Firestore:", err);
-        }
-      }
+    let localUserId = localStorage.getItem('beforeregret_guest_uid');
+    if (!localUserId) {
+      localUserId = `guest_${Math.floor(100000 + Math.random() * 900000)}`;
+      localStorage.setItem('beforeregret_guest_uid', localUserId);
+    }
+    const finalUserName = store.user.username || 'Anonymous Seeker';
+    setCurrentUser({
+      uid: localUserId,
+      displayName: finalUserName,
+      email: `${finalUserName.toLowerCase().replace(/[^a-z0-9]/g, '_')}@beforeregret.com`,
+      isAnonymous: true,
+      isGuest: true
     });
+  }, []);
 
-    // 2. Real-Time Subscription to Stories
+  // Listen to Authentication State and Subscribe to Real-Time Collections
+  useEffect(() => {
+    // 1. Real-Time Subscription to Stories
     const storiesCol = collection(db, "stories");
     const qStories = query(storiesCol, orderBy("dateAdded", "desc"));
     const unsubscribeStories = onSnapshot(qStories, (snapshot) => {
@@ -359,7 +333,7 @@ export default function App() {
       console.error("Firestore stories subscription error: ", error);
     });
 
-    // 3. Real-Time Subscription to Comments / Advice Answers
+    // 2. Real-Time Subscription to Comments / Advice Answers
     const commentsCol = collection(db, "comments");
     const qComments = query(commentsCol, orderBy("dateAdded", "asc"));
     const unsubscribeComments = onSnapshot(qComments, (snapshot) => {
@@ -374,7 +348,7 @@ export default function App() {
       console.error("Firestore comments subscription error: ", error);
     });
 
-    // 4. Real-Time Subscription to Questions / Advice Requests
+    // 3. Real-Time Subscription to Questions / Advice Requests
     const questionsCol = collection(db, "questions");
     const unsubscribeQuestions = onSnapshot(questionsCol, (snapshot) => {
       const fsQuestions: Question[] = [];
@@ -401,12 +375,51 @@ export default function App() {
       setIsQuestionsLoaded(true);
     });
 
+    // 4. Real-Time Subscription to Court Cases
+    const courtCasesCol = collection(db, "courtCases");
+    const unsubscribeCourtCases = onSnapshot(courtCasesCol, (snapshot) => {
+      const fsCourtCases: CourtCase[] = [];
+      snapshot.forEach((snapDoc) => {
+        fsCourtCases.push(snapDoc.data() as CourtCase);
+      });
+      setStore(prev => {
+        const preseeded = prev.courtCases.filter(c => !c.caseNumber || parseInt(c.caseNumber.replace(/[^0-9]/g, ''), 10) <= 2012);
+        const combined = [...fsCourtCases, ...preseeded];
+        const unique = combined.filter((c, idx, self) =>
+          self.findIndex(t => t.slug === c.slug) === idx
+        );
+        return { ...prev, courtCases: unique };
+      });
+    }, (error) => {
+      console.error("Firestore courtCases subscription error: ", error);
+    });
+
+    // 5. Real-Time Subscription to Red Flag Cases
+    const redFlagCasesCol = collection(db, "redFlagCases");
+    const unsubscribeRedFlagCases = onSnapshot(redFlagCasesCol, (snapshot) => {
+      const fsRedFlagCases: RedFlagCase[] = [];
+      snapshot.forEach((snapDoc) => {
+        fsRedFlagCases.push(snapDoc.data() as RedFlagCase);
+      });
+      setStore(prev => {
+        const preseeded = prev.redFlagCases.filter(f => !f.caseNumber || parseInt(f.caseNumber.replace(/[^0-9]/g, ''), 10) <= 3004);
+        const combined = [...fsRedFlagCases, ...preseeded];
+        const unique = combined.filter((f, idx, self) =>
+          self.findIndex(t => t.id === f.id) === idx
+        );
+        return { ...prev, redFlagCases: unique };
+      });
+    }, (error) => {
+      console.error("Firestore redFlagCases subscription error: ", error);
+    });
+
     // Cleanup all subscriptions on unmount
     return () => {
-      unsubscribeAuth();
       unsubscribeStories();
       unsubscribeComments();
       unsubscribeQuestions();
+      unsubscribeCourtCases();
+      unsubscribeRedFlagCases();
     };
   }, []);
 
@@ -564,119 +577,85 @@ export default function App() {
     const trimmed = caseNum.trim().toUpperCase().replace(/\s+/g, '');
     if (!trimmed) return;
 
-    // Direct exact matches first
-    const exactCourt = store.courtCases.find(
-      c => c.caseNumber?.toUpperCase() === trimmed || c.slug?.toUpperCase() === trimmed
-    );
-    if (exactCourt) {
-      setScreen({ type: 'court', slug: exactCourt.slug });
-      showToast(`⚖️ Court Case ${exactCourt.caseNumber} retrieved successfully!`);
+    const cleaned = trimmed.replace('CASE-', '');
+    const matchNumber = cleaned.match(/\d+/);
+    const hasNum = matchNumber ? matchNumber[0] : '';
+
+    const hasS = cleaned.includes('S');
+    const hasC = cleaned.includes('C');
+    const hasF = cleaned.includes('F');
+
+    // 1. Check Stories / Regrets Registry
+    const foundStory = store.stories.find(s => {
+      const sNum = (s.caseNumber || '').toUpperCase();
+      return sNum === trimmed || 
+             sNum === `CASE-${trimmed}` || 
+             (hasNum && sNum === `CASE-S${hasNum}` && (hasS || (!hasC && !hasF && sNum.includes(hasNum))));
+    });
+
+    if (foundStory) {
+      setScreen({ type: 'regret_stories', slug: foundStory.id });
+      setHighlightedStoryId(foundStory.id);
+      showToast(`📂 Regret Case ${foundStory.caseNumber} retrieved from Registry!`);
       return;
     }
 
-    const exactStory = store.stories.find(
-      s => s.caseNumber?.toUpperCase() === trimmed || s.id?.toUpperCase() === trimmed
-    );
-    if (exactStory) {
-      setScreen({ type: 'situation', slug: exactStory.situationSlug });
-      setHighlightedStoryId(exactStory.id);
-      showToast(`📂 Case ${exactStory.caseNumber} retrieved! viewing inside folder.`);
-      
-      // Attempt smooth scroll
-      setTimeout(() => {
-        const element = document.getElementById(`story-${exactStory.id}`);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 500);
+    // 2. Check Court Cases / Relationship Court
+    const foundCourt = store.courtCases.find(c => {
+      const cNum = (c.caseNumber || '').toUpperCase();
+      const cSlug = (c.slug || '').toUpperCase();
+      return cNum === trimmed || 
+             cNum === `CASE-${trimmed}` || 
+             cSlug === trimmed ||
+             (hasNum && cNum === `CASE-C${hasNum}` && (hasC || (!hasS && !hasF && cNum.includes(hasNum))));
+    });
+
+    if (foundCourt) {
+      setScreen({ type: 'court', slug: foundCourt.slug });
+      showToast(`⚖️ Tribunal Case ${foundCourt.caseNumber} retrieved successfully!`);
       return;
     }
 
-    // Now do smart fuzzy/shorthand matches
-    // E.g., someone types "S1234", "C2001", "F3001", "1234", "CASE-S1234", "CASE-C2001", "CASE-F3001"
-    const cleaned = trimmed.replace('CASE-', ''); // Remove CASE- prefix if present. e.g. "S1234", "C2001", "1234", "F3001"
+    // 3. Check Red Flag Cases
+    const foundFlag = store.redFlagCases.find(f => {
+      const fNum = (f.caseNumber || '').toUpperCase();
+      const fId = (f.id || '').toUpperCase();
+      return fNum === trimmed || 
+             fNum === `CASE-${trimmed}` || 
+             fId === trimmed ||
+             (hasNum && fNum === `CASE-F${hasNum}` && (hasF || (!hasS && !hasC && fNum.includes(hasNum))));
+    });
+
+    if (foundFlag) {
+      setScreen({ type: 'red_flag_meter', slug: foundFlag.id });
+      showToast(`🏁 Red Flag Dilemma ${foundFlag.caseNumber} retrieved successfully!`);
+      return;
+    }
+
+    // 4. Fallback search by title or keyword
+    const queryStr = trimmed.toLowerCase();
     
-    // If it starts with S or is numeric and corresponds to stories (since preseeded stories are S1001-S1030 vs court C2001-C2010 etc)
-    const isStoryPattern = cleaned.startsWith('S') || (/^\d+$/.test(cleaned) && parseInt(cleaned, 10) < 2000);
-    const isCourtPattern = cleaned.startsWith('C') || (/^\d+$/.test(cleaned) && parseInt(cleaned, 10) >= 2000 && parseInt(cleaned, 10) < 3000);
-    const isRedFlagPattern = cleaned.startsWith('F') || (/^\d+$/.test(cleaned) && parseInt(cleaned, 10) >= 3000);
-
-    const numericPart = cleaned.replace(/^[SCF]/, ''); // e.g. "1234"
-
-    if (isCourtPattern) {
-      const foundCourt = store.courtCases.find(c => {
-        const cNumClean = (c.caseNumber || '').toUpperCase().replace('CASE-', '').replace('C', '');
-        return cNumClean === numericPart;
-      });
-      if (foundCourt) {
-        setScreen({ type: 'court', slug: foundCourt.slug });
-        showToast(`⚖️ Court Case ${foundCourt.caseNumber} retrieved successfully!`);
-        return;
-      }
-    }
-
-    if (isStoryPattern) {
-      const foundStory = store.stories.find(s => {
-        const sNumClean = (s.caseNumber || '').toUpperCase().replace('CASE-', '').replace('S', '');
-        return sNumClean === numericPart;
-      });
-      if (foundStory) {
-        setScreen({ type: 'situation', slug: foundStory.situationSlug });
-        setHighlightedStoryId(foundStory.id);
-        showToast(`📂 Case ${foundStory.caseNumber} retrieved! viewing inside folder.`);
-        
-        // Attempt smooth scroll
-        setTimeout(() => {
-          const element = document.getElementById(`story-${foundStory.id}`);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        }, 500);
-        return;
-      }
-    }
-
-    if (isRedFlagPattern) {
-      const foundFlag = store.redFlagCases.find(f => {
-        const fNumClean = (f.caseNumber || '').toUpperCase().replace('CASE-', '').replace('F', '');
-        return fNumClean === numericPart;
-      });
-      if (foundFlag) {
-        setScreen({ type: 'red_flag_meter', slug: foundFlag.id });
-        showToast(`🏁 Red Flag Dilemma ${foundFlag.caseNumber} retrieved successfully!`);
-        return;
-      }
-    }
-
-    // Fallback: search any case containing the input
     const fallbackCourt = store.courtCases.find(
-      c => c.caseNumber?.toUpperCase().includes(cleaned) || c.title.toLowerCase().includes(cleaned.toLowerCase())
+      c => c.title.toLowerCase().includes(queryStr) || (c.caseNumber && c.caseNumber.toLowerCase().includes(queryStr))
     );
     if (fallbackCourt) {
       setScreen({ type: 'court', slug: fallbackCourt.slug });
-      showToast(`⚖️ Court Case ${fallbackCourt.caseNumber} retrieved successfully!`);
+      showToast(`⚖️ Court Case ${fallbackCourt.caseNumber} retrieved!`);
       return;
     }
 
     const fallbackStory = store.stories.find(
-      s => s.caseNumber?.toUpperCase().includes(cleaned) || s.title.toLowerCase().includes(cleaned.toLowerCase())
+      s => s.title.toLowerCase().includes(queryStr) || (s.caseNumber && s.caseNumber.toLowerCase().includes(queryStr))
     );
     if (fallbackStory) {
-      setScreen({ type: 'situation', slug: fallbackStory.situationSlug });
+      setScreen({ type: 'regret_stories', slug: fallbackStory.id });
       setHighlightedStoryId(fallbackStory.id);
-      showToast(`📂 Case ${fallbackStory.caseNumber} retrieved!`);
-      
-      setTimeout(() => {
-        const element = document.getElementById(`story-${fallbackStory.id}`);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 500);
+      showToast(`📂 Regret Case ${fallbackStory.caseNumber} retrieved from Registry!`);
       return;
     }
 
     const fallbackRedFlag = store.redFlagCases.find(
-      f => f.caseNumber?.toUpperCase().includes(cleaned) || f.title.toLowerCase().includes(cleaned.toLowerCase())
+      f => f.title.toLowerCase().includes(queryStr) || (f.caseNumber && f.caseNumber.toLowerCase().includes(queryStr))
     );
     if (fallbackRedFlag) {
       setScreen({ type: 'red_flag_meter', slug: fallbackRedFlag.id });
@@ -684,7 +663,7 @@ export default function App() {
       return;
     }
 
-    showToast(`❌ Case ID "${caseNum}" not found. Verify character spelling.`);
+    showToast(`❌ Case ID or term "${caseNum}" not found in our indices.`);
   };
 
   const handleToggleAdmin = (status: boolean) => {
@@ -697,7 +676,6 @@ export default function App() {
     }
   };
   const [darkMode, setDarkMode] = useState(true);
-  const [isLedgerOpen, setIsLedgerOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [newlyLodgedCase, setNewlyLodgedCase] = useState<{ 
     title: string; 
@@ -973,15 +951,21 @@ export default function App() {
   };
 
   const handleVoteCourtCase = (slug: string, side: 'me' | 'partner' | 'both' | 'neither') => {
+    let updatedCaseToSave: CourtCase | null = null;
     setStore(prev => {
       const idx = prev.courtCases.findIndex(c => c.slug === slug);
       if (idx === -1) return prev;
 
       const updatedCases = [...prev.courtCases];
-      const courtCase = updatedCases[idx];
+      const courtCase = { 
+        ...updatedCases[idx], 
+        votes: { ...updatedCases[idx].votes } 
+      };
 
       // Mutate case metrics
       courtCase.votes[side] += 1;
+      updatedCases[idx] = courtCase;
+      updatedCaseToSave = courtCase;
 
       return {
         ...prev,
@@ -991,21 +975,29 @@ export default function App() {
 
     setUserVotedCases(prev => ({ ...prev, [slug]: side }));
     showToast("⚖️ Verdict logged. You can now analyze peer jury ratios.");
+    if (updatedCaseToSave) {
+      saveCourtCaseToFirestore(updatedCaseToSave).catch(err => {
+        console.error("Error saving voted courtcase to Firestore:", err);
+      });
+    }
   };
 
   const handleVoteFlag = (caseId: string, flagType: 'green' | 'yellow' | 'red') => {
+    let updatedFlagToSave: RedFlagCase | null = null;
     setStore(prev => {
       const idx = prev.redFlagCases.findIndex(c => c.id === caseId);
       if (idx === -1) return prev;
 
       const updated = [...prev.redFlagCases];
-      updated[idx] = {
+      const redFlagCase = {
         ...updated[idx],
         votes: {
           ...updated[idx].votes,
-          [flagType]: updated[idx].votes[flagType] + 1
+          [flagType]: (updated[idx].votes[flagType] || 0) + 1
         }
       };
+      updated[idx] = redFlagCase;
+      updatedFlagToSave = redFlagCase;
 
       return {
         ...prev,
@@ -1015,9 +1007,15 @@ export default function App() {
 
     setUserVotedFlags(prev => ({ ...prev, [caseId]: flagType }));
     showToast("🏁 Flag vote registered! Viewing live statistics.");
+    if (updatedFlagToSave) {
+      saveRedFlagCaseToFirestore(updatedFlagToSave).catch(err => {
+        console.error("Error saving red flag vote to Firestore:", err);
+      });
+    }
   };
 
   const handleAddFlagComment = (caseId: string, text: string) => {
+    let updatedFlagToSave: RedFlagCase | null = null;
     setStore(prev => {
       const idx = prev.redFlagCases.findIndex(c => c.id === caseId);
       if (idx === -1) return prev;
@@ -1030,10 +1028,12 @@ export default function App() {
         date: new Date().toISOString().split('T')[0]
       };
 
-      updated[idx] = {
+      const redFlagCase = {
         ...updated[idx],
         comments: [...(updated[idx].comments || []), commentObj]
       };
+      updated[idx] = redFlagCase;
+      updatedFlagToSave = redFlagCase;
 
       return {
         ...prev,
@@ -1041,6 +1041,11 @@ export default function App() {
       };
     });
     showToast("💬 Comment posted to Warning board.");
+    if (updatedFlagToSave) {
+      saveRedFlagCaseToFirestore(updatedFlagToSave).catch(err => {
+        console.error("Error saving red flag comment to Firestore:", err);
+      });
+    }
   };
 
   const handleAddFlagCase = (
@@ -1048,25 +1053,23 @@ export default function App() {
     description: string, 
     category: 'Communication' | 'Exes & Socials' | 'Trust & Privacy' | 'Control & Habits' | 'Other'
   ) => {
+    const caseId = 'rf_' + Date.now().toString();
+    const randomNum = Math.floor(1000 + Math.random() * 9000); 
+    const caseNumber = `CASE-F${randomNum}`;
+    
+    const newCase: RedFlagCase = {
+      id: caseId,
+      caseNumber,
+      title,
+      description,
+      category,
+      votes: { green: 0, yellow: 0, red: 0 },
+      comments: [],
+      author: store.user.username,
+      dateAdded: new Date().toISOString().split('T')[0]
+    };
+
     setStore(prev => {
-      const caseId = 'rf_' + Date.now().toString();
-      const nextNum = 3001 + prev.redFlagCases.length;
-      const caseNumber = `CASE-F${nextNum}`;
-      
-      const newCase: RedFlagCase = {
-        id: caseId,
-        caseNumber,
-        title,
-        description,
-        category,
-        votes: { green: 0, yellow: 0, red: 0 },
-        comments: [],
-        author: prev.user.username,
-        dateAdded: new Date().toISOString().split('T')[0]
-      };
-
-      showToast(`🏁 Lodged Category ${category} Dilemma: ${caseNumber}`);
-
       const updatedUser: UserProfile = {
         ...prev.user,
         submittedRedFlags: [...(prev.user.submittedRedFlags || []), caseId],
@@ -1086,15 +1089,25 @@ export default function App() {
         user: updatedUser
       };
     });
+
+    showToast(`🏁 Lodged Category ${category} Dilemma: ${caseNumber}`);
+
+    saveRedFlagCaseToFirestore(newCase).catch(err => {
+      console.error("Error saving newly submitted red flag case to Firestore:", err);
+    });
   };
 
   const handleAddCourtArgument = (slug: string, side: 'Me' | 'Partner' | 'Both' | 'Neither', text: string) => {
+    let updatedCaseToSave: CourtCase | null = null;
     setStore(prev => {
       const idx = prev.courtCases.findIndex(c => c.slug === slug);
       if (idx === -1) return prev;
 
       const updatedCases = [...prev.courtCases];
-      const courtCase = updatedCases[idx];
+      const courtCase = { 
+        ...updatedCases[idx],
+        arguments: [...(updatedCases[idx].arguments || [])]
+      };
 
       const newArg = {
         id: 'arg_' + Date.now().toString(),
@@ -1106,6 +1119,8 @@ export default function App() {
       };
 
       courtCase.arguments = [newArg, ...courtCase.arguments];
+      updatedCases[idx] = courtCase;
+      updatedCaseToSave = courtCase;
 
       return {
         ...prev,
@@ -1114,6 +1129,11 @@ export default function App() {
     });
 
     showToast("✍️ Jury opinion finalized! Thank you for raising relationship objectivity.");
+    if (updatedCaseToSave) {
+      saveCourtCaseToFirestore(updatedCaseToSave).catch(err => {
+        console.error("Error saving added argument courtcase to Firestore:", err);
+      });
+    }
   };
 
   const handleRegisterCourtCase = (caseData: { title: string; description: string; tags: string[] }) => {
@@ -1172,6 +1192,10 @@ export default function App() {
       slug: newCase.slug
     });
     showToast(`⚖️ Court case registered successfully under Case Key: ${caseNumber}!`);
+
+    saveCourtCaseToFirestore(newCase).catch(err => {
+      console.error("Error saving registered court case to Firestore:", err);
+    });
   };
 
   const handleVoteQuestionPoll = (slug: string, optionText: string) => {
@@ -1513,30 +1537,6 @@ export default function App() {
         onCaseRetrieve={handleCaseRetrieve}
         stories={store.stories}
         courtCases={store.courtCases}
-        onOpenLedger={() => setIsLedgerOpen(true)}
-      />
-
-      {/* Anonymous Submissions Ledger Modal */}
-      <MySubmissionsLedger
-        isOpen={isLedgerOpen}
-        onClose={() => setIsLedgerOpen(false)}
-        user={store.user}
-        stories={store.stories}
-        redFlagCases={store.redFlagCases}
-        setScreen={setScreen}
-        onSelectStory={(storyId) => {
-          const found = store.stories.find(s => s.id === storyId);
-          if (found) {
-            setScreen({ type: 'situation', slug: found.situationSlug });
-            setHighlightedStoryId(storyId);
-            setTimeout(() => {
-              const el = document.getElementById(`story-${storyId}`);
-              if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
-            }, 600);
-          }
-        }}
       />
 
       {/* Floating interactive notification toasts */}
@@ -1611,9 +1611,9 @@ export default function App() {
           <div className="space-y-6 pb-16 animate-fadeIn">
             <div>
               <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-                <Gavel className="h-6 w-6 text-[#F4B942]" /> Become a Judge
+                <Gavel className="h-6 w-6 text-[#F4B942]" /> Before Regret Court
               </h1>
-              <p className="text-xs text-[#AAB2C0]">Step into our anonymous tribunal. Review relationship evidence, defend sides, and lodge peer verdict opinions.</p>
+              <p className="text-xs text-[#AAB2C0]">Step into our anonymous space. Review relationship evidence, defend sides, and cast peer perspective votes.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -1631,8 +1631,8 @@ export default function App() {
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-[9px] uppercase font-bold text-[#F4B942] bg-[#F4B942]/10 px-2 py-0.5 rounded">
-                            Active Deliberation
+                          <span className="text-[9px] uppercase font-mono font-bold text-[#F4B942] bg-[#F4B942]/10 px-2 py-0.5 rounded">
+                            {c.caseNumber || 'CASE-C2011'}
                           </span>
                           <span className="text-[9px] text-[#AAB2C0] font-mono">
                             ⚖️ {(c.votes.me || 0) + (c.votes.partner || 0) + (c.votes.both || 0) + (c.votes.neither || 0)} votes
@@ -1642,7 +1642,7 @@ export default function App() {
                         <p className="text-xs text-[#AAB2C0] line-clamp-3 leading-relaxed mt-1.5 font-serif">{c.description}</p>
                       </div>
                       <div className="mt-4 border-t border-[#30363D]/45 pt-3 flex items-center justify-between text-[10px] text-zinc-500">
-                        <span>Lodge Verdict →</span>
+                        <span>Cast Vote →</span>
                         <span className="font-mono">{c.postTime}</span>
                       </div>
                     </div>
@@ -1771,18 +1771,22 @@ export default function App() {
           );
         })()}
 
-        {currentScreen.type === 'regret_stories' && (
-          <RegretStoriesScreen
-            stories={store.stories}
-            situations={liveSituations}
-            onVoteHelpful={handleVoteHelpful}
-            onSubmitStory={handleAddStory}
-            setScreen={setScreen}
-            isAdmin={isAdmin}
-            onDeleteStory={handleDeleteStory}
-            initialSituationSlug={currentScreen.slug}
-          />
-        )}
+        {currentScreen.type === 'regret_stories' && (() => {
+          const isStoryId = currentScreen.slug && store.stories.some(s => s.id === currentScreen.slug);
+          return (
+            <RegretStoriesScreen
+              stories={store.stories}
+              situations={liveSituations}
+              onVoteHelpful={handleVoteHelpful}
+              onSubmitStory={handleAddStory}
+              setScreen={setScreen}
+              isAdmin={isAdmin}
+              onDeleteStory={handleDeleteStory}
+              initialSituationSlug={isStoryId ? 'All' : currentScreen.slug}
+              initialStoryId={isStoryId ? currentScreen.slug : undefined}
+            />
+          );
+        })()}
 
         {currentScreen.type === 'red_flag_meter' && (
           <RedFlagMeterScreen

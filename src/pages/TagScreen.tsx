@@ -148,7 +148,7 @@ export default function TagScreen({
           {taggedCourtCases.length > 0 && (
             <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 space-y-3 shadow-sm">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9A227] flex items-center gap-1 font-mono">
-                <Gavel className="h-4 w-4" /> Related Court Trials
+                <Gavel className="h-4 w-4" /> Related Before Regret Cases
               </h3>
               <div className="space-y-2">
                 {taggedCourtCases.map(c => (
@@ -157,6 +157,7 @@ export default function TagScreen({
                     onClick={() => setScreen({ type: 'court', slug: c.slug })}
                     className="rounded bg-[#FAF8F2] p-2.5 text-xs text-[#1F2937] hover:text-[#C9A227] cursor-pointer hover:border-zinc-300 border border-[#E5E7EB] transition-all font-serif italic"
                   >
+                    <span className="font-mono text-[9px] font-bold text-[#C9A227] mr-1.5 not-italic uppercase bg-[#C9A227]/5 px-1 py-0.2 rounded border border-[#C9A227]/10 inline-block">{c.caseNumber || 'CASE-C2011'}</span>
                     "{c.title}"
                   </div>
                 ))}
