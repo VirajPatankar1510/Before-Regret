@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, Menu, X, Gavel, FileText, User, Sparkles, ChevronRight, Compass, Sun, Moon, BookOpen, Heart, AlertTriangle } from 'lucide-react';
 import { PRESEEDED_SITUATIONS, PRESEEDED_QUESTIONS, COUNTRIES_DATA } from '../data/mockData';
 import { Story, CourtCase } from '../types';
+import BeforeRegretLogo from './BeforeRegretLogo';
 
 interface NavigationProps {
   currentScreen: { type: string; slug?: string };
@@ -48,7 +49,7 @@ export default function Navigation({
     courtCases.forEach(c => {
       const caseNum = c.caseNumber || '';
       if (caseNum.toLowerCase().includes(query) || c.title.toLowerCase().includes(query)) {
-        results.push({ type: 'court', label: `⚖️ ${caseNum ? `[${caseNum}]` : 'Court'}: ${c.title}`, slug: c.slug });
+        results.push({ type: 'court', label: `⚖️ ${caseNum ? `[${caseNum}]` : 'BR Court'}: ${c.title}`, slug: c.slug });
       }
     });
 
@@ -102,7 +103,7 @@ export default function Navigation({
 
   const menuItems = [
     { label: 'Explore', screen: { type: 'explore' }, icon: Compass },
-    { label: 'Before Regret Court', screen: { type: 'court_list' }, icon: Gavel },
+    { label: 'BR Court', screen: { type: 'court_list' }, icon: Gavel },
     { label: 'Advice Boards', screen: { type: 'question_list' }, icon: Sparkles },
     { label: 'Red Flag Meter', screen: { type: 'red_flag_meter' }, icon: AlertTriangle },
     { label: 'Regret Registry', screen: { type: 'regret_stories' }, icon: Heart },
@@ -119,9 +120,7 @@ export default function Navigation({
             className="flex cursor-pointer items-center space-x-2.5 shrink-0 select-none"
             id="logo-desktop"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#24324A] font-extrabold text-[#F7E9B4] text-lg shadow-inner">
-              BR
-            </div>
+            <BeforeRegretLogo showText={false} size={40} lightTheme={true} className="shrink-0" />
             <div className="block">
               <span className="font-extrabold text-sm sm:text-lg tracking-tight text-[#24324A]">Before<span className="text-[#C9A227]">Regret</span></span>
               <p className="text-[8px] sm:text-[9px] text-[#6B7280] leading-none font-medium">Before you stay. Before you leave.</p>

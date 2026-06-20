@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Gavel, Users, Clock, Vote, Check, ShieldAlert, Award, MessageSquare, Plus, ArrowLeft, Shield, Trash2, Calendar, Lock, Unlock, Download, Copy, ExternalLink, Sparkles, Share2, X } from 'lucide-react';
 import { CourtCase, CourtArgument } from '../types';
+import { saveCourtCaseToFirestore } from '../lib/firestoreService';
+import BeforeRegretLogo from '../components/BeforeRegretLogo';
 
 interface CourtScreenProps {
   courtCase: CourtCase;
@@ -42,6 +44,13 @@ export default function CourtScreen({
   const [certJurors, setCertJurors] = useState<number | null>(null);
   const [certIsGeneratingImage, setCertIsGeneratingImage] = useState(false);
   
+  const [showAddNameForm, setShowAddNameForm] = useState(false);
+  const [typedPin, setTypedPin] = useState('');
+  const [typedName, setTypedName] = useState('');
+  const [typedConfirmName, setTypedConfirmName] = useState('');
+  const [nameRevealConsent, setNameRevealConsent] = useState(false);
+  const [nameError, setNameError] = useState('');
+  const [isSavingName, setIsSavingName] = useState(false);
 
 
   React.useEffect(() => {
@@ -198,7 +207,7 @@ export default function CourtScreen({
           <span className="flex h-5 w-5 items-center justify-center rounded bg-[#FFF8E1] text-[#C9A227]">
             <Gavel className="h-3.5 w-3.5" />
           </span>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#C9A227]">Before Regret Court Case • {courtCase.caseNumber || 'CASE-C2011'}</span>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-[#C9A227]">BR Court Case • {courtCase.caseNumber || 'CASE-C2011'}</span>
         </div>
         
         <h1 className="text-lg sm:text-xl font-bold text-[#24324A] leading-snug font-serif">
@@ -353,6 +362,176 @@ export default function CourtScreen({
 
           {certificateUnlocked && (
             <div className="space-y-6 animate-fadeIn">
+              {/* Personalization Section */}
+              <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 text-left space-y-2 max-w-2xl mx-auto no-print">
+                {courtCase.recipientName ? (
+                  <div className="flex items-center gap-3 py-1">
+                    <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                      <Check className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-emerald-400 uppercase tracking-wider">
+                        CERTIFICATE RECIPIENT LOCKED
+                      </h4>
+                      <p className="text-[11px] text-zinc-400 mt-0.5 leading-relaxed">
+                        This credential is permanently locked and issued to <strong className="text-white font-black">"{courtCase.recipientName}"</strong>. Recipient names can only be added once to preserve social-proof integrity.
+                      </p>
+                    </div>
+                  </div>
+                ) : !showAddNameForm ? (
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div>
+                      <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+                        <Sparkles className="h-4 w-4 text-[#F4B942]" /> Is this your case? Click to add your name
+                      </h4>
+                      <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                        Enter your Case PIN to permanently add your name to this certificate. <strong>Note: This can only be done once.</strong>
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setShowAddNameForm(true);
+                        setTypedPin('');
+                        setTypedName('');
+                        setTypedConfirmName('');
+                        setNameRevealConsent(false);
+                        setNameError('');
+                      }}
+                      className="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider bg-[#F4B942]/10 border border-[#F4B942]/30 hover:bg-[#F4B942]/20 text-[#F4B942] active:scale-95 transition-all cursor-pointer shrink-0"
+                    >
+                      Add Your Name
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3 p-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#F4B942] font-mono">
+                        CLAIM CERTIFICATE & ADD YOUR NAME
+                      </span>
+                      <button
+                        onClick={() => setShowAddNameForm(false)}
+                        className="px-2 py-1 rounded bg-[#161B22] border border-[#30363D] text-zinc-400 hover:text-white transition-all text-[9.5px] uppercase font-bold cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+
+                    <p className="text-[10px] text-[#E0A52D] leading-tight font-sans">
+                      ⚠️ Once submitted, the name is permanently locked on the certificate database and cannot be modified ever again.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-zinc-400 font-bold mb-1">
+                          CASE PIN (PASSWORD):
+                        </label>
+                        <input
+                          type="password"
+                          placeholder={courtCase.passwordPin ? "Enter 4-digit PIN..." : "No PIN required"}
+                          disabled={!courtCase.passwordPin}
+                          value={typedPin}
+                          onChange={(e) => setTypedPin(e.target.value.trim())}
+                          className="w-full bg-[#0D1117] border border-[#30363D] disabled:opacity-50 text-white text-xs px-3 py-2 rounded-lg font-mono focus:border-[#F4B942]/50 focus:outline-none transition-all placeholder:text-zinc-650"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-zinc-400 font-bold mb-1">
+                          RECIPIENT NAME:
+                        </label>
+                        <input
+                          type="text"
+                          maxLength={35}
+                          placeholder="e.g. Samuel Bennett"
+                          value={typedName}
+                          onChange={(e) => setTypedName(e.target.value)}
+                          className="w-full bg-[#0D1117] border border-[#30363D] text-white text-xs px-3 py-2 rounded-lg focus:border-[#F4B942]/50 focus:outline-none transition-all placeholder:text-zinc-650"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-zinc-400 font-bold mb-1">
+                          CONFIRM RECIPIENT NAME:
+                        </label>
+                        <input
+                          type="text"
+                          maxLength={35}
+                          placeholder="Type name again to confirm..."
+                          value={typedConfirmName}
+                          onChange={(e) => setTypedConfirmName(e.target.value)}
+                          className="w-full bg-[#0D1117] border border-[#30363D] text-white text-xs px-3 py-2 rounded-lg focus:border-[#F4B942]/50 focus:outline-none transition-all placeholder:text-zinc-650"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-2 pt-1 font-sans">
+                      <input
+                        type="checkbox"
+                        id="consent-reveal-checkbox"
+                        checked={nameRevealConsent}
+                        onChange={(e) => setNameRevealConsent(e.target.checked)}
+                        className="mt-0.5 rounded border border-[#30363D] bg-[#0c1015] text-[#F4B942] focus:ring-0 focus:outline-none h-3.5 w-3.5 cursor-pointer accent-[#F4B942]"
+                      />
+                      <label htmlFor="consent-reveal-checkbox" className="text-[10.5px] text-zinc-300 font-semibold leading-tight cursor-pointer select-none">
+                        I understand that adding my name makes it publicly visible on this certificate.
+                      </label>
+                    </div>
+
+                    {nameError && (
+                      <p className="text-[10px] text-rose-400 font-bold mt-1">
+                        ⚠️ nameError: {nameError}
+                      </p>
+                    )}
+
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-800/60 mt-2">
+                      <button
+                        onClick={async () => {
+                          const cleanName = typedName.trim();
+                          const cleanConfirm = typedConfirmName.trim();
+
+                          if (!cleanName) {
+                            setNameError("Please enter a recipient name.");
+                            return;
+                          }
+                          if (cleanName !== cleanConfirm) {
+                            setNameError("The Recipient Name and Confirm Recipient Name fields do not match.");
+                            return;
+                          }
+                          if (courtCase.passwordPin && typedPin !== courtCase.passwordPin) {
+                            setNameError("Incorrect Case PIN. Certificate claim failed.");
+                            return;
+                          }
+                          if (!nameRevealConsent) {
+                            setNameError("Please confirm public display acknowledgement by checking the consent box.");
+                            return;
+                          }
+                          
+                          setIsSavingName(true);
+                          setNameError('');
+                          try {
+                            const updatedCase: CourtCase = {
+                              ...courtCase,
+                              recipientName: cleanName
+                            };
+                            await saveCourtCaseToFirestore(updatedCase);
+                            setShowAddNameForm(false);
+                          } catch (err) {
+                            console.error(err);
+                            setNameError("Error saving to database. Certificate update failed.");
+                          } finally {
+                            setIsSavingName(false);
+                          }
+                        }}
+                        disabled={isSavingName || !nameRevealConsent}
+                        className="bg-[#F4B942] hover:bg-[#E0A52D] disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-[#0D1117] font-black text-[10px] uppercase tracking-wider px-3.5 py-2 rounded-lg transition-all shadow cursor-pointer"
+                      >
+                        {isSavingName ? "Saving Name..." : "Confirm & Apply Name"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* PRINT STYLE COMPONENT OVERRIDE */}
               <style dangerouslySetInnerHTML={{ __html: `
                 @media print {
@@ -442,7 +621,7 @@ export default function CourtScreen({
                   <div className="flex items-center justify-center gap-1">
                     <span className="text-amber-600 text-xs">⚖️</span>
                     <span className="block text-[8px] sm:text-[9.5px] uppercase tracking-[0.22em] font-mono font-bold text-amber-800">
-                      RELATIONSHIP COURT
+                      BR COURT
                     </span>
                     <span className="text-amber-600 text-xs">⚖️</span>
                   </div>
@@ -451,22 +630,28 @@ export default function CourtScreen({
                   </h2>
                 </div>
 
-                {/* Shield Icon, Badge Header and ribbon block */}
-                <div className="flex flex-col items-center space-y-3 pt-2">
-                  {/* Rounded Shield and heart */}
-                  <div className="relative flex items-center justify-center h-12 w-12 bg-[#4AA3A2] border-2 border-[#C29B38] rounded-xl shadow-md rotate-45 transform">
-                    <div className="-rotate-45 transform">
-                      <svg className="w-5 h-5 text-white fill-white" viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                      </svg>
-                    </div>
+                {/* Recipient Custom Name */}
+                {courtCase.recipientName && (
+                  <div className="pt-2 pb-1 text-center animate-fadeIn select-all">
+                    <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] text-[#B45309] font-black font-sans block mb-1">
+                      THIS CREDENTIAL IS PROUDLY ISSUED TO
+                    </span>
+                    <span className="text-xl sm:text-2xl font-black text-slate-950 tracking-wider font-serif px-6 block max-w-sm mx-auto border-b border-dashed border-[#C29B38]/30 pb-1.5">
+                      {courtCase.recipientName}
+                    </span>
                   </div>
+                )}
+
+                {/* Shield Icon, Badge Header and ribbon block */}
+                <div className="flex flex-col items-center space-y-3 pt-2 animate-fadeIn">
+                  {/* Custom Before Regret Emblem Logo matching user upload */}
+                  <BeforeRegretLogo showText={false} size={90} lightTheme={true} className="mb-1" />
 
                   {/* Title with decorative rays */}
                   <div className="flex items-center gap-3">
                     <span className="text-amber-600/40 text-xs font-serif select-none">🗲</span>
                     <h3 className="text-xl sm:text-2xl font-black tracking-widest text-[#1B2B3E] uppercase font-sans leading-none">
-                      {certHeroText}
+                      BR COURT CERTIFICATE
                     </h3>
                     <span className="text-amber-600/40 text-xs font-serif select-none">🗲</span>
                   </div>
@@ -493,8 +678,8 @@ export default function CourtScreen({
                   </div>
                 </div>
 
-                {/* Three-column premium statistics table */}
-                <div className="grid grid-cols-3 gap-1 border-t border-b border-amber-700/10 py-5 max-w-xl mx-auto bg-stone-50/50 rounded-xl px-2">
+                {/* Two-column premium statistics table */}
+                <div className="grid grid-cols-2 gap-4 border-t border-b border-amber-700/10 py-5 max-w-xl mx-auto bg-stone-50/50 rounded-xl px-4">
                   <div className="flex flex-col items-center text-center space-y-1">
                     <div className="h-7 w-7 rounded-full bg-[#E07A5F] flex items-center justify-center text-white shadow-sm shrink-0">
                       <Users className="h-3.5 w-3.5" />
@@ -508,7 +693,7 @@ export default function CourtScreen({
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-center text-center space-y-1 border-l border-r border-[#30363D]/10">
+                  <div className="flex flex-col items-center text-center space-y-1 border-l border-amber-700/10">
                     <div className="h-7 w-7 rounded-full bg-[#4AA3A2] flex items-center justify-center text-white shadow-sm shrink-0">
                       <Shield className="h-3.5 w-3.5" />
                     </div>
@@ -518,19 +703,6 @@ export default function CourtScreen({
                         {certConfidence}
                       </span>
                       <span className="text-[8px] text-amber-500 block mt-0.5 leading-none">★★★★★</span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-center text-center space-y-1">
-                    <div className="h-7 w-7 rounded-full bg-[#8165A9] flex items-center justify-center text-white shadow-sm shrink-0">
-                      <Award className="h-3.5 w-3.5" />
-                    </div>
-                    <div className="leading-tight">
-                      <span className="text-[7.5px] uppercase tracking-wider text-stone-500 block font-sans font-bold">ARC ARCHETYPE</span>
-                      <span className="text-xs font-black text-[#5C458A] font-sans block pt-0.5 uppercase tracking-tighter">
-                        {certArchetype}
-                      </span>
-                      <span className="text-[6.5px] uppercase tracking-widest text-stone-400 font-bold block">COURT RECORD</span>
                     </div>
                   </div>
                 </div>

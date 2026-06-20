@@ -94,6 +94,8 @@ export interface CourtCase {
   tags: string[];
   deliberationDays?: number; // Duration of active voting (min 3 days)
   createdAt?: string;        // ISO string when created
+  passwordPin?: string;      // Random PIN/password generated at registration
+  recipientName?: string;    // Custom recipient name added by authenticated user
 }
 
 export interface QuestionAnswerComment {
