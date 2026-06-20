@@ -61,7 +61,7 @@ export default function CourtScreen({
         onClick={() => setScreen({ type: 'home' })}
         className="text-xs text-[#6B7280] hover:text-[#24324A] inline-flex items-center gap-1 font-semibold border border-[#E5E7EB] bg-white px-3 py-1.5 rounded-xl transition-all hover:border-zinc-300 shadow-sm"
       >
-        <ArrowLeft className="h-3.5 w-3.5" /> Return to Courtroom Entries
+        <ArrowLeft className="h-3.5 w-3.5" /> Return to Before Regret Cases
       </button>
 
       {/* Primary Dilemma header */}
@@ -108,7 +108,7 @@ export default function CourtScreen({
           <span className="flex h-5 w-5 items-center justify-center rounded bg-[#FFF8E1] text-[#C9A227]">
             <Gavel className="h-3.5 w-3.5" />
           </span>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#C9A227]">Relationship Court Trials</span>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-[#C9A227]">Before Regret Court Case • {courtCase.caseNumber || 'CASE-C2011'}</span>
         </div>
         
         <h1 className="text-lg sm:text-xl font-bold text-[#24324A] leading-snug font-serif">
@@ -142,7 +142,7 @@ export default function CourtScreen({
         
         {/* Left Side: Active Poll Voting */}
         <div className="md:col-span-5 rounded-2xl border border-[#E5E7EB] bg-white p-5 space-y-4 shadow-sm">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Cast Your Jury Verdict</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Cast Your Jury Perspective</h3>
           
           {userVote ? (
             <div className="space-y-3">
@@ -173,9 +173,9 @@ export default function CourtScreen({
               })}
 
               <div className="border-t border-[#ECECEC] pt-3 text-center">
-                <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-bold">Leading Jury Verdict</span>
+                <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-bold">Leading Perspective</span>
                 <span className="text-sm font-bold text-[#C9A227] uppercase bg-[#FFF8E1] px-3 py-1 rounded border border-[#E8D79B] inline-block mt-1 font-mono">
-                  {currentVerdict() === 'Me' ? 'Guilty Me' : currentVerdict() === 'Partner' ? 'Guilty Partner' : currentVerdict() === 'Both' ? 'Equally Culpable' : 'No Crime committed'}
+                  {currentVerdict() === 'Me' ? 'Poster at Fault' : currentVerdict() === 'Partner' ? 'Partner at Fault' : currentVerdict() === 'Both' ? 'Both Share Blame' : 'Mutual Understanding / No Fault'}
                 </span>
               </div>
             </div>

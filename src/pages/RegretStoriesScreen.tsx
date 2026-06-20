@@ -31,6 +31,7 @@ interface RegretStoriesScreenProps {
   isAdmin?: boolean;
   onDeleteStory?: (id: string) => void;
   initialSituationSlug?: string;
+  initialStoryId?: string;
 }
 
 export default function RegretStoriesScreen({
@@ -41,7 +42,8 @@ export default function RegretStoriesScreen({
   setScreen,
   isAdmin = false,
   onDeleteStory,
-  initialSituationSlug = 'All'
+  initialSituationSlug = 'All',
+  initialStoryId
 }: RegretStoriesScreenProps) {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [filterCategory, setFilterCategory] = useState<string>('All');
@@ -54,9 +56,21 @@ export default function RegretStoriesScreen({
       setFilterSituation(initialSituationSlug);
     }
   }, [initialSituationSlug]);
-  
+
   // Track open/collapsed state of full stories
   const [expandedStories, setExpandedStories] = useState<{ [id: string]: boolean }>({});
+
+  useEffect(() => {
+    if (initialStoryId) {
+      setExpandedStories(prev => ({ ...prev, [initialStoryId]: true }));
+      setTimeout(() => {
+        const element = document.getElementById(`story-card-${initialStoryId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500);
+    }
+  }, [initialStoryId]);
 
   // Track admin delete state
   const [storyIdToDeleteConfirm, setStoryIdToDeleteConfirm] = useState<string | null>(null);
@@ -280,10 +294,16 @@ export default function RegretStoriesScreen({
           sortedStories.map(story => {
             const regret = getRegretString(story.regretScore);
             const isExpanded = !!expandedStories[story.id];
+            const isHighlighted = initialStoryId === story.id;
             return (
               <div 
                 key={story.id} 
-                className="rounded-2xl border border-[#E5E7EB] bg-white p-5 sm:p-6 shadow-sm hover:shadow-md hover:translate-y-[-1px] transition-all relative"
+                id={`story-card-${story.id}`}
+                className={`rounded-2xl border transition-all duration-300 relative p-5 sm:p-6 ${
+                  isHighlighted 
+                    ? 'border-[#C9A227] ring-4 ring-[#C9A227]/15 bg-[#FAF8F2] shadow-md scale-[1.01]' 
+                    : 'border-[#E5E7EB] bg-white shadow-sm hover:shadow-md hover:translate-y-[-1px]'
+                }`}
               >
                 
                 {/* Upper row: Case number, Category tag and regret level badge */}
@@ -295,6 +315,11 @@ export default function RegretStoriesScreen({
                     <span className="text-[10px] font-extrabold text-[#24324A] uppercase tracking-wider bg-[#24324A]/5 px-2 py-0.5 rounded">
                       {story.tags[0] || 'Relationship'}
                     </span>
+                    {isHighlighted && (
+                      <span className="animate-pulse bg-[#C9A227] text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded shadow-sm">
+                        🎯 Searched Case Match
+                      </span>
+                    )}
                   </div>
                   
                   {/* Regret Score Badge */}

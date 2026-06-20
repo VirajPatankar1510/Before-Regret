@@ -10,7 +10,7 @@ import {
   orderBy,
   deleteDoc
 } from "firebase/firestore";
-import { Story, StoryComment, UserProfile, Question } from "../types";
+import { Story, StoryComment, UserProfile, Question, CourtCase, RedFlagCase } from "../types";
 
 export enum OperationType {
   CREATE = 'create',
@@ -184,5 +184,27 @@ export async function fetchQuestionsFromFirestore(): Promise<Question[]> {
     return questions;
   } catch (error) {
     handleFirestoreError(error, OperationType.LIST, pathForGetDocs);
+  }
+}
+
+// Durable Court Cases Saving
+export async function saveCourtCaseToFirestore(courtCase: CourtCase): Promise<void> {
+  const pathForWrite = `courtCases/${courtCase.slug}`;
+  try {
+    const caseRef = doc(db, "courtCases", courtCase.slug);
+    await setDoc(caseRef, courtCase);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, pathForWrite);
+  }
+}
+
+// Durable Red Flag Cases Saving
+export async function saveRedFlagCaseToFirestore(redFlagCase: RedFlagCase): Promise<void> {
+  const pathForWrite = `redFlagCases/${redFlagCase.id}`;
+  try {
+    const caseRef = doc(db, "redFlagCases", redFlagCase.id);
+    await setDoc(caseRef, redFlagCase);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, pathForWrite);
   }
 }

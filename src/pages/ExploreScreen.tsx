@@ -120,10 +120,10 @@ export default function ExploreScreen({
           <div className="space-y-1">
             <h2 className="text-base font-bold text-[#24324A] flex items-center gap-2 uppercase tracking-wide font-serif">
               <ShieldCheck className="h-5 w-5 text-[#C9A227]" />
-              🔓 Public Cryptographic case Index
+              📁 Public Case Directory
             </h2>
             <p className="text-[11px] text-[#6B7280] font-medium">
-              Index ledger of user-lodged relationship stories and trials. Completely anonymous and indexable for search engines.
+              Directory listing of user-lodged relationship stories and trial records. Completely anonymous and securely stored.
             </p>
           </div>
 
@@ -228,8 +228,8 @@ export default function ExploreScreen({
           className="rounded-2xl border border-dashed border-[#E8D79B] bg-white p-5 cursor-pointer hover:border-[#C9A227] hover:shadow-md transition-all shadow-sm"
         >
           <Gavel className="h-8 w-8 text-[#C9A227] mb-3" />
-          <h3 className="text-sm font-bold text-[#24324A] mb-1 font-serif">Relationship Jury Courtroom</h3>
-          <p className="text-xs text-[#6B7280] leading-relaxed font-sans">Read or load trials of digital snoopings, Instagram ex-likes, or in-law disagreements. Take the stand and cast your active verdict.</p>
+          <h3 className="text-sm font-bold text-[#24324A] mb-1 font-serif">Before Regret Court Cases</h3>
+          <p className="text-xs text-[#6B7280] leading-relaxed font-sans">Read or load situations of digital snoopings, Instagram ex-likes, or in-law disagreements. Review perspectives and cast your active vote.</p>
         </div>
 
         {/* Q&A shortcut */}
