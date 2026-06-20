@@ -92,6 +92,8 @@ export interface CourtCase {
   };
   arguments: CourtArgument[];
   tags: string[];
+  deliberationDays?: number; // Duration of active voting (min 3 days)
+  createdAt?: string;        // ISO string when created
 }
 
 export interface QuestionAnswerComment {
