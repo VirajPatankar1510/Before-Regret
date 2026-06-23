@@ -20,6 +20,7 @@ import TagScreen from './pages/TagScreen';
 import CompareScreen from './pages/CompareScreen';
 import RegretStoriesScreen from './pages/RegretStoriesScreen';
 import RedFlagMeterScreen from './pages/RedFlagMeterScreen';
+import HubScreen from './pages/HubScreen';
 // Core State and Seeding
 import { getInitialState, saveState } from './data/store';
 import { PRESEEDED_SITUATIONS, COUNTRIES_DATA } from './data/mockData';
@@ -120,6 +121,9 @@ export function parsePath(pathname: string): { type: string; slug?: string } {
     }
     return { type: 'question_list' };
   }
+  if (first === 'should-i-leave' || first === 'will-i-regret' || first === 'red-flags' || first === 'relationship-regrets' || first === 'commitment-issues') {
+    return { type: 'hub', slug: first };
+  }
   if (first === 'regrets') {
     if (parts[1]) {
       return { type: 'regret_stories', slug: extractIdFromSlug(parts[1]) };
@@ -152,6 +156,8 @@ export function getRelativePath(screen: { type: string; slug?: string }, store?:
       return '/';
     case 'explore':
       return '/explore';
+    case 'hub':
+      return `/${screen.slug}`;
     case 'regret_stories':
       if (screen.slug) {
         if (store && store.stories) {
@@ -233,20 +239,39 @@ export default function App() {
         title = "Explore Decisional Outcomes | BeforeRegret";
         description = "Browse real relationship categories and outcome dossiers grouped by decision, gender, age, and country.";
         break;
+      case 'hub': {
+        if (currentScreen.slug === 'should-i-leave') {
+          title = "Should I Leave My Partner? Reflections & Experiences | BeforeRegret";
+          description = "Uncover shared relationship perspectives, peer experiences, and considerations to help answer: Should I leave or should I stay? Read reflections from people who faced similar choices.";
+        } else if (currentScreen.slug === 'will-i-regret') {
+          title = "Will I Regret It? Relationship Perspectives & Insights | BeforeRegret";
+          description = "Explore reflections on relationship decision points. Find out how others approached choices like children mismatch, cheating, or differing life goals.";
+        } else if (currentScreen.slug === 'red-flags') {
+          title = "Red Flags Reflection: Relationship Warning Patterns | BeforeRegret";
+          description = "Review community experiences on relationship warning signs, behavioral patterns, and shared feedback detailing behaviors you shouldn't ignore.";
+        } else if (currentScreen.slug === 'relationship-regrets') {
+          title = "Relationship Perspective Registry: Reflection & Lessons | BeforeRegret";
+          description = "Read authentic reflections detailing key relationship decisions and lessons. Explore the emotional and personal realities of staying or leaving.";
+        } else if (currentScreen.slug === 'commitment-issues') {
+          title = "Commitment Issues & Life Goals: Marriage & Family Alignment | BeforeRegret";
+          description = "Community advice and open perspectives on deep relationship alignment. Consider discussions on family timelines and differing vision paths.";
+        }
+        break;
+      }
       case 'situation': {
         const currentSit = PRESEEDED_SITUATIONS.find(s => s.slug === currentScreen.slug);
         const sName = currentSit ? currentSit.name : (displaySlug || 'Relationship Decision');
         const seoHeading = getSEOHeadingForSituation(currentScreen.slug || '', sName);
         title = `${seoHeading} | BeforeRegret`;
-        description = `Access crowd-sourced demographics, average regret curves, and 100% anonymous story timelines on "${sName}".`;
+        description = `Access community-sourced perspectives, guidance points, and anonymous reflective stories on "${sName}".`;
         break;
       }
       case 'compare': {
         const parts = (currentScreen.slug || 'boyfriend-doesnt-want-marriage-vs-stayed-after-cheating').split('-vs-');
         const d1 = parts[0]?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Decision Alpha';
         const d2 = parts[1]?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Decision Beta';
-        title = `Compare ${d1} vs ${d2} | Relationship Decision Ledger`;
-        description = `Raw side-by-side comparative analysis of ${d1} vs ${d2}. Check relationship split rates, average regret ratings, and demographic stats.`;
+        title = `Compare ${d1} vs ${d2} | Relationship Decision Perspectives`;
+        description = `Read side-by-side comparative perspectives of ${d1} vs ${d2}. Browse shared stories and reflective qualitative insight.`;
         break;
       }
       case 'court_list':
@@ -1687,6 +1712,17 @@ export default function App() {
             setScreen={setScreen}
             onCaseRetrieve={handleCaseRetrieve}
             initialSearchTerm={currentScreen.slug}
+          />
+        )}
+
+        {currentScreen.type === 'hub' && (
+          <HubScreen
+            slug={currentScreen.slug || ''}
+            stories={store.stories}
+            courtCases={store.courtCases}
+            questions={store.questions}
+            redFlagCases={store.redFlagCases || []}
+            setScreen={setScreen}
           />
         )}
 

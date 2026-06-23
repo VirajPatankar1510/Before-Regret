@@ -75,7 +75,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             <Sparkles className="h-3 w-3 text-[#C9A227]" /> Learn From Those Who Already Lived Your Choice.
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-[#24324A] tracking-tight leading-tight select-none font-display">
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-[#060606] tracking-tight leading-tight select-none font-display">
             What Relationship Decision Are You <span className="text-[#C9A227]">Struggling With?</span>
           </h1>
 

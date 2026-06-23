@@ -237,9 +237,29 @@ async function getPageMetadata(urlPath: string) {
         description = `Review and audit relationship red/yellow/green flag cases submitted anonymously.`;
       }
     } else {
-      title = "Red Flag Dilemma Meter - Citizen Vote on Warnings | BeforeRegret";
+      title = "Scientific Red Flags Meter: Dating & Relationship Warning Signs | BeforeRegret";
       description = "Audit and vote on red, yellow, and green flag relationship warnings submitted anonymously by real partners.";
     }
+  }
+  else if (first === 'should-i-leave') {
+    title = "Should I Leave My Partner? Decision Calculator & Outcomes Hub | BeforeRegret";
+    description = "Uncover relationship outcome data, crowd-voted verdicts, and peer experiences to help answer: Should I leave or should I stay? Read real timelines from people who faced the exact same decision.";
+  }
+  else if (first === 'will-i-regret') {
+    title = "Will I Regret It? Relationship Decision Regret Curves & Analysis | BeforeRegret";
+    description = "Analyze the statistical curve of relationship regret. Find out if staying with a partner who does not want kids, staying after cheating, or giving ultimatums leads to long-term regret.";
+  }
+  else if (first === 'red-flags') {
+    title = "Scientific Red Flags Meter: Dating & Relationship Warning Signs | BeforeRegret";
+    description = "Review the crowd-voted community Red Flags warning lights, active warning board cases, and survivor logs detailing behavior warnings you shouldn't ignore.";
+  }
+  else if (first === 'relationship-regrets') {
+    title = "Relationship Regrets Registry: 100% Anonymous Timelines & Lessons | BeforeRegret";
+    description = "Read authentic, chronological timelines detailing years of relationship decisions and their long-term consequences. Explore the physical, emotional and financial realities of staying or leaving.";
+  }
+  else if (first === 'commitment-issues') {
+    title = "Commitment Issues & Ultimatums: Marriage, Kids & Cohabitation | BeforeRegret";
+    description = "Real data and community advisory dossiers on deep-seated relationship bottlenecks. Compare marriage ultimatums, interfaith friction, and different partner life visions.";
   }
   else if (first === 'country') {
     const countryName = parts[1] ? parts[1].toUpperCase() : 'Global';

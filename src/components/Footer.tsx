@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, ExternalLink, Tag } from 'lucide-react';
+import { Heart, ExternalLink, Tag, Compass } from 'lucide-react';
 import AdminPanel from './AdminPanel';
 
 interface FooterProps {
@@ -28,7 +28,7 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
   return (
     <footer className="mt-auto border-t border-[#30363D] bg-[#090D13] py-12 text-[#AAB2C0] transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
           
           {/* Column 1: Info and Tagline */}
           <div className="space-y-4">
@@ -42,11 +42,60 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
               See what happened before making the same decision. Analyze thousands of genuine, anonymous relationship timelines, regret ratios, and post-decision updates.
             </p>
             <div className="text-[10px] text-zinc-500">
-              Disclaimer: Outcomes are self-reported by community contributors. Not a substitute for professional legal or psychological advisory.
+              Disclaimer: Outcomes are self-reported by community contributors. Not a substitute for professional advisory.
             </div>
           </div>
 
-          {/* Column 2: Tag Directories */}
+          {/* Column 2: Decision Intelligence Hubs */}
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-1.5">
+              <Compass className="h-3.5 w-3.5 text-indigo-400" /> Decision Hubs
+            </h3>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <button 
+                  onClick={() => setScreen({ type: 'hub', slug: 'should-i-leave' })} 
+                  className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
+                >
+                  Should I Leave Partner?
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setScreen({ type: 'hub', slug: 'will-i-regret' })} 
+                  className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
+                >
+                  Will I Regret It?
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setScreen({ type: 'hub', slug: 'red-flags' })} 
+                  className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
+                >
+                  Scientific Red Flags
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setScreen({ type: 'hub', slug: 'relationship-regrets' })} 
+                  className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
+                >
+                  Regret Registry Feed
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setScreen({ type: 'hub', slug: 'commitment-issues' })} 
+                  className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
+                >
+                  Commitment & Ultimatums
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Tag Directories */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-1.5">
               <Tag className="h-3.5 w-3.5 text-pink-400" /> Tag Archives
