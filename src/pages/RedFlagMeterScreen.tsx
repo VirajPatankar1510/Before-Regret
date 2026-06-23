@@ -28,9 +28,7 @@ export default function RedFlagMeterScreen({
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialCaseId) {
-      setSelectedCaseId(initialCaseId);
-    }
+    setSelectedCaseId(initialCaseId || null);
   }, [initialCaseId]);
   
   // Search and Filtering
@@ -108,7 +106,7 @@ export default function RedFlagMeterScreen({
         /* ================= DETAIL VIEW ================= */
         <div className="space-y-6">
           <button
-            onClick={() => setSelectedCaseId(null)}
+            onClick={() => setScreen({ type: 'red_flag_meter' })}
             className="text-xs text-[#6B7280] hover:text-[#24324A] inline-flex items-center gap-1.5 font-semibold border border-[#E5E7EB] bg-white px-3 py-1.5 rounded-xl transition-all hover:border-zinc-300 shadow-sm"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Return to Red Flag Meter Entries
@@ -464,7 +462,7 @@ export default function RedFlagMeterScreen({
                 return (
                   <div 
                     key={c.id} 
-                    onClick={() => setSelectedCaseId(c.id)}
+                    onClick={() => setScreen({ type: 'red_flag_meter', slug: c.id })}
                     className="rounded-2xl border border-[#E5E7EB] bg-white p-4.5 space-y-3 hover:border-rose-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
                   >
                     <div className="space-y-2">

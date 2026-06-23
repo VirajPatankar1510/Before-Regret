@@ -76,7 +76,13 @@ export default function RegretStoriesScreen({
   const [storyIdToDeleteConfirm, setStoryIdToDeleteConfirm] = useState<string | null>(null);
 
   const toggleExpand = (id: string) => {
+    const isCurrentlyExpanded = !!expandedStories[id];
     setExpandedStories(prev => ({ ...prev, [id]: !prev[id] }));
+    if (!isCurrentlyExpanded) {
+      setScreen({ type: 'regret_stories', slug: id });
+    } else {
+      setScreen({ type: 'regret_stories' });
+    }
   };
 
   // Get unique categories for filtering

@@ -51,6 +51,22 @@ import {
 } from './lib/firestoreService';
 
 // RESTful Route Pathname Helpers for Clean Semantic Dynamic pSEO
+export function extractIdFromSlug(slug: string): string {
+  if (!slug) return '';
+  if (slug.includes('-')) {
+    const parts = slug.split('-');
+    const prefix = parts[0];
+    const isPreseededStory = /^s\d+$/.test(prefix);
+    const isCustomStory = prefix.startsWith('story_');
+    const isRedFlag = prefix.startsWith('rf_');
+    
+    if (isPreseededStory || isCustomStory || isRedFlag) {
+      return prefix;
+    }
+  }
+  return slug;
+}
+
 export function parsePath(pathname: string): { type: string; slug?: string } {
   const parts = pathname.split('/').filter(Boolean);
   
@@ -82,7 +98,16 @@ export function parsePath(pathname: string): { type: string; slug?: string } {
     return { type: 'question_list' };
   }
   if (first === 'regrets') {
+    if (parts[1]) {
+      return { type: 'regret_stories', slug: extractIdFromSlug(parts[1]) };
+    }
     return { type: 'regret_stories' };
+  }
+  if (first === 'flags' || first === 'redflags' || first === 'red-flags' || first === 'red-flag-meter') {
+    if (parts[1]) {
+      return { type: 'red_flag_meter', slug: extractIdFromSlug(parts[1]) };
+    }
+    return { type: 'red_flag_meter' };
   }
   if (first === 'country') {
     return { type: 'country', slug: parts[1] || 'usa' };
@@ -98,14 +123,44 @@ export function parsePath(pathname: string): { type: string; slug?: string } {
   return { type: 'home' };
 }
 
-export function getRelativePath(screen: { type: string; slug?: string }): string {
+export function getRelativePath(screen: { type: string; slug?: string }, store?: any): string {
   switch (screen.type) {
     case 'home':
       return '/';
     case 'explore':
       return '/explore';
     case 'regret_stories':
+      if (screen.slug) {
+        if (store && store.stories) {
+          const storyObj = store.stories.find((s: any) => s.id === screen.slug);
+          if (storyObj && storyObj.title) {
+            const titleSlug = storyObj.title
+              .toLowerCase()
+              .replace(/['"’]/g, '')
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '');
+            return `/regrets/${screen.slug}-${titleSlug}`;
+          }
+        }
+        return `/regrets/${screen.slug}`;
+      }
       return '/regrets';
+    case 'red_flag_meter':
+      if (screen.slug) {
+        if (store && store.redFlagCases) {
+          const redFlagObj = store.redFlagCases.find((rf: any) => rf.id === screen.slug);
+          if (redFlagObj && redFlagObj.title) {
+            const titleSlug = redFlagObj.title
+              .toLowerCase()
+              .replace(/['"’]/g, '')
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '');
+            return `/flags/${screen.slug}-${titleSlug}`;
+          }
+        }
+        return `/flags/${screen.slug}`;
+      }
+      return '/flags';
     case 'situation':
       return `/decision/${screen.slug || 'boyfriend-doesnt-want-marriage'}`;
     case 'compare':
@@ -206,6 +261,30 @@ export default function App() {
         title = "Lodge Relationship Advice Board Request | BeforeRegret";
         description = "Get constructive, real-world advice comments from timeline survivors anonymous and secure.";
         break;
+      case 'regret_stories': {
+        if (currentScreen.slug) {
+          const storyObj = store.stories.find(s => s.id === currentScreen.slug);
+          const sTitle = storyObj ? storyObj.title : (displaySlug || 'Relationship Outcome');
+          title = `Regret Story: "${sTitle}" | BeforeRegret`;
+          description = storyObj ? storyObj.fullStory.slice(0, 155) + "..." : `Read the 100% anonymous regret story and outcomes timeline for this relationship decision.`;
+        } else {
+          title = "BeforeRegret Relationship Story Ledger & Regrets";
+          description = "Read full timeline stories, interactive outcome statistics, and veteran survivors reports of relationship regrets.";
+        }
+        break;
+      }
+      case 'red_flag_meter': {
+        if (currentScreen.slug) {
+          const redFlagObj = store.redFlagCases.find(rf => rf.id === currentScreen.slug);
+          const rfTitle = redFlagObj ? redFlagObj.title : (displaySlug || 'Relationship Warning');
+          title = `Red Flag Dilemma: "${rfTitle}" | BeforeRegret`;
+          description = redFlagObj ? redFlagObj.description.slice(0, 155) + "..." : `Cast your citizen vote on this red flag dilemma and review comments.`;
+        } else {
+          title = "Red Flag Dilemma Meter - Citizen Vote on Warnings | BeforeRegret";
+          description = "Audit and vote on red, yellow, and green flag relationship warnings submitted anonymously by real partners.";
+        }
+        break;
+      }
     }
     
     document.title = title;
@@ -233,7 +312,7 @@ export default function App() {
       }
     };
 
-    const path = getRelativePath(currentScreen);
+    const path = getRelativePath(currentScreen, store);
     const origin = window.location.origin || 'https://beforeregret.org';
     const canonicalUrl = `${origin}${path}`;
 
