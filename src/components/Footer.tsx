@@ -53,44 +53,64 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
-                <button 
-                  onClick={() => setScreen({ type: 'hub', slug: 'should-i-leave' })} 
+                <a 
+                  href="/should-i-leave"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen({ type: 'hub', slug: 'should-i-leave' });
+                  }} 
                   className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
                 >
                   Should I Leave Partner?
-                </button>
+                </a>
               </li>
               <li>
-                <button 
-                  onClick={() => setScreen({ type: 'hub', slug: 'will-i-regret' })} 
+                <a 
+                  href="/will-i-regret"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen({ type: 'hub', slug: 'will-i-regret' });
+                  }} 
                   className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
                 >
                   Will I Regret It?
-                </button>
+                </a>
               </li>
               <li>
-                <button 
-                  onClick={() => setScreen({ type: 'hub', slug: 'red-flags' })} 
+                <a 
+                  href="/red-flags"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen({ type: 'hub', slug: 'red-flags' });
+                  }} 
                   className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
                 >
                   Scientific Red Flags
-                </button>
+                </a>
               </li>
               <li>
-                <button 
-                  onClick={() => setScreen({ type: 'hub', slug: 'relationship-regrets' })} 
+                <a 
+                  href="/relationship-regrets"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen({ type: 'hub', slug: 'relationship-regrets' });
+                  }} 
                   className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
                 >
                   Regret Registry Feed
-                </button>
+                </a>
               </li>
               <li>
-                <button 
-                  onClick={() => setScreen({ type: 'hub', slug: 'commitment-issues' })} 
+                <a 
+                  href="/commitment-issues"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen({ type: 'hub', slug: 'commitment-issues' });
+                  }} 
                   className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
                 >
                   Commitment & Ultimatums
-                </button>
+                </a>
               </li>
             </ul>
           </div>
@@ -103,12 +123,16 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
             <ul className="space-y-2 text-xs">
               {popularTags.map(tag => (
                 <li key={tag.code}>
-                  <button 
-                    onClick={() => setScreen({ type: 'tag', slug: tag.code })} 
+                  <a 
+                    href={`/tag/${tag.code}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setScreen({ type: 'tag', slug: tag.code });
+                    }} 
                     className="hover:text-white transition-colors text-left flex items-center gap-1"
                   >
                     <span className="text-[#AAB2C0]">#</span>{tag.name}
-                  </button>
+                  </a>
                 </li>
               ))}
             </ul>

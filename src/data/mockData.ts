@@ -821,6 +821,166 @@ export const PRESEEDED_STORIES: Story[] = [
         regretScore: 4
       }
     ]
+  },
+  {
+    id: 's13',
+    title: "My gut told me he was hiding something. He called me paranoid for 2 years. He was living a secret double life on dating apps.",
+    situationSlug: 'ignored-red-flags',
+    situationName: "Ignored Red Flags",
+    age: 32,
+    gender: "Female",
+    country: "United States",
+    relationshipDuration: "4 Years",
+    decisionMade: "Stayed",
+    currentOutcome: "Separated",
+    regretScore: 10,
+    wouldDoAgain: "No",
+    dateAdded: "2026-06-18",
+    tags: ["red-flags", "cheating", "trust", "gaslighting"],
+    fullStory: "We were living together and planning our future. But he started taking his phone to the bathroom and leaving it face down on the table. Every time I asked him why his behavior had changed, he sighed, rolled his eyes, and called me 'crazy,' 'insecure,' and 'paranoid.' He said that if I didn't trust him, our relationship was doomed anyway, which made me feel guilty. So I suppressed my gut feeling, thinking I was indeed the problem, and tried to be the chill, trusting girlfriend.\n\nTwo years of this psychological torture went on. Then, a friend of mine spotted his active profile on Tinder. When I confronted him with the screenshot, he couldn't deny it anymore. He had been meeting women for casual hookups the entire time. Trust your intuition. If a partner makes you feel insane for asking simple, respectful questions about changed behaviors, he is gaslighting you to protect his secrets.",
+    userName: "gut_was_right_32",
+    helpfulVotes: 512,
+    timeline: [
+      { year: "2022", stage: "Changed Phone Habits", description: "He began shielding his screen. Accused me of paranoia when asked." },
+      { year: "2024", stage: "Decision Made (Stayed)", description: "Chose to stay and apologize for my insecurity, hoping to restore peace." },
+      { year: "2026", stage: "Dating Apps Exposed", description: "Discovered active profiles. Packed my bags and left within 24 hours." }
+    ],
+    updates: [
+      {
+        daysAfter: 30,
+        dateAdded: "2026-07-18",
+        text: "I feel incredibly relieved. The chronic anxiety and self-doubt that I carried for two years vanished the minute I left his house. I was never crazy.",
+        regretScore: 1
+      }
+    ]
+  },
+  {
+    id: 's14',
+    title: "Gave him an ultimatum to move in together after 4 years. He reluctantly agreed, but his daily passive-aggression drove me to leave anyway.",
+    situationSlug: 'long-distance-relationship',
+    situationName: "Long Distance Relationship",
+    age: 28,
+    gender: "Female",
+    country: "Canada",
+    relationshipDuration: "5 Years",
+    decisionMade: "Moved Together",
+    currentOutcome: "Separated",
+    regretScore: 8,
+    wouldDoAgain: "No",
+    dateAdded: "2026-05-15",
+    tags: ["long-distance", "ultimatum", "moving-in", "resentment"],
+    fullStory: "We had been dating long-distance for 4 years. I was tired of airport goodbyes and wanted to close the gap. He kept finding reasons to delay, saying his career was too busy. Finally, I told him: either we sign a lease together in the same city, or we break up. He looked cornered but reluctantly agreed to let me relocate to his city.\n\nBut the moment I arrived, he made me pay for that ultimatum in a thousand silent ways. He never cleared space in his closets. He would loudly sigh when doing dishes or sharing the living room. Every weekend, he went out with his friends, leaving me isolated in a new city where I had no network. I realized he was letting me live there physically, but he had locked me out of his life emotionally. I packed my boxes and left after six months. If he has to be forced into taking the next step, he will make you pay for his lost freedom.",
+    userName: "reluctant_lease_holder",
+    helpfulVotes: 420,
+    timeline: [
+      { year: "2021", stage: "Long Distance Dating", description: "Dated long-distance, seeing each other once a month." },
+      { year: "2025", stage: "Decision Made (Ultimatum)", description: "Issued a 'move together or break up' ultimatum. He agreed to let me relocate." },
+      { year: "2026", stage: "Silent Resentment Era", description: "Lived together in constant tension. He isolated me and acted cold." }
+    ],
+    updates: [
+      {
+        daysAfter: 30,
+        dateAdded: "2026-06-15",
+        text: "Moving back to my home city. The financial cost of relocating twice was brutal, but living with someone who resents your physical presence is far more costly to your soul.",
+        regretScore: 1
+      }
+    ]
+  },
+  {
+    id: 's15',
+    title: "He spent our entire house downpayment on speculative crypto behind my back. I forgave him, but the financial anxiety is killing our intimacy.",
+    situationSlug: 'ignored-red-flags',
+    situationName: "Ignored Red Flags",
+    age: 34,
+    gender: "Female",
+    country: "Australia",
+    relationshipDuration: "6 Years",
+    decisionMade: "Stayed",
+    currentOutcome: "Complicated",
+    regretScore: 8,
+    wouldDoAgain: "No",
+    dateAdded: "2026-04-10",
+    tags: ["red-flags", "finances", "marriage-compromise", "trust"],
+    fullStory: "We were married for three years and saving diligently for our first home. I thought we had $65,000 in our high-yield savings account. When we finally found a townhouse and went to put down the holding deposit, he went pale and confessed: he had transferred the entire sum to a crypto exchange a year ago to invest in a 'sure thing' meme coin. It had crashed to zero.\n\nHe wept, went on his knees, and promised to work overtime and hand over full control of his bank credentials to me. I loved him, so I agreed to stay and work through it. But the financial infidelity has changed me. I am constantly checking his bank balances like a detective. Every time he buys a coffee, my stomach knots. I can't look at him with respect anymore, and our sex life is non-existent. Forgiving financial cheating is possible on paper, but rebuilding the trust that he won't ruin your financial security is a long, draining road.",
+    userName: "depleted_nest_egg",
+    helpfulVotes: 610,
+    timeline: [
+      { year: "2020", stage: "Married & Saving", description: "Set up a joint account. Agreed to save for a mortgage." },
+      { year: "2025", stage: "The Confession", description: "Discovered the savings were completely gone due to crypto trading." },
+      { year: "2026", stage: "Decision Made (Stayed)", description: "Forgave him under strict financial monitoring, but baseline respect is shattered." }
+    ],
+    updates: [
+      {
+        daysAfter: 60,
+        dateAdded: "2026-06-10",
+        text: "He is indeed working overtime and transferring every dollar to my account, but my anxiety remains sky-high. I feel like his probation officer, not his wife.",
+        regretScore: 8
+      }
+    ]
+  },
+  {
+    id: 's16',
+    title: "I was sure she would change her mind about kids because she was 'so good with my nieces.' She didn't. Now I am 39 and starting over.",
+    situationSlug: 'partner-doesnt-want-kids',
+    situationName: "Partner Doesn't Want Kids",
+    age: 39,
+    gender: "Male",
+    country: "United Kingdom",
+    relationshipDuration: "8 Years",
+    decisionMade: "Stayed",
+    currentOutcome: "Separated",
+    regretScore: 9,
+    wouldDoAgain: "No",
+    dateAdded: "2026-03-20",
+    tags: ["children", "compatibility", "wasted-time", "divorce"],
+    fullStory: "When we started dating, she told me on date three that she did not want to raise children. I nodded along, but internally, I thought, 'She is only 25, she will change her mind once we get married.' Every time she played wonderfully with my nieces and nephews, I smiled and thought my theory was correct.\n\nWe married, and as we hit our thirties, my desire to be a father grew into an ache. But she was firm. She had built a great career in marketing and cherished her sleeping schedules and independence. When I brought up children, she looked shocked: 'I told you from day one I was childfree.' I spent three more years trying to convince her, hoping she would 'soften.' She never did. We divorced last year. I am 39, single, and starting over in the dating market, desperately hoping to meet someone who wants to start a family before my biological window closes. Do not date someone hoping to change their core biological desires. It is disrespectful to them and devastating to you.",
+    userName: "nephew_uncle_only",
+    helpfulVotes: 730,
+    timeline: [
+      { year: "2018", stage: "Clear Declaration Ignored", description: "She stated she didn't want kids. I secretly assumed she'd change her mind." },
+      { year: "2023", stage: "Decision Made (Stayed)", description: "Stayed through marriage hoping her maternal instinct would activate." },
+      { year: "2025", stage: "The Final Separation", description: "Realized she would never change her mind. Divorced with deep mutual grief." }
+    ],
+    updates: [
+      {
+        daysAfter: 90,
+        dateAdded: "2026-06-20",
+        text: "Dating at 39 with 'wants kids' in my bio is highly stressful. I feel like my clock is ticking as much as any woman's. I regret wasting my thirties playing a waiting game.",
+        regretScore: 9
+      }
+    ]
+  },
+  {
+    id: 's17',
+    title: "He proposed with a 'placeholder' ring and promised a wedding 'next year.' I realized he was just dangling a carrot to keep me around.",
+    situationSlug: 'signs-he-doesnt-want-marriage',
+    situationName: "Signs He Doesn't Want Marriage",
+    age: 30,
+    gender: "Female",
+    country: "United States",
+    relationshipDuration: "6 Years",
+    decisionMade: "Left",
+    currentOutcome: "Separated",
+    regretScore: 1,
+    wouldDoAgain: "Yes",
+    dateAdded: "2026-02-12",
+    tags: ["marriage", "commitment-issues", "manipulation", "healing"],
+    fullStory: "We had been dating for 5 years. I was 29 and made it clear that marriage was my goal. To prevent me from leaving, he proposed on a random Tuesday night in our living room with a $50 silver band, saying, 'Let's get this placeholder ring so you know I'm serious, and we will plan the real wedding next year.' I was thrilled and felt my patience had paid off.\n\nBut over the next year, every attempt to tour a venue or discuss a budget was met with annoyance. 'We don't have the funds yet,' or 'Why are you rushing me? We are already engaged.' Then, he suggested we postpone setting a date until he bought a new truck. I woke up: the proposal wasn't a commitment; it was a shut-up ring. It was a cheap way to buy another two years of my silence. I returned the ring and left. He didn't even fight to keep me. Do not fall for future-faking; if he wants to marry you, he will actively help plan the day.",
+    userName: "no_more_placeholders",
+    helpfulVotes: 890,
+    timeline: [
+      { year: "2020", stage: "Dating Peak", description: "Happy and building a household together." },
+      { year: "2025", stage: "Decision Made (Left)", description: "Received a placeholder ring but he refused to set any wedding date. Walked away." },
+      { year: "2026", stage: "Rebuilding Life", description: "Renting my own apartment, focusing on my mental health and career." }
+    ],
+    updates: [
+      {
+        daysAfter: 120,
+        dateAdded: "2026-06-12",
+        text: "I found out he is dating someone new and telling everyone how glad he is that he didn't sign a marriage license. It hurts, but it proves my gut was 100% right. I escaped a lifetime of waiting.",
+        regretScore: 1
+      }
+    ]
   }
 ];
 
@@ -894,6 +1054,38 @@ export const PRESEEDED_COURT_CASES: CourtCase[] = [
         text: "They broke up years ago! Gym selfies are just gym selfies. Forcing someone to prune their instagram likes is high school behavior. Just trust him.",
         votes: 14,
         role: "Novice"
+      }
+    ]
+  },
+  {
+    slug: 'husband-financial-infidelity-secret-debt',
+    title: "Husband Hid $45k of Credit Card Debt Until We Applied for a Mortgage",
+    description: "We have been happily married for 3 years and were about to buy our first house. The mortgage broker pulled our credit reports and revealed my husband has $45,000 in secret credit card debt from his speculative retail option trading. He begged me not to leave, saying he wanted to fix it himself and was ashamed. Am I justified in wanting a separation over this financial betrayal, or should I stay and help him pay it off?",
+    postTime: "2026-06-21",
+    author: "heartbroken_nest_builder",
+    votes: {
+      me: 910,
+      partner: 80,
+      both: 140,
+      neither: 40
+    },
+    tags: ["finances", "trust", "marriage", "red-flags"],
+    arguments: [
+      {
+        id: "ca6",
+        author: "financial_forester",
+        side: "Me",
+        text: "Financial infidelity is just as destructive as physical infidelity. He lied every single day for years while you were saving your hard-earned wages. If you buy a house with him now, you are legally marrying his debt and his addiction. Separate immediately to protect your own credit score and assets.",
+        votes: 312,
+        role: "Truth Teller"
+      },
+      {
+        id: "ca7",
+        author: "grace_under_pressure",
+        side: "Both",
+        text: "He did a terrible thing out of shame and addiction. If he hands over complete control of his bank logins, attends Gamblers Anonymous, and agrees to a post-nuptial agreement protecting you from his liabilities, you can try to rebuild. But do not buy a house or merge accounts until he completes therapy.",
+        votes: 184,
+        role: "Mentor"
       }
     ]
   }
