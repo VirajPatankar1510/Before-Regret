@@ -11,6 +11,7 @@ import {
   deleteDoc
 } from "firebase/firestore";
 import { Story, StoryComment, UserProfile, Question, CourtCase, RedFlagCase } from "../types";
+import { RelationshipProblem } from "../data/relationshipProblems";
 
 export enum OperationType {
   CREATE = 'create',
@@ -226,5 +227,34 @@ export async function deleteQuestionFromFirestore(slug: string): Promise<void> {
     await deleteDoc(questionRef);
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, pathForDelete);
+  }
+}
+
+// Dynamic Relationship Problems Configs Saving & Fetching
+export async function saveRelationshipProblemsToFirestore(problems: RelationshipProblem[]): Promise<void> {
+  const pathForWrite = "relationshipConfigs/problems";
+  try {
+    const docRef = doc(db, "relationshipConfigs", "problems");
+    await setDoc(docRef, { list: problems });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, pathForWrite);
+  }
+}
+
+export async function fetchRelationshipProblemsFromFirestore(): Promise<RelationshipProblem[]> {
+  const pathForGetDoc = "relationshipConfigs/problems";
+  try {
+    const docRef = doc(db, "relationshipConfigs", "problems");
+    const snapshot = await getDoc(docRef);
+    if (snapshot.exists()) {
+      const data = snapshot.data();
+      if (data && Array.isArray(data.list)) {
+        return data.list as RelationshipProblem[];
+      }
+    }
+    return [];
+  } catch (error) {
+    handleFirestoreError(error, OperationType.GET, pathForGetDoc);
+    return [];
   }
 }

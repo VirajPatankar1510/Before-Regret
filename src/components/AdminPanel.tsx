@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Shield, ShieldAlert, Key, LogOut, CheckCircle, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Shield, ShieldAlert, Key, LogOut, CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react';
+import { PRESEEDED_RELATIONSHIP_PROBLEMS, RelationshipProblem } from '../data/relationshipProblems';
+import { fetchRelationshipProblemsFromFirestore, saveRelationshipProblemsToFirestore } from '../lib/firestoreService';
 
 interface AdminPanelProps {
   isAdmin: boolean;
@@ -10,6 +12,46 @@ export default function AdminPanel({ isAdmin, onToggleAdmin }: AdminPanelProps) 
   const [isOpen, setIsOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
+
+  // Sync state and dynamic dictionary lists
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [problems, setProblems] = useState<RelationshipProblem[]>(PRESEEDED_RELATIONSHIP_PROBLEMS);
+
+  useEffect(() => {
+    fetchRelationshipProblemsFromFirestore().then(list => {
+      if (list && list.length > 0) {
+        setProblems(list);
+      }
+    }).catch(err => {
+      console.error("Failed to load custom relationship problems in admin:", err);
+    });
+  }, []);
+
+  const handleSyncKeywords = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch("/api/admin/sync-relationship-problems", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
+      if (!res.ok) {
+        throw new Error("HTTP response status error: " + res.status);
+      }
+      const data = await res.json();
+      if (data.success && Array.isArray(data.list)) {
+        await saveRelationshipProblemsToFirestore(data.list);
+        setProblems(data.list);
+        alert(`Successfully synchronized ${data.list.length} relationship categories with latest trending search terms/phrases using Gemini API!`);
+      } else {
+        throw new Error(data.error || "Missing list array in response");
+      }
+    } catch (e: any) {
+      console.error("Gemini keyword generation failed: ", e);
+      alert("Failed to fetch trending relationship keywords: " + (e.message || e));
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const handleAuthorize = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,6 +124,43 @@ export default function AdminPanel({ isAdmin, onToggleAdmin }: AdminPanelProps) 
                     <li>Jury Opinions & Arguments</li>
                     <li>Survival Q&A Answers</li>
                   </ul>
+                </div>
+
+                {/* SEARCH KEYWORDS DICTIONARY WIDGET */}
+                <div className="border border-[#30363D] bg-[#0D1117] rounded-xl p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-extrabold text-[#4F8CFF] uppercase text-[9px] tracking-wider block">
+                      Keywords Dictionary
+                    </span>
+                    <button
+                      type="button"
+                      disabled={isSyncing}
+                      onClick={handleSyncKeywords}
+                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#4F8CFF]/15 hover:bg-[#4F8CFF]/25 text-[#4F8CFF] text-[9.5px] font-bold border border-[#4F8CFF]/20 cursor-pointer disabled:opacity-50 transition-all font-mono"
+                    >
+                      <RefreshCw className={`h-2.5 w-2.5 ${isSyncing ? 'animate-spin' : ''}`} />
+                      <span>{isSyncing ? "Syncing..." : "Gemini Sync"}</span>
+                    </button>
+                  </div>
+                  <p className="text-[9.5px] text-zinc-400 leading-normal font-sans">
+                    Fetch/add trending search keywords and phrases (hidden from standard listings) via Gemini.
+                  </p>
+
+                  <div className="max-h-40 overflow-y-auto space-y-1.5 border-t border-[#30363D]/60 pt-2 pr-1 scrollbar-thin text-left">
+                    {problems.map(prob => (
+                      <div key={prob.id} className="bg-[#161B22] p-1.5 rounded border border-[#30363D]/50">
+                        <div className="flex items-center justify-between font-bold text-[9.5px] text-white">
+                          <span>{prob.name}</span>
+                          <span className="text-[8.5px] text-zinc-400 font-mono">
+                            {prob.keywords.length} terms
+                          </span>
+                        </div>
+                        <p className="text-[8.5px] text-zinc-500 line-clamp-2 mt-0.5 font-sans leading-tight">
+                          {prob.keywords.join(', ')}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <button

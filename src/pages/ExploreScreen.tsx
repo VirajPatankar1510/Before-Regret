@@ -48,7 +48,7 @@ export default function ExploreScreen({
       time: s.dateAdded || 'Archived',
       slug: s.situationSlug,
       parentSlug: s.situationSlug,
-      tags: [s.gender, `${s.age}y/o`, ...(sit ? [sit.category] : [])]
+      tags: [s.gender, `${s.age}y/o`, ...(sit ? [sit.category] : []), ...(s.tags || [])]
     });
   });
 
@@ -70,14 +70,43 @@ export default function ExploreScreen({
   // Sort by Case Number descending/random but stable
   const sortedItems = [...indexedItems].sort((a, b) => b.caseNumber!.localeCompare(a.caseNumber!));
 
+  // Helper to determine if a tag is demographic or generic country
+  const isDemographicOrGenericTag = (tag: string): boolean => {
+    const t = tag.toLowerCase().trim();
+    if (t === 'male' || t === 'female' || t === 'other' || t === 'non-binary') return true;
+    if (t.endsWith('y/o') || t.endsWith('s') || /^\d+$/.test(t)) return true;
+    const countries = ['usa', 'india', 'canada', 'uk', 'vietnam', 'australia', 'germany', 'france', 'united states', 'united kingdom'];
+    if (countries.includes(t)) return true;
+    return false;
+  };
+
   // Filter based on search input & tabs
   const filteredItems = sortedItems.filter(item => {
     const matchesTab = filterType === 'all' || item.type === filterType;
+    if (!searchTerm.trim()) return matchesTab;
+
+    const termLower = searchTerm.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim();
+    if (!termLower) return matchesTab;
+
+    // Split search query into words to support multi-term searches
+    const termWords = termLower.split(/\s+/).filter(w => w.length > 2 && !['got', 'the', 'and', 'for', 'was', 'with', 'not', 'your', 'from'].includes(w));
+
     const matchesSearch = 
-      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.caseNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.tags.some(t => t.toLowerCase().includes(searchTerm.toLowerCase()));
+      item.title.toLowerCase().includes(termLower) ||
+      item.caseNumber?.toLowerCase().includes(termLower) ||
+      item.description.toLowerCase().includes(termLower) ||
+      // Search tags: match if tag contains term, OR term contains tag (e.g. term "i got ghosted" includes tag "ghosted")
+      item.tags.some(t => {
+        const cleanTag = t.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim();
+        return cleanTag && (cleanTag.includes(termLower) || termLower.includes(cleanTag));
+      }) ||
+      // Or word-level overlap
+      (termWords.length > 0 && termWords.some(word => 
+        item.title.toLowerCase().includes(word) ||
+        item.description.toLowerCase().includes(word) ||
+        item.tags.some(t => t.toLowerCase().includes(word))
+      ));
+
     return matchesTab && matchesSearch;
   });
 
@@ -214,7 +243,7 @@ export default function ExploreScreen({
               </div>
 
               <div className="flex flex-wrap items-center gap-1.5 md:self-center">
-                {item.tags.map(t => (
+                {item.tags.filter(isDemographicOrGenericTag).map(t => (
                   <span key={t} className="text-[9px] bg-[#F4F1E8] text-[#6B7280] border border-[#E5E7EB] px-2 py-0.5 rounded-full font-sans font-semibold">
                     {t}
                   </span>

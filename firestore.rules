@@ -40,5 +40,10 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if true;
     }
+
+    // Relationship Configurations
+    match /relationshipConfigs/{docId} {
+      allow read, write: if true;
+    }
   }
 }

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Check, Sparkles, FileText, AlertCircle, RefreshCw, Calendar, Eye, Heart, ShieldCheck } from 'lucide-react';
 import { Story, TimelineNode } from '../types';
+import { PRESEEDED_RELATIONSHIP_PROBLEMS, RelationshipProblem } from '../data/relationshipProblems';
+import { fetchRelationshipProblemsFromFirestore } from '../lib/firestoreService';
 
 export interface SituationOption {
   category: string; // The popular search text option
@@ -91,6 +93,22 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
   const [fullStory, setFullStory] = useState('');
   const [anonymousUsername, setAnonymousUsername] = useState('');
 
+  // Dynamic Relationship Problems state
+  const [relationshipProblems, setRelationshipProblems] = useState<RelationshipProblem[]>(PRESEEDED_RELATIONSHIP_PROBLEMS);
+  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState('ghosting');
+
+  React.useEffect(() => {
+    fetchRelationshipProblemsFromFirestore().then(list => {
+      if (list && list.length > 0) {
+        setRelationshipProblems(list);
+      }
+    }).catch(err => {
+      console.error("Failed to load custom relationship problems, using fallbacks:", err);
+    });
+  }, []);
+
+  const selectedProblem = relationshipProblems.find(p => p.id === selectedSubCategoryId);
+
   // Auto-generate a secure anonymous survivor moniker
   const rollAnonymousName = () => {
     const prefixes = ["silent", "weary", "brave", "healed", "watchful", "soaring", "glistening", "patient", "thoughtful", "shattered", "resolute", "hidden"];
@@ -167,11 +185,17 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
         if (customSituation.trim()) {
           return customSituation.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
         }
+        if (situationCategory === "Other relationship issue") {
+          return selectedSubCategoryId;
+        }
         const opt = SITUATION_OPTIONS.find(o => o.category === situationCategory);
         return opt ? opt.slug : 'custom-situation';
       })(),
       situationName: (() => {
         if (customSituation.trim()) return customSituation.trim();
+        if (situationCategory === "Other relationship issue") {
+          return selectedProblem ? selectedProblem.name : "Other Custom Issue";
+        }
         const opt = SITUATION_OPTIONS.find(o => o.category === situationCategory);
         return opt ? opt.name : `Dealing with ${situationCategory}`;
       })(),
@@ -197,7 +221,13 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
         })(),
         decisionMade.toLowerCase(),
         currentOutcome.toLowerCase(),
-        regretType.toLowerCase() + '-regret'
+        regretType.toLowerCase() + '-regret',
+        ...(situationCategory === "Other relationship issue" ? [
+          "other-relationship-issue",
+          selectedSubCategoryId,
+          ...(selectedProblem ? [selectedProblem.name.toLowerCase()] : []),
+          ...(selectedProblem ? selectedProblem.keywords.map(kw => kw.toLowerCase()) : [])
+        ] : [])
       ]
     };
 
@@ -288,6 +318,31 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
                 ))}
               </div>
               
+              {/* Dropdown for custom relationship problems options */}
+              {situationCategory === "Other relationship issue" && (
+                <div className="space-y-2 bg-[#0D1117] border border-[#30363D] p-3 rounded-xl animate-fadeIn text-left">
+                  <label className="text-[11px] font-bold text-[#AAB2C0] block">
+                    Choose Specific Relationship Issue Option:
+                  </label>
+                  <select
+                    value={selectedSubCategoryId}
+                    onChange={(e) => setSelectedSubCategoryId(e.target.value)}
+                    className="w-full rounded-xl border border-[#30363D] bg-[#161B22] p-2 text-xs text-white focus:border-[#4F8CFF] focus:outline-none font-semibold cursor-pointer"
+                  >
+                    {relationshipProblems.map(p => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                  {selectedProblem && (
+                    <p className="text-[10px] text-zinc-400 leading-relaxed font-sans mt-1">
+                      {selectedProblem.description}
+                    </p>
+                  )}
+                </div>
+              )}
+
               <div className="space-y-1 pt-1">
                 <label className="text-[10px] text-[#AAB2C0] font-bold block">Optional: Define custom concise situation name:</label>
                 <input
