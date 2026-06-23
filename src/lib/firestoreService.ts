@@ -198,6 +198,16 @@ export async function saveCourtCaseToFirestore(courtCase: CourtCase): Promise<vo
   }
 }
 
+export async function deleteCourtCaseFromFirestore(slug: string): Promise<void> {
+  const pathForDelete = `courtCases/${slug}`;
+  try {
+    const caseRef = doc(db, "courtCases", slug);
+    await deleteDoc(caseRef);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, pathForDelete);
+  }
+}
+
 // Durable Red Flag Cases Saving
 export async function saveRedFlagCaseToFirestore(redFlagCase: RedFlagCase): Promise<void> {
   const pathForWrite = `redFlagCases/${redFlagCase.id}`;
@@ -206,5 +216,15 @@ export async function saveRedFlagCaseToFirestore(redFlagCase: RedFlagCase): Prom
     await setDoc(caseRef, redFlagCase);
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, pathForWrite);
+  }
+}
+
+export async function deleteQuestionFromFirestore(slug: string): Promise<void> {
+  const pathForDelete = `questions/${slug}`;
+  try {
+    const questionRef = doc(db, "questions", slug);
+    await deleteDoc(questionRef);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, pathForDelete);
   }
 }

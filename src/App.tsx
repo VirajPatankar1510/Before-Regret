@@ -45,7 +45,9 @@ import {
   saveQuestionToFirestore,
   fetchQuestionsFromFirestore,
   saveCourtCaseToFirestore,
-  saveRedFlagCaseToFirestore
+  saveRedFlagCaseToFirestore,
+  deleteCourtCaseFromFirestore,
+  deleteQuestionFromFirestore
 } from './lib/firestoreService';
 
 // RESTful Route Pathname Helpers for Clean Semantic Dynamic pSEO
@@ -1431,6 +1433,9 @@ export default function App() {
   };
 
   const handleDeleteCourtCase = (slug: string) => {
+    deleteCourtCaseFromFirestore(slug).catch(err => {
+      console.error("Firestore court case delete error:", err);
+    });
     setStore(prev => {
       const updatedCases = prev.courtCases.filter(c => c.slug !== slug);
       const newState = {
@@ -1465,6 +1470,9 @@ export default function App() {
   };
 
   const handleDeleteQuestion = (slug: string) => {
+    deleteQuestionFromFirestore(slug).catch(err => {
+      console.error("Firestore question delete error:", err);
+    });
     setStore(prev => {
       const updatedQuestions = prev.questions.filter(q => q.slug !== slug);
       const newState = {
