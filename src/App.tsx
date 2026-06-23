@@ -1644,7 +1644,7 @@ export default function App() {
             <div className="space-y-4">
               <h2 className="text-xs uppercase font-extrabold tracking-wider text-[#AAB2C0] px-1 flex items-center justify-between">
                 <span>Active Cases Under Deliberation ({store.courtCases.length})</span>
-                <span className="text-[10px] text-zinc-500 font-mono normal-case">Deliberation duration: 1 min to 14 days</span>
+                <span className="text-[10px] text-zinc-500 font-mono normal-case">Deliberation duration: 3 to 14 days</span>
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {store.courtCases.map(c => (

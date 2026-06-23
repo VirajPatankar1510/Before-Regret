@@ -293,19 +293,7 @@ export default function CourtScreen({
             {getRemainingTimeText()}
           </span>
           
-          {/* Simulation fast-forward triggers for testing */}
-          {!isExpired && isRealCase && (
-            <button
-              onClick={() => {
-                setSimExpired(true);
-                setCertificateUnlocked(false);
-              }}
-              className="mt-2 text-[9px] uppercase font-bold text-[#F4B942] bg-[#F4B942]/10 hover:bg-[#F4B942]/20 px-2 py-1 rounded transition-all border border-[#F4B942]/20 flex items-center gap-1 active:scale-95 cursor-pointer"
-              title="Skip the 3-day wait to instantly test the certificate!"
-            >
-              <Sparkles className="h-2.5 w-2.5" /> Skip Deliberation (Dev Mode)
-            </button>
-          )}
+
         </div>
       </div>
 
@@ -837,7 +825,7 @@ export default function CourtScreen({
               {[
                 { label: "I am wrong", key: 'me' },
                 { label: "Partner is wrong", key: 'partner' },
-                { label: "Both are wrong (Culpable of friction)", key: 'both' },
+                { label: "Both are wrong", key: 'both' },
                 { label: "Neither are wrong (Just miscommunication)", key: 'neither' }
               ].map(opt => (
                 <button
