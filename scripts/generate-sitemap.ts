@@ -64,6 +64,7 @@ async function runSitemapGenerator() {
     { path: "regrets", changefreq: "daily", priority: "0.8" },
     { path: "court", changefreq: "daily", priority: "0.9" },
     { path: "boards", changefreq: "daily", priority: "0.9" },
+    { path: "flags", changefreq: "daily", priority: "0.9" },
   ];
 
   const urlTags: string[] = [];
@@ -152,6 +153,56 @@ async function runSitemapGenerator() {
     }
   } catch (err) {
     console.error("Sitemap compilation dynamic questions query error:", err);
+  }
+
+  // 8. Dynamic Regret Registry Stories from Firestore
+  try {
+    const storiesObj = await fetchAllDocumentsInCollection("stories");
+    console.log(`Fetched ${storiesObj.length} dynamic stories for static sitemap inclusion.`);
+    for (const storyObj of storiesObj) {
+      if (storyObj.id) {
+        let titleSlug = '';
+        if (storyObj.title) {
+          titleSlug = '-' + storyObj.title
+            .toLowerCase()
+            .replace(/['"’]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        }
+        urlTags.push(`  <url>
+    <loc>${origin}/regrets/${storyObj.id}${titleSlug}</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>`);
+      }
+    }
+  } catch (err) {
+    console.error("Sitemap compilation dynamic stories query error:", err);
+  }
+
+  // 9. Dynamic Red Flag Cases from Firestore
+  try {
+    const redFlagsObj = await fetchAllDocumentsInCollection("redFlagCases");
+    console.log(`Fetched ${redFlagsObj.length} dynamic red flags for static sitemap inclusion.`);
+    for (const rObj of redFlagsObj) {
+      if (rObj.id) {
+        let titleSlug = '';
+        if (rObj.title) {
+          titleSlug = '-' + rObj.title
+            .toLowerCase()
+            .replace(/['"’]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        }
+        urlTags.push(`  <url>
+    <loc>${origin}/flags/${rObj.id}${titleSlug}</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>`);
+      }
+    }
+  } catch (err) {
+    console.error("Sitemap compilation dynamic red_flag_meter query error:", err);
   }
 
   // Construct legal XML package

@@ -101,6 +101,22 @@ async function fetchAllDocumentsInCollection(collectionName: string): Promise<an
   }
 }
 
+function extractIdFromSlug(slug: string): string {
+  if (!slug) return '';
+  if (slug.includes('-')) {
+    const parts = slug.split('-');
+    const prefix = parts[0];
+    const isPreseededStory = /^s\d+$/.test(prefix);
+    const isCustomStory = prefix.startsWith('story_');
+    const isRedFlag = prefix.startsWith('rf_');
+    
+    if (isPreseededStory || isCustomStory || isRedFlag) {
+      return prefix;
+    }
+  }
+  return slug;
+}
+
 // Generate matching page title and description exactly aligned with front-end routing
 async function getPageMetadata(urlPath: string) {
   const parts = urlPath.split('/').filter(Boolean);
@@ -167,8 +183,36 @@ async function getPageMetadata(urlPath: string) {
     }
   }
   else if (first === 'regrets') {
-    title = "BeforeRegret Relationship Story Ledger & Regrets";
-    description = "Read full timeline stories, interactive outcome statistics, and veteran survivors reports of relationship regrets.";
+    if (parts[1]) {
+      const dbId = extractIdFromSlug(parts[1]);
+      const story = await fetchDocumentFromFirestore("stories", dbId);
+      if (story) {
+        title = `Regret Story: "${story.title || 'Relationship Outcome'}" | BeforeRegret`;
+        description = story.fullStory ? story.fullStory.slice(0, 155) + "..." : `Read the 100% anonymous regret story and outcomes timeline for this relationship decision.`;
+      } else {
+        title = `Regret Story Outcomes | BeforeRegret`;
+        description = `Read real stories, average regrets, and veteran survivors reports of relationship regrets.`;
+      }
+    } else {
+      title = "BeforeRegret Relationship Story Ledger & Regrets";
+      description = "Read full timeline stories, interactive outcome statistics, and veteran survivors reports of relationship regrets.";
+    }
+  }
+  else if (first === 'flags' || first === 'redflags' || first === 'red-flags' || first === 'red-flag-meter') {
+    if (parts[1]) {
+      const dbId = extractIdFromSlug(parts[1]);
+      const redFlag = await fetchDocumentFromFirestore("redFlagCases", dbId);
+      if (redFlag) {
+        title = `Red Flag Dilemma: "${redFlag.title || 'Relationship Danger Meter'}" | BeforeRegret`;
+        description = redFlag.description ? redFlag.description.slice(0, 155) + "..." : `Cast your citizen vote on this red flag dilemma and review comments.`;
+      } else {
+        title = `Red Flag Dilemma | BeforeRegret`;
+        description = `Review and audit relationship red/yellow/green flag cases submitted anonymously.`;
+      }
+    } else {
+      title = "Red Flag Dilemma Meter - Citizen Vote on Warnings | BeforeRegret";
+      description = "Audit and vote on red, yellow, and green flag relationship warnings submitted anonymously by real partners.";
+    }
   }
   else if (first === 'country') {
     const countryName = parts[1] ? parts[1].toUpperCase() : 'Global';
