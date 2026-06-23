@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, ShieldAlert, Heart, HelpCircle, Flame, ExternalLink, Globe, Tag } from 'lucide-react';
+import { Heart, ExternalLink, Tag } from 'lucide-react';
 import AdminPanel from './AdminPanel';
 
 interface FooterProps {
@@ -18,12 +18,6 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
     { name: "Gottman Institute Relationship Method", link: "https://gottman.com" }
   ];
 
-  const popularCountries = [
-    { name: "United States", code: "usa" },
-    { name: "India", code: "india" },
-    { name: "Canada", code: "canada" }
-  ];
-
   const popularTags = [
     { name: "Marriage Commitment", code: "marriage" },
     { name: "Trust & Infidelity", code: "cheating" },
@@ -34,7 +28,7 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
   return (
     <footer className="mt-auto border-t border-[#30363D] bg-[#090D13] py-12 text-[#AAB2C0] transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
           
           {/* Column 1: Info and Tagline */}
           <div className="space-y-4">
@@ -52,39 +46,7 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
             </div>
           </div>
 
-          {/* Column 2: Popular Situations & Directories */}
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-1.5">
-              <Compass className="h-3.5 w-3.5 text-[#4F8CFF]" /> Explore Directories
-            </h3>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <button onClick={() => setScreen({ type: 'explore' })} className="hover:text-white transition-colors text-left">
-                  All Relationship Situations
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setScreen({ type: 'court_list' })} className="hover:text-white transition-colors text-left">
-                  BR Court
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setScreen({ type: 'question_list' })} className="hover:text-white transition-colors text-left">
-                  Community Q&A Panels
-                </button>
-              </li>
-              <li className="pt-2 text-[11px] font-semibold text-white/90">Country Directories:</li>
-              {popularCountries.map(c => (
-                <li key={c.code} className="inline-block mr-2">
-                  <button onClick={() => setScreen({ type: 'country', slug: c.code })} className="hover:text-white text-[11px] underline flex items-center gap-0.5">
-                    <Globe className="h-2.5 w-2.5 text-zinc-400" /> {c.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3: Tag Directories */}
+          {/* Column 2: Tag Directories */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-1.5">
               <Tag className="h-3.5 w-3.5 text-pink-400" /> Tag Archives

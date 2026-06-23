@@ -173,7 +173,7 @@ export default function CourtScreen({
       
       {/* Return Button */}
       <button
-        onClick={() => setScreen({ type: 'home' })}
+        onClick={() => setScreen({ type: 'court_list' })}
         className="text-xs text-[#6B7280] hover:text-[#24324A] inline-flex items-center gap-1 font-semibold border border-[#E5E7EB] bg-white px-3 py-1.5 rounded-xl transition-all hover:border-zinc-300 shadow-sm"
       >
         <ArrowLeft className="h-3.5 w-3.5" /> Return to Before Regret Cases
