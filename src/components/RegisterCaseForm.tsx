@@ -143,9 +143,8 @@ export default function RegisterCaseForm({ onSubmit }: RegisterCaseFormProps) {
           <Calendar className="h-3.5 w-3.5 text-[#F4B942]" />
           <span>Deliberation period *</span>
         </div>
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
           {[
-            { label: "1 min", value: 1 / 1440, unit: "min", isMin: true },
             { label: "3 days", value: 3, unit: "days" },
             { label: "5 days", value: 5, unit: "days" },
             { label: "7 days", value: 7, unit: "days" },
@@ -162,7 +161,7 @@ export default function RegisterCaseForm({ onSubmit }: RegisterCaseFormProps) {
                   : 'bg-[#0D1117] border-[#30363D] text-[#AAB2C0] hover:border-zinc-600'
               }`}
             >
-              <span className="text-[13px] font-black">{opt.isMin ? "1" : opt.value}</span>
+              <span className="text-[13px] font-black">{opt.value}</span>
               <span className="text-[7.5px] uppercase tracking-widest text-[#AAB2C0]">{opt.unit}</span>
             </button>
           ))}
