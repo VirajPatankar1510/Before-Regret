@@ -101,6 +101,29 @@ async function fetchAllDocumentsInCollection(collectionName: string): Promise<an
   }
 }
 
+function getSEOHeadingForSituation(slug: string, fallbackName: string): string {
+  switch (slug) {
+    case 'boyfriend-doesnt-want-marriage':
+      return "Will I Regret Staying If My Boyfriend Doesn't Want Marriage?";
+    case 'stayed-after-cheating':
+      return "Will I Regret Staying After Cheating? Forgiveness Statistics & Outcomes";
+    case 'partner-doesnt-want-kids':
+      return "Will I Regret Staying With a Partner Who Doesn't Want Kids?";
+    case 'moved-for-love':
+      return "Should I Move for Love? Relocation Regrets & Survival Rates";
+    case 'long-distance-relationship':
+      return "Are Long Distance Relationships Worth It? Split Rates & Regret Curves";
+    case 'different-religion-marriage':
+      return "Do Interfaith Marriages Work? Religion Friction & Outcome Statistics";
+    case 'marriage-ultimatum':
+      return "Do Marriage Ultimatums Work? Resentment Rates & Divorce Statistics";
+    case 'ignored-red-flags':
+      return "Will I Regret Ignoring Red Flags? Relationship Warning Outcomes";
+    default:
+      return `Should I ${fallbackName}? Real Outcomes & Regret Metrics`;
+  }
+}
+
 function extractIdFromSlug(slug: string): string {
   if (!slug) return '';
   if (slug.includes('-')) {
@@ -121,11 +144,14 @@ function extractIdFromSlug(slug: string): string {
 async function getPageMetadata(urlPath: string) {
   const parts = urlPath.split('/').filter(Boolean);
   
-  let title = "BeforeRegret — See what happened before making the same decision.";
-  let description = "BeforeRegret is an interactive ledger of crowdsourced anonymous relationship timeline stories on marriage, cheating, and commitment regrets.";
+  let title = "BeforeRegret — Relationship Decisions Before Regret";
+  let description = "BeforeRegret is the ultimate decision intelligence platform for relationship regrets. Read crowdsourced anonymous story timelines, citizen jury verdicts, and red flag warnings before making life-altering choices.";
   
   if (parts.length === 0) {
-    return { title, description };
+    return { 
+      title: "BeforeRegret — Relationship Decisions Before Regret | Relationship Court & Regrets", 
+      description: "Analyze crowdsourced anonymous timeline stories on marriage, cheating, cohabitation, and family commitments before making major life decisions. Vote on Red Flag warnings, hear jury trials, and write survivor guidelines." 
+    };
   }
   
   const first = parts[0].toLowerCase();
@@ -139,8 +165,9 @@ async function getPageMetadata(urlPath: string) {
     const slug = parts[1] || 'boyfriend-doesnt-want-marriage';
     const preseeded = PRESEEDED_SITUATIONS.find(s => s.slug === slug);
     const sName = preseeded ? preseeded.name : displaySlug;
-    title = `Should I ${sName}? Real Outcomes & Regrets | BeforeRegret`;
-    description = preseeded ? preseeded.description : `Access crowd-sourced demographics, average regret curves, and 100% anonymous stories on "${sName}".`;
+    const seoHeading = getSEOHeadingForSituation(slug, sName);
+    title = `${seoHeading} | BeforeRegret`;
+    description = preseeded ? preseeded.description : `Access crowdsourced demographics, average regret curves, and 100% anonymous story timelines about "${sName}".`;
   }
   else if (first === 'compare') {
     const slug = parts[1] || 'boyfriend-doesnt-want-marriage-vs-stayed-after-cheating';
