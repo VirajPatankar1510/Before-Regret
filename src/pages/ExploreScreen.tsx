@@ -81,18 +81,17 @@ export default function ExploreScreen({
     return matchesTab && matchesSearch;
   });
 
-  return (
-    <div className="space-y-8 pb-16 animate-fadeIn">
-      
-      {/* Intro Header */}
-      <div className="space-y-1.5 text-center max-w-2xl mx-auto py-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#24324A] tracking-tight uppercase font-display">Outcome Intelligence Directories</h1>
-        <p className="text-xs sm:text-sm text-[#6B7280] leading-relaxed font-semibold">
-          Browse real-life crowd-sourced relationship dossiers grouped by issues, demographics, and active case logs.
-        </p>
-      </div>
+  const showDirectoryOnTop = !!searchTerm;
 
-      {/* Categories Grid (Bento) */}
+  // 1. Categories Grid JSX
+  const categoriesGrid = (
+    <div className="space-y-4">
+      {!showDirectoryOnTop && (
+        <div className="text-left pb-1">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-[#C9A227]">Browse Frameworks</span>
+          <h2 className="text-lg font-bold text-[#24324A] uppercase tracking-wide font-serif">Topic Classified Directories</h2>
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {situations.map(s => (
           <div
@@ -113,111 +112,153 @@ export default function ExploreScreen({
           </div>
         ))}
       </div>
+    </div>
+  );
 
-      {/* SEO-Friendly Index Section */}
-      <section className="bg-white border border-[#E5E7EB] rounded-3xl p-5 sm:p-6 space-y-6 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#ECECEC] pb-5">
-          <div className="space-y-1">
-            <h2 className="text-base font-bold text-[#24324A] flex items-center gap-2 uppercase tracking-wide font-serif">
-              <ShieldCheck className="h-5 w-5 text-[#C9A227]" />
-              📁 Public Case Directory
-            </h2>
-            <p className="text-[11px] text-[#6B7280] font-medium">
-              Directory listing of user-lodged relationship stories and trial records. Completely anonymous and securely stored.
-            </p>
-          </div>
-
-          {/* Quick Filter Controls */}
-          <div className="flex items-center gap-1.5 self-start sm:self-center">
-            {(['all', 'story', 'trial'] as const).map(type => (
+  // 2. SEO-Friendly Index Section JSX (Public Case Directory)
+  const publicCaseDirectory = (
+    <section className="bg-white border border-[#E5E7EB] rounded-3xl p-5 sm:p-6 space-y-6 shadow-sm border-t-2 border-t-[#C9A227]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#ECECEC] pb-5">
+        <div className="space-y-1">
+          <h2 className="text-base font-bold text-[#24324A] flex items-center gap-2 uppercase tracking-wide font-serif">
+            <ShieldCheck className="h-5 w-5 text-[#C9A227]" />
+            📁 Public Case Directory
+          </h2>
+          <p className="text-[11px] text-[#6B7280] font-medium">
+            Directory listing of user-lodged relationship stories and trial records. Completely anonymous and securely stored.
+          </p>
+          
+          {searchTerm && (
+            <div className="mt-2.5 inline-flex items-center gap-2 bg-[#FFF8E1] border border-[#E8D79B]/60 px-3 py-1 rounded-xl animate-fadeIn">
+              <span className="text-[9px] font-mono uppercase tracking-wider font-extrabold text-amber-800">Showing results for:</span>
+              <span className="text-xs font-black text-[#24324A] font-serif">"{searchTerm}"</span>
               <button
-                key={type}
-                onClick={() => setFilterType(type)}
-                className={`px-3 py-1 text-[10px] font-bold uppercase rounded-lg border transition-all ${
-                  filterType === type
-                    ? 'bg-[#FFF8E1] text-[#C9A227] border-[#E8D79B]'
-                    : 'text-[#6B7280] border-[#E5E7EB] hover:bg-[#FAF8F2] bg-white'
-                }`}
+                onClick={() => setSearchTerm('')}
+                className="text-[#C0392B] hover:text-[#CBB544] ml-2 text-xs font-mono font-bold transition-all px-1"
+                title="Clear search"
               >
-                {type}s
+                ✕ Clear Filter
               </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Local Index Search */}
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search index by unique Case Key, tags (e.g. Female, 20s), or issue words..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-white border border-[#E5E7EB] focus:border-[#24324A] rounded-xl py-2 px-3.5 pl-10 text-xs text-[#1F2937] placeholder-zinc-400 focus:outline-none transition-all font-sans font-medium hover:border-zinc-300"
-          />
-          <Search className="h-4 w-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-        </div>
-
-        {/* Ledger list */}
-        <div className="divide-y divide-[#E5E7EB]">
-          {filteredItems.length > 0 ? (
-            filteredItems.map(item => (
-              <div
-                key={item.id}
-                onClick={() => {
-                  if (item.type === 'story') {
-                    setScreen({ type: 'situation', slug: item.slug });
-                    if (onCaseRetrieve) {
-                      setTimeout(() => onCaseRetrieve(item.caseNumber || ''), 300);
-                    }
-                  } else {
-                    setScreen({ type: 'court', slug: item.slug });
-                  }
-                }}
-                className="py-4 hover:bg-[#FAF8F2]/60 px-2 rounded-xl transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
-              >
-                <div className="space-y-1.5 max-w-3xl">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] font-bold text-[#C9A227] bg-[#FFF8E1] border border-[#E8D79B] px-2 py-0.5 rounded-md">
-                      {item.caseNumber}
-                    </span>
-                    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md font-mono ${
-                      item.type === 'trial' ? 'bg-[#24324A]/5 text-[#24324A] border border-[#24324A]/10' : 'bg-zinc-100 text-[#6B7280] border border-zinc-200'
-                    }`}>
-                      {item.type}
-                    </span>
-                    <span className="text-[10px] text-zinc-400 font-mono">
-                      {item.time}
-                    </span>
-                  </div>
-                  <h3 className="text-xs sm:text-sm font-semibold text-[#1F2937] group-hover:text-[#24324A] transition-colors font-serif">
-                    "{item.title}"
-                  </h3>
-                  <p className="text-xs text-[#6B7280] line-clamp-2 leading-relaxed font-sans">
-                    {item.description}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-1.5 md:self-center">
-                  {item.tags.map(t => (
-                    <span key={t} className="text-[9px] bg-[#F4F1E8] text-[#6B7280] border border-[#E5E7EB] px-2 py-0.5 rounded-full font-sans font-semibold">
-                      {t}
-                    </span>
-                  ))}
-                  <div className="hidden md:flex h-7 w-7 rounded-full bg-zinc-100 group-hover:bg-[#24324A]/5 items-center justify-center text-zinc-400 group-hover:text-[#24324A] transition-all">
-                    <ChevronRight className="h-4 w-4" />
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="py-12 text-center bg-[#FAF8F2] rounded-xl my-4">
-              <AlertTriangle className="h-8 w-8 text-zinc-400 mx-auto mb-2" />
-              <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">No matching stories or cases in offline index</p>
-              <p className="text-[10px] text-zinc-400 mt-1">Try resetting filter tabs or checking for typos.</p>
             </div>
           )}
         </div>
-      </section>
+
+        {/* Quick Filter Controls */}
+        <div className="flex items-center gap-1.5 self-start sm:self-center">
+          {(['all', 'story', 'trial'] as const).map(type => (
+            <button
+              key={type}
+              onClick={() => setFilterType(type)}
+              className={`px-3 py-1 text-[10px] font-bold uppercase rounded-lg border transition-all ${
+                filterType === type
+                  ? 'bg-[#FFF8E1] text-[#C9A227] border-[#E8D79B]'
+                  : 'text-[#6B7280] border-[#E5E7EB] hover:bg-[#FAF8F2] bg-white'
+              }`}
+            >
+              {type}s
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Local Index Search */}
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Search index by unique Case Key, tags (e.g. Female, 20s), or issue words..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full bg-white border border-[#E5E7EB] focus:border-[#24324A] rounded-xl py-2 px-3.5 pl-10 text-xs text-[#1F2937] placeholder-zinc-400 focus:outline-none transition-all font-sans font-medium hover:border-zinc-300"
+        />
+        <Search className="h-4 w-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+      </div>
+
+      {/* Ledger list */}
+      <div className="divide-y divide-[#E5E7EB]">
+        {filteredItems.length > 0 ? (
+          filteredItems.map(item => (
+            <div
+              key={item.id}
+              onClick={() => {
+                if (item.type === 'story') {
+                  setScreen({ type: 'situation', slug: item.slug });
+                  if (onCaseRetrieve) {
+                    setTimeout(() => onCaseRetrieve(item.caseNumber || ''), 300);
+                  }
+                } else {
+                  setScreen({ type: 'court', slug: item.slug });
+                }
+              }}
+              className="py-4 hover:bg-[#FAF8F2]/60 px-2 rounded-xl transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+            >
+              <div className="space-y-1.5 max-w-3xl">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-[10px] font-bold text-[#C9A227] bg-[#FFF8E1] border border-[#E8D79B] px-2 py-0.5 rounded-md">
+                    {item.caseNumber}
+                  </span>
+                  <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md font-mono ${
+                    item.type === 'trial' ? 'bg-[#24324A]/5 text-[#24324A] border border-[#24324A]/10' : 'bg-zinc-100 text-[#6B7280] border border-zinc-200'
+                  }`}>
+                    {item.type}
+                  </span>
+                  <span className="text-[10px] text-zinc-400 font-mono">
+                    {item.time}
+                  </span>
+                </div>
+                <h3 className="text-xs sm:text-sm font-semibold text-[#1F2937] group-hover:text-[#24324A] transition-colors font-serif">
+                  "{item.title}"
+                </h3>
+                <p className="text-xs text-[#6B7280] line-clamp-2 leading-relaxed font-sans">
+                  {item.description}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-1.5 md:self-center">
+                {item.tags.map(t => (
+                  <span key={t} className="text-[9px] bg-[#F4F1E8] text-[#6B7280] border border-[#E5E7EB] px-2 py-0.5 rounded-full font-sans font-semibold">
+                    {t}
+                  </span>
+                ))}
+                <div className="hidden md:flex h-7 w-7 rounded-full bg-zinc-100 group-hover:bg-[#24324A]/5 items-center justify-center text-zinc-400 group-hover:text-[#24324A] transition-all">
+                  <ChevronRight className="h-4 w-4" />
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="py-12 text-center bg-[#FAF8F2] rounded-xl my-4">
+            <AlertTriangle className="h-8 w-8 text-zinc-400 mx-auto mb-2" />
+            <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">No matching stories or cases in offline index</p>
+            <p className="text-[10px] text-zinc-400 mt-1">Try resetting filter tabs or checking for typos.</p>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+
+  return (
+    <div className="space-y-8 pb-16 animate-fadeIn">
+      
+      {/* Intro Header */}
+      <div className="space-y-1.5 text-center max-w-2xl mx-auto py-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#24324A] tracking-tight uppercase font-display">Outcome Intelligence Directories</h1>
+        <p className="text-xs sm:text-sm text-[#6B7280] leading-relaxed font-semibold">
+          Browse real-life crowd-sourced relationship dossiers grouped by issues, demographics, and active case logs.
+        </p>
+      </div>
+
+      {/* Dynamic ordering of directories based on Search presence */}
+      {showDirectoryOnTop ? (
+        <div className="space-y-8">
+          {publicCaseDirectory}
+          {categoriesGrid}
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {categoriesGrid}
+          {publicCaseDirectory}
+        </div>
+      )}
 
       {/* Extra Directories shortcuts */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
