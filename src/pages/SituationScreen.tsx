@@ -248,25 +248,11 @@ export default function SituationScreen({
                     </div>
                     <button
                       onClick={() => {
-                        const targetCard = document.getElementById(`story-${story.id}`);
-                        if (targetCard) {
-                          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                          // Highlight the card temporarily
-                          targetCard.classList.add('ring-4', 'ring-[#C9A227]/40');
-                          setTimeout(() => {
-                            targetCard.classList.remove('ring-4', 'ring-[#C9A227]/40');
-                          }, 3000);
-                        } else {
-                          // Fallback scroll to stories feed
-                          const element = document.getElementById("peer-stories-title");
-                          if (element) {
-                            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                          }
-                        }
+                        setScreen({ type: 'regret_stories', slug: story.id });
                       }}
                       className="bg-[#21262D] hover:bg-[#30363D] text-white border border-[#30363D] hover:border-[#4F8CFF] rounded-xl px-3 py-1.5 transition-all text-[10px] font-bold cursor-pointer shrink-0"
                     >
-                      Inspect Profile
+                      Read Full Story
                     </button>
                   </div>
                 </div>
