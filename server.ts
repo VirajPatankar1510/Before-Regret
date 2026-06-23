@@ -285,7 +285,7 @@ Ensure that:
   // Dynamic Google Search Console compatible Sitemap Generator
   app.get("/sitemap.xml", async (req, res) => {
     try {
-      const origin = `${req.protocol}://${req.get("host") || "beforeregret.org"}`;
+      const origin = `${req.protocol}://${req.get("host") || "beforeregret.com"}`;
       
       // Core static page views
       const staticUrls = [
@@ -426,7 +426,7 @@ ${urlTags.join("\n")}
         const rawHtml = fs.readFileSync(indexPagePath, "utf-8");
         const transformedHtml = await vite.transformIndexHtml(req.originalUrl, rawHtml);
         const { title, description } = await getPageMetadata(req.path);
-        const origin = `${req.protocol}://${req.get('host') || 'beforeregret.org'}`;
+        const origin = `${req.protocol}://${req.get('host') || 'beforeregret.com'}`;
         const canonicalUrl = `${origin}${req.originalUrl}`;
         const hydratedHtml = hydrateHtml(transformedHtml, title, description, canonicalUrl);
         res.status(200).set({ 'Content-Type': 'text/html' }).end(hydratedHtml);
@@ -449,7 +449,7 @@ ${urlTags.join("\n")}
         }
         const rawHtml = fs.readFileSync(distIndexPage, "utf-8");
         const { title, description } = await getPageMetadata(req.path);
-        const origin = `${req.protocol}://${req.get('host') || 'beforeregret.org'}`;
+        const origin = `${req.protocol}://${req.get('host') || 'beforeregret.com'}`;
         const canonicalUrl = `${origin}${req.originalUrl}`;
         const hydratedHtml = hydrateHtml(rawHtml, title, description, canonicalUrl);
         res.status(200).set({ 'Content-Type': 'text/html' }).end(hydratedHtml);
