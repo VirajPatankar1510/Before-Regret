@@ -251,15 +251,25 @@ export default function StoryCard({
 
       {/* Segmented Tags */}
       <div className="mt-4 flex flex-wrap gap-2">
-        {story.tags.map(t => (
-          <button
-            key={t}
-            onClick={() => onSelectTag(t)}
-            className="text-[10px] font-semibold text-zinc-600 bg-white border border-[#E5E7EB] hover:border-[#4F8CFF] hover:text-[#4F8CFF] px-2 py-0.5 rounded-md transition-colors"
-          >
-            #{t}
-          </button>
-        ))}
+        {(() => {
+          const isDemographicOrGenericTag = (tag: string): boolean => {
+            const t = tag.toLowerCase().trim();
+            if (t === 'male' || t === 'female' || t === 'other' || t === 'non-binary') return true;
+            if (t.endsWith('y/o') || t.endsWith('s') || /^\d+$/.test(t)) return true;
+            const countries = ['usa', 'india', 'canada', 'uk', 'vietnam', 'australia', 'germany', 'france', 'united states', 'united kingdom'];
+            if (countries.includes(t)) return true;
+            return false;
+          };
+          return story.tags.filter(isDemographicOrGenericTag).map(t => (
+            <button
+              key={t}
+              onClick={() => onSelectTag(t)}
+              className="text-[10px] font-semibold text-zinc-600 bg-white border border-[#E5E7EB] hover:border-[#4F8CFF] hover:text-[#4F8CFF] px-2 py-0.5 rounded-md transition-colors"
+            >
+              #{t}
+            </button>
+          ));
+        })()}
       </div>
 
 

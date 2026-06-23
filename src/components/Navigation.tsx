@@ -55,7 +55,9 @@ export default function Navigation({
 
     stories.forEach(s => {
       const caseNum = s.caseNumber || '';
-      if (caseNum.toLowerCase().includes(query) || s.title.toLowerCase().includes(query)) {
+      const matchesText = caseNum.toLowerCase().includes(query) || s.title.toLowerCase().includes(query);
+      const matchesKeywords = s.tags && s.tags.some(t => t.toLowerCase().includes(query));
+      if (matchesText || matchesKeywords) {
         results.push({ type: 'situation', label: `📂 ${caseNum ? `[${caseNum}]` : 'Case Story'}: ${s.title}`, slug: s.situationSlug });
       }
     });
