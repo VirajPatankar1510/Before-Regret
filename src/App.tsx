@@ -121,7 +121,19 @@ export function parsePath(pathname: string): { type: string; slug?: string } {
     }
     return { type: 'question_list' };
   }
-  if (first === 'should-i-leave' || first === 'will-i-regret' || first === 'red-flags' || first === 'relationship-regrets' || first === 'commitment-issues') {
+  if (
+    first === 'should-i-leave' || 
+    first === 'will-i-regret' || 
+    first === 'red-flags' || 
+    first === 'relationship-regrets' || 
+    first === 'commitment-issues' ||
+    first === 'trust-issues' ||
+    first === 'signs-he-doesnt-want-marriage' ||
+    first === 'should-i-forgive-cheating' ||
+    first === 'will-i-regret-divorce' ||
+    first === 'red-flags-i-ignored' ||
+    first === 'relationship-ultimatum'
+  ) {
     return { type: 'hub', slug: first };
   }
   if (first === 'regrets') {
@@ -241,20 +253,38 @@ export default function App() {
         break;
       case 'hub': {
         if (currentScreen.slug === 'should-i-leave') {
-          title = "Should I Leave My Partner? Reflections & Experiences | BeforeRegret";
-          description = "Uncover shared relationship perspectives, peer experiences, and considerations to help answer: Should I leave or should I stay? Read reflections from people who faced similar choices.";
+          title = "Should I Leave My Relationship? Breakup & Marriage Doubts | BeforeRegret";
+          description = "Should I stay or should I leave my partner? Reflect on breakup decisions, marriage doubts, and read raw outcome stories from other couples facing relationship fatigue.";
         } else if (currentScreen.slug === 'will-i-regret') {
-          title = "Will I Regret It? Relationship Perspectives & Insights | BeforeRegret";
-          description = "Explore reflections on relationship decision points. Find out how others approached choices like children mismatch, cheating, or differing life goals.";
+          title = "Will I Regret Leaving My Husband or Partner? Outcomes | BeforeRegret";
+          description = "Will I regret leaving my husband, ending my relationship, or relocating for love? Browse real-life perspectives and 1-year later outcome timelines.";
         } else if (currentScreen.slug === 'red-flags') {
-          title = "Red Flags Reflection: Relationship Warning Patterns | BeforeRegret";
-          description = "Review community experiences on relationship warning signs, behavioral patterns, and shared feedback detailing behaviors you shouldn't ignore.";
+          title = "Relationship Red Flags: Warning Signs & Partner Patterns | BeforeRegret";
+          description = "Is it a red flag if he still talks to his ex? Spot warning signs in dating, secretive phone habits, stonewalling, and emotional isolation patterns.";
         } else if (currentScreen.slug === 'relationship-regrets') {
-          title = "Relationship Perspective Registry: Reflection & Lessons | BeforeRegret";
-          description = "Read authentic reflections detailing key relationship decisions and lessons. Explore the emotional and personal realities of staying or leaving.";
+          title = "Relationship Regrets Registry: Stories & Breakup Lessons | BeforeRegret";
+          description = "Read real, anonymous relationship regrets and success stories. Find perspective on staying for the kids, divorce adjustment, and life-defining lessons.";
         } else if (currentScreen.slug === 'commitment-issues') {
-          title = "Commitment Issues & Life Goals: Marriage & Family Alignment | BeforeRegret";
-          description = "Community advice and open perspectives on deep relationship alignment. Consider discussions on family timelines and differing vision paths.";
+          title = "Commitment Issues, Marriage Delays & Ultimatums | BeforeRegret";
+          description = "Waiting for a proposal or wondering why your boyfriend won't marry you? Navigate commitment problems, marriage ultimatums, or children desire mismatches.";
+        } else if (currentScreen.slug === 'trust-issues') {
+          title = "Trust Issues: Secret Phones, Lies & Emotional Cheating | BeforeRegret";
+          description = "Is your partner hiding things, keeping a secret phone, or emotionally cheating? Explore community wisdom on rebuilding trust or walking away after lies.";
+        } else if (currentScreen.slug === 'signs-he-doesnt-want-marriage') {
+          title = "Signs He Doesn't Want Marriage & Won't Propose | BeforeRegret";
+          description = "How long should you wait for a proposal? Learn key signs he doesn't want to get married and the actual outcomes of giving a marriage ultimatum.";
+        } else if (currentScreen.slug === 'should-i-forgive-cheating') {
+          title = "Should I Forgive Cheating or Leave After Infidelity? | BeforeRegret";
+          description = "Deciding whether to stay or leave after cheating? Read shared experiences from real couples who tried to forgive, restore trust, or chose to walk away.";
+        } else if (currentScreen.slug === 'will-i-regret-divorce') {
+          title = "Will I Regret Divorce? Doubts, Relief & Real Timelines | BeforeRegret";
+          description = "Are you facing divorce doubts and wondering if you'll regret leaving? Explore real outcome curves, adjustment timelines, and stories 1 year later.";
+        } else if (currentScreen.slug === 'red-flags-i-ignored') {
+          title = "The Biggest Relationship Red Flags I Ignored: Real Stories | BeforeRegret";
+          description = "Read authentic stories of red flags partners wish they hadn't ignored, from hidden bank accounts to emotional withholding in dating.";
+        } else if (currentScreen.slug === 'relationship-ultimatum') {
+          title = "Relationship Ultimatums: Do They Work or Cause Resentment? | BeforeRegret";
+          description = "Thinking of giving an ultimatum about marriage, commitment, or moving? Read outcomes and discover healthy ways to discuss dealbreakers.";
         }
         break;
       }
@@ -389,14 +419,16 @@ export default function App() {
 
   // Handle auto-scroll to top and focus main section on navigation/screen change
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    window.scrollTo(0, 0);
     const mainContent = document.getElementById('main-content');
     if (mainContent) {
       mainContent.focus();
     }
+    // Handle layout adjustments/loading lag
+    const timer = setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 100);
+    return () => clearTimeout(timer);
   }, [currentScreen]);
 
   // Synchronize browser native back & forward button pops directly into the React stack
