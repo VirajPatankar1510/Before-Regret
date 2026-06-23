@@ -9,36 +9,31 @@ service cloud.firestore {
     // Stories collection - publicly readable, writable by everyone for guest submissions
     match /stories/{storyId} {
       allow read: if true;
-      allow create, update: if true;
-      allow delete: if request.auth != null;
+      allow create, update, delete: if true;
     }
 
     // Comments/replies collection - publicly readable and writable
     match /comments/{commentId} {
       allow read: if true;
-      allow create, update: if true;
-      allow delete: if request.auth != null;
+      allow create, update, delete: if true;
     }
 
     // Questions collection - publicly readable and writable to support community advice requests
     match /questions/{questionId} {
       allow read: if true;
-      allow create, update: if true;
-      allow delete: if request.auth != null;
+      allow create, update, delete: if true;
     }
 
     // Court cases collection - publicly readable and writable
     match /courtCases/{caseId} {
       allow read: if true;
-      allow create, update: if true;
-      allow delete: if request.auth != null;
+      allow create, update, delete: if true;
     }
 
     // Red flag cases collection - publicly readable and writable
     match /redFlagCases/{caseId} {
       allow read: if true;
-      allow create, update: if true;
-      allow delete: if request.auth != null;
+      allow create, update, delete: if true;
     }
 
     // User profiles - readable and writable to support profile synchronization
