@@ -65,6 +65,11 @@ async function runSitemapGenerator() {
     { path: "court", changefreq: "daily", priority: "0.9" },
     { path: "boards", changefreq: "daily", priority: "0.9" },
     { path: "flags", changefreq: "daily", priority: "0.9" },
+    { path: "should-i-leave", changefreq: "daily", priority: "0.95" },
+    { path: "will-i-regret", changefreq: "daily", priority: "0.95" },
+    { path: "red-flags", changefreq: "daily", priority: "0.95" },
+    { path: "relationship-regrets", changefreq: "daily", priority: "0.95" },
+    { path: "commitment-issues", changefreq: "daily", priority: "0.95" },
   ];
 
   const urlTags: string[] = [];
