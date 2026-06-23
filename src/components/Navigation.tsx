@@ -103,6 +103,15 @@ export default function Navigation({
     setIsOpen(false);
   };
 
+  const getNavPath = (screen: { type: string; slug?: string }) => {
+    if (screen.type === 'explore') return '/explore';
+    if (screen.type === 'court_list') return '/court';
+    if (screen.type === 'question_list') return '/boards';
+    if (screen.type === 'red_flag_meter') return '/flags';
+    if (screen.type === 'regret_stories') return '/regrets';
+    return '/';
+  };
+
   const menuItems = [
     { label: 'Explore', screen: { type: 'explore' }, icon: Compass },
     { label: 'BR Court', screen: { type: 'court_list' }, icon: Gavel },
@@ -117,8 +126,12 @@ export default function Navigation({
         <div className="flex h-16 items-center justify-between gap-4">
           
           {/* Logo */}
-          <div 
-            onClick={() => setScreen({ type: 'home' })}
+          <a 
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              setScreen({ type: 'home' });
+            }}
             className="flex cursor-pointer items-center space-x-2.5 shrink-0 select-none"
             id="logo-desktop"
           >
@@ -127,7 +140,7 @@ export default function Navigation({
               <span className="font-extrabold text-sm sm:text-lg tracking-tight text-[#24324A]">Before<span className="text-[#C9A227]">Regret</span></span>
               <p className="text-[8px] sm:text-[9px] text-[#6B7280] leading-none font-medium">Before you stay. Before you leave.</p>
             </div>
-          </div>
+          </a>
 
           {/* Navigation Menu Links Desktop */}
           <div className="hidden lg:flex items-center space-x-3 shrink-0">
@@ -135,9 +148,13 @@ export default function Navigation({
               const screenCast = item.screen as { type: string; slug?: string };
               const active = currentScreen.type === screenCast.type && (!screenCast.slug || currentScreen.slug === screenCast.slug);
               return (
-                <button
+                <a
                   key={item.label}
-                  onClick={() => setScreen(item.screen)}
+                  href={getNavPath(screenCast)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen(item.screen);
+                  }}
                   className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all ${
                     active 
                       ? 'text-[#24324A] bg-[#F4F1E8] border border-[#E5E7EB]' 
@@ -146,7 +163,8 @@ export default function Navigation({
                 >
                   <item.icon className={`h-4 w-4 ${active ? 'text-[#C9A227]' : 'text-[#9CA3AF]'}`} />
                   {item.label}
-                </button>
+                </a
+>
               );
             })}
           </div>

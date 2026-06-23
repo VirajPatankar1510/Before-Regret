@@ -411,6 +411,82 @@ export default function App() {
       document.head.appendChild(canonicalLink);
     }
 
+    // Programmatic SEO: Inject dynamic JSON-LD structured data for rich search engine snippets (FAQ, Q&A, BlogPosting)
+    let schemaJson: any = {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "BeforeRegret",
+      "url": origin,
+      "description": "The ultimate crowdsourced decision intelligence platform for relationships. View timelines, jury trials, and red flags before making life-altering decisions."
+    };
+
+    if (currentScreen.type === 'court') {
+      const courtCaseObj = store.courtCases.find((c: any) => c.slug === currentScreen.slug);
+      if (courtCaseObj) {
+        schemaJson = {
+          "@context": "https://schema.org",
+          "@type": "DiscussionForumPosting",
+          "headline": courtCaseObj.title,
+          "description": courtCaseObj.description,
+          "datePublished": courtCaseObj.postTime,
+          "author": {
+            "@type": "Person",
+            "name": courtCaseObj.author || "Anonymous Juror"
+          },
+          "interactionStatistic": {
+            "@type": "InteractionCounter",
+            "interactionType": "https://schema.org/LikeAction",
+            "userInteractionCount": (courtCaseObj.votes?.me || 0) + (courtCaseObj.votes?.partner || 0)
+          }
+        };
+      }
+    } else if (currentScreen.type === 'question') {
+      const questionObj = store.questions.find((q: any) => q.slug === currentScreen.slug);
+      if (questionObj) {
+        schemaJson = {
+          "@context": "https://schema.org",
+          "@type": "QAPage",
+          "mainEntity": {
+            "@type": "Question",
+            "name": questionObj.title,
+            "text": questionObj.description || questionObj.title,
+            "answerCount": questionObj.answers?.length || 0,
+            "dateCreated": questionObj.postTime || "2026-06-23",
+            "author": {
+              "@type": "Person",
+              "name": questionObj.author || "Anonymous Citizen"
+            }
+          }
+        };
+      }
+    } else if (currentScreen.type === 'regret_stories' && currentScreen.slug) {
+      const storyObj = store.stories.find((s: any) => s.id === currentScreen.slug);
+      if (storyObj) {
+        schemaJson = {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": storyObj.title,
+          "description": storyObj.fullStory.slice(0, 160) + "...",
+          "datePublished": storyObj.dateAdded,
+          "author": {
+            "@type": "Person",
+            "name": storyObj.userName || "Anonymous Writer"
+          }
+        };
+      }
+    }
+
+    let schemaScript = document.getElementById('seo-jsonld-schema');
+    if (schemaScript) {
+      schemaScript.textContent = JSON.stringify(schemaJson);
+    } else {
+      schemaScript = document.createElement('script');
+      schemaScript.id = 'seo-jsonld-schema';
+      schemaScript.setAttribute('type', 'application/ld+json');
+      schemaScript.textContent = JSON.stringify(schemaJson);
+      document.head.appendChild(schemaScript);
+    }
+
     // Push states to native HTML5 REST history pathnames
     if (window.location.pathname !== path) {
       window.history.pushState({ type: currentScreen.type, slug: currentScreen.slug }, '', path);
