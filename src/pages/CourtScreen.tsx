@@ -43,6 +43,13 @@ export default function CourtScreen({
   const [certConfidence, setCertConfidence] = useState('HIGH');
   const [certJurors, setCertJurors] = useState<number | null>(null);
   const [certIsGeneratingImage, setCertIsGeneratingImage] = useState(false);
+  const [certFormat, setCertFormat] = useState<'standard' | 'story916'>('standard');
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setCertFormat('story916');
+    }
+  }, []);
   
   const [showAddNameForm, setShowAddNameForm] = useState(false);
   const [typedPin, setTypedPin] = useState('');
@@ -333,6 +340,34 @@ export default function CourtScreen({
                 </button>
               ) : (
                 <div className="flex flex-wrap items-center gap-2 no-print">
+                  {/* Download Format Toggle Selector */}
+                  <div className="flex items-center gap-0.5 bg-zinc-800 border border-[#30363D] p-1 rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setCertFormat('standard')}
+                      className={`px-2.5 py-1.5 text-[9.5px] font-black uppercase tracking-wider rounded-lg transition-all ${
+                        certFormat === 'standard'
+                          ? 'bg-[#F4B942] text-[#0D1117] shadow'
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                      title="Wide Aspect Ratio (4:3)"
+                    >
+                      Card
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCertFormat('story916')}
+                      className={`px-2.5 py-1.5 text-[9.5px] font-black uppercase tracking-wider rounded-lg transition-all flex items-center gap-1 ${
+                        certFormat === 'story916'
+                          ? 'bg-[#F4B942] text-[#0D1117] shadow'
+                          : 'text-zinc-400 hover:text-white'
+                      }`}
+                      title="Vertical Aspect Ratio (9:16) for TikTok, Instagram stories etc."
+                    >
+                      9:16 Story
+                    </button>
+                  </div>
+
                   {/* Download Image (PNG) Button */}
                   <button
                     onClick={handleDownloadImage}
@@ -341,7 +376,7 @@ export default function CourtScreen({
                     title="Download high-resolution PNG image of your certificate"
                   >
                     <Download className="h-4 w-4" />
-                    {certIsGeneratingImage ? "Downloading..." : "Download Certificate"}
+                    {certIsGeneratingImage ? "Downloading..." : "Download"}
                   </button>
 
                   {/* Copy Link Button */}
@@ -353,7 +388,7 @@ export default function CourtScreen({
                     }}
                     className="bg-zinc-800 hover:bg-zinc-700 text-white font-extrabold text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl border border-[#30363D] transition-all shadow active:scale-95 flex items-center gap-1.5 cursor-pointer"
                   >
-                    <Copy className="h-4 w-4 text-[#F4B942]" /> {copied ? "Copied Link!" : "Copy Link"}
+                    <Copy className="h-4 w-4 text-[#F4B942]" /> {copied ? "Copied!" : "Copy Link"}
                   </button>
                 </div>
               )}
@@ -566,7 +601,12 @@ export default function CourtScreen({
               {/* HIGH-FIDELITY DESIGNED RELATIONSHIP COURT CERTIFICATE IN SINGLE CANVAS CARD */}
               <div 
                 id="certificate-print-area"
-                className="relative rounded-[24px] border-8 border-double border-[#C29B38] bg-[#FAFAF6] text-[#1E293B] p-6 sm:p-10 space-y-6 text-center max-w-2xl mx-auto shadow-2xl overflow-hidden transition-all duration-300 select-none pb-8"
+                className={`relative rounded-[24px] border-[#C29B38] bg-[#FAFAF6] text-[#1E293B] text-center mx-auto shadow-2xl overflow-hidden transition-all duration-300 select-none ${
+                  certFormat === 'story916' 
+                    ? 'border-[10px] border-double flex flex-col justify-between p-6 pt-9 pb-12' 
+                    : 'border-8 border-double p-6 sm:p-10 space-y-6 pb-8 max-w-2xl'
+                }`}
+                style={certFormat === 'story916' ? { aspectRatio: '9/16', width: '100%', maxWidth: '410px' } : undefined}
               >
                 {/* Dual-line elegant outer border ornaments */}
                 <div className="absolute inset-2 sm:inset-3 border border-[#C29B38]/40 pointer-events-none rounded-[16px]" />
@@ -599,7 +639,9 @@ export default function CourtScreen({
                 </div>
 
                 {/* Golden Wax Foil Stamp/Seal */}
-                <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-10 select-none pointer-events-none">
+                <div className={`absolute z-10 select-none pointer-events-none ${
+                  certFormat === 'story916' ? 'top-5 right-5 scale-90' : 'top-6 right-6 sm:top-8 sm:right-8'
+                }`}>
                   <div className="relative flex items-center justify-center">
                     {/* Golden jagged rosette seal background */}
                     <div className="absolute w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 shadow-md border-2 border-white animate-pulse opacity-95" />
@@ -616,108 +658,121 @@ export default function CourtScreen({
                   </div>
                 </div>
 
-                {/* Certificate Heading */}
-                <div className="space-y-1.5 pt-4 text-center">
-                  <div className="flex items-center justify-center gap-1">
-                    <span className="text-amber-600 text-xs">⚖️</span>
-                    <span className="block text-[8px] sm:text-[9.5px] uppercase tracking-[0.22em] font-mono font-bold text-amber-800">
-                      BR COURT
-                    </span>
-                    <span className="text-amber-600 text-xs">⚖️</span>
-                  </div>
-                  <h2 className="text-[9px] sm:text-[10.5px] text-[#A67C1E] tracking-[0.1em] font-serif uppercase font-bold italic leading-none">
-                    — Community Decision —
-                  </h2>
-                </div>
-
-                {/* Recipient Custom Name */}
-                {courtCase.recipientName && (
-                  <div className="pt-2 pb-1 text-center animate-fadeIn select-all">
-                    <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] text-[#B45309] font-black font-sans block mb-1">
-                      THIS CREDENTIAL IS PROUDLY ISSUED TO
-                    </span>
-                    <span className="text-xl sm:text-2xl font-black text-slate-950 tracking-wider font-serif px-6 block max-w-sm mx-auto border-b border-dashed border-[#C29B38]/30 pb-1.5">
-                      {courtCase.recipientName}
-                    </span>
-                  </div>
-                )}
-
-                {/* Shield Icon, Badge Header and ribbon block */}
-                <div className="flex flex-col items-center space-y-3 pt-2 animate-fadeIn">
-                  {/* Custom Before Regret Emblem Logo matching user upload */}
-                  <BeforeRegretLogo showText={false} size={90} lightTheme={true} className="mb-1" />
-
-                  {/* Title with decorative rays */}
-                  <div className="flex items-center gap-3">
-                    <span className="text-amber-600/40 text-xs font-serif select-none">🗲</span>
-                    <h3 className="text-xl sm:text-2xl font-black tracking-widest text-[#1B2B3E] uppercase font-sans leading-none">
-                      BR COURT CERTIFICATE
-                    </h3>
-                    <span className="text-amber-600/40 text-xs font-serif select-none">🗲</span>
-                  </div>
-
-                  {/* Highlighted prominent verdict box */}
-                  <div className="relative inline-block bg-gradient-to-r from-[#1E293B] to-[#334155] px-10 py-4 rounded-2xl border-2 border-[#C29B38] shadow-xl transform -skew-x-2 hover:skew-x-0 transition-transform duration-300">
-                    <span className="text-[10px] sm:text-[11px] font-black text-[#C29B38] uppercase tracking-[0.25em] block mb-1.5 font-mono">
-                      PEER VERDICT DELIVERED
-                    </span>
-                    <span className="text-2xl sm:text-3xl font-extrabold text-white uppercase tracking-widest block font-sans px-3">
-                      ★ {certVerdict || "NOT GUILTY"} ★
-                    </span>
-                  </div>
-                </div>
-
-                {/* Formal Statement & Quote decoration */}
-                <div className="space-y-4 font-serif text-slate-800 leading-relaxed text-xs sm:text-sm px-3 max-w-xl mx-auto pt-2">
-                  <div className="max-w-md mx-auto space-y-1 py-1 text-center px-4 relative">
-                    <span className="text-xl text-amber-500 font-serif leading-none block">“</span>
-                    <p className="text-xs sm:text-sm font-semibold italic text-[#2F3E50] leading-relaxed max-w-sm mx-auto font-serif">
-                      {certQuote}
-                    </p>
-                    <span className="text-xl text-amber-500 font-serif leading-none block -mt-1">”</span>
-                  </div>
-                </div>
-
-                {/* Two-column premium statistics table */}
-                <div className="grid grid-cols-2 gap-4 border-t border-b border-amber-700/10 py-5 max-w-xl mx-auto bg-stone-50/50 rounded-xl px-4">
-                  <div className="flex flex-col items-center text-center space-y-1">
-                    <div className="h-7 w-7 rounded-full bg-[#E07A5F] flex items-center justify-center text-white shadow-sm shrink-0">
-                      <Users className="h-3.5 w-3.5" />
-                    </div>
-                    <div className="leading-tight">
-                      <span className="text-[7.5px] uppercase tracking-wider text-stone-500 block font-sans font-bold">REVIEWED BY</span>
-                      <span className="text-xs font-black text-slate-800 font-sans block pt-0.5">
-                        {(certJurors !== null ? certJurors : (totalVotes || 1284)).toLocaleString()}
+                {/* 1. TOP LAYING AREA */}
+                <div className={certFormat === 'story916' ? 'space-y-2.5' : 'contents'}>
+                  {/* Certificate Heading */}
+                  <div className="space-y-1.5 pt-4 text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <span className="text-amber-600 text-xs">⚖️</span>
+                      <span className="block text-[8px] sm:text-[9.5px] uppercase tracking-[0.22em] font-mono font-bold text-amber-800">
+                        BR COURT
                       </span>
-                      <span className="text-[6.5px] uppercase tracking-widest text-stone-400 font-bold block">RELATIONSHIP JURORS</span>
+                      <span className="text-amber-600 text-xs">⚖️</span>
+                    </div>
+                    <h2 className="text-[9px] sm:text-[10.5px] text-[#A67C1E] tracking-[0.1em] font-serif uppercase font-bold italic leading-none">
+                      — Community Decision —
+                    </h2>
+                  </div>
+
+                  {/* Recipient Custom Name */}
+                  {courtCase.recipientName && (
+                    <div className="pt-2 pb-1 text-center animate-fadeIn select-all">
+                      <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] text-[#B45309] font-black font-sans block mb-1">
+                        THIS CREDENTIAL IS PROUDLY ISSUED TO
+                      </span>
+                      <span className="text-xl sm:text-2xl font-black text-slate-950 tracking-wider font-serif px-6 block max-w-sm mx-auto border-b border-dashed border-[#C29B38]/30 pb-1.5 leading-tight">
+                        {courtCase.recipientName}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. MIDDLE LAYING AREA */}
+                <div className={certFormat === 'story916' ? 'space-y-4 my-auto flex flex-col items-center justify-center' : 'contents'}>
+                  {/* Shield Icon, Badge Header and ribbon block */}
+                  <div className="flex flex-col items-center space-y-3 pt-2 animate-fadeIn">
+                    {/* Custom Before Regret Emblem Logo matching user upload */}
+                    <BeforeRegretLogo showText={false} size={certFormat === 'story916' ? 70 : 85} lightTheme={true} className="mb-1" />
+
+                    {/* Title with decorative rays */}
+                    <div className="flex items-center gap-3">
+                      <span className="text-amber-600/40 text-xs font-serif select-none">🗲</span>
+                      <h3 className="text-xl sm:text-2xl font-black tracking-widest text-[#1B2B3E] uppercase font-sans leading-none">
+                        BR COURT CERTIFICATE
+                      </h3>
+                      <span className="text-amber-600/40 text-xs font-serif select-none">🗲</span>
+                    </div>
+
+                    {/* Highlighted prominent verdict box */}
+                    <div className="relative inline-block bg-gradient-to-r from-[#1E293B] to-[#334155] px-10 py-4 rounded-2xl border-2 border-[#C29B38] shadow-xl transform -skew-x-2 hover:skew-x-0 transition-transform duration-300">
+                      <span className="text-[10px] sm:text-[11px] font-black text-[#C29B38] uppercase tracking-[0.25em] block mb-1.5 font-mono">
+                        PEER VERDICT DELIVERED
+                      </span>
+                      <span className="text-2xl sm:text-3xl font-extrabold text-white uppercase tracking-widest block font-sans px-3">
+                        ★ {certVerdict || "NOT GUILTY"} ★
+                      </span>
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-center text-center space-y-1 border-l border-amber-700/10">
-                    <div className="h-7 w-7 rounded-full bg-[#4AA3A2] flex items-center justify-center text-white shadow-sm shrink-0">
-                      <Shield className="h-3.5 w-3.5" />
+                  {/* Formal Statement & Quote decoration */}
+                  <div className="space-y-4 font-serif text-slate-800 leading-relaxed text-xs sm:text-sm px-3 max-w-xl mx-auto pt-2">
+                    <div className="max-w-md mx-auto space-y-1 py-1 text-center px-4 relative">
+                      <span className="text-xl text-amber-500 font-serif leading-none block">“</span>
+                      <p className="text-xs sm:text-sm font-semibold italic text-[#2F3E50] leading-relaxed max-w-sm mx-auto font-serif">
+                        {certQuote}
+                      </p>
+                      <span className="text-xl text-amber-500 font-serif leading-none block -mt-1">”</span>
                     </div>
-                    <div className="leading-tight">
-                      <span className="text-[7.5px] uppercase tracking-wider text-stone-500 block font-sans font-bold">CONFIDENCE</span>
-                      <span className="text-xs font-black text-slate-800 font-sans block pt-0.5 uppercase">
-                        {certConfidence}
-                      </span>
-                      <span className="text-[8px] text-amber-500 block mt-0.5 leading-none">★★★★★</span>
+                  </div>
+
+                  {/* Two-column premium statistics table */}
+                  <div className="grid grid-cols-2 gap-4 border-t border-b border-amber-700/10 py-5 max-w-xl mx-auto bg-stone-50/50 rounded-xl px-4 w-full">
+                    <div className="flex flex-col items-center text-center space-y-1">
+                      <div className="h-7 w-7 rounded-full bg-[#E07A5F] flex items-center justify-center text-white shadow-sm shrink-0">
+                        <Users className="h-3.5 w-3.5" />
+                      </div>
+                      <div className="leading-tight">
+                        <span className="text-[7.5px] uppercase tracking-wider text-stone-500 block font-sans font-bold">REVIEWED BY</span>
+                        <span className="text-xs font-black text-slate-800 font-sans block pt-0.5">
+                          {(certJurors !== null ? certJurors : (totalVotes || 1284)).toLocaleString()}
+                        </span>
+                        <span className="text-[6.5px] uppercase tracking-widest text-[#B45309] font-bold block">RELATIONSHIP JURORS</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-center text-center space-y-1 border-l border-amber-700/10">
+                      <div className="h-7 w-7 rounded-full bg-[#4AA3A2] flex items-center justify-center text-white shadow-sm shrink-0">
+                        <Shield className="h-3.5 w-3.5" />
+                      </div>
+                      <div className="leading-tight">
+                        <span className="text-[7.5px] uppercase tracking-wider text-stone-500 block font-sans font-bold">CONFIDENCE</span>
+                        <span className="text-xs font-black text-slate-800 font-sans block pt-0.5 uppercase">
+                          {certConfidence}
+                        </span>
+                        <span className="text-[8px] text-amber-500 block mt-0.5 leading-none">★★★★★</span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Simplified Certificate Footer */}
-                <div className="flex flex-col items-center justify-center gap-1 pt-6 mx-auto">
-                  <span className="text-[9.5px] uppercase tracking-[0.18em] text-[#A67C1E] font-bold font-mono">
+                {/* 3. BOTTOM FOOTER - PLACED SLIGHTLY HIGHER, ULTRA SHARP AND PROMINENT */}
+                <div className={`flex flex-col items-center justify-center gap-1.5 mx-auto w-full relative ${
+                  certFormat === 'story916' ? 'mb-2' : 'pt-4'
+                }`}>
+                  <span className="text-[10.5px] uppercase tracking-[0.2em] text-[#78350F] font-black font-mono">
                     check my case on:
                   </span>
-                  <div className="bg-[#12161A] text-white rounded-full px-6 py-2 shadow border border-zinc-800 text-[9.5px] uppercase tracking-[0.25em] font-sans font-black select-none leading-none shrink-0 mt-0.5">
+                  <div className="bg-[#0D1117] text-white rounded-full px-7 py-2.5 shadow-md border-2 border-zinc-700 text-[10px] uppercase tracking-[0.28em] font-sans font-black select-none leading-none shrink-0 transform hover:scale-105 transition-transform duration-200">
                     BeforeRegret.com
                   </div>
-                  <span className="text-[9px] uppercase tracking-widest text-[#B45309] font-black font-sans mt-2">
-                    my case id: <span className="font-mono text-slate-950 bg-amber-100/50 px-2.5 py-0.5 rounded border border-amber-300">{courtCase.caseNumber || 'CASE-C2011'}</span>
-                  </span>
+                  <div className="flex items-center gap-1.5 mt-2 bg-amber-50/70 border border-[#C29B38]/40 px-3 py-1 rounded-lg">
+                    <span className="text-[9.5px] uppercase tracking-widest text-[#78350F] font-extrabold font-sans">
+                      my case id:
+                    </span>
+                    <span className="font-mono text-slate-950 text-[10px] font-black tracking-wider bg-white px-2 py-0.5 rounded border border-amber-200 shadow-sm">
+                      {courtCase.caseNumber || 'CASE-C2011'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
