@@ -373,6 +373,117 @@ Ensure that:
     }
   });
 
+  // API route to generate an Instagram post from a submission
+  app.post("/api/admin/generate-instagram-post", async (req, res) => {
+    try {
+      const { title, content, type, author } = req.body;
+      const apiKey = process.env.GEMINI_API_KEY;
+      
+      if (!apiKey) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "GEMINI_API_KEY is not configured in environment variables." 
+        });
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+
+      const prompt = `You are a viral social media strategist for @BeforeRegret, a trending American relationship platform.
+We are creating a high-impact, viral Instagram 9:16 Story or TikTok/Reels text slide based on a real, raw relationship situation.
+
+Here is the user's raw submission:
+---
+Type: ${type || 'Story'}
+Title: ${title || 'Relationship dilemma'}
+Content: ${content || 'No content provided.'}
+Author: ${author || 'Anonymous'}
+---
+
+Your task is to transform this submission into a highly relatable, viral, trending 9:16 text slide and caption tailored for a young US audience (ages 18-35).
+It must NOT sound like AI. It should feel 100% like a real person sharing a raw, unfiltered relationship truth, confession, realization, or hot-take.
+
+Strict Guidelines:
+1. "Hook" (The 9:16 Story Overlay Text):
+   - This will be displayed in the center of a 9:16 vertical screen.
+   - It should NOT be a dry title or generic summary.
+   - Instead, make it a spicy, high-conflict relationship lesson, an unfiltered confession, a modern dating rule, or a "hot take" inspired by the situation.
+   - Use raw emotions and colloquial US phrasing. Examples of highly viral human hooks:
+     - "Dating a guy who 'is not ready yet' is basically paying full price for a demo version."
+     - "If you have to ask him to marry you after 6 years, you already have your answer."
+     - "He bought the house. He handles the bills. But you're paying with your freedom."
+     - "Unpopular opinion: If they want to talk to their ex, let them. And then let them go."
+     - "We've been living together for 3 years, but he still calls his mom to make his big decisions. It's giving roommate, not husband."
+   - Keep it extremely punchy and conversational (15-30 words max). No corporate tone.
+
+2. "Caption":
+   - The caption should feel like a close friend venting or dropping hard truth bombs in a chat.
+   - Use short, punchy, single-sentence paragraphs with generous line breaks to optimize readability on mobile.
+   - Use current US dating lingo organically (e.g., "low-key", "major red flag", "playing house", "living rent-free", "if they wanted to, they would", "dating scene is in shambles", "ghosted", "gaslight", "he's a 10 but...").
+   - Absolutely NO corporate buzzwords, self-promotional jargon, or sterile summaries.
+   - Bring out the core dilemma of the submission in a dramatic, empathetic way.
+   - Always conclude with a highly provocative, interactive question that makes people want to write long comments debating the topic (e.g., "Is she overreacting or is this an immediate relationship dealbreaker? Let me know in the comments 👇").
+   - Mention smoothly that they can read the full raw submission, vote on who is wrong, and see what the internet decided at BeforeRegret.com (or "link in bio").
+   - Use at most 1 or 2 emojis. Do not over-embellish. Keep the text raw and authentic.
+
+3. "VisualSuggestion":
+   - Detail how this 9:16 vertical slide should look visually to grab attention (e.g., "A clean minimalist iOS Notes App style screenshot centered on a warm charcoal gray background", or "A typewriter-style font on a grainy, atmospheric twilight photo of city lights, keeping the aesthetic low-key and mysterious").
+
+4. "Hashtags":
+   - Provide 5-8 trending, high-traffic US hashtags for relationship advice, modern dating, and confessions. Avoid generic spam.`;
+
+      const candidateModels = ["gemini-3.5-flash", "gemini-2.5-flash"];
+      let response = null;
+      let lastError = null;
+
+      for (const modelName of candidateModels) {
+        try {
+          console.log(`Attempting Instagram post generation using model: ${modelName}`);
+          response = await ai.models.generateContent({
+            model: modelName,
+            contents: prompt,
+            config: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                  hook: { type: Type.STRING },
+                  caption: { type: Type.STRING },
+                  visualSuggestion: { type: Type.STRING },
+                  hashtags: {
+                    type: Type.ARRAY,
+                    items: { type: Type.STRING }
+                  }
+                },
+                required: ["hook", "caption", "visualSuggestion", "hashtags"]
+              }
+            }
+          });
+          if (response && response.text) {
+            console.log(`Successfully generated Instagram post with: ${modelName}`);
+            break;
+          }
+        } catch (err: any) {
+          console.warn(`Model ${modelName} failed or unavailable for Instagram post generation:`, err?.message || err);
+          lastError = err;
+        }
+      }
+
+      if (!response || !response.text) {
+        throw lastError || new Error("Failed to generate content with Gemini API.");
+      }
+
+      const postData = JSON.parse(response.text);
+      return res.json({ success: true, post: postData });
+
+    } catch (error: any) {
+      console.error("Instagram post generation error:", error);
+      return res.status(500).json({ 
+        success: false, 
+        error: error.message || "Failed to generate Instagram post." 
+      });
+    }
+  });
+
   // Dynamic Google Search Console compatible Sitemap Generator
   app.get("/sitemap.xml", async (req, res) => {
     try {
