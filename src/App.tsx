@@ -21,6 +21,7 @@ import CompareScreen from './pages/CompareScreen';
 import RegretStoriesScreen from './pages/RegretStoriesScreen';
 import RedFlagMeterScreen from './pages/RedFlagMeterScreen';
 import HubScreen from './pages/HubScreen';
+import AdminFeedScreen from './pages/AdminFeedScreen';
 // Core State and Seeding
 import { getInitialState, saveState } from './data/store';
 import { PRESEEDED_SITUATIONS, COUNTRIES_DATA } from './data/mockData';
@@ -32,7 +33,9 @@ import {
   collection,
   query,
   orderBy,
-  onSnapshot
+  onSnapshot,
+  doc,
+  deleteDoc
 } from 'firebase/firestore';
 import { 
   saveStoryToFirestore, 
@@ -506,6 +509,15 @@ export default function App() {
     }, 100);
     return () => clearTimeout(timer);
   }, [currentScreen]);
+
+  // Initialize feed check time for live alerts
+  useEffect(() => {
+    if (!localStorage.getItem('before_regret_last_feed_check')) {
+      // Set to 6 hours ago so there are some "new" items to show first-time visitors
+      const initialTime = Date.now() - 6 * 3600 * 1000;
+      localStorage.setItem('before_regret_last_feed_check', initialTime.toString());
+    }
+  }, []);
 
   // Synchronize browser native back & forward button pops directly into the React stack
   useEffect(() => {
@@ -1777,6 +1789,67 @@ export default function App() {
     showToast("🗑️ Discussion comment deleted by administrator.");
   };
 
+  const handleDeleteRedFlagCase = (caseId: string) => {
+    deleteDoc(doc(db, "redFlagCases", caseId)).catch(err => {
+      console.error("Firestore red flag case delete error:", err);
+    });
+    setStore(prev => {
+      const updated = (prev.redFlagCases || []).filter(c => c.id !== caseId);
+      const newState = { ...prev, redFlagCases: updated };
+      saveState(newState);
+      return newState;
+    });
+    showToast("🗑️ Red flag warning case deleted by administrator.");
+  };
+
+  const handleDeleteRedFlagComment = (caseId: string, commentId: string) => {
+    setStore(prev => {
+      const idx = (prev.redFlagCases || []).findIndex(c => c.id === caseId);
+      if (idx === -1) return prev;
+      const updated = [...prev.redFlagCases];
+      const flagCase = { ...updated[idx] };
+      flagCase.comments = (flagCase.comments || []).filter(c => c.id !== commentId);
+      updated[idx] = flagCase;
+
+      saveRedFlagCaseToFirestore(flagCase).catch(err => {
+        console.error("Firestore red flag comment delete error:", err);
+      });
+
+      const newState = { ...prev, redFlagCases: updated };
+      saveState(newState);
+      return newState;
+    });
+    showToast("🗑️ Red flag discussion comment deleted.");
+  };
+
+  const newSubmissionsCount = useMemo(() => {
+    const lastCheck = parseInt(localStorage.getItem('before_regret_last_feed_check') || '0', 10);
+    if (!lastCheck) return 0;
+
+    let count = 0;
+    // Count new stories
+    store.stories.forEach(s => {
+      if (new Date(s.dateAdded).getTime() > lastCheck) count++;
+    });
+    // Count new comments
+    comments.forEach(c => {
+      if (new Date(c.dateAdded).getTime() > lastCheck) count++;
+    });
+    // Count new court cases
+    store.courtCases.forEach(cc => {
+      const caseTime = new Date(cc.createdAt || cc.postTime || 0).getTime();
+      if (caseTime > lastCheck) count++;
+    });
+    // Count new red flag cases
+    if (store.redFlagCases) {
+      store.redFlagCases.forEach(rf => {
+        if (new Date(rf.dateAdded).getTime() > lastCheck) count++;
+      });
+    }
+
+    return count;
+  }, [store.stories, comments, store.courtCases, store.redFlagCases]);
+
   return (
     <div className="bg-[#FAF8F2] text-[#1F2937] min-h-screen flex flex-col font-sans">
       
@@ -1789,6 +1862,7 @@ export default function App() {
         onCaseRetrieve={handleCaseRetrieve}
         stories={store.stories}
         courtCases={store.courtCases}
+        newSubmissionsCount={newSubmissionsCount}
       />
 
       {/* Floating interactive notification toasts */}
@@ -2140,6 +2214,28 @@ export default function App() {
             onDeleteComment={handleDeleteComment}
             currentUser={currentUser}
             onGoogleLogin={handleGoogleLogin}
+          />
+        )}
+
+        {currentScreen.type === 'admin_feed' && (
+          <AdminFeedScreen
+            stories={store.stories}
+            comments={comments}
+            courtCases={store.courtCases}
+            questions={store.questions}
+            redFlagCases={store.redFlagCases || []}
+            isAdmin={isAdmin}
+            setScreen={setScreen}
+            onDeleteStory={handleDeleteStory}
+            onDeleteComment={handleDeleteComment}
+            onDeleteCourtCase={handleDeleteCourtCase}
+            onDeleteArgument={handleDeleteArgument}
+            onDeleteQuestion={handleDeleteQuestion}
+            onDeleteAnswer={handleDeleteAnswer}
+            onDeleteAnswerComment={handleDeleteAnswerComment}
+            onDeleteRedFlagCase={handleDeleteRedFlagCase}
+            onDeleteRedFlagComment={handleDeleteRedFlagComment}
+            onToggleAdmin={handleToggleAdmin}
           />
         )}
       </main>
