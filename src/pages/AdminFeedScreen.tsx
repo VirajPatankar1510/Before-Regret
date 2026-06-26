@@ -322,8 +322,8 @@ export default function AdminFeedScreen({
       // Small timeout to ensure fonts and dynamic render bindings are finished
       await new Promise(resolve => setTimeout(resolve, 200));
       
-      const width = 360;
-      const height = 640;
+      const width = 400;
+      const height = 500;
       
       const dataUrl = await toPng(node, {
         quality: 0.98,
@@ -768,6 +768,65 @@ export default function AdminFeedScreen({
     localStorage.setItem('before_regret_last_feed_check', Date.now().toString());
   };
 
+  if (!isAdmin) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center p-4 animate-fadeIn" id="admin-auth-gate">
+        <div className="w-full max-w-md bg-white border border-[#E5E7EB] rounded-3xl p-8 shadow-xs text-center space-y-6">
+          <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+            <Lock className="h-6 w-6" />
+          </div>
+          
+          <div className="space-y-2">
+            <h2 className="text-xl font-black text-[#24324A] tracking-tight">Admin Portal Locked</h2>
+            <p className="text-xs text-zinc-500 max-w-xs mx-auto leading-relaxed">
+              This dashboard contains sensitive platform monitoring, live feeds, and content generator tools. Please enter the master override password to proceed.
+            </p>
+          </div>
+
+          <form onSubmit={handleAdminAuthSubmit} className="space-y-3">
+            <div className="relative">
+              <input
+                type="password"
+                placeholder="Enter master password..."
+                value={passwordInput}
+                onChange={(e) => {
+                  setPasswordInput(e.target.value);
+                  setAuthError(false);
+                }}
+                className={`w-full bg-[#FAF8F2] border ${
+                  authError ? 'border-rose-500 focus:ring-rose-500/20' : 'border-[#E5E7EB] focus:ring-amber-500/20'
+                } rounded-xl px-4 py-3 text-sm text-center font-semibold focus:outline-none focus:ring-2`}
+                autoFocus
+              />
+            </div>
+
+            {authError && (
+              <p className="text-rose-600 text-[10px] font-bold uppercase tracking-wider animate-pulse">
+                Incorrect Password. Please try again.
+              </p>
+            )}
+
+            <button
+              type="submit"
+              className="w-full py-3 bg-[#24324A] hover:bg-[#1a2536] text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer hover:shadow-sm"
+            >
+              <span>Unlock Dashboard</span>
+            </button>
+          </form>
+
+          <div className="pt-2">
+            <button
+              onClick={() => setScreen({ type: 'home' })}
+              className="text-xs font-bold text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer underline"
+            >
+              Return to Public Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 animate-fadeIn" id="admin-feed-dashboard">
       
@@ -802,37 +861,17 @@ export default function AdminFeedScreen({
             <Clock className="h-3 w-3 text-zinc-400" />
             <span>Updates: Live Streamed (Firestore)</span>
           </div>
+
+          <button
+            onClick={() => onToggleAdmin(false)}
+            className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[10px] font-bold border border-rose-200/60 rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+            title="Lock admin session"
+          >
+            <Lock className="h-3 w-3" />
+            <span>Lock Session</span>
+          </button>
         </div>
       </div>
-
-      {/* Auth Guard Banner if not Admin */}
-      {!isAdmin && (
-        <div className="bg-[#FAF8F2] border border-amber-300/60 p-5 rounded-2xl flex flex-col md:flex-row gap-5 items-center justify-between">
-          <div className="space-y-1">
-            <h3 className="text-sm font-black text-[#24324A] uppercase flex items-center gap-1.5">
-              <Lock className="h-4 w-4 text-amber-600 shrink-0" /> Authorization Required for Moderation
-            </h3>
-            <p className="text-xs text-zinc-500 max-w-2xl leading-relaxed">
-              You are viewing the submission activity feed in read-only audit mode. To gain moderation powers (direct permanent removal of any user-submitted text across all boards), activate Admin Mode with credentials.
-            </p>
-          </div>
-          <form onSubmit={handleAdminAuthSubmit} className="flex gap-2 w-full md:w-auto">
-            <input
-              type="password"
-              placeholder="Admin password..."
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-              className="bg-white border border-[#E5E7EB] hover:border-amber-500/50 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500/20 max-w-[160px] grow"
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-[#24324A] hover:bg-[#1a2536] text-white text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap"
-            >
-              Authorize
-            </button>
-          </form>
-        </div>
-      )}
 
       {/* Metrics Bento Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
@@ -1207,7 +1246,7 @@ export default function AdminFeedScreen({
                   {/* Left: Aesthetic Image Mockup Preview */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 font-mono">9:16 Story / Reels / TikTok Preview</span>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 font-mono">4:5 Instagram Post Preview</span>
                       
                       {/* Theme selection toggle */}
                       <div className="flex items-center gap-1 bg-zinc-100 p-0.5 rounded-xl border border-zinc-200">
@@ -1266,10 +1305,10 @@ export default function AdminFeedScreen({
                       </div>
                     </div>
 
-                    {/* The actual 9:16 image canvas mockup locked to exact 360x640 story size */}
+                    {/* The actual 4:5 image canvas mockup locked to exact 400x500 post size */}
                     <div 
                       id="instagram-story-canvas"
-                      className={`w-[360px] h-[640px] rounded-3xl p-6 flex flex-col justify-between shadow-xl relative transition-all duration-300 mx-auto overflow-hidden text-left shrink-0 ${
+                      className={`w-[400px] h-[500px] rounded-3xl p-6 flex flex-col justify-between shadow-xl relative transition-all duration-300 mx-auto overflow-hidden text-left shrink-0 ${
                         previewTheme === 'cream' 
                           ? 'bg-[#F9F6EE] text-[#1D1B18] border border-[#E9E4D5] font-serif' 
                           : previewTheme === 'midnight'
@@ -1295,7 +1334,7 @@ export default function AdminFeedScreen({
                         <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1.5px,transparent_1.5px)] [background-size:20px_20px] opacity-25 pointer-events-none" />
                       )}
 
-                      {/* Header bar of 9:16 screen */}
+                      {/* Header bar of 4:5 card */}
                       <div className="flex items-center justify-between opacity-85 z-10 shrink-0">
                         {previewTheme === 'cream' ? (
                           <>
@@ -1304,7 +1343,7 @@ export default function AdminFeedScreen({
                           </>
                         ) : previewTheme === 'midnight' ? (
                           <>
-                            <span className="text-[9px] tracking-widest font-bold uppercase text-violet-400 font-mono flex items-center gap-1">⚖️ @BeforeRegret</span>
+                            <span className="text-[9px] tracking-widest font-bold uppercase text-violet-400 font-mono flex items-center gap-1">⚖️ BeforeRegret</span>
                             <span className="px-1.5 py-0.5 rounded bg-violet-500/10 border border-violet-500/20 text-[8px] text-violet-300 font-mono">Trending #1</span>
                           </>
                         ) : previewTheme === 'notes' ? (
@@ -1317,7 +1356,7 @@ export default function AdminFeedScreen({
                         ) : previewTheme === 'meme' ? (
                           <>
                             <span className="text-[10px] font-extrabold text-[#F59E0B] flex items-center gap-1.5 font-sans tracking-wide">
-                              ⚖️ @BeforeRegret Discussion
+                              ⚖️ BeforeRegret Discussion
                             </span>
                             <span className="px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[8px] text-amber-500 font-mono font-bold uppercase">Relationship Court</span>
                           </>
@@ -1530,7 +1569,7 @@ export default function AdminFeedScreen({
                         {previewTheme === 'cream' ? (
                           <>
                             <span className="font-semibold uppercase font-sans">VOTE NOW ON OUR BIO</span>
-                            <span>@beforeregret</span>
+                            <span>BeforeRegret</span>
                           </>
                         ) : previewTheme === 'midnight' ? (
                           <>
@@ -1540,17 +1579,17 @@ export default function AdminFeedScreen({
                         ) : previewTheme === 'notes' ? (
                           <>
                             <span className="text-amber-600 font-bold uppercase font-sans">🔗 read full timeline</span>
-                            <span className="text-zinc-400">@beforeregret</span>
+                            <span className="text-zinc-400">BeforeRegret</span>
                           </>
                         ) : previewTheme === 'meme' ? (
                           <>
                             <span className="text-[#F59E0B] font-bold uppercase font-sans flex items-center gap-1">👉 VOTE & DISCUSS AT BEFOREREGRET.COM</span>
-                            <span className="text-zinc-400">@beforeregret</span>
+                            <span className="text-zinc-400">BeforeRegret</span>
                           </>
                         ) : (
                           <>
                             <span className="text-[#C9A227] font-bold uppercase font-sans">Join the discussion at BeforeRegret.com</span>
-                            <span className="text-zinc-400">@beforeregret</span>
+                            <span className="text-zinc-400">BeforeRegret</span>
                           </>
                         )}
                       </div>
