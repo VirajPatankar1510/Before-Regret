@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, ExternalLink, Tag, Compass } from 'lucide-react';
+import { Heart, ExternalLink, Tag, Compass, Shield } from 'lucide-react';
 import AdminPanel from './AdminPanel';
 
 interface FooterProps {
@@ -172,6 +172,17 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
             <a href="#privacy" className="hover:text-white text-[11px]">Privacy Policy</a>
             <a href="#terms" className="hover:text-white text-[11px]">Terms of Use</a>
             <a href="#cookie" className="hover:text-white text-[11px]">Ad Policy</a>
+            <a 
+              href="/admin-feed"
+              onClick={(e) => {
+                e.preventDefault();
+                setScreen({ type: 'admin_feed' });
+              }}
+              className="hover:text-[#C9A227] text-[11px] flex items-center gap-1.5 transition-colors font-semibold"
+            >
+              <Shield className="h-3 w-3" />
+              <span>Admin Feed</span>
+            </a>
             <AdminPanel isAdmin={isAdmin} onToggleAdmin={onToggleAdmin} />
           </div>
         </div>

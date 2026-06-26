@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Menu, X, Gavel, FileText, User, Sparkles, ChevronRight, Compass, Sun, Moon, BookOpen, Heart, AlertTriangle } from 'lucide-react';
+import { Search, Menu, X, Gavel, FileText, User, Sparkles, ChevronRight, Compass, Sun, Moon, BookOpen, Heart, AlertTriangle, Shield } from 'lucide-react';
 import { PRESEEDED_SITUATIONS, PRESEEDED_QUESTIONS, COUNTRIES_DATA } from '../data/mockData';
 import { Story, CourtCase } from '../types';
 import BeforeRegretLogo from './BeforeRegretLogo';
@@ -12,6 +12,7 @@ interface NavigationProps {
   onCaseRetrieve: (caseNum: string) => void;
   stories: Story[];
   courtCases: CourtCase[];
+  newSubmissionsCount?: number;
 }
 
 export default function Navigation({ 
@@ -21,7 +22,8 @@ export default function Navigation({
   setDarkMode, 
   onCaseRetrieve,
   stories,
-  courtCases
+  courtCases,
+  newSubmissionsCount = 0
 }: NavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -109,6 +111,7 @@ export default function Navigation({
     if (screen.type === 'question_list') return '/boards';
     if (screen.type === 'red_flag_meter') return '/flags';
     if (screen.type === 'regret_stories') return '/regrets';
+    if (screen.type === 'admin_feed') return '/admin-feed';
     return '/';
   };
 
@@ -162,9 +165,8 @@ export default function Navigation({
                   }`}
                 >
                   <item.icon className={`h-4 w-4 ${active ? 'text-[#C9A227]' : 'text-[#9CA3AF]'}`} />
-                  {item.label}
-                </a
->
+                  <span>{item.label}</span>
+                </a>
               );
             })}
           </div>
@@ -229,7 +231,7 @@ export default function Navigation({
                   setScreen(item.screen);
                   setIsOpen(false);
                 }}
-                className="flex items-center gap-2 rounded-xl bg-white border border-[#E5E7EB] px-3 py-2.5 text-left text-xs font-semibold text-[#6B7280] hover:text-[#24324A] hover:bg-[#F4F1E8] transition-all"
+                className="flex items-center gap-2 rounded-xl bg-white border border-[#E5E7EB] px-3 py-2.5 text-left text-xs font-semibold text-[#6B7280] hover:text-[#24324A] hover:bg-[#F4F1E8] transition-all relative"
               >
                 <item.icon className="h-3.5 w-3.5 shrink-0 text-[#C9A227]" />
                 <span className="truncate">{item.label}</span>
