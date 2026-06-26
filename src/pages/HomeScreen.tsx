@@ -194,9 +194,9 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
               </div>
 
               <div className="border-t border-[#ECECEC] mt-4 pt-3 space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#6B7280] font-medium">Avg Regret Ratio</span>
-                  <span className={`px-2 py-0.5 border rounded-lg text-[10px] font-black ${getRegretColor(situation.stats.avgRegret)}`}>
+                <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs">
+                  <span className="text-[#6B7280] font-medium whitespace-nowrap shrink-0">Avg Regret Ratio</span>
+                  <span className={`px-2 py-0.5 border rounded-lg text-[10px] font-black whitespace-nowrap shrink-0 ${getRegretColor(situation.stats.avgRegret)}`}>
                     {situation.stats.avgRegret}/10 ({getRegretLevelString(situation.stats.avgRegret)})
                   </span>
                 </div>
