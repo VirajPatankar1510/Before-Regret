@@ -117,7 +117,7 @@ export default function Navigation({
 
   const menuItems = [
     { label: 'Explore', screen: { type: 'explore' }, icon: Compass },
-    { label: 'BR Court', screen: { type: 'court_list' }, icon: Gavel },
+    { label: 'Become a Judge', screen: { type: 'court_list' }, icon: Gavel },
     { label: 'Advice Boards', screen: { type: 'question_list' }, icon: Sparkles },
     { label: 'Red Flag Meter', screen: { type: 'red_flag_meter' }, icon: AlertTriangle },
     { label: 'Regret Registry', screen: { type: 'regret_stories' }, icon: Heart },
