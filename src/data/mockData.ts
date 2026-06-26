@@ -11,19 +11,19 @@ export const POPULAR_SEARCHES = [
 ];
 
 export const MOST_REGRETTED_DECISIONS = [
-  { id: '1', title: 'Stayed Too Long', description: 'Staying in a failing relationship hoping they would change.', avgRegret: 8.9, count: 18420, rate: '92%' },
-  { id: '2', title: 'Ignored Red Flags', description: 'Overlooking early warning signs of manipulation or incompatibility.', avgRegret: 8.5, count: 15112, rate: '88%' },
-  { id: '3', title: 'Married Too Quickly', description: 'Rushing into marriage before fully knowing their character.', avgRegret: 7.8, count: 9812, rate: '79%' },
-  { id: '4', title: 'Moved For Love', description: 'Relocating to another state/country, giving up career or friends.', avgRegret: 7.2, count: 6410, rate: '71%' },
-  { id: '5', title: 'Stayed After Multiple Affairs', description: 'Giving third and fourth chances after repeated infidelity.', avgRegret: 9.3, count: 12450, rate: '95%' }
+  { id: '1', title: 'Stayed Too Long', description: 'Staying in a failing relationship hoping they would change.', avgRegret: 8.9, count: 184, rate: '92%' },
+  { id: '2', title: 'Ignored Red Flags', description: 'Overlooking early warning signs of manipulation or incompatibility.', avgRegret: 8.5, count: 151, rate: '88%' },
+  { id: '3', title: 'Married Too Quickly', description: 'Rushing into marriage before fully knowing their character.', avgRegret: 7.8, count: 98, rate: '79%' },
+  { id: '4', title: 'Moved For Love', description: 'Relocating to another state/country, giving up career or friends.', avgRegret: 7.2, count: 64, rate: '71%' },
+  { id: '5', title: 'Stayed After Multiple Affairs', description: 'Giving third and fourth chances after repeated infidelity.', avgRegret: 9.3, count: 124, rate: '95%' }
 ];
 
 export const MOST_SUCCESSFUL_DECISIONS = [
-  { id: '1', title: 'Left Toxic Relationship', description: 'Walking away from a manipulative or abusive relationship early.', avgRegret: 1.2, successRate: '96%', count: 22100, wouldDoAgain: '98%' },
-  { id: '2', title: 'Set Boundaries Early', description: 'Establishing clear dealbreakers and core needs within months 1-3.', avgRegret: 1.8, successRate: '91%', count: 14320, wouldDoAgain: '93%' },
-  { id: '3', title: 'Delayed Marriage', description: 'Postponing marriage to finish education, therapy, or build stability.', avgRegret: 2.1, successRate: '88%', count: 8710, wouldDoAgain: '89%' },
-  { id: '4', title: 'Went To Therapy', description: 'Pragmatic couple counseling early, or individual trauma therapy.', avgRegret: 2.5, successRate: '85%', count: 11200, wouldDoAgain: '86%' },
-  { id: '5', title: 'Communicated Expectations', description: 'Having the hard conversations about kids, money, and religion before moving in.', avgRegret: 1.5, successRate: '94%', count: 19120, wouldDoAgain: '95%' }
+  { id: '1', title: 'Left Toxic Relationship', description: 'Walking away from a manipulative or abusive relationship early.', avgRegret: 1.2, successRate: '96%', count: 221, wouldDoAgain: '98%' },
+  { id: '2', title: 'Set Boundaries Early', description: 'Establishing clear dealbreakers and core needs within months 1-3.', avgRegret: 1.8, successRate: '91%', count: 143, wouldDoAgain: '93%' },
+  { id: '3', title: 'Delayed Marriage', description: 'Postponing marriage to finish education, therapy, or build stability.', avgRegret: 2.1, successRate: '88%', count: 87, wouldDoAgain: '89%' },
+  { id: '4', title: 'Went To Therapy', description: 'Pragmatic couple counseling early, or individual trauma therapy.', avgRegret: 2.5, successRate: '85%', count: 112, wouldDoAgain: '86%' },
+  { id: '5', title: 'Communicated Expectations', description: 'Having the hard conversations about kids, money, and religion before moving in.', avgRegret: 1.5, successRate: '94%', count: 191, wouldDoAgain: '95%' }
 ];
 
 export const PRESEEDED_SITUATIONS: Situation[] = [
@@ -33,7 +33,7 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
     category: 'Marriage',
     description: "Stories, outcomes, regrets and relationship results from people who experienced having a male partner who did not believe in, wanted to postpone, or outright rejected marriage while they wanted it.",
     stats: {
-      storyCount: 24182,
+      storyCount: 241,
       avgRegret: 6.8,
       wouldDoAgainPercent: 39,
       stillTogetherPercent: 28,
@@ -61,11 +61,11 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
       { period: '5 Years', level: 8.1 }
     ],
     countryBreakdown: [
-      { country: 'United States', count: 12150, avgRegret: 6.9 },
-      { country: 'United Kingdom', count: 3410, avgRegret: 6.4 },
-      { country: 'Canada', count: 2840, avgRegret: 6.6 },
-      { country: 'Australia', count: 2110, avgRegret: 6.2 },
-      { country: 'India', count: 1920, avgRegret: 8.4 }
+      { country: 'United States', count: 121, avgRegret: 6.9 },
+      { country: 'United Kingdom', count: 34, avgRegret: 6.4 },
+      { country: 'Canada', count: 28, avgRegret: 6.6 },
+      { country: 'Australia', count: 21, avgRegret: 6.2 },
+      { country: 'India', count: 19, avgRegret: 8.4 }
     ]
   },
   {
@@ -74,7 +74,7 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
     category: 'Cheating',
     description: "Results of individuals who decided to forgive, stay, and work through the relationship after discovering their partner committed physical or emotional infidelity.",
     stats: {
-      storyCount: 38240,
+      storyCount: 382,
       avgRegret: 8.2,
       wouldDoAgainPercent: 18,
       stillTogetherPercent: 15,
@@ -101,11 +101,11 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
       { period: '5 Years', level: 9.1 }
     ],
     countryBreakdown: [
-      { country: 'United States', count: 18450, avgRegret: 8.1 },
-      { country: 'Canada', count: 4890, avgRegret: 8.3 },
-      { country: 'United Kingdom', count: 4120, avgRegret: 7.9 },
-      { country: 'India', count: 3200, avgRegret: 8.9 },
-      { country: 'Australia', count: 2800, avgRegret: 8.0 }
+      { country: 'United States', count: 184, avgRegret: 8.1 },
+      { country: 'Canada', count: 48, avgRegret: 8.3 },
+      { country: 'United Kingdom', count: 41, avgRegret: 7.9 },
+      { country: 'India', count: 32, avgRegret: 8.9 },
+      { country: 'Australia', count: 28, avgRegret: 8.0 }
     ]
   },
   {
@@ -114,7 +114,7 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
     category: 'Children & Family',
     description: "What happens when one partner strongly desires children, and the other is firmly child-free, yet they try to make the relationship work anyway.",
     stats: {
-      storyCount: 14810,
+      storyCount: 148,
       avgRegret: 7.5,
       wouldDoAgainPercent: 24,
       stillTogetherPercent: 19,
@@ -141,11 +141,11 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
       { period: '5 Years', level: 8.8 }
     ],
     countryBreakdown: [
-      { country: 'United States', count: 6800, avgRegret: 7.4 },
-      { country: 'Germany', count: 2110, avgRegret: 7.1 },
-      { country: 'Canada', count: 1920, avgRegret: 7.6 },
-      { country: 'United Kingdom', count: 1410, avgRegret: 7.3 },
-      { country: 'Australia', count: 1200, avgRegret: 7.5 }
+      { country: 'United States', count: 68, avgRegret: 7.4 },
+      { country: 'Germany', count: 21, avgRegret: 7.1 },
+      { country: 'Canada', count: 19, avgRegret: 7.6 },
+      { country: 'United Kingdom', count: 14, avgRegret: 7.3 },
+      { country: 'Australia', count: 12, avgRegret: 7.5 }
     ]
   },
   {
@@ -154,7 +154,7 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
     category: 'Careers & Moving',
     description: "The long-term outcomes of people who gave up their jobs, moved across countries or states, or left their social support networks to pursue a partner's career or relocate with them.",
     stats: {
-      storyCount: 19612,
+      storyCount: 196,
       avgRegret: 5.4,
       wouldDoAgainPercent: 51,
       stillTogetherPercent: 44,
@@ -181,11 +181,11 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
       { period: '5 Years', level: 4.8 }
     ],
     countryBreakdown: [
-      { country: 'United States', count: 9100, avgRegret: 5.3 },
-      { country: 'Canada', count: 2900, avgRegret: 5.5 },
-      { country: 'United Kingdom', count: 2400, avgRegret: 5.2 },
-      { country: 'Australia', count: 1800, avgRegret: 5.1 },
-      { country: 'Germany', count: 1200, avgRegret: 5.6 }
+      { country: 'United States', count: 91, avgRegret: 5.3 },
+      { country: 'Canada', count: 29, avgRegret: 5.5 },
+      { country: 'United Kingdom', count: 24, avgRegret: 5.2 },
+      { country: 'Australia', count: 18, avgRegret: 5.1 },
+      { country: 'Germany', count: 12, avgRegret: 5.6 }
     ]
   },
   {
@@ -194,7 +194,7 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
     category: 'Long Distance',
     description: "Vetted data and authentic stories concerning geographic separation, dual-location careers, time-zone conflicts, and the psychological and financial toll of staying together while living apart.",
     stats: {
-      storyCount: 16421,
+      storyCount: 164,
       avgRegret: 4.9,
       wouldDoAgainPercent: 54,
       stillTogetherPercent: 32,
@@ -221,11 +221,11 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
       { period: '5 Years', level: 4.9 }
     ],
     countryBreakdown: [
-      { country: 'United States', count: 7200, avgRegret: 4.8 },
-      { country: 'Canada', count: 2100, avgRegret: 5.1 },
-      { country: 'United Kingdom', count: 1800, avgRegret: 4.7 },
-      { country: 'Germany', count: 1100, avgRegret: 5.0 },
-      { country: 'Australia', count: 900, avgRegret: 5.2 }
+      { country: 'United States', count: 72, avgRegret: 4.8 },
+      { country: 'Canada', count: 21, avgRegret: 5.1 },
+      { country: 'United Kingdom', count: 18, avgRegret: 4.7 },
+      { country: 'Germany', count: 11, avgRegret: 5.0 },
+      { country: 'Australia', count: 9, avgRegret: 5.2 }
     ]
   },
   {
@@ -234,7 +234,7 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
     category: 'Marriage',
     description: "Friction analysis of interfaith marriages, family tradition friction, child raising debates, holiday struggles, and expectations surrounding religious conversion.",
     stats: {
-      storyCount: 9140,
+      storyCount: 91,
       avgRegret: 5.1,
       wouldDoAgainPercent: 62,
       stillTogetherPercent: 55,
@@ -261,10 +261,10 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
       { period: '5 Years', level: 5.9 }
     ],
     countryBreakdown: [
-      { country: 'India', count: 3200, avgRegret: 6.5 },
-      { country: 'United States', count: 2800, avgRegret: 4.5 },
-      { country: 'United Kingdom', count: 1100, avgRegret: 4.9 },
-      { country: 'Canada', count: 900, avgRegret: 4.7 }
+      { country: 'India', count: 32, avgRegret: 6.5 },
+      { country: 'United States', count: 28, avgRegret: 4.5 },
+      { country: 'United Kingdom', count: 11, avgRegret: 4.9 },
+      { country: 'Canada', count: 9, avgRegret: 4.7 }
     ]
   },
   {
@@ -273,7 +273,7 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
     category: 'Ultimatums',
     description: "The long-term success rates, levels of underlying resentment, and divorce statistics of relationships where one partner issued a hard 'marry me or I leave' timeline.",
     stats: {
-      storyCount: 11210,
+      storyCount: 112,
       avgRegret: 7.9,
       wouldDoAgainPercent: 21,
       stillTogetherPercent: 22,
@@ -300,10 +300,10 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
       { period: '5 Years', level: 8.5 }
     ],
     countryBreakdown: [
-      { country: 'United States', count: 5400, avgRegret: 7.8 },
-      { country: 'United Kingdom', count: 1800, avgRegret: 7.6 },
-      { country: 'Canada', count: 1100, avgRegret: 8.1 },
-      { country: 'Australia', count: 900, avgRegret: 8.0 }
+      { country: 'United States', count: 54, avgRegret: 7.8 },
+      { country: 'United Kingdom', count: 18, avgRegret: 7.6 },
+      { country: 'Canada', count: 11, avgRegret: 8.1 },
+      { country: 'Australia', count: 9, avgRegret: 8.0 }
     ]
   },
   {
@@ -312,7 +312,7 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
     category: 'Red Flags',
     description: "Retrospective analysis of partners who overlooked early signs of jealousy, love bombing, manipulation, white lies, or narcissism hoping love or time would cure it.",
     stats: {
-      storyCount: 29110,
+      storyCount: 291,
       avgRegret: 8.7,
       wouldDoAgainPercent: 9,
       stillTogetherPercent: 4,
@@ -339,10 +339,10 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
       { period: '5 Years', level: 9.4 }
     ],
     countryBreakdown: [
-      { country: 'United States', count: 14100, avgRegret: 8.6 },
-      { country: 'United Kingdom', count: 4200, avgRegret: 8.5 },
-      { country: 'Canada', count: 3100, avgRegret: 8.8 },
-      { country: 'Australia', count: 2100, avgRegret: 8.7 }
+      { country: 'United States', count: 141, avgRegret: 8.6 },
+      { country: 'United Kingdom', count: 42, avgRegret: 8.5 },
+      { country: 'Canada', count: 31, avgRegret: 8.8 },
+      { country: 'Australia', count: 21, avgRegret: 8.7 }
     ]
   }
 ];
@@ -1155,7 +1155,7 @@ export const COUNTRIES_DATA = [
     topSituations: ["Stayed After Cheating", "Boyfriend Doesn't Want Marriage", "Partner Doesn't Want Kids"],
     topRegrets: ["Ignoring early red flags", "Moving for a partner too quickly", "Staying after physical affairs"],
     commonOutcomes: "74% of long-term engagements without a date set end in separation.",
-    storiesCount: 45210
+    storiesCount: 452
   },
   {
     slug: 'india',
@@ -1163,7 +1163,7 @@ export const COUNTRIES_DATA = [
     topSituations: ["Different Religion Marriage", "Parents Disapprove of Partner", "Arranged Marriage Compatibility"],
     topRegrets: ["Compromising on career for in-laws", "Assuming family approval will come later", "Ignoring financial disparities"],
     commonOutcomes: "88% of cross-community relationships that proceed without maternal blessing report severe early marital stress.",
-    storiesCount: 12480
+    storiesCount: 125
   },
   {
     slug: 'canada',
@@ -1171,7 +1171,7 @@ export const COUNTRIES_DATA = [
     topSituations: ["Moved for Love", "Long Distance (US-Canada)", "Financial Disparities"],
     topRegrets: ["Giving up professional status in move", "Living in isolated suburbs for a partner"],
     commonOutcomes: "Moves for love that involve switching provinces report higher mid-term financial tension.",
-    storiesCount: 8900
+    storiesCount: 89
   }
 ];
 

@@ -100,9 +100,6 @@ export default function StoryCard({
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[#E5E7EB] pb-3 mb-4 text-xs text-[#6B7280]">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-[#1F2937]">@{story.userName}</span>
-          <span className="text-[10px] bg-[#24324A]/5 text-[#24324A] border border-[#24324A]/10 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-mono">
-             Story ID: #{story.id.slice(0, 5)}
-          </span>
           {story.caseNumber && (
             <span className="text-[10px] bg-[#FFF8E1] text-[#C9A227] border border-[#E8D79B] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-mono font-bold">
                ⚖️ {story.caseNumber}

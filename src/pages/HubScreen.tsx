@@ -1275,7 +1275,8 @@ export default function HubScreen({
           {relevantStories.slice(0, 3).map((st) => (
             <div 
               key={st.id}
-              className="bg-[#161B22] border border-[#30363D] p-5 sm:p-6 rounded-3xl hover:border-[#4F8CFF] transition-all flex flex-col justify-between space-y-4 shadow-sm"
+              onClick={() => setScreen({ type: 'regret_stories', slug: st.id })}
+              className="bg-[#161B22] border border-[#30363D] p-5 sm:p-6 rounded-3xl hover:border-[#4F8CFF] hover:bg-[#1c212a] cursor-pointer transition-all flex flex-col justify-between space-y-4 shadow-sm group"
             >
               <div className="space-y-2">
                 <div className="flex items-center gap-2 justify-between">
@@ -1284,7 +1285,7 @@ export default function HubScreen({
                   </span>
                   <span className="text-[10px] text-gray-500 font-mono">{st.country}</span>
                 </div>
-                <h3 className="text-sm font-bold text-white leading-snug line-clamp-2">
+                <h3 className="text-sm font-bold text-white leading-snug line-clamp-2 group-hover:text-[#4F8CFF] transition-colors">
                   {st.title}
                 </h3>
                 <p className="text-xs text-gray-400 line-clamp-3 leading-relaxed">
@@ -1293,8 +1294,11 @@ export default function HubScreen({
               </div>
 
               <button
-                onClick={() => setScreen({ type: 'regret_stories', slug: st.id })}
-                className="w-full py-2 bg-[#21262D] hover:bg-[#30363D] text-white border border-[#30363D] text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setScreen({ type: 'regret_stories', slug: st.id });
+                }}
+                className="w-full py-2 bg-[#21262D] group-hover:bg-[#30363D] text-white border border-[#30363D] group-hover:border-[#4F8CFF]/50 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <span>Read Full Story Timeline</span>
                 <ChevronRight className="h-3 w-3" />
