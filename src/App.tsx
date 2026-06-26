@@ -1948,7 +1948,7 @@ export default function App() {
           <div className="space-y-6 pb-16 animate-fadeIn">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#161B22] border border-[#30363D] p-5 sm:p-6 rounded-3xl shadow-sm">
               <div className="space-y-1">
-                <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2" style={{ color: '#2c2c2c' }}>
+                <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2" style={{ color: '#ffffff' }}>
                   <Gavel className="h-6 w-6 text-[#F4B942]" /> BR Court
                 </h1>
                 <p className="text-xs text-[#AAB2C0]">Step into our anonymous space. Review relationship evidence, defend sides, and cast peer perspective votes.</p>
@@ -1958,7 +1958,7 @@ export default function App() {
                 className="shrink-0 bg-[#F4B942] hover:bg-[#E0A52D] text-[#0D1117] font-black text-xs uppercase tracking-wider px-5 py-3 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer font-sans"
                 id="open-register-case"
               >
-                <Plus className="h-4 w-4" /> Submit New Case
+                <Plus className="h-4 w-4" /> Submit Your Case
               </button>
             </div>
 
