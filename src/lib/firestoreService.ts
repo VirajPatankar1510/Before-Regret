@@ -60,12 +60,32 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
   throw new Error(JSON.stringify(errInfo));
 }
 
+function cleanUndefined(obj: any): any {
+  if (obj === undefined) {
+    return null;
+  }
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(item => cleanUndefined(item));
+  }
+  const result: any = {};
+  for (const key of Object.keys(obj)) {
+    const value = obj[key];
+    if (value !== undefined) {
+      result[key] = cleanUndefined(value);
+    }
+  }
+  return result;
+}
+
 // Dynamic Stories
 export async function saveStoryToFirestore(story: Story): Promise<void> {
   const pathForWrite = `stories/${story.id}`;
   try {
     const storyRef = doc(db, "stories", story.id);
-    await setDoc(storyRef, story);
+    await setDoc(storyRef, cleanUndefined(story));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, pathForWrite);
   }
@@ -102,7 +122,7 @@ export async function saveCommentToFirestore(comment: StoryComment): Promise<voi
   const pathForWrite = `comments/${comment.id}`;
   try {
     const commentRef = doc(db, "comments", comment.id);
-    await setDoc(commentRef, comment);
+    await setDoc(commentRef, cleanUndefined(comment));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, pathForWrite);
   }
@@ -142,7 +162,7 @@ export async function saveUserProfileToFirestore(uid: string, profile: UserProfi
   const pathForWrite = `users/${uid}`;
   try {
     const profileRef = doc(db, "users", uid);
-    await setDoc(profileRef, profile);
+    await setDoc(profileRef, cleanUndefined(profile));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, pathForWrite);
   }
@@ -167,7 +187,7 @@ export async function saveQuestionToFirestore(question: Question): Promise<void>
   const pathForWrite = `questions/${question.slug}`;
   try {
     const questionRef = doc(db, "questions", question.slug);
-    await setDoc(questionRef, question);
+    await setDoc(questionRef, cleanUndefined(question));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, pathForWrite);
   }
@@ -193,7 +213,7 @@ export async function saveCourtCaseToFirestore(courtCase: CourtCase): Promise<vo
   const pathForWrite = `courtCases/${courtCase.slug}`;
   try {
     const caseRef = doc(db, "courtCases", courtCase.slug);
-    await setDoc(caseRef, courtCase);
+    await setDoc(caseRef, cleanUndefined(courtCase));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, pathForWrite);
   }
@@ -214,7 +234,7 @@ export async function saveRedFlagCaseToFirestore(redFlagCase: RedFlagCase): Prom
   const pathForWrite = `redFlagCases/${redFlagCase.id}`;
   try {
     const caseRef = doc(db, "redFlagCases", redFlagCase.id);
-    await setDoc(caseRef, redFlagCase);
+    await setDoc(caseRef, cleanUndefined(redFlagCase));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, pathForWrite);
   }
@@ -235,7 +255,7 @@ export async function saveRelationshipProblemsToFirestore(problems: Relationship
   const pathForWrite = "relationshipConfigs/problems";
   try {
     const docRef = doc(db, "relationshipConfigs", "problems");
-    await setDoc(docRef, { list: problems });
+    await setDoc(docRef, cleanUndefined({ list: problems }));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, pathForWrite);
   }
