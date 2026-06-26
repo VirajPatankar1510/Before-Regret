@@ -21,8 +21,13 @@ import {
   Lock,
   EyeOff,
   Bell,
-  RefreshCw
+  RefreshCw,
+  Instagram,
+  Copy,
+  X,
+  Download
 } from 'lucide-react';
+import { toPng } from 'html-to-image';
 import { Story, StoryComment, CourtCase, Question, RedFlagCase } from '../types';
 
 interface FeedItem {
@@ -61,6 +66,83 @@ interface AdminFeedScreenProps {
   onToggleAdmin: (val: boolean) => void;
 }
 
+// Deterministic hash helper to select stable templates/ctas
+const hashString = (str: string): number => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return hash;
+};
+
+const getCleanCaseId = (item: { id: string; typeLabel: string } | null) => {
+  if (!item) return 'CASE #BR-102';
+  const parts = item.id.split('-');
+  const rawId = parts[parts.length - 1] || '102';
+  const clean = rawId.length > 8 ? rawId.substring(0, 6).toUpperCase() : rawId.toUpperCase();
+  
+  const label = item.typeLabel.toLowerCase();
+  if (label.includes('court') || label.includes('jury') || label.includes('trial')) {
+    return `COURT CASE #${clean}`;
+  } else if (label.includes('red flag')) {
+    return `RED FLAG #${clean}`;
+  } else if (label.includes('advice') || label.includes('board') || label.includes('question')) {
+    return `ADVICE BOARD #${clean}`;
+  } else {
+    return `REGRET STORY #${clean}`;
+  }
+};
+
+const getProminentCta = (typeLabel: string | undefined) => {
+  if (!typeLabel) return 'GIVE YOUR OPINION';
+  const label = typeLabel.toLowerCase();
+  
+  if (label.includes('court') || label.includes('jury') || label.includes('trial')) {
+    const ctas = [
+      '⚖️ GIVE YOUR JUDGMENT',
+      '⚖️ PASS YOUR VERDICT',
+      '⚖️ WHO IS WRONG? VOTE',
+      '⚖️ CAST YOUR JURY VOTE',
+      '⚖️ DECIDE WHO REGRETS',
+      '⚖️ DROP YOUR VERDICT'
+    ];
+    return ctas[Math.abs(hashString(typeLabel)) % ctas.length];
+  }
+  
+  if (label.includes('red flag') || label.includes('toxic') || label.includes('danger')) {
+    const ctas = [
+      '🚩 IS THIS A RED FLAG?',
+      '🚩 RATE THE DANGER LEVEL',
+      '🚩 RUN OR STAY? VOTE NOW',
+      '🚩 IS IT LOW-KEY TOXIC?',
+      '🚩 DEALBREAKER? VOTE NOW',
+      '🚩 RED FLAG METER: RATE'
+    ];
+    return ctas[Math.abs(hashString(typeLabel)) % ctas.length];
+  }
+  
+  if (label.includes('advice') || label.includes('board') || label.includes('question')) {
+    const ctas = [
+      '💬 GIVE YOUR OPINION',
+      '💬 WHAT WOULD YOU DO?',
+      '💬 DROP YOUR BEST ADVICE',
+      '💬 HELP THEM DECIDE',
+      '💬 WHAT\'S THE PLAY HERE?',
+      '💬 LEAVE YOUR ADVICE'
+    ];
+    return ctas[Math.abs(hashString(typeLabel)) % ctas.length];
+  }
+  
+  const generalCtas = [
+    '🔗 AVOID THIS REGRET',
+    '🔗 DON\'T MAKE THIS MISTAKE',
+    '🔗 READ THE FULL TIMELINE',
+    '🔗 WOULD YOU REGRET THIS?',
+    '🔗 LEARN BEFORE REGRET'
+  ];
+  return generalCtas[Math.abs(hashString(typeLabel)) % generalCtas.length];
+};
+
 export default function AdminFeedScreen({
   stories,
   comments,
@@ -89,6 +171,108 @@ export default function AdminFeedScreen({
     const saved = localStorage.getItem('before_regret_last_feed_check');
     return saved ? parseInt(saved, 10) : Date.now();
   });
+
+  // Instagram Post Generator State
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedPost, setGeneratedPost] = useState<{
+    hook: string;
+    caption: string;
+    visualSuggestion: string;
+    hashtags: string[];
+  } | null>(null);
+  const [activeItem, setActiveItem] = useState<FeedItem | null>(null);
+  const [editedCaption, setEditedCaption] = useState('');
+  const [copyStatus, setCopyStatus] = useState<{[key: string]: boolean}>({});
+  const [previewTheme, setPreviewTheme] = useState<'cream' | 'midnight' | 'notes' | 'social'>('cream');
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleGenerateInstagramPost = async (item: FeedItem) => {
+    setIsGenerating(true);
+    setGeneratedPost(null);
+    setActiveItem(item);
+    setCopyStatus({});
+    
+    try {
+      const response = await fetch('/api/admin/generate-instagram-post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: item.title,
+          content: item.content,
+          type: item.typeLabel,
+          author: item.author,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success && data.post) {
+        setGeneratedPost(data.post);
+        setEditedCaption(data.post.caption);
+      } else {
+        alert(data.error || 'Failed to generate Instagram post. Please check server logs.');
+        setActiveItem(null);
+      }
+    } catch (err) {
+      console.error('Error generating Instagram post:', err);
+      alert('Network error while generating Instagram post. Is the dev server running?');
+      setActiveItem(null);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleCopyText = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopyStatus(prev => ({ ...prev, [key]: true }));
+    setTimeout(() => {
+      setCopyStatus(prev => ({ ...prev, [key]: false }));
+    }, 2000);
+  };
+
+  const handleDownloadImage = async () => {
+    const node = document.getElementById('instagram-story-canvas');
+    if (!node) {
+      alert('Could not find image preview element.');
+      return;
+    }
+    
+    setIsDownloading(true);
+    try {
+      // Small timeout to ensure fonts and dynamic render bindings are finished
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      const width = 360;
+      const height = 640;
+      
+      const dataUrl = await toPng(node, {
+        quality: 0.98,
+        pixelRatio: 3.0, // Highly crisp and dense export
+        width: width,
+        height: height,
+        style: {
+          transform: 'scale(1)',
+          transformOrigin: 'top left',
+          width: `${width}px`,
+          height: `${height}px`,
+          margin: '0',
+          padding: '24px',
+        },
+        cacheBust: true,
+      });
+      
+      const link = document.createElement('a');
+      link.download = `before_regret_${previewTheme}_post_${activeItem?.id || 'post'}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to download image:', err);
+      alert('Failed to generate image download. Try taking a screenshot or use another browser.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   // Save last check timestamp to localStorage on mount or when tab is open
   useEffect(() => {
@@ -828,6 +1012,16 @@ export default function AdminFeedScreen({
                   {/* Operational moderation buttons */}
                   <div className="flex md:flex-col justify-end items-center md:items-end gap-2 shrink-0 pt-4 md:pt-0 border-t md:border-t-0 border-dashed border-zinc-100">
                     
+                    {/* Generate Instagram Post Button */}
+                    <button
+                      onClick={() => handleGenerateInstagramPost(item)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-pink-600 hover:text-white bg-pink-50 hover:bg-pink-600 border border-pink-100 hover:border-pink-600 rounded-xl transition-all cursor-pointer whitespace-nowrap font-mono"
+                      title="Generate a viral US-targeted Instagram post from this submission"
+                    >
+                      <Instagram className="h-3.5 w-3.5" />
+                      <span>Generate IG Post</span>
+                    </button>
+
                     {/* Deep Link to the page */}
                     <button
                       onClick={item.onView}
@@ -873,6 +1067,407 @@ export default function AdminFeedScreen({
         )}
 
       </div>
+
+      {/* Instagram Generator Modal Overlay */}
+      {(isGenerating || generatedPost) && activeItem && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden border border-zinc-100 flex flex-col max-h-[90vh]">
+            
+            {/* Modal Header */}
+            <div className="bg-[#24324A] text-white px-6 py-4 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center">
+                  <Instagram className="h-4 w-4" />
+                </div>
+                <div className="text-left">
+                  <h2 className="text-sm font-black uppercase tracking-wider">Instagram Post Generator</h2>
+                  <p className="text-[10px] text-zinc-300 font-medium">Tailored for USA audience • Designed to go viral</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  setGeneratedPost(null);
+                  setActiveItem(null);
+                  setIsGenerating(false);
+                }}
+                className="p-1 rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-6 flex-1">
+              {isGenerating ? (
+                <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                  <div className="relative">
+                    <div className="h-12 w-12 rounded-full border-4 border-zinc-100 border-t-pink-500 animate-spin"></div>
+                    <Instagram className="h-5 w-5 text-pink-500 absolute inset-0 m-auto animate-pulse" />
+                  </div>
+                  <div className="text-center space-y-1">
+                    <h3 className="text-sm font-bold text-[#24324A]">Crafting Relatable Post...</h3>
+                    <p className="text-xs text-zinc-500 max-w-xs leading-relaxed">
+                      Analyzing submission behavior patterns, writing a killer hook, and generating high-engagement captions with Gemini.
+                    </p>
+                  </div>
+                </div>
+              ) : generatedPost ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                  
+                  {/* Left: Aesthetic Image Mockup Preview */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 font-mono">9:16 Story / Reels / TikTok Preview</span>
+                      
+                      {/* Theme selection toggle */}
+                      <div className="flex items-center gap-1 bg-zinc-100 p-0.5 rounded-xl border border-zinc-200">
+                        <button
+                          onClick={() => setPreviewTheme('cream')}
+                          className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                            previewTheme === 'cream' 
+                              ? 'bg-white text-[#24324A] shadow-xs' 
+                              : 'text-zinc-500 hover:text-[#24324A]'
+                          }`}
+                        >
+                          Cream
+                        </button>
+                        <button
+                          onClick={() => setPreviewTheme('midnight')}
+                          className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                            previewTheme === 'midnight' 
+                              ? 'bg-[#24324A] text-white shadow-xs' 
+                              : 'text-zinc-500 hover:text-[#24324A]'
+                          }`}
+                        >
+                          Midnight
+                        </button>
+                        <button
+                          onClick={() => setPreviewTheme('notes')}
+                          className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                            previewTheme === 'notes' 
+                              ? 'bg-amber-100 text-amber-800 shadow-xs' 
+                              : 'text-zinc-500 hover:text-[#24324A]'
+                          }`}
+                        >
+                          iOS Notes
+                        </button>
+                        <button
+                          onClick={() => setPreviewTheme('social')}
+                          className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                            previewTheme === 'social' 
+                              ? 'bg-[#1D9BF0] text-white shadow-xs' 
+                              : 'text-zinc-500 hover:text-[#24324A]'
+                          }`}
+                        >
+                          X/Tweet
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* The actual 9:16 image canvas mockup */}
+                    <div 
+                      id="instagram-story-canvas"
+                      className={`aspect-[9/16] w-full max-w-[280px] rounded-3xl p-6 flex flex-col justify-between shadow-lg relative transition-all duration-300 mx-auto overflow-hidden text-left ${
+                        previewTheme === 'cream' 
+                          ? 'bg-[#F9F6EE] text-[#1D1B18] border border-zinc-200/50 font-serif' 
+                          : previewTheme === 'midnight'
+                          ? 'bg-[#0E121A] text-[#F3F4F6] border border-[#1E293B] font-sans'
+                          : previewTheme === 'notes'
+                          ? 'bg-white text-zinc-800 border border-zinc-200 font-sans'
+                          : 'bg-[#FFFFFF] text-[#0F1419] border border-[#EFF3F4] font-sans'
+                      }`}
+                      style={previewTheme === 'notes' ? {
+                        backgroundImage: 'radial-gradient(circle, #e5e7eb 1px, rgba(0,0,0,0) 1px)',
+                        backgroundSize: '16px 16px'
+                      } : undefined}
+                    >
+                      {/* Ambient light glow effect for Midnight theme */}
+                      {previewTheme === 'midnight' && (
+                        <div className="absolute inset-0 bg-radial from-violet-500/10 via-transparent to-transparent pointer-events-none" />
+                      )}
+
+                      {/* Header bar of 9:16 screen */}
+                      <div className="flex items-center justify-between opacity-80 z-10 shrink-0">
+                        {previewTheme === 'cream' ? (
+                          <>
+                            <span className="text-[9px] tracking-widest font-black uppercase font-mono">BEFORE REGRET</span>
+                            <span className="text-[9px] font-mono opacity-60">CONFESSIONAL</span>
+                          </>
+                        ) : previewTheme === 'midnight' ? (
+                          <>
+                            <span className="text-[9px] tracking-widest font-bold uppercase text-violet-400 font-mono">@BeforeRegret</span>
+                            <span className="px-1.5 py-0.5 rounded bg-violet-500/10 border border-violet-500/20 text-[8px] text-violet-300 font-mono">Trending #1</span>
+                          </>
+                        ) : previewTheme === 'notes' ? (
+                          <>
+                            <span className="text-[10px] font-bold text-amber-600 flex items-center gap-1 font-sans">
+                              <span>📁</span> Notes
+                            </span>
+                            <span className="text-[10px] text-zinc-400 font-mono">Done</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-[9px] font-bold text-[#536471] font-sans">✕ Thread Details</span>
+                            <span className="text-[9px] text-[#1D9BF0] font-mono font-bold">Trending</span>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Hook Content Centered */}
+                      <div className="flex-1 flex flex-col justify-center py-6 z-10 relative">
+                        {previewTheme === 'notes' ? (
+                          <div className="space-y-4 text-left">
+                            <div className="text-[11px] text-zinc-400 border-b border-zinc-100 pb-1 flex justify-between items-center font-mono">
+                              <span>{getCleanCaseId(activeItem)}</span>
+                              <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                            </div>
+                            <p className="text-sm font-semibold leading-relaxed tracking-tight text-zinc-800 whitespace-pre-wrap">
+                              {generatedPost.hook}
+                            </p>
+                            
+                            {/* Inner reference snippet */}
+                            <div className="border-l-2 border-amber-500 pl-3 py-1 bg-amber-500/5 rounded-r">
+                              <p className="text-[10px] text-zinc-500 italic line-clamp-3 leading-normal">
+                                "{activeItem?.content}"
+                              </p>
+                            </div>
+
+                            {/* Prominent Notes Style Highlighted Sticker */}
+                            <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-2.5 flex items-center justify-between">
+                              <span className="text-[9px] font-bold text-amber-800 uppercase tracking-wide">
+                                {getProminentCta(activeItem?.typeLabel)}
+                              </span>
+                              <span className="text-[9px] text-amber-600 font-bold font-mono">beforeregret.com ➔</span>
+                            </div>
+                          </div>
+                        ) : previewTheme === 'social' ? (
+                          <div className="bg-white border border-[#E1E8ED] rounded-2xl p-4 space-y-3 shadow-xs text-left w-full">
+                            {/* Tweet Header */}
+                            <div className="flex items-center gap-2">
+                              <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-[#1D1B18] to-[#C9A227] flex items-center justify-center font-black text-white text-[10px] shadow-sm shrink-0">
+                                BR
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1">
+                                  <span className="font-bold text-xs text-[#0F1419] truncate leading-none">Before Regret</span>
+                                  {/* Verified Badge */}
+                                  <span className="text-[#1D9BF0] text-[10px] font-bold">✓</span>
+                                </div>
+                                <span className="text-[10px] text-[#536471] block truncate leading-tight">@BeforeRegret</span>
+                              </div>
+                            </div>
+                            
+                            {/* Tweet Body */}
+                            <p className="text-xs sm:text-sm font-medium leading-relaxed text-[#0F1419] whitespace-pre-wrap">
+                              {generatedPost.hook}
+                            </p>
+
+                            {/* Embedded Link Card CTA */}
+                            <div className="border border-[#CFD9DE] rounded-xl overflow-hidden bg-[#F7F9F9] hover:bg-[#EFF1F1] transition-colors cursor-pointer">
+                              <div className="p-3 space-y-1">
+                                <div className="text-[8px] font-bold tracking-wider text-[#1D9BF0] font-mono uppercase">
+                                  {getCleanCaseId(activeItem)}
+                                </div>
+                                <h4 className="font-bold text-[11px] text-[#0F1419] leading-snug">
+                                  {getProminentCta(activeItem?.typeLabel)} ➔
+                                </h4>
+                                <p className="text-[9px] text-[#536471] line-clamp-1">
+                                  "{activeItem?.content}"
+                                </p>
+                                <span className="text-[9px] text-[#536471] block font-mono">beforeregret.com</span>
+                              </div>
+                            </div>
+                            
+                            {/* Date/Time */}
+                            <div className="text-[9px] text-[#536471] border-b border-[#EFF3F4] pb-2 font-mono">
+                              {new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} · <span className="text-[#1D9BF0] font-bold">X for iPhone</span>
+                            </div>
+                            
+                            {/* Interaction Row */}
+                            <div className="flex items-center justify-between text-[#536471] text-[9px] pt-1 px-1 font-mono">
+                              <div className="flex items-center gap-1 hover:text-[#1D9BF0] transition-colors cursor-pointer">
+                                <MessageSquare className="h-3 w-3" />
+                                <span>412</span>
+                              </div>
+                              <div className="flex items-center gap-1 hover:text-green-500 transition-colors cursor-pointer">
+                                <span>🔁</span>
+                                <span>2.8K</span>
+                              </div>
+                              <div className="flex items-center gap-1 hover:text-red-500 transition-colors cursor-pointer">
+                                <Heart className="h-3 w-3 hover:fill-red-500/10" />
+                                <span>24.5K</span>
+                              </div>
+                            </div>
+                          </div>
+                        ) : previewTheme === 'cream' ? (
+                          <div className="space-y-4">
+                            <span className="text-2xl text-[#C9A227] leading-none">“</span>
+                            <div className="text-[10px] tracking-widest font-bold uppercase text-[#C9A227] font-mono">
+                              {getCleanCaseId(activeItem)}
+                            </div>
+                            <p className="text-base sm:text-lg font-black leading-snug tracking-tight italic font-serif text-[#2C2620]">
+                              {generatedPost.hook}
+                            </p>
+                            <div className="pt-2">
+                              <div className="inline-flex items-center gap-1.5 bg-[#2C2620] text-[#F9F6EE] px-3.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider shadow-sm">
+                                <span>{getProminentCta(activeItem?.typeLabel)}</span>
+                                <span className="text-[#C9A227]">➔</span>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-4">
+                            <div className="text-[10px] tracking-widest font-black uppercase text-violet-400 font-mono">
+                              {getCleanCaseId(activeItem)}
+                            </div>
+                            <p className="text-base sm:text-lg font-extrabold leading-snug tracking-tight text-white font-sans">
+                              {generatedPost.hook}
+                            </p>
+                            <div className="pt-2">
+                              <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white px-3.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider shadow-lg shadow-violet-500/20">
+                                <span>{getProminentCta(activeItem?.typeLabel)}</span>
+                                <span>✦</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Call to action footer banner */}
+                      <div className="border-t border-current/10 pt-3 opacity-80 text-[9px] flex items-center justify-between shrink-0 z-10 font-mono font-bold">
+                        {previewTheme === 'cream' ? (
+                          <>
+                            <span className="font-semibold uppercase font-sans">VOTE NOW ON OUR BIO</span>
+                            <span>@beforeregret</span>
+                          </>
+                        ) : previewTheme === 'midnight' ? (
+                          <>
+                            <span className="text-violet-300 font-semibold uppercase animate-pulse">➔ Tap Link in Bio to Vote</span>
+                            <span className="opacity-60">beforeregret.com</span>
+                          </>
+                        ) : previewTheme === 'notes' ? (
+                          <>
+                            <span className="text-amber-600 font-bold uppercase font-sans">🔗 read full timeline</span>
+                            <span className="text-zinc-400">@beforeregret</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-[#1D9BF0] font-bold uppercase font-sans">🔗 VOTE AT BEFORE REGRET</span>
+                            <span className="text-[#536471]">@beforeregret</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Copy Hook and Download Image Buttons Side-by-Side */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => handleCopyText(generatedPost.hook, 'hook')}
+                        className={`py-2 px-3 border rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                          copyStatus['hook'] 
+                            ? 'bg-emerald-50 border-emerald-300 text-emerald-700' 
+                            : 'bg-white border-zinc-200 text-[#24324A] hover:bg-zinc-50'
+                        }`}
+                      >
+                        {copyStatus['hook'] ? <CheckCircle className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                        <span>{copyStatus['hook'] ? 'Copied!' : 'Copy Hook'}</span>
+                      </button>
+
+                      <button
+                        onClick={handleDownloadImage}
+                        disabled={isDownloading}
+                        className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-white shadow-xs ${
+                          isDownloading 
+                            ? 'bg-zinc-400 cursor-not-allowed' 
+                            : 'bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600'
+                        }`}
+                      >
+                        <Download className={`h-3.5 w-3.5 ${isDownloading ? 'animate-spin' : 'animate-bounce'}`} />
+                        <span>{isDownloading ? 'Saving...' : 'Download Image'}</span>
+                      </button>
+                    </div>
+
+                    {/* Visual Suggestion Note */}
+                    <div className="bg-zinc-50 border border-zinc-200/60 p-3.5 rounded-xl space-y-1">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-[#C9A227] font-mono block text-left">Creative Direction Tip</span>
+                      <p className="text-[11px] text-zinc-600 leading-relaxed text-left">
+                        {generatedPost.visualSuggestion}
+                      </p>
+                    </div>
+
+                  </div>
+
+                  {/* Right: Caption, Hashtags & Action Buttons */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 font-mono">2. Caption & Hashtags</span>
+                      <button
+                        onClick={() => {
+                          const fullPost = `${editedCaption}\n\n${generatedPost.hashtags.join(' ')}`;
+                          handleCopyText(fullPost, 'full');
+                        }}
+                        className={`px-3 py-1 rounded-xl text-[10px] font-bold transition-all flex items-center gap-1 border cursor-pointer ${
+                          copyStatus['full'] 
+                            ? 'bg-emerald-50 border-emerald-300 text-emerald-700' 
+                            : 'bg-[#24324A] border-[#24324A] text-white hover:bg-[#1a2536]'
+                        }`}
+                      >
+                        {copyStatus['full'] ? <CheckCircle className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                        <span>{copyStatus['full'] ? 'All Copied!' : 'Copy Caption + Hashtags'}</span>
+                      </button>
+                    </div>
+
+                    {/* Editable caption container */}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-zinc-400 block text-left">EDIT CAPTION TEXT</label>
+                      <textarea
+                        value={editedCaption}
+                        onChange={(e) => setEditedCaption(e.target.value)}
+                        className="w-full h-64 p-3.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#24324A]/15 font-sans hover:border-zinc-300 text-left"
+                        placeholder="Write your Instagram caption..."
+                      />
+                    </div>
+
+                    {/* Hashtags badging block */}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-zinc-400 block text-left">OPTIMIZED HASHTAGS</label>
+                      <div className="flex flex-wrap gap-1">
+                        {generatedPost.hashtags.map((tag, idx) => (
+                          <span 
+                            key={idx}
+                            className="px-2 py-0.5 rounded-md bg-[#FAF8F2] border border-zinc-200 text-[10px] text-zinc-600 font-mono font-medium hover:text-[#C9A227] cursor-pointer"
+                            onClick={() => handleCopyText(tag, `tag-${idx}`)}
+                          >
+                            {copyStatus[`tag-${idx}`] ? 'Copied!' : tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+              ) : null}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-zinc-50 px-6 py-4 border-t border-zinc-100 flex items-center justify-between shrink-0">
+              <span className="text-[10px] text-zinc-400 font-medium">Generated via Gemini Large Language Model</span>
+              <button
+                onClick={() => {
+                  setGeneratedPost(null);
+                  setActiveItem(null);
+                  setIsGenerating(false);
+                }}
+                className="px-4 py-2 bg-zinc-200 hover:bg-zinc-300 text-zinc-700 text-xs font-bold rounded-xl transition-all cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
