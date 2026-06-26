@@ -16,7 +16,7 @@ export interface StoryComment {
   storyId: string;
   authorName: string;
   authorId: string;
-  authorPhoto?: string;
+  authorPhoto?: string | null;
   text: string;
   dateAdded: string;
 }

@@ -780,7 +780,7 @@ export default function App() {
     const commentId = 'comment_' + Math.random().toString(36).substring(2, 9);
     const authorId = currentUser ? currentUser.uid : 'guest_' + Math.random().toString(36).substring(2, 9);
     const authorName = currentUser ? (currentUser.displayName || 'Google Seeker') : `@${guestNickName.trim() || 'Wandering_Seeker'}`;
-    const authorPhoto = currentUser ? (currentUser.photoURL || undefined) : undefined;
+    const authorPhoto = currentUser ? (currentUser.photoURL || null) : null;
 
     const newComment: StoryComment = {
       id: commentId,
