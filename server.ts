@@ -320,7 +320,7 @@ Ensure that:
 2. For each problem, provide a highly specific description.
 3. For each problem, expand the 'keywords' array with 10-15 highly realistic phrases, complaints, and exact search queries that people type into search engines or relationship support forums (e.g. 'stopped replying to me', 'likes me as a friend', 'stuck in limbo', 'shady phone secrets', 'ex watches my stories').`;
 
-      const candidateModels = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"];
+      const candidateModels = ["gemini-flash-latest", "gemini-3.1-flash-lite", "gemini-3.5-flash"];
       let response = null;
       let lastError = null;
 
@@ -355,7 +355,7 @@ Ensure that:
             break; // Success!
           }
         } catch (err: any) {
-          console.warn(`Model ${modelName} failed or unavailable:`, err?.message || err);
+          console.log(`Skipping model ${modelName} during keyword generation.`);
           lastError = err;
         }
       }
@@ -431,7 +431,7 @@ Strict Guidelines:
 4. "Hashtags":
    - Provide 5-8 trending, high-traffic US hashtags for relationship advice, modern dating, and confessions. Avoid generic spam.`;
 
-      const candidateModels = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"];
+      const candidateModels = ["gemini-flash-latest", "gemini-3.1-flash-lite", "gemini-3.5-flash"];
       let response = null;
       let lastError = null;
 
@@ -463,7 +463,7 @@ Strict Guidelines:
             break;
           }
         } catch (err: any) {
-          console.warn(`Model ${modelName} failed or unavailable for Instagram post generation:`, err?.message || err);
+          console.log(`Skipping model ${modelName} during Instagram post generation.`);
           lastError = err;
         }
       }
@@ -583,7 +583,7 @@ Please output your response as JSON matching this schema:
 - caption: A hilarious Instagram caption that vents about this behavior, asks a provocative question to spark debate/tags in the comments, and smoothly mentions that the full raw submission is at BeforeRegret.com.
 - hashtags: An array of 5-8 trending relationship hashtags (e.g., #beforeregret #relationshipadvice #clownbehavior #relatable).`;
 
-      const candidateModels = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"];
+      const candidateModels = ["gemini-flash-latest", "gemini-3.1-flash-lite", "gemini-3.5-flash"];
       let response = null;
       let lastError = null;
 
@@ -627,7 +627,7 @@ Please output your response as JSON matching this schema:
             break;
           }
         } catch (err: any) {
-          console.warn(`Model ${modelName} failed or unavailable for Meme generation:`, err?.message || err);
+          console.log(`Skipping model ${modelName} during Meme generation.`);
           lastError = err;
         }
       }
