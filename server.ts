@@ -320,7 +320,7 @@ Ensure that:
 2. For each problem, provide a highly specific description.
 3. For each problem, expand the 'keywords' array with 10-15 highly realistic phrases, complaints, and exact search queries that people type into search engines or relationship support forums (e.g. 'stopped replying to me', 'likes me as a friend', 'stuck in limbo', 'shady phone secrets', 'ex watches my stories').`;
 
-      const candidateModels = ["gemini-3.5-flash", "gemini-2.5-flash"];
+      const candidateModels = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"];
       let response = null;
       let lastError = null;
 
@@ -431,7 +431,7 @@ Strict Guidelines:
 4. "Hashtags":
    - Provide 5-8 trending, high-traffic US hashtags for relationship advice, modern dating, and confessions. Avoid generic spam.`;
 
-      const candidateModels = ["gemini-3.5-flash", "gemini-2.5-flash"];
+      const candidateModels = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"];
       let response = null;
       let lastError = null;
 
@@ -469,7 +469,38 @@ Strict Guidelines:
       }
 
       if (!response || !response.text) {
-        throw lastError || new Error("Failed to generate content with Gemini API.");
+        console.warn("All candidate Gemini models failed or were unavailable due to demand spikes/quota limits. Employing programmatic high-relatability human-crafted fallback post generator.");
+        
+        // Beautiful human fallback generator adhering strictly to target tone and style
+        const cleanedTitle = (title || "Unpopular Opinion").trim();
+        const cleanedContent = (content || "").trim();
+        let hook = "";
+
+        if (cleanedTitle.length > 5 && cleanedTitle.toLowerCase() !== "untitled") {
+          const lowerTitle = cleanedTitle.toLowerCase();
+          if (lowerTitle.includes("ex") || lowerTitle.includes("breakup") || lowerTitle.includes("past")) {
+            hook = `Unpopular opinion: If they're still keeping tabs on their ex, you're not their partner—you're their distraction.`;
+          } else if (lowerTitle.includes("toxic") || lowerTitle.includes("red flag") || lowerTitle.includes("shady")) {
+            hook = `If you have to play detective to get the full truth, you already have your answer. Choose your peace.`;
+          } else if (lowerTitle.includes("marriage") || lowerTitle.includes("proposal") || lowerTitle.includes("future")) {
+            hook = `Stop playing spouse for someone who treats commitment like a subscription they can cancel anytime.`;
+          } else {
+            hook = `“${cleanedTitle}” — sometimes you're not in love with them, you're just attached to the version of them you created in your head.`;
+          }
+        } else {
+          hook = `Unpopular opinion: Stop trying to squeeze a lifetime commitment out of someone who can't even give you a consistent reply.`;
+        }
+
+        const caption = `Let's talk about this real quick, because this situation is wild... 😳\n\n"${cleanedContent.substring(0, 180)}${cleanedContent.length > 180 ? "..." : ""}"\n\nLow-key, modern dating is in absolute shambles right now. We've completely normalized accepting the absolute bare minimum, and then we wonder why we're feeling low-key exhausted.\n\nAt the end of the day, if they wanted to, they would. It is literally that simple. Stop building futures with people who only offer you temporary attention.\n\nIs this an immediate dealbreaker or are they overreacting? What would you do? Let me know in the comments 👇\n\n(Read the full raw story and cast your official vote on who is wrong at beforeregret.com or click the 🔗 in bio!)`;
+        
+        const visualSuggestion = "A clean minimalist iOS Notes App style screenshot centered on a warm charcoal gray background to keep the aesthetic low-key and raw.";
+        const hashtags = ["beforeregret", "relationshipadvice", "moderndating", "confessions", "toxicrelationships", "datingadvice", "redflags"];
+
+        return res.json({ 
+          success: true, 
+          post: { hook, caption, visualSuggestion, hashtags },
+          isFallback: true
+        });
       }
 
       const postData = JSON.parse(response.text);
@@ -480,6 +511,185 @@ Strict Guidelines:
       return res.status(500).json({ 
         success: false, 
         error: error.message || "Failed to generate Instagram post." 
+      });
+    }
+  });
+
+  // API route to generate a highly relatable, trending USA 9:16 relationship meme
+  app.post("/api/admin/generate-meme-post", async (req, res) => {
+    try {
+      const { title, content, type, author } = req.body;
+      const apiKey = process.env.GEMINI_API_KEY;
+      
+      if (!apiKey) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "GEMINI_API_KEY is not configured in environment variables." 
+        });
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+
+      const prompt = `You are a viral social media comedian and content creator for @BeforeRegret, a highly popular relationship platform.
+We are creating an ultra-relatable, humorous 9:16 vertical text layout tailored for Gen Z and Millennials (ages 18-30) on Instagram, TikTok, and Pinterest.
+This post must be directly inspired by the following real-life user submission:
+---
+Type: ${type || 'Story'}
+Title: ${title || 'Relationship dilemma'}
+Content: ${content || 'No content provided.'}
+Author: ${author || 'Anonymous'}
+---
+
+Your task is to transform this drama/situation into one of three highly shareable, humorous, and relatable text-based layouts. Choose the template that best fits this specific drama:
+
+1. 'translation' (The Relationship Dictionary / Translation Guide):
+   - What people say vs. what they actually mean.
+   - Example:
+     - Title: "The 'He's Just Busy' Dictionary"
+     - Phrase: "I've been so swamped with work" -> Reality: "I had 4 hours to send a text but chose to check my Clash of Clans clan instead."
+     - Phrase: "I'm just not on my phone like that" -> Reality: "My screen time is 9 hours and 42 minutes but typing 5 letters to you is a chore."
+
+2. 'starterpack' (The Starter Pack):
+   - Exactly 4 funny, highly specific things, quotes, or behaviors that define this relationship archetype or behavior.
+   - Example:
+     - Title: "The 'We Are Not Labeling It' Starter Pack"
+     - Items: 
+       - "Checking their active status while they've been 'sleeping' for 3 hours"
+       - "The sentence: 'I don't want to ruin what we have right now'"
+       - "Crying to a Drake song at 2:00 AM on a Tuesday"
+       - "Going on full dinner dates but splitting the bill 50/50"
+
+3. 'math' (Dating/Relationship Math):
+   - Funny, absurd but real illogical behaviors in modern dating.
+   - Example:
+     - Title: "Situationship Math"
+     - Item: "Leaving me on read for 12 hours is 'busy', but posting a 4K resolution sunset on their story 10 minutes later is 'unplugging'."
+     - Item: "Not being ready for a relationship but being ready to text me 'good morning' every day for 8 months straight."
+
+Strict Guidelines:
+- It MUST be funny, slightly sarcastic, highly relatable, and completely free of AI-sounding corporate clichés.
+- Never use the word "Meme", "Meme Court", or "USA Trending" in any output fields (especially the title).
+- Use extremely simple, clear, easy, and natural title language (e.g. "The 'Share Location' Starter Pack" or "Relationship Red Flag Dictionary"). Simple titles perform much better. DO NOT use all-caps for titles. Use standard title-casing.
+- Use current colloquial dating terms (e.g., "situationship", "low-key", "clown behavior", "talking stage", "it's giving", "living rent-free", "valid", "gaslight", "he's a 10 but...").
+- Keep items punchy, funny, and direct.
+
+Please output your response as JSON matching this schema:
+- memeType: "translation" | "starterpack" | "math"
+- title: A simple, natural, clear title using title-casing.
+- items: An array containing the content:
+  - If memeType is "translation", this must be an array of objects: { "phrase": string, "reality": string } (provide 2-3 pairs).
+  - If memeType is "starterpack", this must be an array of strings (exactly 4 funny items).
+  - If memeType is "math", this must be an array of objects: { "condition": string, "conclusion": string } (provide 2-3 pairs).
+- caption: A hilarious Instagram caption that vents about this behavior, asks a provocative question to spark debate/tags in the comments, and smoothly mentions that the full raw submission is at BeforeRegret.com.
+- hashtags: An array of 5-8 trending relationship hashtags (e.g., #beforeregret #relationshipadvice #clownbehavior #relatable).`;
+
+      const candidateModels = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"];
+      let response = null;
+      let lastError = null;
+
+      for (const modelName of candidateModels) {
+        try {
+          console.log(`Attempting Meme post generation using model: ${modelName}`);
+          response = await ai.models.generateContent({
+            model: modelName,
+            contents: prompt,
+            config: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                  memeType: { type: Type.STRING, enum: ["translation", "starterpack", "math"] },
+                  title: { type: Type.STRING },
+                  items: {
+                    type: Type.ARRAY,
+                    items: {
+                      type: Type.OBJECT,
+                      properties: {
+                        phrase: { type: Type.STRING },
+                        reality: { type: Type.STRING },
+                        condition: { type: Type.STRING },
+                        conclusion: { type: Type.STRING }
+                      }
+                    }
+                  },
+                  caption: { type: Type.STRING },
+                  hashtags: {
+                    type: Type.ARRAY,
+                    items: { type: Type.STRING }
+                  }
+                },
+                required: ["memeType", "title", "items", "caption", "hashtags"]
+              }
+            }
+          });
+          if (response && response.text) {
+            console.log(`Successfully generated Meme post with: ${modelName}`);
+            break;
+          }
+        } catch (err: any) {
+          console.warn(`Model ${modelName} failed or unavailable for Meme generation:`, err?.message || err);
+          lastError = err;
+        }
+      }
+
+      if (!response || !response.text) {
+        console.warn("All candidate Gemini models failed or were unavailable due to demand spikes/quota limits. Employing programmatic high-relatability fallback meme generator.");
+        
+        // Beautiful human fallback generator for Memes
+        const cleanedTitle = (title || "Unpopular Opinion").trim();
+        const lowerTitle = cleanedTitle.toLowerCase();
+        
+        let memeType = "starterpack";
+        let memeTitle = "Modern Dating Starter Pack";
+        let items: any[] = [];
+        
+        if (lowerTitle.includes("ex") || lowerTitle.includes("breakup") || lowerTitle.includes("past")) {
+          memeType = "translation";
+          memeTitle = "Still Friends With My Ex Dictionary";
+          items = [
+            { phrase: '"We\'re just friends, it\'s not like that"', reality: '"I still want their validation because I haven\'t fully healed yet."' },
+            { phrase: '"They just reached out to ask how I was doing"', reality: '"We both know they\'re checking if they still have access to me."' }
+          ];
+        } else if (lowerTitle.includes("toxic") || lowerTitle.includes("red flag") || lowerTitle.includes("shady") || lowerTitle.includes("phone")) {
+          memeType = "math";
+          memeTitle = "Relationship Red Flag Dictionary";
+          items = [
+            { condition: "Putting their phone face down every single time they leave the room", conclusion: "But calling you 'insecure' for asking why their phone is on 1% brightness." },
+            { condition: "Being too tired to go out on a Friday date", conclusion: "But somehow finding the energy to reply to group chat messages for 4 hours." }
+          ];
+        } else {
+          memeType = "starterpack";
+          memeTitle = "The 'Situationship Limbo' Starter Pack";
+          items = [
+            "A 'good morning' text at 2:30 PM",
+            "The phrase: 'I'm just really focusing on myself right now'",
+            "Splitting a $14 dinner bill to the exact cent",
+            "Being too scared to ask 'what are we' because you know the answer will hurt"
+          ];
+        }
+
+        const caption = `Honestly, we need to talk about this because situationship culture has got to be studied in a lab... 💀💀\n\nIs this actually facts or is it literally just what we do now? Modern dating is a full-time sport.\n\nRead the full raw story that inspired this post and cast your vote on BeforeRegret.com (🔗 in bio to judge)!`;
+        const hashtags = ["beforeregret", "datingguide", "relationshiphumor", "situationships", "datingmath", "starterpack"];
+
+        return res.json({ 
+          success: true, 
+          post: { memeType, title: memeTitle, items, caption, hashtags },
+          isFallback: true
+        });
+      }
+
+      const memeData = JSON.parse(response.text);
+      // Ensure starterpack items are just clean strings if parsed differently
+      if (memeData.memeType === 'starterpack' && memeData.items && typeof memeData.items[0] === 'object') {
+        memeData.items = memeData.items.map((i: any) => i.phrase || i.condition || JSON.stringify(i));
+      }
+      return res.json({ success: true, post: memeData });
+
+    } catch (error: any) {
+      console.error("Meme post generation error:", error);
+      return res.status(500).json({ 
+        success: false, 
+        error: error.message || "Failed to generate Meme post." 
       });
     }
   });

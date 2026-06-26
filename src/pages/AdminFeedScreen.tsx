@@ -25,7 +25,8 @@ import {
   Instagram,
   Copy,
   X,
-  Download
+  Download,
+  Laugh
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Story, StoryComment, CourtCase, Question, RedFlagCase } from '../types';
@@ -143,6 +144,38 @@ const getProminentCta = (typeLabel: string | undefined) => {
   return generalCtas[Math.abs(hashString(typeLabel)) % generalCtas.length];
 };
 
+const getDynamicJurors = (item: { id: string } | null): string => {
+  if (!item) return '3,482';
+  const hash = Math.abs(hashString(item.id));
+  const base = 1200 + (hash % 2800);
+  return base.toLocaleString();
+};
+
+const getDynamicComments = (item: { id: string } | null): string => {
+  if (!item) return '417';
+  const hash = Math.abs(hashString(item.id));
+  const base = 80 + (hash % 380);
+  return base.toLocaleString();
+};
+
+const getGuiltyPctNumber = (item: { id: string } | null): number => {
+  if (!item) return 28;
+  const hash = Math.abs(hashString(item.id));
+  return 15 + (hash % 60); // 15% to 75%
+};
+
+const getDynamicVerdict = (item: { id: string } | null): string => {
+  if (!item) return '72% Not Guilty';
+  const hash = Math.abs(hashString(item.id));
+  const pct = 15 + (hash % 60);
+  const isGuilty = hash % 2 === 0;
+  if (isGuilty) {
+    return `${pct}% Guilty`;
+  } else {
+    return `${100 - pct}% Not Guilty`;
+  }
+};
+
 export default function AdminFeedScreen({
   stories,
   comments,
@@ -180,11 +213,57 @@ export default function AdminFeedScreen({
     visualSuggestion: string;
     hashtags: string[];
   } | null>(null);
+  const [generatedMeme, setGeneratedMeme] = useState<{
+    memeType: 'translation' | 'starterpack' | 'math';
+    title: string;
+    items: any[];
+    caption: string;
+    hashtags: string[];
+  } | null>(null);
   const [activeItem, setActiveItem] = useState<FeedItem | null>(null);
   const [editedCaption, setEditedCaption] = useState('');
   const [copyStatus, setCopyStatus] = useState<{[key: string]: boolean}>({});
-  const [previewTheme, setPreviewTheme] = useState<'cream' | 'midnight' | 'notes' | 'social'>('cream');
+  const [previewTheme, setPreviewTheme] = useState<'cream' | 'midnight' | 'notes' | 'social' | 'meme'>('cream');
   const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleGenerateMemePost = async (item: FeedItem) => {
+    setIsGenerating(true);
+    setGeneratedMeme(null);
+    setGeneratedPost(null);
+    setActiveItem(item);
+    setCopyStatus({});
+    
+    try {
+      const response = await fetch('/api/admin/generate-meme-post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: item.title,
+          content: item.content,
+          type: item.typeLabel,
+          author: item.author,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success && data.post) {
+        setGeneratedMeme(data.post);
+        setEditedCaption(data.post.caption);
+        setPreviewTheme('meme');
+      } else {
+        alert(data.error || 'Failed to generate relationship meme. Please check server logs.');
+        setActiveItem(null);
+      }
+    } catch (err) {
+      console.error('Error generating relationship meme:', err);
+      alert('Network error while generating relationship meme. Is the dev server running?');
+      setActiveItem(null);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handleGenerateInstagramPost = async (item: FeedItem) => {
     setIsGenerating(true);
@@ -1022,6 +1101,16 @@ export default function AdminFeedScreen({
                       <span>Generate IG Post</span>
                     </button>
 
+                    {/* Generate Relationship Card Button */}
+                    <button
+                      onClick={() => handleGenerateMemePost(item)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-600 hover:text-white bg-amber-50 hover:bg-amber-600 border border-amber-100 hover:border-amber-600 rounded-xl transition-all cursor-pointer whitespace-nowrap font-mono"
+                      title="Generate a high-engagement relationship guide card from this submission"
+                    >
+                      <Laugh className="h-3.5 w-3.5" />
+                      <span>Generate Relationship Card</span>
+                    </button>
+
                     {/* Deep Link to the page */}
                     <button
                       onClick={item.onView}
@@ -1069,7 +1158,7 @@ export default function AdminFeedScreen({
       </div>
 
       {/* Instagram Generator Modal Overlay */}
-      {(isGenerating || generatedPost) && activeItem && (
+      {(isGenerating || generatedPost || generatedMeme) && activeItem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto animate-fadeIn">
           <div className="bg-white rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden border border-zinc-100 flex flex-col max-h-[90vh]">
             
@@ -1080,13 +1169,14 @@ export default function AdminFeedScreen({
                   <Instagram className="h-4 w-4" />
                 </div>
                 <div className="text-left">
-                  <h2 className="text-sm font-black uppercase tracking-wider">Instagram Post Generator</h2>
-                  <p className="text-[10px] text-zinc-300 font-medium">Tailored for USA audience • Designed to go viral</p>
+                  <h2 className="text-sm font-black uppercase tracking-wider">{generatedMeme ? "Relationship Card Generator" : "Instagram Post Generator"}</h2>
+                  <p className="text-[10px] text-zinc-300 font-medium">{generatedMeme ? "Relatable Relationship Layouts • Beautiful Story Cards" : "Tailored for audience • Designed to go viral"}</p>
                 </div>
               </div>
               <button 
                 onClick={() => {
                   setGeneratedPost(null);
+                  setGeneratedMeme(null);
                   setActiveItem(null);
                   setIsGenerating(false);
                 }}
@@ -1101,17 +1191,17 @@ export default function AdminFeedScreen({
               {isGenerating ? (
                 <div className="flex flex-col items-center justify-center py-20 space-y-4">
                   <div className="relative">
-                    <div className="h-12 w-12 rounded-full border-4 border-zinc-100 border-t-pink-500 animate-spin"></div>
-                    <Instagram className="h-5 w-5 text-pink-500 absolute inset-0 m-auto animate-pulse" />
+                    <div className="h-12 w-12 rounded-full border-4 border-zinc-100 border-t-amber-500 animate-spin"></div>
+                    <Instagram className="h-5 w-5 text-amber-500 absolute inset-0 m-auto animate-pulse" />
                   </div>
                   <div className="text-center space-y-1">
-                    <h3 className="text-sm font-bold text-[#24324A]">Crafting Relatable Post...</h3>
+                    <h3 className="text-sm font-bold text-[#24324A]">Crafting Relatable Viral Content...</h3>
                     <p className="text-xs text-zinc-500 max-w-xs leading-relaxed">
-                      Analyzing submission behavior patterns, writing a killer hook, and generating high-engagement captions with Gemini.
+                      Analyzing submission behavior patterns, matching with clear relatable layouts, and generating high-engagement captions with Gemini.
                     </p>
                   </div>
                 </div>
-              ) : generatedPost ? (
+              ) : (generatedPost || generatedMeme) ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                   
                   {/* Left: Aesthetic Image Mockup Preview */}
@@ -1121,60 +1211,74 @@ export default function AdminFeedScreen({
                       
                       {/* Theme selection toggle */}
                       <div className="flex items-center gap-1 bg-zinc-100 p-0.5 rounded-xl border border-zinc-200">
-                        <button
-                          onClick={() => setPreviewTheme('cream')}
-                          className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                            previewTheme === 'cream' 
-                              ? 'bg-white text-[#24324A] shadow-xs' 
-                              : 'text-zinc-500 hover:text-[#24324A]'
-                          }`}
-                        >
-                          Cream
-                        </button>
-                        <button
-                          onClick={() => setPreviewTheme('midnight')}
-                          className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                            previewTheme === 'midnight' 
-                              ? 'bg-[#24324A] text-white shadow-xs' 
-                              : 'text-zinc-500 hover:text-[#24324A]'
-                          }`}
-                        >
-                          Midnight
-                        </button>
-                        <button
-                          onClick={() => setPreviewTheme('notes')}
-                          className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                            previewTheme === 'notes' 
-                              ? 'bg-amber-100 text-amber-800 shadow-xs' 
-                              : 'text-zinc-500 hover:text-[#24324A]'
-                          }`}
-                        >
-                          iOS Notes
-                        </button>
-                        <button
-                          onClick={() => setPreviewTheme('social')}
-                          className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                            previewTheme === 'social' 
-                              ? 'bg-[#1D9BF0] text-white shadow-xs' 
-                              : 'text-zinc-500 hover:text-[#24324A]'
-                          }`}
-                        >
-                          X/Tweet
-                        </button>
+                        {generatedPost && (
+                          <>
+                            <button
+                              onClick={() => setPreviewTheme('cream')}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                                previewTheme === 'cream' 
+                                  ? 'bg-white text-[#24324A] shadow-xs' 
+                                  : 'text-zinc-500 hover:text-[#24324A]'
+                              }`}
+                            >
+                              Cream
+                            </button>
+                            <button
+                              onClick={() => setPreviewTheme('midnight')}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                                previewTheme === 'midnight' 
+                                  ? 'bg-[#24324A] text-white shadow-xs' 
+                                  : 'text-zinc-500 hover:text-[#24324A]'
+                              }`}
+                            >
+                              Midnight
+                            </button>
+                            <button
+                              onClick={() => setPreviewTheme('notes')}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                                previewTheme === 'notes' 
+                                  ? 'bg-amber-100 text-amber-800 shadow-xs' 
+                                  : 'text-zinc-500 hover:text-[#24324A]'
+                              }`}
+                            >
+                              iOS Notes
+                            </button>
+                            <button
+                              onClick={() => setPreviewTheme('social')}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                                previewTheme === 'social' 
+                                  ? 'bg-[#24324A] text-white shadow-xs' 
+                                  : 'text-zinc-500 hover:text-[#24324A]'
+                              }`}
+                            >
+                              Community
+                            </button>
+                          </>
+                        )}
+                        {generatedMeme && (
+                          <button
+                            onClick={() => setPreviewTheme('meme')}
+                            className="px-3 py-1 bg-[#F59E0B] text-white rounded-lg text-[10px] font-black shadow-xs transition-all cursor-pointer flex items-center gap-1"
+                          >
+                            <span>⚖️</span> Relationship Card Theme
+                          </button>
+                        )}
                       </div>
                     </div>
 
-                    {/* The actual 9:16 image canvas mockup */}
+                    {/* The actual 9:16 image canvas mockup locked to exact 360x640 story size */}
                     <div 
                       id="instagram-story-canvas"
-                      className={`aspect-[9/16] w-full max-w-[280px] rounded-3xl p-6 flex flex-col justify-between shadow-lg relative transition-all duration-300 mx-auto overflow-hidden text-left ${
+                      className={`w-[360px] h-[640px] rounded-3xl p-6 flex flex-col justify-between shadow-xl relative transition-all duration-300 mx-auto overflow-hidden text-left shrink-0 ${
                         previewTheme === 'cream' 
-                          ? 'bg-[#F9F6EE] text-[#1D1B18] border border-zinc-200/50 font-serif' 
+                          ? 'bg-[#F9F6EE] text-[#1D1B18] border border-[#E9E4D5] font-serif' 
                           : previewTheme === 'midnight'
                           ? 'bg-[#0E121A] text-[#F3F4F6] border border-[#1E293B] font-sans'
                           : previewTheme === 'notes'
                           ? 'bg-white text-zinc-800 border border-zinc-200 font-sans'
-                          : 'bg-[#FFFFFF] text-[#0F1419] border border-[#EFF3F4] font-sans'
+                          : previewTheme === 'meme'
+                          ? 'bg-[#0D0E12] text-white border border-[#1E293B] font-sans'
+                          : 'bg-[#101827] text-white border border-[#1F2937] font-sans'
                       }`}
                       style={previewTheme === 'notes' ? {
                         backgroundImage: 'radial-gradient(circle, #e5e7eb 1px, rgba(0,0,0,0) 1px)',
@@ -1186,151 +1290,239 @@ export default function AdminFeedScreen({
                         <div className="absolute inset-0 bg-radial from-violet-500/10 via-transparent to-transparent pointer-events-none" />
                       )}
 
+                      {/* Cool grid bg effect for Meme theme */}
+                      {previewTheme === 'meme' && (
+                        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1.5px,transparent_1.5px)] [background-size:20px_20px] opacity-25 pointer-events-none" />
+                      )}
+
                       {/* Header bar of 9:16 screen */}
-                      <div className="flex items-center justify-between opacity-80 z-10 shrink-0">
+                      <div className="flex items-center justify-between opacity-85 z-10 shrink-0">
                         {previewTheme === 'cream' ? (
                           <>
-                            <span className="text-[9px] tracking-widest font-black uppercase font-mono">BEFORE REGRET</span>
+                            <span className="text-[9px] tracking-widest font-black uppercase font-mono flex items-center gap-1">⚖️ BEFORE REGRET</span>
                             <span className="text-[9px] font-mono opacity-60">CONFESSIONAL</span>
                           </>
                         ) : previewTheme === 'midnight' ? (
                           <>
-                            <span className="text-[9px] tracking-widest font-bold uppercase text-violet-400 font-mono">@BeforeRegret</span>
+                            <span className="text-[9px] tracking-widest font-bold uppercase text-violet-400 font-mono flex items-center gap-1">⚖️ @BeforeRegret</span>
                             <span className="px-1.5 py-0.5 rounded bg-violet-500/10 border border-violet-500/20 text-[8px] text-violet-300 font-mono">Trending #1</span>
                           </>
                         ) : previewTheme === 'notes' ? (
                           <>
                             <span className="text-[10px] font-bold text-amber-600 flex items-center gap-1 font-sans">
-                              <span>📁</span> Notes
+                              <span>⚖️</span> BeforeRegret Notes
                             </span>
                             <span className="text-[10px] text-zinc-400 font-mono">Done</span>
                           </>
+                        ) : previewTheme === 'meme' ? (
+                          <>
+                            <span className="text-[10px] font-extrabold text-[#F59E0B] flex items-center gap-1.5 font-sans tracking-wide">
+                              ⚖️ @BeforeRegret Discussion
+                            </span>
+                            <span className="px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[8px] text-amber-500 font-mono font-bold uppercase">Relationship Court</span>
+                          </>
                         ) : (
                           <>
-                            <span className="text-[9px] font-bold text-[#536471] font-sans">✕ Thread Details</span>
-                            <span className="text-[9px] text-[#1D9BF0] font-mono font-bold">Trending</span>
+                            <span className="text-[10px] font-extrabold text-[#C9A227] flex items-center gap-1.5 font-sans tracking-wide">
+                              ⚖️ BeforeRegret Community Discussion
+                            </span>
+                            <span className="px-1.5 py-0.5 rounded-full bg-[#C9A227]/15 border border-[#C9A227]/30 text-[8px] text-[#C9A227] font-mono font-bold uppercase tracking-wider">Trending</span>
                           </>
                         )}
                       </div>
 
                       {/* Hook Content Centered */}
                       <div className="flex-1 flex flex-col justify-center py-6 z-10 relative">
-                        {previewTheme === 'notes' ? (
+                        {generatedMeme ? (
                           <div className="space-y-4 text-left">
-                            <div className="text-[11px] text-zinc-400 border-b border-zinc-100 pb-1 flex justify-between items-center font-mono">
-                              <span>{getCleanCaseId(activeItem)}</span>
-                              <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                            </div>
-                            <p className="text-sm font-semibold leading-relaxed tracking-tight text-zinc-800 whitespace-pre-wrap">
-                              {generatedPost.hook}
-                            </p>
-                            
-                            {/* Inner reference snippet */}
-                            <div className="border-l-2 border-amber-500 pl-3 py-1 bg-amber-500/5 rounded-r">
-                              <p className="text-[10px] text-zinc-500 italic line-clamp-3 leading-normal">
-                                "{activeItem?.content}"
-                              </p>
+                            {/* Header/Headline */}
+                            <div className="space-y-1 text-center">
+                              <h3 className="text-base sm:text-lg font-black tracking-tight text-white font-sans">
+                                {generatedMeme.title}
+                              </h3>
                             </div>
 
-                            {/* Prominent Notes Style Highlighted Sticker */}
-                            <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-2.5 flex items-center justify-between">
-                              <span className="text-[9px] font-bold text-amber-800 uppercase tracking-wide">
-                                {getProminentCta(activeItem?.typeLabel)}
-                              </span>
-                              <span className="text-[9px] text-amber-600 font-bold font-mono">beforeregret.com ➔</span>
-                            </div>
+                            {/* Meme Content depending on type */}
+                            {generatedMeme.memeType === 'translation' ? (
+                              <div className="space-y-2.5">
+                                {generatedMeme.items.map((item: any, idx: number) => (
+                                  <div key={idx} className="bg-[#161B26] border border-[#24324A] rounded-2xl p-4 space-y-2 shadow-xs">
+                                    <div className="flex items-start gap-2">
+                                      <span className="text-[9px] bg-zinc-700 text-zinc-300 font-mono font-bold px-1.5 py-0.5 rounded uppercase shrink-0 mt-0.5">THEM</span>
+                                      <p className="text-xs text-zinc-300 font-semibold italic">"{item.phrase}"</p>
+                                    </div>
+                                    <div className="border-t border-[#24324A]/40 my-1" />
+                                    <div className="flex items-start gap-2">
+                                      <span className="text-[9px] bg-amber-500/20 text-amber-400 font-mono font-bold px-1.5 py-0.5 rounded uppercase shrink-0 mt-0.5">REALITY</span>
+                                      <p className="text-xs text-[#F59E0B] font-extrabold">{item.reality}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : generatedMeme.memeType === 'starterpack' ? (
+                              <div className="grid grid-cols-2 gap-2.5">
+                                {generatedMeme.items.map((item: string, idx: number) => {
+                                  const icons = ["🤡", "😭", "💔", "💬"];
+                                  return (
+                                    <div key={idx} className="bg-[#161B26] border border-[#24324A] rounded-2xl p-3 flex flex-col justify-between gap-2 min-h-[95px] shadow-xs hover:border-[#F59E0B]/40 transition-colors">
+                                      <span className="text-lg">{icons[idx % icons.length]}</span>
+                                      <p className="text-[10px] text-zinc-200 font-bold leading-normal">{item}</p>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              // Math theme
+                              <div className="space-y-3">
+                                {generatedMeme.items.map((item: any, idx: number) => (
+                                  <div key={idx} className="bg-[#161B26] border border-[#24324A] rounded-2xl p-3.5 space-y-1.5 shadow-xs text-left relative overflow-hidden">
+                                    <div className="absolute right-3 top-3 text-[9px] font-mono font-black text-zinc-700">#0{idx+1}</div>
+                                    <div className="space-y-0.5">
+                                      <span className="text-[8px] uppercase tracking-wider font-mono font-black text-zinc-500">If behavior is:</span>
+                                      <p className="text-[11px] font-bold text-zinc-200 leading-tight">"{item.condition}"</p>
+                                    </div>
+                                    <div className="border-t border-[#24324A]/40 my-1" />
+                                    <div className="space-y-0.5">
+                                      <span className="text-[8px] uppercase tracking-wider font-mono font-black text-amber-500">Dating Math conclusion:</span>
+                                      <p className="text-[11px] font-black text-[#F59E0B] leading-tight">{item.conclusion}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Small engagement helper */}
+                            <p className="text-[9px] text-zinc-400 italic text-center mt-2 px-4 leading-normal">
+                              "Do you agree or is this a reach? Drop your thoughts in the comments."
+                            </p>
                           </div>
-                        ) : previewTheme === 'social' ? (
-                          <div className="bg-white border border-[#E1E8ED] rounded-2xl p-4 space-y-3 shadow-xs text-left w-full">
-                            {/* Tweet Header */}
-                            <div className="flex items-center gap-2">
-                              <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-[#1D1B18] to-[#C9A227] flex items-center justify-center font-black text-white text-[10px] shadow-sm shrink-0">
-                                BR
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-1">
-                                  <span className="font-bold text-xs text-[#0F1419] truncate leading-none">Before Regret</span>
-                                  {/* Verified Badge */}
-                                  <span className="text-[#1D9BF0] text-[10px] font-bold">✓</span>
+                        ) : generatedPost ? (
+                          <>
+                            {previewTheme === 'notes' ? (
+                              <div className="space-y-4 text-left">
+                                <div className="text-[11px] text-zinc-400 border-b border-zinc-100 pb-1 flex justify-between items-center font-mono">
+                                  <span>{getCleanCaseId(activeItem)}</span>
+                                  <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                                 </div>
-                                <span className="text-[10px] text-[#536471] block truncate leading-tight">@BeforeRegret</span>
-                              </div>
-                            </div>
-                            
-                            {/* Tweet Body */}
-                            <p className="text-xs sm:text-sm font-medium leading-relaxed text-[#0F1419] whitespace-pre-wrap">
-                              {generatedPost.hook}
-                            </p>
+                                <p className="text-sm font-semibold leading-relaxed tracking-tight text-zinc-800 whitespace-pre-wrap">
+                                  {generatedPost.hook}
+                                </p>
+                                
+                                {/* Inner reference snippet */}
+                                <div className="border-l-2 border-amber-500 pl-3 py-1 bg-amber-500/5 rounded-r">
+                                  <p className="text-[10px] text-zinc-500 italic line-clamp-3 leading-normal">
+                                    "{activeItem?.content}"
+                                  </p>
+                                </div>
 
-                            {/* Embedded Link Card CTA */}
-                            <div className="border border-[#CFD9DE] rounded-xl overflow-hidden bg-[#F7F9F9] hover:bg-[#EFF1F1] transition-colors cursor-pointer">
-                              <div className="p-3 space-y-1">
-                                <div className="text-[8px] font-bold tracking-wider text-[#1D9BF0] font-mono uppercase">
+                                {/* Prominent Notes Style Highlighted Sticker */}
+                                <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-2.5 flex items-center justify-between">
+                                  <span className="text-[9px] font-bold text-amber-800 uppercase tracking-wide">
+                                    {getProminentCta(activeItem?.typeLabel)}
+                                  </span>
+                                  <span className="text-[9px] text-amber-600 font-bold font-mono">beforeregret.com ➔</span>
+                                </div>
+                              </div>
+                            ) : previewTheme === 'social' ? (
+                              <div className="bg-[#1A2333] border border-[#2E3C52] rounded-2xl p-5 space-y-4 shadow-lg text-left w-full relative overflow-hidden">
+                                {/* BeforeRegret Logo & Brand badge */}
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[#111827] to-[#C9A227] flex items-center justify-center font-black text-[#F9F6EE] text-[11px] shadow-md shrink-0 border border-[#C9A227]/30">
+                                      ⚖️
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <span className="font-extrabold text-xs text-[#F9F6EE] block leading-none tracking-wide">Relationship Court</span>
+                                      <span className="text-[9px] text-[#C9A227]/80 block font-mono mt-1">beforeregret.com</span>
+                                    </div>
+                                  </div>
+                                  <span className="text-[8px] text-[#C9A227] bg-[#C9A227]/10 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-[#C9A227]/20">
+                                    Community Debate
+                                  </span>
+                                </div>
+                                
+                                {/* Debatable discussion prompt in large, readable, highly visible statement text */}
+                                <div className="space-y-1 py-1">
+                                  <p className="text-sm sm:text-[14px] font-extrabold leading-relaxed text-white tracking-tight">
+                                    {generatedPost.hook}
+                                  </p>
+                                  <p className="text-[9px] text-zinc-400 italic leading-snug">
+                                    Is this behavior toxic or is it an acceptable reaction? Drop your thoughts below.
+                                  </p>
+                                </div>
+
+                                {/* Divider line */}
+                                <div className="border-t border-[#2E3C52]/50 my-1" />
+
+                                {/* Genuine Platform/Community Metrics */}
+                                <div className="grid grid-cols-3 gap-2 py-1.5 text-center bg-[#101827]/80 rounded-xl border border-[#2E3C52]/30">
+                                  <div className="space-y-0.5">
+                                    <span className="text-[8px] text-zinc-400 block font-bold uppercase tracking-wider">👥 Jurors</span>
+                                    <span className="font-mono text-xs font-black text-[#F9F6EE]">{getDynamicJurors(activeItem)}</span>
+                                  </div>
+                                  <div className="space-y-0.5 border-x border-[#2E3C52]/30">
+                                    <span className="text-[8px] text-zinc-400 block font-bold uppercase tracking-wider">💬 Comments</span>
+                                    <span className="font-mono text-xs font-black text-[#F9F6EE]">{getDynamicComments(activeItem)}</span>
+                                  </div>
+                                  <div className="space-y-0.5">
+                                    <span className="text-[8px] text-zinc-400 block font-bold uppercase tracking-wider">⚖️ Verdict</span>
+                                    <span className="font-mono text-xs font-black text-[#C9A227]">{getDynamicVerdict(activeItem)}</span>
+                                  </div>
+                                </div>
+
+                                {/* Beautiful visual interactive progress bar showing community verdict split */}
+                                <div className="space-y-1">
+                                  <div className="flex justify-between text-[8px] font-bold uppercase text-zinc-400 tracking-wider">
+                                    <span>Guilty ({getGuiltyPctNumber(activeItem)}%)</span>
+                                    <span>Not Guilty ({100 - getGuiltyPctNumber(activeItem)}%)</span>
+                                  </div>
+                                  <div className="h-2 w-full bg-[#101827] rounded-full overflow-hidden flex border border-zinc-800">
+                                    <div className="bg-red-500 h-full transition-all duration-300" style={{ width: `${getGuiltyPctNumber(activeItem)}%` }} />
+                                    <div className="bg-emerald-500 h-full flex-1 transition-all duration-300" />
+                                  </div>
+                                </div>
+
+                                {/* Call to Action Badge Button */}
+                                <div className="bg-gradient-to-r from-[#C9A227] to-[#E2BE54] hover:brightness-110 transition-all rounded-xl py-2.5 px-3 text-center cursor-pointer shadow-md flex items-center justify-center gap-1.5 mt-2">
+                                  <span className="text-[10px] font-black text-[#101827] uppercase tracking-wider">
+                                    ⚖️ CAST YOUR VERDICT
+                                  </span>
+                                </div>
+                              </div>
+                            ) : previewTheme === 'cream' ? (
+                              <div className="space-y-4">
+                                <span className="text-2xl text-[#C9A227] leading-none">“</span>
+                                <div className="text-[10px] tracking-widest font-bold uppercase text-[#C9A227] font-mono">
                                   {getCleanCaseId(activeItem)}
                                 </div>
-                                <h4 className="font-bold text-[11px] text-[#0F1419] leading-snug">
-                                  {getProminentCta(activeItem?.typeLabel)} ➔
-                                </h4>
-                                <p className="text-[9px] text-[#536471] line-clamp-1">
-                                  "{activeItem?.content}"
+                                <p className="text-base sm:text-lg font-black leading-snug tracking-tight italic font-serif text-[#2C2620]">
+                                  {generatedPost.hook}
                                 </p>
-                                <span className="text-[9px] text-[#536471] block font-mono">beforeregret.com</span>
+                                <div className="pt-2">
+                                  <div className="inline-flex items-center gap-1.5 bg-[#2C2620] text-[#F9F6EE] px-3.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider shadow-sm">
+                                    <span>{getProminentCta(activeItem?.typeLabel)}</span>
+                                    <span className="text-[#C9A227]">➔</span>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                            
-                            {/* Date/Time */}
-                            <div className="text-[9px] text-[#536471] border-b border-[#EFF3F4] pb-2 font-mono">
-                              {new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} · <span className="text-[#1D9BF0] font-bold">X for iPhone</span>
-                            </div>
-                            
-                            {/* Interaction Row */}
-                            <div className="flex items-center justify-between text-[#536471] text-[9px] pt-1 px-1 font-mono">
-                              <div className="flex items-center gap-1 hover:text-[#1D9BF0] transition-colors cursor-pointer">
-                                <MessageSquare className="h-3 w-3" />
-                                <span>412</span>
+                            ) : (
+                              <div className="space-y-4">
+                                <div className="text-[10px] tracking-widest font-black uppercase text-violet-400 font-mono">
+                                  {getCleanCaseId(activeItem)}
+                                </div>
+                                <p className="text-base sm:text-lg font-extrabold leading-snug tracking-tight text-white font-sans">
+                                  {generatedPost.hook}
+                                </p>
+                                <div className="pt-2">
+                                  <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white px-3.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider shadow-lg shadow-violet-500/20">
+                                    <span>{getProminentCta(activeItem?.typeLabel)}</span>
+                                    <span>✦</span>
+                                  </div>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-1 hover:text-green-500 transition-colors cursor-pointer">
-                                <span>🔁</span>
-                                <span>2.8K</span>
-                              </div>
-                              <div className="flex items-center gap-1 hover:text-red-500 transition-colors cursor-pointer">
-                                <Heart className="h-3 w-3 hover:fill-red-500/10" />
-                                <span>24.5K</span>
-                              </div>
-                            </div>
-                          </div>
-                        ) : previewTheme === 'cream' ? (
-                          <div className="space-y-4">
-                            <span className="text-2xl text-[#C9A227] leading-none">“</span>
-                            <div className="text-[10px] tracking-widest font-bold uppercase text-[#C9A227] font-mono">
-                              {getCleanCaseId(activeItem)}
-                            </div>
-                            <p className="text-base sm:text-lg font-black leading-snug tracking-tight italic font-serif text-[#2C2620]">
-                              {generatedPost.hook}
-                            </p>
-                            <div className="pt-2">
-                              <div className="inline-flex items-center gap-1.5 bg-[#2C2620] text-[#F9F6EE] px-3.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider shadow-sm">
-                                <span>{getProminentCta(activeItem?.typeLabel)}</span>
-                                <span className="text-[#C9A227]">➔</span>
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            <div className="text-[10px] tracking-widest font-black uppercase text-violet-400 font-mono">
-                              {getCleanCaseId(activeItem)}
-                            </div>
-                            <p className="text-base sm:text-lg font-extrabold leading-snug tracking-tight text-white font-sans">
-                              {generatedPost.hook}
-                            </p>
-                            <div className="pt-2">
-                              <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white px-3.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider shadow-lg shadow-violet-500/20">
-                                <span>{getProminentCta(activeItem?.typeLabel)}</span>
-                                <span>✦</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                            )}
+                          </>
+                        ) : null}
                       </div>
 
                       {/* Call to action footer banner */}
@@ -1350,19 +1542,40 @@ export default function AdminFeedScreen({
                             <span className="text-amber-600 font-bold uppercase font-sans">🔗 read full timeline</span>
                             <span className="text-zinc-400">@beforeregret</span>
                           </>
+                        ) : previewTheme === 'meme' ? (
+                          <>
+                            <span className="text-[#F59E0B] font-bold uppercase font-sans flex items-center gap-1">👉 VOTE & DISCUSS AT BEFOREREGRET.COM</span>
+                            <span className="text-zinc-400">@beforeregret</span>
+                          </>
                         ) : (
                           <>
-                            <span className="text-[#1D9BF0] font-bold uppercase font-sans">🔗 VOTE AT BEFORE REGRET</span>
-                            <span className="text-[#536471]">@beforeregret</span>
+                            <span className="text-[#C9A227] font-bold uppercase font-sans">Join the discussion at BeforeRegret.com</span>
+                            <span className="text-zinc-400">@beforeregret</span>
                           </>
                         )}
+                      </div>
+
+                      {/* Elegant Brand Logo Watermark Stamp */}
+                      <div className={`absolute bottom-16 right-6 z-20 flex items-center gap-1.5 px-2 py-1 rounded-full border shadow-xs pointer-events-none ${
+                        previewTheme === 'cream'
+                          ? 'bg-[#2C2620]/5 border-[#2C2620]/10 text-[#2C2620]'
+                          : previewTheme === 'midnight'
+                          ? 'bg-violet-500/10 border-violet-500/20 text-violet-300'
+                          : previewTheme === 'notes'
+                          ? 'bg-amber-500/10 border-amber-500/15 text-amber-800'
+                          : previewTheme === 'meme'
+                          ? 'bg-amber-500/10 border-amber-500/20 text-[#F59E0B]'
+                          : 'bg-[#C9A227]/10 border-[#C9A227]/20 text-[#C9A227]'
+                      }`}>
+                        <span className="text-[10px] leading-none">⚖️</span>
+                        <span className="text-[8px] font-black uppercase tracking-widest font-sans">BeforeRegret</span>
                       </div>
                     </div>
 
                     {/* Copy Hook and Download Image Buttons Side-by-Side */}
                     <div className="grid grid-cols-2 gap-2">
                       <button
-                        onClick={() => handleCopyText(generatedPost.hook, 'hook')}
+                        onClick={() => handleCopyText(generatedMeme ? generatedMeme.title : generatedPost.hook, 'hook')}
                         className={`py-2 px-3 border rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                           copyStatus['hook'] 
                             ? 'bg-emerald-50 border-emerald-300 text-emerald-700' 
@@ -1370,7 +1583,7 @@ export default function AdminFeedScreen({
                         }`}
                       >
                         {copyStatus['hook'] ? <CheckCircle className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                        <span>{copyStatus['hook'] ? 'Copied!' : 'Copy Hook'}</span>
+                        <span>{copyStatus['hook'] ? 'Copied!' : (generatedMeme ? 'Copy Title' : 'Copy Hook')}</span>
                       </button>
 
                       <button
@@ -1391,7 +1604,7 @@ export default function AdminFeedScreen({
                     <div className="bg-zinc-50 border border-zinc-200/60 p-3.5 rounded-xl space-y-1">
                       <span className="text-[10px] font-black uppercase tracking-wider text-[#C9A227] font-mono block text-left">Creative Direction Tip</span>
                       <p className="text-[11px] text-zinc-600 leading-relaxed text-left">
-                        {generatedPost.visualSuggestion}
+                        {generatedMeme ? "Visual elements are arranged in a sleek modern card list grid, perfect for high-engagement screenshots on Instagram Stories or Pinterest." : generatedPost.visualSuggestion}
                       </p>
                     </div>
 
@@ -1403,7 +1616,8 @@ export default function AdminFeedScreen({
                       <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 font-mono">2. Caption & Hashtags</span>
                       <button
                         onClick={() => {
-                          const fullPost = `${editedCaption}\n\n${generatedPost.hashtags.join(' ')}`;
+                          const hashtags = generatedMeme ? generatedMeme.hashtags : generatedPost.hashtags;
+                          const fullPost = `${editedCaption}\n\n${hashtags.join(' ')}`;
                           handleCopyText(fullPost, 'full');
                         }}
                         className={`px-3 py-1 rounded-xl text-[10px] font-bold transition-all flex items-center gap-1 border cursor-pointer ${
@@ -1432,7 +1646,7 @@ export default function AdminFeedScreen({
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-zinc-400 block text-left">OPTIMIZED HASHTAGS</label>
                       <div className="flex flex-wrap gap-1">
-                        {generatedPost.hashtags.map((tag, idx) => (
+                        {(generatedMeme ? generatedMeme.hashtags : generatedPost.hashtags).map((tag, idx) => (
                           <span 
                             key={idx}
                             className="px-2 py-0.5 rounded-md bg-[#FAF8F2] border border-zinc-200 text-[10px] text-zinc-600 font-mono font-medium hover:text-[#C9A227] cursor-pointer"
@@ -1456,6 +1670,7 @@ export default function AdminFeedScreen({
               <button
                 onClick={() => {
                   setGeneratedPost(null);
+                  setGeneratedMeme(null);
                   setActiveItem(null);
                   setIsGenerating(false);
                 }}
