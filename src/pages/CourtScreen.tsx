@@ -182,52 +182,142 @@ export default function CourtScreen({
       {/* Primary Dilemma header */}
       <div className="rounded-2xl border border-[#E5E7EB] bg-white p-5 sm:p-6 shadow-sm space-y-4">
         {isAdmin && (
-          <div className="flex flex-wrap items-center justify-between gap-2 bg-red-50 border border-red-200 rounded-xl p-2.5 mb-2 text-xs">
-            <span className="font-bold text-red-700 uppercase tracking-wider text-[10px] flex items-center gap-1.5 font-mono">
-              <Shield className="h-3.5 w-3.5 text-[#C9A227] animate-pulse" /> Court Case Override Console
-            </span>
-            {showCaseDeleteConfirm ? (
-              <div className="flex items-center gap-2 animate-fadeIn">
-                <span className="text-red-700 font-bold font-mono text-[11px]">Permanently delete trial?</span>
+          <div className="bg-red-50/70 border border-red-200/80 rounded-xl p-4 mb-4 space-y-4 text-xs animate-fadeIn">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-red-100 pb-2">
+              <span className="font-bold text-red-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5 font-mono">
+                <Shield className="h-3.5 w-3.5 text-[#C9A227] animate-pulse" /> Court Case Override Console
+              </span>
+              
+              {showCaseDeleteConfirm ? (
+                <div className="flex items-center gap-2 animate-fadeIn">
+                  <span className="text-red-700 font-bold font-mono text-[11px]">Permanently delete trial?</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onDeleteCourtCase?.(courtCase.slug);
+                      setScreen({ type: 'home' });
+                    }}
+                    className="px-2.5 py-1 rounded bg-red-600 hover:bg-red-700 text-white font-extrabold text-[10px] transition-all cursor-pointer shadow-sm"
+                  >
+                    Yes, Delete Case
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowCaseDeleteConfirm(false)}
+                    className="px-2.5 py-1 rounded bg-zinc-200 hover:bg-zinc-300 text-zinc-700 font-bold text-[10px] transition-all cursor-pointer border border-zinc-300"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
                 <button
                   type="button"
-                  onClick={() => {
-                    onDeleteCourtCase?.(courtCase.slug);
-                    setScreen({ type: 'home' });
-                  }}
-                  className="px-2.5 py-1 rounded bg-red-600 text-white font-extrabold text-[10px] transition-all"
+                  onClick={() => setShowCaseDeleteConfirm(true)}
+                  className="px-2.5 py-1 rounded bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 font-bold flex items-center gap-1 transition-colors text-[10px] cursor-pointer"
                 >
-                  Yes, Delete Case
+                  <Trash2 className="h-3.5 w-3.5" /> Delete Court Case
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setShowCaseDeleteConfirm(false)}
-                  className="px-2.5 py-1 rounded bg-zinc-200 text-zinc-700 font-bold text-[10px] transition-all"
-                >
-                  Cancel
-                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+              {/* Option to change trial duration */}
+              <div className="space-y-1.5">
+                <label className="block text-[10px] uppercase font-bold text-zinc-600 font-sans tracking-wide">
+                  Change Trial Duration:
+                </label>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={courtCase.deliberationDays || 3}
+                    onChange={async (e) => {
+                      const selectedDays = parseFloat(e.target.value);
+                      try {
+                        const updatedCase: CourtCase = {
+                          ...courtCase,
+                          deliberationDays: selectedDays
+                        };
+                        await saveCourtCaseToFirestore(updatedCase);
+                      } catch (err) {
+                        console.error("Error updating deliberation days:", err);
+                      }
+                    }}
+                    className="rounded-lg border border-red-200 bg-white p-1.5 text-xs text-zinc-800 focus:outline-none focus:border-red-400 font-mono focus:ring-1 focus:ring-red-400"
+                  >
+                    <option value="0.000694">1 Minute (Quick Test)</option>
+                    <option value="1">1 Day</option>
+                    <option value="3">3 Days</option>
+                    <option value="5">5 Days</option>
+                    <option value="7">7 Days</option>
+                    <option value="14">14 Days</option>
+                  </select>
+                  <span className="text-[10px] text-zinc-500 font-medium">
+                    (Current: {deliberationDays < 1 ? "1 Min" : `${deliberationDays} Days`})
+                  </span>
+                </div>
               </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setShowCaseDeleteConfirm(true)}
-                className="px-2.5 py-1 rounded bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold flex items-center gap-1 transition-colors"
-              >
-                <Trash2 className="h-3.5 w-3.5" /> Delete Court Case
-              </button>
-            )}
+
+              {/* Reset Trial / Open Sealed Perspectives Button */}
+              <div className="flex flex-col justify-end md:items-end space-y-1.5">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      // Set createdAt to current time (which re-opens the trial if expired)
+                      const updatedCase: CourtCase = {
+                        ...courtCase,
+                        createdAt: new Date().toISOString()
+                      };
+                      await saveCourtCaseToFirestore(updatedCase);
+                      setSimExpired(false);
+                    } catch (err) {
+                      console.error("Error resetting case:", err);
+                    }
+                  }}
+                  className="w-full md:w-auto px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 shadow transition-all duration-200 cursor-pointer"
+                >
+                  <Unlock className="h-3.5 w-3.5" /> Reset Trial & Open Perspectives
+                </button>
+                <span className="text-[9px] text-zinc-500 mt-0.5 md:text-right font-sans block">
+                  Sets start time to NOW and unseals all perspectives.
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
-        <div className="flex items-center gap-2">
-          <span className="flex h-5 w-5 items-center justify-center rounded bg-[#FFF8E1] text-[#C9A227]">
-            <Gavel className="h-3.5 w-3.5" />
-          </span>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#C9A227]">BR Court Case • {courtCase.caseNumber || 'CASE-C2011'}</span>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-2">
+            <span className="flex h-5 w-5 items-center justify-center rounded bg-[#FFF8E1] text-[#C9A227]">
+              <Gavel className="h-3.5 w-3.5" />
+            </span>
+            <span className="text-[10px] uppercase font-bold tracking-widest text-[#C9A227]">BR Court Case • {courtCase.caseNumber || 'CASE-C2011'}</span>
+          </div>
+          {isExpired ? (
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider font-mono bg-rose-50 text-rose-700 border border-rose-200 shrink-0">
+              <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+              Ended
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Live
+            </span>
+          )}
         </div>
         
-        <h1 className="text-lg sm:text-xl font-bold text-[#24324A] leading-snug font-serif">
-          "{courtCase.title}"
+        <h1 className="text-lg sm:text-xl font-bold text-[#24324A] leading-snug font-serif flex items-center gap-2 flex-wrap">
+          <span>"{courtCase.title}"</span>
+          {isExpired ? (
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider font-mono bg-rose-50 text-rose-700 border border-rose-200">
+              <span className="h-1 w-1 rounded-full bg-rose-500" />
+              Ended
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+              Live
+            </span>
+          )}
         </h1>
 
         <div className="flex items-center gap-3 text-[11px] text-[#6B7280] font-sans font-medium">

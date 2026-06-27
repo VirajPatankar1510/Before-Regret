@@ -1323,6 +1323,8 @@ export default function HubScreen({
               else if (idx === 2) bgClass = "bg-[#101010]";
               else if (idx === 3) bgClass = "bg-[#050505]";
               
+              const isExpired = !cCase.createdAt || (new Date(cCase.createdAt).getTime() + (cCase.deliberationDays || 3) * 24 * 60 * 60 * 1000) <= Date.now();
+              
               return (
                 <div 
                   key={cCase.slug}
@@ -1331,9 +1333,17 @@ export default function HubScreen({
                   <div className="space-y-3">
                     <div className="flex justify-between items-center text-xs">
                       <span className="font-mono text-gray-500">{cCase.caseNumber || 'CASE-X'}</span>
-                      <span className="inline-flex items-center gap-1 text-yellow-400 px-2 py-0.5 rounded bg-yellow-400/5 font-mono text-[10px]">
-                        <Clock className="h-3 w-3" /> Active Trial
-                      </span>
+                      {isExpired ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider font-mono bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                          <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                          Ended
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          Live
+                        </span>
+                      )}
                     </div>
                     <h3 className="text-sm sm:text-base font-bold text-white">{cCase.title}</h3>
                     <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">{cCase.description}</p>

@@ -41,10 +41,26 @@ export function getInitialState(): StoreState {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.stories) stories = parsed.stories;
-        if (parsed.courtCases) courtCases = parsed.courtCases;
-        if (parsed.questions) questions = parsed.questions;
-        if (parsed.redFlagCases) redFlagCases = parsed.redFlagCases;
+        if (parsed.stories) {
+          const savedIds = new Set(parsed.stories.map((s: any) => s.id));
+          const newPreseeded = PRESEEDED_STORIES.filter(s => !savedIds.has(s.id));
+          stories = [...parsed.stories, ...newPreseeded];
+        }
+        if (parsed.courtCases) {
+          const savedSlugs = new Set(parsed.courtCases.map((c: any) => c.slug));
+          const newPreseeded = PRESEEDED_COURT_CASES.filter(c => !savedSlugs.has(c.slug));
+          courtCases = [...parsed.courtCases, ...newPreseeded];
+        }
+        if (parsed.questions) {
+          const savedSlugs = new Set(parsed.questions.map((q: any) => q.slug));
+          const newPreseeded = PRESEEDED_QUESTIONS.filter(q => !savedSlugs.has(q.slug));
+          questions = [...parsed.questions, ...newPreseeded];
+        }
+        if (parsed.redFlagCases) {
+          const savedIds = new Set(parsed.redFlagCases.map((r: any) => r.id));
+          const newPreseeded = PRESEEDED_RED_FLAG_CASES.filter(r => !savedIds.has(r.id));
+          redFlagCases = [...parsed.redFlagCases, ...newPreseeded];
+        }
         if (parsed.user) user = parsed.user;
       } catch (e) {
         console.error("Error reading localStorage", e);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, Flame, AlertTriangle, ShieldCheck, Heart, Sparkles, MessageSquare, ChevronRight, TrendingUp, Gavel, Globe, Users, Clock, HelpCircle, Compass, BarChart3, Star, ArrowRight } from 'lucide-react';
 import { Situation, Story, CourtCase, Question } from '../types';
 import { MOST_REGRETTED_DECISIONS, MOST_SUCCESSFUL_DECISIONS, POPULAR_SEARCHES, PRESEEDED_SITUATIONS } from '../data/mockData';
+import { PRESEEDED_RELATIONSHIP_PROBLEMS } from '../data/relationshipProblems';
 import AdSenseWidget from '../components/AdSenseWidget';
 
 interface HomeScreenProps {
@@ -31,12 +32,40 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
       setSearchInput('');
       return;
     }
-    
-    // Check if the query matches any PRESEEDED_SITUATIONS directly by name
-    const queryLower = query.toLowerCase();
-    const matchedSituation = PRESEEDED_SITUATIONS.find(s => 
-      s.name.toLowerCase().includes(queryLower) || s.slug.toLowerCase().includes(queryLower)
-    );
+
+    const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
+    const queryNorm = normalize(query);
+
+    // 1. Direct or normalized match in PRESEEDED_SITUATIONS
+    let matchedSituation = PRESEEDED_SITUATIONS.find(s => {
+      const nameNorm = normalize(s.name);
+      const slugNorm = normalize(s.slug);
+      return nameNorm.includes(queryNorm) || queryNorm.includes(nameNorm) || 
+             slugNorm.includes(queryNorm) || queryNorm.includes(slugNorm);
+    });
+
+    // 2. If no direct situation matched, check against PRESEEDED_RELATIONSHIP_PROBLEMS keywords & categories
+    if (!matchedSituation) {
+      const matchedProblem = PRESEEDED_RELATIONSHIP_PROBLEMS.find(p => {
+        const pNameNorm = normalize(p.name);
+        const pIdNorm = normalize(p.id);
+        if (pNameNorm.includes(queryNorm) || queryNorm.includes(pNameNorm) || pIdNorm.includes(queryNorm) || queryNorm.includes(pIdNorm)) {
+          return true;
+        }
+        return p.keywords.some(kw => {
+          const kwNorm = normalize(kw);
+          return kwNorm.includes(queryNorm) || queryNorm.includes(kwNorm);
+        });
+      });
+
+      if (matchedProblem) {
+        // Map the matched problem ID/slug back to a preseeded situation if it exists
+        const mappedSit = PRESEEDED_SITUATIONS.find(s => normalize(s.slug) === normalize(matchedProblem.id));
+        if (mappedSit) {
+          matchedSituation = mappedSit;
+        }
+      }
+    }
 
     if (matchedSituation) {
       setScreen({ type: 'situation', slug: matchedSituation.slug });
@@ -304,6 +333,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             const total = c.votes.me + c.votes.partner + c.votes.both + c.votes.neither;
             const mePct = total > 0 ? Math.round((c.votes.me / total) * 100) : 0;
             const partnerPct = total > 0 ? Math.round((c.votes.partner / total) * 100) : 0;
+            const isExpired = !c.createdAt || (new Date(c.createdAt).getTime() + (c.deliberationDays || 3) * 24 * 60 * 60 * 1000) <= Date.now();
             return (
               <div
                 key={c.slug}
@@ -311,9 +341,22 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
                 className="rounded-xl border border-[#E5E7EB] bg-white p-4 cursor-pointer hover:border-[#C9A227] hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div className="space-y-1.5">
-                  <span className="text-[9px] uppercase font-mono text-[#C9A227] font-bold">
-                    {c.caseNumber || 'CASE-C2011'} • Jury Deliberation
-                  </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[9px] uppercase font-mono text-[#C9A227] font-bold">
+                      {c.caseNumber || 'CASE-C2011'} • Jury Deliberation
+                    </span>
+                    {isExpired ? (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider font-mono bg-rose-50 text-rose-600 border border-rose-200">
+                        <span className="h-1 w-1 rounded-full bg-rose-500" />
+                        Ended
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider font-mono bg-emerald-50 text-emerald-600 border border-emerald-200">
+                        <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                        Live
+                      </span>
+                    )}
+                  </div>
                   <h4 className="text-sm font-bold text-[#1F2937] line-clamp-2 leading-snug">"{c.title}"</h4>
                   <p className="text-xs text-[#6B7280] line-clamp-3 leading-relaxed font-serif">{c.description}</p>
                 </div>

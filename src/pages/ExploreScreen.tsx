@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Compass, FileText, ChevronRight, Gavel, Sparkles, AlertTriangle, HelpCircle, Heart, Tag, Search, ShieldCheck, Clock, ArrowRight } from 'lucide-react';
 import { Situation, Story, CourtCase } from '../types';
+import { PRESEEDED_RELATIONSHIP_PROBLEMS } from '../data/relationshipProblems';
 
 interface ExploreScreenProps {
   situations: Situation[];
@@ -85,26 +86,57 @@ export default function ExploreScreen({
     const matchesTab = filterType === 'all' || item.type === filterType;
     if (!searchTerm.trim()) return matchesTab;
 
-    const termLower = searchTerm.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim();
-    if (!termLower) return matchesTab;
+    const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
+    const queryNorm = normalize(searchTerm);
+    if (!queryNorm) return matchesTab;
 
-    // Split search query into words to support multi-term searches
+    // Check if the query matches any PRESEEDED_RELATIONSHIP_PROBLEMS keywords/name/id
+    const matchedProblems = PRESEEDED_RELATIONSHIP_PROBLEMS.filter(p => {
+      const pNameNorm = normalize(p.name);
+      const pIdNorm = normalize(p.id);
+      if (pNameNorm.includes(queryNorm) || queryNorm.includes(pNameNorm) || pIdNorm.includes(queryNorm) || queryNorm.includes(pIdNorm)) {
+        return true;
+      }
+      return p.keywords.some(kw => {
+        const kwNorm = normalize(kw);
+        return kwNorm.includes(queryNorm) || queryNorm.includes(kwNorm);
+      });
+    });
+
+    const matchedProblemSlugs = matchedProblems.map(p => normalize(p.id));
+
+    // Also match split words for fallback/broad matching
+    const termLower = searchTerm.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim();
     const termWords = termLower.split(/\s+/).filter(w => w.length > 2 && !['got', 'the', 'and', 'for', 'was', 'with', 'not', 'your', 'from'].includes(w));
+    const termWordsNorm = termWords.map(w => normalize(w)).filter(Boolean);
+
+    // Main search logic with normalization
+    const titleNorm = normalize(item.title);
+    const descNorm = normalize(item.description);
+    const caseNumNorm = item.caseNumber ? normalize(item.caseNumber) : '';
+    const slugNorm = item.slug ? normalize(item.slug) : '';
+    const parentSlugNorm = item.parentSlug ? normalize(item.parentSlug) : '';
 
     const matchesSearch = 
-      item.title.toLowerCase().includes(termLower) ||
-      item.caseNumber?.toLowerCase().includes(termLower) ||
-      item.description.toLowerCase().includes(termLower) ||
-      // Search tags: match if tag contains term, OR term contains tag (e.g. term "i got ghosted" includes tag "ghosted")
+      titleNorm.includes(queryNorm) ||
+      queryNorm.includes(titleNorm) ||
+      caseNumNorm.includes(queryNorm) ||
+      descNorm.includes(queryNorm) ||
+      // Match via preseeded relationship problem category mapping
+      (matchedProblemSlugs.length > 0 && (
+        matchedProblemSlugs.includes(slugNorm) ||
+        matchedProblemSlugs.includes(parentSlugNorm)
+      )) ||
+      // Search tags: match if tag contains query, OR query contains tag
       item.tags.some(t => {
-        const cleanTag = t.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim();
-        return cleanTag && (cleanTag.includes(termLower) || termLower.includes(cleanTag));
+        const tNorm = normalize(t);
+        return tNorm && (tNorm.includes(queryNorm) || queryNorm.includes(tNorm));
       }) ||
-      // Or word-level overlap
-      (termWords.length > 0 && termWords.some(word => 
-        item.title.toLowerCase().includes(word) ||
-        item.description.toLowerCase().includes(word) ||
-        item.tags.some(t => t.toLowerCase().includes(word))
+      // Or word-level overlap (normalized)
+      (termWordsNorm.length > 0 && termWordsNorm.some(wordNorm => 
+        titleNorm.includes(wordNorm) ||
+        descNorm.includes(wordNorm) ||
+        item.tags.some(t => normalize(t).includes(wordNorm))
       ));
 
     return matchesTab && matchesSearch;
