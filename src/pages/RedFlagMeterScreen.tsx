@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Flag, ArrowLeft, MessageSquare, Search, Plus, Check, Clock, Sparkles, AlertTriangle, ShieldCheck, HelpCircle } from 'lucide-react';
+import { validateInputText } from '../lib/validation';
 import { RedFlagCase, RedFlagComment } from '../types';
 
 interface RedFlagMeterScreenProps {
@@ -79,6 +80,16 @@ export default function RedFlagMeterScreen({
   const handleCreateCase = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !newDesc.trim()) return;
+    const titleVal = validateInputText(newTitle, "Case Title");
+    if (!titleVal.isValid) {
+      alert(titleVal.error);
+      return;
+    }
+    const descVal = validateInputText(newDesc, "Case Description");
+    if (!descVal.isValid) {
+      alert(descVal.error);
+      return;
+    }
     onAddFlagCase(newTitle.trim(), newDesc.trim(), newCategory);
     setNewTitle('');
     setNewDesc('');
@@ -88,6 +99,11 @@ export default function RedFlagMeterScreen({
   const handleCreateComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim() || !selectedCaseId) return;
+    const commentVal = validateInputText(commentText, "Comment");
+    if (!commentVal.isValid) {
+      alert(commentVal.error);
+      return;
+    }
     onAddFlagComment(selectedCaseId, commentText.trim());
     setCommentText('');
   };

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Sparkles, MessageSquare, AlertCircle, HelpCircle, Check, Plus, Trash2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Sparkles, MessageSquare, AlertCircle, HelpCircle, Check, Plus, Trash2, AlertTriangle } from 'lucide-react';
+import { validateInputText } from '../lib/validation';
 
 interface SubmitQuestionFormProps {
   onClose: () => void;
@@ -17,6 +18,7 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('Marriage');
   const [tagsInput, setTagsInput] = useState('');
+  const [validationError, setValidationError] = useState<string | null>(null);
   
   // Custom Poll option management!
   const [pollOptions, setPollOptions] = useState<string[]>([
@@ -24,6 +26,37 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
     "Stay and try couples therapy",
     "Give it one last chance"
   ]);
+
+  // Validate fields on the fly
+  useEffect(() => {
+    setValidationError(null);
+
+    const titleVal = validateInputText(title, "Title");
+    if (!titleVal.isValid) {
+      setValidationError(titleVal.error || "Invalid title");
+      return;
+    }
+
+    const descVal = validateInputText(description, "Context / Dilemma");
+    if (!descVal.isValid) {
+      setValidationError(descVal.error || "Invalid description");
+      return;
+    }
+
+    const tagsVal = validateInputText(tagsInput, "Tags");
+    if (!tagsVal.isValid) {
+      setValidationError(tagsVal.error || "Invalid tags");
+      return;
+    }
+
+    for (let i = 0; i < pollOptions.length; i++) {
+      const optVal = validateInputText(pollOptions[i], `Poll Option ${i + 1}`);
+      if (!optVal.isValid) {
+        setValidationError(optVal.error || "Invalid poll option");
+        return;
+      }
+    }
+  }, [title, description, tagsInput, pollOptions]);
 
   const handleUpdateOption = (index: number, val: string) => {
     const updated = [...pollOptions];
@@ -49,6 +82,11 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
 
     if (title.trim().length < 15) {
       alert("Please expand your Advice Topic title to at least 15 characters to make it clear what you are asking.");
@@ -213,6 +251,14 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
           </button>
         </div>
 
+        {/* Validation Error Banner */}
+        {validationError && (
+          <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 text-[#FF5D5D] px-3 py-2 rounded-xl text-[10.5px] leading-relaxed font-sans text-left">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>{validationError}</span>
+          </div>
+        )}
+
         {/* Buttons */}
         <div className="flex justify-end gap-3 pt-4 border-t border-[#30363D]/65">
           <button
@@ -224,7 +270,12 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
           </button>
           <button
             type="submit"
-            className="inline-flex items-center gap-1 rounded-xl bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 text-xs font-black transition-all shadow-md active:scale-98"
+            disabled={!!validationError}
+            className={`inline-flex items-center gap-1 rounded-xl px-5 py-2 text-xs font-black transition-all shadow-md active:scale-98 ${
+              validationError
+                ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-[#30363D]/40'
+                : 'bg-purple-600 hover:bg-purple-700 text-white cursor-pointer'
+            }`}
           >
             <Check className="h-4 w-4" /> Broadcast Advice Topic
           </button>

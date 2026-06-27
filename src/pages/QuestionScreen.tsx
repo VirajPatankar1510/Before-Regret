@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { HelpCircle, Vote, MessageSquare, ArrowLeft, CheckCircle, Sparkles, Plus, Award, Shield, Trash2, ThumbsUp, Send } from 'lucide-react';
+import { validateInputText } from '../lib/validation';
 import { Question } from '../types';
 
 interface QuestionProps {
@@ -39,6 +40,11 @@ export default function QuestionScreen({
   const handleAnswerSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!answerContent.trim()) return;
+    const val = validateInputText(answerContent, "Answer Content");
+    if (!val.isValid) {
+      alert(val.error);
+      return;
+    }
     onAddQuestionAnswer(question.slug, answerContent);
     setAnswerContent('');
   };
@@ -47,6 +53,11 @@ export default function QuestionScreen({
     e.preventDefault();
     const txt = commentTextState[ansId]?.trim();
     if (!txt) return;
+    const val = validateInputText(txt, "Comment Text");
+    if (!val.isValid) {
+      alert(val.error);
+      return;
+    }
     onAddAnswerComment(question.slug, ansId, txt);
     setCommentTextState(prev => ({ ...prev, [ansId]: '' }));
   };

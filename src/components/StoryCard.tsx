@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Bookmark, Share2, AlertCircle, Heart, Check, Clock, User, Award, PlusCircle, Globe, Sparkles, MessageCircle, Edit, Trash2, Shield, LogIn } from 'lucide-react';
+import { Bookmark, Share2, AlertCircle, Heart, Check, Clock, User, Award, PlusCircle, Globe, Sparkles, MessageCircle, Edit, Trash2, Shield, LogIn, AlertTriangle } from 'lucide-react';
+import { validateInputText } from '../lib/validation';
 import { Story, StoryUpdate, StoryComment } from '../types';
 
 interface StoryCardProps {
@@ -169,6 +170,16 @@ export default function StoryCard({
       {isEditing ? (
         <form onSubmit={(e) => {
           e.preventDefault();
+          const titleVal = validateInputText(editTitle, "Edit Title");
+          if (!titleVal.isValid) {
+            alert(titleVal.error);
+            return;
+          }
+          const storyVal = validateInputText(editStoryText, "Edit Story");
+          if (!storyVal.isValid) {
+            alert(storyVal.error);
+            return;
+          }
           if (!editTitle.trim() || !editStoryText.trim()) return;
           onEditStory?.(story.id, editTitle, editStoryText);
           setIsEditing(false);
@@ -389,6 +400,11 @@ export default function StoryCard({
             onSubmit={(e) => {
               e.preventDefault();
               if (!newCommentText.trim()) return;
+              const commentVal = validateInputText(newCommentText, "Comment");
+              if (!commentVal.isValid) {
+                alert(commentVal.error);
+                return;
+              }
               if (onAddComment) {
                 onAddComment(story.id, newCommentText);
               }
