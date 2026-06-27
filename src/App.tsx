@@ -22,6 +22,7 @@ import RegretStoriesScreen from './pages/RegretStoriesScreen';
 import RedFlagMeterScreen from './pages/RedFlagMeterScreen';
 import HubScreen from './pages/HubScreen';
 import AdminFeedScreen from './pages/AdminFeedScreen';
+import LegalScreen from './pages/LegalScreen';
 // Core State and Seeding
 import { getInitialState, saveState } from './data/store';
 import { PRESEEDED_SITUATIONS, COUNTRIES_DATA } from './data/mockData';
@@ -157,6 +158,18 @@ export function parsePath(pathname: string): { type: string; slug?: string } {
   if (first === 'tag') {
     return { type: 'tag', slug: parts[1] || 'cheating' };
   }
+  if (first === 'legal') {
+    return { type: 'legal', slug: parts[1] || 'disclaimer' };
+  }
+  if (first === 'privacy' || first === 'privacy-policy') {
+    return { type: 'legal', slug: 'privacy' };
+  }
+  if (first === 'terms' || first === 'terms-of-use') {
+    return { type: 'legal', slug: 'terms' };
+  }
+  if (first === 'disclaimer' || first === 'legal-disclaimer') {
+    return { type: 'legal', slug: 'disclaimer' };
+  }
   if (first === 'lodge' || first === 'submit' || first === 'submit-story') {
     return { type: 'question_list' };
   }
@@ -221,6 +234,8 @@ export function getRelativePath(screen: { type: string; slug?: string }, store?:
       return `/country/${screen.slug || 'usa'}`;
     case 'tag':
       return `/tag/${screen.slug || 'cheating'}`;
+    case 'legal':
+      return `/legal/${screen.slug || 'disclaimer'}`;
     case 'submit_story':
       return '/boards';
     default:
@@ -364,6 +379,19 @@ export default function App() {
         } else {
           title = "Red Flag Dilemma Meter - Citizen Vote on Warnings | BeforeRegret";
           description = "Audit and vote on red, yellow, and green flag relationship warnings submitted anonymously by real partners.";
+        }
+        break;
+      }
+      case 'legal': {
+        if (currentScreen.slug === 'privacy') {
+          title = "Privacy Policy — Cookie-Free & Anonymous | BeforeRegret";
+          description = "Review our strict privacy-first policy. We do not use tracking cookies or sell your relationship data. Your anonymous stories are fully secured.";
+        } else if (currentScreen.slug === 'terms') {
+          title = "Terms of Use — User Rules & Section 230 Protected | BeforeRegret";
+          description = "Browse our terms of use, age requirements, defamation prohibition, and content license guidelines. Your stories are protected anonymously.";
+        } else {
+          title = "Legal Disclaimer — Professional Counseling Exclusions | BeforeRegret";
+          description = "Review our binding legal disclaimer. BeforeRegret offers peer perspectives and citizen juries, not licensed therapist counseling or legal advice.";
         }
         break;
       }
@@ -2225,6 +2253,13 @@ export default function App() {
             onDeleteRedFlagCase={handleDeleteRedFlagCase}
             onDeleteRedFlagComment={handleDeleteRedFlagComment}
             onToggleAdmin={handleToggleAdmin}
+          />
+        )}
+
+        {currentScreen.type === 'legal' && (
+          <LegalScreen
+            initialTab={currentScreen.slug as any || 'disclaimer'}
+            setScreen={setScreen}
           />
         )}
       </main>

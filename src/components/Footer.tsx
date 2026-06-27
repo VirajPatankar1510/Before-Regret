@@ -41,8 +41,18 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
             <p className="text-xs text-[#AAB2C0] leading-relaxed max-w-xs">
               See what happened before making the same decision. Analyze thousands of genuine, anonymous relationship timelines, regret ratios, and post-decision updates.
             </p>
-            <div className="text-[10px] text-zinc-500">
-              Disclaimer: Outcomes are self-reported by community contributors. Not a substitute for professional advisory.
+            <div className="text-[10px] text-zinc-500 leading-normal">
+              Disclaimer: Outcomes are self-reported. Not a substitute for professional clinical therapy or advisory. Read our binding{' '}
+              <a 
+                href="/disclaimer" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  setScreen({ type: 'legal', slug: 'disclaimer' });
+                }}
+                className="text-[#F4B942] hover:underline cursor-pointer"
+              >
+                Legal Disclaimer
+              </a>.
             </div>
           </div>
 
@@ -166,12 +176,39 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
 
         <div className="mt-12 border-t border-[#30363D] pt-6 text-center text-xs text-zinc-500 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            © {currentYear} BeforeRegret. Built with high precision outcome analytics. Zero tracking cookies. All cases stored fully locally and anonymously.
+            © {currentYear} BeforeRegret. Built with high precision outcome analytics. All cases stored securely and anonymously.
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 justify-center md:justify-end">
-            <a href="#privacy" className="hover:text-white text-[11px]">Privacy Policy</a>
-            <a href="#terms" className="hover:text-white text-[11px]">Terms of Use</a>
-            <a href="#cookie" className="hover:text-white text-[11px]">Ad Policy</a>
+            <a 
+              href="/privacy" 
+              onClick={(e) => {
+                e.preventDefault();
+                setScreen({ type: 'legal', slug: 'privacy' });
+              }}
+              className="hover:text-white text-[11px] transition-colors cursor-pointer"
+            >
+              Privacy Policy
+            </a>
+            <a 
+              href="/terms" 
+              onClick={(e) => {
+                e.preventDefault();
+                setScreen({ type: 'legal', slug: 'terms' });
+              }}
+              className="hover:text-white text-[11px] transition-colors cursor-pointer"
+            >
+              Terms of Use
+            </a>
+            <a 
+              href="/disclaimer" 
+              onClick={(e) => {
+                e.preventDefault();
+                setScreen({ type: 'legal', slug: 'disclaimer' });
+              }}
+              className="hover:text-white text-[11px] transition-colors cursor-pointer"
+            >
+              Legal Disclaimer
+            </a>
             <a 
               href="/admin-feed"
               onClick={(e) => {

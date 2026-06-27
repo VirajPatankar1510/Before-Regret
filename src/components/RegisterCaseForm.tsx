@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Gavel, Scale, ShieldAlert, Check, RefreshCw, Calendar } from 'lucide-react';
+import { Gavel, Scale, ShieldAlert, Check, RefreshCw, Calendar, AlertTriangle } from 'lucide-react';
+import { validateInputText } from '../lib/validation';
 
 interface RegisterCaseFormProps {
   onSubmit: (caseData: { title: string; description: string; tags: string[]; deliberationDays: number }) => void;
@@ -12,6 +13,7 @@ export default function RegisterCaseForm({ onSubmit }: RegisterCaseFormProps) {
   const [anonymousName, setAnonymousName] = useState('');
   const [deliberationDays, setDeliberationDays] = useState(3);
   const [isDisclaimerChecked, setIsDisclaimerChecked] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   // Generate a premium anonymous judge / litigant moniker
   const rollLitigantAlias = () => {
@@ -27,8 +29,52 @@ export default function RegisterCaseForm({ onSubmit }: RegisterCaseFormProps) {
     rollLitigantAlias();
   }, []);
 
+  // Validate inputs on the fly
+  useEffect(() => {
+    setValidationError(null);
+    
+    const titleVal = validateInputText(title, "Title");
+    if (!titleVal.isValid) {
+      setValidationError(titleVal.error || "Invalid input");
+      return;
+    }
+
+    const descVal = validateInputText(description, "Evidence Narrative");
+    if (!descVal.isValid) {
+      setValidationError(descVal.error || "Invalid input");
+      return;
+    }
+
+    const tagsVal = validateInputText(tagsString, "Tags");
+    if (!tagsVal.isValid) {
+      setValidationError(tagsVal.error || "Invalid input");
+      return;
+    }
+  }, [title, description, tagsString]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const titleVal = validateInputText(title, "Title");
+    if (!titleVal.isValid) {
+      alert(titleVal.error);
+      setValidationError(titleVal.error || "Invalid title");
+      return;
+    }
+
+    const descVal = validateInputText(description, "Evidence Narrative");
+    if (!descVal.isValid) {
+      alert(descVal.error);
+      setValidationError(descVal.error || "Invalid narrative");
+      return;
+    }
+
+    const tagsVal = validateInputText(tagsString, "Tags");
+    if (!tagsVal.isValid) {
+      alert(tagsVal.error);
+      setValidationError(tagsVal.error || "Invalid tags");
+      return;
+    }
 
     if (!title.trim()) {
       alert("Please provide a concise title summarizing your relationship dispute.");
@@ -69,6 +115,7 @@ export default function RegisterCaseForm({ onSubmit }: RegisterCaseFormProps) {
     setTagsString('');
     setDeliberationDays(3);
     setIsDisclaimerChecked(false);
+    setValidationError(null);
     rollLitigantAlias();
   };
 
@@ -164,6 +211,14 @@ export default function RegisterCaseForm({ onSubmit }: RegisterCaseFormProps) {
         />
       </div>
 
+      {/* Validation Error Alert */}
+      {validationError && (
+        <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 text-[#FF5D5D] px-3 py-2 rounded-xl text-[10.5px] leading-relaxed font-sans">
+          <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+          <span>{validationError}</span>
+        </div>
+      )}
+
       {/* Row 4: Disclaimer */}
       <div className="rounded-xl border border-dashed border-[#30363D]/80 bg-[#161B22]/55 p-2 animate-fadeIn">
         <label className="flex gap-2 cursor-pointer select-none">
@@ -183,9 +238,9 @@ export default function RegisterCaseForm({ onSubmit }: RegisterCaseFormProps) {
       {/* Row 5: Submit Button */}
       <button
         type="submit"
-        disabled={!isDisclaimerChecked || !title.trim() || description.trim().length < 50}
+        disabled={!isDisclaimerChecked || !title.trim() || description.trim().length < 50 || !!validationError}
         className={`w-full py-2.5 rounded-xl font-bold uppercase text-[10.5px] tracking-wider transition-all shadow active:scale-95 flex items-center justify-center gap-1.5 ${
-          isDisclaimerChecked && title.trim() && description.trim().length >= 50
+          isDisclaimerChecked && title.trim() && description.trim().length >= 50 && !validationError
             ? 'bg-[#F4B942] text-[#0D1117] hover:bg-[#F4B942]/90 cursor-pointer font-black'
             : 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-[#30363D]/40'
         }`}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Check, Sparkles, FileText, AlertCircle, RefreshCw, Calendar, Eye, Heart, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, Sparkles, FileText, AlertCircle, RefreshCw, Calendar, Eye, Heart, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { validateInputText } from '../lib/validation';
 import { Story, TimelineNode } from '../types';
 import { PRESEEDED_RELATIONSHIP_PROBLEMS, RelationshipProblem } from '../data/relationshipProblems';
 import { fetchRelationshipProblemsFromFirestore } from '../lib/firestoreService';
@@ -92,6 +93,30 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
   const [title, setTitle] = useState('');
   const [fullStory, setFullStory] = useState('');
   const [anonymousUsername, setAnonymousUsername] = useState('');
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  // Validate fields on the fly
+  React.useEffect(() => {
+    setValidationError(null);
+
+    const titleVal = validateInputText(title, "Title");
+    if (!titleVal.isValid) {
+      setValidationError(titleVal.error || "Invalid input");
+      return;
+    }
+
+    const storyVal = validateInputText(fullStory, "Story Narrative");
+    if (!storyVal.isValid) {
+      setValidationError(storyVal.error || "Invalid input");
+      return;
+    }
+
+    const customVal = validateInputText(customSituation, "Custom Issue");
+    if (!customVal.isValid) {
+      setValidationError(customVal.error || "Invalid input");
+      return;
+    }
+  }, [title, fullStory, customSituation]);
 
   // Dynamic Relationship Problems state
   const [relationshipProblems, setRelationshipProblems] = useState<RelationshipProblem[]>(PRESEEDED_RELATIONSHIP_PROBLEMS);
@@ -127,6 +152,10 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
   const progressPercent = Math.min(100, Math.floor(((step - 1) / (totalSteps - 1)) * 100));
 
   const handleNext = () => {
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
     if (step === 5) {
       if (fullStory.trim().length < 100) {
         alert("Please expand your story narrative to at least 100 characters so peers can learn from your experience.");
@@ -150,6 +179,12 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
 
   const handleFinalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (validationError) {
+      alert(validationError);
+      setStep(5);
+      return;
+    }
 
     if (fullStory.trim().length < 100) {
       alert("Please expand your story narrative to at least 100 characters so peers can learn from your experience.");
@@ -644,6 +679,14 @@ export default function SubmitStoryForm({ onClose, onSubmit }: SubmitStoryFormPr
               <div className="rounded-xl bg-indigo-500/5 border border-indigo-500/10 p-3 max-w-sm mx-auto text-[10px] text-zinc-400 font-semibold italic">
                 "By clicking Publish, I commit this raw outcome ledger transparently to guide and safeguard other partners facing comparable constraints."
               </div>
+            </div>
+          )}
+
+          {/* Validation Error Banner */}
+          {validationError && (
+            <div className="mt-4 flex items-start gap-2 bg-red-500/10 border border-red-500/20 text-[#FF5D5D] px-3 py-2 rounded-xl text-[10.5px] leading-relaxed font-sans text-left">
+              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>{validationError}</span>
             </div>
           )}
 

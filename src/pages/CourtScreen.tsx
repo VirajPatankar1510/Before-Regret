@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Gavel, Users, Clock, Vote, Check, ShieldAlert, Award, MessageSquare, Plus, ArrowLeft, Shield, Trash2, Calendar, Lock, Unlock, Download, Copy, ExternalLink, Sparkles, Share2, X } from 'lucide-react';
+import { validateInputText } from '../lib/validation';
 import { CourtCase, CourtArgument } from '../types';
 import { saveCourtCaseToFirestore } from '../lib/firestoreService';
 import BeforeRegretLogo from '../components/BeforeRegretLogo';
@@ -136,6 +137,11 @@ export default function CourtScreen({
   const handleArgSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!argumentText.trim()) return;
+    const val = validateInputText(argumentText, "Argument / Comment");
+    if (!val.isValid) {
+      alert(val.error);
+      return;
+    }
     onAddArgument(courtCase.slug, selectedSide, argumentText);
     setArgumentText('');
   };
