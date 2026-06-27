@@ -112,44 +112,90 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             Explore relationship outcomes and regrets before making a decision you'll live with for years.
           </p>
 
-          {/* Large Hero Search bar input */}
-          <form onSubmit={handleSearchSubmit} className="max-w-xl mx-auto mt-4 space-y-3">
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <Search className="h-5 w-5 text-[#9CA3AF]" />
-              </div>
-              <input
-                type="text"
-                placeholder="My boyfriend doesn't want marriage..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="w-full rounded-2xl border-2 border-[#E5E7EB] bg-white py-4 pl-11 pr-4 text-xs sm:text-sm text-[#1F2937] placeholder-zinc-400 focus:border-[#24324A] focus:outline-none focus:ring-4 focus:ring-[#24324A]/5 transition-all text-left shadow-inner"
-              />
-            </div>
-            <div className="flex justify-center">
-              <button
-                type="submit"
-                className="w-full sm:w-auto min-w-[200px] rounded-xl bg-[#24324A] hover:bg-[#1C273A] py-3.5 px-6 text-xs sm:text-xs font-bold uppercase tracking-wider text-white transition-all shadow-md shadow-zinc-200 active:scale-95"
-              >
-                Search Outcomes
-              </button>
-            </div>
-          </form>
-
-          {/* Popular Searches triggers */}
-          <div className="pt-2 text-xs text-left max-w-xl mx-auto">
-            <span className="text-[#6B7280] font-bold block mb-1.5 text-[10px] uppercase tracking-wider">Popular Searches:</span>
-            <div className="flex flex-wrap gap-1.5">
-              {POPULAR_SEARCHES.map(term => (
+          {/* Grid of Existing Options (Relationship Dilemmas) */}
+          <div className="pt-6 max-w-4xl mx-auto space-y-4">
+            <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-wider text-center select-none">
+              Select a Relationship Dilemma to Explore Real Outcomes
+            </h3>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3">
+              {[
+                { 
+                  name: "Boyfriend Doesn't Want Marriage", 
+                  slug: "boyfriend-doesnt-want-marriage", 
+                  desc: "Postponing, rejecting, or waiting on marital commitment.",
+                  icon: Gavel,
+                  color: "border-amber-200/60 hover:border-amber-400 bg-amber-50/10 text-amber-700" 
+                },
+                { 
+                  name: "Stayed After Cheating", 
+                  slug: "stayed-after-cheating", 
+                  desc: "Forgiving physical/emotional infidelity and rebuilding trust.",
+                  icon: Heart,
+                  color: "border-rose-200/60 hover:border-rose-400 bg-rose-50/10 text-rose-700" 
+                },
+                { 
+                  name: "Partner Doesn't Want Kids", 
+                  slug: "partner-doesnt-want-kids", 
+                  desc: "Navigating mismatch in parenting desires and timelines.",
+                  icon: Users,
+                  color: "border-sky-200/60 hover:border-sky-400 bg-sky-50/10 text-sky-700" 
+                },
+                { 
+                  name: "Moved For Love", 
+                  slug: "moved-for-love", 
+                  desc: "Relocating, sacrificing career or friends for a partner.",
+                  icon: Compass,
+                  color: "border-emerald-200/60 hover:border-emerald-400 bg-emerald-50/10 text-emerald-700" 
+                },
+                { 
+                  name: "Long Distance Relationship", 
+                  slug: "long-distance-relationship", 
+                  desc: "Managing separation and closing the distance gap.",
+                  icon: Globe,
+                  color: "border-indigo-200/60 hover:border-indigo-400 bg-indigo-50/10 text-indigo-700" 
+                },
+                { 
+                  name: "Different Religion Marriage", 
+                  slug: "different-religion-marriage", 
+                  desc: "Interfaith relationships and family expectations.",
+                  icon: Sparkles,
+                  color: "border-purple-200/60 hover:border-purple-400 bg-purple-50/10 text-purple-700" 
+                },
+                { 
+                  name: "Marriage Ultimatum", 
+                  slug: "marriage-ultimatum", 
+                  desc: "Giving a timeline to marry or go separate ways.",
+                  icon: Clock,
+                  color: "border-orange-200/60 hover:border-orange-400 bg-orange-50/10 text-orange-700" 
+                },
+                { 
+                  name: "Ignored Red Flags", 
+                  slug: "ignored-red-flags", 
+                  desc: "Overlooking warning signs in months 1-6.",
+                  icon: AlertTriangle,
+                  color: "border-red-200/60 hover:border-red-400 bg-red-50/10 text-red-700" 
+                },
+                { 
+                  name: "Friend Zone Limbo", 
+                  slug: "friend-zone-limbo", 
+                  desc: "Staying platonic vs confessing feelings.",
+                  icon: HelpCircle,
+                  color: "border-teal-200/60 hover:border-teal-400 bg-teal-50/10 text-teal-700" 
+                }
+              ].map(opt => (
                 <button
-                  key={term}
-                  onClick={() => {
-                    setSearchInput(term);
-                    setScreen({ type: 'situation', slug: term.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '') });
-                  }}
-                  className="rounded-lg bg-[#F4F1E8] border border-[#E5E7EB] px-2.5 py-1 text-[11px] text-[#6B7280] hover:text-[#24324A] hover:border-[#24324A] hover:bg-white transition-all font-medium"
+                  key={opt.slug}
+                  onClick={() => setScreen({ type: 'situation', slug: opt.slug })}
+                  className={`flex flex-col text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-white hover:bg-slate-50/50 shadow-xs hover:shadow-sm transition-all group active:scale-[0.98] ${opt.color.split(" ")[0]} ${opt.color.split(" ")[1]}`}
                 >
-                  {term}
+                  <div className="flex items-start gap-2 mb-1.5 min-w-0 w-full">
+                    <div className="p-1 sm:p-1.5 rounded-lg sm:rounded-xl bg-white border border-[#E5E7EB] shrink-0 group-hover:scale-105 transition-transform mt-0.5">
+                      <opt.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    </div>
+                    <span className="font-extrabold text-[11px] sm:text-[13px] text-[#24324A] leading-tight group-hover:text-[#C9A227] transition-colors flex-1">{opt.name}</span>
+                  </div>
+                  <p className="text-[10px] sm:text-[11px] text-[#6B7280] leading-normal sm:leading-relaxed line-clamp-2">{opt.desc}</p>
                 </button>
               ))}
             </div>
