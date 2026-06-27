@@ -376,7 +376,7 @@ Ensure that:
   // API route to generate an Instagram post from a submission
   app.post("/api/admin/generate-instagram-post", async (req, res) => {
     try {
-      const { title, content, type, author } = req.body;
+      const { title, content, type, author, communityOpinions } = req.body;
       const apiKey = process.env.GEMINI_API_KEY;
       
       if (!apiKey) {
@@ -389,22 +389,23 @@ Ensure that:
       const ai = new GoogleGenAI({ apiKey });
 
       const prompt = `You are a viral social media strategist for @BeforeRegret, a trending American relationship platform.
-We are creating a high-impact, viral Instagram 9:16 Story or TikTok/Reels text slide based on a real, raw relationship situation.
+We are creating a high-impact, viral Instagram 4:5 Post text slide based on a real, raw relationship situation and its associated real community opinions/comments.
 
-Here is the user's raw submission:
+Here is the user's raw submission and associated real community opinions/verdicts:
 ---
 Type: ${type || 'Story'}
 Title: ${title || 'Relationship dilemma'}
 Content: ${content || 'No content provided.'}
 Author: ${author || 'Anonymous'}
+Community Opinions/Verdicts: ${communityOpinions || 'None yet'}
 ---
 
-Your task is to transform this submission into a highly relatable, viral, trending 9:16 text slide and caption tailored for a young US audience (ages 18-35).
+Your task is to transform this submission into a highly relatable, viral, trending 4:5 text slide and caption tailored for a young US audience (ages 18-35).
 It must NOT sound like AI. It should feel 100% like a real person sharing a raw, unfiltered relationship truth, confession, realization, or hot-take.
 
 Strict Guidelines:
-1. "Hook" (The 9:16 Story Overlay Text):
-   - This will be displayed in the center of a 9:16 vertical screen.
+1. "Hook" (The Post Overlay Text):
+   - This will be displayed in the center of the post.
    - It should NOT be a dry title or generic summary.
    - Instead, make it a spicy, high-conflict relationship lesson, an unfiltered confession, a modern dating rule, or a "hot take" inspired by the situation.
    - Use raw emotions and colloquial US phrasing. Examples of highly viral human hooks:
@@ -415,20 +416,31 @@ Strict Guidelines:
      - "We've been living together for 3 years, but he still calls his mom to make his big decisions. It's giving roommate, not husband."
    - Keep it extremely punchy and conversational (15-30 words max). No corporate tone.
 
-2. "Caption":
+2. "CommunitySpotlight" (The Engaged Community Verdict / Peer Suggestion):
+   - Formulate a highly engaging highlight representing community reaction.
+   - If there are "Community Opinions/Verdicts" provided in the input, extract and refine the spiciest one into a punchy quote.
+   - If no community opinions exist, invent a highly realistic, spicy peer opinion/judgement as if a passionate reader commented it.
+   - Examples:
+     - "Juror: 'If he split the bills 50/50 but split chores 100/0, it's not a partnership, it's a scam.'"
+     - "Community Verdict: 84% GUILTY of playing mind games."
+     - "Top Comment: 'You are low-key paying his lease while he figures himself out. Run. 🚩'"
+   - Keep it short, punchy, and incredibly natural (12-25 words).
+
+3. "Caption":
    - The caption should feel like a close friend venting or dropping hard truth bombs in a chat.
    - Use short, punchy, single-sentence paragraphs with generous line breaks to optimize readability on mobile.
    - Use current US dating lingo organically (e.g., "low-key", "major red flag", "playing house", "living rent-free", "if they wanted to, they would", "dating scene is in shambles", "ghosted", "gaslight", "he's a 10 but...").
    - Absolutely NO corporate buzzwords, self-promotional jargon, or sterile summaries.
-   - Bring out the core dilemma of the submission in a dramatic, empathetic way.
-   - Always conclude with a highly provocative, interactive question that makes people want to write long comments debating the topic (e.g., "Is she overreacting or is this an immediate relationship dealbreaker? Let me know in the comments 👇").
+   - Mention the situation's core dilemma in a dramatic, empathetic way.
+   - Highlight the user verdict/community spotlight: "One user suggested this opinion: [communitySpotlight]. What verdict or opinion would you give?"
+   - Always conclude with a highly provocative, interactive question that makes people want to write long comments debating the topic (e.g., "What verdict or opinion would you give? Let me know in the comments 👇").
    - Mention smoothly that they can read the full raw submission, vote on who is wrong, and see what the internet decided at BeforeRegret.com (or "link in bio").
    - Use at most 1 or 2 emojis. Do not over-embellish. Keep the text raw and authentic.
 
-3. "VisualSuggestion":
-   - Detail how this 9:16 vertical slide should look visually to grab attention (e.g., "A clean minimalist iOS Notes App style screenshot centered on a warm charcoal gray background", or "A typewriter-style font on a grainy, atmospheric twilight photo of city lights, keeping the aesthetic low-key and mysterious").
+4. "VisualSuggestion":
+   - Detail how this 4:5 vertical slide should look visually to grab attention (e.g., "A clean minimalist iOS Notes App style screenshot centered on a warm charcoal gray background", or "A typewriter-style font on a grainy, atmospheric twilight photo of city lights, keeping the aesthetic low-key and mysterious").
 
-4. "Hashtags":
+5. "Hashtags":
    - Provide 5-8 trending, high-traffic US hashtags for relationship advice, modern dating, and confessions. Avoid generic spam.`;
 
       const candidateModels = ["gemini-flash-latest", "gemini-3.1-flash-lite", "gemini-3.5-flash"];
@@ -447,6 +459,7 @@ Strict Guidelines:
                 type: Type.OBJECT,
                 properties: {
                   hook: { type: Type.STRING },
+                  communitySpotlight: { type: Type.STRING },
                   caption: { type: Type.STRING },
                   visualSuggestion: { type: Type.STRING },
                   hashtags: {
@@ -454,7 +467,7 @@ Strict Guidelines:
                     items: { type: Type.STRING }
                   }
                 },
-                required: ["hook", "caption", "visualSuggestion", "hashtags"]
+                required: ["hook", "communitySpotlight", "caption", "visualSuggestion", "hashtags"]
               }
             }
           });
@@ -491,14 +504,15 @@ Strict Guidelines:
           hook = `Unpopular opinion: Stop trying to squeeze a lifetime commitment out of someone who can't even give you a consistent reply.`;
         }
 
-        const caption = `Let's talk about this real quick, because this situation is wild... 😳\n\n"${cleanedContent.substring(0, 180)}${cleanedContent.length > 180 ? "..." : ""}"\n\nLow-key, modern dating is in absolute shambles right now. We've completely normalized accepting the absolute bare minimum, and then we wonder why we're feeling low-key exhausted.\n\nAt the end of the day, if they wanted to, they would. It is literally that simple. Stop building futures with people who only offer you temporary attention.\n\nIs this an immediate dealbreaker or are they overreacting? What would you do? Let me know in the comments 👇\n\n(Read the full raw story and cast your official vote on who is wrong at beforeregret.com or click the 🔗 in bio!)`;
+        const communitySpotlight = "One user commented: 'If you have to play detective to get the full truth, you already have your answer.'";
+        const caption = `Let's talk about this real quick, because this situation is wild... 😳\n\n"${cleanedContent.substring(0, 180)}${cleanedContent.length > 180 ? "..." : ""}"\n\nOne user gave this verdict: "${communitySpotlight}"\n\nWhat verdict or opinion would you give? Do you agree, or is this a reach?\n\nLow-key, modern dating is in absolute shambles right now. We've completely normalized accepting the absolute bare minimum, and then we wonder why we're feeling low-key exhausted.\n\nAt the end of the day, if they wanted to, they would. It is literally that simple. Stop building futures with people who only offer you temporary attention.\n\nLet me know in the comments 👇\n\n(Read the full raw story and cast your official vote on who is wrong at beforeregret.com or click the 🔗 in bio!)`;
         
         const visualSuggestion = "A clean minimalist iOS Notes App style screenshot centered on a warm charcoal gray background to keep the aesthetic low-key and raw.";
         const hashtags = ["beforeregret", "relationshipadvice", "moderndating", "confessions", "toxicrelationships", "datingadvice", "redflags"];
 
         return res.json({ 
           success: true, 
-          post: { hook, caption, visualSuggestion, hashtags },
+          post: { hook, communitySpotlight, caption, visualSuggestion, hashtags },
           isFallback: true
         });
       }

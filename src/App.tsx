@@ -592,9 +592,7 @@ export default function App() {
       snapshot.forEach((snapDoc) => {
         fsComments.push(snapDoc.data() as StoryComment);
       });
-      if (fsComments.length > 0) {
-        setComments(fsComments);
-      }
+      setComments(fsComments);
     }, (error) => {
       console.error("Firestore comments subscription error: ", error);
     });
@@ -1620,7 +1618,8 @@ export default function App() {
       storiesCount: 0,
       tags: newQuestion.tags.length > 0 ? newQuestion.tags : ["user-submitted", newQuestion.category.toLowerCase().replace(/\s+/g, '-')],
       pollOptions: formattedPollOptions,
-      answers: []
+      answers: [],
+      dateAdded: new Date().toISOString()
     };
 
     saveQuestionToFirestore(questionObj).catch(err => {
@@ -1968,30 +1967,46 @@ export default function App() {
                 <span className="text-[10px] text-zinc-500 font-mono normal-case">Deliberation duration: 3 to 14 days</span>
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {store.courtCases.map(c => (
-                  <div
-                    key={c.slug}
-                    onClick={() => setScreen({ type: 'court', slug: c.slug })}
-                    className="rounded-2xl border border-[#30363D] bg-[#161B22] p-5 cursor-pointer hover:border-[#F4B942] transition-all hover:scale-[1.01] flex flex-col justify-between shadow-sm animate-fadeIn"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[9px] uppercase font-mono font-bold text-[#F4B942] bg-[#F4B942]/10 px-2 py-0.5 rounded">
-                          {c.caseNumber || 'CASE-C2011'}
-                        </span>
-                        <span className="text-[9px] text-[#AAB2C0] font-mono">
-                          ⚖️ {(c.votes.me || 0) + (c.votes.partner || 0) + (c.votes.both || 0) + (c.votes.neither || 0)} votes
-                        </span>
+                {store.courtCases.map(c => {
+                  const isExpired = !c.createdAt || (new Date(c.createdAt).getTime() + (c.deliberationDays || 3) * 24 * 60 * 60 * 1000) <= Date.now();
+                  return (
+                    <div
+                      key={c.slug}
+                      onClick={() => setScreen({ type: 'court', slug: c.slug })}
+                      className="rounded-2xl border border-[#30363D] bg-[#161B22] p-5 cursor-pointer hover:border-[#F4B942] transition-all hover:scale-[1.01] flex flex-col justify-between shadow-sm animate-fadeIn"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[9px] uppercase font-mono font-bold text-[#F4B942] bg-[#F4B942]/10 px-2 py-0.5 rounded">
+                              {c.caseNumber || 'CASE-C2011'}
+                            </span>
+                            {isExpired ? (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider font-mono bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                                <span className="h-1 w-1 rounded-full bg-rose-500" />
+                                Ended
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                                Live
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[9px] text-[#AAB2C0] font-mono">
+                            ⚖️ {(c.votes.me || 0) + (c.votes.partner || 0) + (c.votes.both || 0) + (c.votes.neither || 0)} votes
+                          </span>
+                        </div>
+                        <h3 className="text-sm font-bold text-white mt-1 leading-snug">"{c.title}"</h3>
+                        <p className="text-xs text-[#AAB2C0] line-clamp-3 leading-relaxed mt-1.5 font-serif">{c.description}</p>
                       </div>
-                      <h3 className="text-sm font-bold text-white mt-1 leading-snug">"{c.title}"</h3>
-                      <p className="text-xs text-[#AAB2C0] line-clamp-3 leading-relaxed mt-1.5 font-serif">{c.description}</p>
+                      <div className="mt-4 border-t border-[#30363D]/45 pt-3 flex items-center justify-between text-[10px] text-zinc-500">
+                        <span className="text-[#F4B942] font-semibold">Cast Vote →</span>
+                        <span className="font-mono">{c.postTime}</span>
+                      </div>
                     </div>
-                    <div className="mt-4 border-t border-[#30363D]/45 pt-3 flex items-center justify-between text-[10px] text-zinc-500">
-                      <span className="text-[#F4B942] font-semibold">Cast Vote →</span>
-                      <span className="font-mono">{c.postTime}</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

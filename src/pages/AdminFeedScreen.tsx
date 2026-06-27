@@ -209,6 +209,7 @@ export default function AdminFeedScreen({
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPost, setGeneratedPost] = useState<{
     hook: string;
+    communitySpotlight?: string;
     caption: string;
     visualSuggestion: string;
     hashtags: string[];
@@ -225,6 +226,64 @@ export default function AdminFeedScreen({
   const [copyStatus, setCopyStatus] = useState<{[key: string]: boolean}>({});
   const [previewTheme, setPreviewTheme] = useState<'cream' | 'midnight' | 'notes' | 'social' | 'meme'>('cream');
   const [isDownloading, setIsDownloading] = useState(false);
+
+  // Compile associated comments, arguments, or votes to drive engaging, authentic social posts
+  const getCommunityOpinionsForFeedItem = (item: FeedItem): string => {
+    if (!item) return '';
+    
+    // Find the base slug or ID
+    const baseSlug = item.slug;
+    const baseId = item.id.replace(/^(story|comment|courtcase|courtarg|question|answer|comment|redflagcase|redflagcomment)-/, '');
+    
+    let opinions: string[] = [];
+    
+    // 1. If it's a court case or jury argument
+    if (item.type === 'court_case' || item.type === 'jury_argument') {
+      const cc = courtCases.find(c => c.slug === baseSlug);
+      if (cc) {
+        if (cc.votes) {
+          opinions.push(`Community jury vote split - Me: ${cc.votes.me} votes, Partner: ${cc.votes.partner} votes, Both: ${cc.votes.both} votes.`);
+        }
+        if (cc.arguments && cc.arguments.length > 0) {
+          cc.arguments.slice(0, 3).forEach(arg => {
+            opinions.push(`Juror ${arg.author} (${arg.side} side) suggested: "${arg.text}"`);
+          });
+        }
+      }
+    }
+    
+    // 2. If it's a story or story comment
+    else if (item.type === 'story' || item.type === 'comment') {
+      const sComments = comments.filter(c => c.storyId === baseSlug);
+      if (sComments.length > 0) {
+        sComments.slice(0, 3).forEach(c => {
+          opinions.push(`User ${c.authorName || 'Anonymous'} commented: "${c.text}"`);
+        });
+      }
+    }
+    
+    // 3. If it's an advice question, answer, or answer comment
+    else if (item.type === 'question' || item.type === 'advice_answer' || item.type === 'advice_comment') {
+      const q = questions.find(question => question.slug === baseSlug);
+      if (q && q.answers) {
+        q.answers.slice(0, 3).forEach(ans => {
+          opinions.push(`Advisor ${ans.author} suggested: "${ans.text}"`);
+        });
+      }
+    }
+    
+    // 4. If it's a red flag case or red flag comment
+    else if (item.type === 'red_flag_case' || item.type === 'red_flag_comment') {
+      const rfc = redFlagCases.find(rc => rc.id === baseSlug || rc.id === baseId);
+      if (rfc && rfc.comments) {
+        rfc.comments.slice(0, 3).forEach(c => {
+          opinions.push(`User ${c.author || 'Anonymous'} commented: "${c.text}"`);
+        });
+      }
+    }
+    
+    return opinions.join('\n');
+  };
 
   const handleGenerateMemePost = async (item: FeedItem) => {
     setIsGenerating(true);
@@ -272,6 +331,7 @@ export default function AdminFeedScreen({
     setCopyStatus({});
     
     try {
+      const opinionsText = getCommunityOpinionsForFeedItem(item);
       const response = await fetch('/api/admin/generate-instagram-post', {
         method: 'POST',
         headers: {
@@ -282,6 +342,7 @@ export default function AdminFeedScreen({
           content: item.content,
           type: item.typeLabel,
           author: item.author,
+          communityOpinions: opinionsText,
         }),
       });
 
@@ -470,7 +531,7 @@ export default function AdminFeedScreen({
             )}
           </div>
         ),
-        onView: () => setScreen({ type: 'court_case', slug: cc.slug }),
+        onView: () => setScreen({ type: 'court', slug: cc.slug }),
         onDelete: () => onDeleteCourtCase(cc.slug)
       });
 
@@ -498,7 +559,7 @@ export default function AdminFeedScreen({
                 </span>
               </div>
             ),
-            onView: () => setScreen({ type: 'court_case', slug: cc.slug }),
+            onView: () => setScreen({ type: 'court', slug: cc.slug }),
             onDelete: () => onDeleteArgument(cc.slug, arg.id)
           });
         });
@@ -508,6 +569,7 @@ export default function AdminFeedScreen({
     // 4. Questions
     questions.forEach(q => {
       const isUserSubmitted = q.slug.startsWith('q_');
+      const qDateStr = q.dateAdded || '2026-06-20T12:00:00Z';
       items.push({
         id: `question-${q.slug}`,
         type: 'question',
@@ -516,8 +578,8 @@ export default function AdminFeedScreen({
         title: q.title,
         content: q.description,
         author: 'Advice Board Seeker',
-        dateStr: new Date().toISOString(),
-        dateObj: new Date(),
+        dateStr: qDateStr,
+        dateObj: new Date(qDateStr),
         slug: q.slug,
         meta: (
           <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2">
@@ -549,8 +611,8 @@ export default function AdminFeedScreen({
             title: `Advice Answer on: "${q.title}"`,
             content: ans.text,
             author: ans.author || 'Anonymous Advisor',
-            dateStr: ans.date || new Date().toISOString(),
-            dateObj: new Date(ans.date || Date.now()),
+            dateStr: ans.date || qDateStr,
+            dateObj: new Date(ans.date || qDateStr),
             slug: q.slug,
             meta: (
               <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2">
@@ -579,8 +641,8 @@ export default function AdminFeedScreen({
                 title: `Comment on advice by @${ans.author} on: "${q.title}"`,
                 content: ac.text,
                 author: ac.author || 'Discussion Contributor',
-                dateStr: ac.date || new Date().toISOString(),
-                dateObj: new Date(ac.date || Date.now()),
+                dateStr: ac.date || ans.date || qDateStr,
+                dateObj: new Date(ac.date || ans.date || qDateStr),
                 slug: q.slug,
                 meta: (
                   <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2 font-mono">
@@ -642,8 +704,8 @@ export default function AdminFeedScreen({
             title: `Comment on Red Flag case: "${rf.title}"`,
             content: com.text,
             author: com.author || 'Flag Analyst',
-            dateStr: com.date || new Date().toISOString(),
-            dateObj: new Date(com.date || Date.now()),
+            dateStr: com.date || rf.dateAdded || '2026-06-20T12:00:00Z',
+            dateObj: new Date(com.date || rf.dateAdded || '2026-06-20T12:00:00Z'),
             slug: rf.id,
             meta: (
               <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2 font-mono">
@@ -1447,15 +1509,22 @@ export default function AdminFeedScreen({
                                   {generatedPost.hook}
                                 </p>
                                 
+                                {generatedPost.communitySpotlight && (
+                                  <div className="mt-1 bg-amber-500/10 border-l-2 border-amber-500 rounded-r p-2.5 text-[10px] leading-relaxed text-zinc-700 font-medium">
+                                    <span className="font-extrabold uppercase text-[8px] tracking-wide text-amber-600 block mb-0.5">💡 COMMUNITY SPOTLIGHT</span>
+                                    "{generatedPost.communitySpotlight}"
+                                  </div>
+                                )}
+                                
                                 {/* Inner reference snippet */}
-                                <div className="border-l-2 border-amber-500 pl-3 py-1 bg-amber-500/5 rounded-r">
-                                  <p className="text-[10px] text-zinc-500 italic line-clamp-3 leading-normal">
+                                <div className="border-l-2 border-amber-500/30 pl-3 py-1 bg-amber-500/5 rounded-r">
+                                  <p className="text-[10px] text-zinc-500 italic line-clamp-2 leading-normal">
                                     "{activeItem?.content}"
                                   </p>
                                 </div>
 
                                 {/* Prominent Notes Style Highlighted Sticker */}
-                                <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-2.5 flex items-center justify-between">
+                                <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-2 flex items-center justify-between">
                                   <span className="text-[9px] font-bold text-amber-800 uppercase tracking-wide">
                                     {getProminentCta(activeItem?.typeLabel)}
                                   </span>
@@ -1463,7 +1532,7 @@ export default function AdminFeedScreen({
                                 </div>
                               </div>
                             ) : previewTheme === 'social' ? (
-                              <div className="bg-[#1A2333] border border-[#2E3C52] rounded-2xl p-5 space-y-4 shadow-lg text-left w-full relative overflow-hidden">
+                              <div className="bg-[#1A2333] border border-[#2E3C52] rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-lg text-left w-full relative overflow-hidden">
                                 {/* BeforeRegret Logo & Brand badge */}
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-2.5">
@@ -1481,20 +1550,26 @@ export default function AdminFeedScreen({
                                 </div>
                                 
                                 {/* Debatable discussion prompt in large, readable, highly visible statement text */}
-                                <div className="space-y-1 py-1">
-                                  <p className="text-sm sm:text-[14px] font-extrabold leading-relaxed text-white tracking-tight">
+                                <div className="space-y-1 py-0.5">
+                                  <p className="text-xs sm:text-[13px] font-extrabold leading-relaxed text-white tracking-tight">
                                     {generatedPost.hook}
                                   </p>
-                                  <p className="text-[9px] text-zinc-400 italic leading-snug">
-                                    Is this behavior toxic or is it an acceptable reaction? Drop your thoughts below.
-                                  </p>
                                 </div>
+
+                                {generatedPost.communitySpotlight && (
+                                  <div className="bg-[#101827] border border-[#2E3C52]/50 rounded-xl p-2.5 space-y-0.5">
+                                    <span className="text-[8px] text-[#C9A227] font-black uppercase tracking-wider block">💬 USER OPINION & VERDICT</span>
+                                    <p className="text-[11px] font-semibold text-zinc-200 leading-snug">
+                                      "{generatedPost.communitySpotlight}"
+                                    </p>
+                                  </div>
+                                )}
 
                                 {/* Divider line */}
                                 <div className="border-t border-[#2E3C52]/50 my-1" />
 
                                 {/* Genuine Platform/Community Metrics */}
-                                <div className="grid grid-cols-3 gap-2 py-1.5 text-center bg-[#101827]/80 rounded-xl border border-[#2E3C52]/30">
+                                <div className="grid grid-cols-3 gap-1.5 py-1 text-center bg-[#101827]/80 rounded-xl border border-[#2E3C52]/30">
                                   <div className="space-y-0.5">
                                     <span className="text-[8px] text-zinc-400 block font-bold uppercase tracking-wider">👥 Jurors</span>
                                     <span className="font-mono text-xs font-black text-[#F9F6EE]">{getDynamicJurors(activeItem)}</span>
@@ -1515,21 +1590,21 @@ export default function AdminFeedScreen({
                                     <span>Guilty ({getGuiltyPctNumber(activeItem)}%)</span>
                                     <span>Not Guilty ({100 - getGuiltyPctNumber(activeItem)}%)</span>
                                   </div>
-                                  <div className="h-2 w-full bg-[#101827] rounded-full overflow-hidden flex border border-zinc-800">
+                                  <div className="h-1.5 w-full bg-[#101827] rounded-full overflow-hidden flex border border-zinc-800">
                                     <div className="bg-red-500 h-full transition-all duration-300" style={{ width: `${getGuiltyPctNumber(activeItem)}%` }} />
                                     <div className="bg-emerald-500 h-full flex-1 transition-all duration-300" />
                                   </div>
                                 </div>
 
                                 {/* Call to Action Badge Button */}
-                                <div className="bg-gradient-to-r from-[#C9A227] to-[#E2BE54] hover:brightness-110 transition-all rounded-xl py-2.5 px-3 text-center cursor-pointer shadow-md flex items-center justify-center gap-1.5 mt-2">
-                                  <span className="text-[10px] font-black text-[#101827] uppercase tracking-wider">
+                                <div className="bg-gradient-to-r from-[#C9A227] to-[#E2BE54] hover:brightness-110 transition-all rounded-xl py-2 px-3 text-center cursor-pointer shadow-md flex items-center justify-center gap-1.5 mt-1">
+                                  <span className="text-[9px] font-black text-[#101827] uppercase tracking-wider">
                                     ⚖️ CAST YOUR VERDICT
                                   </span>
                                 </div>
                               </div>
                             ) : previewTheme === 'cream' ? (
-                              <div className="space-y-4">
+                              <div className="space-y-3.5">
                                 <span className="text-2xl text-[#C9A227] leading-none">“</span>
                                 <div className="text-[10px] tracking-widest font-bold uppercase text-[#C9A227] font-mono">
                                   {getCleanCaseId(activeItem)}
@@ -1537,7 +1612,17 @@ export default function AdminFeedScreen({
                                 <p className="text-base sm:text-lg font-black leading-snug tracking-tight italic font-serif text-[#2C2620]">
                                   {generatedPost.hook}
                                 </p>
-                                <div className="pt-2">
+                                
+                                {generatedPost.communitySpotlight && (
+                                  <div className="bg-[#2C2620]/5 border-l-2 border-[#C9A227] p-2.5 text-left max-w-sm mx-auto rounded-r">
+                                    <span className="text-[8px] font-bold tracking-wider text-[#C9A227] uppercase font-mono block mb-0.5">⚖️ PEER VERDICT</span>
+                                    <p className="text-[11px] font-medium italic text-[#2C2620]/85 leading-normal">
+                                      "{generatedPost.communitySpotlight}"
+                                    </p>
+                                  </div>
+                                )}
+                                
+                                <div className="pt-1">
                                   <div className="inline-flex items-center gap-1.5 bg-[#2C2620] text-[#F9F6EE] px-3.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider shadow-sm">
                                     <span>{getProminentCta(activeItem?.typeLabel)}</span>
                                     <span className="text-[#C9A227]">➔</span>
@@ -1552,7 +1637,17 @@ export default function AdminFeedScreen({
                                 <p className="text-base sm:text-lg font-extrabold leading-snug tracking-tight text-white font-sans">
                                   {generatedPost.hook}
                                 </p>
-                                <div className="pt-2">
+                                
+                                {generatedPost.communitySpotlight && (
+                                  <div className="bg-white/5 border border-violet-500/20 rounded-xl p-2.5 text-left max-w-sm mx-auto">
+                                    <span className="text-[8px] font-black tracking-wider text-violet-400 uppercase font-mono block mb-0.5">🔥 THE JURY DEBATE</span>
+                                    <p className="text-[11px] font-bold text-zinc-100 leading-normal">
+                                      "{generatedPost.communitySpotlight}"
+                                    </p>
+                                  </div>
+                                )}
+                                
+                                <div className="pt-1">
                                   <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white px-3.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider shadow-lg shadow-violet-500/20">
                                     <span>{getProminentCta(activeItem?.typeLabel)}</span>
                                     <span>✦</span>

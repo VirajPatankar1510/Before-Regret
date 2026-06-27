@@ -124,6 +124,7 @@ export interface Question {
   pollOptions: { text: string; votes: number }[];
   storiesCount: number;
   tags: string[];
+  dateAdded?: string;
 }
 
 export interface UserProfile {

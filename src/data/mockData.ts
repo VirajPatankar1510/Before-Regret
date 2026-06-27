@@ -344,6 +344,46 @@ export const PRESEEDED_SITUATIONS: Situation[] = [
       { country: 'Canada', count: 31, avgRegret: 8.8 },
       { country: 'Australia', count: 21, avgRegret: 8.7 }
     ]
+  },
+  {
+    slug: 'friend-zone',
+    name: "Friend Zone Limbo",
+    category: 'Red Flags',
+    description: "Stories, outcomes, regrets, and relationship results from individuals who spent months or years acting as a platonic friend while harboring deep romantic feelings, hoping they would eventually be loved back.",
+    stats: {
+      storyCount: 184,
+      avgRegret: 7.9,
+      wouldDoAgainPercent: 12,
+      stillTogetherPercent: 5,
+      marriedPercent: 2,
+      separatedPercent: 93,
+      avgRelationshipLength: "2.1 Years"
+    },
+    decisionBreakdown: [
+      { name: 'Confessed and Cut Contact', percentage: 55 },
+      { name: 'Stayed as Platonic Friend', percentage: 35 },
+      { name: 'Tried Friends-with-Benefits', percentage: 10 }
+    ],
+    outcomeBreakdown: [
+      { name: 'Friendship Faded Entirely', value: 68 },
+      { name: 'Remained Distant Acquaintances', value: 20 },
+      { name: 'Successfully Became a Couple', value: 7 },
+      { name: 'Still Stuck in Limbo', value: 5 }
+    ],
+    regretOverTime: [
+      { period: '1 Month', level: 5.2 },
+      { period: '6 Months', level: 6.8 },
+      { period: '1 Year', level: 8.1 },
+      { period: '2 Years', level: 8.9 },
+      { period: '5 Years', level: 9.2 }
+    ],
+    countryBreakdown: [
+      { country: 'United States', count: 98, avgRegret: 8.1 },
+      { country: 'United Kingdom', count: 24, avgRegret: 7.6 },
+      { country: 'Canada', count: 18, avgRegret: 8.0 },
+      { country: 'Australia', count: 14, avgRegret: 7.8 },
+      { country: 'India', count: 30, avgRegret: 8.4 }
+    ]
   }
 ];
 
@@ -981,6 +1021,83 @@ export const PRESEEDED_STORIES: Story[] = [
         regretScore: 1
       }
     ]
+  },
+  {
+    id: 's18',
+    title: "I was her 'platonic best friend' for 3 years, paid her rent once, and helped her move twice. Then she introduced me as her 'brother' to her new boyfriend.",
+    situationSlug: 'friend-zone',
+    situationName: "Friend Zone Limbo",
+    age: 26,
+    gender: "Male",
+    country: "United States",
+    relationshipDuration: "3 Years",
+    decisionMade: "Stayed",
+    currentOutcome: "Separated",
+    regretScore: 10,
+    wouldDoAgain: "No",
+    dateAdded: "2026-03-10",
+    tags: ["friendzone", "unrequited-love", "boundaries", "rejection"],
+    fullStory: "For three years, I was her emotional anchor. I listened to her complain about toxic guys for hours, picked her up from the airport at 2 AM, and even lent her $1,200 when she was short on rent. I secretly adored her, and whenever I tried to talk about us being more, she'd say she 'valued our friendship too much to ruin it.' I convinced myself that if I just showed her enough loyalty and support, she'd eventually realize I was the one. Then, out of nowhere, she started dating this guy she met at a club who treated her like garbage. One night, we bumped into them, and she introduced me to him as 'like a big brother to me.' It hit me like a train. I was her boyfriend without any of the benefits, respect, or security. I went home, cried for hours, and then blocked her on everything. I regret wasting three years of my twenties playing therapist for a girl who used my feelings for free labor and attention.",
+    userName: "brotherzoned_and_broke",
+    helpfulVotes: 1450,
+    timeline: [
+      { year: "2023", stage: "Met as Friends", description: "Met at a local event, quickly became close confidants." },
+      { year: "2024", stage: "Soft Confession", description: "Brought up my romantic interest. She put me in the 'valued friend' category." },
+      { year: "2025", stage: "Decision Made (Stayed)", description: "Decided to keep supporting her, hoping she'd develop feelings over time." },
+      { year: "2026", stage: "The Brother-Zone Betrayal", description: "Discovered she introduced me as her 'big brother' to a club boyfriend. Went no-contact." }
+    ],
+    updates: [
+      {
+        daysAfter: 30,
+        dateAdded: "2026-04-10",
+        text: "She tried to reach out from a new number asking why I 'ghosted' her. I didn't reply. It's painful but my peace of mind is finally returning.",
+        regretScore: 8
+      },
+      {
+        daysAfter: 90,
+        dateAdded: "2026-06-10",
+        text: "I started going to the gym and focusing on my own hobbies. I can't believe how much time and energy I used to waste on someone who didn't even see me as a partner. Best decision ever to walk away.",
+        regretScore: 1
+      }
+    ]
+  },
+  {
+    id: 's19',
+    title: "I worked 2 jobs to pay his rent and tuition while he finished his residency. The week he graduated, he broke up with me because we are 'in different leagues' now.",
+    situationSlug: 'ignored-red-flags',
+    situationName: "Ignored Red Flags",
+    age: 29,
+    gender: "Female",
+    country: "United States",
+    relationshipDuration: "5 Years",
+    decisionMade: "Stayed",
+    currentOutcome: "Separated",
+    regretScore: 10,
+    wouldDoAgain: "No",
+    dateAdded: "2026-01-15",
+    tags: ["unbalanced-effort", "betrayal", "finances", "exploitation"],
+    fullStory: "We met when we were 24. He was in medical school, broke, stressed, and struggling. I was working a stable corporate job, and I loved him so much that I took on a second retail job on weekends to fully support our living costs, buy his books, and pay his grocery bills so he could focus entirely on his studies. For 5 years, I didn't buy myself new clothes, we never went on vacations, and I did all the cooking and cleaning. I thought we were building our future. The week after he matched into his dream surgery residency and signed his six-figure contract, he sat me down and broke up with me. He told me that his social circle was changing, and that he felt we were 'growing in different directions' and that he needed a partner who 'matched his new professional caliber.' I was discarded like a ladder he used to climb out of his struggle. Never fund a man's potential at the expense of your own security. If they wanted to, they would—but only if you're not the one paying for their ticket.",
+    userName: "medical_ladder_victim",
+    helpfulVotes: 3200,
+    timeline: [
+      { year: "2021", stage: "Medical School Struggle", description: "Began cohabitating; I took on 2 jobs to cover our expenses." },
+      { year: "2023", stage: "Decision Made (Stayed)", description: "Ignored friends warning me about his lack of reciprocity, continued funding his lifestyle." },
+      { year: "2025", stage: "The Graduation discarding", description: "Discarded the exact week he secured his six-figure surgical contract." }
+    ],
+    updates: [
+      {
+        daysAfter: 60,
+        dateAdded: "2026-03-15",
+        text: "I hired a lawyer to see if I can sue him in small claims for the tuition loans I co-signed, but it is a legal uphill battle. I am completely broke and heartbroken.",
+        regretScore: 10
+      },
+      {
+        daysAfter: 180,
+        dateAdded: "2026-07-15",
+        text: "I decided to focus on myself. I got a major promotion at my own job because I finally have the energy to focus on my own career instead of running his. He tried to text me a half-hearted apology, but I left him on read. He's no longer my project.",
+        regretScore: 3
+      }
+    ]
   }
 ];
 
@@ -1086,6 +1203,38 @@ export const PRESEEDED_COURT_CASES: CourtCase[] = [
         text: "He did a terrible thing out of shame and addiction. If he hands over complete control of his bank logins, attends Gamblers Anonymous, and agrees to a post-nuptial agreement protecting you from his liabilities, you can try to rebuild. But do not buy a house or merge accounts until he completes therapy.",
         votes: 184,
         role: "Mentor"
+      }
+    ]
+  },
+  {
+    slug: 'friendzone-betrayal-best-friend',
+    title: "Best Friend is Mad I Started Dating and Claims I 'Betrayed' Our Bond",
+    description: "My male best friend of 4 years has been my absolute rock. Twice in the past, I confessed that I had romantic feelings for him and asked him out, but both times he laughed it off and said he valued our friendship too much to 'complicate' it. So, I forced myself to move on. Last month, I started dating an amazing guy. Now, my best friend is acting cold, refusing to hang out, and claims that I 'betrayed' our close bond and that my new boyfriend is a 'threat' to our friendship. Am I right to tell him he's acting entitled, or is his emotional reaction valid?",
+    postTime: "2026-06-25",
+    author: "moving_on_curious",
+    votes: {
+      me: 1240,
+      partner: 110,
+      both: 180,
+      neither: 50
+    },
+    tags: ["friendzone", "jealousy", "friendship-boundaries", "rejection"],
+    arguments: [
+      {
+        id: "ca8",
+        author: "boundary_boss",
+        side: "Me",
+        text: "He rejected you twice! He doesn't get to keep you single as an on-call emotional support girlfriend while refusing to give you the commitment, label, or security. It is incredibly selfish to act betrayed when you finally find happiness elsewhere.",
+        votes: 480,
+        role: "Truth Teller"
+      },
+      {
+        id: "ca9",
+        author: "empathy_first",
+        side: "Both",
+        text: "He is acting incredibly immaturely by freezing you out, which makes him wrong. However, the introduction of a romantic partner permanently alters a close opposite-sex friendship. He is likely grieving the sudden loss of his primary emotional safe space, even if his way of expressing it is completely unfair.",
+        votes: 124,
+        role: "Relationship Veteran"
       }
     ]
   }
