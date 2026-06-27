@@ -2009,32 +2009,6 @@ export default function App() {
                 })}
               </div>
             </div>
-
-            {/* REGISTER MODAL OVERLAY */}
-            {isRegisterModalOpen && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-                <div className="relative w-full max-w-2xl bg-[#161B22] border-2 border-[#30363D] rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4">
-                  <button
-                    onClick={() => setIsRegisterModalOpen(false)}
-                    className="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-[#30363D] transition-all cursor-pointer animate-pulse"
-                    id="close-registration-modal"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                  <div className="pr-8">
-                    <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
-                      <Gavel className="h-5 w-5 text-[#F4B942]" /> Submit Case to Court
-                    </h2>
-                    <p className="text-xs text-[#AAB2C0] mt-1 font-sans">
-                      Register your relationship dispute anonymously. Peers will deliberate, debate evidence, and deliver an objective perspective.
-                    </p>
-                  </div>
-                  <div className="pt-2">
-                    <RegisterCaseForm onSubmit={handleRegisterCourtCase} />
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -2457,6 +2431,32 @@ export default function App() {
             >
               Go to My Submitted Case Dossier ➔
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* GLOBAL REGISTER CASE MODAL OVERLAY */}
+      {isRegisterModalOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-[540px] bg-[#161B22] border-2 border-[#30363D] rounded-3xl p-5 shadow-2xl space-y-3.5 overflow-hidden">
+            <button
+              onClick={() => setIsRegisterModalOpen(false)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-[#30363D] transition-all cursor-pointer"
+              id="close-registration-modal"
+            >
+              <X className="h-4.5 w-4.5" />
+            </button>
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <Gavel className="h-4.5 w-4.5 text-[#F4B942]" /> Submit Case to Court
+              </h2>
+              <p className="text-[11px] text-[#AAB2C0] mt-0.5 font-sans leading-normal">
+                Register your relationship dispute anonymously. Peers will deliberate, debate evidence, and deliver an objective perspective.
+              </p>
+            </div>
+            <div className="pt-1">
+              <RegisterCaseForm onSubmit={handleRegisterCourtCase} />
+            </div>
           </div>
         </div>
       )}
