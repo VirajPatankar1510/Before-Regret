@@ -108,10 +108,6 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             What Relationship Decision Are You <span className="text-[#C9A227]">Struggling With?</span>
           </h1>
 
-          <p className="text-sm sm:text-base text-[#6B7280] leading-relaxed max-w-2xl mx-auto font-medium">
-            Explore relationship outcomes and regrets before making a decision you'll live with for years.
-          </p>
-
           {/* Grid of Existing Options (Relationship Dilemmas) */}
           <div className="pt-6 max-w-4xl mx-auto space-y-4">
             <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-wider text-center select-none">
@@ -182,20 +178,43 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
                   desc: "Staying platonic vs confessing feelings.",
                   icon: HelpCircle,
                   color: "border-teal-200/60 hover:border-teal-400 bg-teal-50/10 text-teal-700" 
+                },
+                {
+                  name: "Become a Judge",
+                  slug: "become-a-judge",
+                  desc: "Step into the Relationship Court, weigh actual dilemmas, and cast your verdict.",
+                  icon: Gavel,
+                  color: "",
+                  action: () => setScreen({ type: 'court_list' }),
+                  highlighted: true
                 }
               ].map(opt => (
                 <button
                   key={opt.slug}
-                  onClick={() => setScreen({ type: 'situation', slug: opt.slug })}
-                  className={`flex flex-col text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-white hover:bg-slate-50/50 shadow-xs hover:shadow-sm transition-all group active:scale-[0.98] ${opt.color.split(" ")[0]} ${opt.color.split(" ")[1]}`}
+                  onClick={opt.action ? opt.action : () => setScreen({ type: 'situation', slug: opt.slug })}
+                  className={`flex flex-col text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all group active:scale-[0.98] ${
+                    opt.highlighted 
+                      ? "bg-gradient-to-br from-[#24324A] to-[#1C273A] border-[#C9A227] hover:from-[#1F2B40] hover:to-[#17202E] text-white shadow-md shadow-[#C9A227]/10 ring-2 ring-[#C9A227]/30 col-span-2 md:col-span-1" 
+                      : `bg-white hover:bg-slate-50/50 shadow-xs hover:shadow-sm ${opt.color.split(" ")[0]} ${opt.color.split(" ")[1]}`
+                  }`}
                 >
                   <div className="flex items-start gap-2 mb-1.5 min-w-0 w-full">
-                    <div className="p-1 sm:p-1.5 rounded-lg sm:rounded-xl bg-white border border-[#E5E7EB] shrink-0 group-hover:scale-105 transition-transform mt-0.5">
+                    <div className={`p-1 sm:p-1.5 rounded-lg sm:rounded-xl border shrink-0 group-hover:scale-105 transition-transform mt-0.5 ${
+                      opt.highlighted 
+                        ? "bg-[#C9A227] border-[#C9A227] text-[#24324A]" 
+                        : "bg-white border-[#E5E7EB]"
+                    }`}>
                       <opt.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </div>
-                    <span className="font-extrabold text-[11px] sm:text-[13px] text-[#24324A] leading-tight group-hover:text-[#C9A227] transition-colors flex-1">{opt.name}</span>
+                    <span className={`font-extrabold text-[11px] sm:text-[13px] leading-tight transition-colors flex-1 ${
+                      opt.highlighted 
+                        ? "text-white group-hover:text-[#C9A227]" 
+                        : "text-[#24324A] group-hover:text-[#C9A227]"
+                    }`}>{opt.name}</span>
                   </div>
-                  <p className="text-[10px] sm:text-[11px] text-[#6B7280] leading-normal sm:leading-relaxed line-clamp-2">{opt.desc}</p>
+                  <p className={`text-[10px] sm:text-[11px] leading-normal sm:leading-relaxed line-clamp-2 ${
+                    opt.highlighted ? "text-slate-300 font-medium" : "text-[#6B7280]"
+                  }`}>{opt.desc}</p>
                 </button>
               ))}
             </div>
