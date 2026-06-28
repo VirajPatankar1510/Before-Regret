@@ -29,11 +29,15 @@ export default function Navigation({
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
+      }
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -126,7 +130,7 @@ export default function Navigation({
   ];
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white text-[#1F2937] shadow-sm">
+    <nav ref={navRef} className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white text-[#1F2937] shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
           
