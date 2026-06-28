@@ -52,6 +52,7 @@ export default function StoryCard({
   const [showComments, setShowComments] = useState(false);
   const [newCommentText, setNewCommentText] = useState("");
   const [isReported, setIsReported] = useState(false);
+  const [reportedCommentIds, setReportedCommentIds] = useState<string[]>([]);
 
   if (isReported) {
     return (
@@ -374,43 +375,57 @@ export default function StoryCard({
           </div>
 
           {/* Comment List */}
-          {storyComments.length === 0 ? (
+          {storyComments.filter(c => !reportedCommentIds.includes(c.id)).length === 0 ? (
             <div className="text-center py-6 border border-dashed border-[#E5E7EB] rounded-xl text-zinc-400 bg-[#FAF8F2]">
-              <p className="text-xs font-medium text-[#6B7280]">No peer responses yet for this timeline story.</p>
+              <p className="text-xs font-medium text-[#6B7280]">No peer responses yet for this timeline story (or content reported).</p>
               <p className="text-[10px] text-zinc-500 mt-1">Be the first to provide helpful guidance or analyze their post-decision logic!</p>
             </div>
           ) : (
             <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
-              {storyComments.map((c) => (
-                <div key={c.id} className="rounded-xl border border-[#E5E7EB] bg-[#FAF8F2] p-3 text-xs flex gap-3 shadow-sm">
-                  {c.authorPhoto ? (
-                    <img src={c.authorPhoto} alt={c.authorName} className="h-6 w-6 rounded-full shrink-0" referrerPolicy="no-referrer" />
-                  ) : (
-                    <div className="h-6 w-6 rounded-full bg-[#24324A] text-[10px] font-bold flex items-center justify-center text-white shrink-0 uppercase font-mono">
-                      {c.authorName.slice(0, 2)}
-                    </div>
-                  )}
-                  <div className="space-y-1 flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-[#24324A]">@{c.authorName}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-zinc-400">{c.dateAdded}</span>
-                        {isAdmin && (
+              {storyComments
+                .filter(c => !reportedCommentIds.includes(c.id))
+                .map((c) => (
+                  <div key={c.id} className="rounded-xl border border-[#E5E7EB] bg-[#FAF8F2] p-3 text-xs flex gap-3 shadow-sm">
+                    {c.authorPhoto ? (
+                      <img src={c.authorPhoto} alt={c.authorName} className="h-6 w-6 rounded-full shrink-0" referrerPolicy="no-referrer" />
+                    ) : (
+                      <div className="h-6 w-6 rounded-full bg-[#24324A] text-[10px] font-bold flex items-center justify-center text-white shrink-0 uppercase font-mono">
+                        {c.authorName.slice(0, 2)}
+                      </div>
+                    )}
+                    <div className="space-y-1 flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-[#24324A]">@{c.authorName}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-zinc-400">{c.dateAdded}</span>
                           <button
                             type="button"
-                            onClick={() => onDeleteComment?.(c.id)}
-                            className="bg-red-50 hover:bg-red-100 text-[#C0392B] border border-red-100 p-1 rounded-md transition-colors"
-                            title="Moderator: Delete response"
+                            onClick={() => {
+                              if (window.confirm("Are you sure you want to report this comment? It will be hidden immediately to comply with ad safety guidelines.")) {
+                                setReportedCommentIds(prev => [...prev, c.id]);
+                              }
+                            }}
+                            className="text-[10px] text-zinc-400 hover:text-red-600 transition-colors font-bold uppercase font-sans ml-1"
+                            title="Report comment"
                           >
-                            <Trash2 className="h-3 w-3" />
+                            Report
                           </button>
-                        )}
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => onDeleteComment?.(c.id)}
+                              className="bg-red-50 hover:bg-red-100 text-[#C0392B] border border-red-100 p-1 rounded-md transition-colors"
+                              title="Moderator: Delete response"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          )}
+                        </div>
                       </div>
+                      <p className="text-sm text-[#374151] leading-relaxed font-serif whitespace-pre-wrap">{c.text}</p>
                     </div>
-                    <p className="text-sm text-[#374151] leading-relaxed font-serif whitespace-pre-wrap">{c.text}</p>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
 

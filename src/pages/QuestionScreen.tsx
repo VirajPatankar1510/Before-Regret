@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HelpCircle, Vote, MessageSquare, ArrowLeft, CheckCircle, Sparkles, Plus, Award, Shield, Trash2, ThumbsUp, Send } from 'lucide-react';
+import { HelpCircle, Vote, MessageSquare, ArrowLeft, CheckCircle, Sparkles, Plus, Award, Shield, Trash2, ThumbsUp, Send, AlertTriangle } from 'lucide-react';
 import { validateInputText } from '../lib/validation';
 import { Question } from '../types';
 
@@ -33,6 +33,8 @@ export default function QuestionScreen({
   const [answerContent, setAnswerContent] = useState('');
   const [showQuestionDeleteConfirm, setShowQuestionDeleteConfirm] = useState(false);
   const [commentTextState, setCommentTextState] = useState<{ [ansId: string]: string }>({});
+  const [reportedAnswerIds, setReportedAnswerIds] = useState<string[]>([]);
+  const [reportedCommentIds, setReportedCommentIds] = useState<string[]>([]);
   
   const userVote = userVotedQuestions[question.slug];
   const totalPollVotes = question.pollOptions.reduce((acc, o) => acc + o.votes, 0);
@@ -233,86 +235,116 @@ export default function QuestionScreen({
 
             {/* List answers with user comments nested below each advice */}
             <div className="space-y-4">
-              {question.answers.length === 0 ? (
+              {question.answers.filter(ans => !reportedAnswerIds.includes(ans.id)).length === 0 ? (
                 <div className="text-center py-8 text-xs text-zinc-400 font-semibold bg-[#FAF8F2] rounded-xl">
-                  No advice has been posted on this board yet. Share your experience to help them out!
+                  No advice has been posted on this board yet (or content has been reported). Share your experience to help them out!
                 </div>
               ) : (
-                question.answers.map(ans => (
-                  <div key={ans.id} className="rounded-xl border border-[#E5E7EB] bg-[#FAF8F2] p-4 space-y-3 shadow-xs">
-                    <div className="flex items-center justify-between gap-3 font-mono">
-                      <div className="flex items-center gap-1.5 text-xs">
-                        <span className="font-extrabold text-[#24324A]">@{ans.author}</span>
-                        {ans.isOutcomeVerified && (
-                          <span className="text-[9px] bg-emerald-50 text-[#2E7D32] px-1.5 py-0.5 rounded border border-emerald-100 flex items-center gap-0.5 font-sans font-bold shadow-2xs">
-                            <Award className="h-2.5 w-2.5" /> Outcome Survivor
-                          </span>
-                        )}
+                question.answers
+                  .filter(ans => !reportedAnswerIds.includes(ans.id))
+                  .map(ans => (
+                    <div key={ans.id} className="rounded-xl border border-[#E5E7EB] bg-[#FAF8F2] p-4 space-y-3 shadow-xs">
+                      <div className="flex items-center justify-between gap-3 font-mono">
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <span className="font-extrabold text-[#24324A]">@{ans.author}</span>
+                          {ans.isOutcomeVerified && (
+                            <span className="text-[9px] bg-emerald-50 text-[#2E7D32] px-1.5 py-0.5 rounded border border-emerald-100 flex items-center gap-0.5 font-sans font-bold shadow-2xs">
+                              <Award className="h-2.5 w-2.5" /> Outcome Survivor
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 text-[10px] text-zinc-400 font-mono">
+                          <span>{ans.date}</span>
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => onDeleteAnswer?.(question.slug, ans.id)}
+                              className="bg-red-50 hover:bg-red-100 text-red-655 text-red-600 border border-red-100 p-1 rounded-md transition-colors"
+                              title="Moderator: Delete advice"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 text-[10px] text-zinc-400 font-mono">
-                        <span>{ans.date}</span>
-                        {isAdmin && (
+                      
+                      <p className="text-[#374151] leading-relaxed text-sm font-serif not-italic pl-2 border-l-2 border-purple-400">
+                        "{ans.text}"
+                      </p>
+
+                      <div className="flex items-center justify-between border-t border-[#E5E7EB] pt-2 text-[11px] font-semibold">
+                        <div className="flex items-center gap-3">
                           <button
                             type="button"
-                            onClick={() => onDeleteAnswer?.(question.slug, ans.id)}
-                            className="bg-red-50 hover:bg-red-100 text-red-655 text-red-600 border border-red-100 p-1 rounded-md transition-colors"
-                            title="Moderator: Delete advice"
+                            onClick={() => onUpvoteAnswer(question.slug, ans.id)}
+                            className="inline-flex items-center gap-1 text-purple-700 hover:text-purple-900 font-extrabold transition-colors"
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <ThumbsUp className="h-3.5 w-3.5" /> Helpful ({ans.votes})
                           </button>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <p className="text-[#374151] leading-relaxed text-sm font-serif not-italic pl-2 border-l-2 border-purple-400">
-                      "{ans.text}"
-                    </p>
-
-                    <div className="flex items-center justify-between border-t border-[#E5E7EB] pt-2 text-[11px] font-semibold">
-                      <button
-                        type="button"
-                        onClick={() => onUpvoteAnswer(question.slug, ans.id)}
-                        className="inline-flex items-center gap-1 text-purple-700 hover:text-purple-900 font-extrabold transition-colors"
-                      >
-                        <ThumbsUp className="h-3.5 w-3.5" /> Helpful ({ans.votes})
-                      </button>
-                      <span className="text-[10px] text-zinc-400 font-bold uppercase flex items-center gap-1">
-                        <MessageSquare className="h-3 w-3" /> {(ans.comments || []).length} comments
-                      </span>
-                    </div>
-
-                    {/* NESTED COMMENTS UNDER THE CURRENT ADVICE */}
-                    <div className="bg-white p-3 rounded-xl border border-[#E5E7EB] space-y-2 shadow-2xs">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block font-mono">Discussion Comments</span>
-                      
-                      {/* Comments list */}
-                      {(ans.comments || []).length > 0 ? (
-                        <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                          {(ans.comments || []).map(comment => (
-                            <div key={comment.id} className="bg-[#FAF8F2] p-2 rounded-lg border border-[#E5E7EB] text-xs">
-                              <div className="flex items-center justify-between text-[10px] text-zinc-400 mb-0.5 font-mono">
-                                <span className="font-bold text-[#1F2937]">@{comment.author}</span>
-                                <div className="flex items-center gap-1.5">
-                                  <span>{comment.date}</span>
-                                  {isAdmin && (
-                                    <button
-                                      type="button"
-                                      onClick={() => onDeleteAnswerComment?.(question.slug, ans.id, comment.id)}
-                                      className="bg-red-50 hover:bg-red-100 text-[#C0392B] border border-red-100 p-0.5 rounded transition-colors"
-                                      title="Moderator: Delete comment"
-                                    >
-                                      <Trash2 className="h-2.5 w-2.5" />
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-                              <p className="text-[#374151] pl-0.5 font-sans leading-relaxed">{comment.text}</p>
-                            </div>
-                          ))}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm("Are you sure you want to report this advice? It will be immediately hidden for review to comply with Google safety guidelines.")) {
+                                setReportedAnswerIds(prev => [...prev, ans.id]);
+                              }
+                            }}
+                            className="inline-flex items-center gap-1 text-[#6B7280] hover:text-red-600 transition-colors"
+                            title="Report this advice for safety review"
+                          >
+                            <AlertTriangle className="h-3 w-3" /> Report
+                          </button>
                         </div>
-                      ) : (
-                        <p className="text-[10px] text-zinc-400 italic font-medium">No feedback comments written yet. Ask a question or share thoughts!</p>
-                      )}
+                        <span className="text-[10px] text-zinc-400 font-bold uppercase flex items-center gap-1">
+                          <MessageSquare className="h-3 w-3" /> {(ans.comments || []).filter(c => !reportedCommentIds.includes(c.id)).length} comments
+                        </span>
+                      </div>
+
+                      {/* NESTED COMMENTS UNDER THE CURRENT ADVICE */}
+                      <div className="bg-white p-3 rounded-xl border border-[#E5E7EB] space-y-2 shadow-2xs">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block font-mono">Discussion Comments</span>
+                        
+                        {/* Comments list */}
+                        {(ans.comments || []).filter(comment => !reportedCommentIds.includes(comment.id)).length > 0 ? (
+                          <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            {(ans.comments || [])
+                              .filter(comment => !reportedCommentIds.includes(comment.id))
+                              .map(comment => (
+                                <div key={comment.id} className="bg-[#FAF8F2] p-2 rounded-lg border border-[#E5E7EB] text-xs">
+                                  <div className="flex items-center justify-between text-[10px] text-zinc-400 mb-0.5 font-mono">
+                                    <span className="font-bold text-[#1F2937]">@{comment.author}</span>
+                                    <div className="flex items-center gap-1.5">
+                                      <span>{comment.date}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (window.confirm("Are you sure you want to report this comment? It will be immediately hidden for review to comply with Google safety guidelines.")) {
+                                            setReportedCommentIds(prev => [...prev, comment.id]);
+                                          }
+                                        }}
+                                        className="hover:text-red-650 text-[#6B7280] hover:text-red-600 transition-colors text-[9px] font-bold uppercase tracking-wider"
+                                        title="Report comment"
+                                      >
+                                        Report
+                                      </button>
+                                      {isAdmin && (
+                                        <button
+                                          type="button"
+                                          onClick={() => onDeleteAnswerComment?.(question.slug, ans.id, comment.id)}
+                                          className="bg-red-50 hover:bg-red-100 text-[#C0392B] border border-red-100 p-0.5 rounded transition-colors"
+                                          title="Moderator: Delete comment"
+                                        >
+                                          <Trash2 className="h-2.5 w-2.5" />
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <p className="text-[#374151] pl-0.5 font-sans leading-relaxed">{comment.text}</p>
+                                </div>
+                              ))}
+                          </div>
+                        ) : (
+                          <p className="text-[10px] text-zinc-400 italic font-medium">No feedback comments written yet (or content reported). Ask a question or share thoughts!</p>
+                        )}
 
                       {/* Comment Input Form */}
                       <form onSubmit={(e) => handleCommentSubmit(e, ans.id)} className="flex gap-2 pt-1 border-t border-[#ECECEC] mt-2 font-semibold">
