@@ -620,15 +620,24 @@ export default function App() {
       snapshot.forEach((snapDoc) => {
         fsStories.push(snapDoc.data() as Story);
       });
+      if (snapshot.empty) {
+        import('./data/mockData').then(({ PRESEEDED_STORIES }) => {
+          PRESEEDED_STORIES.forEach(s => {
+            if (!s.caseNumber) {
+              const stableNum = 1001 + PRESEEDED_STORIES.indexOf(s);
+              s.caseNumber = `CASE-S${stableNum}`;
+            }
+            saveStoryToFirestore(s).catch(err => console.error("Seed error:", err));
+          });
+        });
+      }
       setStore(prev => {
-        // Keep ONLY local preseeded stories that do not start with 'usr_'
-        const preseededStories = prev.stories.filter(s => !s.id.startsWith('usr_'));
-        // Standard user-submitted stories from Firestore are merged cleanly
-        const combined = [...fsStories, ...preseededStories];
-        const uniqueStories = combined.filter((s, idx, self) => 
+        const uniqueStories = fsStories.filter((s, idx, self) => 
           self.findIndex(t => t.id === s.id) === idx
         );
-        return { ...prev, stories: uniqueStories };
+        const newState = { ...prev, stories: uniqueStories };
+        saveState(newState);
+        return newState;
       });
     }, (error) => {
       console.error("Firestore stories subscription error: ", error);
@@ -662,11 +671,12 @@ export default function App() {
         });
       }
       setStore(prev => {
-        const combined = [...fsQuestions, ...prev.questions];
-        const uniqueQuestions = combined.filter((q, idx, self) => 
+        const uniqueQuestions = fsQuestions.filter((q, idx, self) => 
           self.findIndex(t => t.slug === q.slug) === idx
         );
-        return { ...prev, questions: uniqueQuestions };
+        const newState = { ...prev, questions: uniqueQuestions };
+        saveState(newState);
+        return newState;
       });
       setIsQuestionsLoaded(true);
     }, (error) => {
@@ -681,13 +691,24 @@ export default function App() {
       snapshot.forEach((snapDoc) => {
         fsCourtCases.push(snapDoc.data() as CourtCase);
       });
+      if (snapshot.empty) {
+        import('./data/mockData').then(({ PRESEEDED_COURT_CASES }) => {
+          PRESEEDED_COURT_CASES.forEach(c => {
+            if (!c.caseNumber) {
+              const stableNum = 2001 + PRESEEDED_COURT_CASES.indexOf(c);
+              c.caseNumber = `CASE-C${stableNum}`;
+            }
+            saveCourtCaseToFirestore(c).catch(err => console.error("Seed error:", err));
+          });
+        });
+      }
       setStore(prev => {
-        const preseeded = prev.courtCases.filter(c => !c.caseNumber || parseInt(c.caseNumber.replace(/[^0-9]/g, ''), 10) <= 2012);
-        const combined = [...fsCourtCases, ...preseeded];
-        const unique = combined.filter((c, idx, self) =>
+        const unique = fsCourtCases.filter((c, idx, self) =>
           self.findIndex(t => t.slug === c.slug) === idx
         );
-        return { ...prev, courtCases: unique };
+        const newState = { ...prev, courtCases: unique };
+        saveState(newState);
+        return newState;
       });
     }, (error) => {
       console.error("Firestore courtCases subscription error: ", error);
@@ -700,13 +721,24 @@ export default function App() {
       snapshot.forEach((snapDoc) => {
         fsRedFlagCases.push(snapDoc.data() as RedFlagCase);
       });
+      if (snapshot.empty) {
+        import('./data/mockData').then(({ PRESEEDED_RED_FLAG_CASES }) => {
+          PRESEEDED_RED_FLAG_CASES.forEach(rf => {
+            if (!rf.caseNumber) {
+              const stableNum = 3001 + PRESEEDED_RED_FLAG_CASES.indexOf(rf);
+              rf.caseNumber = `CASE-F${stableNum}`;
+            }
+            saveRedFlagCaseToFirestore(rf).catch(err => console.error("Seed error:", err));
+          });
+        });
+      }
       setStore(prev => {
-        const preseeded = prev.redFlagCases.filter(f => !f.caseNumber || parseInt(f.caseNumber.replace(/[^0-9]/g, ''), 10) <= 3004);
-        const combined = [...fsRedFlagCases, ...preseeded];
-        const unique = combined.filter((f, idx, self) =>
+        const unique = fsRedFlagCases.filter((f, idx, self) =>
           self.findIndex(t => t.id === f.id) === idx
         );
-        return { ...prev, redFlagCases: unique };
+        const newState = { ...prev, redFlagCases: unique };
+        saveState(newState);
+        return newState;
       });
     }, (error) => {
       console.error("Firestore redFlagCases subscription error: ", error);
@@ -2511,7 +2543,7 @@ export default function App() {
             </button>
             <div>
               <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                <Gavel className="h-4.5 w-4.5 text-[#F4B942]" /> Submit Case to Court
+                <Gavel className="h-4.5 w-4.5 text-[#F4B942]" /> Submit Your Case
               </h2>
               <p className="text-[11px] text-[#AAB2C0] mt-0.5 font-sans leading-normal">
                 Register your relationship dispute anonymously. Peers will deliberate, debate evidence, and deliver an objective perspective.

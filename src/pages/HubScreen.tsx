@@ -1312,7 +1312,7 @@ export default function HubScreen({
       {courtCases.length > 0 && (
         <div className="space-y-6 pt-6">
           <h2 className="text-xl sm:text-2xl font-black text-[#000000] flex items-center gap-2">
-            <Gavel className="h-6 w-6 text-yellow-500" /> Active Relationships Under Citizen Deliberation
+            <Gavel className="h-6 w-6 text-yellow-500" /> Active Relationships Open for Voting
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
