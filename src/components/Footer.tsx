@@ -180,6 +180,16 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 justify-center md:justify-end">
             <a 
+              href="/guides" 
+              onClick={(e) => {
+                e.preventDefault();
+                setScreen({ type: 'guides' });
+              }}
+              className="hover:text-white text-[11px] font-bold text-[#C9A227] transition-colors cursor-pointer"
+            >
+              Decision Guides
+            </a>
+            <a 
               href="/privacy" 
               onClick={(e) => {
                 e.preventDefault();

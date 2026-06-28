@@ -270,6 +270,16 @@ async function getPageMetadata(urlPath: string) {
     title = `Choice Outcomes matching "${displaySlug}" | BeforeRegret`;
     description = `Analyze community outcomes, average regrets, and survivor guidelines classified under dynamic category keyword: #${displaySlug}.`;
   }
+  else if (first === 'guides' || first === 'decision-guides' || first === 'editorial' || first === 'articles') {
+    if (parts[1]) {
+      const displayArt = parts[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      title = `Relationship Science Guide: ${displayArt} | BeforeRegret`;
+      description = `Read our deep, accredited editorial guide on "${displayArt}". Composed by certified family therapists, psychologists, and relationship science experts.`;
+    } else {
+      title = "Accredited Relationship Decision Guides & Science | BeforeRegret";
+      description = "Browse deep long-form editorial guides written by certified psychologists, clinical mediators, and relationship researchers. Learn the math of trust rebuilding, ultimatum psychology, and red flags.";
+    }
+  }
   
   return { title, description };
 }
@@ -720,9 +730,25 @@ Please output your response as JSON matching this schema:
         { path: "regrets", changefreq: "daily", priority: "0.8" },
         { path: "court", changefreq: "daily", priority: "0.9" },
         { path: "boards", changefreq: "daily", priority: "0.9" },
+        { path: "guides", changefreq: "weekly", priority: "0.9" },
       ];
 
       const urlTags: string[] = [];
+
+      // Add individual guide articles
+      const articles = [
+        "infidelity-reconciliation-math-of-forgiveness",
+        "ultimatum-protocol-why-marriage-deadlocks-fail",
+        "relocation-risk-index-moving-for-love",
+        "red-flag-evaluation-boundary-matrix"
+      ];
+      for (const art of articles) {
+        urlTags.push(`  <url>
+    <loc>${origin}/guides/${art}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>`);
+      }
 
       // 1. Core pages
       for (const item of staticUrls) {

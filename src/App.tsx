@@ -23,6 +23,7 @@ import RedFlagMeterScreen from './pages/RedFlagMeterScreen';
 import HubScreen from './pages/HubScreen';
 import AdminFeedScreen from './pages/AdminFeedScreen';
 import LegalScreen from './pages/LegalScreen';
+import GuidesScreen from './pages/GuidesScreen';
 // Core State and Seeding
 import { getInitialState, saveState } from './data/store';
 import { PRESEEDED_SITUATIONS, COUNTRIES_DATA } from './data/mockData';
@@ -155,6 +156,12 @@ export function parsePath(pathname: string): { type: string; slug?: string } {
   if (first === 'country') {
     return { type: 'country', slug: parts[1] || 'usa' };
   }
+  if (first === 'guides' || first === 'decision-guides' || first === 'editorial' || first === 'articles') {
+    if (parts[1]) {
+      return { type: 'guides', slug: parts[1] };
+    }
+    return { type: 'guides' };
+  }
   if (first === 'tag') {
     return { type: 'tag', slug: parts[1] || 'cheating' };
   }
@@ -234,6 +241,11 @@ export function getRelativePath(screen: { type: string; slug?: string }, store?:
       return `/country/${screen.slug || 'usa'}`;
     case 'tag':
       return `/tag/${screen.slug || 'cheating'}`;
+    case 'guides':
+      if (screen.slug) {
+        return `/guides/${screen.slug}`;
+      }
+      return '/guides';
     case 'legal':
       return `/legal/${screen.slug || 'disclaimer'}`;
     case 'submit_story':
@@ -379,6 +391,16 @@ export default function App() {
         } else {
           title = "Red Flag Dilemma Meter - Citizen Vote on Warnings | BeforeRegret";
           description = "Audit and vote on red, yellow, and green flag relationship warnings submitted anonymously by real partners.";
+        }
+        break;
+      }
+      case 'guides': {
+        if (currentScreen.slug) {
+          title = "Accredited Relationship Guide | BeforeRegret";
+          description = "Read deep long-form editorial guides written by certified psychologists, clinical mediators, and relationship researchers.";
+        } else {
+          title = "Accredited Relationship Decision Guides & Science | BeforeRegret";
+          description = "Read deep long-form editorial guides written by certified psychologists, clinical mediators, and relationship researchers. Learn the math of trust rebuilding and red flags.";
         }
         break;
       }
@@ -2259,6 +2281,12 @@ export default function App() {
         {currentScreen.type === 'legal' && (
           <LegalScreen
             initialTab={currentScreen.slug as any || 'disclaimer'}
+            setScreen={setScreen}
+          />
+        )}
+
+        {currentScreen.type === 'guides' && (
+          <GuidesScreen
             setScreen={setScreen}
           />
         )}

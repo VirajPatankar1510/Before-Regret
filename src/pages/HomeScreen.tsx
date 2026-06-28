@@ -373,6 +373,55 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
 
       </section>
 
+      {/* SECTION 4.5: ACCREDITED DECISION GUIDES */}
+      <section className="bg-white rounded-3xl border border-[#E5E7EB] p-6 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="space-y-1">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#C9A227]/10 border border-[#C9A227]/20 text-[#C9A227] select-none">
+              <Star className="h-3 w-3 fill-current" /> Expert Perspectives
+            </span>
+            <h2 className="text-base sm:text-lg font-black text-[#24324A] font-display">Accredited Decision Guides</h2>
+            <p className="text-xs text-[#6B7280]">Read clinical analysis on trust rebuilding, commitment anxieties, and partners red flags.</p>
+          </div>
+          <button
+            onClick={() => setScreen({ type: 'guides' })}
+            className="text-xs font-extrabold text-[#C9A227] hover:underline flex items-center gap-0.5 shrink-0 self-start sm:self-center"
+          >
+            Browse All Guides <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div 
+            onClick={() => setScreen({ type: 'guides' })}
+            className="border border-[#E5E7EB] rounded-2xl p-4 cursor-pointer hover:border-[#C9A227] hover:bg-[#FAF8F2]/30 transition-all flex items-start gap-4"
+          >
+            <div className="p-2.5 rounded-xl bg-[#FAF8F2] text-[#C9A227] shrink-0">
+              <Heart className="h-5 w-5" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-xs font-black text-[#24324A]">Infidelity &amp; Reconciliation: Rebuilding Trust</h4>
+              <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">Learn the structural pillars required to survive cheating and calculate the emotional load of hypervigilance.</p>
+              <span className="text-[10px] font-bold text-[#C9A227] inline-flex items-center gap-0.5 pt-1">Read Guide <ArrowRight className="h-3 w-3" /></span>
+            </div>
+          </div>
+
+          <div 
+            onClick={() => setScreen({ type: 'guides' })}
+            className="border border-[#E5E7EB] rounded-2xl p-4 cursor-pointer hover:border-[#C9A227] hover:bg-[#FAF8F2]/30 transition-all flex items-start gap-4"
+          >
+            <div className="p-2.5 rounded-xl bg-[#FAF8F2] text-[#C9A227] shrink-0">
+              <Gavel className="h-5 w-5" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-xs font-black text-[#24324A]">The Ultimatum Protocol: Commitment Deadlocks</h4>
+              <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">Why pressure tactics trigger defensiveness and how to establish healthy self-boundaries.</p>
+              <span className="text-[10px] font-bold text-[#C9A227] inline-flex items-center gap-0.5 pt-1">Read Guide <ArrowRight className="h-3 w-3" /></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* SECTION 5: RELATIONSHIP COURT SPLIT SECTION */}
       <section className="rounded-2xl border border-[#E8D79B] bg-gradient-to-br from-white to-[#FFF8E1]/40 p-5 sm:p-6 shadow-md">
         <div className="flex items-center justify-between mb-5">
