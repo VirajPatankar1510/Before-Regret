@@ -414,7 +414,7 @@ export default function CourtScreen({
                 <Award className="h-4 w-4 animate-pulse text-[#F4B942]" /> Boundary Certificate
               </span>
               <h3 className="text-lg font-black text-white font-sans tracking-tight pt-1">
-                Jury Boundary Certificate ⚖️
+                Community Verdict Certificate ⚖️
               </h3>
               <p className="text-xs text-[#AAB2C0] max-w-xl leading-relaxed">
                 Peer deliberation consensus determines you held proper, healthy relationship boundaries in this dispute. Export this certificate to validate your healthy boundaries!
@@ -873,7 +873,7 @@ export default function CourtScreen({
         
         {/* Left Side: Active Poll Voting */}
         <div className="md:col-span-5 rounded-2xl border border-[#E5E7EB] bg-white p-5 space-y-4 shadow-sm">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Cast Your Jury Perspective</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Cast Your Vote</h3>
           
           {(userVote || isExpired) ? (
             <div className="space-y-3">
@@ -942,7 +942,7 @@ export default function CourtScreen({
         {/* Right Side: Juror Arguments List & Input */}
         <div className="md:col-span-7 space-y-4">
           <div className="rounded-2xl border border-[#E5E7EB] bg-white p-5 space-y-4 shadow-sm">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Jury Deliberation Opinions</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Community Opinions</h3>
 
             {/* Submit Argument Form */}
             <form onSubmit={handleArgSubmit} className="space-y-3 bg-[#FAF8F2] p-3 rounded-xl border border-[#E5E7EB]">
