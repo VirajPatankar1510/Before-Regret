@@ -174,7 +174,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
                 },
                 { 
                   name: "Friend Zone Limbo", 
-                  slug: "friend-zone-limbo", 
+                  slug: "friend-zone", 
                   desc: "Staying platonic vs confessing feelings.",
                   icon: HelpCircle,
                   color: "border-teal-200/60 hover:border-teal-400 bg-teal-50/10 text-teal-700" 
@@ -254,49 +254,62 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
       {/* Google Ad Unit */}
       <AdSenseWidget slot="2666879134" />
 
-      {/* SECTION 3: TRENDING SITUATIONS CARDS */}
+      {/* SECTION 3: TRENDING PEER COURT DEBATES */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-[#24324A] flex items-center gap-2">
-              <Flame className="h-5 w-5 text-[#C0392B]" /> Trending Relationship Situations
+              <Gavel className="h-5 w-5 text-[#C9A227]" /> Trending Relationship Court Debates
             </h2>
-            <p className="text-xs text-[#6B7280]">Compare metrics of individuals who faced identical crises recently.</p>
+            <p className="text-xs text-[#6B7280]">Step into the citizen court, weigh in on real conflicts, and cast your anonymous verdict.</p>
           </div>
           <button
-            onClick={() => setScreen({ type: 'explore' })}
+            onClick={() => setScreen({ type: 'court_list' })}
             className="text-xs font-bold text-[#24324A] hover:underline flex items-center gap-0.5"
           >
-            All Situations <ChevronRight className="h-4 w-4" />
+            Enter Courtroom <ChevronRight className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {PRESEEDED_SITUATIONS.map(situation => (
-            <div
-              key={situation.slug}
-              onClick={() => setScreen({ type: 'situation', slug: situation.slug })}
-              className="rounded-2xl border border-[#E5E7EB] bg-white p-5 cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.06)] hover:translate-y-[-2px] transition-all flex flex-col justify-between"
-              id={`situation-card-${situation.slug}`}
-            >
-              <div className="space-y-1">
-                <span className="text-[10px] uppercase font-bold text-[#24324A] bg-[#24324A]/5 px-2 py-0.5 rounded">
-                  {situation.category}
-                </span>
-                <h3 className="text-sm font-bold text-[#1F2937] pt-1 line-clamp-2 leading-snug">{situation.name}</h3>
-                <p className="text-[11px] text-[#6B7280] line-clamp-3 leading-relaxed mt-1.5">{situation.description}</p>
-              </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {(courtCases || []).slice(0, 3).map(c => {
+            const totalVotes = (c.votes?.me || 0) + (c.votes?.partner || 0) + (c.votes?.both || 0) + (c.votes?.neither || 0);
+            return (
+              <div
+                key={c.slug}
+                onClick={() => setScreen({ type: 'court', slug: c.slug })}
+                className="rounded-2xl border border-[#E5E7EB] bg-white p-5 cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.06)] hover:translate-y-[-2px] transition-all flex flex-col justify-between"
+                id={`court-card-${c.slug}`}
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-1.5 text-[10px] font-bold text-[#24324A] font-mono">
+                    <span className="bg-[#24324A]/5 px-2 py-0.5 rounded uppercase">
+                      {c.tags?.[0] || 'Relationship Dispute'}
+                    </span>
+                    {c.caseNumber && (
+                      <span className="text-[#C9A227]">
+                        #{c.caseNumber}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-sm font-bold text-[#1F2937] line-clamp-2 leading-snug hover:text-[#C9A227] transition-colors">{c.title}</h3>
+                  <p className="text-[11px] text-[#6B7280] line-clamp-3 leading-relaxed mt-1">{c.description}</p>
+                </div>
 
-              <div className="border-t border-[#ECECEC] mt-4 pt-3 space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs">
-                  <span className="text-[#6B7280] font-medium whitespace-nowrap shrink-0">Avg Regret Ratio</span>
-                  <span className={`px-2 py-0.5 border rounded-lg text-[10px] font-black whitespace-nowrap shrink-0 ${getRegretColor(situation.stats.avgRegret)}`}>
-                    {situation.stats.avgRegret}/10 ({getRegretLevelString(situation.stats.avgRegret)})
-                  </span>
+                <div className="border-t border-[#ECECEC] mt-4 pt-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1 text-zinc-500 font-semibold">
+                      <MessageSquare className="h-3.5 w-3.5 text-zinc-400" />
+                      <span>{c.arguments?.length || 0} Opinions</span>
+                    </div>
+                    <span className="text-[11px] bg-amber-50 text-[#C9A227] px-2 py-0.5 border border-amber-200/50 rounded-lg font-black shrink-0">
+                      {totalVotes} Juror Votes
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

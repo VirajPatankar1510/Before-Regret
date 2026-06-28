@@ -29,6 +29,7 @@ export default function CourtScreen({
   const [argumentText, setArgumentText] = useState('');
   const [selectedSide, setSelectedSide] = useState<'Me' | 'Partner' | 'Both' | 'Neither'>('Me');
   const [showCaseDeleteConfirm, setShowCaseDeleteConfirm] = useState(false);
+  const [reportedArguments, setReportedArguments] = useState<string[]>([]);
 
   const [now, setNow] = useState(new Date());
   const [simExpired, setSimExpired] = useState(false);
@@ -986,7 +987,7 @@ export default function CourtScreen({
 
             {/* List Opinions */}
             <div className="space-y-3 max-h-96 overflow-y-auto">
-              {courtCase.arguments.map(arg => {
+              {courtCase.arguments.filter(arg => !reportedArguments.includes(arg.id)).map(arg => {
                 const badgeColor = 
                   arg.side === 'Me' ? 'bg-[#24324A]/5 text-[#24324A] border-[#24324A]/10' :
                   arg.side === 'Partner' ? 'bg-[#B23B3B]/5 text-[#B23B3B] border-[#B23B3B]/10' :
@@ -1019,15 +1020,28 @@ export default function CourtScreen({
                       </div>
                     </div>
                     <p className="text-[#374151] leading-relaxed font-serif text-sm not-italic">"{arg.text}"</p>
-                    <div className="flex justify-end gap-3 text-[10px] text-zinc-400 mt-2 font-medium">
-                       <span>Was this analysis helpful?</span>
-                       <button 
+                    <div className="flex justify-between items-center text-[10px] text-zinc-400 mt-2 font-medium">
+                       <button
                          type="button"
-                         onClick={() => alert("Opinion upvoted!")}
-                         className="text-[#24324A] hover:text-[#C9A227] font-bold hover:underline"
+                         onClick={() => {
+                           if (window.confirm("Are you sure you want to flag this opinion for safety review? It will be hidden immediately to comply with ad safety guidelines.")) {
+                             setReportedArguments(prev => [...prev, arg.id]);
+                           }
+                         }}
+                         className="text-zinc-400 hover:text-red-600 hover:underline cursor-pointer"
                        >
-                         Upvote ({arg.votes})
+                         Report Issue
                        </button>
+                       <div className="flex gap-3">
+                         <span>Was this analysis helpful?</span>
+                         <button 
+                           type="button"
+                           onClick={() => alert("Opinion upvoted!")}
+                           className="text-[#24324A] hover:text-[#C9A227] font-bold hover:underline"
+                         >
+                           Upvote ({arg.votes})
+                         </button>
+                       </div>
                     </div>
                   </div>
                 );

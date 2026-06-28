@@ -51,6 +51,21 @@ export default function StoryCard({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [newCommentText, setNewCommentText] = useState("");
+  const [isReported, setIsReported] = useState(false);
+
+  if (isReported) {
+    return (
+      <div className="rounded-2xl border-2 border-dashed border-red-200 bg-red-50 p-5 sm:p-6 text-center space-y-2 font-sans animate-fadeIn">
+        <div className="flex justify-center text-red-600">
+          <AlertTriangle className="h-6 w-6" />
+        </div>
+        <h4 className="text-xs font-black text-[#24324A] uppercase tracking-wider">Content Hidden Under Review</h4>
+        <p className="text-[11px] text-zinc-500 leading-relaxed max-w-md mx-auto">
+          This post has been flagged by the community for safety review. It has been immediately hidden from your view and queued for safety audits in accordance with our Google ad partner safety regulations. Thank you for helping keep BeforeRegret safe.
+        </p>
+      </div>
+    );
+  }
 
   const getRegretColor = (score: number) => {
     if (score >= 8) return 'bg-[#C0392B]/5 text-[#C0392B] border-[#C0392B]/10';
@@ -332,9 +347,13 @@ export default function StoryCard({
 
           {/* Report Trigger */}
           <button
-            onClick={() => alert("Thank you. An anonymous moderator has queued this post for review within 24 hours.")}
+            onClick={() => {
+              if (window.confirm("Are you sure you want to flag this story for content safety review? It will be hidden immediately to comply with ad partner safety regulations.")) {
+                setIsReported(true);
+              }
+            }}
             className="text-zinc-400 hover:text-red-600 p-1.5 sm:p-2"
-            title="Flag as False or Personal Data Violations"
+            title="Flag as False, Offensive, or Personal Data Violations"
           >
             <AlertCircle className="h-3.5 w-3.5" />
           </button>
