@@ -111,6 +111,7 @@ export default function Navigation({
     if (screen.type === 'question_list') return '/boards';
     if (screen.type === 'red_flag_meter') return '/flags';
     if (screen.type === 'regret_stories') return '/regrets';
+    if (screen.type === 'guides') return '/guides';
     if (screen.type === 'admin_feed') return '/admin-feed';
     return '/';
   };
@@ -121,6 +122,7 @@ export default function Navigation({
     { label: 'Advice Boards', screen: { type: 'question_list' }, icon: Sparkles },
     { label: 'Red Flag Meter', screen: { type: 'red_flag_meter' }, icon: AlertTriangle },
     { label: 'Regret Registry', screen: { type: 'regret_stories' }, icon: Heart },
+    { label: 'Decision Guides', screen: { type: 'guides' }, icon: BookOpen },
   ];
 
   return (
