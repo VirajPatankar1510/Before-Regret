@@ -15,7 +15,25 @@ export interface ValidationResult {
 export function validateInputText(text: string, fieldName: string = "Input"): ValidationResult {
   if (!text) return { isValid: true };
 
-  // 1. Email validation
+  // 1. Self-Harm/Crisis safety check to show immediate supportive helpline resources
+  const selfHarmRegex = /\b(suicide|suicid(al|e)|kill\s+myself|end\s+my\s+life|slitting|self\s+harm)\b/i;
+  if (selfHarmRegex.test(text)) {
+    return {
+      isValid: false,
+      error: `For safety and supportive care, our filters flagged mentions related to self-harm. If you or someone you know is experiencing thoughts of self-harm, severe trauma, or domestic crisis, please reach out immediately to a certified professional. You can call or text the Suicide & Crisis Lifeline at 988 (US/Canada), contact the National Domestic Violence Hotline at 1-800-799-7233, or contact your local emergency services. You do not have to walk through this alone.`
+    };
+  }
+
+  // 2. Severe Profanity & Explicit/Adult Content UGC validation (for Google AdSense compliance)
+  const explicitRegex = /\b(fuck|fucking|fucker|fuckers|cunt|dick|pussy|asshole|motherfucker|slut|sluts|whore|whores|porn|pornography|prostitute|escort|onlyfans|erotic|naked|nudity|rape|raped|rapist|incest|cocaine|heroin|methamphetamine|shit|shitty|bitch|bitches|bastard|fag|faggot|nigger|kike|chink|gook|retard|retarded)\b/i;
+  if (explicitRegex.test(text)) {
+    return {
+      isValid: false,
+      error: `${fieldName} contains language that does not comply with our safety guidelines. To keep BeforeRegret a civil, supportive, and AdSense-compliant environment, please avoid using highly offensive words, slurs, profanity, or sexually explicit/adult descriptions.`
+    };
+  }
+
+  // 3. Email validation
   const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
   if (emailRegex.test(text)) {
     return {

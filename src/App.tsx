@@ -346,7 +346,7 @@ export default function App() {
         break;
       }
       case 'question_list':
-        title = "Community Advice Boards - Ask Survivor Veterans | BeforeRegret";
+        title = "Community Ask/Give Advice - Ask Survivor Veterans | BeforeRegret";
         description = "Browse advice and questions from individuals facing major relationship crises answered by veteran survivors.";
         break;
       case 'question': {
@@ -2080,7 +2080,7 @@ export default function App() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#161B22] border border-[#30363D] p-5 rounded-3xl">
               <div>
                 <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-                  <HelpCircle className="h-6 w-6 text-purple-400" /> Community Advice Boards
+                  <HelpCircle className="h-6 w-6 text-purple-400" /> Ask/Give Advice Hub
                 </h1>
                 <p className="text-xs text-[#AAB2C0]">Explore hard relationship questions answered directly by veteran survivors or submit your own dilemma.</p>
               </div>
@@ -2152,7 +2152,7 @@ export default function App() {
                     onClick={() => setScreen({ type: 'question_list' })}
                     className="px-4 py-2 text-xs font-bold bg-[#1e142e] border border-purple-500/20 text-purple-400 rounded-xl hover:border-purple-500/40 transition-colors"
                   >
-                    Back to Advice Boards
+                    Back to Ask/Give Advice
                   </button>
                 </div>
               );

@@ -44,6 +44,7 @@ export default function RedFlagMeterScreen({
   
   // Comments State
   const [commentText, setCommentText] = useState('');
+  const [reportedComments, setReportedComments] = useState<string[]>([]);
 
   const activeCase = redFlagCases.find(c => c.id === selectedCaseId);
 
@@ -298,12 +299,25 @@ export default function RedFlagMeterScreen({
               </h3>
 
               <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
-                {activeCase.comments && activeCase.comments.length > 0 ? (
-                  activeCase.comments.map(c => (
+                {activeCase.comments && activeCase.comments.filter(c => !reportedComments.includes(c.id)).length > 0 ? (
+                  activeCase.comments.filter(c => !reportedComments.includes(c.id)).map(c => (
                     <div key={c.id} className="p-3 bg-[#FAF8F5] border border-[#EAE6DF] rounded-xl space-y-1.5 text-xs">
                       <div className="flex justify-between items-center text-[10px] text-[#6B7280] font-sans font-semibold">
                         <span className="text-[#24324A]">@{c.author}</span>
-                        <span>{c.date}</span>
+                        <div className="flex items-center gap-2">
+                          <span>{c.date}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm("Are you sure you want to report this comment? It will be hidden immediately to comply with ad safety guidelines.")) {
+                                setReportedComments(prev => [...prev, c.id]);
+                              }
+                            }}
+                            className="text-zinc-400 hover:text-red-600 hover:underline cursor-pointer"
+                          >
+                            Report
+                          </button>
+                        </div>
                       </div>
                       <p className="text-[#374151] leading-relaxed">{c.text}</p>
                     </div>
