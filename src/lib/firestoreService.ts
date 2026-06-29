@@ -8,7 +8,8 @@ import {
   query, 
   where,
   orderBy,
-  deleteDoc
+  deleteDoc,
+  increment
 } from "firebase/firestore";
 import { Story, StoryComment, UserProfile, Question, CourtCase, RedFlagCase } from "../types";
 import { RelationshipProblem } from "../data/relationshipProblems";
@@ -276,5 +277,50 @@ export async function fetchRelationshipProblemsFromFirestore(): Promise<Relation
   } catch (error) {
     handleFirestoreError(error, OperationType.GET, pathForGetDoc);
     return [];
+  }
+}
+
+// Visit Tracker Helpers
+export interface VisitStatsData {
+  totalViews: number;
+  uniqueVisitors: number;
+}
+
+export async function fetchVisitStats(): Promise<VisitStatsData> {
+  const pathForGetDoc = "stats/visits";
+  try {
+    const docRef = doc(db, "stats", "visits");
+    const snapshot = await getDoc(docRef);
+    if (snapshot.exists()) {
+      const data = snapshot.data();
+      return {
+        totalViews: data.totalViews || 0,
+        uniqueVisitors: data.uniqueVisitors || 0
+      };
+    }
+    return { totalViews: 0, uniqueVisitors: 0 };
+  } catch (error) {
+    console.error("Error fetching visit stats:", error);
+    return { totalViews: 0, uniqueVisitors: 0 };
+  }
+}
+
+export async function recordVisitInFirestore(isNewSession: boolean, isNewVisitor: boolean): Promise<void> {
+  const pathForWrite = "stats/visits";
+  try {
+    const docRef = doc(db, "stats", "visits");
+    const updates: any = {};
+    if (isNewSession) {
+      updates.totalViews = increment(1);
+    }
+    if (isNewVisitor) {
+      updates.uniqueVisitors = increment(1);
+    }
+    
+    if (Object.keys(updates).length > 0) {
+      await setDoc(docRef, updates, { merge: true });
+    }
+  } catch (error) {
+    console.error("Error recording visit in Firestore:", error);
   }
 }

@@ -76,6 +76,16 @@
         "tags": { "type": "array" }
       },
       "required": ["slug", "title", "description", "category"]
+    },
+    "VisitStats": {
+      "title": "Visit Statistics",
+      "description": "Aggregated live visit and traffic data",
+      "type": "object",
+      "properties": {
+        "totalViews": { "type": "integer" },
+        "uniqueVisitors": { "type": "integer" }
+      },
+      "required": ["totalViews", "uniqueVisitors"]
     }
   },
   "firestore": {
@@ -94,6 +104,10 @@
     "/questions/{questionId}": {
       "schema": "Question",
       "description": "Public database of user submitted advice requests"
+    },
+    "/stats/{docId}": {
+      "schema": "VisitStats",
+      "description": "General application statistics like visit and traffic counts"
     }
   }
 }
