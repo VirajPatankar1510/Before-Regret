@@ -186,10 +186,11 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
 
 interface GuidesScreenProps {
   setScreen: (screen: { type: string; slug?: string }) => void;
+  slug?: string;
 }
 
-export default function GuidesScreen({ setScreen }: GuidesScreenProps) {
-  const [selectedArticle, setSelectedArticle] = useState<GuideArticle | null>(null);
+export default function GuidesScreen({ setScreen, slug }: GuidesScreenProps) {
+  const selectedArticle = slug ? GUIDE_ARTICLES.find(a => a.slug === slug || a.id === slug) : null;
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
@@ -210,7 +211,7 @@ export default function GuidesScreen({ setScreen }: GuidesScreenProps) {
         <div className="max-w-3xl mx-auto space-y-8 animate-fadeIn">
           <button
             onClick={() => {
-              setSelectedArticle(null);
+              setScreen({ type: 'guides' });
               window.scrollTo({ top: 0 });
             }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-[#24324A] bg-white border border-[#E5E7EB] hover:border-[#C9A227] hover:bg-[#FAF8F2] shadow-xs active:scale-95 transition-all"
@@ -332,7 +333,7 @@ export default function GuidesScreen({ setScreen }: GuidesScreenProps) {
               <BookOpen className="h-3 w-3" /> Relationship Intelligence
             </span>
             <h1 className="text-3xl sm:text-4xl font-black text-[#24324A] tracking-tight leading-tight">
-              Evidence-Based <span className="text-[#C9A227]">Decision Guides</span>
+              Relationship <span className="text-[#C9A227]">Decision Guides</span>
             </h1>
             <p className="text-sm sm:text-base text-zinc-500 font-medium max-w-xl mx-auto">
               Read community-distilled guides focused on real, anonymous relationship outcomes, helping you make high-stakes life decisions with clarity.
@@ -378,7 +379,7 @@ export default function GuidesScreen({ setScreen }: GuidesScreenProps) {
                 <div
                   key={article.id}
                   onClick={() => {
-                    setSelectedArticle(article);
+                    setScreen({ type: 'guides', slug: article.slug });
                     window.scrollTo({ top: 0 });
                   }}
                   className="bg-white rounded-3xl border border-[#E5E7EB] hover:border-[#C9A227]/60 p-6 flex flex-col justify-between hover:shadow-md active:scale-[0.99] transition-all cursor-pointer group relative overflow-hidden"
@@ -430,18 +431,7 @@ export default function GuidesScreen({ setScreen }: GuidesScreenProps) {
             )}
           </div>
 
-          {/* Professional Credentials Banner */}
-          <div className="max-w-4xl mx-auto rounded-3xl border border-dashed border-[#E5E7EB] bg-white p-6 flex flex-col sm:flex-row items-center gap-4">
-            <div className="p-3 bg-[#FAF8F2] border border-[#C9A227]/30 rounded-2xl text-[#C9A227] shrink-0">
-              <Award className="h-6 w-6" />
-            </div>
-            <div className="text-center sm:text-left space-y-1">
-              <h4 className="text-xs font-black tracking-wider uppercase text-[#24324A]">Editorial Transparency & Safety</h4>
-              <p className="text-xs text-zinc-500 leading-normal font-medium">
-                Our guides are compiled by the BeforeRegret Editorial Desk. All statistical split rates, average regrets, and transition risk levels are derived mathematically from actual anonymized user timelines and community court files logged on this platform. This provides a clear, unvarnished look at real-world relationship choices, completely free of simulated advice or artificial commentary.
-              </p>
-            </div>
-          </div>
+
         </div>
       )}
     </div>

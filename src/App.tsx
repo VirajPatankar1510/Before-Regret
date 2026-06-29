@@ -23,7 +23,7 @@ import RedFlagMeterScreen from './pages/RedFlagMeterScreen';
 import HubScreen from './pages/HubScreen';
 import AdminFeedScreen from './pages/AdminFeedScreen';
 import LegalScreen from './pages/LegalScreen';
-import GuidesScreen from './pages/GuidesScreen';
+import GuidesScreen, { GUIDE_ARTICLES } from './pages/GuidesScreen';
 // Core State and Seeding
 import { getInitialState, saveState } from './data/store';
 import { PRESEEDED_SITUATIONS, COUNTRIES_DATA } from './data/mockData';
@@ -396,8 +396,14 @@ export default function App() {
       }
       case 'guides': {
         if (currentScreen.slug) {
-          title = "Accredited Relationship Guide | BeforeRegret";
-          description = "Read deep long-form editorial guides written by certified psychologists, clinical mediators, and relationship researchers.";
+          const article = GUIDE_ARTICLES.find(a => a.slug === currentScreen.slug || a.id === currentScreen.slug);
+          if (article) {
+            title = `${article.title} | BeforeRegret Relationship Guide`;
+            description = article.summary;
+          } else {
+            title = "Accredited Relationship Guide | BeforeRegret";
+            description = "Read deep long-form editorial guides written by certified psychologists, clinical mediators, and relationship researchers.";
+          }
         } else {
           title = "Accredited Relationship Decision Guides & Science | BeforeRegret";
           description = "Read deep long-form editorial guides written by certified psychologists, clinical mediators, and relationship researchers. Learn the math of trust rebuilding and red flags.";
@@ -524,6 +530,25 @@ export default function App() {
           "author": {
             "@type": "Person",
             "name": storyObj.userName || "Anonymous Writer"
+          }
+        };
+      }
+    } else if (currentScreen.type === 'guides' && currentScreen.slug) {
+      const article = GUIDE_ARTICLES.find(a => a.slug === currentScreen.slug || a.id === currentScreen.slug);
+      if (article) {
+        schemaJson = {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": article.title,
+          "description": article.summary,
+          "author": {
+            "@type": "Person",
+            "name": article.author
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "BeforeRegret",
+            "url": origin
           }
         };
       }
@@ -2320,6 +2345,7 @@ export default function App() {
         {currentScreen.type === 'guides' && (
           <GuidesScreen
             setScreen={setScreen}
+            slug={currentScreen.slug}
           />
         )}
       </main>
