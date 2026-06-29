@@ -2395,8 +2395,8 @@ export default function App() {
 
       {/* ⚙️ FIREBASE AUTH TROUBLESHOOTING & INSTANT GUEST PASS OVERLAY */}
       {showAuthTroubleshooter && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-lg bg-[#161B22] border border-[#30363D] shadow-2xl rounded-3xl overflow-hidden text-left p-6 relative">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn overflow-y-auto">
+          <div className="w-full max-w-lg bg-[#161B22] border border-[#30363D] shadow-2xl rounded-3xl text-left p-6 relative my-auto max-h-[90vh] overflow-y-auto">
             <button 
               onClick={() => setShowAuthTroubleshooter(false)}
               className="absolute top-4 right-4 p-1.5 rounded-xl text-zinc-500 hover:text-white hover:bg-[#30363D]/50 transition-colors"
@@ -2598,8 +2598,8 @@ export default function App() {
 
       {/* GLOBAL REGISTER CASE MODAL OVERLAY */}
       {isRegisterModalOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-[540px] bg-[#161B22] border-2 border-[#30363D] rounded-3xl p-5 shadow-2xl space-y-3.5 overflow-hidden">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn overflow-y-auto">
+          <div className="relative w-full max-w-[540px] bg-[#161B22] border-2 border-[#30363D] rounded-3xl p-5 shadow-2xl space-y-3.5 my-auto max-h-[90vh] overflow-y-auto flex flex-col">
             <button
               onClick={() => setIsRegisterModalOpen(false)}
               className="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-[#30363D] transition-all cursor-pointer"

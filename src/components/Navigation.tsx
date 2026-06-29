@@ -240,7 +240,7 @@ export default function Navigation({
               <input
                 type="text"
                 placeholder="CASE KEY..."
-                className="bg-transparent border-none text-[11px] text-[#1F2937] w-[75px] xs:w-[90px] focus:outline-none placeholder-zinc-400 font-mono font-semibold uppercase"
+                className="bg-transparent border-none text-[11px] text-[#1F2937] w-16 sm:w-24 focus:outline-none placeholder-zinc-400 font-mono font-semibold uppercase"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     const val = (e.target as HTMLInputElement).value.trim();

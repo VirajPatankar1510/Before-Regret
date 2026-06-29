@@ -1225,7 +1225,7 @@ export default function AdminFeedScreen({
                         <User className="h-3 w-3 text-zinc-400" />
                         <span>Submitted by <strong className="text-[#24324A]">{item.author}</strong></span>
                       </span>
-                      <span className="text-zinc-300 hidden xs:inline">•</span>
+                      <span className="text-zinc-300 hidden sm:inline">•</span>
                       <span className="flex items-center gap-1 text-zinc-400 font-mono shrink-0">
                         <Clock className="h-3 w-3" />
                         <span>{formatRelativeTime(item.dateObj)}</span>
@@ -1418,7 +1418,7 @@ export default function AdminFeedScreen({
                     {/* The actual 4:5 image canvas mockup locked to exact 400x500 post size */}
                     <div 
                       id="instagram-story-canvas"
-                      className={`w-[400px] h-[500px] rounded-3xl p-6 flex flex-col justify-between shadow-xl relative transition-all duration-300 mx-auto overflow-hidden text-left shrink-0 ${
+                      className={`w-full max-w-[400px] aspect-[4/5] rounded-3xl p-6 flex flex-col justify-between shadow-xl relative transition-all duration-300 mx-auto overflow-hidden text-left shrink-0 ${
                         previewTheme === 'cream' 
                           ? 'bg-[#F9F6EE] text-[#1D1B18] border border-[#E9E4D5] font-serif' 
                           : previewTheme === 'midnight'
