@@ -132,27 +132,128 @@ export default function Navigation({
   return (
     <nav ref={navRef} className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white text-[#1F2937] shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-4">
-          
-          {/* Logo */}
-          <a 
-            href="/"
-            onClick={(e) => {
-              e.preventDefault();
-              setScreen({ type: 'home' });
-            }}
-            className="flex cursor-pointer items-center space-x-2.5 shrink-0 select-none"
-            id="logo-desktop"
-          >
-            <BeforeRegretLogo showText={false} size={40} lightTheme={true} className="shrink-0" />
-            <div className="block">
-              <span className="font-extrabold text-sm sm:text-lg tracking-tight text-[#24324A]">Before<span className="text-[#C9A227]">Regret</span></span>
-              <p className="text-[8px] sm:text-[9px] text-[#6B7280] leading-none font-medium">Before you stay. Before you leave.</p>
+        <div className="flex flex-col justify-center min-h-[4rem] py-2.5 lg:py-3.5 gap-2.5 lg:gap-3">
+          <div className="flex items-center justify-between gap-4 w-full">
+            
+            {/* Logo */}
+            <a 
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                setScreen({ type: 'home' });
+              }}
+              className="flex cursor-pointer items-center space-x-2.5 shrink-0 select-none"
+              id="logo-desktop"
+            >
+              <BeforeRegretLogo showText={false} size={40} lightTheme={true} className="shrink-0" />
+              <div className="block">
+                <span className="font-extrabold text-sm sm:text-lg tracking-tight text-[#24324A]">Before<span className="text-[#C9A227]">Regret</span></span>
+                <p className="text-[8px] sm:text-[9px] text-[#6B7280] leading-none font-medium">Before you stay. Before you leave.</p>
+              </div>
+            </a>
+
+            {/* Action Trigger Elements Right */}
+            <div className="flex items-center space-x-2 shrink-0">
+              
+              {/* Topic Search Input with suggestions */}
+              <div className="relative hidden md:block" ref={suggestionsRef}>
+                <div className="flex items-center gap-1.5 bg-[#FAF8F5] border border-[#E5E7EB] hover:border-[#C9A227]/60 rounded-xl px-2.5 py-1.5 transition-all text-xs focus-within:ring-2 focus-within:ring-[#24324A]/10 shadow-xs">
+                  <Search className="h-3.5 w-3.5 text-[#9CA3AF]" />
+                  <input
+                    type="text"
+                    placeholder="Search topics..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setShowSuggestions(true);
+                    }}
+                    onFocus={() => setShowSuggestions(true)}
+                    className="bg-transparent border-none text-[11px] text-[#1F2937] w-36 xl:w-48 focus:outline-none placeholder-zinc-400 font-semibold"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const val = searchQuery.trim();
+                        if (val) {
+                          const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
+                          const queryNorm = normalize(val);
+                          const matchedSituation = PRESEEDED_SITUATIONS.find(s => normalize(s.name).includes(queryNorm) || normalize(s.slug).includes(queryNorm));
+                          if (matchedSituation) {
+                            setScreen({ type: 'situation', slug: matchedSituation.slug });
+                          } else {
+                            setScreen({ type: 'explore', slug: val });
+                          }
+                          setSearchQuery('');
+                          setShowSuggestions(false);
+                        }
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* Suggestions Dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute right-0 mt-2 w-64 rounded-xl border border-[#E5E7EB] bg-white p-2 shadow-xl z-50 animate-slideDown max-h-80 overflow-y-auto">
+                    <div className="px-2 py-1 text-[9px] uppercase font-bold text-[#6B7280] tracking-wider border-b border-[#FAF8F2] mb-1">
+                      Suggested Outcomes
+                    </div>
+                    {suggestions.map((item, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleSelectSuggestion(item)}
+                        className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-[#FAF8F2] text-[11px] font-semibold text-[#4B5563] hover:text-[#24324A] transition-colors flex items-center justify-between gap-1"
+                      >
+                        <span className="truncate">{item.label}</span>
+                        <ChevronRight className="h-3 w-3 shrink-0 text-[#9CA3AF]" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Case Finder Input */}
+              <div className="flex items-center gap-1.5 bg-[#FAF8F5] border border-[#E5E7EB] hover:border-[#C9A227]/60 rounded-xl px-2.5 py-1.5 transition-all text-xs focus-within:ring-2 focus-within:ring-[#24324A]/10 shadow-xs">
+                <span className="text-[9px] text-[#C9A227] font-mono font-extrabold tracking-wider hidden sm:inline shrink-0 select-none">SEARCH CASE ID</span>
+                <input
+                  type="text"
+                  placeholder="CASE KEY..."
+                  className="bg-transparent border-none text-[11px] text-[#1F2937] w-16 sm:w-24 focus:outline-none placeholder-zinc-400 font-mono font-semibold uppercase"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const val = (e.target as HTMLInputElement).value.trim();
+                      if (val) {
+                        onCaseRetrieve(val);
+                        (e.target as HTMLInputElement).value = '';
+                      }
+                    }
+                  }}
+                />
+                <button 
+                  onClick={(e) => {
+                    const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                    const val = input.value.trim();
+                    if (val) {
+                      onCaseRetrieve(val);
+                      input.value = '';
+                    }
+                  }}
+                  className="text-[#6B7280] hover:text-[#24324A] transition-colors shrink-0 p-0.5"
+                  title="Search Case Reference Code"
+                >
+                  <Search className="h-3 w-3" />
+                </button>
+              </div>
+
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 rounded-xl text-[#6B7280] hover:text-[#1F2937] hover:bg-[#FAF8F2] lg:hidden animate-fadeIn"
+              >
+                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
             </div>
-          </a>
+          </div>
 
           {/* Navigation Menu Links Desktop */}
-          <div className="hidden lg:flex items-center space-x-3 shrink-0">
+          <div className="hidden lg:flex items-center justify-center flex-wrap gap-2.5 pt-2 border-t border-slate-100 w-full">
             {menuItems.map(item => {
               const screenCast = item.screen as { type: string; slug?: string };
               const active = currentScreen.type === screenCast.type && (!screenCast.slug || currentScreen.slug === screenCast.slug);
@@ -175,105 +276,6 @@ export default function Navigation({
                 </a>
               );
             })}
-          </div>
-
-          {/* Action Trigger Elements Right */}
-          <div className="flex items-center space-x-2 shrink-0">
-            
-            {/* Topic Search Input with suggestions */}
-            <div className="relative hidden md:block" ref={suggestionsRef}>
-              <div className="flex items-center gap-1.5 bg-[#FAF8F5] border border-[#E5E7EB] hover:border-[#C9A227]/60 rounded-xl px-2.5 py-1.5 transition-all text-xs focus-within:ring-2 focus-within:ring-[#24324A]/10 shadow-xs">
-                <Search className="h-3.5 w-3.5 text-[#9CA3AF]" />
-                <input
-                  type="text"
-                  placeholder="Search topics..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setShowSuggestions(true);
-                  }}
-                  onFocus={() => setShowSuggestions(true)}
-                  className="bg-transparent border-none text-[11px] text-[#1F2937] w-36 xl:w-48 focus:outline-none placeholder-zinc-400 font-semibold"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      const val = searchQuery.trim();
-                      if (val) {
-                        const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
-                        const queryNorm = normalize(val);
-                        const matchedSituation = PRESEEDED_SITUATIONS.find(s => normalize(s.name).includes(queryNorm) || normalize(s.slug).includes(queryNorm));
-                        if (matchedSituation) {
-                          setScreen({ type: 'situation', slug: matchedSituation.slug });
-                        } else {
-                          setScreen({ type: 'explore', slug: val });
-                        }
-                        setSearchQuery('');
-                        setShowSuggestions(false);
-                      }
-                    }
-                  }}
-                />
-              </div>
-
-              {/* Suggestions Dropdown */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute right-0 mt-2 w-64 rounded-xl border border-[#E5E7EB] bg-white p-2 shadow-xl z-50 animate-slideDown max-h-80 overflow-y-auto">
-                  <div className="px-2 py-1 text-[9px] uppercase font-bold text-[#6B7280] tracking-wider border-b border-[#FAF8F2] mb-1">
-                    Suggested Outcomes
-                  </div>
-                  {suggestions.map((item, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSelectSuggestion(item)}
-                      className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-[#FAF8F2] text-[11px] font-semibold text-[#4B5563] hover:text-[#24324A] transition-colors flex items-center justify-between gap-1"
-                    >
-                      <span className="truncate">{item.label}</span>
-                      <ChevronRight className="h-3 w-3 shrink-0 text-[#9CA3AF]" />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Case Finder Input */}
-            <div className="flex items-center gap-1.5 bg-[#FAF8F5] border border-[#E5E7EB] hover:border-[#C9A227]/60 rounded-xl px-2.5 py-1.5 transition-all text-xs focus-within:ring-2 focus-within:ring-[#24324A]/10 shadow-xs">
-              <span className="text-[9px] text-[#C9A227] font-mono font-extrabold tracking-wider hidden sm:inline shrink-0 select-none">SEARCH CASE ID</span>
-              <input
-                type="text"
-                placeholder="CASE KEY..."
-                className="bg-transparent border-none text-[11px] text-[#1F2937] w-16 sm:w-24 focus:outline-none placeholder-zinc-400 font-mono font-semibold uppercase"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    const val = (e.target as HTMLInputElement).value.trim();
-                    if (val) {
-                      onCaseRetrieve(val);
-                      (e.target as HTMLInputElement).value = '';
-                    }
-                  }
-                }}
-              />
-              <button 
-                onClick={(e) => {
-                  const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                  const val = input.value.trim();
-                  if (val) {
-                    onCaseRetrieve(val);
-                    input.value = '';
-                  }
-                }}
-                className="text-[#6B7280] hover:text-[#24324A] transition-colors shrink-0 p-0.5"
-                title="Search Case Reference Code"
-              >
-                <Search className="h-3 w-3" />
-              </button>
-            </div>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl text-[#6B7280] hover:text-[#1F2937] hover:bg-[#FAF8F2] lg:hidden animate-fadeIn"
-            >
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
           </div>
         </div>
       </div>
