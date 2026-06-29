@@ -297,7 +297,7 @@ export default function CourtScreen({
             <span className="flex h-5 w-5 items-center justify-center rounded bg-[#FFF8E1] text-[#C9A227]">
               <Gavel className="h-3.5 w-3.5" />
             </span>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-[#C9A227]">BR Court Case • {courtCase.caseNumber || 'CASE-C2011'}</span>
+            <span className="text-[10px] uppercase font-bold tracking-widest text-[#C9A227]">BR Relationship Court Case • {courtCase.caseNumber || 'CASE-C2011'}</span>
           </div>
           {isExpired ? (
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider font-mono bg-rose-50 text-rose-700 border border-rose-200 shrink-0">

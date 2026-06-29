@@ -269,13 +269,13 @@ export default function App() {
   // Dynamically update document title and URL parameters for SEO and native back/forward behaviors!
   useEffect(() => {
     // Determine dynamic page metadata based on clean routes
-    let title = "BeforeRegret — Relationship Decisions Before Regret";
+    let title = "BeforeRegret — The Internet's Relationship Jury";
     let description = "BeforeRegret is the ultimate decision intelligence platform for relationship regrets. Read crowdsourced anonymous story timelines, citizen jury verdicts, and red flag warnings before making life-altering choices.";
     const displaySlug = currentScreen.slug ? currentScreen.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
     
     switch (currentScreen.type) {
       case 'home':
-        title = "BeforeRegret — Relationship Decisions Before Regret | Relationship Court & Regrets";
+        title = "BeforeRegret — The Internet's Relationship Jury | BR Relationship Court & Regrets";
         description = "Analyze crowdsourced anonymous timeline stories on marriage, cheating, cohabitation, and family commitments before making major life decisions. Vote on Red Flag warnings, hear jury trials, and write survivor guidelines.";
         break;
       case 'explore':
@@ -2095,7 +2095,7 @@ export default function App() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#161B22] border border-[#30363D] p-5 sm:p-6 rounded-3xl shadow-sm">
               <div className="space-y-1">
                 <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2" style={{ color: '#ffffff' }}>
-                  <Gavel className="h-6 w-6 text-[#F4B942]" /> BR Court
+                  <Gavel className="h-6 w-6 text-[#F4B942]" /> BR Relationship Court
                 </h1>
                 <p className="text-xs text-[#AAB2C0]">Step into our anonymous space. Review relationship evidence, defend sides, and cast peer perspective votes.</p>
               </div>
