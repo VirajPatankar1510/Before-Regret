@@ -538,7 +538,7 @@ export default function AdminFeedScreen({
         id: `courtcase-${cc.slug}`,
         type: 'court_case',
         typeLabel: 'Court Trial',
-        categoryLabel: 'BR Court Case',
+        categoryLabel: 'BR Relationship Court Case',
         title: cc.title,
         content: cc.description,
         author: cc.author || 'Court Submitter',
@@ -571,7 +571,7 @@ export default function AdminFeedScreen({
             id: `courtarg-${arg.id}`,
             type: 'jury_argument',
             typeLabel: 'Jury Opinion',
-            categoryLabel: 'BR Court Opinions',
+            categoryLabel: 'BR Relationship Court Opinions',
             title: `Jury Opinion on trial: "${cc.title}"`,
             content: arg.text,
             author: `${arg.author} (${arg.role || 'Juror'})`,
@@ -1094,7 +1094,7 @@ export default function AdminFeedScreen({
             }`}
           >
             <Gavel className="h-3 w-3" />
-            <span>BR Court</span>
+            <span>BR Relationship Court</span>
           </button>
           <button
             onClick={() => setSelectedType('board')}

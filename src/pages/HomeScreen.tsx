@@ -330,8 +330,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             {MOST_REGRETTED_DECISIONS.map((item, idx) => (
               <div
                 key={item.id}
-                onClick={() => setScreen({ type: 'tag', slug: item.title.toLowerCase().replace(/\s+/g, '-') })}
-                className="rounded-xl border border-[#E5E7EB] bg-[#FAF8F2] p-3.5 flex items-center justify-between gap-3 cursor-pointer hover:bg-white hover:border-[#C0392B]/30 transition-all shadow-sm"
+                className="rounded-xl border border-[#E5E7EB] bg-[#FAF8F2] p-3.5 flex items-center justify-between gap-3 shadow-sm"
                 id={`regret-decision-${item.id}`}
               >
                 <div className="flex items-center gap-3">
@@ -364,8 +363,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             {MOST_SUCCESSFUL_DECISIONS.map((item, idx) => (
               <div
                 key={item.id}
-                onClick={() => setScreen({ type: 'tag', slug: 'successful-stories' })}
-                className="rounded-xl border border-[#E5E7EB] bg-[#FAF8F2] p-3.5 flex items-center justify-between gap-3 cursor-pointer hover:bg-white hover:border-[#2E7D32]/30 transition-all shadow-sm"
+                className="rounded-xl border border-[#E5E7EB] bg-[#FAF8F2] p-3.5 flex items-center justify-between gap-3 shadow-sm"
                 id={`success-decision-${item.id}`}
               >
                 <div className="flex items-center gap-3">
@@ -443,7 +441,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
               <Gavel className="h-4 w-4" />
             </span>
             <div>
-              <h3 className="text-base font-extrabold text-[#24324A] font-display">BR Court Cases</h3>
+              <h3 className="text-base font-extrabold text-[#24324A] font-display">BR Relationship Court Cases</h3>
               <p className="text-xs text-[#6B7280]">Anonymously vote on active relationship dilemmas. Who is wrong?</p>
             </div>
           </div>
