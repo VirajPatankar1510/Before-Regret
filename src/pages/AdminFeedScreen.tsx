@@ -26,10 +26,14 @@ import {
   Copy,
   X,
   Download,
-  Laugh
+  Laugh,
+  Eye,
+  Users
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Story, StoryComment, CourtCase, Question, RedFlagCase } from '../types';
+import { db } from '../lib/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 interface FeedItem {
   id: string;
@@ -204,6 +208,31 @@ export default function AdminFeedScreen({
     const saved = localStorage.getItem('before_regret_last_feed_check');
     return saved ? parseInt(saved, 10) : Date.now();
   });
+
+  // Real-time website visitor counter state
+  const [visitorStats, setVisitorStats] = useState<{ totalViews: number; uniqueVisitors: number }>({
+    totalViews: 0,
+    uniqueVisitors: 0
+  });
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const docRef = doc(db, "stats", "visits");
+    const unsubscribe = onSnapshot(docRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setVisitorStats({
+          totalViews: data.totalViews || 0,
+          uniqueVisitors: data.uniqueVisitors || 0
+        });
+      }
+    }, (error) => {
+      console.error("Error subscribing to visitor stats in AdminFeedScreen:", error);
+    });
+
+    return () => unsubscribe();
+  }, [isAdmin]);
 
   // Instagram Post Generator State
   const [isGenerating, setIsGenerating] = useState(false);
@@ -939,7 +968,7 @@ export default function AdminFeedScreen({
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
         
         {/* Metric Card 1: Total */}
-        <div className="bg-white border border-[#E5E7EB] p-4 rounded-2xl shadow-xs col-span-2 flex flex-col justify-between">
+        <div className="bg-white border border-[#E5E7EB] p-4 rounded-2xl shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase font-extrabold text-zinc-500 font-mono tracking-wider">Total Active Items</span>
             <span className="p-1 rounded-md bg-zinc-100 text-zinc-600">
@@ -947,8 +976,8 @@ export default function AdminFeedScreen({
             </span>
           </div>
           <div className="mt-4">
-            <div className="text-3xl font-black text-[#24324A] font-mono tracking-tight">{stats.total}</div>
-            <p className="text-[10px] text-zinc-400 mt-1">Sum of all records in state memory</p>
+            <div className="text-2xl font-black text-[#24324A] font-mono tracking-tight">{stats.total}</div>
+            <p className="text-[9px] text-zinc-400 mt-0.5">Records in memory</p>
           </div>
         </div>
 
@@ -976,7 +1005,7 @@ export default function AdminFeedScreen({
           </div>
           <div className="mt-4">
             <div className="text-2xl font-black text-purple-900 font-mono">{stats.court}</div>
-            <p className="text-[9px] text-zinc-400 mt-0.5">Court cases + jury statements</p>
+            <p className="text-[9px] text-zinc-400 mt-0.5">Trials + jury statements</p>
           </div>
         </div>
 
@@ -990,7 +1019,7 @@ export default function AdminFeedScreen({
           </div>
           <div className="mt-4">
             <div className="text-2xl font-black text-teal-900 font-mono">{stats.boards}</div>
-            <p className="text-[9px] text-zinc-400 mt-0.5">Queries, expert tips, & replies</p>
+            <p className="text-[9px] text-zinc-400 mt-0.5">Queries, tips, & replies</p>
           </div>
         </div>
 
@@ -1005,6 +1034,25 @@ export default function AdminFeedScreen({
           <div className="mt-4">
             <div className="text-2xl font-black text-rose-900 font-mono">{stats.flags}</div>
             <p className="text-[9px] text-zinc-400 mt-0.5">Flag cases + warning comments</p>
+          </div>
+        </div>
+
+        {/* Metric Card 6: Website Visits */}
+        <div className="bg-white border border-[#E5E7EB] p-4 rounded-2xl shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase font-extrabold text-zinc-500 font-mono tracking-wider">Real Visitors</span>
+            <span className="p-1 rounded-md bg-emerald-50 text-emerald-600 flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <Users className="h-3.5 w-3.5" />
+            </span>
+          </div>
+          <div className="mt-4">
+            <div className="text-2xl font-black text-emerald-950 font-mono">
+              {(visitorStats.uniqueVisitors || 0).toLocaleString()}
+            </div>
+            <p className="text-[9px] text-zinc-400 mt-0.5" title="Filters out automated bot user agents">
+              {(visitorStats.totalViews || 0).toLocaleString()} views • bot-filtered
+            </p>
           </div>
         </div>
 

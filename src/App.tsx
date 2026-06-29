@@ -53,7 +53,8 @@ import {
   saveCourtCaseToFirestore,
   saveRedFlagCaseToFirestore,
   deleteCourtCaseFromFirestore,
-  deleteQuestionFromFirestore
+  deleteQuestionFromFirestore,
+  recordVisitInFirestore
 } from './lib/firestoreService';
 
 // RESTful Route Pathname Helpers for Clean Semantic Dynamic pSEO
@@ -591,6 +592,45 @@ export default function App() {
       // Set to 6 hours ago so there are some "new" items to show first-time visitors
       const initialTime = Date.now() - 6 * 3600 * 1000;
       localStorage.setItem('before_regret_last_feed_check', initialTime.toString());
+    }
+  }, []);
+
+  // Record website visits (filtered for bots and crawlers)
+  useEffect(() => {
+    const isBot = () => {
+      if (typeof window === 'undefined') return true;
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      const botKeywords = [
+        'googlebot', 'bingbot', 'yandexbot', 'duckduckbot', 'slurp', 'baidu', 'sogou', 'exabot',
+        'facebot', 'ia_archiver', 'crawler', 'spider', 'robot', 'crawling', 'curl', 'wget', 'lighthouse',
+        'speedcurve', 'pingdom', 'uptime', 'monitor', 'bot', 'headlesschrome', 'selenium', 'puppeteer'
+      ];
+      for (const keyword of botKeywords) {
+        if (userAgent.includes(keyword)) return true;
+      }
+      if (window.navigator.webdriver) return true;
+      if (!window.navigator.languages || window.navigator.languages.length === 0) return true;
+      if (window.innerWidth === 0 || window.innerHeight === 0) return true;
+      return false;
+    };
+
+    if (isBot()) {
+      return;
+    }
+
+    const sessionCounted = sessionStorage.getItem('beforeregret_session_counted');
+    const visitorCounted = localStorage.getItem('beforeregret_visitor_counted');
+
+    const isNewSession = !sessionCounted;
+    const isNewVisitor = !visitorCounted;
+
+    if (isNewSession || isNewVisitor) {
+      recordVisitInFirestore(isNewSession, isNewVisitor)
+        .then(() => {
+          if (isNewSession) sessionStorage.setItem('beforeregret_session_counted', 'true');
+          if (isNewVisitor) localStorage.setItem('beforeregret_visitor_counted', 'true');
+        })
+        .catch(err => console.error("Error logging visit:", err));
     }
   }, []);
 
