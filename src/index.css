@@ -27,3 +27,11 @@
   to { transform: translateX(0); opacity: 1; }
 }
 
+/* Prevent iOS/mobile browsers from zooming in on focusing input fields, select elements, and textareas */
+@media screen and (max-width: 767px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+
