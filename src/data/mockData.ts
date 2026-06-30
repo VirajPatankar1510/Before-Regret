@@ -1212,6 +1212,44 @@ export const PRESEEDED_STORIES: Story[] = [
         regretScore: 5
       }
     ]
+  },
+  {
+    id: 's23',
+    title: "I lied on our first date and said I love football. We've been married 3 years and I still have to sit through 4 hours of games every Sunday pretending I know what a first down is.",
+    situationSlug: 'ignored-red-flags',
+    situationName: "Ignored Red Flags",
+    age: 28,
+    gender: "Female",
+    country: "United States",
+    relationshipDuration: "5 Years",
+    decisionMade: "Stayed",
+    currentOutcome: "Married",
+    regretScore: 6,
+    wouldDoAgain: "No",
+    dateAdded: "2026-05-10",
+    tags: ["funny", "lies", "sports", "marriage", "relatable"],
+    fullStory: "Okay, so our very first date was at a sports bar. I was trying so hard to be the 'cool, chill girl' who wasn't like other girls, so when he asked if I liked football, I enthusiastically said, 'Oh my god, yes, I literally live for Sunday game days!'\n\nI do not live for Sunday game days. I do not even know what a first down is. But he was gorgeous, so I kept the lie going. I bought a jersey. I memorized three players' names. I learned when to cheer by watching his face. \n\nFast forward 5 years: we are married, own a house, and he thinks Sunday football is our sacred couple's ritual. Every single week from September to February, I sit on the couch for four hours screaming at the TV, completely dead inside, wishing I was doing literally anything else. Last week he bought us season tickets. I have spent thousands of dollars and hundreds of hours on a sport I genuinely despise. If you're on a first date right now: do not fake your hobbies. You will end up trapped in a lifelong subscription to something you hate.",
+    userName: "fake_football_fan_98",
+    helpfulVotes: 3200,
+    timeline: [
+      { year: "2021", stage: "The First Date Lie", description: "Told him I loved football to seem low-maintenance and cool." },
+      { year: "2023", stage: "The Proposal Jersey", description: "He proposed to me with a custom team jersey with our future last name on it. I had to fake cry tears of joy." },
+      { year: "2026", stage: "Season Ticket Crisis", description: "He surprised me with expensive season tickets. I realized I am trapped in this lie forever." }
+    ],
+    updates: [
+      {
+        daysAfter: 30,
+        dateAdded: "2026-06-10",
+        text: "I tried to subtle-hint that I'm getting 'tired of the NFL' and he looked at me like I just suggested we kick a puppy. I guess I'm going to the stadium in the freezing rain next Sunday.",
+        regretScore: 6
+      },
+      {
+        daysAfter: 90,
+        dateAdded: "2026-08-10",
+        text: "I'm thinking of starting a support group for people who lied about liking camping, golf, or indie rock on their first dates. We can meet in secret and do crafts.",
+        regretScore: 4
+      }
+    ]
   }
 ];
 
