@@ -19,6 +19,7 @@ export interface StoryComment {
   authorPhoto?: string | null;
   text: string;
   dateAdded: string;
+  isRealInput?: boolean;
 }
 
 export interface Story {
@@ -44,6 +45,7 @@ export interface Story {
   dateAdded: string;
   updates: StoryUpdate[];
   tags: string[];
+  isRealInput?: boolean;
 }
 
 export interface SituationStats {
@@ -75,6 +77,7 @@ export interface CourtArgument {
   text: string;
   votes: number;
   role: 'Truth Teller' | 'Relationship Veteran' | 'Mentor' | 'Novice' | 'Top Mentor';
+  isRealInput?: boolean;
 }
 
 export interface CourtCase {
@@ -96,6 +99,7 @@ export interface CourtCase {
   createdAt?: string;        // ISO string when created
   passwordPin?: string;      // Random PIN/password generated at registration
   recipientName?: string;    // Custom recipient name added by authenticated user
+  isRealInput?: boolean;
 }
 
 export interface QuestionAnswerComment {
@@ -103,6 +107,7 @@ export interface QuestionAnswerComment {
   author: string;
   text: string;
   date: string;
+  isRealInput?: boolean;
 }
 
 export interface QuestionAnswer {
@@ -113,6 +118,7 @@ export interface QuestionAnswer {
   isOutcomeVerified: boolean; // has submitted a story
   date: string;
   comments?: QuestionAnswerComment[]; // Comments below this specific advice!
+  isRealInput?: boolean;
 }
 
 export interface Question {
@@ -125,6 +131,7 @@ export interface Question {
   storiesCount: number;
   tags: string[];
   dateAdded?: string;
+  isRealInput?: boolean;
 }
 
 export interface UserProfile {
@@ -151,6 +158,7 @@ export interface RedFlagComment {
   author: string;
   text: string;
   date: string;
+  isRealInput?: boolean;
 }
 
 export interface RedFlagCase {
@@ -167,6 +175,7 @@ export interface RedFlagCase {
   comments?: RedFlagComment[];
   author: string;
   dateAdded: string;
+  isRealInput?: boolean;
 }
 
 
