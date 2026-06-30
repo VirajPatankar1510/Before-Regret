@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Shield, 
+  Pencil,
   Trash2, 
   ExternalLink, 
   Search, 
@@ -55,6 +56,7 @@ interface FeedItem {
   meta?: React.ReactNode;
   onView: () => void;
   onDelete: () => void;
+  onEdit: (newTitle: string, newContent: string) => void;
   isUserSubmitted: boolean;
 }
 
@@ -76,6 +78,15 @@ interface AdminFeedScreenProps {
   onDeleteRedFlagCase: (caseId: string) => void;
   onDeleteRedFlagComment: (caseId: string, commentId: string) => void;
   onToggleAdmin: (val: boolean) => void;
+  onEditStory: (storyId: string, newTitle: string, newStoryText: string) => void;
+  onEditComment: (commentId: string, newText: string) => void;
+  onEditCourtCase: (slug: string, newTitle: string, newDescription: string) => void;
+  onEditArgument: (caseSlug: string, argId: string, newText: string) => void;
+  onEditQuestion: (slug: string, newTitle: string, newDescription: string) => void;
+  onEditAnswer: (qSlug: string, ansId: string, newText: string) => void;
+  onEditAnswerComment: (qSlug: string, ansId: string, commentId: string, newText: string) => void;
+  onEditRedFlagCase: (caseId: string, newTitle: string, newDescription: string) => void;
+  onEditRedFlagComment: (caseId: string, commentId: string, newText: string) => void;
 }
 
 // Deterministic hash helper to select stable templates/ctas
@@ -204,9 +215,21 @@ export default function AdminFeedScreen({
   onDeleteAnswerComment,
   onDeleteRedFlagCase,
   onDeleteRedFlagComment,
-  onToggleAdmin
+  onToggleAdmin,
+  onEditStory,
+  onEditComment,
+  onEditCourtCase,
+  onEditArgument,
+  onEditQuestion,
+  onEditAnswer,
+  onEditAnswerComment,
+  onEditRedFlagCase,
+  onEditRedFlagComment
 }: AdminFeedScreenProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [editingItem, setEditingItem] = useState<FeedItem | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
   const [passwordInput, setPasswordInput] = useState('');
@@ -503,7 +526,8 @@ export default function AdminFeedScreen({
           </div>
         ),
         onView: () => setScreen({ type: 'regret_stories', slug: s.id }),
-        onDelete: () => onDeleteStory(s.id)
+        onDelete: () => onDeleteStory(s.id),
+        onEdit: (newTitle: string, newContent: string) => onEditStory(s.id, newTitle, newContent)
       });
     });
 
@@ -537,7 +561,8 @@ export default function AdminFeedScreen({
           </div>
         ),
         onView: () => setScreen({ type: 'regret_stories', slug: c.storyId }),
-        onDelete: () => onDeleteComment(c.id)
+        onDelete: () => onDeleteComment(c.id),
+        onEdit: (newTitle: string, newContent: string) => onEditComment(c.id, newContent)
       });
     });
 
@@ -573,7 +598,8 @@ export default function AdminFeedScreen({
           </div>
         ),
         onView: () => setScreen({ type: 'court', slug: cc.slug }),
-        onDelete: () => onDeleteCourtCase(cc.slug)
+        onDelete: () => onDeleteCourtCase(cc.slug),
+        onEdit: (newTitle: string, newContent: string) => onEditCourtCase(cc.slug, newTitle, newContent)
       });
 
       // Jury Arguments
@@ -608,7 +634,8 @@ export default function AdminFeedScreen({
               </div>
             ),
             onView: () => setScreen({ type: 'court', slug: cc.slug }),
-            onDelete: () => onDeleteArgument(cc.slug, arg.id)
+            onDelete: () => onDeleteArgument(cc.slug, arg.id),
+            onEdit: (newTitle: string, newContent: string) => onEditArgument(cc.slug, arg.id, newContent)
           });
         });
       }
@@ -647,7 +674,8 @@ export default function AdminFeedScreen({
           </div>
         ),
         onView: () => setScreen({ type: 'question', slug: q.slug }),
-        onDelete: () => onDeleteQuestion(q.slug)
+        onDelete: () => onDeleteQuestion(q.slug),
+        onEdit: (newTitle: string, newContent: string) => onEditQuestion(q.slug, newTitle, newContent)
       });
 
       // Advice answers
@@ -684,7 +712,8 @@ export default function AdminFeedScreen({
               </div>
             ),
             onView: () => setScreen({ type: 'question', slug: q.slug }),
-            onDelete: () => onDeleteAnswer(q.slug, ans.id)
+            onDelete: () => onDeleteAnswer(q.slug, ans.id),
+            onEdit: (newTitle: string, newContent: string) => onEditAnswer(q.slug, ans.id, newContent)
           });
 
           // Answer comments
@@ -716,7 +745,8 @@ export default function AdminFeedScreen({
                   </div>
                 ),
                 onView: () => setScreen({ type: 'question', slug: q.slug }),
-                onDelete: () => onDeleteAnswerComment(q.slug, ans.id, ac.id)
+                onDelete: () => onDeleteAnswerComment(q.slug, ans.id, ac.id),
+                onEdit: (newTitle: string, newContent: string) => onEditAnswerComment(q.slug, ans.id, ac.id, newContent)
               });
             });
           }
@@ -756,7 +786,8 @@ export default function AdminFeedScreen({
           </div>
         ),
         onView: () => setScreen({ type: 'red_flag_meter', slug: rf.id }),
-        onDelete: () => onDeleteRedFlagCase(rf.id)
+        onDelete: () => onDeleteRedFlagCase(rf.id),
+        onEdit: (newTitle: string, newContent: string) => onEditRedFlagCase(rf.id, newTitle, newContent)
       });
 
       // Red flag comments
@@ -788,14 +819,15 @@ export default function AdminFeedScreen({
               </div>
             ),
             onView: () => setScreen({ type: 'red_flag_meter', slug: rf.id }),
-            onDelete: () => onDeleteRedFlagComment(rf.id, com.id)
+            onDelete: () => onDeleteRedFlagComment(rf.id, com.id),
+            onEdit: (newTitle: string, newContent: string) => onEditRedFlagComment(rf.id, com.id, newContent)
           });
         });
       }
     });
 
     return items;
-  }, [stories, comments, courtCases, questions, redFlagCases, setScreen, onDeleteStory, onDeleteComment, onDeleteCourtCase, onDeleteArgument, onDeleteQuestion, onDeleteAnswer, onDeleteAnswerComment, onDeleteRedFlagCase, onDeleteRedFlagComment]);
+  }, [stories, comments, courtCases, questions, redFlagCases, setScreen, onDeleteStory, onDeleteComment, onDeleteCourtCase, onDeleteArgument, onDeleteQuestion, onDeleteAnswer, onDeleteAnswerComment, onDeleteRedFlagCase, onDeleteRedFlagComment, onEditStory, onEditComment, onEditCourtCase, onEditArgument, onEditQuestion, onEditAnswer, onEditAnswerComment, onEditRedFlagCase, onEditRedFlagComment]);
 
   // Filters and search logic
   const filteredAndSortedItems = useMemo(() => {
@@ -1322,6 +1354,31 @@ export default function AdminFeedScreen({
                       <ExternalLink className="h-3 w-3" />
                     </button>
 
+                    {/* Edit item if Admin Mode is on */}
+                    {isAdmin ? (
+                      <button
+                        onClick={() => {
+                          setEditingItem(item);
+                          setEditTitle(item.title);
+                          setEditContent(item.content);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-600 border border-[#E5E7EB] hover:border-indigo-600 rounded-xl transition-all cursor-pointer whitespace-nowrap font-mono"
+                        title="Edit and correct this submission content"
+                      >
+                        <Pencil className="h-3 w-3" />
+                        <span>Edit Content</span>
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-zinc-400 bg-zinc-50 border border-zinc-200 rounded-xl opacity-60 cursor-not-allowed whitespace-nowrap font-mono"
+                        title="Authorize in Admin Console to enable content editing overrides"
+                      >
+                        <EyeOff className="h-3 w-3" />
+                        <span>Edit Locked</span>
+                      </button>
+                    )}
+
                     {/* Delete item if Admin Mode is on */}
                     {isAdmin ? (
                       <button
@@ -1357,6 +1414,110 @@ export default function AdminFeedScreen({
         )}
 
       </div>
+
+      {/* Dynamic Content Edit Modal Overlay */}
+      {editingItem && (
+        <div id="admin-edit-modal-overlay" className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto animate-fadeIn">
+          <div id="admin-edit-modal-container" className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden border border-zinc-100 flex flex-col max-h-[90vh]">
+            
+            {/* Modal Header */}
+            <div id="admin-edit-modal-header" className="bg-[#24324A] text-white px-6 py-4 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <Pencil className="h-5 w-5 text-[#C9A227]" />
+                <div className="text-left">
+                  <h3 className="font-sans font-bold text-lg tracking-tight">Edit Console Override</h3>
+                  <p className="text-[10px] text-zinc-300 font-mono tracking-wider uppercase">MODERATING {editingItem.typeLabel}</p>
+                </div>
+              </div>
+              <button 
+                id="admin-edit-modal-close"
+                onClick={() => setEditingItem(null)} 
+                className="text-zinc-400 hover:text-white bg-zinc-800/40 p-1.5 rounded-full transition-colors cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Content Form */}
+            <div id="admin-edit-modal-form" className="p-6 overflow-y-auto space-y-5 text-left">
+              <div className="bg-amber-50/60 border border-amber-200/50 rounded-2xl p-4 flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="text-xs text-amber-900 leading-relaxed">
+                  <strong className="font-bold">Caution:</strong> You are directly overwriting database fields. Corrections will be immediately committed to Firestore and reflect globally for all visitors in real-time.
+                </div>
+              </div>
+
+              {/* Conditionally Render Title Input */}
+              {['story', 'court_case', 'question', 'red_flag_case'].includes(editingItem.type) && (
+                <div className="space-y-1.5">
+                  <label id="admin-edit-title-label" className="block text-xs font-bold text-zinc-700 tracking-wide uppercase font-mono">
+                    Submission Title
+                  </label>
+                  <input
+                    id="admin-edit-title-input"
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl text-sm transition-all focus:outline-hidden text-zinc-900"
+                    placeholder="Enter submission title..."
+                  />
+                </div>
+              )}
+
+              {/* Content Textarea */}
+              <div className="space-y-1.5">
+                <label id="admin-edit-content-label" className="block text-xs font-bold text-zinc-700 tracking-wide uppercase font-mono">
+                  Content Body
+                </label>
+                <textarea
+                  id="admin-edit-content-textarea"
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  rows={8}
+                  className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl text-sm transition-all focus:outline-hidden resize-y font-sans leading-relaxed text-zinc-900"
+                  placeholder="Enter content text..."
+                />
+              </div>
+
+              {/* Metadata Read-only Summary */}
+              <div className="bg-zinc-50 rounded-2xl p-4 text-[11px] text-zinc-500 font-mono space-y-1">
+                <div><span className="text-zinc-400">ID:</span> {editingItem.id}</div>
+                <div><span className="text-zinc-400">Author:</span> {editingItem.author}</div>
+                <div><span className="text-zinc-400">Original Date:</span> {editingItem.dateStr}</div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div id="admin-edit-modal-footer" className="bg-zinc-50 px-6 py-4 flex items-center justify-end gap-3 border-t border-zinc-100 shrink-0">
+              <button
+                id="admin-edit-modal-cancel"
+                type="button"
+                onClick={() => setEditingItem(null)}
+                className="px-4 py-2 text-xs font-bold text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 border border-zinc-200 rounded-xl transition-all cursor-pointer font-mono"
+              >
+                CANCEL
+              </button>
+              <button
+                id="admin-edit-modal-save"
+                type="button"
+                onClick={() => {
+                  try {
+                    editingItem.onEdit(editTitle, editContent);
+                    setEditingItem(null);
+                  } catch (err) {
+                    console.error("Failed to commit edit:", err);
+                    alert("Error updating content. Please check console logs.");
+                  }
+                }}
+                className="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 border border-indigo-600 rounded-xl shadow-xs transition-all cursor-pointer font-mono"
+              >
+                SAVE OVERWRITE
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* Instagram Generator Modal Overlay */}
       {(isGenerating || generatedPost || generatedMeme) && activeItem && (
