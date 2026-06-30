@@ -214,7 +214,7 @@ export default function Navigation({
                 <span className="text-[9px] text-[#C9A227] font-mono font-extrabold tracking-wider hidden sm:inline shrink-0 select-none">SEARCH CASE ID</span>
                 <input
                   type="text"
-                  placeholder="CASE KEY..."
+                  placeholder="CASE ID..."
                   className="bg-transparent border-none text-[11px] text-[#1F2937] w-16 sm:w-24 focus:outline-none placeholder-zinc-400 font-mono font-semibold uppercase"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {

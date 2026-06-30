@@ -226,7 +226,7 @@ export default function ExploreScreen({
       <div className="relative">
         <input
           type="text"
-          placeholder="Search index by unique Case Key, tags (e.g. Female, 20s), or issue words..."
+          placeholder="Search index by unique Case ID, tags (e.g. Female, 20s), or issue words..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full bg-white border border-[#E5E7EB] focus:border-[#24324A] rounded-xl py-2 px-3.5 pl-10 text-xs text-[#1F2937] placeholder-zinc-400 focus:outline-none transition-all font-sans font-medium hover:border-zinc-300"
