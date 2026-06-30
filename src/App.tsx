@@ -685,8 +685,8 @@ export default function App() {
       snapshot.forEach((snapDoc) => {
         fsStories.push(snapDoc.data() as Story);
       });
-      if (snapshot.empty) {
-        import('./data/mockData').then(({ PRESEEDED_STORIES }) => {
+      import('./data/mockData').then(({ PRESEEDED_STORIES }) => {
+        if (snapshot.empty) {
           PRESEEDED_STORIES.forEach(s => {
             if (!s.caseNumber) {
               const stableNum = 1001 + PRESEEDED_STORIES.indexOf(s);
@@ -694,8 +694,20 @@ export default function App() {
             }
             saveStoryToFirestore(s).catch(err => console.error("Seed error:", err));
           });
-        });
-      }
+        } else {
+          // Sync missing preseeded stories
+          const fsIds = new Set(fsStories.map(s => s.id));
+          PRESEEDED_STORIES.forEach(s => {
+            if (!fsIds.has(s.id)) {
+              if (!s.caseNumber) {
+                const stableNum = 1001 + PRESEEDED_STORIES.indexOf(s);
+                s.caseNumber = `CASE-S${stableNum}`;
+              }
+              saveStoryToFirestore(s).catch(err => console.error("Seed error:", err));
+            }
+          });
+        }
+      });
       setStore(prev => {
         const uniqueStories = fsStories.filter((s, idx, self) => 
           self.findIndex(t => t.id === s.id) === idx
@@ -728,13 +740,20 @@ export default function App() {
       snapshot.forEach((snapDoc) => {
         fsQuestions.push(snapDoc.data() as Question);
       });
-      if (snapshot.empty) {
-        import('./data/mockData').then(({ PRESEEDED_QUESTIONS }) => {
+      import('./data/mockData').then(({ PRESEEDED_QUESTIONS }) => {
+        if (snapshot.empty) {
           PRESEEDED_QUESTIONS.forEach(q => {
             saveQuestionToFirestore(q).catch(err => console.error("Seed error:", err));
           });
-        });
-      }
+        } else {
+          const fsSlugs = new Set(fsQuestions.map(q => q.slug));
+          PRESEEDED_QUESTIONS.forEach(q => {
+            if (!fsSlugs.has(q.slug)) {
+              saveQuestionToFirestore(q).catch(err => console.error("Seed error:", err));
+            }
+          });
+        }
+      });
       setStore(prev => {
         const uniqueQuestions = fsQuestions.filter((q, idx, self) => 
           self.findIndex(t => t.slug === q.slug) === idx
@@ -756,8 +775,8 @@ export default function App() {
       snapshot.forEach((snapDoc) => {
         fsCourtCases.push(snapDoc.data() as CourtCase);
       });
-      if (snapshot.empty) {
-        import('./data/mockData').then(({ PRESEEDED_COURT_CASES }) => {
+      import('./data/mockData').then(({ PRESEEDED_COURT_CASES }) => {
+        if (snapshot.empty) {
           PRESEEDED_COURT_CASES.forEach(c => {
             if (!c.caseNumber) {
               const stableNum = 2001 + PRESEEDED_COURT_CASES.indexOf(c);
@@ -765,8 +784,19 @@ export default function App() {
             }
             saveCourtCaseToFirestore(c).catch(err => console.error("Seed error:", err));
           });
-        });
-      }
+        } else {
+          const fsSlugs = new Set(fsCourtCases.map(c => c.slug));
+          PRESEEDED_COURT_CASES.forEach(c => {
+            if (!fsSlugs.has(c.slug)) {
+              if (!c.caseNumber) {
+                const stableNum = 2001 + PRESEEDED_COURT_CASES.indexOf(c);
+                c.caseNumber = `CASE-C${stableNum}`;
+              }
+              saveCourtCaseToFirestore(c).catch(err => console.error("Seed error:", err));
+            }
+          });
+        }
+      });
       setStore(prev => {
         const unique = fsCourtCases.filter((c, idx, self) =>
           self.findIndex(t => t.slug === c.slug) === idx
@@ -786,8 +816,8 @@ export default function App() {
       snapshot.forEach((snapDoc) => {
         fsRedFlagCases.push(snapDoc.data() as RedFlagCase);
       });
-      if (snapshot.empty) {
-        import('./data/mockData').then(({ PRESEEDED_RED_FLAG_CASES }) => {
+      import('./data/mockData').then(({ PRESEEDED_RED_FLAG_CASES }) => {
+        if (snapshot.empty) {
           PRESEEDED_RED_FLAG_CASES.forEach(rf => {
             if (!rf.caseNumber) {
               const stableNum = 3001 + PRESEEDED_RED_FLAG_CASES.indexOf(rf);
@@ -795,8 +825,19 @@ export default function App() {
             }
             saveRedFlagCaseToFirestore(rf).catch(err => console.error("Seed error:", err));
           });
-        });
-      }
+        } else {
+          const fsIds = new Set(fsRedFlagCases.map(rf => rf.id));
+          PRESEEDED_RED_FLAG_CASES.forEach(rf => {
+            if (!fsIds.has(rf.id)) {
+              if (!rf.caseNumber) {
+                const stableNum = 3001 + PRESEEDED_RED_FLAG_CASES.indexOf(rf);
+                rf.caseNumber = `CASE-F${stableNum}`;
+              }
+              saveRedFlagCaseToFirestore(rf).catch(err => console.error("Seed error:", err));
+            }
+          });
+        }
+      });
       setStore(prev => {
         const unique = fsRedFlagCases.filter((f, idx, self) =>
           self.findIndex(t => t.id === f.id) === idx
