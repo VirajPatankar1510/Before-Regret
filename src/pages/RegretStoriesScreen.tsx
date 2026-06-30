@@ -305,7 +305,8 @@ export default function RegretStoriesScreen({
               <div 
                 key={story.id} 
                 id={`story-card-${story.id}`}
-                className={`rounded-2xl border transition-all duration-300 relative p-5 sm:p-6 ${
+                onClick={() => toggleExpand(story.id)}
+                className={`rounded-2xl border transition-all duration-300 relative p-5 sm:p-6 cursor-pointer ${
                   isHighlighted 
                     ? 'border-[#C9A227] ring-4 ring-[#C9A227]/15 bg-[#FAF8F2] shadow-md scale-[1.01]' 
                     : 'border-[#E5E7EB] bg-white shadow-sm hover:shadow-md hover:translate-y-[-1px]'
@@ -340,7 +341,7 @@ export default function RegretStoriesScreen({
                 <div className="space-y-4">
                   
                   <div>
-                    <h3 className="text-base font-bold text-[#24324A] leading-snug font-serif">
+                    <h3 className="text-base font-bold text-[#24324A] leading-snug font-serif hover:text-[#C9A227] transition-colors">
                       "{story.title}"
                     </h3>
                     
@@ -380,7 +381,10 @@ export default function RegretStoriesScreen({
                     
                     {story.fullStory.length > 250 && (
                       <button
-                        onClick={() => toggleExpand(story.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleExpand(story.id);
+                        }}
                         className="inline-flex items-center gap-1 text-[11px] text-[#C9A227] hover:text-[#24324A] font-bold transition-colors mt-1 hover:underline"
                       >
                         {isExpanded ? (
@@ -396,7 +400,10 @@ export default function RegretStoriesScreen({
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#ECECEC] text-[11px] text-zinc-400 font-medium">
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => onVoteHelpful(story.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onVoteHelpful(story.id);
+                        }}
                         className="inline-flex items-center gap-1.5 bg-white border border-[#E5E7EB] hover:border-[#24324A] hover:bg-neutral-50 px-3 py-1.5 rounded-lg text-[#1F2937] font-semibold transition-all cursor-pointer"
                       >
                         <ThumbsUp className="h-3.5 w-3.5 text-[#C0392B]" /> Helpful Outcome Review ({story.helpfulVotes})
@@ -404,11 +411,12 @@ export default function RegretStoriesScreen({
 
                       {isAdmin && onDeleteStory && (
                         storyIdToDeleteConfirm === story.id ? (
-                          <div className="inline-flex items-center gap-1 bg-red-50 border border-red-200 p-0.5 rounded-lg">
+                          <div className="inline-flex items-center gap-1 bg-red-50 border border-red-200 p-0.5 rounded-lg" onClick={(e) => e.stopPropagation()}>
                             <span className="text-[10px] text-red-700 px-1.5 font-bold">Are you sure?</span>
                             <button
                               type="button"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 onDeleteStory(story.id);
                                 setStoryIdToDeleteConfirm(null);
                               }}
@@ -418,7 +426,10 @@ export default function RegretStoriesScreen({
                             </button>
                             <button
                               type="button"
-                              onClick={() => setStoryIdToDeleteConfirm(null)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setStoryIdToDeleteConfirm(null);
+                              }}
                               className="px-2 py-1 rounded bg-zinc-200 text-zinc-700 font-bold hover:bg-zinc-300 text-[10px] cursor-pointer"
                             >
                               Cancel
@@ -427,7 +438,10 @@ export default function RegretStoriesScreen({
                         ) : (
                           <button
                             type="button"
-                            onClick={() => setStoryIdToDeleteConfirm(story.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setStoryIdToDeleteConfirm(story.id);
+                            }}
                             className="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-[#C0392B] border border-red-100 px-3 py-1.5 rounded-lg font-bold transition-all shadow-2xs cursor-pointer"
                             title="Administrator Override: Delete Story"
                           >
