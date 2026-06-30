@@ -987,7 +987,8 @@ export default function App() {
       authorName: authorName,
       authorPhoto: authorPhoto,
       text: text,
-      dateAdded: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      dateAdded: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      isRealInput: true
     };
 
     await saveCommentToFirestore(newComment);
@@ -1215,6 +1216,7 @@ export default function App() {
     
     newStory.id = newStory.id || 'story_' + Math.random().toString(36).substring(2, 9);
     newStory.caseNumber = caseNumber;
+    newStory.isRealInput = true;
 
     // Save to local storage private list
     try {
@@ -1463,7 +1465,8 @@ export default function App() {
         id: 'flag_cmt_' + Date.now().toString(),
         author: prev.user.username,
         text,
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        isRealInput: true
       };
 
       const redFlagCase = {
@@ -1504,7 +1507,8 @@ export default function App() {
       votes: { green: 0, yellow: 0, red: 0 },
       comments: [],
       author: store.user.username,
-      dateAdded: new Date().toISOString().split('T')[0]
+      dateAdded: new Date().toISOString().split('T')[0],
+      isRealInput: true
     };
 
     setStore(prev => {
@@ -1553,7 +1557,8 @@ export default function App() {
         side,
         text,
         votes: 0,
-        role: (prev.user.storiesSubmitted > 0 ? "Relationship Veteran" : "Truth Teller") as any
+        role: (prev.user.storiesSubmitted > 0 ? "Relationship Veteran" : "Truth Teller") as any,
+        isRealInput: true
       };
 
       courtCase.arguments = [newArg, ...courtCase.arguments];
@@ -1605,7 +1610,8 @@ export default function App() {
       tags: caseData.tags,
       deliberationDays: caseData.deliberationDays || 3,
       createdAt: new Date().toISOString(),
-      passwordPin: passwordPin
+      passwordPin: passwordPin,
+      isRealInput: true
     };
 
     // Save to local storage private list
@@ -1689,7 +1695,8 @@ export default function App() {
         text,
         votes: 0,
         isOutcomeVerified: prev.user.storiesSubmitted > 0,
-        date: 'Just now'
+        date: 'Just now',
+        isRealInput: true
       };
 
       question.answers = [newAnswer, ...question.answers];
@@ -1728,7 +1735,8 @@ export default function App() {
         id: 'cmt_' + Date.now().toString(),
         author: prev.user.username,
         text,
-        date: 'Just now'
+        date: 'Just now',
+        isRealInput: true
       };
 
       answer.comments = [...comments, newComment];

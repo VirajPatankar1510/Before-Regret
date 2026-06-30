@@ -32,6 +32,12 @@ import {
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Story, StoryComment, CourtCase, Question, RedFlagCase } from '../types';
+import { 
+  PRESEEDED_STORIES, 
+  PRESEEDED_COURT_CASES, 
+  PRESEEDED_QUESTIONS, 
+  PRESEEDED_RED_FLAG_CASES 
+} from '../data/mockData';
 import { db } from '../lib/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 
@@ -49,6 +55,7 @@ interface FeedItem {
   meta?: React.ReactNode;
   onView: () => void;
   onDelete: () => void;
+  isUserSubmitted: boolean;
 }
 
 interface AdminFeedScreenProps {
@@ -466,7 +473,8 @@ export default function AdminFeedScreen({
 
     // 1. Stories
     stories.forEach(s => {
-      const isUserSubmitted = s.id.startsWith('usr_') || s.caseNumber?.startsWith('S');
+      const isPreseeded = PRESEEDED_STORIES.some(ps => ps.id === s.id);
+      const isUserSubmitted = !!s.isRealInput || (!isPreseeded && (s.id.startsWith('story_') || s.id.startsWith('usr_')));
       items.push({
         id: `story-${s.id}`,
         type: 'story',
@@ -478,6 +486,7 @@ export default function AdminFeedScreen({
         dateStr: s.dateAdded,
         dateObj: new Date(s.dateAdded),
         slug: s.id,
+        isUserSubmitted,
         meta: (
           <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2">
             <span className="px-2 py-0.5 rounded-md bg-[#FAF8F2] text-[#24324A] font-semibold border border-[#E5E7EB]">
@@ -502,7 +511,7 @@ export default function AdminFeedScreen({
     comments.forEach(c => {
       const story = stories.find(s => s.id === c.storyId);
       const storyTitle = story ? story.title : 'Registry Case Story';
-      const isUserSubmitted = c.id.startsWith('comment_');
+      const isUserSubmitted = !!c.isRealInput || c.id.startsWith('comment_');
       items.push({
         id: `comment-${c.id}`,
         type: 'comment',
@@ -514,6 +523,7 @@ export default function AdminFeedScreen({
         dateStr: c.dateAdded,
         dateObj: new Date(c.dateAdded),
         slug: c.storyId,
+        isUserSubmitted,
         meta: (
           <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2">
             <span className="px-2 py-0.5 rounded-md bg-[#FAF8F2] text-zinc-600 border border-[#E5E7EB] font-mono">
@@ -533,7 +543,8 @@ export default function AdminFeedScreen({
 
     // 3. Court Cases
     courtCases.forEach(cc => {
-      const isUserSubmitted = cc.slug.startsWith('case-') || cc.caseNumber?.startsWith('C');
+      const isPreseeded = PRESEEDED_COURT_CASES.some(pcc => pcc.slug === cc.slug);
+      const isUserSubmitted = !!cc.isRealInput || !isPreseeded;
       items.push({
         id: `courtcase-${cc.slug}`,
         type: 'court_case',
@@ -545,6 +556,7 @@ export default function AdminFeedScreen({
         dateStr: cc.createdAt || cc.postTime,
         dateObj: new Date(cc.createdAt || cc.postTime || Date.now()),
         slug: cc.slug,
+        isUserSubmitted,
         meta: (
           <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2">
             <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-100 font-semibold">
@@ -567,6 +579,7 @@ export default function AdminFeedScreen({
       // Jury Arguments
       if (cc.arguments && Array.isArray(cc.arguments)) {
         cc.arguments.forEach(arg => {
+          const isUserSubmitted = !!arg.isRealInput || arg.id.startsWith('arg_');
           items.push({
             id: `courtarg-${arg.id}`,
             type: 'jury_argument',
@@ -578,6 +591,7 @@ export default function AdminFeedScreen({
             dateStr: cc.createdAt || cc.postTime,
             dateObj: new Date(cc.createdAt || cc.postTime || Date.now()),
             slug: cc.slug,
+            isUserSubmitted,
             meta: (
               <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2">
                 <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-100 font-semibold">
@@ -586,6 +600,11 @@ export default function AdminFeedScreen({
                 <span className="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-800 border border-indigo-100 font-semibold font-mono">
                   Argument Upvotes: {arg.votes}
                 </span>
+                {isUserSubmitted && (
+                  <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/60 font-black uppercase text-[8px] tracking-wide">
+                    User Submission
+                  </span>
+                )}
               </div>
             ),
             onView: () => setScreen({ type: 'court', slug: cc.slug }),
@@ -597,7 +616,8 @@ export default function AdminFeedScreen({
 
     // 4. Questions
     questions.forEach(q => {
-      const isUserSubmitted = q.slug.startsWith('q_');
+      const isPreseeded = PRESEEDED_QUESTIONS.some(pq => pq.slug === q.slug);
+      const isUserSubmitted = !!q.isRealInput || !isPreseeded;
       const qDateStr = q.dateAdded || '2026-06-20T12:00:00Z';
       items.push({
         id: `question-${q.slug}`,
@@ -610,6 +630,7 @@ export default function AdminFeedScreen({
         dateStr: qDateStr,
         dateObj: new Date(qDateStr),
         slug: q.slug,
+        isUserSubmitted,
         meta: (
           <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2">
             <span className="px-2 py-0.5 rounded-md bg-teal-50 text-teal-800 border border-teal-100 font-semibold">
@@ -632,6 +653,7 @@ export default function AdminFeedScreen({
       // Advice answers
       if (q.answers && Array.isArray(q.answers)) {
         q.answers.forEach(ans => {
+          const isUserSubmitted = !!ans.isRealInput || ans.id.startsWith('ans_');
           items.push({
             id: `answer-${ans.id}`,
             type: 'advice_answer',
@@ -643,6 +665,7 @@ export default function AdminFeedScreen({
             dateStr: ans.date || qDateStr,
             dateObj: new Date(ans.date || qDateStr),
             slug: q.slug,
+            isUserSubmitted,
             meta: (
               <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2">
                 <span className="px-2 py-0.5 rounded-md bg-[#FAF8F2] text-zinc-600 border border-[#E5E7EB]">
@@ -651,6 +674,11 @@ export default function AdminFeedScreen({
                 {ans.isOutcomeVerified && (
                   <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 font-extrabold border border-emerald-200/60 uppercase text-[8px] tracking-wider">
                     Outcome Verified
+                  </span>
+                )}
+                {isUserSubmitted && (
+                  <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/60 font-black uppercase text-[8px] tracking-wide">
+                    User Submission
                   </span>
                 )}
               </div>
@@ -662,6 +690,7 @@ export default function AdminFeedScreen({
           // Answer comments
           if (ans.comments && Array.isArray(ans.comments)) {
             ans.comments.forEach(ac => {
+              const isUserSubmitted = !!ac.isRealInput || ac.id.startsWith('cmt_');
               items.push({
                 id: `anscomment-${ac.id}`,
                 type: 'advice_comment',
@@ -673,11 +702,17 @@ export default function AdminFeedScreen({
                 dateStr: ac.date || ans.date || qDateStr,
                 dateObj: new Date(ac.date || ans.date || qDateStr),
                 slug: q.slug,
+                isUserSubmitted,
                 meta: (
                   <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2 font-mono">
                     <span className="px-2 py-0.5 rounded-md bg-[#FAF8F2] text-zinc-600 border border-[#E5E7EB]">
                       Answer ID: {ans.id}
                     </span>
+                    {isUserSubmitted && (
+                      <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/60 font-black uppercase text-[8px] tracking-wide">
+                        User Submission
+                      </span>
+                    )}
                   </div>
                 ),
                 onView: () => setScreen({ type: 'question', slug: q.slug }),
@@ -691,7 +726,8 @@ export default function AdminFeedScreen({
 
     // 5. Red Flag Cases
     redFlagCases.forEach(rf => {
-      const isUserSubmitted = rf.id.startsWith('flag_') || rf.caseNumber?.startsWith('F');
+      const isPreseeded = PRESEEDED_RED_FLAG_CASES.some(prf => prf.id === rf.id);
+      const isUserSubmitted = !!rf.isRealInput || (!isPreseeded && (rf.id.startsWith('rf_') || rf.id.startsWith('flag_')));
       items.push({
         id: `redflag-${rf.id}`,
         type: 'red_flag_case',
@@ -703,6 +739,7 @@ export default function AdminFeedScreen({
         dateStr: rf.dateAdded,
         dateObj: new Date(rf.dateAdded),
         slug: rf.id,
+        isUserSubmitted,
         meta: (
           <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2">
             <span className="px-2 py-0.5 rounded-md bg-rose-50 text-rose-800 border border-rose-100 font-semibold">
@@ -725,6 +762,7 @@ export default function AdminFeedScreen({
       // Red flag comments
       if (rf.comments && Array.isArray(rf.comments)) {
         rf.comments.forEach(com => {
+          const isUserSubmitted = !!com.isRealInput || com.id.startsWith('flag_cmt_');
           items.push({
             id: `redflagcomment-${com.id}`,
             type: 'red_flag_comment',
@@ -736,11 +774,17 @@ export default function AdminFeedScreen({
             dateStr: com.date || rf.dateAdded || '2026-06-20T12:00:00Z',
             dateObj: new Date(com.date || rf.dateAdded || '2026-06-20T12:00:00Z'),
             slug: rf.id,
+            isUserSubmitted,
             meta: (
               <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2 font-mono">
                 <span className="px-2 py-0.5 rounded-md bg-[#FAF8F2] text-zinc-600 border border-[#E5E7EB]">
                   Flag Case: {rf.id}
                 </span>
+                {isUserSubmitted && (
+                  <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/60 font-black uppercase text-[8px] tracking-wide">
+                    User Submission
+                  </span>
+                )}
               </div>
             ),
             onView: () => setScreen({ type: 'red_flag_meter', slug: rf.id }),
@@ -1205,6 +1249,14 @@ export default function AdminFeedScreen({
                       {isNew && (
                         <span className="px-1.5 py-0.5 rounded-md bg-amber-500 text-white font-mono font-bold text-[8px] uppercase tracking-wider animate-pulse">
                           NEW
+                        </span>
+                      )}
+                      {item.isUserSubmitted && (
+                        <span className="inline-flex items-center" title="Real Device Submission">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                          </span>
                         </span>
                       )}
                     </div>
