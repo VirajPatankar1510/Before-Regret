@@ -1857,11 +1857,15 @@ export default function App() {
     setStore(prev => {
       const updatedStories = prev.stories.map(s => {
         if (s.id === storyId) {
-          return {
+          const updated = {
             ...s,
             title: newTitle,
             fullStory: newStoryText
           };
+          saveStoryToFirestore(updated).catch(err => {
+            console.error("Firestore story update error:", err);
+          });
+          return updated;
         }
         return s;
       });
@@ -1873,6 +1877,242 @@ export default function App() {
       return newState;
     });
     showToast("✍️ User story post updated successfully by administrator.");
+  };
+
+  const handleEditComment = (commentId: string, newText: string) => {
+    setComments(prev => {
+      return prev.map(c => {
+        if (c.id === commentId) {
+          const updated = {
+            ...c,
+            text: newText
+          };
+          saveCommentToFirestore(updated).catch(err => {
+            console.error("Firestore comment update error:", err);
+          });
+          return updated;
+        }
+        return c;
+      });
+    });
+    showToast("✍️ Registry case comment updated successfully by administrator.");
+  };
+
+  const handleEditCourtCase = (slug: string, newTitle: string, newDescription: string) => {
+    setStore(prev => {
+      const updatedCases = prev.courtCases.map(c => {
+        if (c.slug === slug) {
+          const updated = {
+            ...c,
+            title: newTitle,
+            description: newDescription
+          };
+          saveCourtCaseToFirestore(updated).catch(err => {
+            console.error("Firestore court case update error:", err);
+          });
+          return updated;
+        }
+        return c;
+      });
+      const newState = {
+        ...prev,
+        courtCases: updatedCases
+      };
+      saveState(newState);
+      return newState;
+    });
+    showToast("✍️ Court case trial updated successfully by administrator.");
+  };
+
+  const handleEditArgument = (caseSlug: string, argId: string, newText: string) => {
+    setStore(prev => {
+      const updatedCases = prev.courtCases.map(c => {
+        if (c.slug === caseSlug) {
+          const updatedArgs = c.arguments.map(a => {
+            if (a.id === argId) {
+              return {
+                ...a,
+                text: newText
+              };
+            }
+            return a;
+          });
+          const updated = {
+            ...c,
+            arguments: updatedArgs
+          };
+          saveCourtCaseToFirestore(updated).catch(err => {
+            console.error("Firestore court case arguments update error:", err);
+          });
+          return updated;
+        }
+        return c;
+      });
+      const newState = {
+        ...prev,
+        courtCases: updatedCases
+      };
+      saveState(newState);
+      return newState;
+    });
+    showToast("✍️ Juror argument updated successfully by administrator.");
+  };
+
+  const handleEditQuestion = (slug: string, newTitle: string, newDescription: string) => {
+    setStore(prev => {
+      const updatedQuestions = prev.questions.map(q => {
+        if (q.slug === slug) {
+          const updated = {
+            ...q,
+            title: newTitle,
+            description: newDescription
+          };
+          saveQuestionToFirestore(updated).catch(err => {
+            console.error("Firestore question update error:", err);
+          });
+          return updated;
+        }
+        return q;
+      });
+      const newState = {
+        ...prev,
+        questions: updatedQuestions
+      };
+      saveState(newState);
+      return newState;
+    });
+    showToast("✍️ Survival Q&A thread updated successfully by administrator.");
+  };
+
+  const handleEditAnswer = (qSlug: string, ansId: string, newText: string) => {
+    setStore(prev => {
+      const updatedQuestions = prev.questions.map(q => {
+        if (q.slug === qSlug) {
+          const updatedAnswers = q.answers.map(a => {
+            if (a.id === ansId) {
+              return {
+                ...a,
+                text: newText
+              };
+            }
+            return a;
+          });
+          const updated = {
+            ...q,
+            answers: updatedAnswers
+          };
+          saveQuestionToFirestore(updated).catch(err => {
+            console.error("Firestore advice answer update error:", err);
+          });
+          return updated;
+        }
+        return q;
+      });
+      const newState = {
+        ...prev,
+        questions: updatedQuestions
+      };
+      saveState(newState);
+      return newState;
+    });
+    showToast("✍️ Survivor advice answer updated successfully by administrator.");
+  };
+
+  const handleEditAnswerComment = (qSlug: string, ansId: string, commentId: string, newText: string) => {
+    setStore(prev => {
+      const updatedQuestions = prev.questions.map(q => {
+        if (q.slug === qSlug) {
+          const updatedAnswers = q.answers.map(a => {
+            if (a.id === ansId) {
+              const updatedComments = (a.comments || []).map(c => {
+                if (c.id === commentId) {
+                  return {
+                    ...c,
+                    text: newText
+                  };
+                }
+                return c;
+              });
+              return {
+                ...a,
+                comments: updatedComments
+              };
+            }
+            return a;
+          });
+          const updated = {
+            ...q,
+            answers: updatedAnswers
+          };
+          saveQuestionToFirestore(updated).catch(err => {
+            console.error("Firestore advice answer comment update error:", err);
+          });
+          return updated;
+        }
+        return q;
+      });
+      const newState = {
+        ...prev,
+        questions: updatedQuestions
+      };
+      saveState(newState);
+      return newState;
+    });
+    showToast("✍️ Discussion comment updated successfully by administrator.");
+  };
+
+  const handleEditRedFlagCase = (caseId: string, newTitle: string, newDescription: string) => {
+    setStore(prev => {
+      const updated = (prev.redFlagCases || []).map(c => {
+        if (c.id === caseId) {
+          const updatedCase = {
+            ...c,
+            title: newTitle,
+            description: newDescription
+          };
+          saveRedFlagCaseToFirestore(updatedCase).catch(err => {
+            console.error("Firestore red flag case update error:", err);
+          });
+          return updatedCase;
+        }
+        return c;
+      });
+      const newState = { ...prev, redFlagCases: updated };
+      saveState(newState);
+      return newState;
+    });
+    showToast("✍️ Red flag warning case updated successfully by administrator.");
+  };
+
+  const handleEditRedFlagComment = (caseId: string, commentId: string, newText: string) => {
+    setStore(prev => {
+      const updated = (prev.redFlagCases || []).map(c => {
+        if (c.id === caseId) {
+          const updatedComments = (c.comments || []).map(cm => {
+            if (cm.id === commentId) {
+              return {
+                ...cm,
+                text: newText
+              };
+            }
+            return cm;
+          });
+          const updatedCase = {
+            ...c,
+            comments: updatedComments
+          };
+          saveRedFlagCaseToFirestore(updatedCase).catch(err => {
+            console.error("Firestore red flag comment update error:", err);
+          });
+          return updatedCase;
+        }
+        return c;
+      });
+      const newState = { ...prev, redFlagCases: updated };
+      saveState(newState);
+      return newState;
+    });
+    showToast("✍️ Red flag discussion comment updated successfully by administrator.");
   };
 
   const handleDeleteCourtCase = (slug: string) => {
@@ -2421,6 +2661,15 @@ export default function App() {
             onDeleteRedFlagCase={handleDeleteRedFlagCase}
             onDeleteRedFlagComment={handleDeleteRedFlagComment}
             onToggleAdmin={handleToggleAdmin}
+            onEditStory={handleEditStory}
+            onEditComment={handleEditComment}
+            onEditCourtCase={handleEditCourtCase}
+            onEditArgument={handleEditArgument}
+            onEditQuestion={handleEditQuestion}
+            onEditAnswer={handleEditAnswer}
+            onEditAnswerComment={handleEditAnswerComment}
+            onEditRedFlagCase={handleEditRedFlagCase}
+            onEditRedFlagComment={handleEditRedFlagComment}
           />
         )}
 
