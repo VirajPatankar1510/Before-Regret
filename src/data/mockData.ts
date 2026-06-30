@@ -1098,6 +1098,120 @@ export const PRESEEDED_STORIES: Story[] = [
         regretScore: 3
       }
     ]
+  },
+  {
+    id: 's20',
+    title: "I stayed in an unhappy marriage 'for the kids.' Now that they are grown, they told me they wish I had divorced years ago.",
+    situationSlug: 'partner-doesnt-want-kids',
+    situationName: "Partner Doesn't Want Kids",
+    age: 47,
+    gender: "Female",
+    country: "United States",
+    relationshipDuration: "18 Years",
+    decisionMade: "Stayed",
+    currentOutcome: "Divorced",
+    regretScore: 9,
+    wouldDoAgain: "No",
+    dateAdded: "2026-03-12",
+    tags: ["staying-for-the-kids", "loveless-marriage", "divorce", "parenting"],
+    fullStory: "For fifteen years, my marriage was a cold war. There was no physical abuse, but there was zero affection, constant passive-aggressive sniping, and long, icy silences. I convinced myself that staying together 'for the kids' was the noble, selfless thing to do. I wanted them to have a two-parent home, a stable house, and normal family holidays. So, I grit my teeth and endured it.\n\nLast Thanksgiving, my oldest daughter (now 22) and my son (20) were having a drink with me. Out of nowhere, my daughter said, 'Mom, we always knew you and Dad hated each other. Growing up in that house was so stressful. We felt the tension every single day. Honestly, we used to pray you guys would just get a divorce.'\n\nI was absolutely floored. I had sacrificed my own happiness, my mental health, and fifteen years of my life to protect them from divorce, only to find out that the hostile environment we created was actually worse for them. It taught them a completely broken model of what a relationship looks like. If you're staying together purely 'for the kids,' please don't. Kids are smart. They don't want two miserable parents under one roof.",
+    userName: "peaceful_nest_seeker",
+    helpfulVotes: 1850,
+    timeline: [
+      { year: "2008", stage: "The Silence Began", description: "Realized we had grown completely apart, but decided to stay together until the kids graduated high school." },
+      { year: "2015", stage: "Decision Made (Stayed)", description: "Endured years of passive aggression and icy dinner tables, pretending everything was fine for their sake." },
+      { year: "2024", stage: "The Divorce", description: "Our youngest went to college. We filed for divorce within six months. It was quiet, but the damage was done." }
+    ],
+    updates: [
+      {
+        daysAfter: 60,
+        dateAdded: "2026-05-12",
+        text: "My ex-husband and I barely speak, but the relief of living in a peaceful apartment without his constant sighing and eye-rolling is incredible. I only wish I did this when the kids were in elementary school.",
+        regretScore: 8
+      },
+      {
+        daysAfter: 180,
+        dateAdded: "2026-09-12",
+        text: "Had a long chat with my son. He admitted he used to hide in his room to avoid the 'vibes' in our house. Hearing that breaks my heart, but it confirms that children of divorce are happier than children of a bitter marriage.",
+        regretScore: 9
+      }
+    ]
+  },
+  {
+    id: 's21',
+    title: "I spent my entire 20s financially supporting my boyfriend while he chased his 'dream.' He dumped me the second he actually made it.",
+    situationSlug: 'ignored-red-flags',
+    situationName: "Ignored Red Flags",
+    age: 30,
+    gender: "Female",
+    country: "United Kingdom",
+    relationshipDuration: "7 Years",
+    decisionMade: "Stayed",
+    currentOutcome: "Separated",
+    regretScore: 10,
+    wouldDoAgain: "No",
+    dateAdded: "2026-02-18",
+    tags: ["financial-exploitation", "wasted-twenties", "broken-promises", "users"],
+    fullStory: "We met when we were 22. He was a talented guy but 'struggling' to find his path. He wanted to be a full-time music producer and creator. I believed in him completely, so I took a boring 9-to-5 corporate job and paid for everything. I paid the rent, the groceries, his car payments, his expensive gear, and his medical bills. Every time I brought up our lack of savings or his lack of contribution, he'd say I didn't believe in him or that he'd make it all up to me once he signed a deal. \n\nI spent seven years living like a broke college student, sacrificing my own hobbies and travel dreams to fund his. Last year, one of his tracks went viral on TikTok. He got signed, got a massive advance, and finally started making real money. \n\nTwo weeks later, he sat me down and said he 'needed space to find himself' and that our relationship felt 'too heavy and full of old baggage.' He moved into a luxury flat in London and started dating a 22-year-old influencer. He didn't even offer to pay back a single penny of the thousands I spent on him. I was literally just his launchpad. Please, never financially support a man who isn't your husband or showing equal hustle. You cannot buy a man's loyalty by paying his rent.",
+    userName: "never_again_sponsor",
+    helpfulVotes: 2420,
+    timeline: [
+      { year: "2019", stage: "The Promise", description: "He quit his retail job to focus on music. I agreed to cover rent for 'a few months' that turned into years." },
+      { year: "2022", stage: "Decision Made (Stayed)", description: "Exhausted from working overtime, but caved when he cried and said I was his only support system." },
+      { year: "2026", stage: "The Viral Hit & Dump", description: "His track went viral. He got signed, got rich, and dumped me via a 'we grew apart' conversation." }
+    ],
+    updates: [
+      {
+        daysAfter: 30,
+        dateAdded: "2026-03-20",
+        text: "I'm struggling to pay rent on my own now since we had a joint lease and he just walked away. It is so humiliating to realize I funded his glow-up while draining my own savings.",
+        regretScore: 10
+      },
+      {
+        daysAfter: 120,
+        dateAdded: "2026-06-20",
+        text: "I've blocked him on everything. I started putting the money I used to spend on his groceries into a savings account, and I'm amazed at how fast it's growing. I'm finally reclaiming my financial power.",
+        regretScore: 6
+      }
+    ]
+  },
+  {
+    id: 's22',
+    title: "I gave up my dream career and relocated for my husband's job. Now I'm a resentful stay-at-home parent with a huge gap on my resume.",
+    situationSlug: 'moved-for-love',
+    situationName: "Moved For Love",
+    age: 34,
+    gender: "Female",
+    country: "Australia",
+    relationshipDuration: "6 Years",
+    decisionMade: "Stayed",
+    currentOutcome: "Married",
+    regretScore: 8,
+    wouldDoAgain: "No",
+    dateAdded: "2026-04-05",
+    tags: ["career-sacrifice", "relocation", "financial-dependence", "stay-at-home-parent"],
+    fullStory: "I had a fantastic, fast-paced marketing job in Sydney that I absolutely loved. I spent years building my network and was on track for a major promotion. Then my husband got offered a high-paying executive role in a very small, remote mining town. He promised it would only be for two years, and that we would save a ton of money and buy our dream house. He told me, 'It's a team decision, you can find something there or take a break.'\n\nThere were zero professional marketing roles in that town. None. To fill the time, we had our first baby sooner than planned. That was four years ago. We are still here. I have become a full-time, stay-at-home parent. I love my child, but I have completely lost my identity. My husband works 60 hours a week, and when he's home, he acts like his job is the only one that matters because he's the breadwinner. I have to ask him for money for everything, which makes me feel like a child. \n\nEvery time I look at LinkedIn, I see my old peers getting director roles, and I feel this deep, toxic resentment towards my husband. My resume now has a four-year gap that feels impossible to explain to employers. Sacrificing your career and independence for a partner's job is a trap. You think you're making a team decision, but you're actually just handing over your power.",
+    userName: "lost_my_spark_34",
+    helpfulVotes: 1980,
+    timeline: [
+      { year: "2020", stage: "The Move", description: "Gave up my corporate role in Sydney to relocate to a remote town for his career." },
+      { year: "2022", stage: "Decision Made (Stayed)", description: "Agreed to stay past the 'two-year agreement' because his bonus was too good to pass up, despite my growing resentment." },
+      { year: "2025", stage: "Resentment Peaks", description: "Completely financially dependent, feeling isolated, and noticing a significant power imbalance in our marriage." }
+    ],
+    updates: [
+      {
+        daysAfter: 45,
+        dateAdded: "2026-05-20",
+        text: "We had a huge fight. I told him I wanted to move back to the city so I could work, and he told me I was being 'selfish' and not thinking about our financial security. The resentment is becoming toxic.",
+        regretScore: 9
+      },
+      {
+        daysAfter: 150,
+        dateAdded: "2026-09-01",
+        text: "I've started doing freelance consulting online. It doesn't pay nearly what my old job did, but having my own income and using my brain again is saving my sanity. I am drawing a hard line: we are moving back to a major city next year or I am taking our child and leaving.",
+        regretScore: 5
+      }
+    ]
   }
 ];
 
