@@ -1123,6 +1123,7 @@ export default function App() {
     slug?: string;
     passwordPin?: string;
     wantsPartnerResponse?: boolean;
+    partnerKey?: string;
   } | null>(null);
   const [highlightedStoryId, setHighlightedStoryId] = useState<string | null>(null);
 
@@ -1593,6 +1594,7 @@ export default function App() {
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const caseNumber = `CASE-C${randomNum}`;
     const passwordPin = Math.floor(1000 + Math.random() * 9000).toString();
+    const partnerKey = 'PK-' + Array.from({ length: 16 }, () => Math.random().toString(36).charAt(2).toUpperCase()).join('');
 
     const newCase: CourtCase = {
       slug: uniqueSlug,
@@ -1612,6 +1614,7 @@ export default function App() {
       deliberationDays: caseData.deliberationDays || 3,
       createdAt: new Date().toISOString(),
       passwordPin: passwordPin,
+      partnerKey: partnerKey,
       isRealInput: true,
       wantsPartnerResponse: caseData.wantsPartnerResponse
     };
@@ -1641,7 +1644,8 @@ export default function App() {
       type: 'court',
       slug: newCase.slug,
       passwordPin: passwordPin,
-      wantsPartnerResponse: newCase.wantsPartnerResponse
+      wantsPartnerResponse: newCase.wantsPartnerResponse,
+      partnerKey: partnerKey
     });
     showToast(`⚖️ Court case registered successfully under Case Key: ${caseNumber}!`);
     setIsRegisterModalOpen(false);
@@ -2866,23 +2870,24 @@ export default function App() {
             {newlyLodgedCase.wantsPartnerResponse && (
               <div className="my-4 bg-blue-50 border border-blue-200 rounded-xl p-3 text-left">
                 <span className="text-[9px] uppercase font-bold text-blue-600 tracking-widest font-mono block mb-1">
-                  🔗 PARTNER INVITATION LINK
+                  🔗 SECURE PARTNER INVITATION LINK
                 </span>
                 <p className="text-[10px] text-blue-800 mb-2 leading-relaxed font-medium">
-                  Copy the preset message below and share it with your partner privately so they can submit their opposition narrative.
+                  Copy the secure, personalized message below to send privately to your partner:
                 </p>
                 <div className="bg-white border border-zinc-200 rounded-lg p-2 font-mono text-[9.5px] text-zinc-700 select-all break-all leading-normal">
-                  This link is only for you to add your argument, do not share with anyone then {`${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true`}
+                  I shared our situation anonymously on www.beforeregret.com to get unbiased opinions. You can now add your side before anyone votes. Please don't share this link with anyone—it's only for you. {`${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true&partnerKey=${newlyLodgedCase.partnerKey}`}
                 </div>
                 <button
                   onClick={() => {
-                    const messageText = `This link is only for you to add your argument, do not share with anyone then ${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true`;
+                    const inviteLink = `${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true&partnerKey=${newlyLodgedCase.partnerKey}`;
+                    const messageText = `I shared our situation anonymously on www.beforeregret.com to get unbiased opinions. You can now add your side before anyone votes. Please don't share this link with anyone—it's only for you. ${inviteLink}`;
                     navigator.clipboard.writeText(messageText);
                     showToast("📋 Invitation Message Copied!");
                   }}
                   className="w-full mt-2 py-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600/20 text-blue-700 border border-blue-200 text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
                 >
-                  <Copy className="h-3 w-3" /> Copy Invitation Message
+                  <Copy className="h-3 w-3" /> Copy Secure Invitation Message
                 </button>
               </div>
             )}

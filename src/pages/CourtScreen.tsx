@@ -63,14 +63,129 @@ export default function CourtScreen({
     }
   }, []);
   
-  const [showAddNameForm, setShowAddNameForm] = useState(false);
-  const [typedPin, setTypedPin] = useState('');
-  const [typedName, setTypedName] = useState('');
-  const [typedConfirmName, setTypedConfirmName] = useState('');
-  const [nameRevealConsent, setNameRevealConsent] = useState(false);
-  const [nameError, setNameError] = useState('');
-  const [isSavingName, setIsSavingName] = useState(false);
+  const [partnerKeyValid, setPartnerKeyValid] = useState(true);
+  const [partnerPinInput, setPartnerPinInput] = useState('');
+  const [partnerPinConfirm, setPartnerPinConfirm] = useState('');
+  const [partnerPinError, setPartnerPinError] = useState('');
 
+  const [isPosterUnlocked, setIsPosterUnlocked] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(`poster_unlocked_${courtCase.slug}`) === 'true';
+    }
+    return false;
+  });
+  const [showSubmitterPinBox, setShowSubmitterPinBox] = useState(false);
+  const [posterUnlockPin, setPosterUnlockPin] = useState('');
+  const [posterUnlockError, setPosterUnlockError] = useState('');
+  const [posterStatementText, setPosterStatementText] = useState('');
+  const [partnerStatementText, setPartnerStatementText] = useState('');
+
+  const handleUnlockPoster = () => {
+    if (!courtCase.passwordPin) {
+      setPosterUnlockError("This case has no PIN configured.");
+      return;
+    }
+    if (posterUnlockPin === courtCase.passwordPin) {
+      setIsPosterUnlocked(true);
+      setPosterUnlockError('');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`poster_unlocked_${courtCase.slug}`, 'true');
+      }
+    } else {
+      setPosterUnlockError("Incorrect Submitter PIN.");
+    }
+  };
+
+  const handleAddPosterStatement = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!posterStatementText.trim()) return;
+    const val = validateInputText(posterStatementText, "Statement");
+    if (!val.isValid) {
+      alert(val.error);
+      return;
+    }
+
+    try {
+      const newArg: CourtArgument = {
+        id: 'official_' + Date.now().toString(),
+        author: 'ME',
+        side: 'Me',
+        text: posterStatementText.trim(),
+        votes: 0,
+        role: 'Poster',
+        isRealInput: true
+      };
+
+      const updatedCase: CourtCase = {
+        ...courtCase,
+        arguments: [newArg, ...(courtCase.arguments || [])]
+      };
+
+      await saveCourtCaseToFirestore(updatedCase);
+      setPosterStatementText('');
+      alert("✅ Your official submitter allegation/response has been published to the secure case log below!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to submit point to Firestore.");
+    }
+  };
+
+  const handleAddPartnerStatement = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!partnerStatementText.trim()) return;
+    const val = validateInputText(partnerStatementText, "Statement");
+    if (!val.isValid) {
+      alert(val.error);
+      return;
+    }
+
+    try {
+      const newArg: CourtArgument = {
+        id: 'official_' + Date.now().toString(),
+        author: 'Partner',
+        side: 'Partner',
+        text: partnerStatementText.trim(),
+        votes: 0,
+        role: 'Partner',
+        isRealInput: true
+      };
+
+      const updatedCase: CourtCase = {
+        ...courtCase,
+        arguments: [newArg, ...(courtCase.arguments || [])]
+      };
+
+      await saveCourtCaseToFirestore(updatedCase);
+      setPartnerStatementText('');
+      alert("✅ Your official partner response/statement has been published to the secure case log below!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to submit point to Firestore.");
+    }
+  };
+
+  const handleSavePartnerPin = async () => {
+    if (partnerPinInput.length !== 4 || !/^\d+$/.test(partnerPinInput)) {
+      setPartnerPinError("PIN must be exactly 4 digits.");
+      return;
+    }
+    if (partnerPinInput !== partnerPinConfirm) {
+      setPartnerPinError("PINs do not match.");
+      return;
+    }
+    try {
+      setPartnerPinError('');
+      const updatedCase: CourtCase = {
+        ...courtCase,
+        partnerPasswordPin: partnerPinInput
+      };
+      await saveCourtCaseToFirestore(updatedCase);
+      alert("🎉 Your 4-digit Partner Case PIN has been saved! You can now claim your certificate using this PIN if you are found not guilty.");
+    } catch (err) {
+      console.error(err);
+      setPartnerPinError("Failed to save PIN to Firestore.");
+    }
+  };
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -81,17 +196,27 @@ export default function CourtScreen({
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
-      const isInvite = new URLSearchParams(window.location.search).get('partnerInvite') === 'true';
+      const params = new URLSearchParams(window.location.search);
+      const isInvite = params.get('partnerInvite') === 'true';
       setIsPartnerInvite(isInvite);
       if (isInvite) {
         setSelectedSide('Partner');
+        if (courtCase.partnerKey) {
+          const keyFromUrl = params.get('partnerKey');
+          setPartnerKeyValid(keyFromUrl === courtCase.partnerKey);
+        } else {
+          setPartnerKeyValid(true);
+        }
+      } else {
+        setPartnerKeyValid(true);
       }
     }
-  }, [courtCase.slug]);
+  }, [courtCase.slug, courtCase.partnerKey]);
 
   React.useEffect(() => {
     if (certificateUnlocked) {
-      const voteCleanHands = totalVotes > 0 ? (100 - getPercent(courtCase.votes.me)) : 92;
+      const blamedPercent = isPartnerInvite ? getPercent(courtCase.votes.partner) : getPercent(courtCase.votes.me);
+      const voteCleanHands = totalVotes > 0 ? (100 - blamedPercent) : 92;
       setCertPercent(voteCleanHands);
       setCertJurors(totalVotes || 1284);
       
@@ -102,7 +227,7 @@ export default function CourtScreen({
           : `The Court identifies reasonable concern and recommends establishing healthier boundaries to avoid regret.`;
       setCertQuote(customQuoteText);
     }
-  }, [certificateUnlocked]);
+  }, [certificateUnlocked, isPartnerInvite, courtCase.votes.me, courtCase.votes.partner]);
 
   const userVote = userVotedCases[courtCase.slug];
   const totalVotes = courtCase.votes.me + courtCase.votes.partner + courtCase.votes.both + courtCase.votes.neither;
@@ -130,6 +255,10 @@ export default function CourtScreen({
   const expirationTime = createdDate ? (createdDate.getTime() + deliberationDays * 24 * 60 * 60 * 1000) : 0;
   
   const isExpired = !isRealCase || simExpired || (createdDate ? now.getTime() >= expirationTime : true);
+
+  const isViewerNotGuilty = isPartnerInvite 
+    ? (currentVerdict() === 'Me' || currentVerdict() === 'Neither')
+    : (currentVerdict() === 'Partner' || currentVerdict() === 'Neither');
 
   const getRemainingTimeText = () => {
     if (isExpired) return "00d 00h 00m 00s";
@@ -186,159 +315,266 @@ export default function CourtScreen({
     }
   };
 
+  if (isPartnerInvite && !partnerKeyValid) {
+    return (
+      <div className="space-y-6 max-w-2xl mx-auto py-12 px-4 text-center">
+        <div className="mx-auto w-16 h-16 bg-rose-50 border border-rose-200 rounded-2xl flex items-center justify-center text-rose-600 mb-4 animate-bounce">
+          <ShieldAlert className="h-8 w-8" />
+        </div>
+        <h2 className="text-xl font-black text-zinc-900 uppercase tracking-wider font-sans">
+          ⛔ Unauthorized Private Access
+        </h2>
+        <p className="text-sm text-zinc-600 max-w-md mx-auto leading-relaxed">
+          This is a private, secure case link. If you are the partner, please request the exact secure invitation link containing the secret authorization key from the submitter.
+        </p>
+        <div className="pt-4">
+          <button
+            onClick={() => setScreen({ type: 'court_list' })}
+            className="px-6 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-900 text-white font-black text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer shadow"
+          >
+            Go to Before Regret Cases
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6 pb-16 animate-fadeIn">
+    <div className="space-y-4 pb-12 animate-fadeIn">
       
       {/* Return Button */}
       <button
         onClick={() => setScreen({ type: 'court_list' })}
-        className="text-xs text-[#6B7280] hover:text-[#24324A] inline-flex items-center gap-1 font-semibold border border-[#E5E7EB] bg-white px-3 py-1.5 rounded-xl transition-all hover:border-zinc-300 shadow-sm"
+        className="text-xs text-[#6B7280] hover:text-[#24324A] inline-flex items-center gap-1 font-semibold border border-[#E5E7EB] bg-white px-3 py-1.5 rounded-xl transition-all hover:border-zinc-300 shadow-xs"
       >
         <ArrowLeft className="h-3.5 w-3.5" /> Return to Before Regret Cases
       </button>
 
-      {/* Primary Dilemma header */}
-      <div className="rounded-2xl border border-[#E5E7EB] bg-white p-5 sm:p-6 shadow-sm space-y-4">
-        {isAdmin && (
-          <div className="bg-red-50/70 border border-red-200/80 rounded-xl p-4 mb-4 space-y-4 text-xs animate-fadeIn">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-red-100 pb-2">
-              <span className="font-bold text-red-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5 font-mono">
-                <Shield className="h-3.5 w-3.5 text-[#C9A227] animate-pulse" /> Court Case Override Console
-              </span>
-              
-              {showCaseDeleteConfirm ? (
-                <div className="flex items-center gap-2 animate-fadeIn">
-                  <span className="text-red-700 font-bold font-mono text-[11px]">Permanently delete trial?</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onDeleteCourtCase?.(courtCase.slug);
-                      setScreen({ type: 'home' });
-                    }}
-                    className="px-2.5 py-1 rounded bg-red-600 hover:bg-red-700 text-white font-extrabold text-[10px] transition-all cursor-pointer shadow-sm"
-                  >
-                    Yes, Delete Case
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowCaseDeleteConfirm(false)}
-                    className="px-2.5 py-1 rounded bg-zinc-200 hover:bg-zinc-300 text-zinc-700 font-bold text-[10px] transition-all cursor-pointer border border-zinc-300"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setShowCaseDeleteConfirm(true)}
-                  className="px-2.5 py-1 rounded bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 font-bold flex items-center gap-1 transition-colors text-[10px] cursor-pointer"
-                >
-                  <Trash2 className="h-3.5 w-3.5" /> Delete Court Case
-                </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-              {/* Option to change trial duration */}
-              <div className="space-y-1.5">
-                <label className="block text-[10px] uppercase font-bold text-zinc-600 font-sans tracking-wide">
-                  Change Trial Duration:
-                </label>
-                <div className="flex items-center gap-2">
-                  <select
-                    value={courtCase.deliberationDays || 3}
-                    onChange={async (e) => {
-                      const selectedDays = parseFloat(e.target.value);
-                      try {
-                        const updatedCase: CourtCase = {
-                          ...courtCase,
-                          deliberationDays: selectedDays
-                        };
-                        await saveCourtCaseToFirestore(updatedCase);
-                      } catch (err) {
-                        console.error("Error updating deliberation days:", err);
-                      }
-                    }}
-                    className="rounded-lg border border-red-200 bg-white p-1.5 text-xs text-zinc-800 focus:outline-none focus:border-red-400 font-mono focus:ring-1 focus:ring-red-400"
-                  >
-                    <option value="0.000694">1 Minute (Quick Test)</option>
-                    <option value="1">1 Day</option>
-                    <option value="3">3 Days</option>
-                    <option value="5">5 Days</option>
-                    <option value="7">7 Days</option>
-                    <option value="14">14 Days</option>
-                  </select>
-                  <span className="text-[10px] text-zinc-500 font-medium">
-                    (Current: {deliberationDays < 1 ? "1 Min" : `${deliberationDays} Days`})
-                  </span>
-                </div>
-              </div>
-
-              {/* Reset Trial / Open Sealed Perspectives Button */}
-              <div className="flex flex-col justify-end md:items-end space-y-1.5">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      // Set createdAt to current time (which re-opens the trial if expired)
-                      const updatedCase: CourtCase = {
-                        ...courtCase,
-                        createdAt: new Date().toISOString()
-                      };
-                      await saveCourtCaseToFirestore(updatedCase);
-                      setSimExpired(false);
-                    } catch (err) {
-                      console.error("Error resetting case:", err);
-                    }
-                  }}
-                  className="w-full md:w-auto px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 shadow transition-all duration-200 cursor-pointer"
-                >
-                  <Unlock className="h-3.5 w-3.5" /> Reset Trial & Open Perspectives
-                </button>
-                <span className="text-[9px] text-zinc-500 mt-0.5 md:text-right font-sans block">
-                  Sets start time to NOW and unseals all perspectives.
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {isPartnerInvite && (
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3 shadow-sm animate-fadeIn text-[#1E3A8A]">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100 border border-blue-200 text-blue-600 shrink-0 mt-0.5">
-              <Users className="h-4 w-4" />
+      {/* MINIMAL COUNTDOWN TIMER ON TOP */}
+      <div className={`rounded-xl border px-3 py-1 flex items-center justify-between gap-3 shadow-xs text-left ${
+        isExpired 
+          ? 'bg-zinc-50 border-zinc-200 text-zinc-500' 
+          : 'bg-[#FFFDF4] border-[#E8D79B]/60 text-[#785E14] animate-fadeIn'
+      }`}>
+        <div className="flex items-center gap-2">
+          {isExpired ? (
+            <span className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 font-mono uppercase bg-zinc-200/50 px-2 py-0.5 rounded border border-zinc-300">
+              <Lock className="h-3 w-3" /> Sealed
             </span>
-            <div className="space-y-1">
-              <h4 className="text-xs font-black uppercase tracking-wider text-blue-900 font-sans flex items-center gap-1">
-                <Sparkles className="h-3.5 w-3.5 text-blue-500" /> You Have Been Invited to Respond in Opposition
-              </h4>
-              <p className="text-xs text-blue-800 leading-relaxed font-sans">
-                Your partner has submitted this case and requested your perspective to ensure a balanced community trial. Under peer-juror guidelines, your identity is 100% anonymous. Share your narrative below so peer citizens can weigh both sides fairly.
-              </p>
-              <div className="pt-1.5">
+          ) : (
+            <span className="flex items-center gap-1 text-[10px] font-bold text-[#C9A227] font-mono uppercase bg-[#FFF8E1] px-2 py-0.5 rounded border border-[#E8D79B] animate-pulse">
+              <Clock className="h-3 w-3" /> Live
+            </span>
+          )}
+          <span className="font-mono text-xs sm:text-sm font-black tracking-wider text-zinc-800">
+            {getRemainingTimeText()}
+          </span>
+        </div>
+        <span className="text-[10px] text-zinc-500 font-mono font-medium">
+          Trial Duration: {deliberationDays < 1 ? "1 Min" : `${deliberationDays} Days`}
+        </span>
+      </div>
+
+      {/* Admin overriding controls and Partner Setup */}
+      {isAdmin && (
+        <div className="bg-red-50/70 border border-red-200/80 rounded-2xl p-5 space-y-4 text-xs animate-fadeIn text-left">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-red-100 pb-2">
+            <span className="font-bold text-red-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5 font-mono">
+              <Shield className="h-3.5 w-3.5 text-[#C9A227] animate-pulse" /> Court Case Override Console
+            </span>
+            
+            {showCaseDeleteConfirm ? (
+              <div className="flex items-center gap-2 animate-fadeIn">
+                <span className="text-red-700 font-bold font-mono text-[11px]">Permanently delete trial?</span>
                 <button
                   type="button"
                   onClick={() => {
-                    const formElement = document.getElementById("argument-form") || document.querySelector("form");
-                    if (formElement) {
-                      formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
+                    onDeleteCourtCase?.(courtCase.slug);
+                    setScreen({ type: 'home' });
                   }}
-                  className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] uppercase tracking-wider transition-all shadow cursor-pointer inline-flex items-center gap-1.5"
+                  className="px-2.5 py-1 rounded bg-red-600 hover:bg-red-700 text-white font-extrabold text-[10px] transition-all cursor-pointer shadow-sm"
                 >
-                  <Plus className="h-3.5 w-3.5" /> Submit Counter-Argument Below
+                  Yes, Delete Case
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCaseDeleteConfirm(false)}
+                  className="px-2.5 py-1 rounded bg-zinc-200 hover:bg-zinc-300 text-zinc-700 font-bold text-[10px] transition-all cursor-pointer border border-zinc-300"
+                >
+                  Cancel
                 </button>
               </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowCaseDeleteConfirm(true)}
+                className="px-2.5 py-1 rounded bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 font-bold flex items-center gap-1 transition-colors text-[10px] cursor-pointer"
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Delete Court Case
+              </button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+            <div className="space-y-1.5">
+              <label className="block text-[10px] uppercase font-bold text-zinc-600 font-sans tracking-wide">
+                Change Trial Duration:
+              </label>
+              <div className="flex items-center gap-2">
+                <select
+                  value={courtCase.deliberationDays || 3}
+                  onChange={async (e) => {
+                    const selectedDays = parseFloat(e.target.value);
+                    try {
+                      const updatedCase: CourtCase = {
+                        ...courtCase,
+                        deliberationDays: selectedDays
+                      };
+                      await saveCourtCaseToFirestore(updatedCase);
+                    } catch (err) {
+                      console.error("Error updating deliberation days:", err);
+                    }
+                  }}
+                  className="rounded-lg border border-red-200 bg-white p-1.5 text-xs text-zinc-800 focus:outline-none focus:border-red-400 font-mono focus:ring-1 focus:ring-red-400"
+                >
+                  <option value="0.000694">1 Minute (Quick Test)</option>
+                  <option value="1">1 Day</option>
+                  <option value="3">3 Days</option>
+                  <option value="5">5 Days</option>
+                  <option value="7">7 Days</option>
+                  <option value="14">14 Days</option>
+                </select>
+                <span className="text-[10px] text-zinc-500 font-medium">
+                  (Current: {deliberationDays < 1 ? "1 Min" : `${deliberationDays} Days`})
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-end md:items-end space-y-1.5">
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    const updatedCase: CourtCase = {
+                      ...courtCase,
+                      createdAt: new Date().toISOString()
+                    };
+                    await saveCourtCaseToFirestore(updatedCase);
+                    setSimExpired(false);
+                  } catch (err) {
+                    console.error("Error resetting case:", err);
+                  }
+                }}
+                className="w-full md:w-auto px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 shadow transition-all duration-200 cursor-pointer"
+              >
+                <Unlock className="h-3.5 w-3.5" /> Reset Trial & Open Perspectives
+              </button>
+              <span className="text-[9px] text-zinc-500 mt-0.5 md:text-right font-sans block">
+                Sets start time to NOW and unseals all perspectives.
+              </span>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        <div className="flex items-center justify-between gap-2 flex-wrap">
+      {isPartnerInvite && (
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3 shadow-sm animate-fadeIn text-left text-[#1E3A8A]">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100 border border-blue-200 text-blue-600 shrink-0 mt-0.5">
+            <Users className="h-4 w-4" />
+          </span>
+          <div className="space-y-1">
+            <h4 className="text-xs font-black uppercase tracking-wider text-blue-900 font-sans flex items-center gap-1">
+              <Sparkles className="h-3.5 w-3.5 text-blue-500" /> You Have Been Invited to Respond in Opposition
+            </h4>
+            <p className="text-xs text-blue-800 leading-relaxed font-sans">
+              Your partner has submitted this case and requested your perspective to ensure a balanced community trial. Under peer-juror guidelines, your identity is 100% anonymous. Share your narrative below so peer citizens can weigh both sides fairly.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {isPartnerInvite && partnerKeyValid && !courtCase.partnerPasswordPin && (
+        <div className="bg-[#FFFDF4] border-2 border-[#E8D79B] rounded-2xl p-5 space-y-4 shadow-md animate-fadeIn text-left">
+          <div className="flex items-start gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FFF8E1] border border-[#E8D79B] text-[#C9A227] shrink-0">
+              <Shield className="h-5 w-5" />
+            </span>
+            <div className="space-y-1">
+              <h4 className="text-xs sm:text-sm font-black uppercase tracking-wider text-amber-900 font-sans flex items-center gap-1.5">
+                <Sparkles className="h-4 w-4 text-[#C9A227] animate-pulse" /> Secure Your Partner Access
+              </h4>
+              <p className="text-xs text-amber-800 leading-relaxed font-medium">
+                Please set your unique 4-digit Case PIN before contributing your side. This PIN secures your response anonymously and allows you to claim and apply your name to the Clean Hands Certificate if the jury declares you not guilty!
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 max-w-md">
+            <div>
+              <label className="block text-[10px] uppercase font-bold text-amber-800 mb-1">
+                Choose 4-Digit PIN:
+              </label>
+              <input
+                type="password"
+                maxLength={4}
+                placeholder="e.g. 5821"
+                value={partnerPinInput}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  setPartnerPinInput(val);
+                }}
+                className="w-full bg-white border border-[#E8D79B] text-slate-950 text-xs px-3 py-2 rounded-lg font-mono focus:border-[#C9A227] focus:outline-none placeholder:text-zinc-400 font-bold"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] uppercase font-bold text-amber-800 mb-1">
+                Confirm 4-Digit PIN:
+              </label>
+              <input
+                type="password"
+                maxLength={4}
+                placeholder="Confirm PIN..."
+                value={partnerPinConfirm}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  setPartnerPinConfirm(val);
+                }}
+                className="w-full bg-white border border-[#E8D79B] text-slate-950 text-xs px-3 py-2 rounded-lg font-mono focus:border-[#C9A227] focus:outline-none placeholder:text-zinc-400 font-bold"
+              />
+            </div>
+          </div>
+
+          {partnerPinError && (
+            <p className="text-[10.5px] text-rose-600 font-bold">
+              ⚠️ {partnerPinError}
+            </p>
+          )}
+
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={handleSavePartnerPin}
+              className="px-5 py-2 rounded-xl bg-[#24324A] hover:bg-[#1C273A] text-white font-extrabold text-xs uppercase tracking-wider shadow active:scale-95 transition-all cursor-pointer"
+            >
+              Save Secure PIN
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* UNIFIED CASE DOSSIER & CLAIMS/DIALOGUE TIMELINE */}
+      <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 sm:p-5 shadow-xs space-y-4 text-left">
+        {/* Dossier Header Info */}
+        <div className="flex items-center justify-between gap-2 flex-wrap border-b border-zinc-100 pb-2.5">
           <div className="flex items-center gap-2">
             <span className="flex h-5 w-5 items-center justify-center rounded bg-[#FFF8E1] text-[#C9A227]">
               <Gavel className="h-3.5 w-3.5" />
             </span>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-[#C9A227]">The Relationship Court Case • {courtCase.caseNumber || 'CASE-C2011'}</span>
+            <span className="text-[10px] uppercase font-bold tracking-widest text-[#24324A] bg-[#FAF8F2] border border-[#E5E7EB] px-2 py-0.5 rounded shadow-2xs">The Relationship Court Case</span>
+            <span className="text-[10px] font-mono font-black uppercase tracking-wider bg-zinc-900 text-[#F4B942] px-2.5 py-0.5 rounded border border-zinc-950 shadow-sm animate-pulse">
+              {courtCase.caseNumber || 'CASE-C2011'}
+            </span>
           </div>
           {isExpired ? (
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider font-mono bg-rose-50 text-rose-700 border border-rose-200 shrink-0">
@@ -352,44 +588,85 @@ export default function CourtScreen({
             </span>
           )}
         </div>
-        
-        <h1 className="text-lg sm:text-xl font-bold text-[#24324A] leading-snug font-serif flex items-center gap-2 flex-wrap">
-          <span>"{courtCase.title}"</span>
-          {isExpired ? (
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider font-mono bg-rose-50 text-rose-700 border border-rose-200">
-              <span className="h-1 w-1 rounded-full bg-rose-500" />
-              Ended
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
-              Live
-            </span>
-          )}
-        </h1>
 
-        <div className="flex items-center gap-3 text-[11px] text-[#6B7280] font-sans font-medium">
-          <span>Judge: @{courtCase.author}</span>
-          <span>•</span>
-          <span>Case Lodged: {courtCase.postTime}</span>
-          <span>•</span>
-          <span className="text-[#2E7D32] font-bold">{totalVotes.toLocaleString()} jurors voted</span>
+        {/* Case Title and Metadata */}
+        <div className="space-y-1">
+          <h1 className="text-lg sm:text-xl font-bold text-[#24324A] leading-snug font-serif">
+            "{courtCase.title}"
+          </h1>
+          <div className="flex items-center gap-3 text-[11px] text-[#6B7280] font-sans font-medium">
+            <span>Judge: @{courtCase.author}</span>
+            <span>•</span>
+            <span>Case Lodged: {courtCase.postTime}</span>
+            <span>•</span>
+            <span className="text-[#2E7D32] font-bold">{totalVotes.toLocaleString()} jurors voted</span>
+          </div>
         </div>
 
-        <p className="text-base text-[#374151] leading-relaxed font-serif pl-3 border-l-2 border-[#C9A227] not-italic">
-          {courtCase.description}
-        </p>
+        {/* The Dialogue Thread */}
+        <div className="space-y-3 pt-0.5">
+          <div className="flex items-center gap-1.5 border-b border-zinc-100 pb-2">
+            <MessageSquare className="h-4 w-4 text-[#C9A227]" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Case Dialogue & Timeline</h3>
+          </div>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 pt-1">
-          {courtCase.tags.map(t => (
-            <span key={t} className="text-[10px] font-semibold text-[#6B7280] bg-[#F4F1E8] border border-[#E5E7EB] px-2 py-0.5 rounded">
-              #{t}
-            </span>
-          ))}
+          <div className="space-y-4 max-h-[450px] overflow-y-auto pr-1">
+            {/* Highlighted original case description so it feels distinct, starting the timeline */}
+            <div className="flex items-start gap-3 max-w-full animate-fadeIn border-b border-dashed border-zinc-200 pb-5 mb-3">
+              <div className="flex-1 space-y-2 bg-gradient-to-r from-amber-50 to-orange-50/20 border-l-4 border-l-[#C9A227] border-y border-r border-[#E8D79B]/60 rounded-r-2xl rounded-l-md p-4 shadow-sm">
+                <div className="flex items-center justify-between text-[10px] flex-wrap gap-1">
+                  <span className="font-black text-[#8A6D1C] bg-[#FFF8E1] px-2.5 py-1 rounded border border-[#E8D79B] uppercase tracking-widest font-sans flex items-center gap-1.5">
+                    ⚖️ Primary Case Allegation
+                  </span>
+                  <span className="text-zinc-500 font-bold font-mono uppercase tracking-wider">Lodged Core Case</span>
+                </div>
+                <p className="text-[#1E293B] leading-relaxed font-serif text-sm italic pr-1">
+                  "{courtCase.description}"
+                </p>
+              </div>
+            </div>
+
+            {/* Map of rest of official arguments */}
+            {(courtCase.arguments || [])
+              .filter(arg => arg.role === 'Poster' || arg.role === 'Partner')
+              .slice()
+              .reverse() // Display chronologically from oldest to newest official arguments
+              .map((arg) => {
+                const isPoster = arg.role === 'Poster';
+                return (
+                  <div 
+                    key={arg.id} 
+                    className={`flex items-start gap-3 max-w-[85%] animate-fadeIn ${
+                      isPoster ? 'mr-auto text-left' : 'ml-auto flex-row-reverse text-right'
+                    }`}
+                  >
+                    <div className="flex-1 space-y-1">
+                      <div className={`flex items-center gap-1.5 text-[10px] ${isPoster ? '' : 'justify-end'}`}>
+                        <span className={`font-extrabold px-2 py-0.5 rounded uppercase tracking-wider ${
+                          isPoster 
+                            ? 'text-[#24324A] bg-[#24324A]/10' 
+                            : 'text-[#B23B3B] bg-[#B23B3B]/10'
+                        }`}>
+                          {isPoster ? 'ME' : 'Partner'}
+                        </span>
+                        <span className="text-zinc-400 font-medium font-mono">Statement</span>
+                      </div>
+                      <div className={`rounded-2xl p-3.5 text-[#374151] shadow-sm leading-relaxed font-serif text-sm text-left ${
+                        isPoster 
+                          ? 'rounded-tl-none bg-[#FAF8F2] border border-[#24324A]/10' 
+                          : 'rounded-tr-none bg-rose-50/50 border border-rose-100'
+                      }`}>
+                        "{arg.text}"
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
         </div>
 
-        {courtCase.wantsPartnerResponse && (
+        {/* Partner Invite Banner (Only shown inside the card if invite code is on case) */}
+        {courtCase.wantsPartnerResponse && !isPartnerInvite && (
           <div className="bg-[#FAF8F2] border border-[#ECECEC] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs mt-3">
             <div className="space-y-0.5">
               <span className="font-bold text-[#24324A] flex items-center gap-1">
@@ -402,8 +679,8 @@ export default function CourtScreen({
             <button
               type="button"
               onClick={() => {
-                const inviteLink = `${window.location.origin}/court/${courtCase.slug}?partnerInvite=true`;
-                const message = `This link is only for you to add your argument, do not share with anyone then ${inviteLink}`;
+                const inviteLink = `${window.location.origin}/court/${courtCase.slug}?partnerInvite=true&partnerKey=${courtCase.partnerKey || ''}`;
+                const message = `I shared our situation anonymously on www.beforeregret.com to get unbiased opinions. You can now add your side before anyone votes. Please don't share this link with anyone—it's only for you. ${inviteLink}`;
                 navigator.clipboard.writeText(message);
                 alert("📋 Copied invitation message to clipboard!");
               }}
@@ -413,56 +690,133 @@ export default function CourtScreen({
             </button>
           </div>
         )}
-      </div>
 
-      {/* SECTION: DELIBERATION COUNTDOWN TIMER PANEL */}
-      <div className={`rounded-2xl border p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm relative overflow-hidden transition-all duration-300 ${
-        isExpired 
-          ? 'bg-zinc-50 border-zinc-200 text-zinc-700' 
-          : 'bg-[#FFFDF4] border-[#E8D79B] text-[#785E14] animate-fadeIn'
-      }`}>
-        {/* Subtle decorative elements for premium marketer touch */}
-        {!isExpired && <div className="absolute top-0 right-0 h-10 w-10 bg-[#F4B942]/10 rounded-full blur-xl animate-pulse" />}
-
-        <div className="space-y-1 z-10 flex-1">
-          <div className="flex items-center gap-2">
-            {isExpired ? (
-              <span className="flex items-center gap-1 text-[9px] sm:text-xs font-bold text-zinc-500 font-mono uppercase bg-zinc-200/50 px-2.5 py-0.5 rounded border border-zinc-300">
-                <Lock className="h-3 w-3" /> Perspectives Sealed
-              </span>
+        {/* INPUT BOX AREA (SECURE STATEMENTS) */}
+        <div className="pt-4 border-t border-zinc-100">
+          {!isPartnerInvite ? (
+            /* POSTER (SUBMITTER) SECURE CONTROL & INPUT BOX */
+            isPosterUnlocked ? (
+              <div className="space-y-3 p-4 rounded-xl border border-slate-100 bg-slate-50/50 text-left max-w-2xl mx-auto">
+                <form onSubmit={handleAddPosterStatement} className="space-y-3 animate-fadeIn">
+                  <p className="text-[10.5px] text-emerald-700 font-bold flex items-center gap-1">
+                    <Check className="h-3.5 w-3.5" /> Submitter Controls Unlocked
+                  </p>
+                  <textarea
+                    placeholder="Explain a new point, cite another boundary that was crossed, or write a direct rebuttal response to partner allegations..."
+                    value={posterStatementText}
+                    onChange={(e) => setPosterStatementText(e.target.value)}
+                    maxLength={1000}
+                    className="w-full rounded-xl border border-zinc-200 bg-white p-2.5 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] min-h-[85px]"
+                    required
+                  />
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] text-zinc-400 font-medium">Your entries will be tagged as "ME"</span>
+                    <button
+                      type="submit"
+                      className="inline-flex items-center gap-1 rounded-lg bg-[#24324A] text-white px-3 py-1.5 text-xs font-bold hover:bg-[#1C273A] cursor-pointer"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Add My Statement
+                    </button>
+                  </div>
+                </form>
+              </div>
+            ) : !showSubmitterPinBox ? (
+              <div className="text-center py-1">
+                <button
+                  type="button"
+                  onClick={() => setShowSubmitterPinBox(true)}
+                  className="text-[10px] text-[#24324A] hover:bg-[#24324A]/5 font-bold flex items-center gap-1.5 mx-auto transition-all px-2.5 py-1 rounded-lg border border-dashed border-[#24324A]/25 hover:border-[#24324A]/40 bg-white shadow-xs cursor-pointer"
+                >
+                  <Lock className="h-2.5 w-2.5" /> Submitter: Unlock to add statements
+                </button>
+              </div>
             ) : (
-              <span className="flex items-center gap-1 text-[9px] sm:text-xs font-bold text-[#C9A227] font-mono uppercase bg-[#FFF8E1] px-2.5 py-0.5 rounded border border-[#E8D79B] animate-pulse">
-                <Clock className="h-3 w-3" /> Deliberation In Progress
-              </span>
-            )}
-            <span className="text-[10px] text-zinc-500 font-mono font-medium">
-              Trial Duration: {deliberationDays < 1 ? "1 Minute" : `${deliberationDays} Days`}
-            </span>
-          </div>
-          <h2 className="text-sm font-bold font-serif leading-tight">
-            {isExpired 
-              ? "Perspectives have been finalized and decided by the Peer Jury."
-              : "Peer Jurors are on the stand sharing balanced insights. Cast your perspectives below before values lock!"
-            }
-          </h2>
-        </div>
+              <div className="space-y-2 p-3 rounded-lg border border-slate-200 bg-slate-50/40 text-left max-w-sm mx-auto animate-fadeIn">
+                <div className="flex items-center justify-between gap-2 border-b border-slate-200/60 pb-1">
+                  <div className="flex items-center gap-1">
+                    <Lock className="h-3 w-3 text-[#24324A]" />
+                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#24324A]">
+                      Submitter Verification
+                    </h4>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowSubmitterPinBox(false)}
+                    className="text-[9px] text-zinc-500 hover:text-zinc-800 font-bold"
+                  >
+                    Hide
+                  </button>
+                </div>
 
-        {/* Live numerical countdown */}
-        <div className="bg-white text-zinc-900 p-4 rounded-xl flex flex-col items-center justify-center font-mono min-w-[200px] border border-zinc-200 shadow-sm">
-          <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-sans font-extrabold mb-1.5 flex items-center gap-1">
-            {isExpired ? "Deliberation Closed" : "Remaining Deliberation"}
-          </span>
-          <span className={`text-base font-black tracking-wider ${isExpired ? "text-rose-600 font-mono" : "text-[#C9A227]"}`}>
-            {getRemainingTimeText()}
-          </span>
-          
+                <div className="space-y-1.5 pt-0.5">
+                  <p className="text-[10px] text-[#6B7280] leading-tight">
+                    Enter your 4-digit PIN to add a statement or response:
+                  </p>
+                  <div className="flex gap-1.5">
+                    <input
+                      type="password"
+                      maxLength={4}
+                      placeholder="PIN..."
+                      value={posterUnlockPin}
+                      onChange={(e) => setPosterUnlockPin(e.target.value.replace(/\D/g, ''))}
+                      className="w-16 bg-white border border-zinc-200 text-slate-950 text-xs px-2 py-1 rounded font-mono focus:border-[#24324A] focus:outline-none placeholder:text-zinc-400 font-bold"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleUnlockPoster}
+                      className="px-2.5 py-1 rounded bg-[#24324A] hover:bg-[#1C273A] text-white font-extrabold text-[10px] uppercase tracking-wider shadow-xs transition-all cursor-pointer"
+                    >
+                      Unlock
+                    </button>
+                  </div>
+                  {posterUnlockError && (
+                    <p className="text-[9px] text-rose-600 font-bold mt-1">⚠️ {posterUnlockError}</p>
+                  )}
+                </div>
+              </div>
+            )
+          ) : (
+            /* PARTNER SECURE INPUT BOX */
+            <div className="space-y-3 p-4 rounded-xl border border-rose-100 bg-rose-50/20 text-left max-w-2xl mx-auto">
+              <div className="flex items-center gap-1.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#B23B3B]/10 text-[#B23B3B]">
+                  <Users className="h-3 w-3" />
+                </span>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#B23B3B]">
+                  Partner Statement / Response
+                </h4>
+              </div>
 
+              <form onSubmit={handleAddPartnerStatement} className="space-y-3 animate-fadeIn">
+                <p className="text-[10.5px] text-rose-700 font-bold flex items-center gap-1">
+                  <Check className="h-3.5 w-3.5" /> Partner Access Authenticated
+                </p>
+                <textarea
+                  placeholder="Explain your side of the story, highlight crucial relationship details, or write a direct rebuttal to the submitter's allegations..."
+                  value={partnerStatementText}
+                  onChange={(e) => setPartnerStatementText(e.target.value)}
+                  maxLength={1000}
+                  className="w-full rounded-xl border border-rose-200 bg-white p-2.5 text-xs text-[#1F2937] focus:outline-none focus:border-rose-400 min-h-[85px]"
+                  required
+                />
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-rose-600 font-medium">Your entries will be tagged as "Partner"</span>
+                  <button
+                    type="submit"
+                    className="inline-flex items-center gap-1 rounded-lg bg-[#B23B3B] text-white px-3 py-1.5 text-xs font-bold hover:bg-[#922D2D] cursor-pointer"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Add Partner Response
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
       </div>
 
       {/* SECTION: TRIBUNAL CLEAN HANDS CERTIFICATE */}
-      {isExpired && currentVerdict() !== 'Me' && (
-        <div className="relative rounded-3xl border border-zinc-200 bg-white p-5 sm:p-7 shadow-xl space-y-6 transition-all duration-300 animate-fadeIn text-left">
+      {isExpired && isViewerNotGuilty && (
+        <div className="relative rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 shadow-sm space-y-4 transition-all duration-300 animate-fadeIn text-left">
           {/* Close Certificate Plaque (X) Badge */}
           {certificateUnlocked && (
             <button
@@ -474,7 +828,7 @@ export default function CourtScreen({
             </button>
           )}
 
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-3">
             <div className="space-y-1 text-left">
               <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#C9A227] bg-amber-50 border border-[#C9A227]/30 px-3 py-1 rounded-full font-mono">
                 <Award className="h-4 w-4 animate-pulse text-[#C9A227]" /> Boundary Certificate
@@ -529,176 +883,6 @@ export default function CourtScreen({
 
           {certificateUnlocked && (
             <div className="space-y-6 animate-fadeIn">
-              {/* Personalization Section */}
-              <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 text-left space-y-2 max-w-2xl mx-auto no-print">
-                {courtCase.recipientName ? (
-                  <div className="flex items-center gap-3 py-1">
-                    <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                      <Check className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-black text-emerald-400 uppercase tracking-wider">
-                        CERTIFICATE RECIPIENT LOCKED
-                      </h4>
-                      <p className="text-[11px] text-zinc-400 mt-0.5 leading-relaxed">
-                        This credential is permanently locked and issued to <strong className="text-white font-black">"{courtCase.recipientName}"</strong>. Recipient names can only be added once to preserve social-proof integrity.
-                      </p>
-                    </div>
-                  </div>
-                ) : !showAddNameForm ? (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div>
-                      <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
-                        <Sparkles className="h-4 w-4 text-[#F4B942]" /> Is this your case? Click to add your name
-                      </h4>
-                      <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
-                        Enter your Case PIN to permanently add your name to this certificate. <strong>Note: This can only be done once.</strong>
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setShowAddNameForm(true);
-                        setTypedPin('');
-                        setTypedName('');
-                        setTypedConfirmName('');
-                        setNameRevealConsent(false);
-                        setNameError('');
-                      }}
-                      className="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider bg-[#F4B942]/10 border border-[#F4B942]/30 hover:bg-[#F4B942]/20 text-[#F4B942] active:scale-95 transition-all cursor-pointer shrink-0"
-                    >
-                      Add Your Name
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-3 p-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#C9A227] font-mono">
-                        CLAIM CERTIFICATE & ADD YOUR NAME
-                      </span>
-                      <button
-                        onClick={() => setShowAddNameForm(false)}
-                        className="px-2 py-1 rounded bg-zinc-100 border border-zinc-200 text-zinc-600 hover:text-zinc-900 transition-all text-[9.5px] uppercase font-bold cursor-pointer"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-
-                    <p className="text-[10px] text-amber-700 leading-tight font-sans font-bold">
-                      ⚠️ Once submitted, the name is permanently locked on the certificate database and cannot be modified ever again.
-                    </p>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                      <div>
-                        <label className="block text-[9px] uppercase tracking-wider text-zinc-500 font-bold mb-1">
-                          CASE PIN (PASSWORD):
-                        </label>
-                        <input
-                          type="password"
-                          placeholder={courtCase.passwordPin ? "Enter 4-digit PIN..." : "No PIN required"}
-                          disabled={!courtCase.passwordPin}
-                          value={typedPin}
-                          onChange={(e) => setTypedPin(e.target.value.trim())}
-                          className="w-full bg-white border border-zinc-300 disabled:opacity-50 text-zinc-950 text-xs px-3 py-2 rounded-lg font-mono focus:border-[#C9A227] focus:outline-none transition-all placeholder:text-zinc-400 font-bold"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[9px] uppercase tracking-wider text-zinc-500 font-bold mb-1">
-                          RECIPIENT NAME:
-                        </label>
-                        <input
-                          type="text"
-                          maxLength={35}
-                          placeholder="e.g. Samuel Bennett"
-                          value={typedName}
-                          onChange={(e) => setTypedName(e.target.value)}
-                          className="w-full bg-white border border-zinc-300 text-zinc-950 text-xs px-3 py-2 rounded-lg focus:border-[#C9A227] focus:outline-none transition-all placeholder:text-zinc-400 font-bold"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[9px] uppercase tracking-wider text-zinc-500 font-bold mb-1">
-                          CONFIRM RECIPIENT NAME:
-                        </label>
-                        <input
-                          type="text"
-                          maxLength={35}
-                          placeholder="Type name again to confirm..."
-                          value={typedConfirmName}
-                          onChange={(e) => setTypedConfirmName(e.target.value)}
-                          className="w-full bg-white border border-zinc-300 text-zinc-950 text-xs px-3 py-2 rounded-lg focus:border-[#C9A227] focus:outline-none transition-all placeholder:text-zinc-400 font-bold"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-2 pt-1 font-sans">
-                      <input
-                        type="checkbox"
-                        id="consent-reveal-checkbox"
-                        checked={nameRevealConsent}
-                        onChange={(e) => setNameRevealConsent(e.target.checked)}
-                        className="mt-0.5 rounded border-zinc-300 bg-white text-[#C9A227] focus:ring-2 focus:ring-[#C9A227]/20 h-3.5 w-3.5 cursor-pointer accent-[#C9A227]"
-                      />
-                      <label htmlFor="consent-reveal-checkbox" className="text-[10.5px] text-zinc-700 font-bold leading-tight cursor-pointer select-none">
-                        I understand that adding my name makes it publicly visible on this certificate.
-                      </label>
-                    </div>
-
-                    {nameError && (
-                      <p className="text-[10px] text-rose-600 font-bold mt-1">
-                        ⚠️ Error: {nameError}
-                      </p>
-                    )}
-
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-200 mt-2">
-                      <button
-                        onClick={async () => {
-                          const cleanName = typedName.trim();
-                          const cleanConfirm = typedConfirmName.trim();
-
-                          if (!cleanName) {
-                            setNameError("Please enter a recipient name.");
-                            return;
-                          }
-                          if (cleanName !== cleanConfirm) {
-                            setNameError("The Recipient Name and Confirm Recipient Name fields do not match.");
-                            return;
-                          }
-                          if (courtCase.passwordPin && typedPin !== courtCase.passwordPin) {
-                            setNameError("Incorrect Case PIN. Certificate claim failed.");
-                            return;
-                          }
-                          if (!nameRevealConsent) {
-                            setNameError("Please confirm public display acknowledgement by checking the consent box.");
-                            return;
-                          }
-                          
-                          setIsSavingName(true);
-                          setNameError('');
-                          try {
-                            const updatedCase: CourtCase = {
-                              ...courtCase,
-                              recipientName: cleanName
-                            };
-                            await saveCourtCaseToFirestore(updatedCase);
-                            setShowAddNameForm(false);
-                          } catch (err) {
-                            console.error(err);
-                            setNameError("Error saving to database. Certificate update failed.");
-                          } finally {
-                            setIsSavingName(false);
-                          }
-                        }}
-                        disabled={isSavingName || !nameRevealConsent}
-                        className="bg-[#C9A227] hover:bg-[#B38E1D] disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed text-white font-black text-[10px] uppercase tracking-wider px-3.5 py-2 rounded-lg transition-all shadow cursor-pointer"
-                      >
-                        {isSavingName ? "Saving Name..." : "Confirm & Apply Name"}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
               {/* PRINT STYLE COMPONENT OVERRIDE */}
               <style dangerouslySetInnerHTML={{ __html: `
                 @media print {
@@ -747,29 +931,6 @@ export default function CourtScreen({
                 <div className="absolute bottom-2.5 left-2.5 w-6 h-6 border-b border-l border-[#C29B38] rounded-bl pointer-events-none" />
                 <div className="absolute bottom-2.5 right-2.5 w-6 h-6 border-b border-r border-[#C29B38] rounded-br pointer-events-none" />
 
-                {/* Soft pastel corner watercolor waves */}
-                <div className="absolute bottom-0 left-0 w-44 h-44 bg-gradient-to-tr from-[#FDFBF7] to-amber-100/40 rounded-tr-[100%] pointer-events-none select-none z-0 filter blur-sm animate-pulse" />
-                <div className="absolute bottom-0 right-0 w-44 h-44 bg-gradient-to-tl from-[#FDFBF7] to-teal-100/30 rounded-tl-[100%] pointer-events-none select-none z-0 filter blur-sm" />
-
-                {/* Left bottom heart outline contour illustration */}
-                <div className="absolute bottom-6 left-6 text-[#E0A994]/20 pointer-events-none z-0 select-none">
-                  <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                  </svg>
-                </div>
-
-                {/* Right bottom heart outline contour illustration */}
-                <div className="absolute bottom-6 right-6 text-[#8CBDB0]/20 pointer-events-none z-0 select-none">
-                  <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                  </svg>
-                </div>
-
-                {/* Vintage Gavel / Scales Watermark backdrop */}
-                <div className="absolute -bottom-8 -right-8 opacity-[0.03] select-none pointer-events-none transform rotate-12 scale-125">
-                  <Award className="h-96 w-96 text-amber-900" />
-                </div>
-
                 {/* Golden Wax Foil Stamp/Seal */}
                 <div className={`absolute z-10 select-none pointer-events-none ${
                   certFormat === 'story916' ? 'top-4 right-4 scale-75 origin-top-right' : 'top-6 right-6 sm:top-8 sm:right-8'
@@ -807,18 +968,16 @@ export default function CourtScreen({
                   </div>
 
                   {/* Recipient Custom Name */}
-                  {courtCase.recipientName && (
-                    <div className="pt-1.5 pb-0.5 text-center animate-fadeIn select-all">
-                      <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] text-[#B45309] font-black font-sans block mb-1">
-                        THIS CREDENTIAL IS PROUDLY ISSUED TO
-                      </span>
-                      <span className={`font-black text-slate-950 tracking-wider font-serif px-6 block max-w-sm mx-auto border-b border-dashed border-[#C29B38]/30 pb-1 leading-tight ${
-                        certFormat === 'story916' ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'
-                      }`}>
-                        {courtCase.recipientName}
-                      </span>
-                    </div>
-                  )}
+                  <div className="pt-1.5 pb-0.5 text-center animate-fadeIn select-all">
+                    <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] text-[#B45309] font-black font-sans block mb-1">
+                      THIS CREDENTIAL IS PROUDLY ISSUED TO
+                    </span>
+                    <span className={`font-black text-slate-950 tracking-wider font-serif px-6 block max-w-sm mx-auto border-b border-dashed border-[#C29B38]/30 pb-1 leading-tight ${
+                      certFormat === 'story916' ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'
+                    }`}>
+                      {courtCase.recipientName || `@${courtCase.author}`}
+                    </span>
+                  </div>
                 </div>
 
                 {/* 2. MIDDLE LAYING AREA */}
@@ -935,56 +1094,56 @@ export default function CourtScreen({
       )}
 
       {/* COURT POLL / VOTE OPTIONS */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
         
         {/* Left Side: Active Poll Voting */}
-        <div className="md:col-span-5 rounded-2xl border border-[#E5E7EB] bg-white p-5 space-y-4 shadow-sm">
+        <div className="md:col-span-5 rounded-xl border border-[#E5E7EB] bg-white p-4 space-y-3 shadow-xs">
           <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Cast Your Vote</h3>
           
           {(userVote || isExpired) ? (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {isExpired ? (
-                <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-center text-[#9F5F1B] font-bold mb-2 flex items-center justify-center gap-1.5 shadow-sm">
+                <div className="rounded-xl bg-amber-50 border border-amber-200 p-2.5 text-xs text-center text-[#9F5F1B] font-bold mb-1.5 flex items-center justify-center gap-1.5 shadow-xs">
                   <Lock className="h-4 w-4" strokeWidth="2.5" /> final deliberation results sealed!
                 </div>
               ) : (
-                <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-center text-[#2E7D32] font-bold mb-2 flex items-center justify-center gap-1.5 shadow-sm">
+                <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-2.5 text-xs text-center text-[#2E7D32] font-bold mb-1.5 flex items-center justify-center gap-1.5 shadow-xs">
                   <Check className="h-4 w-4" /> verdict registered! Current court breakdown:
                 </div>
               )}
 
               {[
-                { label: "Blame Me (Poster)", key: 'me', val: courtCase.votes.me, color: 'bg-[#24324A]' },
+                { label: "Blame ME", key: 'me', val: courtCase.votes.me, color: 'bg-[#24324A]' },
                 { label: "Blame Partner", key: 'partner', val: courtCase.votes.partner, color: 'bg-[#B23B3B]' },
                 { label: "Blame Both equally", key: 'both', val: courtCase.votes.both, color: 'bg-[#C9A227]' },
                 { label: "Blame Neither", key: 'neither', val: courtCase.votes.neither, color: 'bg-[#9CA3AF]' }
               ].map(opt => {
                 const pct = getPercent(opt.val);
                 return (
-                  <div key={opt.key} className="space-y-1">
+                  <div key={opt.key} className="space-y-0.5">
                     <div className="flex justify-between text-xs font-medium text-[#6B7280]">
                       <span className={userVote === opt.key ? 'text-[#24324A] font-bold' : ''}>
                         {opt.label} {userVote === opt.key && ' (Your Vote)'}
                       </span>
                       <span className="text-[#1F2937] font-bold">{pct}% ({opt.val})</span>
                     </div>
-                    <div className="h-2 w-full rounded-full bg-[#FAF8F2] overflow-hidden border border-[#E5E7EB]">
+                    <div className="h-1.5 w-full rounded-full bg-[#FAF8F2] overflow-hidden border border-[#E5E7EB]">
                       <div className={`h-full ${opt.color}`} style={{ width: `${pct}%` }} />
                     </div>
                   </div>
                 );
               })}
 
-              <div className="border-t border-[#ECECEC] pt-3 text-center">
+              <div className="border-t border-[#ECECEC] pt-2.5 text-center">
                 <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-bold">Leading Perspective</span>
                 <span className="text-sm font-bold text-[#C9A227] uppercase bg-[#FFF8E1] px-3 py-1 rounded border border-[#E8D79B] inline-block mt-1 font-mono">
-                  {currentVerdict() === 'Me' ? 'Poster at Fault' : currentVerdict() === 'Partner' ? 'Partner at Fault' : currentVerdict() === 'Both' ? 'Both Share Blame' : 'Mutual Understanding / No Fault'}
+                  {currentVerdict() === 'Me' ? 'I am at fault' : currentVerdict() === 'Partner' ? 'Partner at Fault' : currentVerdict() === 'Both' ? 'Both Share Blame' : 'Mutual Understanding / No Fault'}
                 </span>
               </div>
             </div>
           ) : (
-            <div className="space-y-2">
-              <p className="text-[11px] text-[#6B7280] leading-relaxed mb-3">Vote anonymously based purely on relationship rules and boundary violations:</p>
+            <div className="space-y-1.5">
+              <p className="text-[11px] text-[#6B7280] leading-relaxed mb-2">Vote anonymously based purely on relationship rules and boundary violations:</p>
               {[
                 { label: "I am wrong", key: 'me' },
                 { label: "Partner is wrong", key: 'partner' },
@@ -994,7 +1153,7 @@ export default function CourtScreen({
                 <button
                   key={opt.key}
                   onClick={() => onVoteCourt(courtCase.slug, opt.key as any)}
-                  className="w-full text-left rounded-xl border border-[#E5E7EB] bg-white p-3 text-xs font-bold text-[#1F2937] hover:border-[#24324A] hover:bg-[#FAF8F2] transition-all flex items-center justify-between shadow-sm cursor-pointer"
+                  className="w-full text-left rounded-xl border border-[#E5E7EB] bg-white p-2.5 text-xs font-bold text-[#1F2937] hover:border-[#24324A] hover:bg-[#FAF8F2] transition-all flex items-center justify-between shadow-xs cursor-pointer"
                   id={`court-vote-${opt.key}`}
                 >
                   <span>{opt.label}</span>
@@ -1006,12 +1165,12 @@ export default function CourtScreen({
         </div>
 
         {/* Right Side: Juror Arguments List & Input */}
-        <div className="md:col-span-7 space-y-4">
-          <div className="rounded-2xl border border-[#E5E7EB] bg-white p-5 space-y-4 shadow-sm">
+        <div className="md:col-span-7 space-y-3">
+          <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 space-y-3 shadow-xs">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Community Opinions</h3>
 
             {/* Submit Argument Form */}
-            <form id="argument-form" onSubmit={handleArgSubmit} className="space-y-3 bg-[#FAF8F2] p-3 rounded-xl border border-[#E5E7EB]">
+            <form id="argument-form" onSubmit={handleArgSubmit} className="space-y-2.5 bg-[#FAF8F2] p-2.5 rounded-xl border border-[#E5E7EB]">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-[10px] uppercase font-bold text-[#6B7280]">Who are you blaming?</span>
                 <div className="flex gap-1 text-[10px]">
@@ -1046,14 +1205,14 @@ export default function CourtScreen({
                   type="submit"
                   className="inline-flex items-center gap-1 rounded-lg bg-[#24324A] text-white px-3.5 py-1.5 text-xs font-bold hover:bg-[#1C273A]"
                 >
-                  <Plus className="h-3.5 w-3.5" /> Register Argument
+                  <Plus className="h-3.5 w-3.5" /> Register Opinion
                 </button>
               </div>
             </form>
 
             {/* List Opinions */}
             <div className="space-y-3 max-h-96 overflow-y-auto">
-              {courtCase.arguments.filter(arg => !reportedArguments.includes(arg.id)).map(arg => {
+              {courtCase.arguments.filter(arg => !reportedArguments.includes(arg.id) && arg.role !== 'Poster' && arg.role !== 'Partner').map(arg => {
                 const badgeColor = 
                   arg.side === 'Me' ? 'bg-[#24324A]/5 text-[#24324A] border-[#24324A]/10' :
                   arg.side === 'Partner' ? 'bg-[#B23B3B]/5 text-[#B23B3B] border-[#B23B3B]/10' :
