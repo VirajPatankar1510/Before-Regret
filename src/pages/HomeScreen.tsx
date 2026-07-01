@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Search, Flame, AlertTriangle, ShieldCheck, Heart, Sparkles, MessageSquare, ChevronRight, TrendingUp, Gavel, Globe, Users, Clock, HelpCircle, Compass, BarChart3, Star, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Flame, AlertTriangle, ShieldCheck, Heart, Sparkles, MessageSquare, ChevronRight, TrendingUp, Gavel, Globe, Users, Clock, HelpCircle, Compass, BarChart3, Star, ArrowRight, Award, CheckCircle2, Download, ChevronLeft } from 'lucide-react';
 import { Situation, Story, CourtCase, Question } from '../types';
+import { motion, AnimatePresence } from 'motion/react';
 import { MOST_REGRETTED_DECISIONS, MOST_SUCCESSFUL_DECISIONS, POPULAR_SEARCHES, PRESEEDED_SITUATIONS } from '../data/mockData';
 import { PRESEEDED_RELATIONSHIP_PROBLEMS } from '../data/relationshipProblems';
 import AdSenseWidget from '../components/AdSenseWidget';
@@ -16,6 +17,241 @@ interface HomeScreenProps {
 
 export default function HomeScreen({ situations, courtCases, questions, latestStories, setScreen, onCaseRetrieve }: HomeScreenProps) {
   const [searchInput, setSearchInput] = useState('');
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    const timer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % 3);
+    }, 8000);
+    return () => clearInterval(timer);
+  }, [isAutoPlaying]);
+
+  const handleManualSlideSelect = (index: number) => {
+    setIsAutoPlaying(false);
+    setCurrentSlide(index);
+  };
+
+  const handleManualSlidePrev = () => {
+    setIsAutoPlaying(false);
+    setCurrentSlide(prev => (prev === 0 ? 2 : prev - 1));
+  };
+
+  const handleManualSlideNext = () => {
+    setIsAutoPlaying(false);
+    setCurrentSlide(prev => (prev + 1) % 3);
+  };
+
+  const slides = [
+    {
+      id: 'certificate',
+      bgGradient: 'from-[#111827] via-[#1F2937] to-[#111827]',
+      accentColor: '#C9A227',
+      badge: '⚖️ The Relationship Court',
+      title: "Get a 'Not Guilty' Certificate!",
+      subtitle: "Cleared of blame in your relationship disagreement? Let the public jury listen to your story, vote on the issue, and claim your exoneration certificate.",
+      cta: "Submit Your Case",
+      action: () => setScreen({ type: 'court_list' }),
+      content: (
+        <div className="space-y-3 text-left">
+          <p className="text-[12px] text-zinc-300 font-medium font-sans">Get your official innocence certificate in 3 steps:</p>
+          <div className="space-y-2">
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#C9A227]/20 text-[#C9A227] text-[10px] font-black shrink-0 border border-[#C9A227]/30 mt-0.5">1</span>
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Post Your Case</h4>
+                <p className="text-[9px] text-zinc-400 font-sans leading-normal">Submit details and arguments anonymously from both sides.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#C9A227]/20 text-[#C9A227] text-[10px] font-black shrink-0 border border-[#C9A227]/30 mt-0.5">2</span>
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Community Jury Vote</h4>
+                <p className="text-[9px] text-zinc-400 font-sans leading-normal">Our peer citizens review details, discuss facts, and cast votes on who is right.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#C9A227]/20 text-[#C9A227] text-[10px] font-black shrink-0 border border-[#C9A227]/30 mt-0.5">3</span>
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Download Your Certificate</h4>
+                <p className="text-[9px] text-zinc-400 font-sans leading-normal">Instantly save your custom certificate to share with your partner!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+      visual: (
+        <div className="relative w-full h-full max-w-[290px] mx-auto bg-[#FFFDF9] border-4 border-double border-[#C9A227] rounded-2xl p-4 shadow-2xl flex flex-col justify-between text-[#24324A] font-serif overflow-hidden select-none">
+          <div className="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center">
+            <Gavel className="w-28 h-28 text-[#C9A227]" />
+          </div>
+          
+          <div className="text-center space-y-0.5">
+            <span className="text-[6px] tracking-widest font-mono text-[#C9A227] uppercase font-black block">The Relationship Court</span>
+            <h4 className="text-[11px] font-black tracking-tight uppercase border-b border-[#E8D79B] pb-1 font-sans text-amber-900">Certificate of Innocence</h4>
+          </div>
+
+          <div className="my-2.5 text-center space-y-1.5">
+            <p className="text-[7px] italic text-zinc-500 leading-normal">This official certificate verifies that our community jury has cleared the bearer of blame in their case.</p>
+            <div className="bg-[#FAF8F2] border border-[#E8D79B] py-1 px-1.5 rounded">
+              <span className="text-[8px] font-bold text-amber-950 block font-sans tracking-wide">VERDICT: CERTIFIED INNOCENT</span>
+              <span className="text-[6px] text-[#C9A227] font-mono block uppercase">Verified Good Partner</span>
+            </div>
+            <p className="text-[6.5px] text-zinc-500 leading-normal px-1">"Voted innocent of all relationship blame by anonymous peer reviews."</p>
+          </div>
+
+          <div className="flex items-center justify-between border-t border-[#E8D79B] pt-1.5 mt-0.5">
+            <div className="text-left font-mono text-[5.5px] text-zinc-400 space-y-0.5">
+              <div>Community Decided</div>
+              <div>Peer Citizen Jury</div>
+            </div>
+            
+            <div className="relative flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-[#C9A227] shadow-xs flex items-center justify-center border border-yellow-300 relative">
+                <Star className="w-3 h-3 text-white fill-current" />
+                <div className="absolute top-4 left-0.5 w-1.5 h-3 bg-amber-700/80 -rotate-12 transform origin-top" />
+                <div className="absolute top-4 right-0.5 w-1.5 h-3 bg-amber-700/80 rotate-12 transform origin-top" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'redflag',
+      bgGradient: 'from-[#171A21] via-[#21262D] to-[#171A21]',
+      accentColor: '#3B82F6',
+      badge: '🚩 Dilemma Meter',
+      title: "Red Flag Dilemma Meter",
+      subtitle: "Wondering if a partner behavior is a real warning sign? Submit the dilemma anonymously, vote on active cases, and view warning percentages.",
+      cta: "Check Red Flags",
+      action: () => setScreen({ type: 'red_flag_meter' }),
+      content: (
+        <div className="space-y-3 text-left">
+          <p className="text-[12px] text-zinc-300 font-medium font-sans">Gauge the warning signs before moving forward:</p>
+          <div className="space-y-2">
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-500/20 text-[#3B82F6] text-[10px] font-black shrink-0 border border-blue-500/30 mt-0.5">1</span>
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Rate behaviors</h4>
+                <p className="text-[9px] text-zinc-400 font-sans leading-normal">Vote on whether specific situations are healthy or clear red flags.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-500/20 text-[#3B82F6] text-[10px] font-black shrink-0 border border-blue-500/30 mt-0.5">2</span>
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Compare averages</h4>
+                <p className="text-[9px] text-zinc-400 font-sans leading-normal">Check split ratings to see how your boundaries align with peers.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-500/20 text-[#3B82F6] text-[10px] font-black shrink-0 border border-blue-500/30 mt-0.5">3</span>
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Submit warnings</h4>
+                <p className="text-[9px] text-zinc-400 font-sans leading-normal">Anonymously share your partner's habits to get objective warning meter scores.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+      visual: (
+        <div className="w-full max-w-[290px] mx-auto bg-[#0D1117] border border-[#30363D] rounded-2xl p-4 shadow-2xl space-y-3 text-slate-300 font-sans text-left select-none">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-1.5">
+            <span className="text-[8px] font-mono font-bold tracking-widest text-red-400">RED FLAG METER</span>
+            <span className="text-[8px] text-zinc-400 font-mono font-bold font-sans">Active Voting</span>
+          </div>
+
+          <div className="space-y-1">
+            <h4 className="text-[10px] font-extrabold text-white leading-normal">"Partner hides their phone screen whenever I enter the room."</h4>
+          </div>
+
+          <div className="space-y-2 pt-1">
+            <div className="space-y-1">
+              <div className="flex justify-between text-[8px] font-mono font-bold">
+                <span>⚠️ Red Flag Behavior</span>
+                <span className="text-red-400">82%</span>
+              </div>
+              <div className="w-full bg-[#21262D] h-2 rounded-full overflow-hidden">
+                <div className="bg-red-500 h-full rounded-full transition-all duration-1000" style={{ width: '82%' }} />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex justify-between text-[8px] font-mono font-bold">
+                <span>🟢 Normal Boundary</span>
+                <span className="text-emerald-400">18%</span>
+              </div>
+              <div className="w-full bg-[#21262D] h-2 rounded-full overflow-hidden">
+                <div className="bg-emerald-400 h-full rounded-full" style={{ width: '18%' }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'regret',
+      bgGradient: 'from-[#022C22] via-[#064E3B] to-[#022C22]',
+      accentColor: '#10B981',
+      badge: '📖 Personal Stories',
+      title: "Explore Real Decision Timelines",
+      subtitle: "Facing a tough relationship crossroads? Read actual story timelines from people who walked similar paths and learn from their outcomes.",
+      cta: "Explore Stories",
+      action: () => setScreen({ type: 'explore' }),
+      content: (
+        <div className="space-y-3 text-left">
+          <p className="text-[12px] text-emerald-200 font-medium font-sans">Read how others navigated their relationship crossroads:</p>
+          <div className="space-y-2">
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black shrink-0 border border-emerald-500/30 mt-0.5">1</span>
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Real situations</h4>
+                <p className="text-[9px] text-zinc-300 font-sans leading-normal">Learn what others decided to do when confronting trust issues or major crossroads.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black shrink-0 border border-emerald-500/30 mt-0.5">2</span>
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Step-by-step paths</h4>
+                <p className="text-[9px] text-zinc-300 font-sans leading-normal">Follow how people communicated, sought assistance, or resolved disputes over time.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black shrink-0 border border-emerald-500/30 mt-0.5">3</span>
+              <div>
+                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Honest updates</h4>
+                <p className="text-[9px] text-zinc-300 font-sans leading-normal">Read honest, helpful updates on how their decision impacted their happiness months later.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+      visual: (
+        <div className="w-full max-w-[290px] mx-auto bg-teal-950/40 border border-teal-800/40 rounded-2xl p-4 shadow-2xl space-y-2 text-slate-300 font-sans text-left">
+          <div className="flex items-center justify-between border-b border-teal-900 pb-1.5">
+            <span className="text-[8px] font-mono font-bold tracking-widest text-[#10B981]">STORY TIMELINE</span>
+            <span className="text-[8px] text-zinc-300 font-mono">Decision Roadmap</span>
+          </div>
+
+          <div className="space-y-2 pt-1 text-[10px]">
+            <div className="flex gap-2">
+              <span className="text-emerald-400 font-bold shrink-0 font-mono">Day 1</span>
+              <p className="text-zinc-300 font-sans leading-normal">Spoke up directly about my concerns and trust worries.</p>
+            </div>
+            <div className="flex gap-2">
+              <span className="text-emerald-400 font-bold shrink-0 font-mono">Month 3</span>
+              <p className="text-zinc-300 font-sans leading-normal">We worked together to establish open conversations and boundaries.</p>
+            </div>
+            <div className="flex gap-2">
+              <span className="text-[#F4B942] font-bold shrink-0 font-mono">Update</span>
+              <p className="text-emerald-100 font-sans font-bold leading-normal">Feeling heard and secure. Working on it made us stronger.</p>
+            </div>
+          </div>
+        </div>
+      )
+    }
+  ];
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,25 +327,120 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
   return (
     <div className="space-y-12 pb-16 animate-fadeIn">
       
-      {/* SECTION 1: HERO CONTAINER */}
-      <section className="relative rounded-3xl bg-white border border-[#E5E7EB] py-14 px-6 text-center overflow-hidden shadow-sm">
+      {/* DYNAMIC SLIDING HERO BANNER */}
+      <section className="relative rounded-3xl overflow-hidden shadow-lg border border-zinc-800 bg-zinc-950 text-white select-none">
+        {/* Carousel Content with Slide Animation */}
+        <div className={`w-full min-h-[500px] md:min-h-[400px] bg-gradient-to-r ${slides[currentSlide].bgGradient} transition-all duration-700 ease-in-out p-6 pb-24 sm:p-10 sm:pb-12 flex flex-col md:flex-row items-center justify-between gap-8 relative`}>
+          
+          {/* Decorative accent background glows */}
+          <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-12 -right-12 w-64 h-64 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+
+          {/* Left Column (Content) */}
+          <div className="flex-1 space-y-5 text-left z-10 max-w-xl">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
+              {slides[currentSlide].badge}
+            </div>
+            
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight font-display">
+              {slides[currentSlide].title}
+            </h1>
+            
+            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans">
+              {slides[currentSlide].subtitle}
+            </p>
+
+            <div className="py-1">
+              {slides[currentSlide].content}
+            </div>
+
+            <div className="pt-2 flex flex-wrap gap-3">
+              <button
+                onClick={slides[currentSlide].action}
+                className="px-5 py-3 rounded-xl bg-white text-zinc-950 hover:bg-zinc-100 font-extrabold text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 font-sans"
+              >
+                {slides[currentSlide].cta} <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Right Column (Visual Mockup) */}
+          <div className="hidden md:flex flex-1 items-center justify-center z-10 p-2">
+            {slides[currentSlide].visual}
+          </div>
+
+          {/* Manual Chevron Nav Buttons */}
+          <button
+            onClick={handleManualSlidePrev}
+            className="hidden md:flex absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/30 hover:bg-black/50 border border-white/10 items-center justify-center text-white transition-all cursor-pointer hover:scale-105 z-20"
+            aria-label="Previous Slide"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          
+          <button
+            onClick={handleManualSlideNext}
+            className="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/30 hover:bg-black/50 border border-white/10 items-center justify-center text-white transition-all cursor-pointer hover:scale-105 z-20"
+            aria-label="Next Slide"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Carousel Indicators / Dots */}
+        <div className="absolute bottom-4 left-1/2 -translate-y-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleManualSlideSelect(idx)}
+              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                currentSlide === idx ? "w-6 bg-white" : "w-2 bg-white/40 hover:bg-white/60"
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* SECTION 1.5: THE DILEMMA SELECTOR GRID */}
+      <section className="relative rounded-3xl bg-white border border-[#E5E7EB] py-10 px-6 overflow-hidden shadow-sm space-y-8">
         
         {/* Absolute Background Accent Radial glows */}
         <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-[#24324A]/5 blur-3xl" />
         <div className="absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-[#C9A227]/5 blur-3xl" />
 
-        <div className="relative max-w-3xl mx-auto space-y-6">
-          
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#24324A]/5 border border-[#24324A]/10 px-3 py-1 text-[11px] font-bold text-[#24324A]">
-            <Sparkles className="h-3 w-3 text-[#C9A227]" /> Learn From Those Who Already Lived Your Choice.
+        <div className="relative max-w-4xl mx-auto space-y-6">
+          <div className="text-center space-y-3">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#060606] tracking-tight font-display">
+              What Relationship Decision Are You <span className="text-[#C9A227]">Struggling With?</span>
+            </h2>
+            <p className="text-xs text-[#6B7280] max-w-2xl mx-auto leading-relaxed font-sans">
+              Facing a tough relationship crossroads? Explore caring stories, honest advice, and lessons from peers who have walked similar paths.
+            </p>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-[#060606] tracking-tight leading-tight select-none font-display">
-            What Relationship Decision Are You <span className="text-[#C9A227]">Struggling With?</span>
-          </h1>
+          {/* DYNAMIC SEARCH BAR */}
+          <div className="max-w-xl mx-auto pb-4 relative">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <input
+                type="text"
+                placeholder="Search issues, e.g. 'boyfriend marriage', 'cheating', 'ignored red flags'..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="w-full pl-11 pr-24 py-3.5 bg-zinc-50 border border-zinc-200 focus:bg-white focus:border-[#C9A227] focus:ring-2 focus:ring-[#C9A227]/10 rounded-2xl text-sm transition-all shadow-inner focus:outline-hidden text-[#1F2937]"
+              />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#24324A] hover:bg-[#1C273A] text-white font-extrabold text-xs uppercase tracking-wider px-4 py-2 rounded-xl transition-all cursor-pointer font-sans"
+              >
+                Search
+              </button>
+            </form>
+          </div>
 
           {/* Grid of Existing Options (Relationship Dilemmas) */}
-          <div className="pt-6 max-w-4xl mx-auto space-y-4">
+          <div className="pt-2 max-w-4xl mx-auto space-y-4">
             <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-wider text-center select-none">
               Select a Relationship Dilemma to Explore Real Outcomes
             </h3>
@@ -261,7 +592,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             <h2 className="text-lg sm:text-xl font-bold text-[#24324A] flex items-center gap-2">
               <Gavel className="h-5 w-5 text-[#C9A227]" /> Trending Relationship Court Debates
             </h2>
-            <p className="text-xs text-[#6B7280]">Step into the citizen court, weigh in on real conflicts, and cast your anonymous verdict.</p>
+            <p className="text-xs text-[#6B7280]">Step into The Relationship Court, weigh in on real conflicts, and cast your anonymous verdict.</p>
           </div>
           <button
             onClick={() => setScreen({ type: 'court_list' })}
@@ -441,7 +772,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
               <Gavel className="h-4 w-4" />
             </span>
             <div>
-              <h3 className="text-base font-extrabold text-[#24324A] font-display">BR Relationship Court Cases</h3>
+              <h3 className="text-base font-extrabold text-[#24324A] font-display">The Relationship Court Cases</h3>
               <p className="text-xs text-[#6B7280]">Anonymously vote on active relationship dilemmas. Who is wrong?</p>
             </div>
           </div>

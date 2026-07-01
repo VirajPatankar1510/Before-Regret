@@ -55,7 +55,7 @@ export default function Navigation({
     courtCases.forEach(c => {
       const caseNum = c.caseNumber || '';
       if (caseNum.toLowerCase().includes(query) || c.title.toLowerCase().includes(query)) {
-        results.push({ type: 'court', label: `⚖️ ${caseNum ? `[${caseNum}]` : 'BR Relationship Court'}: ${c.title}`, slug: c.slug });
+        results.push({ type: 'court', label: `⚖️ ${caseNum ? `[${caseNum}]` : 'The Relationship Court'}: ${c.title}`, slug: c.slug });
       }
     });
 
