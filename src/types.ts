@@ -76,7 +76,7 @@ export interface CourtArgument {
   side: 'Me' | 'Partner' | 'Both' | 'Neither';
   text: string;
   votes: number;
-  role: 'Truth Teller' | 'Relationship Veteran' | 'Mentor' | 'Novice' | 'Top Mentor';
+  role: 'Truth Teller' | 'Relationship Veteran' | 'Mentor' | 'Novice' | 'Top Mentor' | 'Poster' | 'Partner';
   isRealInput?: boolean;
 }
 
@@ -98,6 +98,8 @@ export interface CourtCase {
   deliberationDays?: number; // Duration of active voting (min 3 days)
   createdAt?: string;        // ISO string when created
   passwordPin?: string;      // Random PIN/password generated at registration
+  partnerKey?: string;       // Random complex key to authenticate partner invite link
+  partnerPasswordPin?: string; // 4-digit PIN set by partner when opening link
   recipientName?: string;    // Custom recipient name added by authenticated user
   isRealInput?: boolean;
   wantsPartnerResponse?: boolean; // Whether the user generated a partner invite link
