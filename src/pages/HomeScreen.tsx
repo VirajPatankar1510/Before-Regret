@@ -76,8 +76,8 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
       bgGradient: 'from-[#14111C] via-[#2D1D3D] to-[#14111C]',
       accentColor: '#C9A227',
       badge: '⚖️ The Relationship Court',
-      title: "Get a 'Not Guilty' Certificate!",
-      subtitle: "Cleared of blame in your relationship disagreement? Let the public jury listen to your story, vote on the issue, and claim your exoneration certificate.",
+      title: "Your Story Deserves a Verdict...",
+      subtitle: "Cleared of blame in your relationship disagreement? Let the public jury listen to your story, vote on the issue, and claim your official exoneration certificate.",
       cta: "Submit Your Case",
       action: () => setScreen({ type: 'court_list' }),
       content: (
