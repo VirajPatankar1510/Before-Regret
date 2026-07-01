@@ -28,6 +28,7 @@ export default function CourtScreen({
 }: CourtScreenProps) {
   const [argumentText, setArgumentText] = useState('');
   const [selectedSide, setSelectedSide] = useState<'Me' | 'Partner' | 'Both' | 'Neither'>('Me');
+  const [isPartnerInvite, setIsPartnerInvite] = useState(false);
   const [showCaseDeleteConfirm, setShowCaseDeleteConfirm] = useState(false);
   const [reportedArguments, setReportedArguments] = useState<string[]>([]);
 
@@ -77,6 +78,16 @@ export default function CourtScreen({
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isInvite = new URLSearchParams(window.location.search).get('partnerInvite') === 'true';
+      setIsPartnerInvite(isInvite);
+      if (isInvite) {
+        setSelectedSide('Partner');
+      }
+    }
+  }, [courtCase.slug]);
 
   React.useEffect(() => {
     if (certificateUnlocked) {
@@ -292,6 +303,36 @@ export default function CourtScreen({
           </div>
         )}
 
+        {isPartnerInvite && (
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3 shadow-sm animate-fadeIn text-[#1E3A8A]">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100 border border-blue-200 text-blue-600 shrink-0 mt-0.5">
+              <Users className="h-4 w-4" />
+            </span>
+            <div className="space-y-1">
+              <h4 className="text-xs font-black uppercase tracking-wider text-blue-900 font-sans flex items-center gap-1">
+                <Sparkles className="h-3.5 w-3.5 text-blue-500" /> You Have Been Invited to Respond in Opposition
+              </h4>
+              <p className="text-xs text-blue-800 leading-relaxed font-sans">
+                Your partner has submitted this case and requested your perspective to ensure a balanced community trial. Under peer-juror guidelines, your identity is 100% anonymous. Share your narrative below so peer citizens can weigh both sides fairly.
+              </p>
+              <div className="pt-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const formElement = document.getElementById("argument-form") || document.querySelector("form");
+                    if (formElement) {
+                      formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] uppercase tracking-wider transition-all shadow cursor-pointer inline-flex items-center gap-1.5"
+                >
+                  <Plus className="h-3.5 w-3.5" /> Submit Counter-Argument Below
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-2">
             <span className="flex h-5 w-5 items-center justify-center rounded bg-[#FFF8E1] text-[#C9A227]">
@@ -347,6 +388,31 @@ export default function CourtScreen({
             </span>
           ))}
         </div>
+
+        {courtCase.wantsPartnerResponse && (
+          <div className="bg-[#FAF8F2] border border-[#ECECEC] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs mt-3">
+            <div className="space-y-0.5">
+              <span className="font-bold text-[#24324A] flex items-center gap-1">
+                <Share2 className="h-3.5 w-3.5 text-[#C9A227]" /> Partner Opposition Invited
+              </span>
+              <p className="text-[11px] text-[#6B7280] leading-relaxed">
+                The submitter requested a response from their partner to allow jurors to judge both sides fairly.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const inviteLink = `${window.location.origin}/court/${courtCase.slug}?partnerInvite=true`;
+                const message = `This link is only for you to add your argument, do not share with anyone then ${inviteLink}`;
+                navigator.clipboard.writeText(message);
+                alert("📋 Copied invitation message to clipboard!");
+              }}
+              className="px-3 py-2 rounded-lg text-[10.5px] font-bold bg-[#24324A] hover:bg-[#1C273A] text-white transition-all shadow active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer self-start sm:self-center shrink-0"
+            >
+              <Copy className="h-3 w-3" /> Copy Invite Message
+            </button>
+          </div>
+        )}
       </div>
 
       {/* SECTION: DELIBERATION COUNTDOWN TIMER PANEL */}
@@ -382,11 +448,11 @@ export default function CourtScreen({
         </div>
 
         {/* Live numerical countdown */}
-        <div className="bg-[#1F2937] text-white p-4 rounded-xl flex flex-col items-center justify-center font-mono min-w-[200px] border border-zinc-700 shadow-md">
-          <span className="text-[9px] uppercase tracking-widest text-[#AAB2C0] font-sans font-extrabold mb-1.5 flex items-center gap-1">
+        <div className="bg-white text-zinc-900 p-4 rounded-xl flex flex-col items-center justify-center font-mono min-w-[200px] border border-zinc-200 shadow-sm">
+          <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-sans font-extrabold mb-1.5 flex items-center gap-1">
             {isExpired ? "Deliberation Closed" : "Remaining Deliberation"}
           </span>
-          <span className={`text-base font-black tracking-wider ${isExpired ? "text-rose-400 font-mono" : "text-[#FFF8E1]"}`}>
+          <span className={`text-base font-black tracking-wider ${isExpired ? "text-rose-600 font-mono" : "text-[#C9A227]"}`}>
             {getRemainingTimeText()}
           </span>
           
@@ -396,27 +462,27 @@ export default function CourtScreen({
 
       {/* SECTION: TRIBUNAL CLEAN HANDS CERTIFICATE */}
       {isExpired && currentVerdict() !== 'Me' && (
-        <div className="relative rounded-3xl border border-[#30363D] bg-[#161B22] p-5 sm:p-7 shadow-xl space-y-6 transition-all duration-300 animate-fadeIn text-left">
+        <div className="relative rounded-3xl border border-zinc-200 bg-white p-5 sm:p-7 shadow-xl space-y-6 transition-all duration-300 animate-fadeIn text-left">
           {/* Close Certificate Plaque (X) Badge */}
           {certificateUnlocked && (
             <button
               onClick={() => setCertificateUnlocked(false)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-all hover:bg-zinc-800 cursor-pointer z-50 focus:outline-none"
+              className="absolute top-4 right-4 p-2 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-500 hover:text-zinc-900 transition-all hover:bg-zinc-200 cursor-pointer z-50 focus:outline-none"
               title="Close Certificate Plaque"
             >
               <X className="h-4 w-4" />
             </button>
           )}
 
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#30363D]/60 pb-5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 pb-5">
             <div className="space-y-1 text-left">
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#F4B942] bg-[#F4B942]/10 border border-[#F4B942]/30 px-3 py-1 rounded-full font-mono">
-                <Award className="h-4 w-4 animate-pulse text-[#F4B942]" /> Boundary Certificate
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#C9A227] bg-amber-50 border border-[#C9A227]/30 px-3 py-1 rounded-full font-mono">
+                <Award className="h-4 w-4 animate-pulse text-[#C9A227]" /> Boundary Certificate
               </span>
-              <h3 className="text-lg font-black text-white font-sans tracking-tight pt-1">
+              <h3 className="text-lg font-black text-zinc-900 font-sans tracking-tight pt-1">
                 Community Verdict Certificate ⚖️
               </h3>
-              <p className="text-xs text-[#AAB2C0] max-w-xl leading-relaxed">
+              <p className="text-xs text-zinc-600 max-w-xl leading-relaxed font-medium">
                 Peer deliberation consensus determines you held proper, healthy relationship boundaries in this dispute. Export this certificate to validate your healthy boundaries!
               </p>
             </div>
@@ -428,7 +494,7 @@ export default function CourtScreen({
                     setCertificateUnlocked(true);
                     setCopied(false);
                   }}
-                  className="bg-[#F4B942] hover:bg-[#E0A52D] text-[#0D1117] font-black text-xs uppercase tracking-wider px-5 py-3 rounded-2xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="bg-[#C9A227] hover:bg-[#B38E1D] text-white font-black text-xs uppercase tracking-wider px-5 py-3 rounded-2xl transition-all shadow-md active:scale-[0.98] flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Sparkles className="h-4 w-4" /> View Certificate
                 </button>
@@ -438,7 +504,7 @@ export default function CourtScreen({
                   <button
                     onClick={handleDownloadImage}
                     disabled={certIsGeneratingImage}
-                    className="bg-[#F4B942] hover:bg-[#E0A52D] disabled:bg-zinc-750 disabled:text-zinc-500 text-[#0D1117] font-black text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all shadow active:scale-95 flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
+                    className="bg-[#C9A227] hover:bg-[#B38E1D] disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-black text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all shadow active:scale-[0.98] flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
                     title="Download high-resolution PNG image of your certificate"
                   >
                     <Download className="h-4 w-4" />
@@ -506,24 +572,24 @@ export default function CourtScreen({
                 ) : (
                   <div className="space-y-3 p-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#F4B942] font-mono">
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#C9A227] font-mono">
                         CLAIM CERTIFICATE & ADD YOUR NAME
                       </span>
                       <button
                         onClick={() => setShowAddNameForm(false)}
-                        className="px-2 py-1 rounded bg-[#161B22] border border-[#30363D] text-zinc-400 hover:text-white transition-all text-[9.5px] uppercase font-bold cursor-pointer"
+                        className="px-2 py-1 rounded bg-zinc-100 border border-zinc-200 text-zinc-600 hover:text-zinc-900 transition-all text-[9.5px] uppercase font-bold cursor-pointer"
                       >
                         Cancel
                       </button>
                     </div>
 
-                    <p className="text-[10px] text-[#E0A52D] leading-tight font-sans">
+                    <p className="text-[10px] text-amber-700 leading-tight font-sans font-bold">
                       ⚠️ Once submitted, the name is permanently locked on the certificate database and cannot be modified ever again.
                     </p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                       <div>
-                        <label className="block text-[9px] uppercase tracking-wider text-zinc-400 font-bold mb-1">
+                        <label className="block text-[9px] uppercase tracking-wider text-zinc-500 font-bold mb-1">
                           CASE PIN (PASSWORD):
                         </label>
                         <input
@@ -532,12 +598,12 @@ export default function CourtScreen({
                           disabled={!courtCase.passwordPin}
                           value={typedPin}
                           onChange={(e) => setTypedPin(e.target.value.trim())}
-                          className="w-full bg-[#0D1117] border border-[#30363D] disabled:opacity-50 text-white text-xs px-3 py-2 rounded-lg font-mono focus:border-[#F4B942]/50 focus:outline-none transition-all placeholder:text-zinc-650"
+                          className="w-full bg-white border border-zinc-300 disabled:opacity-50 text-zinc-950 text-xs px-3 py-2 rounded-lg font-mono focus:border-[#C9A227] focus:outline-none transition-all placeholder:text-zinc-400 font-bold"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[9px] uppercase tracking-wider text-zinc-400 font-bold mb-1">
+                        <label className="block text-[9px] uppercase tracking-wider text-zinc-500 font-bold mb-1">
                           RECIPIENT NAME:
                         </label>
                         <input
@@ -546,12 +612,12 @@ export default function CourtScreen({
                           placeholder="e.g. Samuel Bennett"
                           value={typedName}
                           onChange={(e) => setTypedName(e.target.value)}
-                          className="w-full bg-[#0D1117] border border-[#30363D] text-white text-xs px-3 py-2 rounded-lg focus:border-[#F4B942]/50 focus:outline-none transition-all placeholder:text-zinc-650"
+                          className="w-full bg-white border border-zinc-300 text-zinc-950 text-xs px-3 py-2 rounded-lg focus:border-[#C9A227] focus:outline-none transition-all placeholder:text-zinc-400 font-bold"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[9px] uppercase tracking-wider text-zinc-400 font-bold mb-1">
+                        <label className="block text-[9px] uppercase tracking-wider text-zinc-500 font-bold mb-1">
                           CONFIRM RECIPIENT NAME:
                         </label>
                         <input
@@ -560,7 +626,7 @@ export default function CourtScreen({
                           placeholder="Type name again to confirm..."
                           value={typedConfirmName}
                           onChange={(e) => setTypedConfirmName(e.target.value)}
-                          className="w-full bg-[#0D1117] border border-[#30363D] text-white text-xs px-3 py-2 rounded-lg focus:border-[#F4B942]/50 focus:outline-none transition-all placeholder:text-zinc-650"
+                          className="w-full bg-white border border-zinc-300 text-zinc-950 text-xs px-3 py-2 rounded-lg focus:border-[#C9A227] focus:outline-none transition-all placeholder:text-zinc-400 font-bold"
                         />
                       </div>
                     </div>
@@ -571,20 +637,20 @@ export default function CourtScreen({
                         id="consent-reveal-checkbox"
                         checked={nameRevealConsent}
                         onChange={(e) => setNameRevealConsent(e.target.checked)}
-                        className="mt-0.5 rounded border border-[#30363D] bg-[#0c1015] text-[#F4B942] focus:ring-0 focus:outline-none h-3.5 w-3.5 cursor-pointer accent-[#F4B942]"
+                        className="mt-0.5 rounded border-zinc-300 bg-white text-[#C9A227] focus:ring-2 focus:ring-[#C9A227]/20 h-3.5 w-3.5 cursor-pointer accent-[#C9A227]"
                       />
-                      <label htmlFor="consent-reveal-checkbox" className="text-[10.5px] text-zinc-300 font-semibold leading-tight cursor-pointer select-none">
+                      <label htmlFor="consent-reveal-checkbox" className="text-[10.5px] text-zinc-700 font-bold leading-tight cursor-pointer select-none">
                         I understand that adding my name makes it publicly visible on this certificate.
                       </label>
                     </div>
 
                     {nameError && (
-                      <p className="text-[10px] text-rose-400 font-bold mt-1">
-                        ⚠️ nameError: {nameError}
+                      <p className="text-[10px] text-rose-600 font-bold mt-1">
+                        ⚠️ Error: {nameError}
                       </p>
                     )}
 
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-800/60 mt-2">
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-200 mt-2">
                       <button
                         onClick={async () => {
                           const cleanName = typedName.trim();
@@ -624,7 +690,7 @@ export default function CourtScreen({
                           }
                         }}
                         disabled={isSavingName || !nameRevealConsent}
-                        className="bg-[#F4B942] hover:bg-[#E0A52D] disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-[#0D1117] font-black text-[10px] uppercase tracking-wider px-3.5 py-2 rounded-lg transition-all shadow cursor-pointer"
+                        className="bg-[#C9A227] hover:bg-[#B38E1D] disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed text-white font-black text-[10px] uppercase tracking-wider px-3.5 py-2 rounded-lg transition-all shadow cursor-pointer"
                       >
                         {isSavingName ? "Saving Name..." : "Confirm & Apply Name"}
                       </button>
@@ -945,7 +1011,7 @@ export default function CourtScreen({
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Community Opinions</h3>
 
             {/* Submit Argument Form */}
-            <form onSubmit={handleArgSubmit} className="space-y-3 bg-[#FAF8F2] p-3 rounded-xl border border-[#E5E7EB]">
+            <form id="argument-form" onSubmit={handleArgSubmit} className="space-y-3 bg-[#FAF8F2] p-3 rounded-xl border border-[#E5E7EB]">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-[10px] uppercase font-bold text-[#6B7280]">Who are you blaming?</span>
                 <div className="flex gap-1 text-[10px]">

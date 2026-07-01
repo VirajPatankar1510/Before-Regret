@@ -43,10 +43,37 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
     setCurrentSlide(prev => (prev + 1) % 3);
   };
 
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  const minSwipeDistance = 50;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      handleManualSlideNext();
+    } else if (isRightSwipe) {
+      handleManualSlidePrev();
+    }
+  };
+
   const slides = [
     {
       id: 'certificate',
-      bgGradient: 'from-[#111827] via-[#1F2937] to-[#111827]',
+      bgGradient: 'from-[#14111C] via-[#2D1D3D] to-[#14111C]',
       accentColor: '#C9A227',
       badge: '⚖️ The Relationship Court',
       title: "Get a 'Not Guilty' Certificate!",
@@ -330,7 +357,12 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
       {/* DYNAMIC SLIDING HERO BANNER */}
       <section className="relative rounded-3xl overflow-hidden shadow-lg border border-zinc-800 bg-zinc-950 text-white select-none">
         {/* Carousel Content with Slide Animation */}
-        <div className={`w-full min-h-[500px] md:min-h-[400px] bg-gradient-to-r ${slides[currentSlide].bgGradient} transition-all duration-700 ease-in-out p-6 pb-24 sm:p-10 sm:pb-12 flex flex-col md:flex-row items-center justify-between gap-8 relative`}>
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className={`w-full min-h-[500px] md:min-h-[400px] bg-gradient-to-r ${slides[currentSlide].bgGradient} transition-all duration-700 ease-in-out p-6 pb-24 sm:p-10 sm:pb-12 flex flex-col md:flex-row items-center justify-between gap-8 relative`}
+        >
           
           {/* Decorative accent background glows */}
           <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />

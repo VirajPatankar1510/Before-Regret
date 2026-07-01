@@ -129,24 +129,24 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
   ];
 
   return (
-    <div className="rounded-2xl border border-[#30363D] bg-[#161B22] p-5 sm:p-6 shadow-xl space-y-6 animate-fadeIn max-w-3xl mx-auto">
+    <div className="rounded-2xl border border-zinc-200 bg-white p-5 sm:p-6 shadow-xl space-y-6 animate-fadeIn max-w-3xl mx-auto text-zinc-900">
       
-      <div className="flex items-center gap-2 pb-3 border-b border-[#30363D]/65">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400">
+      <div className="flex items-center gap-2 pb-3 border-b border-zinc-200 text-left">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-600 shrink-0">
           <MessageSquare className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-base sm:text-lg font-extrabold text-white">Lodge Advice Request Board</h2>
-          <p className="text-xs text-[#AAB2C0]">Get constructive, experienced advices from timeline survivors anonymously.</p>
+          <h2 className="text-base sm:text-lg font-black text-zinc-900">Lodge Advice Request Board</h2>
+          <p className="text-xs text-zinc-600 font-medium">Get constructive, experienced advices from timeline survivors anonymously.</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         
         {/* Topic Title */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-black uppercase text-slate-350 tracking-wider flex items-center justify-between">
-            <span className="text-white">What's Your Dilemma / Dilemma Summary Title? <span className="text-red-400">*</span></span>
+        <div className="space-y-1.5 text-left">
+          <label className="text-xs font-black uppercase text-zinc-700 tracking-wider flex items-center justify-between">
+            <span>What's Your Dilemma / Dilemma Summary Title? <span className="text-red-500">*</span></span>
             <span className="text-[10px] text-zinc-500 font-mono font-normal">Min 15 chars</span>
           </label>
           <input
@@ -155,21 +155,21 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
             placeholder="e.g., Should I tell my husband about a minor financial secret from 5 years ago?"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-xl border border-[#30363D] bg-[#0E131B] p-3 text-xs text-white focus:outline-none focus:border-purple-500 placeholder-zinc-550"
+            className="w-full rounded-xl border border-zinc-300 bg-white p-3 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/15 focus:border-purple-500 placeholder-zinc-400 font-semibold"
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
           
           {/* Category */}
           <div className="space-y-1.5">
-            <label className="text-xs font-black uppercase text-white tracking-wider">
-              Primary Advice category <span className="text-red-400">*</span>
+            <label className="text-xs font-black uppercase text-zinc-700 tracking-wider block">
+              Primary Advice category <span className="text-red-500">*</span>
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full rounded-xl border border-[#30363D] bg-[#0E131B] p-3 text-xs text-white focus:outline-none focus:border-purple-500"
+              className="w-full rounded-xl border border-zinc-300 bg-white p-3 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/15 focus:border-purple-500 cursor-pointer font-semibold"
             >
               {categories.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -179,7 +179,7 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
 
           {/* Tags */}
           <div className="space-y-1.5">
-            <label className="text-xs font-black uppercase text-slate-350 tracking-wider">
+            <label className="text-xs font-black uppercase text-zinc-700 tracking-wider block">
               Keywords / tags <span className="text-zinc-500 font-normal">(comma-separated)</span>
             </label>
             <input
@@ -187,16 +187,16 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
               placeholder="e.g. trust, secrets, marital-finances"
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
-              className="w-full rounded-xl border border-[#30363D] bg-[#0E131B] p-3 text-xs text-white focus:outline-none focus:border-purple-500 placeholder-zinc-550"
+              className="w-full rounded-xl border border-zinc-300 bg-white p-3 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/15 focus:border-purple-500 placeholder-zinc-400 font-semibold"
             />
           </div>
 
         </div>
 
         {/* Story details */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-black uppercase text-slate-350 tracking-wider flex items-center justify-between">
-            <span className="text-white">Dilemma Context & Timeline Details <span className="text-red-400">*</span></span>
+        <div className="space-y-1.5 text-left">
+          <label className="text-xs font-black uppercase text-zinc-700 tracking-wider flex items-center justify-between block">
+            <span>Dilemma Context & Timeline Details <span className="text-red-500">*</span></span>
             <span className="text-[10px] text-zinc-500 font-mono font-normal">Min 50 chars</span>
           </label>
           <textarea
@@ -205,17 +205,17 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
             placeholder="Explain what happened, your current choices, duration, and what specific advice comments you seek. Survivors will answer under peer review guidance."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-xl border border-[#30363D] bg-[#0E131B] p-3 text-xs text-white focus:outline-none focus:border-purple-500 placeholder-zinc-550 font-sans"
+            className="w-full rounded-xl border border-zinc-300 bg-white p-3 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/15 focus:border-purple-500 placeholder-zinc-400 font-sans font-medium leading-relaxed resize-none"
           />
         </div>
 
         {/* Poll Options */}
-        <div className="space-y-3 border-t border-[#30363D]/40 pt-4">
+        <div className="space-y-3 border-t border-zinc-200 pt-4 text-left">
           <div>
-            <span className="text-xs font-black uppercase text-white tracking-wider flex items-center gap-1">
-              <Sparkles className="h-3 w-3 text-purple-400" /> Build Advice Poll Survey
+            <span className="text-xs font-black uppercase text-zinc-900 tracking-wider flex items-center gap-1">
+              <Sparkles className="h-3.5 w-3.5 text-purple-600" /> Build Advice Poll Survey
             </span>
-            <p className="text-[10px] text-zinc-400">Provide options that the public can click dynamically to guide your outcome choice.</p>
+            <p className="text-[10px] text-zinc-600 font-medium">Provide options that the public can click dynamically to guide your outcome choice.</p>
           </div>
 
           <div className="space-y-2">
@@ -228,15 +228,15 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
                   placeholder={`e.g. Option ${idx + 1}`}
                   value={opt}
                   onChange={(e) => handleUpdateOption(idx, e.target.value)}
-                  className="flex-1 rounded-xl border border-[#30363D]/80 bg-[#0E131B] px-3 py-2 text-xs text-white focus:outline-none focus:border-purple-500 placeholder-zinc-550"
+                  className="flex-1 rounded-xl border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/15 focus:border-purple-500 placeholder-zinc-400 font-semibold"
                 />
                 <button
                   type="button"
                   onClick={() => handleRemoveOption(idx)}
-                  className="p-2 border border-red-500/15 hover:border-red-500/35 bg-red-500/5 hover:bg-red-500/10 text-red-400 rounded-lg transition-all"
+                  className="p-2 border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-all cursor-pointer shrink-0"
                   title="Remove option"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             ))}
@@ -245,7 +245,7 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
           <button
             type="button"
             onClick={handleAddOption}
-            className="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold text-purple-400 bg-[#1e142e] border border-purple-500/20 hover:border-purple-500/50 rounded-lg transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold text-purple-700 bg-purple-50 border border-purple-200 hover:bg-purple-100 rounded-lg transition-colors cursor-pointer"
           >
             <Plus className="h-3.5 w-3.5" /> Add Choice Option
           </button>
@@ -253,18 +253,18 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
 
         {/* Validation Error Banner */}
         {validationError && (
-          <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 text-[#FF5D5D] px-3 py-2 rounded-xl text-[10.5px] leading-relaxed font-sans text-left">
-            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-xl text-[10.5px] leading-relaxed font-sans text-left">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-red-500" />
             <span>{validationError}</span>
           </div>
         )}
 
         {/* Buttons */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-[#30363D]/65">
+        <div className="flex justify-end gap-3 pt-4 border-t border-zinc-200">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-[#30363D] hover:bg-[#30363D]/30 px-4 py-2 text-xs text-[#AAB2C0] font-bold transition-all hover:text-white"
+            className="rounded-xl border border-zinc-300 hover:bg-zinc-100 px-4 py-2 text-xs text-zinc-600 font-bold transition-all hover:text-zinc-950 cursor-pointer"
           >
             Cancel
           </button>
@@ -273,7 +273,7 @@ export default function SubmitQuestionForm({ onClose, onSubmit }: SubmitQuestion
             disabled={!!validationError}
             className={`inline-flex items-center gap-1 rounded-xl px-5 py-2 text-xs font-black transition-all shadow-md active:scale-98 ${
               validationError
-                ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-[#30363D]/40'
+                ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed border border-zinc-200'
                 : 'bg-purple-600 hover:bg-purple-700 text-white cursor-pointer'
             }`}
           >

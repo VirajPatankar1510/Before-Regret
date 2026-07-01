@@ -100,6 +100,7 @@ export interface CourtCase {
   passwordPin?: string;      // Random PIN/password generated at registration
   recipientName?: string;    // Custom recipient name added by authenticated user
   isRealInput?: boolean;
+  wantsPartnerResponse?: boolean; // Whether the user generated a partner invite link
 }
 
 export interface QuestionAnswerComment {

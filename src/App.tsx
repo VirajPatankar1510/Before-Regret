@@ -1122,6 +1122,7 @@ export default function App() {
     id?: string;
     slug?: string;
     passwordPin?: string;
+    wantsPartnerResponse?: boolean;
   } | null>(null);
   const [highlightedStoryId, setHighlightedStoryId] = useState<string | null>(null);
 
@@ -1579,7 +1580,7 @@ export default function App() {
     }
   };
 
-  const handleRegisterCourtCase = (caseData: { title: string; description: string; tags: string[]; deliberationDays: number }) => {
+  const handleRegisterCourtCase = (caseData: { title: string; description: string; tags: string[]; deliberationDays: number; wantsPartnerResponse: boolean }) => {
     const baseSlug = caseData.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -1611,7 +1612,8 @@ export default function App() {
       deliberationDays: caseData.deliberationDays || 3,
       createdAt: new Date().toISOString(),
       passwordPin: passwordPin,
-      isRealInput: true
+      isRealInput: true,
+      wantsPartnerResponse: caseData.wantsPartnerResponse
     };
 
     // Save to local storage private list
@@ -1638,7 +1640,8 @@ export default function App() {
       caseNumber: caseNumber, 
       type: 'court',
       slug: newCase.slug,
-      passwordPin: passwordPin
+      passwordPin: passwordPin,
+      wantsPartnerResponse: newCase.wantsPartnerResponse
     });
     showToast(`⚖️ Court case registered successfully under Case Key: ${caseNumber}!`);
     setIsRegisterModalOpen(false);
@@ -2381,16 +2384,16 @@ export default function App() {
 
         {currentScreen.type === 'court_list' && (
           <div className="space-y-6 pb-16 animate-fadeIn">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#161B22] border border-[#30363D] p-5 sm:p-6 rounded-3xl shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-zinc-200 p-5 sm:p-6 rounded-3xl shadow-sm">
               <div className="space-y-1">
-                <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2" style={{ color: '#ffffff' }}>
-                  <Gavel className="h-6 w-6 text-[#F4B942]" /> The Relationship Court
+                <h1 className="text-xl sm:text-2xl font-black text-zinc-900 flex items-center gap-2">
+                  <Gavel className="h-6 w-6 text-[#C9A227]" /> The Relationship Court
                 </h1>
-                <p className="text-xs text-[#AAB2C0]">Step into our anonymous space. Review relationship evidence, defend sides, and cast peer perspective votes.</p>
+                <p className="text-xs text-zinc-600">Step into our anonymous space. Review relationship evidence, defend sides, and cast peer perspective votes.</p>
               </div>
               <button
                 onClick={() => setIsRegisterModalOpen(true)}
-                className="shrink-0 bg-[#F4B942] hover:bg-[#E0A52D] text-[#0D1117] font-black text-xs uppercase tracking-wider px-5 py-3 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer font-sans"
+                className="shrink-0 bg-[#24324A] hover:bg-[#1C273A] text-white font-black text-xs uppercase tracking-wider px-5 py-3 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer font-sans"
                 id="open-register-case"
               >
                 <Plus className="h-4 w-4" /> Submit Your Case
@@ -2398,9 +2401,9 @@ export default function App() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-xs uppercase font-extrabold tracking-wider text-[#AAB2C0] px-1 flex items-center justify-between">
+              <h2 className="text-xs uppercase font-extrabold tracking-wider text-zinc-600 px-1 flex items-center justify-between">
                 <span>Active Cases Under Deliberation ({store.courtCases.length})</span>
-                <span className="text-[10px] text-zinc-500 font-mono normal-case">Deliberation duration: 3 to 14 days</span>
+                <span className="text-[10px] text-zinc-500 font-mono normal-case font-semibold">Deliberation duration: 3 to 14 days</span>
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {store.courtCases.map(c => {
@@ -2409,36 +2412,36 @@ export default function App() {
                     <div
                       key={c.slug}
                       onClick={() => setScreen({ type: 'court', slug: c.slug })}
-                      className="rounded-2xl border border-[#30363D] bg-[#161B22] p-5 cursor-pointer hover:border-[#F4B942] transition-all hover:scale-[1.01] flex flex-col justify-between shadow-sm animate-fadeIn"
+                      className="rounded-2xl border border-zinc-200 bg-gradient-to-br from-white to-zinc-50/70 p-5 cursor-pointer hover:border-[#C9A227] hover:shadow-md transition-all hover:scale-[1.01] flex flex-col justify-between shadow-sm animate-fadeIn"
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[9px] uppercase font-mono font-bold text-[#F4B942] bg-[#F4B942]/10 px-2 py-0.5 rounded">
+                            <span className="text-[9px] uppercase font-mono font-bold text-[#C9A227] bg-[#C9A227]/10 px-2 py-0.5 rounded">
                               {c.caseNumber || 'CASE-C2011'}
                             </span>
                             {isExpired ? (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider font-mono bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider font-mono bg-rose-500/10 text-rose-700 border border-rose-500/20">
                                 <span className="h-1 w-1 rounded-full bg-rose-500" />
                                 Ended
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider font-mono bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
                                 <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
                                 Live
                               </span>
                             )}
                           </div>
-                          <span className="text-[9px] text-[#AAB2C0] font-mono">
+                          <span className="text-[9px] text-zinc-500 font-mono font-semibold">
                             ⚖️ {(c.votes.me || 0) + (c.votes.partner || 0) + (c.votes.both || 0) + (c.votes.neither || 0)} votes
                           </span>
                         </div>
-                        <h3 className="text-sm font-bold text-white mt-1 leading-snug">"{c.title}"</h3>
-                        <p className="text-xs text-[#AAB2C0] line-clamp-3 leading-relaxed mt-1.5 font-serif">{c.description}</p>
+                        <h3 className="text-sm font-black text-zinc-900 mt-1 leading-snug">"{c.title}"</h3>
+                        <p className="text-xs text-zinc-600 line-clamp-3 leading-relaxed mt-1.5 font-sans font-medium">{c.description}</p>
                       </div>
-                      <div className="mt-4 border-t border-[#30363D]/45 pt-3 flex items-center justify-between text-[10px] text-zinc-500">
-                        <span className="text-[#F4B942] font-semibold">Cast Vote →</span>
-                        <span className="font-mono">{c.postTime}</span>
+                      <div className="mt-4 border-t border-zinc-200/80 pt-3 flex items-center justify-between text-[10px] text-zinc-500">
+                        <span className="text-[#C9A227] font-bold">Cast Vote →</span>
+                        <span className="font-mono font-semibold">{c.postTime}</span>
                       </div>
                     </div>
                   );
@@ -2463,17 +2466,17 @@ export default function App() {
 
         {currentScreen.type === 'question_list' && (
           <div className="space-y-6 pb-16 animate-fadeIn">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#161B22] border border-[#30363D] p-5 rounded-3xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-zinc-200 p-5 rounded-3xl shadow-sm">
               <div>
-                <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-                  <HelpCircle className="h-6 w-6 text-purple-400" /> Ask/Give Advice Hub
+                <h1 className="text-xl sm:text-2xl font-black text-zinc-900 flex items-center gap-2">
+                  <HelpCircle className="h-6 w-6 text-purple-600" /> Ask/Give Advice Hub
                 </h1>
-                <p className="text-xs text-[#AAB2C0]">Explore hard relationship questions answered directly by veteran survivors or submit your own dilemma.</p>
+                <p className="text-xs text-zinc-600">Explore hard relationship questions answered directly by veteran survivors or submit your own dilemma.</p>
               </div>
               {!showSubmitQuestion && (
                 <button
                   onClick={() => setShowSubmitQuestion(true)}
-                  className="rounded-xl bg-purple-600 hover:bg-purple-700 font-extrabold text-xs text-white px-4 py-2.5 shadow-lg shadow-purple-500/10 transition-all active:scale-[0.98] self-start sm:self-center"
+                  className="rounded-xl bg-purple-600 hover:bg-purple-700 font-extrabold text-xs text-white px-4 py-2.5 shadow-lg shadow-purple-500/10 transition-all active:scale-[0.98] self-start sm:self-center cursor-pointer"
                 >
                   + Post Advice Request
                 </button>
@@ -2494,18 +2497,18 @@ export default function App() {
                   <div
                     key={q.slug}
                     onClick={() => setScreen({ type: 'question', slug: q.slug })}
-                    className="rounded-2xl border border-[#30363D] bg-[#161B22] p-5 cursor-pointer hover:border-purple-500 transition-all duration-200 hover:scale-[1.01] flex flex-col justify-between h-48"
+                    className="rounded-2xl border border-zinc-200 bg-gradient-to-br from-white to-purple-50/20 p-5 cursor-pointer hover:border-purple-400 hover:shadow-md transition-all duration-200 hover:scale-[1.01] flex flex-col justify-between h-48 shadow-sm"
                   >
                     <div className="space-y-2">
-                      <span className="text-[9px] font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded">
+                      <span className="text-[9px] font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded">
                         {q.category}
                       </span>
-                      <h3 className="text-sm font-bold text-white leading-snug line-clamp-2">"{q.title}"</h3>
-                      <p className="text-xs text-[#AAB2C0] line-clamp-3 leading-relaxed font-serif">{q.description}</p>
+                      <h3 className="text-sm font-black text-zinc-900 leading-snug line-clamp-2">"{q.title}"</h3>
+                      <p className="text-xs text-zinc-600 line-clamp-3 leading-relaxed font-sans font-medium">{q.description}</p>
                     </div>
-                    <div className="border-t border-[#30363D]/40 pt-2.5 mt-2 flex items-center justify-between text-[10px] text-zinc-550">
+                    <div className="border-t border-zinc-200 pt-2.5 mt-2 flex items-center justify-between text-[10px] text-zinc-500 font-medium">
                       <span>{q.answers.length} community advices</span>
-                      <span className="text-purple-400 font-semibold">View thread →</span>
+                      <span className="text-purple-600 font-bold">View thread →</span>
                     </div>
                   </div>
                 ))}
@@ -2798,26 +2801,26 @@ export default function App() {
       )}
       {/* ⚖️ Newly Lodged Case Success Modal */}
       {newlyLodgedCase && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn text-zinc-300">
-          <div className="w-full max-w-sm bg-[#161B22] border-2 border-[#F4B942]/30 shadow-2xl rounded-3xl p-6 text-center relative overflow-hidden">
-            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#F4B942] to-amber-500" />
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn text-zinc-800">
+          <div className="w-full max-w-sm bg-white border-2 border-[#C9A227] shadow-2xl rounded-3xl p-6 text-center relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#C9A227] to-amber-500" />
             
-            <div className="mx-auto w-14 h-14 bg-[#F4B942]/10 border border-[#F4B942]/30 rounded-2xl flex items-center justify-center text-[#F4B942] mb-4">
+            <div className="mx-auto w-14 h-14 bg-amber-50 border border-[#C9A227]/30 rounded-2xl flex items-center justify-center text-[#C9A227] mb-4">
               <Gavel className="h-6 w-6" />
             </div>
 
-            <h3 className="text-base font-extrabold text-white uppercase tracking-wider">
+            <h3 className="text-base font-black text-zinc-900 uppercase tracking-wider">
               Dispute Lodged in Registry
             </h3>
-            <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+            <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed font-medium">
               Your case has been logged securely. Your extreme privacy is 100% protected.
             </p>
 
             {/* Case Number Badge */}
-            <div className="my-4 bg-[#0D1117] border border-[#30363D] rounded-xl p-3">
+            <div className="my-4 bg-zinc-50 border border-zinc-200 rounded-xl p-3">
               <span className="text-[9px] uppercase font-bold text-zinc-500 tracking-widest font-mono block mb-1">YOUR UNIQUE CASE ID</span>
               <div className="flex items-center justify-center gap-1.5 mb-3">
-                <code className="text-base font-black text-[#F4B942] font-mono tracking-wider select-all">
+                <code className="text-base font-black text-[#C9A227] font-mono tracking-wider select-all">
                   {newlyLodgedCase.caseNumber}
                 </code>
                 <button
@@ -2825,19 +2828,19 @@ export default function App() {
                     navigator.clipboard.writeText(newlyLodgedCase.caseNumber);
                     showToast("📋 Case Number Copied!");
                   }}
-                  className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#30363D] text-zinc-400 hover:text-white border border-[#30363D] transition-all"
+                  className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900 border border-zinc-200 transition-all cursor-pointer"
                   title="Copy Case Number"
                 >
-                  <Copy className="h-3 w-3" />
+                  <Copy className="h-3.5 w-3.5" />
                 </button>
               </div>
 
               {newlyLodgedCase.passwordPin && (
                 <>
-                  <div className="border-t border-[#30363D]/60 pt-2.5">
+                  <div className="border-t border-zinc-200 pt-2.5">
                     <span className="text-[9px] uppercase font-bold text-zinc-500 tracking-widest font-mono block mb-1">YOUR CASE PIN (PASSWORD)</span>
                     <div className="flex items-center justify-center gap-1.5">
-                      <code className="text-base font-black text-emerald-400 font-mono tracking-widest select-all">
+                      <code className="text-base font-black text-emerald-600 font-mono tracking-widest select-all">
                         {newlyLodgedCase.passwordPin}
                       </code>
                       <button
@@ -2846,13 +2849,13 @@ export default function App() {
                           navigator.clipboard.writeText(copyText);
                           showToast("📋 Case PIN Copied!");
                         }}
-                        className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#30363D] text-zinc-400 hover:text-white border border-[#30363D] transition-all"
+                        className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900 border border-zinc-200 transition-all cursor-pointer"
                         title="Copy Case PIN"
                       >
-                        <Copy className="h-3 w-3" />
+                        <Copy className="h-3.5 w-3.5" />
                       </button>
                     </div>
-                    <span className="text-[9px] font-bold text-[#E0A52D] leading-tight block mt-2 px-1">
+                    <span className="text-[9px] font-bold text-amber-700 leading-tight block mt-2 px-1">
                       ⚠️ Write down this PIN now! For absolute privacy, this cannot be retrieved or reset if lost. You need it to customize your name on the certificate.
                     </span>
                   </div>
@@ -2860,10 +2863,34 @@ export default function App() {
               )}
             </div>
 
-            <div className="bg-[#1C2128] border border-[#30363D]/60 rounded-xl p-3 text-left text-[10px] text-zinc-400 leading-relaxed mb-4">
-              <p className="font-bold text-zinc-200">💡 Registry Guidelines:</p>
-              <p className="mt-1">
-                To protect privacy, profiles are not stored. Write down your case ID. You can find your case page using the <strong className="text-white font-bold">RETRIEVE CASE</strong> option in the top bar. Use the PIN to lock in your custom name on your certificate.
+            {newlyLodgedCase.wantsPartnerResponse && (
+              <div className="my-4 bg-blue-50 border border-blue-200 rounded-xl p-3 text-left">
+                <span className="text-[9px] uppercase font-bold text-blue-600 tracking-widest font-mono block mb-1">
+                  🔗 PARTNER INVITATION LINK
+                </span>
+                <p className="text-[10px] text-blue-800 mb-2 leading-relaxed font-medium">
+                  Copy the preset message below and share it with your partner privately so they can submit their opposition narrative.
+                </p>
+                <div className="bg-white border border-zinc-200 rounded-lg p-2 font-mono text-[9.5px] text-zinc-700 select-all break-all leading-normal">
+                  This link is only for you to add your argument, do not share with anyone then {`${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true`}
+                </div>
+                <button
+                  onClick={() => {
+                    const messageText = `This link is only for you to add your argument, do not share with anyone then ${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true`;
+                    navigator.clipboard.writeText(messageText);
+                    showToast("📋 Invitation Message Copied!");
+                  }}
+                  className="w-full mt-2 py-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600/20 text-blue-700 border border-blue-200 text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <Copy className="h-3 w-3" /> Copy Invitation Message
+                </button>
+              </div>
+            )}
+
+            <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-left text-[10px] text-zinc-600 leading-relaxed mb-4">
+              <p className="font-bold text-zinc-850">💡 Registry Guidelines:</p>
+              <p className="mt-1 font-medium">
+                To protect privacy, profiles are not stored. Write down your case ID. You can find your case page using the <strong className="text-zinc-900 font-bold">RETRIEVE CASE</strong> option in the top bar. Use the PIN to lock in your custom name on your certificate.
               </p>
             </div>
 
@@ -2886,7 +2913,7 @@ export default function App() {
                   setScreen({ type: 'court', slug: temp.slug || 'court_list' });
                 }
               }}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-xs font-black text-white transition-all uppercase tracking-wider shadow-md hover:shadow-lg cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-xs font-black text-white transition-all uppercase tracking-wider shadow-md hover:shadow-lg cursor-pointer"
             >
               Go to My Submitted Case Dossier ➔
             </button>
@@ -2896,20 +2923,20 @@ export default function App() {
 
       {/* GLOBAL REGISTER CASE MODAL OVERLAY */}
       {isRegisterModalOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn overflow-y-auto">
-          <div className="relative w-full max-w-[540px] bg-[#161B22] border-2 border-[#30363D] rounded-3xl p-5 shadow-2xl space-y-3.5 my-auto max-h-[90vh] overflow-y-auto flex flex-col">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn overflow-y-auto">
+          <div className="relative w-full max-w-[540px] bg-white border-2 border-zinc-200 rounded-3xl p-5 shadow-2xl space-y-3.5 my-auto max-h-[90vh] overflow-y-auto flex flex-col text-zinc-900">
             <button
               onClick={() => setIsRegisterModalOpen(false)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-[#30363D] transition-all cursor-pointer"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-900 p-2 rounded-xl hover:bg-zinc-100 transition-all cursor-pointer"
               id="close-registration-modal"
             >
               <X className="h-4.5 w-4.5" />
             </button>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                <Gavel className="h-4.5 w-4.5 text-[#F4B942]" /> Submit Your Case
+              <h2 className="text-base sm:text-lg font-black text-zinc-900 flex items-center gap-2">
+                <Gavel className="h-4.5 w-4.5 text-[#C9A227]" /> Submit Your Case
               </h2>
-              <p className="text-[11px] text-[#AAB2C0] mt-0.5 font-sans leading-normal">
+              <p className="text-[11.5px] text-zinc-600 mt-1 font-sans leading-relaxed font-medium">
                 Register your relationship dispute anonymously. Peers will deliberate, debate evidence, and deliver an objective perspective.
               </p>
             </div>
