@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Sparkles, Compass, HelpCircle, Heart, ShieldCheck, Gavel, Globe, Clock, PlusCircle, Bookmark, ArrowRight, ChevronRight, AlertTriangle, Monitor, RotateCcw, Share2, Info, X, BookOpen, Copy, Plus } from 'lucide-react';
+import { Sparkles, Compass, HelpCircle, Heart, ShieldCheck, Gavel, Globe, Clock, PlusCircle, Bookmark, ArrowRight, ChevronRight, AlertTriangle, Monitor, RotateCcw, Share2, Info, X, BookOpen, Copy, Plus, Check } from 'lucide-react';
 
 // Reusable custom components
 import Navigation from './components/Navigation';
@@ -1126,6 +1126,10 @@ export default function App() {
     partnerKey?: string;
   } | null>(null);
   const [highlightedStoryId, setHighlightedStoryId] = useState<string | null>(null);
+
+  const [caseNumberCopied, setCaseNumberCopied] = useState(false);
+  const [casePinCopied, setCasePinCopied] = useState(false);
+  const [inviteMessageCopied, setInviteMessageCopied] = useState(false);
 
   // Keep track of what cases and polls the user has already voted on
   const [userVotedCases, setUserVotedCases] = useState<{ [slug: string]: string }>(() => {
@@ -2830,12 +2834,24 @@ export default function App() {
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(newlyLodgedCase.caseNumber);
+                    setCaseNumberCopied(true);
+                    setTimeout(() => setCaseNumberCopied(false), 2500);
                     showToast("📋 Case Number Copied!");
                   }}
-                  className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900 border border-zinc-200 transition-all cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900 border border-zinc-200 transition-all cursor-pointer text-[10px] font-bold flex items-center gap-1"
                   title="Copy Case Number"
                 >
-                  <Copy className="h-3.5 w-3.5" />
+                  {caseNumberCopied ? (
+                    <>
+                      <Check className="h-3 w-3 text-emerald-600" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3 w-3" />
+                      <span>Copy</span>
+                    </>
+                  )}
                 </button>
               </div>
 
@@ -2851,16 +2867,28 @@ export default function App() {
                         onClick={() => {
                           const copyText = newlyLodgedCase.passwordPin || '';
                           navigator.clipboard.writeText(copyText);
+                          setCasePinCopied(true);
+                          setTimeout(() => setCasePinCopied(false), 2500);
                           showToast("📋 Case PIN Copied!");
                         }}
-                        className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900 border border-zinc-200 transition-all cursor-pointer"
+                        className="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900 border border-zinc-200 transition-all cursor-pointer text-[10px] font-bold flex items-center gap-1"
                         title="Copy Case PIN"
                       >
-                        <Copy className="h-3.5 w-3.5" />
+                        {casePinCopied ? (
+                          <>
+                            <Check className="h-3 w-3 text-emerald-600" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3 w-3" />
+                            <span>Copy</span>
+                          </>
+                        )}
                       </button>
                     </div>
                     <span className="text-[9px] font-bold text-amber-700 leading-tight block mt-2 px-1">
-                      ⚠️ Write down this PIN now! For absolute privacy, this cannot be retrieved or reset if lost. You need it to customize your name on the certificate.
+                      ⚠️ Write down this PIN now! For absolute privacy, this cannot be retrieved or reset if lost. You need it to add statements or respond to your partner later.
                     </span>
                   </div>
                 </>
@@ -2883,11 +2911,23 @@ export default function App() {
                     const inviteLink = `${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true&partnerKey=${newlyLodgedCase.partnerKey}`;
                     const messageText = `I shared our situation anonymously on www.beforeregret.com to get unbiased opinions. You can now add your side before anyone votes. Please don't share this link with anyone—it's only for you. ${inviteLink}`;
                     navigator.clipboard.writeText(messageText);
+                    setInviteMessageCopied(true);
+                    setTimeout(() => setInviteMessageCopied(false), 2500);
                     showToast("📋 Invitation Message Copied!");
                   }}
-                  className="w-full mt-2 py-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600/20 text-blue-700 border border-blue-200 text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                  className="w-full mt-2 py-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600/20 text-blue-700 border border-blue-200 text-[10px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <Copy className="h-3 w-3" /> Copy Secure Invitation Message
+                  {inviteMessageCopied ? (
+                    <>
+                      <Check className="h-3 w-3 text-emerald-600" />
+                      <span>Copied Message!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3 w-3" />
+                      <span>Copy Secure Invitation Message</span>
+                    </>
+                  )}
                 </button>
               </div>
             )}
@@ -2895,7 +2935,7 @@ export default function App() {
             <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-left text-[10px] text-zinc-600 leading-relaxed mb-4">
               <p className="font-bold text-zinc-850">💡 Registry Guidelines:</p>
               <p className="mt-1 font-medium">
-                To protect privacy, profiles are not stored. Write down your case ID. You can find your case page using the <strong className="text-zinc-900 font-bold">RETRIEVE CASE</strong> option in the top bar. Use the PIN to lock in your custom name on your certificate.
+                To protect privacy, profiles are not stored. Write down your case ID. You can find your case page using the <strong className="text-zinc-900 font-bold">RETRIEVE CASE</strong> option in the top bar. Use your PIN to edit or respond to arguments under your case.
               </p>
             </div>
 
