@@ -35,6 +35,7 @@ export default function CourtScreen({
   const [now, setNow] = useState(new Date());
   const [simExpired, setSimExpired] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [inviteCopied, setInviteCopied] = useState(false);
   const [certificateUnlocked, setCertificateUnlocked] = useState(false);
 
   // Certificate dynamic personalization states
@@ -504,7 +505,7 @@ export default function CourtScreen({
                 <Sparkles className="h-4 w-4 text-[#C9A227] animate-pulse" /> Secure Your Partner Access
               </h4>
               <p className="text-xs text-amber-800 leading-relaxed font-medium">
-                Please set your unique 4-digit Case PIN before contributing your side. This PIN secures your response anonymously and allows you to claim and apply your name to the Clean Hands Certificate if the jury declares you not guilty!
+                Please set your unique 4-digit Case PIN before contributing your side. This PIN secures your response anonymously and allows you to claim your Clean Hands Certificate if the jury declares you not guilty!
               </p>
             </div>
           </div>
@@ -523,7 +524,7 @@ export default function CourtScreen({
                   const val = e.target.value.replace(/\D/g, '');
                   setPartnerPinInput(val);
                 }}
-                className="w-full bg-white border border-[#E8D79B] text-slate-950 text-xs px-3 py-2 rounded-lg font-mono focus:border-[#C9A227] focus:outline-none placeholder:text-zinc-400 font-bold"
+                className="w-full bg-white border border-[#E8D79B] text-slate-950 text-xs px-3 py-2 rounded-lg font-mono focus:border-[#C9A227] focus:outline-none placeholder:text-zinc-400 font-bold placeholder:text-[10px]"
               />
             </div>
 
@@ -540,7 +541,7 @@ export default function CourtScreen({
                   const val = e.target.value.replace(/\D/g, '');
                   setPartnerPinConfirm(val);
                 }}
-                className="w-full bg-white border border-[#E8D79B] text-slate-950 text-xs px-3 py-2 rounded-lg font-mono focus:border-[#C9A227] focus:outline-none placeholder:text-zinc-400 font-bold"
+                className="w-full bg-white border border-[#E8D79B] text-slate-950 text-xs px-3 py-2 rounded-lg font-mono focus:border-[#C9A227] focus:outline-none placeholder:text-zinc-400 font-bold placeholder:text-[10px]"
               />
             </div>
           </div>
@@ -598,8 +599,6 @@ export default function CourtScreen({
             <span>Judge: @{courtCase.author}</span>
             <span>•</span>
             <span>Case Lodged: {courtCase.postTime}</span>
-            <span>•</span>
-            <span className="text-[#2E7D32] font-bold">{totalVotes.toLocaleString()} jurors voted</span>
           </div>
         </div>
 
@@ -665,31 +664,7 @@ export default function CourtScreen({
           </div>
         </div>
 
-        {/* Partner Invite Banner (Only shown inside the card if invite code is on case) */}
-        {courtCase.wantsPartnerResponse && !isPartnerInvite && (
-          <div className="bg-[#FAF8F2] border border-[#ECECEC] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs mt-3">
-            <div className="space-y-0.5">
-              <span className="font-bold text-[#24324A] flex items-center gap-1">
-                <Share2 className="h-3.5 w-3.5 text-[#C9A227]" /> Partner Opposition Invited
-              </span>
-              <p className="text-[11px] text-[#6B7280] leading-relaxed">
-                The submitter requested a response from their partner to allow jurors to judge both sides fairly.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                const inviteLink = `${window.location.origin}/court/${courtCase.slug}?partnerInvite=true&partnerKey=${courtCase.partnerKey || ''}`;
-                const message = `I shared our situation anonymously on www.beforeregret.com to get unbiased opinions. You can now add your side before anyone votes. Please don't share this link with anyone—it's only for you. ${inviteLink}`;
-                navigator.clipboard.writeText(message);
-                alert("📋 Copied invitation message to clipboard!");
-              }}
-              className="px-3 py-2 rounded-lg text-[10.5px] font-bold bg-[#24324A] hover:bg-[#1C273A] text-white transition-all shadow active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer self-start sm:self-center shrink-0"
-            >
-              <Copy className="h-3 w-3" /> Copy Invite Message
-            </button>
-          </div>
-        )}
+
 
         {/* INPUT BOX AREA (SECURE STATEMENTS) */}
         <div className="pt-4 border-t border-zinc-100">
@@ -706,7 +681,7 @@ export default function CourtScreen({
                     value={posterStatementText}
                     onChange={(e) => setPosterStatementText(e.target.value)}
                     maxLength={1000}
-                    className="w-full rounded-xl border border-zinc-200 bg-white p-2.5 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] min-h-[85px]"
+                    className="w-full rounded-xl border border-zinc-200 bg-white p-2.5 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] min-h-[85px] placeholder:text-[10px]"
                     required
                   />
                   <div className="flex justify-between items-center">
@@ -975,7 +950,7 @@ export default function CourtScreen({
                     <span className={`font-black text-slate-950 tracking-wider font-serif px-6 block max-w-sm mx-auto border-b border-dashed border-[#C29B38]/30 pb-1 leading-tight ${
                       certFormat === 'story916' ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'
                     }`}>
-                      {courtCase.recipientName || `@${courtCase.author}`}
+                      {isPartnerInvite ? 'Anonymous Partner' : `@${courtCase.author}`}
                     </span>
                   </div>
                 </div>
@@ -1098,7 +1073,7 @@ export default function CourtScreen({
         
         {/* Left Side: Active Poll Voting */}
         <div className="md:col-span-5 rounded-xl border border-[#E5E7EB] bg-white p-4 space-y-3 shadow-xs">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Cast Your Vote</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Cast Your Verdict</h3>
           
           {(userVote || isExpired) ? (
             <div className="space-y-2.5">
@@ -1125,7 +1100,7 @@ export default function CourtScreen({
                       <span className={userVote === opt.key ? 'text-[#24324A] font-bold' : ''}>
                         {opt.label} {userVote === opt.key && ' (Your Vote)'}
                       </span>
-                      <span className="text-[#1F2937] font-bold">{pct}% ({opt.val})</span>
+                      <span className="text-[#1F2937] font-bold">{pct}%</span>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-[#FAF8F2] overflow-hidden border border-[#E5E7EB]">
                       <div className={`h-full ${opt.color}`} style={{ width: `${pct}%` }} />
@@ -1167,12 +1142,11 @@ export default function CourtScreen({
         {/* Right Side: Juror Arguments List & Input */}
         <div className="md:col-span-7 space-y-3">
           <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 space-y-3 shadow-xs">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Community Opinions</h3>
 
             {/* Submit Argument Form */}
             <form id="argument-form" onSubmit={handleArgSubmit} className="space-y-2.5 bg-[#FAF8F2] p-2.5 rounded-xl border border-[#E5E7EB]">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-[10px] uppercase font-bold text-[#6B7280]">Who are you blaming?</span>
+                <span className="text-[10px] uppercase font-bold text-[#6B7280]">Who are you blaming? and Why?</span>
                 <div className="flex gap-1 text-[10px]">
                   {['Me', 'Partner', 'Both', 'Neither'].map(side => (
                     <button
@@ -1196,7 +1170,7 @@ export default function CourtScreen({
                 value={argumentText}
                 onChange={(e) => setArgumentText(e.target.value)}
                 maxLength={800}
-                className="w-full rounded-xl border border-[#E5E7EB] bg-white p-2.5 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] min-h-[70px]"
+                className="w-full rounded-xl border border-[#E5E7EB] bg-white p-2.5 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] min-h-[70px] placeholder:text-[10px]"
                 required
               />
 
