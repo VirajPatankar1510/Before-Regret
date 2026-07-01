@@ -2384,7 +2384,7 @@ export default function App() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#161B22] border border-[#30363D] p-5 sm:p-6 rounded-3xl shadow-sm">
               <div className="space-y-1">
                 <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2" style={{ color: '#ffffff' }}>
-                  <Gavel className="h-6 w-6 text-[#F4B942]" /> BR Relationship Court
+                  <Gavel className="h-6 w-6 text-[#F4B942]" /> The Relationship Court
                 </h1>
                 <p className="text-xs text-[#AAB2C0]">Step into our anonymous space. Review relationship evidence, defend sides, and cast peer perspective votes.</p>
               </div>

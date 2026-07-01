@@ -330,7 +330,7 @@ export default function ExploreScreen({
           className="rounded-2xl border border-dashed border-[#E8D79B] bg-white p-5 cursor-pointer hover:border-[#C9A227] hover:shadow-md transition-all shadow-sm"
         >
           <Gavel className="h-8 w-8 text-[#C9A227] mb-3" />
-          <h3 className="text-sm font-bold text-[#24324A] mb-1 font-serif">BR Relationship Court Cases</h3>
+          <h3 className="text-sm font-bold text-[#24324A] mb-1 font-serif">The Relationship Court</h3>
           <p className="text-xs text-[#6B7280] leading-relaxed font-sans">Read or load situations of digital snoopings, Instagram ex-likes, or in-law disagreements. Review perspectives and cast your active vote.</p>
         </div>
 
