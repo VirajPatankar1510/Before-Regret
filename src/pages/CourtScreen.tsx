@@ -181,7 +181,7 @@ export default function CourtScreen({
         partnerPasswordPin: partnerPinInput
       };
       await saveCourtCaseToFirestore(updatedCase);
-      alert("🎉 Your 4-digit Partner Case PIN has been saved! You can now claim your certificate using this PIN if you are found not guilty.");
+      alert("🎉 Your 4-digit Partner Case PIN has been saved! Your response is now secured anonymously.");
     } catch (err) {
       console.error(err);
       setPartnerPinError("Failed to save PIN to Firestore.");
@@ -237,6 +237,25 @@ export default function CourtScreen({
     if (totalVotes === 0) return 0;
     return Math.round((val / totalVotes) * 100);
   };
+
+  const isOwnerOrPartnerOfCase = React.useMemo(() => {
+    if (isPartnerInvite) return true;
+    if (isPosterUnlocked) return true;
+    if (typeof window !== 'undefined') {
+      try {
+        const myCasesRaw = localStorage.getItem('beforeregret_my_cases') || '[]';
+        const myCases = JSON.parse(myCasesRaw);
+        if (Array.isArray(myCases)) {
+          if (myCases.includes(courtCase.slug) || myCases.some((c: any) => c.slug === courtCase.slug || c === courtCase.slug)) {
+            return true;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return false;
+  }, [isPartnerInvite, isPosterUnlocked, courtCase.slug]);
 
   const currentVerdict = () => {
     const list = [
@@ -505,7 +524,7 @@ export default function CourtScreen({
                 <Sparkles className="h-4 w-4 text-[#C9A227] animate-pulse" /> Secure Your Partner Access
               </h4>
               <p className="text-xs text-amber-800 leading-relaxed font-medium">
-                Please set your unique 4-digit Case PIN before contributing your side. This PIN secures your response anonymously and allows you to claim your Clean Hands Certificate if the jury declares you not guilty!
+                Please set your unique 4-digit Case PIN before contributing your side. This PIN secures your response anonymously, verifying your identity on this case.
               </p>
             </div>
           </div>
@@ -1073,7 +1092,41 @@ export default function CourtScreen({
         <div className="md:col-span-5 rounded-xl border border-[#E5E7EB] bg-white p-4 space-y-3 shadow-xs">
           <h3 className="text-xs font-bold uppercase tracking-wider text-[#24324A]">Cast Your Verdict</h3>
           
-          {(userVote || isExpired) ? (
+          {isOwnerOrPartnerOfCase ? (
+            <div className="space-y-2.5">
+              <div className="rounded-xl bg-amber-50 border border-amber-200 p-2.5 text-xs text-center text-amber-800 font-bold mb-1.5 flex flex-col items-center justify-center gap-1 shadow-xs font-sans">
+                <span className="flex items-center gap-1 text-[11px]"><ShieldAlert className="h-4 w-4 text-amber-600" /> You cannot vote on your own case.</span>
+                <span className="text-[10px] text-amber-700/80 font-medium font-sans">Showing live community jury results.</span>
+              </div>
+
+              {[
+                { label: "Blame ME", key: 'me', val: courtCase.votes.me, color: 'bg-[#24324A]' },
+                { label: "Blame Partner", key: 'partner', val: courtCase.votes.partner, color: 'bg-[#B23B3B]' },
+                { label: "Blame Both equally", key: 'both', val: courtCase.votes.both, color: 'bg-[#C9A227]' },
+                { label: "Blame Neither", key: 'neither', val: courtCase.votes.neither, color: 'bg-[#9CA3AF]' }
+              ].map(opt => {
+                const pct = getPercent(opt.val);
+                return (
+                  <div key={opt.key} className="space-y-0.5">
+                    <div className="flex justify-between text-xs font-medium text-[#6B7280]">
+                      <span>{opt.label}</span>
+                      <span className="text-[#1F2937] font-bold">{pct}%</span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-[#FAF8F2] overflow-hidden border border-[#E5E7EB]">
+                      <div className={`h-full ${opt.color}`} style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+
+              <div className="border-t border-[#ECECEC] pt-2.5 text-center">
+                <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-bold">Leading Perspective</span>
+                <span className="text-sm font-bold text-[#C9A227] uppercase bg-[#FFF8E1] px-3 py-1 rounded border border-[#E8D79B] inline-block mt-1 font-mono">
+                  {currentVerdict() === 'Me' ? 'I am at fault' : currentVerdict() === 'Partner' ? 'Partner at Fault' : currentVerdict() === 'Both' ? 'Both Share Blame' : 'Mutual Understanding / No Fault'}
+                </span>
+              </div>
+            </div>
+          ) : (userVote || isExpired) ? (
             <div className="space-y-2.5">
               {isExpired ? (
                 <div className="rounded-xl bg-amber-50 border border-amber-200 p-2.5 text-xs text-center text-[#9F5F1B] font-bold mb-1.5 flex items-center justify-center gap-1.5 shadow-xs">
@@ -1142,45 +1195,52 @@ export default function CourtScreen({
           <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 space-y-3 shadow-xs">
 
             {/* Submit Argument Form */}
-            <form id="argument-form" onSubmit={handleArgSubmit} className="space-y-2.5 bg-[#FAF8F2] p-2.5 rounded-xl border border-[#E5E7EB]">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-[10px] uppercase font-bold text-[#6B7280]">Who are you blaming? and Why?</span>
-                <div className="flex gap-1 text-[10px]">
-                  {['Me', 'Partner', 'Both', 'Neither'].map(side => (
-                    <button
-                      key={side}
-                      type="button"
-                      onClick={() => setSelectedSide(side as any)}
-                      className={`px-2.5 py-1 rounded font-bold border transition-all ${
-                        selectedSide === side 
-                          ? 'bg-[#FFF8E1] border-[#C9A227] text-[#C9A227]' 
-                          : 'bg-white border-[#E5E7EB] text-[#6B7280]'
-                      }`}
-                    >
-                      {side}
-                    </button>
-                  ))}
+            {isOwnerOrPartnerOfCase ? (
+              <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold text-center flex flex-col items-center gap-1 font-sans animate-fadeIn">
+                <span className="flex items-center gap-1.5 text-[11px]"><ShieldAlert className="h-4 w-4 text-amber-600" /> You cannot submit general juror opinions on your own case.</span>
+                <span className="text-[10px] text-amber-700/80 font-medium">Please use the official statements panel above to present your perspective.</span>
+              </div>
+            ) : (
+              <form id="argument-form" onSubmit={handleArgSubmit} className="space-y-2.5 bg-[#FAF8F2] p-2.5 rounded-xl border border-[#E5E7EB]">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-[10px] uppercase font-bold text-[#6B7280]">Who are you blaming? and Why?</span>
+                  <div className="flex gap-1 text-[10px]">
+                    {['Me', 'Partner', 'Both', 'Neither'].map(side => (
+                      <button
+                        key={side}
+                        type="button"
+                        onClick={() => setSelectedSide(side as any)}
+                        className={`px-2.5 py-1 rounded font-bold border transition-all ${
+                          selectedSide === side 
+                            ? 'bg-[#FFF8E1] border-[#C9A227] text-[#C9A227]' 
+                            : 'bg-white border-[#E5E7EB] text-[#6B7280]'
+                        }`}
+                      >
+                        {side}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <textarea
-                placeholder="Submit your deliberative juror opinion here. What boundary was crossed? Keep it objective."
-                value={argumentText}
-                onChange={(e) => setArgumentText(e.target.value)}
-                maxLength={800}
-                className="w-full rounded-xl border border-[#E5E7EB] bg-white p-2.5 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] min-h-[70px] placeholder:text-[10px]"
-                required
-              />
+                <textarea
+                  placeholder="Submit your deliberative juror opinion here. What boundary was crossed? Keep it objective."
+                  value={argumentText}
+                  onChange={(e) => setArgumentText(e.target.value)}
+                  maxLength={800}
+                  className="w-full rounded-xl border border-[#E5E7EB] bg-white p-2.5 text-xs text-[#1F2937] focus:outline-none focus:border-[#24324A] min-h-[70px] placeholder:text-[10px]"
+                  required
+                />
 
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-1 rounded-lg bg-[#24324A] text-white px-3.5 py-1.5 text-xs font-bold hover:bg-[#1C273A]"
-                >
-                  <Plus className="h-3.5 w-3.5" /> Register Opinion
-                </button>
-              </div>
-            </form>
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    className="inline-flex items-center gap-1 rounded-lg bg-[#24324A] text-white px-3.5 py-1.5 text-xs font-bold hover:bg-[#1C273A]"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Register Opinion
+                  </button>
+                </div>
+              </form>
+            )}
 
             {/* List Opinions */}
             <div className="space-y-3 max-h-96 overflow-y-auto">
