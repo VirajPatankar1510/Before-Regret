@@ -2696,6 +2696,8 @@ export default function App() {
             onAddFlagCase={handleAddFlagCase}
             userVotedFlags={userVotedFlags}
             currentUser={currentUser}
+            currentUsername={store.user.username}
+            submittedRedFlags={store.user.submittedRedFlags || []}
             onGoogleLogin={handleGoogleLogin}
             initialCaseId={currentScreen.slug}
           />

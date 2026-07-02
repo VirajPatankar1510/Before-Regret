@@ -721,11 +721,11 @@ Please output your response as JSON matching this schema:
   // API route to perform ahrefs-style Keyword Research & generate high-performing human pSEO relationship submissions
   app.post("/api/admin/generate-seo-submission", async (req, res) => {
     try {
-      const { type, topic } = req.body;
+      const { type, topic, existingTitles } = req.body;
       const requestedType = type || "court_case"; // default
       const apiKey = process.env.GEMINI_API_KEY;
 
-      console.log(`Starting SEO dynamic generation. Type: ${requestedType}, Topic: ${topic || "Any trending"}`);
+      console.log(`Starting SEO dynamic generation. Type: ${requestedType}, Topic: ${topic || "Any trending"}. Existing titles count: ${Array.isArray(existingTitles) ? existingTitles.length : 0}`);
 
       // Setup Gemini parameters and schemas
       const seoAnalysisProperties = {
@@ -789,7 +789,7 @@ Please output your response as JSON matching this schema:
           required: ["seoAnalysis", "generatedData"]
         };
 
-        promptInstructions = `Perform simulated Keyword Search (ahrefs-style) for low-competition, high-volume relationship search terms.
+        promptInstructions = `Perform simulated SEO Keyword Search for low-competition, high-volume relationship search terms.
 Then, generate a Relationship Court Case based on that keyword.
 The case description must be a raw, deeply human allegation outlining a me vs partner dilemma.
 
@@ -861,7 +861,7 @@ The tone of all arguments must be extremely organic, conversational, slightly me
           required: ["seoAnalysis", "generatedData"]
         };
 
-        promptInstructions = `Perform simulated Keyword Search (ahrefs-style) for relationship advice questions typed into Google.
+        promptInstructions = `Perform simulated SEO Keyword Search for relationship advice questions typed into search engines.
 Then, create a Survivor Q&A Question.
 The title must be a clear, highly searchable question (e.g., 'Do relationship ultimatums ever work?').
 The description must be a detailed story explaining the crisis.
@@ -929,7 +929,7 @@ Provide 3 realistic pollOptions (e.g. 'Stay and wait', 'Give strict timeline', '
           required: ["seoAnalysis", "generatedData"]
         };
 
-        promptInstructions = `Perform simulated Keyword Search (ahrefs-style) for long-term relationship regrets.
+        promptInstructions = `Perform simulated SEO Keyword Search for long-term relationship regrets.
 Then, generate a chronological Regret Story and timelines.
 Choose the closest preseeded situation slug and name matching the topic:
 - "boyfriend-doesnt-want-marriage" (He won't marry me)
@@ -989,28 +989,69 @@ Generate 1-2 future outcome updates (e.g. daysAfter: 365, text: 'One year later,
           required: ["seoAnalysis", "generatedData"]
         };
 
-        promptInstructions = `Perform simulated Keyword Search (ahrefs-style) for relationship behavior warning signs and red flags.
+        promptInstructions = `Perform simulated SEO Keyword Search for relationship behavior warning signs and red flags.
 Then, create a Red Flag Warning Case.
 The description should represent a highly specific, suspicious, or borderline behavior (e.g. sharing locations but always turning it off during certain hours, or deleting chats with a 'friend' from work).
 Provide initial crowd-sourced warning light votes (green, yellow, red counts reflecting a complex split).
 Generate 2-3 realistic comments arguing whether it is a toxic control red flag, a normal boundary, or a cautious yellow flag.`;
       }
 
+      const existingTitlesList = Array.isArray(existingTitles) && existingTitles.length > 0
+        ? existingTitles.map((t, idx) => `  ${idx + 1}. "${t}"`).join("\n")
+        : "None specified.";
+
       const mainPrompt = `You are an elite Search Engine Optimization (SEO) director and human-experience copywriter for BeforeRegret.com.
 We need to generate a new submission of type: "${requestedType}".
 The administrator selected topic/focus: "${topic || "Any trending high-demand relationship conflict"}"
 
+CRITICAL - UNIQUE CONTENT & NEW NICHES MANDATE:
+To maintain high organic search value and keep the website fresh, the generated submission MUST NOT repeat or closely resemble existing stories, cases, or questions.
+Here is a list of existing titles/concepts currently live on our website:
+${existingTitlesList}
+
+Your absolute priority is to discover and target a NEW relationship sub-niche, unexplored topic, or fresh behavioral angle that is NOT represented in the list above. Think logically and creatively to identify untapped keyword opportunities typed into search engines by people facing modern dating and relationship crises.
+
+Examples of fresh niches to explore:
+- Digital boundaries (e.g. social media presence, location sharing expectations, deleting chats with certain 'friends', phone privacy rules, being secretly left out of social media posts).
+- Modern financial dynamics (e.g. wage disparities, joint expenses vs personal splurges, secretly hiding debt, splitting bills unequally, partner refusing to work/financial dependence).
+- Cohabitation & pace mismatches (e.g. living together for years without commitment/marriage talk, moving in too early, different cleanliness standards, chore imbalances, feeling like roommates).
+- Career vs love priorities (e.g. partner accepting a job across the country, one partner working late constantly, career jealousy, asymmetric sacrifice).
+- In-law & family interference (e.g. partner prioritizing their parents over their spouse, overbearing parents, boundary-crossing family members, family planning pressures).
+- Friend group boundaries & hobbies (e.g. partner spending every weekend with friends, inappropriate emotional intimacy with a close friend of the opposite gender, obsessive hobbies ignoring the relationship).
+- Emotional labor & attention gaps (e.g. partner stopped trying after marriage, weaponized incompetence, different parenting styles, mismatch in quality time expectations).
+
+CRITICAL DIRECTIVE - COPYRIGHT & ORIGINALITY SAFEGUARD:
+- DO NOT copy, plagiarize, or closely paraphrase any real internet posts, advice columns, or articles.
+- Every scenario, character name, dialogue, timeline step, and specific event MUST be completely original, fictional, and synthesized from scratch.
+- Ensure that the details are deeply specific but fully original to avoid copyright or infringement strikes.
+
+CRITICAL DIRECTIVE - AI DETECTION BYPASS (NATURAL HUMAN WRITING):
+- Write exactly like a raw, emotional, real human in a state of distress, confusion, or reflection.
+- Use conversational, slightly messy phrasing, varying sentence lengths, realistic run-on sentences, and authentic emotional pacing.
+- Feel free to occasionally use minor human spelling/punctuation traits (such as lowercase 'i' or using ellipses '...' or casual colloquialisms like 'low-key', 'giving roommate', 'major red flag', 'absolutely done', 'checking out').
+- STICK TO CONCRETE logistics and direct feelings.
+- ABSOLUTELY AVOID standard AI clichés, sterile structural summaries, or transitions such as: "delve", "testament", "tapestry", "moreover", "furthermore", "in conclusion", "to sum up", "it is important to remember", "a roller coaster of emotions", "only time will tell", "buckle up", "at the end of the day", "look no further".
+
+CRITICAL DIRECTIVE - ZERO BRAND NAMES / NO TRADEMARKS:
+- DO NOT include or mention ANY real brand names, trademarked platforms, websites, apps, or services anywhere in the content, titles, keywords, or meta fields.
+- Instead of using brand names, use high-quality, professional, generic descriptions:
+  - Instead of "Google" or "Ahrefs": Use "search engine", "organic search console", "search volume analytics", or "search queries".
+  - Instead of "Reddit" or "Reddit-style": Use "popular relationship forum", "anonymous online support community", "anonymous counseling thread", or "discussion board".
+  - Instead of "Instagram" or "TikTok": Use "photo-sharing feed", "short-form video app", or "popular social media feed".
+  - Instead of "Snapchat" or "Snapscore": Use "messaging application" or "social app activity level".
+  - Instead of "Find My" or "Google Maps": Use "live location tracking app" or "phone map sharing settings".
+  - Instead of "Slack", "Discord", or "Teams": Use "office work chat", "online gaming chatroom", or "workplace chat app".
+
 Follow this two-step process:
-STEP 1 (ahrefs simulated Keyword Research):
+STEP 1 (Simulated SEO Keyword Research):
 Identify a low-to-moderate competition target keyword (SEO Difficulty: 10-35 out of 100) that has high organic search volume and strong decisional search intent.
-The keyword must represent a painful, contemporary relationship dilemma, mistake, or query typed directly into Google (e.g. 'living together 4 years no ring', 'cheated but stayed for kids remorse', 'boyfriend won\\'t post me on instagram').
-Formulate estimated monthly search volumes, SEO difficulties, search intent types, and 3-5 hyper-specific Google search phrases / complaints.
+The keyword must represent a painful, contemporary relationship dilemma, mistake, or query typed directly into search engines (e.g. 'living together 4 years no ring', 'cheated but stayed for kids remorse', 'boyfriend won\\'t post me on social media').
+Formulate estimated monthly search volumes, SEO difficulties, search intent types, and 3-5 hyper-specific search phrases / complaints.
 
 STEP 2 (Organic human-centric writing):
-Now, draft the relationship content itself.
-It must sound 100% like an actual, raw human writing a Reddit-style confession, dilemma, question, or retrospective.
+Now, draft the relationship content itself following all of the copyright, AI-bypass, and brand-ban guidelines above.
 Do NOT use sterile summaries, structural introductions, or AI-like clichés.
-Include specific details, messy feelings, complex logistics, and authentic dialogues to keep users engaged and clicking.
+Include specific details, messy feelings, complex logistics, and authentic dialogues to keep users engaged.
 
 Ensure compliance with this dynamic prompt:
 ${promptInstructions}
@@ -1068,7 +1109,7 @@ Deliver the output strictly in JSON matching the specified schema.`;
                 "is playing house a trap for marriage",
                 "waiting for proposal while paying half the rent"
               ],
-              trendingRedditTopic: "Highly trending sub-threads on r/Marriage regarding cohabitation duration deadlocks."
+              trendingRedditTopic: "Highly trending sub-threads on popular anonymous discussion boards regarding cohabitation duration deadlocks."
             },
             generatedData: {
               title: customTitle,
@@ -1096,7 +1137,7 @@ Deliver the output strictly in JSON matching the specified schema.`;
                 "resentment after marriage ultimatum",
                 "giving bf ultimatum to propose timeline"
               ],
-              trendingRedditTopic: "Spike in r/relationship_advice discussions about proposal deadlines."
+              trendingRedditTopic: "Spike in anonymous marriage advice discussions about proposal deadlines."
             },
             generatedData: {
               title: "Do marriage ultimatums ever lead to a happy ending, or is it always resentment?",
@@ -1126,7 +1167,7 @@ Deliver the output strictly in JSON matching the specified schema.`;
                 "stayed with cheating husband 5 years later regret",
                 "rebuilding trust after emotional affair coworker"
               ],
-              trendingRedditTopic: "Very high volume on r/survivinginfidelity and r/AsOneAfterInfidelity concerning trust hypervigilance."
+              trendingRedditTopic: "Very high volume on anonymous infidelity-support forums concerning trust hypervigilance."
             },
             generatedData: {
               title: "I stayed for 5 years after he cheated with a coworker. Here is my deepest regret.",
@@ -1143,7 +1184,7 @@ Deliver the output strictly in JSON matching the specified schema.`;
               fullStory: "When I discovered my husband was having an emotional and physical affair with a junior coworker, my world collapsed. We had a beautiful house and a 2-year-old toddler, so I chose to stay and 'fight' for our family. He did all the right things: cut off contact, changed jobs, went to therapy, and let me monitor his phone. But here is the raw truth that people don't tell you about reconciliation: you never truly recover. Five years later, my phone still triggers a tiny spike of adrenaline when it buzzes in the middle of the night. I've become a hypervigilant warden in my own home. I regret staying because even though we saved the marriage, I lost my peace of mind and my self-esteem. I traded five years of potential happiness for an anxious, broken truce.",
               timeline: [
                 { year: "Year 1", stage: "The Discovery & Rage", description: "Found the texts and receipts. Experienced severe panic attacks. He wept, begged, and immediately switched departments to get away from her." },
-                { year: "Year 3", stage: "The Quiet warden", description: "Reconciliation appeared 'successful' to outsiders. But I was secretly checking his location 15 times a day and feeling nauseous if he logged off Slack." },
+                { year: "Year 3", stage: "The Quiet warden", description: "Reconciliation appeared 'successful' to outsiders. But I was secretly checking his location 15 times a day and feeling nauseous if he logged off the work chat app." },
                 { year: "Year 5", stage: "The Emotional Exhaustion", description: "Realized that while I still love him, I am no longer in love with the person I became to keep him. The trust is permanently flatlined." }
               ],
               userName: "warden_of_chicago",
@@ -1163,18 +1204,18 @@ Deliver the output strictly in JSON matching the specified schema.`;
               searchIntent: "Informational/Decisional",
               googleSearchPhrases: [
                 "is hiding phone location a red flag",
-                "boyfriend pauses location on find my",
+                "boyfriend pauses location on tracking app",
                 "he turned off location sharing when going out"
               ],
-              trendingRedditTopic: "Substantial active discussions on TikTok and r/relationships regarding location tracking boundaries."
+              trendingRedditTopic: "Substantial active discussions on popular video sharing networks and relationship support forums regarding location tracking boundaries."
             },
             generatedData: {
-              title: "He pauses his 'Find My' location whenever he goes out with his 'boys' group",
-              description: "My boyfriend (M26) and I (F25) have been sharing locations for over a year for safety. However, I noticed that whenever he goes to a 'boys night' or club, his location on Find My displays 'Location Paused' or 'No Location Found' for 3-4 hours. When I ask, he claims his phone was dead or he had bad cellular service. But his snapscore keeps going up during those hours. Am I being paranoid or is he intentionally blocking me from seeing where they go?",
+              title: "He pauses his location-sharing whenever he goes out with his friends",
+              description: "My boyfriend (M26) and I (F25) have been sharing locations for over a year for safety. However, I noticed that whenever he goes to a night out or club, his location on the tracking app displays 'Location Paused' or 'No Location Found' for 3-4 hours. When I ask, he claims his phone was dead or he had bad cellular service. But his social activity status keeps going up during those hours. Am I being paranoid or is he intentionally blocking me from seeing where they go?",
               category: "Trust & Privacy",
               votes: { green: 14, yellow: 45, red: 289 },
               comments: [
-                { author: "honest_opinion_99", text: "This is a screaming bright crimson red flag. Pausing location is an active setting toggle; it doesn't just happen because of 'bad service' or a dead phone. If snaps are going up, his phone is on and working. He is lying to your face.", date: "1 hour ago" },
+                { author: "honest_opinion_99", text: "This is a screaming bright crimson red flag. Pausing location is an active setting toggle; it doesn't just happen because of 'bad service' or a dead phone. If their activity shows they are active online, the phone is on and working. He is lying to your face.", date: "1 hour ago" },
                 { author: "privacy_first", text: "Honestly, constant location tracking is toxic anyway. Why do you need to watch him like a hawk when he's with his friends? He probably paused it because he is tired of your anxiety.", date: "45 minutes ago" }
               ],
               author: "anxious_gf_detroit",

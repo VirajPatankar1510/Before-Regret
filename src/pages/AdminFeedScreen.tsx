@@ -273,6 +273,13 @@ export default function AdminFeedScreen({
     setGeneratedSeoData(null);
     setSeoSuccessMessage(null);
     try {
+      const existingTitles = [
+        ...courtCases.map(c => c.title),
+        ...stories.map(s => s.title),
+        ...questions.map(q => q.title),
+        ...redFlagCases.map(r => r.title)
+      ].filter(Boolean);
+
       const response = await fetch('/api/admin/generate-seo-submission', {
         method: 'POST',
         headers: {
@@ -280,7 +287,8 @@ export default function AdminFeedScreen({
         },
         body: JSON.stringify({
           type: seoType,
-          topic: seoTopic
+          topic: seoTopic,
+          existingTitles
         })
       });
       if (!response.ok) {
