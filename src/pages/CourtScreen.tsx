@@ -912,11 +912,11 @@ export default function CourtScreen({
                 }`}>
                   <div className="relative flex items-center justify-center">
                     {/* Golden jagged rosette seal background */}
-                    <div className="absolute w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 shadow-md border-2 border-white animate-pulse opacity-95" />
+                    <div className="absolute w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 shadow-md border border-white opacity-95" />
                     {/* Inner gold concentric seal */}
-                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 border border-amber-300 flex flex-col items-center justify-center text-[7px] font-black text-amber-950 font-serif tracking-tighter uppercase leading-none shadow-inner">
+                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 border border-amber-300 flex flex-col items-center justify-center text-[7px] font-bold text-amber-950 font-serif tracking-tight uppercase leading-none shadow-inner">
                       <span className="text-[5.5px] font-bold text-amber-950/80">COMMUNITY</span>
-                      <span className="text-[11px] my-0.5 font-sans font-black tracking-normal">
+                      <span className="text-[11px] my-0.5 font-serif font-black tracking-normal">
                         {certPercent !== null ? certPercent : (totalVotes > 0 ? (100 - getPercent(courtCase.votes.me)) : 92)}%
                       </span>
                       <span className="text-[5.5px] font-bold text-amber-950/85">
@@ -930,24 +930,22 @@ export default function CourtScreen({
                 <div className={`${certFormat === 'story916' ? 'space-y-1.5 pt-1' : 'contents'} shrink-0`}>
                   {/* Certificate Heading */}
                   <div className="space-y-1 pt-3 text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      <span className="text-amber-600 text-[11px] sm:text-xs">⚖️</span>
-                      <span className="block text-[8px] sm:text-[9.5px] uppercase tracking-[0.22em] font-mono font-bold text-amber-800">
-                        BR COURT
+                    <div className="flex items-center justify-center">
+                      <span className="block text-[9px] sm:text-[10px] uppercase tracking-[0.25em] font-serif font-bold text-stone-700">
+                        Before Regret Relationship Court
                       </span>
-                      <span className="text-amber-600 text-[11px] sm:text-xs">⚖️</span>
                     </div>
-                    <h2 className="text-[9px] sm:text-[10.5px] text-[#A67C1E] tracking-[0.1em] font-serif uppercase font-bold italic leading-none">
-                      — Community Decision —
+                    <h2 className="text-[10px] sm:text-[12px] text-[#A67C1E] tracking-[0.15em] font-serif uppercase font-bold italic leading-none">
+                      — Decree of Exoneration —
                     </h2>
                   </div>
 
                   {/* Recipient Custom Name */}
-                  <div className="pt-1.5 pb-0.5 text-center animate-fadeIn select-all">
-                    <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] text-[#B45309] font-black font-sans block mb-1">
-                      THIS CREDENTIAL IS PROUDLY ISSUED TO
+                  <div className="pt-2 pb-0.5 text-center animate-fadeIn select-all">
+                    <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] text-stone-500 font-bold font-serif block mb-1">
+                      THIS CERTIFICATE IS GRANTED TO
                     </span>
-                    <span className={`font-black text-slate-950 tracking-wider font-serif px-6 block max-w-sm mx-auto border-b border-dashed border-[#C29B38]/30 pb-1 leading-tight ${
+                    <span className={`font-medium text-stone-900 tracking-wide font-serif px-6 block max-w-sm mx-auto border-b border-dashed border-[#C29B38]/30 pb-1.5 leading-tight ${
                       certFormat === 'story916' ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'
                     }`}>
                       {isPartnerInvite ? 'Anonymous Partner' : `@${courtCase.author}`}
@@ -962,32 +960,31 @@ export default function CourtScreen({
                     certFormat === 'story916' ? 'space-y-1.5 pt-0.5' : 'space-y-3 pt-2'
                   }`}>
                     {/* Custom Before Regret Emblem Logo matching user upload */}
-                    <BeforeRegretLogo showText={false} size={certFormat === 'story916' ? 55 : 85} lightTheme={true} className="mb-0.5" />
+                    <BeforeRegretLogo showText={false} size={certFormat === 'story916' ? 55 : 85} lightTheme={true} className="mb-0.5 opacity-90" />
 
-                    {/* Title with decorative rays */}
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-amber-600/40 text-xs font-serif select-none">🗲</span>
-                      <h3 className={`font-black tracking-widest text-[#1B2B3E] uppercase font-sans leading-none ${
-                        certFormat === 'story916' ? 'text-lg' : 'text-xl sm:text-2xl'
+                    {/* Title */}
+                    <div className="flex items-center">
+                      <h3 className={`font-bold tracking-[0.15em] text-[#1B2B3E] uppercase font-serif leading-none ${
+                        certFormat === 'story916' ? 'text-base' : 'text-lg sm:text-xl'
                       }`}>
-                        BR COURT CERTIFICATE
+                        Official Verdict of the Public Jury
                       </h3>
-                      <span className="text-amber-600/40 text-xs font-serif select-none">🗲</span>
                     </div>
 
-                    {/* Highlighted prominent verdict box */}
-                    <div className={`relative inline-block bg-gradient-to-r from-[#1E293B] to-[#334155] rounded-2xl border-2 border-[#C29B38] shadow-xl transform -skew-x-2 hover:skew-x-0 transition-transform duration-300 ${
-                      certFormat === 'story916' ? 'px-6 py-2' : 'px-10 py-4'
+                    {/* Highlighted prominent verdict box - Classic style */}
+                    <div className={`relative inline-block border-2 border-[#C29B38] bg-stone-50 rounded-lg shadow-xs ${
+                      certFormat === 'story916' ? 'px-5 py-2.5' : 'px-10 py-4'
                     }`}>
-                      <span className={`font-black text-[#C29B38] uppercase tracking-[0.25em] block font-mono ${
-                        certFormat === 'story916' ? 'text-[8.5px] mb-1' : 'text-[10px] sm:text-[11px] mb-1.5'
+                      <div className="absolute inset-0.5 border border-[#C29B38]/30 rounded pointer-events-none" />
+                      <span className={`font-bold text-[#A67C1E] uppercase tracking-[0.25em] block font-serif ${
+                        certFormat === 'story916' ? 'text-[8px] mb-0.5' : 'text-[9.5px] sm:text-[11px] mb-1'
                       }`}>
-                        PEER VERDICT DELIVERED
+                        PEER CITIZEN VERDICT
                       </span>
-                      <span className={`font-extrabold text-white uppercase tracking-widest block font-sans px-3 ${
-                        certFormat === 'story916' ? 'text-xl' : 'text-2xl sm:text-3xl'
+                      <span className={`font-black text-[#24324A] uppercase tracking-[0.15em] block font-serif px-4 ${
+                        certFormat === 'story916' ? 'text-lg' : 'text-xl sm:text-2xl'
                       }`}>
-                        ★ {certVerdict || "NOT GUILTY"} ★
+                        {certVerdict || "NOT GUILTY"}
                       </span>
                     </div>
                   </div>
@@ -1008,58 +1005,59 @@ export default function CourtScreen({
                   </div>
 
                   {/* Two-column premium statistics table */}
-                  <div className={`grid grid-cols-2 border-t border-b border-amber-700/10 max-w-xl mx-auto bg-stone-50/50 rounded-xl w-full ${
-                    certFormat === 'story916' ? 'gap-2 py-2 px-3' : 'gap-4 py-5 px-4'
+                  <div className={`grid grid-cols-2 border-t border-b border-[#C29B38]/30 max-w-xl mx-auto bg-stone-50/30 w-full ${
+                    certFormat === 'story916' ? 'gap-2 py-2 px-3' : 'gap-4 py-4 px-4'
                   }`}>
                     <div className="flex flex-col items-center text-center space-y-0.5">
-                      <div className={`rounded-full bg-[#E07A5F] flex items-center justify-center text-white shadow-sm shrink-0 ${
-                        certFormat === 'story916' ? 'h-5.5 w-5.5' : 'h-7 w-7'
-                      }`}>
-                        <Users className={certFormat === 'story916' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
-                      </div>
+                      <Users className={`${certFormat === 'story916' ? 'h-4 w-4' : 'h-5 w-5'} text-[#A67C1E] mb-1`} />
                       <div className="leading-tight">
-                        <span className="text-[7.5px] uppercase tracking-wider text-stone-500 block font-sans font-bold">REVIEWED BY</span>
-                        <span className="text-xs font-black text-slate-800 font-sans block pt-0.5">
+                        <span className="text-[7.5px] uppercase tracking-[0.15em] text-stone-500 block font-serif font-bold">COMMUNITY REVIEW</span>
+                        <span className="text-xs font-bold text-slate-900 font-serif block pt-0.5">
                           {(certJurors !== null ? certJurors : (totalVotes || 1284)).toLocaleString()}
                         </span>
                         <span className="text-[6.5px] uppercase tracking-widest text-[#B45309] font-bold block">RELATIONSHIP JURORS</span>
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center text-center space-y-0.5 border-l border-amber-700/10">
-                      <div className={`rounded-full bg-[#4AA3A2] flex items-center justify-center text-white shadow-sm shrink-0 ${
-                        certFormat === 'story916' ? 'h-5.5 w-5.5' : 'h-7 w-7'
-                      }`}>
-                        <Shield className={certFormat === 'story916' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
-                      </div>
+                    <div className="flex flex-col items-center text-center space-y-0.5 border-l border-[#C29B38]/30">
+                      <Shield className={`${certFormat === 'story916' ? 'h-4 w-4' : 'h-5 w-5'} text-[#A67C1E] mb-1`} />
                       <div className="leading-tight">
-                        <span className="text-[7.5px] uppercase tracking-wider text-stone-500 block font-sans font-bold">CONFIDENCE</span>
-                        <span className="text-xs font-black text-slate-800 font-sans block pt-0.5 uppercase">
+                        <span className="text-[7.5px] uppercase tracking-[0.15em] text-stone-500 block font-serif font-bold">VERDICT CONFIDENCE</span>
+                        <span className="text-xs font-bold text-slate-900 font-serif block pt-0.5 uppercase">
                           {certConfidence}
                         </span>
-                        <span className="text-[8px] text-amber-500 block mt-0.5 leading-none">★★★★★</span>
+                        <span className="text-[6.5px] uppercase tracking-widest text-emerald-700 font-bold block">CONSENSUS VERIFIED</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* 3. BOTTOM FOOTER - PLACED SLIGHTLY HIGHER, ULTRA SHARP AND PROMINENT */}
-                <div className={`flex flex-col items-center justify-center gap-1.5 mx-auto w-full relative shrink-0 ${
-                  certFormat === 'story916' ? 'mb-4 pt-1.5' : 'pt-4'
-                }`}>
-                  <span className="text-[11px] md:text-xs uppercase tracking-[0.22em] text-[#5C2D11] font-black font-mono">
-                    check my case on:
-                  </span>
-                  <div className="bg-[#090D12] text-[#F4B942] rounded-full px-8 py-3 shadow-lg border-2 border-[#C29B38] text-[10.5px] tracking-[0.3em] font-sans font-black select-all leading-none shrink-0 transform hover:scale-105 transition-all duration-200 uppercase">
-                    BeforeRegret.com
+                {/* 3. SIGNATURE LINES & VALIDATION */}
+                <div className={`grid grid-cols-2 gap-8 max-w-md mx-auto w-full pt-4 shrink-0 font-serif`}>
+                  <div className="flex flex-col items-center text-center">
+                    <div className="h-6 flex items-end justify-center">
+                      <span className="font-serif italic text-stone-600 text-[11px] tracking-wide select-none">Community Jury</span>
+                    </div>
+                    <div className="w-24 border-b border-stone-400 my-1" />
+                    <span className="text-[7px] uppercase tracking-wider text-stone-500 font-bold">JURY CHAIRPERSON</span>
                   </div>
-                  <div className="flex items-center gap-2 mt-2 bg-amber-50 border-2 border-[#C29B38]/60 px-4 py-1.5 rounded-xl shadow-sm">
-                    <span className="text-[10px] uppercase tracking-widest text-[#5C2D11] font-extrabold font-sans">
-                      my case id:
-                    </span>
-                    <span className="font-mono text-slate-950 text-[10.5px] font-black tracking-wider bg-white px-3 py-1 rounded border border-amber-200 shadow-inner select-all">
-                      {courtCase.caseNumber || 'CASE-C2011'}
-                    </span>
+
+                  <div className="flex flex-col items-center text-center">
+                    <div className="h-6 flex items-end justify-center">
+                      <span className="font-serif italic text-stone-600 text-[11px] tracking-wide select-none">Before Regret Court</span>
+                    </div>
+                    <div className="w-24 border-b border-stone-400 my-1" />
+                    <span className="text-[7px] uppercase tracking-wider text-stone-500 font-bold">COURT REGISTRAR</span>
+                  </div>
+                </div>
+
+                {/* Verification Registry ID */}
+                <div className={`flex flex-col items-center justify-center gap-1 mx-auto w-full pt-4 shrink-0 font-serif border-t border-[#C29B38]/10`}>
+                  <span className="text-[7px] uppercase tracking-[0.25em] text-stone-400 font-bold">
+                    OFFICIAL VERIFICATION REGISTRY
+                  </span>
+                  <div className="text-[8px] tracking-[0.15em] text-[#A67C1E] font-bold select-all">
+                    CASE RECORD ID: {courtCase.caseNumber || 'CASE-C2011'} • BEFOREREGRET.COM
                   </div>
                 </div>
               </div>
