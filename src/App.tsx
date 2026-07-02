@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Sparkles, Compass, HelpCircle, Heart, ShieldCheck, Gavel, Globe, Clock, PlusCircle, Bookmark, ArrowRight, ChevronRight, AlertTriangle, Monitor, RotateCcw, Share2, Info, X, BookOpen, Copy, Plus, Check } from 'lucide-react';
+import { Sparkles, Compass, HelpCircle, Heart, ShieldCheck, Gavel, Globe, Clock, PlusCircle, Bookmark, ArrowRight, ChevronRight, AlertTriangle, Monitor, RotateCcw, Share2, Info, X, BookOpen, Copy, Plus, Check, Camera, Download } from 'lucide-react';
 
 // Reusable custom components
 import Navigation from './components/Navigation';
@@ -1130,6 +1130,7 @@ export default function App() {
   const [caseNumberCopied, setCaseNumberCopied] = useState(false);
   const [casePinCopied, setCasePinCopied] = useState(false);
   const [inviteMessageCopied, setInviteMessageCopied] = useState(false);
+  const [screenshotGenerating, setScreenshotGenerating] = useState(false);
 
   // Keep track of what cases and polls the user has already voted on
   const [userVotedCases, setUserVotedCases] = useState<{ [slug: string]: string }>(() => {
@@ -2296,6 +2297,35 @@ export default function App() {
     return count;
   }, [store.stories, comments, store.courtCases, store.redFlagCases]);
 
+  const handleDownloadReceiptScreenshot = async () => {
+    const el = document.getElementById('receipt-screenshot-area');
+    if (!el) return;
+    try {
+      setScreenshotGenerating(true);
+      await new Promise(resolve => setTimeout(resolve, 150));
+      const { toPng } = await import('html-to-image');
+      const dataUrl = await toPng(el, {
+        pixelRatio: 2.0,
+        cacheBust: true,
+        style: {
+          transform: 'scale(1)',
+          margin: '0',
+          borderRadius: '24px'
+        }
+      });
+      const link = document.createElement('a');
+      link.download = `Registry_Receipt_${newlyLodgedCase?.caseNumber || 'CASE'}.png`;
+      link.href = dataUrl;
+      link.click();
+      showToast("📸 Registry Receipt Card Saved to Device!");
+    } catch (error) {
+      console.error('Error rendering screenshot:', error);
+      showToast("❌ Failed to generate screenshot");
+    } finally {
+      setScreenshotGenerating(false);
+    }
+  };
+
   return (
     <div className="bg-[#FAF8F2] text-[#1F2937] min-h-screen flex flex-col font-sans">
       
@@ -2809,58 +2839,74 @@ export default function App() {
       )}
       {/* ⚖️ Newly Lodged Case Success Modal */}
       {newlyLodgedCase && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn text-zinc-800">
-          <div className="w-full max-w-sm bg-white border-2 border-[#C9A227] shadow-2xl rounded-3xl p-6 text-center relative overflow-hidden">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn text-zinc-800">
+          <div className="w-full max-w-md md:max-w-lg bg-white border border-[#E5E7EB] shadow-2xl rounded-3xl p-6 text-center relative overflow-hidden">
             <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#C9A227] to-amber-500" />
             
-            <div className="mx-auto w-14 h-14 bg-amber-50 border border-[#C9A227]/30 rounded-2xl flex items-center justify-center text-[#C9A227] mb-4">
-              <Gavel className="h-6 w-6" />
+            <div className="mx-auto w-12 h-12 bg-amber-50 border border-[#C9A227]/20 rounded-2xl flex items-center justify-center text-[#C9A227] mb-3">
+              <Gavel className="h-5 w-5" />
             </div>
 
             <h3 className="text-base font-black text-zinc-900 uppercase tracking-wider">
-              Dispute Lodged in Registry
+              Dispute Registered Successfully
             </h3>
-            <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed font-medium">
-              Your case has been logged securely. Your extreme privacy is 100% protected.
+            <p className="text-[11px] text-zinc-500 mt-1 mb-5 leading-relaxed font-medium">
+              Your case has been securely registered in the anonymous relationship court.
             </p>
 
-            {/* Case Number Badge */}
-            <div className="my-4 bg-zinc-50 border border-zinc-200 rounded-xl p-3">
-              <span className="text-[9px] uppercase font-bold text-zinc-500 tracking-widest font-mono block mb-1">YOUR UNIQUE CASE ID</span>
-              <div className="flex items-center justify-center gap-1.5 mb-3">
-                <code className="text-base font-black text-[#C9A227] font-mono tracking-wider select-all">
-                  {newlyLodgedCase.caseNumber}
-                </code>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(newlyLodgedCase.caseNumber);
-                    setCaseNumberCopied(true);
-                    setTimeout(() => setCaseNumberCopied(false), 2500);
-                    showToast("📋 Case Number Copied!");
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900 border border-zinc-200 transition-all cursor-pointer text-[10px] font-bold flex items-center gap-1"
-                  title="Copy Case Number"
-                >
-                  {caseNumberCopied ? (
-                    <>
-                      <Check className="h-3 w-3 text-emerald-600" />
-                      <span>Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3 w-3" />
-                      <span>Copy</span>
-                    </>
-                  )}
-                </button>
+            {/* SCREENSHOT CARD PREVIEW AREA */}
+            <div 
+              id="receipt-screenshot-area" 
+              className="p-5 border border-dashed border-[#C9A227]/40 rounded-2xl bg-gradient-to-br from-[#FAF8F2] to-white text-left relative shadow-xs mb-5"
+            >
+              {/* Receipt Header Watermark */}
+              <div className="flex justify-between items-start border-b border-zinc-100 pb-3 mb-4">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[#C9A227] font-mono block">Registry Receipt</span>
+                  <h4 className="text-xs font-black text-zinc-900 tracking-tight uppercase">Before Regret Court</h4>
+                </div>
+                <div className="text-right">
+                  <span className="text-[8px] font-bold text-zinc-400 font-mono block">REGISTERED ON</span>
+                  <span className="text-[9px] font-bold text-zinc-600 font-mono">
+                    {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
+                </div>
               </div>
 
-              {newlyLodgedCase.passwordPin && (
-                <>
-                  <div className="border-t border-zinc-200 pt-2.5">
-                    <span className="text-[9px] uppercase font-bold text-zinc-500 tracking-widest font-mono block mb-1">YOUR CASE PIN (PASSWORD)</span>
-                    <div className="flex items-center justify-center gap-1.5">
-                      <code className="text-base font-black text-emerald-600 font-mono tracking-widest select-all">
+              {/* Case reference grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                {/* Case ID */}
+                <div className="bg-white border border-zinc-150 rounded-xl p-3 shadow-2xs">
+                  <span className="text-[8px] font-bold text-zinc-400 tracking-wider block mb-1 uppercase font-mono">CASE REFERENCE ID</span>
+                  <div className="flex items-center justify-between gap-1">
+                    <code className="text-sm font-black text-zinc-900 font-mono tracking-wider">
+                      {newlyLodgedCase.caseNumber}
+                    </code>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(newlyLodgedCase.caseNumber);
+                        setCaseNumberCopied(true);
+                        setTimeout(() => setCaseNumberCopied(false), 2000);
+                        showToast("📋 Case Number Copied!");
+                      }}
+                      className="p-1.5 rounded-lg hover:bg-zinc-50 text-zinc-400 hover:text-zinc-800 transition-all cursor-pointer"
+                      title="Copy Case Number"
+                    >
+                      {caseNumberCopied ? (
+                        <Check className="h-3.5 w-3.5 text-emerald-600" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Case Password Pin */}
+                {newlyLodgedCase.passwordPin && (
+                  <div className="bg-white border border-zinc-150 rounded-xl p-3 shadow-2xs">
+                    <span className="text-[8px] font-bold text-zinc-400 tracking-wider block mb-1 uppercase font-mono">CASE PASS PIN</span>
+                    <div className="flex items-center justify-between gap-1">
+                      <code className="text-sm font-black text-emerald-600 font-mono tracking-widest">
                         {newlyLodgedCase.passwordPin}
                       </code>
                       <button
@@ -2868,44 +2914,60 @@ export default function App() {
                           const copyText = newlyLodgedCase.passwordPin || '';
                           navigator.clipboard.writeText(copyText);
                           setCasePinCopied(true);
-                          setTimeout(() => setCasePinCopied(false), 2500);
+                          setTimeout(() => setCasePinCopied(false), 2000);
                           showToast("📋 Case PIN Copied!");
                         }}
-                        className="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900 border border-zinc-200 transition-all cursor-pointer text-[10px] font-bold flex items-center gap-1"
+                        className="p-1.5 rounded-lg hover:bg-zinc-50 text-zinc-400 hover:text-zinc-800 transition-all cursor-pointer"
                         title="Copy Case PIN"
                       >
                         {casePinCopied ? (
-                          <>
-                            <Check className="h-3 w-3 text-emerald-600" />
-                            <span>Copied!</span>
-                          </>
+                          <Check className="h-3.5 w-3.5 text-emerald-600" />
                         ) : (
-                          <>
-                            <Copy className="h-3 w-3" />
-                            <span>Copy</span>
-                          </>
+                          <Copy className="h-3.5 w-3.5" />
                         )}
                       </button>
                     </div>
-                    <span className="text-[9px] font-bold text-amber-700 leading-tight block mt-2 px-1">
-                      ⚠️ Write down this PIN now! For absolute privacy, this cannot be retrieved or reset if lost. You need it to add statements or respond to your partner later.
-                    </span>
                   </div>
-                </>
+                )}
+              </div>
+
+              {/* Secure Partner Link Row */}
+              {newlyLodgedCase.wantsPartnerResponse && (
+                <div className="bg-white border border-zinc-150 rounded-xl p-3 shadow-2xs">
+                  <span className="text-[8px] font-bold text-zinc-400 tracking-wider block mb-1 uppercase font-mono">
+                    SECURE PARTNER INVITE LINK
+                  </span>
+                  <div className="flex items-center justify-between gap-2 bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1.5">
+                    <span className="text-[9.5px] font-mono text-zinc-600 truncate max-w-[200px] sm:max-w-[260px]">
+                      {`${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true&partnerKey=${newlyLodgedCase.partnerKey}`}
+                    </span>
+                    <button
+                      onClick={() => {
+                        const inviteLink = `${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true&partnerKey=${newlyLodgedCase.partnerKey}`;
+                        navigator.clipboard.writeText(inviteLink);
+                        showToast("📋 Partner link copied!");
+                      }}
+                      className="text-[9px] font-bold text-[#C9A227] hover:text-[#B08A1E] transition-all cursor-pointer flex items-center gap-1 shrink-0 bg-white border border-zinc-200 px-2 py-0.5 rounded"
+                    >
+                      <Copy className="h-3 w-3" /> Copy Link
+                    </button>
+                  </div>
+                </div>
               )}
+
+              {/* Secure Pass Note */}
+              <div className="mt-4 pt-3 border-t border-zinc-100 flex items-start gap-2 text-[9px] text-zinc-500 leading-normal font-medium">
+                <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Write down your PIN or save this receipt.</strong> For complete privacy, we do not store profile directories or offer password recoveries. You need your PIN to post updates or retrieve this dossier later.
+                </span>
+              </div>
             </div>
 
-            {newlyLodgedCase.wantsPartnerResponse && (
-              <div className="my-4 bg-blue-50 border border-blue-200 rounded-xl p-3 text-left">
-                <span className="text-[9px] uppercase font-bold text-blue-600 tracking-widest font-mono block mb-1">
-                  🔗 SECURE PARTNER INVITATION LINK
-                </span>
-                <p className="text-[10px] text-blue-800 mb-2 leading-relaxed font-medium">
-                  Copy the secure, personalized message below to send privately to your partner:
-                </p>
-                <div className="bg-white border border-zinc-200 rounded-lg p-2 font-mono text-[9.5px] text-zinc-700 select-all break-all leading-normal">
-                  I shared our situation anonymously on www.beforeregret.com to get unbiased opinions. You can now add your side before anyone votes. Please don't share this link with anyone—it's only for you. {`${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true&partnerKey=${newlyLodgedCase.partnerKey}`}
-                </div>
+            {/* ACTION FOOTER BUTTONS */}
+            <div className="space-y-2">
+              {/* Copy Full polite Message if partner is wanted */}
+              {newlyLodgedCase.wantsPartnerResponse && (
                 <button
                   onClick={() => {
                     const inviteLink = `${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true&partnerKey=${newlyLodgedCase.partnerKey}`;
@@ -2913,55 +2975,70 @@ export default function App() {
                     navigator.clipboard.writeText(messageText);
                     setInviteMessageCopied(true);
                     setTimeout(() => setInviteMessageCopied(false), 2500);
-                    showToast("📋 Invitation Message Copied!");
+                    showToast("📋 Copied polite message draft!");
                   }}
-                  className="w-full mt-2 py-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600/20 text-blue-700 border border-blue-200 text-[10px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-1.5 py-1.5 border border-zinc-200 hover:border-zinc-300 rounded-xl text-[10px] font-black text-zinc-700 bg-white hover:bg-zinc-50 shadow-2xs transition-all cursor-pointer"
                 >
                   {inviteMessageCopied ? (
                     <>
-                      <Check className="h-3 w-3 text-emerald-600" />
-                      <span>Copied Message!</span>
+                      <Check className="h-3.5 w-3.5 text-emerald-600" />
+                      <span>Copied Invite Draft Message!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="h-3 w-3" />
-                      <span>Copy Secure Invitation Message</span>
+                      <Copy className="h-3.5 w-3.5 text-zinc-400" />
+                      <span>Copy Polite Invite Message Draft</span>
                     </>
                   )}
                 </button>
-              </div>
-            )}
+              )}
 
-            <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-left text-[10px] text-zinc-600 leading-relaxed mb-4">
-              <p className="font-bold text-zinc-850">💡 Registry Guidelines:</p>
-              <p className="mt-1 font-medium">
-                To protect privacy, profiles are not stored. Write down your case ID. You can find your case page using the <strong className="text-zinc-900 font-bold">RETRIEVE CASE</strong> option in the top bar. Use your PIN to edit or respond to arguments under your case.
-              </p>
-            </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {/* Take Screenshot */}
+                <button
+                  onClick={handleDownloadReceiptScreenshot}
+                  disabled={screenshotGenerating}
+                  className="w-full flex items-center justify-center gap-1.5 py-2 border border-[#E5E7EB] hover:bg-zinc-50 disabled:bg-zinc-100 text-zinc-800 rounded-xl text-xs font-bold shadow-2xs transition-all cursor-pointer"
+                >
+                  {screenshotGenerating ? (
+                    <>
+                      <div className="h-3.5 w-3.5 border-2 border-[#24324A] border-t-transparent rounded-full animate-spin" />
+                      <span>Saving Receipt...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Camera className="h-3.5 w-3.5 text-[#C9A227]" />
+                      <span>Save Receipt (PNG)</span>
+                    </>
+                  )}
+                </button>
 
-            <button
-              onClick={() => {
-                const temp = newlyLodgedCase;
-                setNewlyLodgedCase(null);
-                if (temp.type === 'story') {
-                  setScreen({ type: 'situation', slug: temp.slug || 'boyfriend-doesnt-want-marriage' });
-                  if (temp.id) {
-                    setHighlightedStoryId(temp.id);
-                    setTimeout(() => {
-                      const element = document.getElementById(`story-${temp.id}`);
-                      if (element) {
-                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                {/* Continue button */}
+                <button
+                  onClick={() => {
+                    const temp = newlyLodgedCase;
+                    setNewlyLodgedCase(null);
+                    if (temp.type === 'story') {
+                      setScreen({ type: 'situation', slug: temp.slug || 'boyfriend-doesnt-want-marriage' });
+                      if (temp.id) {
+                        setHighlightedStoryId(temp.id);
+                        setTimeout(() => {
+                          const element = document.getElementById(`story-${temp.id}`);
+                          if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          }
+                        }, 600);
                       }
-                    }, 600);
-                  }
-                } else {
-                  setScreen({ type: 'court', slug: temp.slug || 'court_list' });
-                }
-              }}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-xs font-black text-white transition-all uppercase tracking-wider shadow-md hover:shadow-lg cursor-pointer"
-            >
-              Go to My Submitted Case Dossier ➔
-            </button>
+                    } else {
+                      setScreen({ type: 'court', slug: temp.slug || 'court_list' });
+                    }
+                  }}
+                  className="w-full py-2 rounded-xl bg-[#24324A] hover:bg-[#1C273A] text-xs font-black text-white transition-all uppercase tracking-wider shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-1"
+                >
+                  Enter Dossier ➔
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
