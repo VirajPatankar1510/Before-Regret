@@ -37,6 +37,10 @@ export default function AdminPanel({ isAdmin, onToggleAdmin }: AdminPanelProps) 
       if (!res.ok) {
         throw new Error("HTTP response status error: " + res.status);
       }
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server did not return JSON. Is it starting up?");
+      }
       const data = await res.json();
       if (data.success && Array.isArray(data.list)) {
         await saveRelationshipProblemsToFirestore(data.list);

@@ -29,7 +29,11 @@ import {
   Download,
   Laugh,
   Eye,
-  Users
+  Users,
+  TrendingUp,
+  Globe,
+  FileText,
+  Check
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Story, StoryComment, CourtCase, Question, RedFlagCase } from '../types';
@@ -87,6 +91,10 @@ interface AdminFeedScreenProps {
   onEditAnswerComment: (qSlug: string, ansId: string, commentId: string, newText: string) => void;
   onEditRedFlagCase: (caseId: string, newTitle: string, newDescription: string) => void;
   onEditRedFlagComment: (caseId: string, commentId: string, newText: string) => void;
+  onAddStory: (story: Story) => Promise<void>;
+  onAddCourtCase: (cc: CourtCase) => Promise<void>;
+  onAddQuestion: (q: Question) => Promise<void>;
+  onAddRedFlagCase: (rf: RedFlagCase) => Promise<void>;
 }
 
 // Deterministic hash helper to select stable templates/ctas
@@ -224,9 +232,14 @@ export default function AdminFeedScreen({
   onEditAnswer,
   onEditAnswerComment,
   onEditRedFlagCase,
-  onEditRedFlagComment
+  onEditRedFlagComment,
+  onAddStory,
+  onAddCourtCase,
+  onAddQuestion,
+  onAddRedFlagCase
 }: AdminFeedScreenProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItem | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
@@ -244,6 +257,199 @@ export default function AdminFeedScreen({
     totalViews: 0,
     uniqueVisitors: 0
   });
+
+  // SEO pSEO Auto-Generator States
+  const [seoType, setSeoType] = useState<'court_case' | 'question' | 'story' | 'red_flag_case'>('court_case');
+  const [seoTopic, setSeoTopic] = useState('');
+  const [isGeneratingSeo, setIsGeneratingSeo] = useState(false);
+  const [isPublishingSeo, setIsPublishingSeo] = useState(false);
+  const [seoAnalysis, setSeoAnalysis] = useState<any | null>(null);
+  const [generatedSeoData, setGeneratedSeoData] = useState<any | null>(null);
+  const [seoSuccessMessage, setSeoSuccessMessage] = useState<string | null>(null);
+
+  const handleGenerateSeo = async () => {
+    setIsGeneratingSeo(true);
+    setSeoAnalysis(null);
+    setGeneratedSeoData(null);
+    setSeoSuccessMessage(null);
+    try {
+      const response = await fetch('/api/admin/generate-seo-submission', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: seoType,
+          topic: seoTopic
+        })
+      });
+      if (!response.ok) {
+        throw new Error(`Server status: ${response.status}`);
+      }
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server returned a non-JSON response. Please check if the dev server is running/restarting.");
+      }
+      const data = await response.json();
+      if (data.success) {
+        setSeoAnalysis(data.seoAnalysis);
+        setGeneratedSeoData(data.generatedData);
+      } else {
+        alert(data.error || 'Failed to perform SEO analysis and generation.');
+      }
+    } catch (err) {
+      console.error('Error generating SEO submission:', err);
+      alert('Network error while generating. Is the server running?');
+    } finally {
+      setIsGeneratingSeo(false);
+    }
+  };
+
+  const handlePublishSeo = async () => {
+    if (!generatedSeoData) return;
+    setIsPublishingSeo(true);
+    try {
+      const slugify = (text: string) => {
+        return text
+          .toString()
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w\-]+/g, '')
+          .replace(/\-\-+/g, '-')
+          .replace(/^-+/, '')
+          .replace(/-+$/, '');
+      };
+
+      const randSuffix = Math.floor(Math.random() * 9000 + 1000).toString();
+      const generatedSlug = `${slugify(generatedSeoData.title || 'seo-topic')}-${randSuffix}`;
+      const caseNumber = `CASE-${seoType === 'story' ? 'S' : seoType === 'court_case' ? 'C' : seoType === 'question' ? 'Q' : 'F'}${Math.floor(Math.random() * 90000 + 10000)}`;
+
+      if (seoType === 'court_case') {
+        const newCase = {
+          slug: generatedSlug,
+          caseNumber: caseNumber,
+          title: generatedSeoData.title,
+          description: generatedSeoData.description,
+          postTime: "Just now",
+          author: generatedSeoData.author || "anonymous_juror",
+          votes: generatedSeoData.votes || { me: 0, partner: 0, both: 0, neither: 0 },
+          arguments: (generatedSeoData.arguments || []).map((arg: any, idx: number) => ({
+            id: `arg_${idx + 1}`,
+            author: arg.author || `Juror_${Math.floor(Math.random() * 1000)}`,
+            side: arg.side || "Me",
+            text: arg.text || "",
+            role: arg.role || "Novice",
+            votes: arg.votes || 0,
+            dateAdded: new Date().toISOString()
+          })),
+          tags: generatedSeoData.tags || [],
+          deliberationDays: 7,
+          createdAt: new Date().toISOString(),
+          passwordPin: "1234",
+          partnerKey: `pk_${Math.random().toString(36).substring(2, 8)}`,
+          wantsPartnerResponse: false,
+          isRealInput: true
+        };
+        await onAddCourtCase(newCase);
+
+      } else if (seoType === 'question') {
+        const newQuestion = {
+          slug: generatedSlug,
+          title: generatedSeoData.title,
+          description: generatedSeoData.description,
+          category: generatedSeoData.category || "General",
+          answers: (generatedSeoData.answers || []).map((ans: any, idx: number) => ({
+            id: `ans_${idx + 1}`,
+            author: ans.author || `Survivor_${Math.floor(Math.random() * 1000)}`,
+            text: ans.text || "",
+            votes: ans.votes || 0,
+            isOutcomeVerified: ans.isOutcomeVerified || false,
+            date: ans.date || "Just now",
+            comments: (ans.comments || []).map((c: any, cidx: number) => ({
+              id: `c_${idx + 1}_${cidx + 1}`,
+              author: c.author || "Anonymous",
+              text: c.text || "",
+              date: c.date || "Just now"
+            }))
+          })),
+          pollOptions: generatedSeoData.pollOptions || [],
+          storiesCount: 0,
+          tags: generatedSeoData.tags || [],
+          dateAdded: new Date().toISOString(),
+          isRealInput: true
+        };
+        await onAddQuestion(newQuestion);
+
+      } else if (seoType === 'story') {
+        const newStory = {
+          id: generatedSlug,
+          caseNumber: caseNumber,
+          title: generatedSeoData.title,
+          situationSlug: generatedSeoData.situationSlug || "ignored-red-flags",
+          situationName: generatedSeoData.situationName || "Ignored Red Flags",
+          age: generatedSeoData.age || 25,
+          gender: generatedSeoData.gender || "Female",
+          country: generatedSeoData.country || "United States",
+          relationshipDuration: generatedSeoData.relationshipDuration || "2 years",
+          decisionMade: generatedSeoData.decisionMade || "Other",
+          currentOutcome: generatedSeoData.currentOutcome || "Complicated",
+          regretScore: generatedSeoData.regretScore || 5,
+          regretType: generatedSeoData.regretType || "Past",
+          wouldDoAgain: generatedSeoData.wouldDoAgain || "Not Sure",
+          fullStory: generatedSeoData.fullStory,
+          timeline: generatedSeoData.timeline || [],
+          userName: generatedSeoData.userName || "anonymous_author",
+          helpfulVotes: generatedSeoData.helpfulVotes || 0,
+          dateAdded: new Date().toISOString(),
+          updates: (generatedSeoData.updates || []).map((upd: any, idx: number) => ({
+            id: `upd_${idx + 1}`,
+            daysAfter: upd.daysAfter || 30,
+            dateAdded: new Date().toISOString(),
+            text: upd.text || ""
+          })),
+          tags: generatedSeoData.tags || [],
+          isRealInput: true
+        };
+        await onAddStory(newStory);
+
+      } else if (seoType === 'red_flag_case') {
+        const newRedFlag = {
+          id: generatedSlug,
+          caseNumber: caseNumber,
+          title: generatedSeoData.title,
+          description: generatedSeoData.description,
+          category: generatedSeoData.category || "Other",
+          votes: generatedSeoData.votes || { green: 0, yellow: 0, red: 0 },
+          comments: (generatedSeoData.comments || []).map((c: any, idx: number) => ({
+            id: `rf_c_${idx + 1}`,
+            author: c.author || "Anonymous",
+            text: c.text || "",
+            date: c.date || "Just now"
+          })),
+          author: generatedSeoData.author || "anonymous_reporter",
+          dateAdded: new Date().toISOString(),
+          isRealInput: true
+        };
+        await onAddRedFlagCase(newRedFlag);
+      }
+
+      setSeoSuccessMessage(`Successfully published new dynamic pSEO ${seoType.replace('_', ' ')}! It is now live in the activity feed and searchable by crawlers.`);
+      setSeoAnalysis(null);
+      setGeneratedSeoData(null);
+      setSeoTopic('');
+    } catch (err) {
+      console.error('Error publishing SEO submission:', err);
+      alert('Error publishing to database.');
+    } finally {
+      setIsPublishingSeo(false);
+    }
+  };
+
+  const handleDiscardSeo = () => {
+    setSeoAnalysis(null);
+    setGeneratedSeoData(null);
+    setSeoSuccessMessage(null);
+  };
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -365,6 +571,13 @@ export default function AdminFeedScreen({
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`Server status: ${response.status}`);
+      }
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server returned a non-JSON response. Please check if the dev server is running/restarting.");
+      }
       const data = await response.json();
       if (data.success && data.post) {
         setGeneratedMeme(data.post);
@@ -405,6 +618,13 @@ export default function AdminFeedScreen({
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`Server status: ${response.status}`);
+      }
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server returned a non-JSON response. Please check if the dev server is running/restarting.");
+      }
       const data = await response.json();
       if (data.success && data.post) {
         setGeneratedPost(data.post);
@@ -601,44 +821,6 @@ export default function AdminFeedScreen({
         onDelete: () => onDeleteCourtCase(cc.slug),
         onEdit: (newTitle: string, newContent: string) => onEditCourtCase(cc.slug, newTitle, newContent)
       });
-
-      // Jury Arguments
-      if (cc.arguments && Array.isArray(cc.arguments)) {
-        cc.arguments.forEach(arg => {
-          const isUserSubmitted = !!arg.isRealInput || arg.id.startsWith('arg_');
-          items.push({
-            id: `courtarg-${arg.id}`,
-            type: 'jury_argument',
-            typeLabel: 'Jury Opinion',
-            categoryLabel: 'BR Relationship Court Opinions',
-            title: `Jury Opinion on trial: "${cc.title}"`,
-            content: arg.text,
-            author: `${arg.author} (${arg.role || 'Juror'})`,
-            dateStr: cc.createdAt || cc.postTime,
-            dateObj: new Date(cc.createdAt || cc.postTime || Date.now()),
-            slug: cc.slug,
-            isUserSubmitted,
-            meta: (
-              <div className="flex flex-wrap items-center gap-1.5 text-[10px] mt-2">
-                <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-100 font-semibold">
-                  Side: {arg.side}
-                </span>
-                <span className="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-800 border border-indigo-100 font-semibold font-mono">
-                  Argument Upvotes: {arg.votes}
-                </span>
-                {isUserSubmitted && (
-                  <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/60 font-black uppercase text-[8px] tracking-wide">
-                    User Submission
-                  </span>
-                )}
-              </div>
-            ),
-            onView: () => setScreen({ type: 'court', slug: cc.slug }),
-            onDelete: () => onDeleteArgument(cc.slug, arg.id),
-            onEdit: (newTitle: string, newContent: string) => onEditArgument(cc.slug, arg.id, newContent)
-          });
-        });
-      }
     });
 
     // 4. Questions
@@ -1134,6 +1316,265 @@ export default function AdminFeedScreen({
 
       </div>
 
+      {/* pSEO Traffic Powerhouse Console */}
+      <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] text-white border border-[#334155] p-6 rounded-3xl shadow-xl space-y-6" id="seo-pseo-generator-console">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="p-1 rounded bg-[#E2E8F0]/10 text-emerald-400">
+                <TrendingUp className="h-4 w-4" />
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 font-mono">Organic Traffic SEO Powerhouse</span>
+            </div>
+            <h2 className="text-xl font-extrabold tracking-tight">ahrefs™-Style Topic Finder & Auto-Generator</h2>
+            <p className="text-xs text-zinc-400 max-w-2xl leading-relaxed">
+              Find low-competition, high-volume search queries from viral relationship forums, run keyword difficulty analysis, and instantly create deeply realistic, highly engaging human submissions.
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold text-zinc-500 font-mono">Status:</span>
+            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-400 text-[10px] font-bold font-mono uppercase tracking-wider border border-emerald-500/20">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              SEO Engine Active
+            </span>
+          </div>
+        </div>
+
+        {seoSuccessMessage && (
+          <div className="bg-emerald-500/15 border border-emerald-500/30 text-emerald-200 text-xs p-4 rounded-xl flex items-start gap-2.5 animate-fadeIn">
+            <Check className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <p className="font-bold">Submission Published!</p>
+              <p className="text-[11px] text-zinc-400 mt-0.5">{seoSuccessMessage}</p>
+            </div>
+            <button onClick={() => setSeoSuccessMessage(null)} className="text-zinc-400 hover:text-white text-xs font-bold font-mono">Dismiss</button>
+          </div>
+        )}
+
+        {/* Generator Setup Form */}
+        {!seoAnalysis && !generatedSeoData && (
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-[#0F172A]/50 p-4 rounded-2xl border border-[#334155]/50">
+            <div className="md:col-span-3 space-y-1.5">
+              <label className="text-[10px] uppercase font-bold text-zinc-400 font-mono tracking-wider">Submission Type</label>
+              <select
+                value={seoType}
+                onChange={(e) => setSeoType(e.target.value as any)}
+                className="w-full bg-[#1E293B] border border-[#334155] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 cursor-pointer"
+              >
+                <option value="court_case">Relationship Court Case (Multi-Argument)</option>
+                <option value="question">Advice Board Question (Polls & Survivor Advice)</option>
+                <option value="story">Deep Regret Story (Chronological Retrospective)</option>
+                <option value="red_flag_case">Red Flag Case (Warning Alert & Comments)</option>
+              </select>
+            </div>
+
+            <div className="md:col-span-6 space-y-1.5">
+              <label className="text-[10px] uppercase font-bold text-zinc-400 font-mono tracking-wider">Target Topic or Niche Keyword (Optional)</label>
+              <input
+                type="text"
+                placeholder="e.g. spouse discount, chores split, hiding locations, emotional cheating... (or empty for auto)"
+                value={seoTopic}
+                onChange={(e) => setSeoTopic(e.target.value)}
+                className="w-full bg-[#1E293B] border border-[#334155] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 placeholder-zinc-500"
+              />
+            </div>
+
+            <div className="md:col-span-3">
+              <button
+                onClick={handleGenerateSeo}
+                disabled={isGeneratingSeo}
+                className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {isGeneratingSeo ? (
+                  <>
+                    <RefreshCw className="h-3 w-3 animate-spin" />
+                    <span>Analyzing Keywords...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span>Run Keyword SEO Analysis</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Dual Panel SEO Report & Content Preview */}
+        {(seoAnalysis && generatedSeoData) && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fadeIn">
+            
+            {/* Left Panel: ahrefs-style Keyword Research intelligence */}
+            <div className="lg:col-span-4 bg-[#0F172A]/80 border border-[#334155] p-5 rounded-2xl space-y-5">
+              <div className="flex items-center gap-1.5 border-b border-[#334155]/50 pb-3">
+                <Globe className="h-4 w-4 text-emerald-400" />
+                <span className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-400 font-mono">SEO Intelligence Report</span>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <span className="text-[9px] uppercase font-bold text-zinc-500 font-mono block">Primary Target Keyword</span>
+                  <div className="text-sm font-black text-white mt-0.5 select-all hover:bg-[#1E293B] px-1 rounded transition-colors font-mono">{seoAnalysis.targetKeyword || 'N/A'}</div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-[#1E293B]/40 p-2.5 rounded-xl border border-[#334155]/30">
+                    <span className="text-[9px] uppercase font-bold text-zinc-500 font-mono block">Search Volume</span>
+                    <span className="text-xs font-mono font-black text-emerald-400">{seoAnalysis.searchVolume || 'Unknown'}</span>
+                  </div>
+                  <div className="bg-[#1E293B]/40 p-2.5 rounded-xl border border-[#334155]/30">
+                    <span className="text-[9px] uppercase font-bold text-zinc-500 font-mono block">Keyword Difficulty</span>
+                    <span className="text-xs font-mono font-black text-amber-400">{seoAnalysis.keywordDifficulty || 'Low Competition'}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[9px] uppercase font-bold text-zinc-500 font-mono block">Search Intent Category</span>
+                  <span className="inline-block mt-1 px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded text-[10px] font-bold font-mono border border-blue-500/25">
+                    {seoAnalysis.searchIntent || 'Decisional / Informational'}
+                  </span>
+                </div>
+
+                <div>
+                  <span className="text-[9px] uppercase font-bold text-zinc-500 font-mono block">Viral Trend Source & Context</span>
+                  <p className="text-xs text-zinc-300 leading-relaxed mt-1">{seoAnalysis.trendingRedditTopic || 'Derived from recent spikes in r/relationships discussions.'}</p>
+                </div>
+
+                <div>
+                  <span className="text-[9px] uppercase font-bold text-zinc-500 font-mono block">Google LSI Search Phrases to Capture</span>
+                  <ul className="mt-1.5 space-y-1.5">
+                    {(seoAnalysis.googleSearchPhrases || []).map((phrase: string, idx: number) => (
+                      <li key={idx} className="flex items-center gap-1.5 text-xs text-zinc-300">
+                        <span className="h-1 w-1 rounded-full bg-emerald-400 shrink-0" />
+                        <span className="select-all bg-[#1E293B]/20 hover:bg-[#1E293B]/60 px-1 rounded font-mono text-[11px]">{phrase}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Panel: Content preview, edit and publish */}
+            <div className="lg:col-span-8 bg-[#1E293B]/60 border border-[#334155] p-5 rounded-2xl flex flex-col justify-between space-y-5">
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-[#334155]/50 pb-3">
+                  <div className="flex items-center gap-1.5">
+                    <FileText className="h-4 w-4 text-blue-400" />
+                    <span className="text-[11px] font-extrabold uppercase tracking-widest text-blue-400 font-mono">Generated Live Content (Human-Centric)</span>
+                  </div>
+                  <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold uppercase font-mono">Ready to Publish</span>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-zinc-500 font-mono block">Generated Title</span>
+                    <h3 className="text-md font-bold text-white mt-1 select-all">{generatedSeoData.title}</h3>
+                  </div>
+
+                  {generatedSeoData.author && (
+                    <div className="flex items-center gap-1 text-xs text-zinc-400">
+                      <span className="font-semibold text-zinc-500 font-mono">Written by:</span>
+                      <span className="text-zinc-300">{generatedSeoData.author || generatedSeoData.userName}</span>
+                    </div>
+                  )}
+
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-zinc-500 font-mono block">Allegations / Backstory Narrative</span>
+                    <p className="text-xs text-zinc-300 leading-relaxed mt-1 bg-[#0F172A]/40 p-3 rounded-xl border border-[#334155]/20 select-all whitespace-pre-wrap">
+                      {generatedSeoData.description || generatedSeoData.fullStory}
+                    </p>
+                  </div>
+
+                  {/* Sub-elements depending on Type */}
+                  {seoType === 'court_case' && generatedSeoData.arguments && (
+                    <div className="space-y-2 border-t border-[#334155]/30 pt-3">
+                      <span className="text-[9px] uppercase font-bold text-zinc-500 font-mono block">Complete End-to-End Juror Arguments ({generatedSeoData.arguments.length})</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {generatedSeoData.arguments.map((arg: any, idx: number) => (
+                          <div key={idx} className="bg-[#0F172A]/35 p-2 rounded-xl border border-[#334155]/15 text-[11px]">
+                            <div className="flex items-center justify-between text-[9px] font-mono mb-1">
+                              <span className="text-zinc-400">{arg.author} ({arg.role})</span>
+                              <span className={`font-bold px-1 rounded ${
+                                arg.side === 'Me' ? 'bg-emerald-500/10 text-emerald-400' :
+                                arg.side === 'Partner' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'
+                              }`}>Side: {arg.side}</span>
+                            </div>
+                            <p className="text-zinc-300 leading-normal font-sans italic">"{arg.text}"</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {seoType === 'question' && generatedSeoData.pollOptions && (
+                    <div className="space-y-2 border-t border-[#334155]/30 pt-3">
+                      <span className="text-[9px] uppercase font-bold text-zinc-500 font-mono block">Q&A Poll Seeding Options</span>
+                      <div className="flex flex-wrap gap-2">
+                        {generatedSeoData.pollOptions.map((opt: any, idx: number) => (
+                          <span key={idx} className="text-xs px-2.5 py-1 bg-[#1E293B] border border-[#334155] rounded-lg text-zinc-300 font-semibold">
+                            {opt.text} <span className="text-zinc-500">({opt.votes} votes)</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {seoType === 'story' && generatedSeoData.timeline && (
+                    <div className="space-y-2 border-t border-[#334155]/30 pt-3">
+                      <span className="text-[9px] uppercase font-bold text-zinc-500 font-mono block">Timeline Trajectory Nodes ({generatedSeoData.timeline.length})</span>
+                      <div className="space-y-1.5">
+                        {generatedSeoData.timeline.map((node: any, idx: number) => (
+                          <div key={idx} className="text-[11px] text-zinc-300 bg-[#0F172A]/30 p-2 rounded-lg border border-[#334155]/10">
+                            <strong className="text-emerald-400 font-mono mr-1">{node.year} [{node.stage}]:</strong> {node.description}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {(generatedSeoData.tags || []).map((tag: string, idx: number) => (
+                      <span key={idx} className="text-[10px] font-mono px-2 py-0.5 bg-zinc-800 text-zinc-400 rounded">#{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 border-t border-[#334155]/30 pt-4 mt-2">
+                <button
+                  onClick={handlePublishSeo}
+                  disabled={isPublishingSeo}
+                  className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {isPublishingSeo ? (
+                    <>
+                      <RefreshCw className="h-3 w-3 animate-spin" />
+                      <span>Syncing with Firestore...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="h-4 w-4 stroke-[3]" />
+                      <span>Publish & Seep Into index.html</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={handleDiscardSeo}
+                  disabled={isPublishingSeo}
+                  className="px-4 py-2.5 bg-[#334155] hover:bg-rose-900/40 hover:text-rose-200 text-zinc-300 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border border-[#475569]/30"
+                >
+                  Discard Content
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Filter Toolbar & Search Bar */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-[#FAF8F5] p-4 rounded-2xl border border-[#E5E7EB]">
         
@@ -1381,18 +1822,36 @@ export default function AdminFeedScreen({
 
                     {/* Delete item if Admin Mode is on */}
                     {isAdmin ? (
-                      <button
-                        onClick={() => {
-                          if (window.confirm("Are you absolutely sure you want to permanently erase this user submission from the live global database? This action is irreversible.")) {
-                            item.onDelete();
-                          }
-                        }}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-100 hover:border-rose-600 rounded-xl transition-all cursor-pointer whitespace-nowrap font-mono"
-                        title="Moderate and delete this submission permanently"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                        <span>Delete Item</span>
-                      </button>
+                      confirmDeleteId === item.id ? (
+                        <div className="flex items-center gap-1.5 animate-fadeIn">
+                          <button
+                            onClick={() => {
+                              item.onDelete();
+                              setConfirmDeleteId(null);
+                            }}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 border border-rose-600 rounded-xl transition-all cursor-pointer whitespace-nowrap font-mono"
+                            title="Confirm permanent deletion"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                            <span>Confirm Delete!</span>
+                          </button>
+                          <button
+                            onClick={() => setConfirmDeleteId(null)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-zinc-600 hover:text-zinc-800 bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 rounded-xl transition-all cursor-pointer whitespace-nowrap font-mono"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmDeleteId(item.id)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-100 hover:border-rose-600 rounded-xl transition-all cursor-pointer whitespace-nowrap font-mono"
+                          title="Moderate and delete this submission permanently"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                          <span>Delete Item</span>
+                        </button>
+                      )
                     ) : (
                       <button
                         disabled
