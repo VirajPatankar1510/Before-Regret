@@ -14,42 +14,38 @@ export default function BeforeRegretLogo({
   lightTheme = false,
 }: BeforeRegretLogoProps) {
   // Define colors based on theme
-  const navyColor = lightTheme ? '#1B2B3E' : '#F8FAFC';
-  const coralColor = '#E07A5F'; // Constant warm coral color
+  const navyColor = lightTheme ? '#24324A' : '#FAF8F2';
+  const coralColor = '#E15A3E'; // The exact vibrant orange-coral from the user's uploaded logo
   const mutedTextColor = lightTheme ? '#57606A' : '#94A3B8';
-  const lineDividerColor = lightTheme ? '#CCCCCC' : '#4B5563';
+  const lineDividerColor = lightTheme ? '#E5E7EB' : '#4B5563';
 
-  // Return pristine custom two-heart vector SVG that is highly polished
+  // Return pristine custom two-heart vector SVG that matches the uploaded logo perfectly
   return (
     <div className={`flex flex-col items-center text-center ${className}`}>
       {/* Emblem SVG */}
       <svg
         width={size}
         height={size}
-        viewBox="0 0 100 100"
+        viewBox="0 0 115 115"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="transform hover:scale-105 transition-transform duration-300"
       >
-        {/* Left / Background Heart (Theme Navy/White) */}
-        <g transform="translate(14, 18) scale(2.2)" opacity="0.9">
-          <path
-            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-            fill={navyColor}
-          />
-        </g>
-        
-        {/* Right / Foreground Heart (Coral Red, overlapping) */}
-        <g transform="translate(38, 34) scale(2.2)">
-          {/* Stroke separator to give clear separation between the overlapping hearts */}
-          <path
-            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-            fill={coralColor}
-            stroke={lightTheme ? '#FAF9F6' : '#1A1D20'}
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-        </g>
+        {/* Heart 1: Slate Blue (Navy) */}
+        <path 
+          d="M 50 30 C 50 30 45 15 30 15 C 15 15 5 25 5 40 C 5 60 30 80 50 95 C 70 80 95 60 95 40 C 95 25 85 15 70 15 C 55 15 50 30 50 30 Z" 
+          fill={navyColor}
+          transform="translate(5, 5) scale(0.7)"
+        />
+        {/* Heart 2: Orange Coral with stroke separation */}
+        <path 
+          d="M 50 30 C 50 30 45 15 30 15 C 15 15 5 25 5 40 C 5 60 30 80 50 95 C 70 80 95 60 95 40 C 95 25 85 15 70 15 C 55 15 50 30 50 30 Z" 
+          fill={coralColor}
+          stroke={lightTheme ? '#FAF8F2' : '#1A1D20'}
+          strokeWidth="8"
+          strokeLinejoin="round"
+          transform="translate(40, 40) scale(0.7)"
+        />
       </svg>
 
       {/* Brand Text */}
@@ -62,8 +58,8 @@ export default function BeforeRegretLogo({
           
           <div className="flex items-center justify-center gap-2.5 my-1.5 px-3">
             <div className="h-[1px] flex-1" style={{ backgroundColor: lineDividerColor }} />
-            <svg className="w-2.5 h-2.5" style={{ fill: coralColor }} viewBox="0 0 24 24">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            <svg className="w-2.5 h-2.5" style={{ fill: coralColor }} viewBox="0 0 115 115">
+              <path d="M 50 30 C 50 30 45 15 30 15 C 15 15 5 25 5 40 C 5 60 30 80 50 95 C 70 80 95 60 95 40 C 95 25 85 15 70 15 C 55 15 50 30 50 30 Z" />
             </svg>
             <div className="h-[1px] flex-1" style={{ backgroundColor: lineDividerColor }} />
           </div>
