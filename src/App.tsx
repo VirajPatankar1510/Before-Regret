@@ -1847,6 +1847,74 @@ export default function App() {
     showToast("✓ Advice request successfully broadcasted!");
   };
 
+  const handleAdminAddStory = async (newStory: Story) => {
+    try {
+      await saveStoryToFirestore(newStory);
+    } catch (err) {
+      console.warn("Firestore error, falling back to local state:", err);
+    }
+    setStore(prev => {
+      const combined = [newStory, ...prev.stories];
+      const unique = combined.filter((s, idx, self) => 
+        self.findIndex(t => t.id === s.id) === idx
+      );
+      const newState = { ...prev, stories: unique };
+      saveState(newState);
+      return newState;
+    });
+  };
+
+  const handleAddCourtCase = async (newCase: CourtCase) => {
+    try {
+      await saveCourtCaseToFirestore(newCase);
+    } catch (err) {
+      console.warn("Firestore error, falling back to local state:", err);
+    }
+    setStore(prev => {
+      const combined = [newCase, ...prev.courtCases];
+      const unique = combined.filter((c, idx, self) => 
+        self.findIndex(t => t.slug === c.slug) === idx
+      );
+      const newState = { ...prev, courtCases: unique };
+      saveState(newState);
+      return newState;
+    });
+  };
+
+  const handleAddQuestion = async (newQuestion: Question) => {
+    try {
+      await saveQuestionToFirestore(newQuestion);
+    } catch (err) {
+      console.warn("Firestore error, falling back to local state:", err);
+    }
+    setStore(prev => {
+      const combined = [newQuestion, ...prev.questions];
+      const unique = combined.filter((q, idx, self) => 
+        self.findIndex(t => t.slug === q.slug) === idx
+      );
+      const newState = { ...prev, questions: unique };
+      saveState(newState);
+      return newState;
+    });
+  };
+
+  const handleAddRedFlagCase = async (newRedFlag: RedFlagCase) => {
+    try {
+      await saveRedFlagCaseToFirestore(newRedFlag);
+    } catch (err) {
+      console.warn("Firestore error, falling back to local state:", err);
+    }
+    setStore(prev => {
+      const combined = [newRedFlag, ...(prev.redFlagCases || [])];
+      const unique = combined.filter((r, idx, self) => 
+        self.findIndex(t => t.id === r.id) === idx
+      );
+      const newState = { ...prev, redFlagCases: unique };
+      saveState(newState);
+      return newState;
+    });
+  };
+
   const handleDeleteStory = (storyId: string) => {
     // Delete from Firestore storage
     deleteStoryFromFirestore(storyId).catch(err => {
@@ -2711,6 +2779,10 @@ export default function App() {
             onEditAnswerComment={handleEditAnswerComment}
             onEditRedFlagCase={handleEditRedFlagCase}
             onEditRedFlagComment={handleEditRedFlagComment}
+            onAddStory={handleAdminAddStory}
+            onAddCourtCase={handleAddCourtCase}
+            onAddQuestion={handleAddQuestion}
+            onAddRedFlagCase={handleAddRedFlagCase}
           />
         )}
 
