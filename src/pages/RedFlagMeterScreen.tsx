@@ -11,6 +11,8 @@ interface RedFlagMeterScreenProps {
   onAddFlagCase: (title: string, description: string, category: 'Communication' | 'Exes & Socials' | 'Trust & Privacy' | 'Control & Habits' | 'Other') => void;
   userVotedFlags: { [caseId: string]: 'green' | 'yellow' | 'red' };
   currentUser?: any;
+  currentUsername?: string;
+  submittedRedFlags?: string[];
   onGoogleLogin?: () => void;
   initialCaseId?: string;
 }
@@ -23,13 +25,17 @@ export default function RedFlagMeterScreen({
   onAddFlagCase,
   userVotedFlags,
   currentUser,
+  currentUsername,
+  submittedRedFlags,
   onGoogleLogin,
   initialCaseId
 }: RedFlagMeterScreenProps) {
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  const [revealStats, setRevealStats] = useState(false);
 
   useEffect(() => {
     setSelectedCaseId(initialCaseId || null);
+    setRevealStats(false);
   }, [initialCaseId]);
   
   // Search and Filtering
@@ -168,13 +174,30 @@ export default function RedFlagMeterScreen({
               {(() => {
                 const votedType = userVotedFlags[activeCase.id];
                 const stats = getPercentages(activeCase.votes);
+                const isSubmitter = (currentUsername && activeCase.author === currentUsername) || (submittedRedFlags && submittedRedFlags.includes(activeCase.id));
 
-                if (votedType) {
+                if (votedType || isSubmitter || revealStats) {
                   return (
                     <div className="space-y-5">
-                      <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-2.5 text-center text-xs text-emerald-800 font-bold flex items-center justify-center gap-1.5 shadow-xs">
-                        <Check className="h-4 w-4 text-emerald-600 shrink-0" /> Your vote registered!
-                      </div>
+                      {isSubmitter ? (
+                        <div className="rounded-xl bg-indigo-50 border border-indigo-100 p-3 text-xs text-indigo-800 font-semibold flex flex-col gap-1 shadow-sm animate-fadeIn">
+                          <div className="flex items-center gap-1.5 font-bold">
+                            <ShieldCheck className="h-4 w-4 text-indigo-600 shrink-0" />
+                            <span>Case Submitter Verdict View</span>
+                          </div>
+                          <p className="text-[10px] text-indigo-600 leading-normal font-sans font-medium">
+                            Since you submitted this case, we have bypassed the voting step so you can instantly monitor live community assessments and jury consensus.
+                          </p>
+                        </div>
+                      ) : votedType ? (
+                        <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-2.5 text-center text-xs text-emerald-800 font-bold flex items-center justify-center gap-1.5 shadow-xs">
+                          <Check className="h-4 w-4 text-emerald-600 shrink-0" /> Your vote registered!
+                        </div>
+                      ) : (
+                        <div className="rounded-xl bg-zinc-50 border border-zinc-200 p-2.5 text-center text-xs text-zinc-700 font-semibold flex items-center justify-center gap-1.5 shadow-xs">
+                          <HelpCircle className="h-4 w-4 text-zinc-500 shrink-0" /> Showing community verdict
+                        </div>
+                      )}
 
                       {/* Stacked single progress bar representing spectrum */}
                       <div className="space-y-1.5">
@@ -233,11 +256,23 @@ export default function RedFlagMeterScreen({
                         </div>
                         <span className="text-[10px] text-zinc-400 mt-0.5 block">Based on {stats.total} total assessments</span>
                       </div>
+
+                      {(!votedType && !isSubmitter) && (
+                        <div className="pt-2 border-t border-[#F4F4F4] text-center">
+                          <button
+                            type="button"
+                            onClick={() => setRevealStats(false)}
+                            className="text-[10px] text-rose-500 hover:text-rose-600 font-bold transition-colors cursor-pointer"
+                          >
+                            ← Back to vote options
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 } else {
                   return (
-                    <div className="space-y-4">
+                    <div className="space-y-4 animate-fadeIn">
                       <p className="text-xs text-[#6B7280] leading-relaxed">
                         Is this behavior healthy, slightly concerning, or a major relationship threat? Vote anonymously to establish community statistics.
                       </p>
@@ -286,6 +321,16 @@ export default function RedFlagMeterScreen({
                           </div>
                         </div>
                       </button>
+
+                      <div className="pt-2 border-t border-[#F4F4F4] flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => setRevealStats(true)}
+                          className="text-[11px] font-bold text-rose-500 hover:text-rose-600 hover:underline transition-colors flex items-center gap-1 cursor-pointer"
+                        >
+                          <HelpCircle className="h-3.5 w-3.5" /> Just want to view community verdict? Skip voting
+                        </button>
+                      </div>
                     </div>
                   );
                 }
