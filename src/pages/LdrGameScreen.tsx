@@ -224,6 +224,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
       if (snap.exists()) {
         await updateDoc(docRef, {
           partnerBName: finalPartnerB,
+          bothEnteredAt: Date.now(),
           lastEvent: {
             type: 'join',
             sender: finalPartnerB,
@@ -275,20 +276,15 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
         const bothNamesPresent = !!data.partnerAName && !!data.partnerBName;
         setPresenceActive(bothNamesPresent);
 
-        // Check for auto-trigger of Blowing Battle Duel if both are online & blew in last 3.5s
+        // Check for auto-trigger of Blowing Battle Duel if both are online
         const battle = data.battleState;
-        if (bothNamesPresent && (!battle || battle.status === 'idle') && role === 'A') {
-          const lastA = data.lastBlowA || 0;
-          const lastB = data.lastBlowB || 0;
-          const blowDiff = Math.abs(lastA - lastB);
+        const bothEnteredAt = data.bothEnteredAt || 0;
+        const timeSinceBothEntered = bothEnteredAt > 0 ? (Date.now() - bothEnteredAt) : 0;
 
-          const sessionCreatedAt = data.createdAt ? new Date(data.createdAt).getTime() : 0;
-          const timeSinceCreation = Date.now() - sessionCreatedAt;
-
-          const lastEndedAt = battle?.endedAt || 0;
-          const timeSinceLastBattle = Date.now() - lastEndedAt;
-
-          if (lastA > 0 && lastB > 0 && blowDiff < 3500 && timeSinceCreation >= 30000 && (lastEndedAt === 0 || timeSinceLastBattle > 300000)) {
+        if (bothNamesPresent && (!battle || !battle.status || battle.status === 'idle') && !battle?.hasFinished && role === 'A') {
+          if (!data.bothEnteredAt) {
+            updateDoc(docRef, { bothEnteredAt: Date.now() }).catch(console.error);
+          } else if (timeSinceBothEntered >= 45000) {
             updateDoc(docRef, {
               battleState: {
                 status: 'countdown',
@@ -296,7 +292,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
                 pBScore: 0,
                 winner: null,
                 startedAt: Date.now(),
-                endedAt: battle?.endedAt || null
+                hasFinished: false
               }
             }).catch(console.error);
           }
@@ -479,7 +475,6 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
 
     const currentScore = role === 'A' ? (battle.pAScore || 0) : (battle.pBScore || 0);
     const nextScore = currentScore + 1;
-    const hasWon = nextScore >= 15;
 
     playSynthSound('heart');
 
@@ -495,18 +490,6 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
           timestamp: Date.now()
         }
       };
-
-      if (hasWon) {
-        updates['battleState.status'] = 'ended';
-        updates['battleState.winner'] = role;
-        updates.lastEvent = {
-          type: 'battle_win',
-          sender: myName || 'Partner',
-          senderUid: currentUser?.uid || 'anonymous',
-          text: role, // 'A' or 'B' won
-          timestamp: Date.now()
-        };
-      }
 
       await updateDoc(docRef, updates);
     } catch (err) {
@@ -595,6 +578,41 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
     return () => clearInterval(timer);
   }, [sessionId, role, sessionData]);
 
+  // Synchronized active duration timer for battle (Partner A ends it after 20s)
+  useEffect(() => {
+    if (!sessionId || role !== 'A' || !sessionData) return;
+    const battle = sessionData.battleState;
+    if (!battle || battle.status !== 'active') return;
+
+    // Start a timeout to end the battle after exactly 20 seconds (20000ms)
+    const timer = setTimeout(() => {
+      const docRef = doc(db, 'ldr-sessions', sessionId);
+      const scoreA = battle.pAScore || 0;
+      const scoreB = battle.pBScore || 0;
+      
+      let winner: string | null = null;
+      if (scoreA > scoreB) winner = 'A';
+      else if (scoreB > scoreA) winner = 'B';
+      else winner = 'tie';
+
+      updateDoc(docRef, {
+        'battleState.status': 'ended',
+        'battleState.winner': winner,
+        'battleState.endedAt': Date.now(),
+        'battleState.hasFinished': true,
+        lastEvent: {
+          type: 'battle_win',
+          sender: winner === 'tie' ? 'Draw' : (winner === 'A' ? (sessionData.partnerAName || 'Partner A') : (sessionData.partnerBName || 'Partner B')),
+          senderUid: currentUser?.uid || 'anonymous',
+          text: winner, // 'A', 'B' or 'tie'
+          timestamp: Date.now()
+        }
+      }).catch(console.error);
+    }, 20000);
+
+    return () => clearTimeout(timer);
+  }, [sessionId, role, sessionData]);
+
   // Auto reset finished battle after 8 seconds
   useEffect(() => {
     if (!sessionId || role !== 'A' || !sessionData) return;
@@ -607,7 +625,8 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
         'battleState.status': 'idle',
         'battleState.pAScore': 0,
         'battleState.pBScore': 0,
-        'battleState.winner': null
+        'battleState.winner': null,
+        'battleState.hasFinished': true
       }).catch(console.error);
     }, 8000);
 
@@ -830,14 +849,11 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
           <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-pink-500 to-indigo-500" />
           
           <div className="space-y-2 text-center">
-            <span className="inline-flex items-center gap-1 bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest font-mono">
-              <Sparkles className="h-3.5 w-3.5" /> LDR TikTok-Viral Interactive Game
-            </span>
             <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 tracking-tight">
-              Delulu Heartblower 💨
+              Delulu Heartblower ❤️
             </h1>
             <p className="text-xs sm:text-sm text-zinc-600 max-w-md mx-auto leading-relaxed">
-              Long distance wearing you down? Create an interactive **Couple Breath Chamber**. Blow near your mic to launch real-time text bubble messages and hearts onto your partner's screen!
+              Create an interactive **Couple Breath Chamber**. Blow near your mic to launch real-time text bubble messages and hearts onto your partner's screen!
             </p>
           </div>
 
@@ -872,7 +888,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
 
           <div className="border-t border-zinc-150 pt-4 text-center">
             <p className="text-[10px] text-zinc-400 leading-normal font-medium">
-              ⚡ <strong>100% Free & Private.</strong> No signup required. Powered by Firestore live cloud synchronizations.
+              ⚡ <strong>100% Free & Private.</strong> No signup required.
             </p>
           </div>
         </div>
@@ -1059,7 +1075,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               <div className="flex flex-col gap-1 text-xs">
                 <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2 font-bold text-emerald-700">
                   <Users className="h-4 w-4 text-emerald-500 shrink-0 animate-pulse" />
-                  <span>Both connected! Blow into your mic concurrently to trigger an automatic duel.</span>
+                  <span>Both connected! The Quick Battle Duel will trigger automatically 45 seconds after entry.</span>
                 </div>
               </div>
             )}
@@ -1181,15 +1197,12 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
             <div className="w-1/2 h-full border-r border-dashed border-white/20 relative overflow-hidden flex flex-col items-center justify-between py-12">
               <motion.div 
                 className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-pink-500/30 to-rose-400/20 w-full"
-                animate={{ height: `${Math.min(100, ((battleState.pAScore || 0) / 15) * 100)}%` }}
-                transition={{ type: 'spring', damping: 15 }}
+                animate={{ height: `${Math.min(100, ((battleState.pAScore || 0) / 20) * 100)}%` }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
               />
               <div className="relative z-10 text-center space-y-1">
                 <span className="bg-pink-500/20 text-pink-300 border border-pink-500/30 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider block">
                   {sessionData?.partnerAName || 'Partner A'}
-                </span>
-                <span className="text-3xl font-black text-white drop-shadow-md">
-                  {battleState.pAScore || 0} / 15
                 </span>
               </div>
               <div className="relative z-10 text-[9px] text-pink-300/60 font-mono font-bold tracking-widest uppercase">
@@ -1201,15 +1214,12 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
             <div className="w-1/2 h-full relative overflow-hidden flex flex-col items-center justify-between py-12">
               <motion.div 
                 className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-indigo-500/30 to-purple-400/20 w-full"
-                animate={{ height: `${Math.min(100, ((battleState.pBScore || 0) / 15) * 100)}%` }}
-                transition={{ type: 'spring', damping: 15 }}
+                animate={{ height: `${Math.min(100, ((battleState.pBScore || 0) / 20) * 100)}%` }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
               />
               <div className="relative z-10 text-center space-y-1">
                 <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider block">
                   {sessionData?.partnerBName || 'Partner B'}
-                </span>
-                <span className="text-3xl font-black text-white drop-shadow-md">
-                  {battleState.pBScore || 0} / 15
                 </span>
               </div>
               <div className="relative z-10 text-[9px] text-indigo-300/60 font-mono font-bold tracking-widest uppercase">
@@ -1234,14 +1244,14 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
                 if (elapsed < 1000) return "3";
                 if (elapsed < 2000) return "2";
                 if (elapsed < 3000) return "1";
-                return "💨 GO!";
+                return "❤️ GO!";
               })()}
             </motion.div>
             <p className="text-xs font-black text-white uppercase tracking-widest animate-pulse px-4">
               🔥 Quick Blow Battle Duel Triggered!
             </p>
             <p className="text-[10px] text-zinc-300 max-w-xs px-6 font-semibold">
-              Blow near your microphone or type messages as fast as possible to fill your side of the screen with hearts! First to 15 wins!
+              Blow near your microphone or type messages as fast as possible to fill your side of the screen with hearts! Battle lasts exactly 20 seconds!
             </p>
           </div>
         )}
@@ -1258,10 +1268,12 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
             </motion.div>
             <div className="space-y-1.5">
               <h3 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-400 to-indigo-400">
-                {battleState.winner === 'A' ? (sessionData?.partnerAName || 'Partner A') : (sessionData?.partnerBName || 'Partner B')} Wins! 🏆
+                {battleState.winner === 'tie' 
+                  ? "It's a Tie! 🤝" 
+                  : `${battleState.winner === 'A' ? (sessionData?.partnerAName || 'Partner A') : (sessionData?.partnerBName || 'Partner B')} Wins! 🏆`}
               </h3>
               <p className="text-[10px] text-zinc-300 font-extrabold uppercase tracking-widest font-sans">
-                The Heartblower Champion!
+                {battleState.winner === 'tie' ? "Both of you are equally powerful!" : "The Heartblower Champion!"}
               </p>
             </div>
             <p className="text-[9px] text-zinc-400 font-mono font-bold leading-relaxed animate-pulse max-w-xs">
@@ -1354,7 +1366,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               className="w-full py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white font-black text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
             >
               <Wind className="h-4 w-4 text-pink-200" />
-              <span>Blow Custom Message 💨</span>
+              <span>Blow Custom Message ❤️</span>
             </button>
           </div>
         </div>
