@@ -51,5 +51,10 @@ service cloud.firestore {
       allow read: if true;
       allow create, update, delete: if true;
     }
+
+    // LDR sessions collection - publicly readable and writable (anonymous gameplay)
+    match /ldr-sessions/{sessionId} {
+      allow read, write: if true;
+    }
   }
 }

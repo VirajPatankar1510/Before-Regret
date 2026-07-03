@@ -385,6 +385,42 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
           </div>
         </div>
       )
+    },
+    {
+      id: 'ldr-bubble',
+      bgGradient: 'from-[#0F172A] via-[#1E1B4B] to-[#0F172A]',
+      accentColor: '#EC4899',
+      badge: '💖 Viral Interactive Game',
+      title: "Delulu Heartblower: LDR Bubble Blow",
+      titleLines: ["Delulu Heartblower", "LDR Stress-Relief"],
+      subtitle: "Long distance wearing you down? Create a private sync chamber, copy the invite link, and blow into your mic (or tap). Instantly send real-time floating stress-relief message bubbles & hearts to your partner's screen!",
+      cta: "Play Bubble Blow",
+      action: () => setScreen({ type: 'ldr_game' }),
+      visual: (
+        <div className="w-full max-w-[290px] mx-auto bg-slate-950/60 border border-pink-500/30 rounded-2xl p-4 shadow-2xl space-y-3 text-slate-300 font-sans text-left relative overflow-hidden">
+          <div className="flex items-center justify-between border-b border-pink-950 pb-1.5">
+            <span className="text-[8px] font-mono font-bold tracking-widest text-pink-400">CHAMBER SNEAK PEEK</span>
+            <span className="text-[8px] text-zinc-400 font-mono font-bold">100% Free</span>
+          </div>
+          <div className="relative h-28 bg-gradient-to-b from-[#111827] to-[#0F172A] rounded-xl border border-zinc-800 flex flex-col justify-end p-2 overflow-hidden">
+            <div className="absolute top-2 left-2 text-[9px] text-zinc-400 font-semibold font-mono">
+              Chamber: <span className="text-pink-400">#LDR-9201</span>
+            </div>
+            
+            <div className="absolute bottom-16 left-4 bg-pink-500/10 border border-pink-500/30 rounded-full px-2 py-1 text-[8px] text-pink-200 animate-pulse font-bold">
+              💭 "I miss you 3000..."
+            </div>
+            <div className="absolute bottom-8 right-4 bg-indigo-500/10 border border-indigo-500/30 rounded-full px-2 py-1 text-[8px] text-indigo-200 animate-pulse font-bold">
+              💭 "Rent free in my mind!"
+            </div>
+            
+            <div className="flex justify-between items-center text-[9px] border-t border-zinc-800/80 pt-1.5 text-zinc-400 font-medium">
+              <span>👤 Maya blowing...</span>
+              <span className="text-pink-500 font-bold">💖 Hearts popped!</span>
+            </div>
+          </div>
+        </div>
+      )
     }
   ];
 
