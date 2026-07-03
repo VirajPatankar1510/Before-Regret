@@ -223,6 +223,9 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
       content: (
         <div className="flex flex-wrap items-center justify-center gap-4 pt-3 text-[11px] font-sans font-semibold text-zinc-400">
           <div className="flex items-center gap-1.5 bg-[#1F2937]/40 border border-[#374151]/50 px-3.5 py-1.5 rounded-full text-zinc-300">
+            <span className="text-[#C9A227]">✦</span> No signup. No Login.
+          </div>
+          <div className="flex items-center gap-1.5 bg-[#1F2937]/40 border border-[#374151]/50 px-3.5 py-1.5 rounded-full text-zinc-300">
             <span className="text-[#C9A227]">✦</span> 100% Anonymous & Private
           </div>
           <div className="flex items-center gap-1.5 bg-[#1F2937]/40 border border-[#374151]/50 px-3.5 py-1.5 rounded-full text-zinc-300">
@@ -240,7 +243,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
       accentColor: '#C9A227',
       badge: '⚖️ The Relationship Court',
       title: "Your Relationship Story Deserves a Verdict...",
-      titleLines: ["Your Relationship Disagreement...", "...Deserves an Honest Verdict"],
+      titleLines: ["Your Relationship Disagreement", "Deserves an Honest Verdict"],
       subtitle: "Cleared of blame in your relationship disagreement? Let the public jury listen to your story, vote on the issue, and claim your official exoneration certificate.",
       cta: "Submit Your Case",
       ctaSecondary: "Read Verdicts",
