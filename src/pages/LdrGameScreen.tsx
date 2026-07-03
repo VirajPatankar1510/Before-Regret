@@ -109,6 +109,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
   const [copiedLink, setCopiedLink] = useState(false);
   const [certificateGenerating, setCertificateGenerating] = useState(false);
   const [partnerExitedName, setPartnerExitedName] = useState<string | null>(null);
+  const [battleTimeLeft, setBattleTimeLeft] = useState(20);
 
   // Refs for mic stream & detection loop
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -475,6 +476,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
 
     const currentScore = role === 'A' ? (battle.pAScore || 0) : (battle.pBScore || 0);
     const nextScore = currentScore + 1;
+    const hasWon = nextScore >= 20;
 
     playSynthSound('heart');
 
@@ -490,6 +492,20 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
           timestamp: Date.now()
         }
       };
+
+      if (hasWon) {
+        updates['battleState.status'] = 'ended';
+        updates['battleState.winner'] = role;
+        updates['battleState.endedAt'] = Date.now();
+        updates['battleState.hasFinished'] = true;
+        updates.lastEvent = {
+          type: 'battle_win',
+          sender: myName || 'Partner',
+          senderUid: currentUser?.uid || 'anonymous',
+          text: role, // 'A' or 'B' won
+          timestamp: Date.now()
+        };
+      }
 
       await updateDoc(docRef, updates);
     } catch (err) {
@@ -570,7 +586,8 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
         clearInterval(timer);
         const docRef = doc(db, 'ldr-sessions', sessionId);
         updateDoc(docRef, {
-          'battleState.status': 'active'
+          'battleState.status': 'active',
+          'battleState.activeStartedAt': Date.now()
         }).catch(console.error);
       }
     }, 250);
@@ -582,36 +599,67 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
   useEffect(() => {
     if (!sessionId || role !== 'A' || !sessionData) return;
     const battle = sessionData.battleState;
-    if (!battle || battle.status !== 'active') return;
+    if (!battle || battle.status !== 'active' || !battle.activeStartedAt) return;
 
-    // Start a timeout to end the battle after exactly 20 seconds (20000ms)
-    const timer = setTimeout(() => {
-      const docRef = doc(db, 'ldr-sessions', sessionId);
-      const scoreA = battle.pAScore || 0;
-      const scoreB = battle.pBScore || 0;
-      
-      let winner: string | null = null;
-      if (scoreA > scoreB) winner = 'A';
-      else if (scoreB > scoreA) winner = 'B';
-      else winner = 'tie';
+    const activeStartedAt = battle.activeStartedAt;
 
-      updateDoc(docRef, {
-        'battleState.status': 'ended',
-        'battleState.winner': winner,
-        'battleState.endedAt': Date.now(),
-        'battleState.hasFinished': true,
-        lastEvent: {
-          type: 'battle_win',
-          sender: winner === 'tie' ? 'Draw' : (winner === 'A' ? (sessionData.partnerAName || 'Partner A') : (sessionData.partnerBName || 'Partner B')),
-          senderUid: currentUser?.uid || 'anonymous',
-          text: winner, // 'A', 'B' or 'tie'
-          timestamp: Date.now()
-        }
-      }).catch(console.error);
-    }, 20000);
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - activeStartedAt;
+      if (elapsed >= 20000) {
+        clearInterval(interval);
+        const docRef = doc(db, 'ldr-sessions', sessionId);
+        
+        // Fetch current snapshot to get the absolute latest scores
+        getDoc(docRef).then(snap => {
+          if (snap.exists()) {
+            const data = snap.data();
+            const bState = data.battleState || {};
+            // If the battle hasn't ended already due to a point victory
+            if (bState.status === 'active') {
+              const scoreA = bState.pAScore || 0;
+              const scoreB = bState.pBScore || 0;
+              
+              let winner: string | null = null;
+              if (scoreA > scoreB) winner = 'A';
+              else if (scoreB > scoreA) winner = 'B';
+              else winner = 'tie';
 
-    return () => clearTimeout(timer);
-  }, [sessionId, role, sessionData]);
+              updateDoc(docRef, {
+                'battleState.status': 'ended',
+                'battleState.winner': winner,
+                'battleState.endedAt': Date.now(),
+                'battleState.hasFinished': true,
+                lastEvent: {
+                  type: 'battle_win',
+                  sender: winner === 'tie' ? 'Draw' : (winner === 'A' ? (data.partnerAName || 'Partner A') : (data.partnerBName || 'Partner B')),
+                  senderUid: currentUser?.uid || 'anonymous',
+                  text: winner, // 'A', 'B' or 'tie'
+                  timestamp: Date.now()
+                }
+              }).catch(console.error);
+            }
+          }
+        }).catch(console.error);
+      }
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, [sessionId, role, sessionData?.battleState?.status, sessionData?.battleState?.activeStartedAt]);
+
+  // Local active countdown tracker for the UI display
+  useEffect(() => {
+    const battle = sessionData?.battleState;
+    if (battle && battle.status === 'active' && battle.activeStartedAt) {
+      const interval = setInterval(() => {
+        const elapsed = Date.now() - battle.activeStartedAt;
+        const left = Math.max(0, Math.ceil((20000 - elapsed) / 1000));
+        setBattleTimeLeft(left);
+      }, 100);
+      return () => clearInterval(interval);
+    } else {
+      setBattleTimeLeft(20);
+    }
+  }, [sessionData?.battleState?.status, sessionData?.battleState?.activeStartedAt]);
 
   // Auto reset finished battle after 8 seconds
   useEffect(() => {
@@ -1028,19 +1076,6 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
           >
             {soundEnabled ? <Volume2 className="h-4 w-4 text-emerald-600" /> : <VolumeX className="h-4 w-4 text-zinc-400" />}
           </button>
-          
-          {/* Presence check */}
-          {presenceActive ? (
-            <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
-              Synchronized Live
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 bg-zinc-100 text-zinc-500 text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full">
-              <span className="h-1.5 w-1.5 rounded-full bg-zinc-400" />
-              Waiting for Partner
-            </span>
-          )}
         </div>
       </div>
 
@@ -1055,7 +1090,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
           </div>
           
           <div className="flex-1 max-w-md">
-            {!presenceActive ? (
+            {!presenceActive && (
               <div className="space-y-1.5">
                 <span className="text-[10px] font-bold text-zinc-500 uppercase block">Copy & Share link with partner to connect:</span>
                 <div className="flex items-center gap-1.5 bg-[#FAF8F2] border border-zinc-200 rounded-xl px-3 py-2">
@@ -1069,13 +1104,6 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
                   >
                     {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
                   </button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-1 text-xs">
-                <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2 font-bold text-emerald-700">
-                  <Users className="h-4 w-4 text-emerald-500 shrink-0 animate-pulse" />
-                  <span>Both connected! The Quick Battle Duel will trigger automatically 45 seconds after entry.</span>
                 </div>
               </div>
             )}
@@ -1226,6 +1254,21 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
                 {sessionData?.partnerBName || 'Partner B'}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Real-time active battle countdown timer */}
+        {battleState && battleState.status === 'active' && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-zinc-950/90 border border-zinc-800 text-white font-mono font-black text-xs px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg select-none"
+            >
+              <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping" />
+              <span>TIME LEFT:</span>
+              <span className="text-rose-400 font-extrabold text-sm min-w-[20px] text-center">{battleTimeLeft}s</span>
+            </motion.div>
           </div>
         )}
 
