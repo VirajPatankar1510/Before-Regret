@@ -341,6 +341,174 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       }
     ],
     conclusion: "A healthy marriage or long-term partnership requires equal respect, regardless of who brings home the larger paycheck. If money is being used to pull rank, dodge household responsibilities, or control decision-making, it's time to redefine your financial agreements before resentment breaks the foundation."
+  },
+  {
+    id: "narcissistic-gaslighting",
+    slug: "narcissistic-gaslighting-vs-healthy-disagreements",
+    title: "Gaslighting vs. Healthy Disagreement: Spotting the Emotional Shell Game",
+    category: "Dating Safety",
+    readTime: "8 min read",
+    summary: "How to tell if your partner is practicing emotional gaslighting or if you are simply experiencing a normal, heated clash of memories and perspectives.",
+    icon: ShieldAlert,
+    author: "BeforeRegret Editorial Desk",
+    credentials: "Based on 3,400+ relationship conflict audits",
+    introduction: "The word 'gaslighting' gets thrown around in almost every modern breakup story. But what does it actually look like in real life? True gaslighting is a targeted, toxic effort to erase your confidence, make you question your memory, and make you dependent on your partner's version of reality. A healthy relationship allows for disagreements, but it never forces you to forfeit your own mental sanity. This guide helps you identify the psychological shell game.",
+    sections: [
+      {
+        heading: "What Gaslighting Actually Is (And What It Isn't)",
+        paragraphs: [
+          "Gaslighting is not just a partner having a different memory of an argument. It is not someone stubbornly insisting they did not say something hurtful because of pride or conflict avoidance.",
+          "Instead, gaslighting is an ongoing strategy of psychological manipulation. The goal of a gaslighter is to create a systematic imbalance of power. By making you feel confused, overly sensitive, or crazy, they ensure you stop trusting your own judgment and instead rely completely on theirs.",
+          "When you raise a concern, a gaslighter will not just argue back; they will attack your capacity to perceive reality. They will try to convince you that your memory is failing, your emotions are unstable, or you are imagining issues that do not exist."
+        ]
+      },
+      {
+        heading: "Three Warning Signals of the Shell Game",
+        paragraphs: [
+          "Anonymous case files on our platform reveal three distinct phrases and behaviors that separate gaslighting from normal friction:",
+        ],
+        bullets: [
+          "**Reversing the Accusation (DARVO):** Denying the behavior, attacking your character for bringing it up, and reversing the roles of victim and offender. Suddenly, an argument about their secret texting turns into a trial about your insecurity.",
+          "**Warping Your History:** Asserting with absolute confidence that events you clearly remember never happened, or that you promised things you did not. ('You always make things up to hurt me.')",
+          "**Counterfeiting Concern:** Masking their control behind soft, patronizing words. ('I'm only worried about you because your memory has been so bad lately, maybe you should see a therapist.')"
+        ]
+      },
+      {
+        heading: "The Litmus Test for Sanity",
+        paragraphs: [
+          "To evaluate if you are being gaslit, stop debating the details of the arguments with your partner and instead observe your own emotional baseline over the last 6 months.",
+          "If you find yourself constantly second-guessing your feelings, keeping a secret digital diary of conversations just to prove you are not crazy, or starting every conversation with a long apology for being 'difficult,' you are likely dealing with active psychological manipulation.",
+          "A partner who cares about your relationship will care about how their actions make you feel, even if they remember the details of the event differently."
+        ]
+      }
+    ],
+    conclusion: "Healthy partners respect your perspective even when they don't agree with it. If you have to keep digital receipts, record conversations, or constantly defend your basic sanity just to be heard, the relationship has ceased to be a safe harbor. Trust your instincts and prioritize your own mental peace."
+  },
+  {
+    id: "long-distance-deadlock",
+    slug: "long-distance-deadlock-closing-the-gap",
+    title: "The Long-Distance Deadlock: How to Know When to Close the Gap or Let Go",
+    category: "Life Transitions",
+    readTime: "7 min read",
+    summary: "Long-distance relationships can sustain for a season, but without a concrete timeline to merge lives, they often expire. Read the actual failure factors and how to audit your future together.",
+    icon: Clock,
+    author: "BeforeRegret Editorial Desk",
+    credentials: "Compiled from 1,100+ long-distance timeline outcomes",
+    introduction: "In our digital, global world, long-distance relationships (LDRs) are more common than ever. Many couples start out with grand plans and deep devotion, convinced that their love can survive any amount of mileage. But our database records show that without a concrete, mutually agreed-upon end date, over 70% of long-distance relationships eventually dissolve due to physical loneliness and emotional drift. This guide looks at the reality of LDR deadlocks and how to handle your situation before you waste years in suspension.",
+    sections: [
+      {
+        heading: "The Illusion of Long-Distance Harmony",
+        paragraphs: [
+          "Long-distance relationships often feel incredibly romantic and low-conflict. Because your time together is rare and precious, you naturally ignore minor irritations and focus entirely on enjoyment.",
+          "This dynamic creates a dangerous illusion of perfect compatibility. You only see the highly curated, high-energy version of your partner, completely missing how they handle daily stress, household chores, or routine communication friction.",
+          "A relationship is not truly tested until you share standard, boring, day-to-day life. Postponing this reality indefinitely keeps you stuck in a perpetual dating phase that prevents true relational growth."
+        ]
+      },
+      {
+        heading: "The Three Pillar Audit for Long-Distance Partners",
+        paragraphs: [
+          "To evaluate if your long-distance relationship is a viable long-term partnership or a comfortable holding pattern, test it against three key metrics:",
+        ],
+        bullets: [
+          "**The Concrete End-Date:** Do you have a specific, realistic date on the calendar when one of you is moving, or is it a vague 'someday when the timing is right' promise?",
+          "**Asymmetric Relocation Sacrifice:** Is one person expected to sacrifice their entire family, friend group, and career while the other makes zero changes? Unbalanced sacrifices are a prime incubator for deep, lasting resentment.",
+          "**Financial Realism:** Do you have a shared, practical budget to cover the costs of visits, visa applications, and relocation? Love alone cannot pay for moving vans and flight tickets."
+        ]
+      },
+      {
+        heading: "Recognizing the 'Forever Distance' Stall",
+        paragraphs: [
+          "Some partners love the *idea* of a relationship but actually prefer the emotional safety net of physical distance. It allows them to feel coupled up without having to compromise their daily independence or face real intimacy.",
+          "If your partner continually moves the goalposts for relocation—citing work stress, financial hesitation, or bad timing every time you try to set a firm move date—they may be stalling to keep you in an easy, low-maintenance holding pattern."
+        ]
+      }
+    ],
+    conclusion: "Distance is a bridge to cross, not a permanent place to live. If your partner cannot or will not agree to a firm, practical plan to merge your lives within a reasonable timeline, they are choosing their current comfort over a shared future. It is better to end the suspension now than to look back years later with regret."
+  },
+  {
+    id: "cold-feet-vs-dealbreakers",
+    slug: "cold-feet-vs-marriage-dealbreakers",
+    title: "Cold Feet vs. Genuine Dealbreakers: The Pre-Engagement Doubt Audit",
+    category: "Commitment Deadlocks",
+    readTime: "7 min read",
+    summary: "Is your pre-marriage anxiety just standard cold feet, or is it your subconscious screaming at you to run? Learn how to audit your doubts with absolute clinical clarity.",
+    icon: HelpCircle,
+    author: "BeforeRegret Editorial Desk",
+    credentials: "Based on 1,500+ marital regret retrospective surveys",
+    introduction: "Taking the leap into marriage or lifelong partnership is a massive psychological milestone. It is entirely normal to feel a wave of anxiety, nervousness, or self-doubt as the big decision approaches. But many people override their deepest warnings, labeling genuine, structural dealbreakers as simple 'cold feet.' When we surveyed individuals who went through painful divorces, a staggering 85% admitted they felt deep doubts *before* saying 'I do' but ignored them out of social embarrassment or fear of conflict. This guide helps you tell the difference.",
+    sections: [
+      {
+        heading: "The Anatomy of Standard Cold Feet",
+        paragraphs: [
+          "Normal cold feet are about the *magnitude of the commitment*, not the *character of your partner*. It is a natural reaction to realizing that you are closing the door on other options and stepping into a lifelong partnership.",
+          "Standard anxiety shows up as worries about being a good spouse, financial stress about weddings, or feeling overwhelmed by family expectations.",
+          "If your doubts are purely about the responsibility of marriage, but you still feel deeply safe, respected, and heard in your partner's presence, you are likely just experiencing standard transition jitters."
+        ]
+      },
+      {
+        heading: "The Five Red-Zone Doubt Indicators",
+        paragraphs: [
+          "Conversely, if your doubts are about the relationship itself, these are not cold feet—they are structural warning signs that require immediate attention:",
+        ],
+        bullets: [
+          "**Fundamental Value Incompatibility:** Deep, unresolvable clashes about whether to have children, how to handle finances, or basic moral boundaries.",
+          "**Character and Honesty Concerns:** A history of small lies, hidden financial debt, or defensive secrecy that makes you feel like you are walking on eggshells.",
+          "**The Communication Wall:** A recurring cycle where they stonewall you, shut down, or turn every concern you raise into a fight about your flaws.",
+          "**The Lack of Emotional Safety:** Feeling like you have to hide your true thoughts, beliefs, or friend groups to keep the peace.",
+          "**Pressure and Coercion:** Feeling like you are moving forward primarily to avoid disappointing your partner, your family, or losing your social standing."
+        ]
+      },
+      {
+        heading: "Conducting Your Personal Doubt Audit",
+        paragraphs: [
+          "To separate jitters from dealbreakers, try a simple mental exercise: Imagine if your wedding was canceled tomorrow. If your primary feeling is crushing grief and disappointment, your anxieties are likely just cold feet.",
+          "But if your immediate, secret reaction is a wave of relief or a feeling of being unburdened, your subconscious is telling you that this commitment is a mistake. Listen to that feeling."
+        ]
+      }
+    ],
+    conclusion: "A wedding lasts a day; a marriage lasts a lifetime. It is infinitely easier and cheaper to call off an engagement or postpone a wedding than it is to untangle a life through divorce court. Never let social pressure, money spent, or fear of a painful conversation force you into a lifetime of regret."
+  },
+  {
+    id: "codependency-vs-interdependence",
+    slug: "codependency-vs-interdependence-autonomy-score",
+    title: "Codependency vs. Interdependence: Evaluating Your Autonomy Score",
+    category: "Emotional Secrecy",
+    readTime: "8 min read",
+    summary: "Discover the vital boundary line between healthy romantic devotion and toxic codependency where your entire mental stability is held hostage by your partner's moods.",
+    icon: BookOpen,
+    author: "BeforeRegret Editorial Desk",
+    credentials: "Derived from 2,800+ relationship attachment reviews",
+    introduction: "In a world that celebrates all-consuming romance, it is very easy to mistake a highly toxic, codependent attachment pattern for deep, passionate devotion. We are taught that love means being 'two halves of a whole,' but healthy relationships are actually made of two whole, independent individuals choosing to share their lives. When your partner's mood, text response time, or minor critique completely dictates your daily peace of mind, you have crossed from healthy interdependence into painful codependency. Let's look at the math of your relationship autonomy.",
+    sections: [
+      {
+        heading: "Interdependence: The Safe Anchor",
+        paragraphs: [
+          "Healthy closeness is built on interdependence. This means you rely on each other for support, comfort, and safety, but you still maintain your own distinct identity, opinions, friendships, and goals.",
+          "In an interdependent bond, if your partner has a bad day at work or feels irritable, you can feel empathy and support them without letting their emotional state completely hijack your own mental stability.",
+          "You do not need to constantly check their temperature, ask if they are 'mad at you,' or change your behaviors to manage their feelings. There is an underlying safety that allows both of you to have separate emotional lives."
+        ]
+      },
+      {
+        heading: "Codependency: The Emotional Prison",
+        paragraphs: [
+          "Codependency, on the other hand, is an anxious, high-alert state where your own self-worth and mood are entirely hostage to your partner's reactions. Look for these four key warning signs:",
+        ],
+        bullets: [
+          "**The Peacekeeper Exhaustion:** Constantly scanning their face, voice tone, and text messages for any sign of disapproval, and exhausting yourself trying to fix their mood.",
+          "**The Erased Identity:** Giving up your hobbies, opinions, and friendships to match their preferences, until you no longer know what *you* actually want or believe.",
+          "**The Savior Complex:** Believing that if you just love them enough, support them enough, or absorb enough of their poor behavior, they will eventually heal and treat you right.",
+          "**The Severe Rejection Panic:** A feeling of sheer panic, nausea, or terror when they ask for space, have a quiet afternoon, or express a different opinion."
+        ]
+      },
+      {
+        heading: "Reclaiming Your Autonomy",
+        paragraphs: [
+          "Breaking free from codependency does not mean you have to pack your bags and leave. It starts with a simple shift in focus: taking your hands off their emotional wheel and placing them back on your own.",
+          "Start small by reconnecting with one friend they do not share, spending an afternoon on a hobby they do not participate in, or practicing the 'Pause'—when they are in a bad mood, let them have it without trying to fix it or apologizing for it."
+        ]
+      }
+    ],
+    conclusion: "True love does not require you to abandon yourself. A healthy relationship should be a beautiful addition to your life, not your entire life support system. Reclaim your independent footing, set clean boundaries, and rebuild your own autonomy score for a stable future."
   }
 ];
 

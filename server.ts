@@ -1303,7 +1303,15 @@ Deliver the output strictly in JSON matching the specified schema.`;
         "infidelity-reconciliation-math-of-forgiveness",
         "ultimatum-protocol-why-marriage-deadlocks-fail",
         "relocation-risk-index-moving-for-love",
-        "red-flag-evaluation-boundary-matrix"
+        "red-flag-evaluation-boundary-matrix",
+        "financial-infidelity-secret-debt-private-accounts",
+        "emotional-cheating-vs-close-friendship-boundaries",
+        "stonewalling-silent-treatment-emotional-punishment",
+        "breadwinner-resentment-income-disparity",
+        "narcissistic-gaslighting-vs-healthy-disagreements",
+        "long-distance-deadlock-closing-the-gap",
+        "cold-feet-vs-marriage-dealbreakers",
+        "codependency-vs-interdependence-autonomy-score"
       ];
       for (const art of articles) {
         urlTags.push(`  <url>
