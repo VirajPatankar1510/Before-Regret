@@ -15,135 +15,238 @@ interface HomeScreenProps {
   onCaseRetrieve?: (caseNum: string) => void;
 }
 
+// Highly premium synchronized count up component
+function AnimatedCounter({ from, to, duration = 1.5, delay = 2.5 }: { from: number; to: number; duration?: number; delay?: number }) {
+  const [count, setCount] = useState(from);
+
+  useEffect(() => {
+    let timeoutId = setTimeout(() => {
+      const startTime = performance.now();
+      const step = (now: number) => {
+        const progress = Math.min((now - startTime) / (duration * 1000), 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3); // Premium cubic ease-out
+        setCount(Math.floor(from + (to - from) * easeOut));
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      };
+      requestAnimationFrame(step);
+    }, delay * 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [from, to, duration, delay]);
+
+  return <>{count.toLocaleString()}</>;
+}
+
+// Premium Floating Court Case Card with detailed idle, entry, and hover interactions
+function FloatingCaseCard() {
+  const [isCardHovered, setIsCardHovered] = useState(false);
+  const [cardLoaded, setCardLoaded] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCardLoaded(true);
+    }, 2500); // Wait for entrance spring animation (2.0s delay + 0.5s duration)
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <motion.div
+      onHoverStart={() => setIsCardHovered(true)}
+      onHoverEnd={() => setIsCardHovered(false)}
+      initial={{ opacity: 0, y: 30 }}
+      animate={
+        !cardLoaded 
+          ? { opacity: 1, y: 0 } 
+          : { 
+              opacity: 1, 
+              y: isCardHovered ? -12 : [0, -8, 0] 
+            }
+      }
+      transition={
+        !cardLoaded
+          ? { duration: 0.5, delay: 2.0, ease: [0.34, 1.56, 0.64, 1] } // Spring/bounce easing
+          : { 
+              y: isCardHovered 
+                ? { duration: 0.3, ease: "easeOut" } 
+                : { repeat: Infinity, duration: 3, ease: "easeInOut" }
+            }
+      }
+      className={`w-full max-w-[310px] mx-auto bg-zinc-900/95 border rounded-2xl p-4 sm:p-5 shadow-2xl space-y-4 text-slate-300 font-sans text-left transition-colors duration-300 relative select-none ${
+        isCardHovered 
+          ? "border-amber-500/40 shadow-[0_20px_40px_rgba(245,158,11,0.15)]" 
+          : "border-zinc-800 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+      }`}
+    >
+      {/* Card Header */}
+      <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+        <div className="flex items-center gap-1.5">
+          <Gavel className="h-3.5 w-3.5 text-amber-500" />
+          <span className="text-[9px] font-mono font-bold tracking-widest text-amber-500 uppercase">CASE FILE #S1234</span>
+        </div>
+        <span className="text-[9px] font-mono text-zinc-500 font-bold bg-zinc-800/50 px-2 py-0.5 rounded-full border border-zinc-800">ACTIVE TRIAL</span>
+      </div>
+
+      {/* Case body dilemma query */}
+      <div className="space-y-1">
+        <h4 className="text-[11px] sm:text-[12px] font-extrabold text-white leading-relaxed">
+          "He spent our entire house deposit savings on a meme coin without telling me. Can I ever trust him again?"
+        </h4>
+      </div>
+
+      {/* Interactive Verdict Progress Section */}
+      <div className="space-y-2.5 pt-1">
+        {/* Progress Bar filling Guilty vs Not Guilty */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-[9px] font-mono font-bold">
+            <span className="text-red-400">🚨 GUILTY</span>
+            <span className="text-red-400">
+              <AnimatedCounter from={0} to={71} duration={1.5} delay={2.5} />%
+            </span>
+          </div>
+          
+          <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden flex relative">
+            <motion.div
+              initial={{ width: '0%' }}
+              animate={{ width: '71%' }}
+              transition={{ duration: 1.5, delay: 2.5, ease: 'easeOut' }}
+              className="bg-red-500 h-full rounded-l-full"
+            />
+            <motion.div
+              initial={{ width: '0%' }}
+              animate={{ width: '0%' }}
+              transition={{ duration: 1.5, delay: 2.5, ease: 'easeOut' }}
+              style={{ width: '29%' }}
+              className="bg-emerald-400 h-full rounded-r-full ml-auto"
+            />
+          </div>
+
+          <div className="flex justify-between text-[9px] font-mono font-bold">
+            <span className="text-emerald-400">🟢 NOT GUILTY</span>
+            <span className="text-emerald-400">
+              <AnimatedCounter from={0} to={29} duration={1.5} delay={2.5} />%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Cast Your Verdict interactive button */}
+      <motion.button
+        whileHover={{ backgroundColor: '#C9A227', color: '#090D13', scale: 1.04 }}
+        transition={{ duration: 0.15 }}
+        className="w-full py-2.5 bg-transparent border border-[#C9A227] text-[#C9A227] rounded-xl font-extrabold text-[10px] uppercase tracking-wider font-sans transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-1.5"
+      >
+        Cast Your Verdict
+      </motion.button>
+
+      {/* Case Count Number count up */}
+      <div className="text-center font-mono text-[9px] text-zinc-500 border-t border-zinc-800/60 pt-2.5">
+        <span className="text-zinc-400 font-bold">
+          <AnimatedCounter from={2000} to={2341} duration={1.0} delay={2.5} />
+        </span> verdicts cast in this case
+      </div>
+    </motion.div>
+  );
+}
+
+// Premium Secondary CTA Button with arrow slide hover effect
+function SecondaryCTAButton({ cta, action }: { cta: string; action: () => void }) {
+  const [isSecondaryHovered, setIsSecondaryHovered] = useState(false);
+
+  return (
+    <motion.button
+      onClick={action}
+      onHoverStart={() => setIsSecondaryHovered(true)}
+      onHoverEnd={() => setIsSecondaryHovered(false)}
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="px-5 py-3 rounded-xl border border-zinc-700 hover:border-white hover:text-[#C9A227] text-zinc-300 font-extrabold text-xs uppercase tracking-wider shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 font-sans"
+    >
+      <span>{cta}</span>
+      <motion.span
+        animate={{ x: isSecondaryHovered ? 4 : 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
+        <ArrowRight className="h-4 w-4" />
+      </motion.span>
+    </motion.button>
+  );
+}
+
+// Scroll reveal section with Intersection Observer / whileInView
+interface ScrollRevealSectionProps {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+}
+
+function ScrollRevealSection({ children, className = "", onClick }: ScrollRevealSectionProps) {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={className}
+      onClick={onClick}
+    >
+      {children}
+    </motion.section>
+  );
+}
+
 export default function HomeScreen({ situations, courtCases, questions, latestStories, setScreen, onCaseRetrieve }: HomeScreenProps) {
   const [searchInput, setSearchInput] = useState('');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    if (!isAutoPlaying) return;
-    const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % 3);
-    }, 8000);
-    return () => clearInterval(timer);
-  }, [isAutoPlaying]);
-
-  const handleManualSlideSelect = (index: number) => {
-    setIsAutoPlaying(false);
-    setCurrentSlide(index);
-  };
-
-  const handleManualSlidePrev = () => {
-    setIsAutoPlaying(false);
-    setCurrentSlide(prev => (prev === 0 ? 2 : prev - 1));
-  };
-
-  const handleManualSlideNext = () => {
-    setIsAutoPlaying(false);
-    setCurrentSlide(prev => (prev + 1) % 3);
-  };
-
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
-
-  const minSwipeDistance = 50;
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-    
-    if (isLeftSwipe) {
-      handleManualSlideNext();
-    } else if (isRightSwipe) {
-      handleManualSlidePrev();
-    }
-  };
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const slides = [
+    {
+      id: 'beforeregret-intro',
+      bgGradient: 'from-[#080B10] via-[#111827] to-[#080B10]',
+      accentColor: '#C9A227',
+      badge: '✨ WHAT IS BEFOREREGRET?',
+      title: "Think Clearly Before You Regret",
+      titleLines: ["Think Clearly", "Before You Regret"],
+      subtitle: "BeforeRegret is a safe, completely anonymous space designed to help you navigate hard relationship crossroads. Review real-life decision paths, evaluate behaviors, and find perspective before making life-altering commitments.",
+      isMinimal: true,
+      content: (
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-3 text-[11px] font-sans font-semibold text-zinc-400">
+          <div className="flex items-center gap-1.5 bg-[#1F2937]/40 border border-[#374151]/50 px-3.5 py-1.5 rounded-full text-zinc-300">
+            <span className="text-[#C9A227]">✦</span> 100% Anonymous & Private
+          </div>
+          <div className="flex items-center gap-1.5 bg-[#1F2937]/40 border border-[#374151]/50 px-3.5 py-1.5 rounded-full text-zinc-300">
+            <span className="text-[#C9A227]">✦</span> Peer Citizen Jury Verdicts
+          </div>
+          <div className="flex items-center gap-1.5 bg-[#1F2937]/40 border border-[#374151]/50 px-3.5 py-1.5 rounded-full text-zinc-300">
+            <span className="text-[#C9A227]">✦</span> Real Outcome Story Timelines
+          </div>
+        </div>
+      )
+    },
     {
       id: 'certificate',
       bgGradient: 'from-[#14111C] via-[#2D1D3D] to-[#14111C]',
       accentColor: '#C9A227',
       badge: '⚖️ The Relationship Court',
       title: "Your Relationship Story Deserves a Verdict...",
+      titleLines: ["Your Relationship Disagreement...", "...Deserves an Honest Verdict"],
       subtitle: "Cleared of blame in your relationship disagreement? Let the public jury listen to your story, vote on the issue, and claim your official exoneration certificate.",
       cta: "Submit Your Case",
+      ctaSecondary: "Read Verdicts",
       action: () => setScreen({ type: 'court_list' }),
-      content: (
-        <div className="space-y-3 text-left">
-          <p className="text-[12px] text-zinc-300 font-medium font-sans">Get your official innocence certificate in 3 steps:</p>
-          <div className="space-y-2">
-            <div className="flex items-start gap-2.5">
-              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#C9A227]/20 text-[#C9A227] text-[10px] font-black shrink-0 border border-[#C9A227]/30 mt-0.5">1</span>
-              <div>
-                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Post Your Case</h4>
-                <p className="text-[9px] text-zinc-400 font-sans leading-normal">Submit details and arguments anonymously from both sides.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2.5">
-              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#C9A227]/20 text-[#C9A227] text-[10px] font-black shrink-0 border border-[#C9A227]/30 mt-0.5">2</span>
-              <div>
-                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Community Jury Vote</h4>
-                <p className="text-[9px] text-zinc-400 font-sans leading-normal">Our peer citizens review details, discuss facts, and cast votes on who is right.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2.5">
-              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#C9A227]/20 text-[#C9A227] text-[10px] font-black shrink-0 border border-[#C9A227]/30 mt-0.5">3</span>
-              <div>
-                <h4 className="text-[11px] font-bold text-white leading-normal font-sans">Download Your Certificate</h4>
-                <p className="text-[9px] text-zinc-400 font-sans leading-normal">Instantly save your custom certificate to share with your partner!</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-      visual: (
-        <div className="relative w-full h-full max-w-[290px] mx-auto bg-[#FFFDF9] border-4 border-double border-[#C9A227] rounded-2xl p-4 shadow-2xl flex flex-col justify-between text-[#24324A] font-serif overflow-hidden select-none">
-          <div className="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center">
-            <Gavel className="w-28 h-28 text-[#C9A227]" />
-          </div>
-          
-          <div className="text-center space-y-0.5">
-            <span className="text-[6px] tracking-widest font-mono text-[#C9A227] uppercase font-black block">The Relationship Court</span>
-            <h4 className="text-[11px] font-black tracking-tight uppercase border-b border-[#E8D79B] pb-1 font-sans text-amber-900">Certificate of Innocence</h4>
-          </div>
-
-          <div className="my-2.5 text-center space-y-1.5">
-            <p className="text-[7px] italic text-zinc-500 leading-normal">This official certificate verifies that our community jury has cleared the bearer of blame in their case.</p>
-            <div className="bg-[#FAF8F2] border border-[#E8D79B] py-1 px-1.5 rounded">
-              <span className="text-[8px] font-bold text-amber-950 block font-sans tracking-wide">VERDICT: CERTIFIED INNOCENT</span>
-              <span className="text-[6px] text-[#C9A227] font-mono block uppercase">Verified Good Partner</span>
-            </div>
-            <p className="text-[6.5px] text-zinc-500 leading-normal px-1">"Voted innocent of all relationship blame by anonymous peer reviews."</p>
-          </div>
-
-          <div className="flex items-center justify-between border-t border-[#E8D79B] pt-1.5 mt-0.5">
-            <div className="text-left font-mono text-[5.5px] text-zinc-400 space-y-0.5">
-              <div>Community Decided</div>
-              <div>Peer Citizen Jury</div>
-            </div>
-            
-            <div className="relative flex items-center justify-center">
-              <div className="w-6 h-6 rounded-full bg-[#C9A227] shadow-xs flex items-center justify-center border border-yellow-300 relative">
-                <Star className="w-3 h-3 text-white fill-current" />
-                <div className="absolute top-4 left-0.5 w-1.5 h-3 bg-amber-700/80 -rotate-12 transform origin-top" />
-                <div className="absolute top-4 right-0.5 w-1.5 h-3 bg-amber-700/80 rotate-12 transform origin-top" />
-              </div>
-            </div>
-          </div>
-        </div>
-      )
+      actionSecondary: () => setScreen({ type: 'court_list' }),
+      visual: <FloatingCaseCard />
     },
     {
       id: 'redflag',
@@ -151,6 +254,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
       accentColor: '#3B82F6',
       badge: '🚩 Dilemma Meter',
       title: "Red Flag Dilemma Meter",
+      titleLines: ["Red Flag", "Dilemma Meter"],
       subtitle: "Wondering if a partner behavior is a real warning sign? Submit the dilemma anonymously, vote on active cases, and view warning percentages.",
       cta: "Check Red Flags",
       action: () => setScreen({ type: 'red_flag_meter' }),
@@ -223,6 +327,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
       accentColor: '#10B981',
       badge: '📖 Personal Stories',
       title: "Explore Real Decision Timelines",
+      titleLines: ["Explore Real", "Decision Timelines"],
       subtitle: "Facing a tough relationship crossroads? Read actual story timelines from people who walked similar paths and learn from their outcomes.",
       cta: "Explore Stories",
       action: () => setScreen({ type: 'explore' }),
@@ -279,6 +384,56 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
       )
     }
   ];
+
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    const timer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % slides.length);
+    }, 10000); // 10 seconds to allow slow animations to play and idle
+    return () => clearInterval(timer);
+  }, [isAutoPlaying, slides.length]);
+
+  const handleManualSlideSelect = (index: number) => {
+    setIsAutoPlaying(false);
+    setCurrentSlide(index);
+  };
+
+  const handleManualSlidePrev = () => {
+    setIsAutoPlaying(false);
+    setCurrentSlide(prev => (prev === 0 ? slides.length - 1 : prev - 1));
+  };
+
+  const handleManualSlideNext = () => {
+    setIsAutoPlaying(false);
+    setCurrentSlide(prev => (prev + 1) % slides.length);
+  };
+
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  const minSwipeDistance = 50;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      handleManualSlideNext();
+    } else if (isRightSwipe) {
+      handleManualSlidePrev();
+    }
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -351,55 +506,196 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
     return 'text-[#2E7D32] bg-[#2E7D32]/5 border-[#2E7D32]/10';
   };
 
+  const heroOpacity = Math.max(0, 1 - scrollY / 600);
+  const heroScale = Math.max(0.95, 1 - scrollY / 2000);
+
   return (
     <div className="space-y-12 pb-16 animate-fadeIn">
       
-      {/* DYNAMIC SLIDING HERO BANNER */}
-      <section className="relative rounded-3xl overflow-hidden shadow-lg border border-zinc-800 bg-zinc-950 text-white select-none">
+      {/* DYNAMIC SLIDING HERO BANNER WITH SCROLL PARALLAX & FADE */}
+      <motion.section 
+        style={{ opacity: heroOpacity, scale: heroScale }}
+        className="relative rounded-3xl overflow-hidden shadow-lg border border-zinc-800 bg-zinc-950 text-white select-none"
+      >
         {/* Carousel Content with Slide Animation */}
         <div 
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          className={`w-full min-h-[500px] md:min-h-[400px] bg-gradient-to-r ${slides[currentSlide].bgGradient} transition-all duration-700 ease-in-out p-6 pb-24 sm:p-10 sm:pb-12 flex flex-col md:flex-row items-center justify-between gap-8 relative`}
+          className="relative w-full min-h-[520px] md:min-h-[440px] p-6 pb-24 sm:p-10 sm:pb-12 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden"
         >
           
-          {/* Decorative accent background glows */}
-          <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-12 -right-12 w-64 h-64 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+          {/* Smoothly crossfaded backgrounds */}
+          <div className={`absolute inset-0 bg-gradient-to-r ${slides[currentSlide].bgGradient} transition-all duration-1000 ease-in-out`} />
+          
+          {/* Static left-hand background glow */}
+          <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-blue-500/10 blur-3xl pointer-events-none z-0" />
+          
+          {/* Ambient glowing spot breathing to match slide color */}
+          <motion.div
+            key={`glow-${currentSlide}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0.5, 0.9, 0.5] }}
+            transition={{
+              opacity: {
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.3
+              }
+            }}
+            style={{
+              backgroundColor: slides[currentSlide].accentColor === '#3B82F6' 
+                ? 'rgba(59, 130, 246, 0.15)' 
+                : slides[currentSlide].accentColor === '#10B981'
+                ? 'rgba(16, 185, 129, 0.15)'
+                : 'rgba(245, 158, 11, 0.15)'
+            }}
+            className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full blur-3xl pointer-events-none z-0"
+          />
 
-          {/* Left Column (Content) */}
-          <div className="flex-1 space-y-5 text-left z-10 max-w-xl">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
-              {slides[currentSlide].badge}
-            </div>
-            
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight font-display">
-              {slides[currentSlide].title}
-            </h1>
-            
-            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans">
-              {slides[currentSlide].subtitle}
-            </p>
+          {/* Active Slide Wrapper with Perfect Staggered Timings */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="w-full flex flex-col md:flex-row items-center justify-between gap-8 z-10"
+            >
+              {/* Content Column */}
+              <div className={`w-full ${slides[currentSlide].isMinimal ? 'max-w-3xl mx-auto text-center flex flex-col items-center justify-center space-y-6 py-6' : 'flex-1 space-y-5 text-left max-w-xl'}`}>
+                {/* 0.3s - 0.6s: Top pill badge */}
+                <motion.div
+                  variants={{
+                    initial: { opacity: 0, y: 10 },
+                    animate: { opacity: 1, y: 0, transition: { duration: 0.4, delay: 0.3, ease: "easeOut" } },
+                    exit: { opacity: 0, y: -10, transition: { duration: 0.3 } }
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#C9A227]"
+                >
+                  {slides[currentSlide].badge}
+                </motion.div>
+                
+                {/* 0.6s - 1.0s: Headline reveals line by line with blur */}
+                <div className={`${slides[currentSlide].isMinimal ? 'text-center flex flex-col items-center' : 'text-left'} space-y-1.5`}>
+                  {slides[currentSlide].titleLines ? (
+                    slides[currentSlide].titleLines.map((line, lineIdx) => (
+                      <motion.h1
+                        key={lineIdx}
+                        variants={{
+                          initial: { opacity: 0, filter: "blur(8px)" },
+                          animate: { opacity: 1, filter: "blur(0px)", transition: { duration: 0.5, delay: 0.6 + lineIdx * 0.15, ease: "easeOut" } },
+                          exit: { opacity: 0, filter: "blur(4px)", transition: { duration: 0.3 } }
+                        }}
+                        className={`${slides[currentSlide].isMinimal ? 'text-3xl sm:text-5xl font-black' : 'text-2xl sm:text-4xl font-extrabold'} text-white tracking-tight leading-none font-display`}
+                      >
+                        {line}
+                      </motion.h1>
+                    ))
+                  ) : (
+                    <motion.h1
+                      variants={{
+                        initial: { opacity: 0, filter: "blur(8px)" },
+                        animate: { opacity: 1, filter: "blur(0px)", transition: { duration: 0.5, delay: 0.6, ease: "easeOut" } },
+                        exit: { opacity: 0, filter: "blur(4px)", transition: { duration: 0.3 } }
+                      }}
+                      className={`${slides[currentSlide].isMinimal ? 'text-3xl sm:text-5xl font-black' : 'text-2xl sm:text-4xl font-extrabold'} text-white tracking-tight leading-tight font-display`}
+                    >
+                      {slides[currentSlide].title}
+                    </motion.h1>
+                  )}
+                </div>
+                
+                {/* 1.0s - 1.3s: Subheadline slides up */}
+                <motion.p
+                  variants={{
+                    initial: { opacity: 0, y: 10 },
+                    animate: { opacity: 1, y: 0, transition: { duration: 0.4, delay: 1.0, ease: "easeOut" } },
+                    exit: { opacity: 0, y: -10, transition: { duration: 0.3 } }
+                  }}
+                  className={`text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans ${slides[currentSlide].isMinimal ? 'max-w-2xl mx-auto' : ''}`}
+                >
+                  {slides[currentSlide].subtitle}
+                </motion.p>
 
-            <div className="py-1">
-              {slides[currentSlide].content}
-            </div>
+                {/* Custom Content */}
+                {slides[currentSlide].content && (
+                  <motion.div
+                    variants={{
+                      initial: { opacity: 0 },
+                      animate: { opacity: 1, transition: { duration: 0.4, delay: 1.1 } },
+                      exit: { opacity: 0, transition: { duration: 0.3 } }
+                    }}
+                    className="py-1 w-full"
+                  >
+                    {slides[currentSlide].content}
+                  </motion.div>
+                )}
 
-            <div className="pt-2 flex flex-wrap gap-3">
-              <button
-                onClick={slides[currentSlide].action}
-                className="px-5 py-3 rounded-xl bg-white text-zinc-950 hover:bg-zinc-100 font-extrabold text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 font-sans"
-              >
-                {slides[currentSlide].cta} <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
+                {/* 1.3s - 1.6s: Dual CTAs / 1.6s - 2.0s: Social Proof with Pulsing dot */}
+                <div className="flex flex-col gap-4">
+                  {!slides[currentSlide].isMinimal && slides[currentSlide].cta && slides[currentSlide].action && (
+                    <motion.div
+                      variants={{
+                        initial: { opacity: 0, scale: 0.95 },
+                        animate: { opacity: 1, scale: 1, transition: { duration: 0.3, delay: 1.3, ease: "easeOut" } },
+                        exit: { opacity: 0, scale: 0.95, transition: { duration: 0.3 } }
+                      }}
+                      className="pt-2 flex flex-wrap gap-3"
+                    >
+                      {/* Primary CTA */}
+                      <motion.button
+                        onClick={slides[currentSlide].action}
+                        whileHover={{ scale: 1.03, y: -2, boxShadow: "0px 8px 24px rgba(245, 158, 11, 0.45)" }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="px-5 py-3 rounded-xl bg-white text-zinc-950 hover:bg-zinc-100 font-extrabold text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 font-sans"
+                      >
+                        {slides[currentSlide].cta} <ArrowRight className="h-4 w-4" />
+                      </motion.button>
 
-          {/* Right Column (Visual Mockup) */}
-          <div className="hidden md:flex flex-1 items-center justify-center z-10 p-2">
-            {slides[currentSlide].visual}
-          </div>
+                      {/* Secondary CTA */}
+                      {slides[currentSlide].ctaSecondary && slides[currentSlide].actionSecondary && (
+                        <SecondaryCTAButton 
+                          cta={slides[currentSlide].ctaSecondary} 
+                          action={slides[currentSlide].actionSecondary} 
+                        />
+                      )}
+                    </motion.div>
+                  )}
+
+                  {/* Social Proof with live pulse */}
+                  {!slides[currentSlide].isMinimal && slides[currentSlide].id === 'certificate' && (
+                    <motion.div
+                      variants={{
+                        initial: { opacity: 0 },
+                        animate: { opacity: 1, transition: { duration: 0.3, delay: 1.6 } },
+                        exit: { opacity: 0, transition: { duration: 0.3 } }
+                      }}
+                      className="flex items-center gap-2 px-1 text-left"
+                    >
+                      <span className="relative flex h-2 w-2">
+                        <motion.span
+                          animate={{ scale: [1, 1.4, 1], opacity: [1, 0.4, 1] }}
+                          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                          className="absolute inline-flex h-full w-full rounded-full bg-[#22C55E]"
+                        />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#22C55E]" />
+                      </span>
+                      <span className="text-xs text-zinc-400 font-sans font-medium">2,847 cases judged this week</span>
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+
+              {/* Visual Column */}
+              {!slides[currentSlide].isMinimal && slides[currentSlide].visual && (
+                <div className="hidden md:flex flex-1 items-center justify-center z-10 p-2">
+                  {slides[currentSlide].visual}
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
 
           {/* Manual Chevron Nav Buttons */}
           <button
@@ -432,10 +728,10 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             />
           ))}
         </div>
-      </section>
+      </motion.section>
 
       {/* SECTION 1.5: THE DILEMMA SELECTOR GRID */}
-      <section className="relative rounded-3xl bg-white border border-[#E5E7EB] py-10 px-6 overflow-hidden shadow-sm space-y-8">
+      <ScrollRevealSection className="relative rounded-3xl bg-white border border-[#E5E7EB] py-10 px-6 overflow-hidden shadow-sm space-y-8">
         
         {/* Absolute Background Accent Radial glows */}
         <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-[#24324A]/5 blur-3xl" />
@@ -585,12 +881,12 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
 
         </div>
 
-      </section>
+      </ScrollRevealSection>
 
       {/* SECTION: RED FLAG METER PROMO BANNER */}
-      <section 
+      <ScrollRevealSection 
         onClick={() => setScreen({ type: 'red_flag_meter' })}
-        className="rounded-2xl border-2 border-dashed border-rose-200 bg-gradient-to-r from-rose-50/50 to-amber-50/30 p-5 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:border-rose-300 hover:shadow-md transition-all animate-fadeIn"
+        className="rounded-2xl border-2 border-dashed border-rose-200 bg-gradient-to-r from-rose-50/50 to-amber-50/30 p-5 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:border-rose-300 hover:shadow-md transition-all"
       >
         <div className="space-y-2">
           <div className="inline-flex items-center gap-1 bg-rose-500 text-white rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider font-mono">
@@ -612,13 +908,13 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
         >
           Check warning flags <ArrowRight className="h-4 w-4" />
         </button>
-      </section>
+      </ScrollRevealSection>
 
       {/* Google Ad Unit */}
       <AdSenseWidget slot="2666879134" />
 
       {/* SECTION 3: TRENDING PEER COURT DEBATES */}
-      <section className="space-y-4">
+      <ScrollRevealSection className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-[#24324A] flex items-center gap-2">
@@ -671,10 +967,10 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             );
           })}
         </div>
-      </section>
+      </ScrollRevealSection>
 
       {/* SECTION 4: DECISION RANKINGS: REGRETTED VS SUCCESSFUL */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <ScrollRevealSection className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Most Regret Cards */}
         <div className="rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-[0_4px_12px_rgba(0,0,0,0.06)] space-y-4">
@@ -742,10 +1038,10 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
           </div>
         </div>
 
-      </section>
+      </ScrollRevealSection>
 
       {/* SECTION 4.5: ACCREDITED DECISION GUIDES */}
-      <section className="bg-white rounded-3xl border border-[#E5E7EB] p-6 shadow-sm space-y-6">
+      <ScrollRevealSection className="bg-white rounded-3xl border border-[#E5E7EB] p-6 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="space-y-1">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#C9A227]/10 border border-[#C9A227]/20 text-[#C9A227] select-none">
@@ -791,10 +1087,10 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             </div>
           </div>
         </div>
-      </section>
+      </ScrollRevealSection>
 
       {/* SECTION 5: RELATIONSHIP COURT SPLIT SECTION */}
-      <section className="rounded-2xl border border-[#E8D79B] bg-gradient-to-br from-white to-[#FFF8E1]/40 p-5 sm:p-6 shadow-md">
+      <ScrollRevealSection className="rounded-2xl border border-[#E8D79B] bg-gradient-to-br from-white to-[#FFF8E1]/40 p-5 sm:p-6 shadow-md">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded bg-[#FFF8E1] text-[#C9A227]">
@@ -862,10 +1158,10 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             );
           })}
         </div>
-      </section>
+      </ScrollRevealSection>
 
       {/* SECTION 7: QUESTIONS BOARD LIST */}
-      <section className="space-y-4">
+      <ScrollRevealSection className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-[#24324A] flex items-center gap-1.5 font-display">
@@ -903,7 +1199,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
             </div>
           ))}
         </div>
-      </section>
+      </ScrollRevealSection>
 
     </div>
   );
