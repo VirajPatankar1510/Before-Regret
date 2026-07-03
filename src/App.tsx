@@ -2538,9 +2538,6 @@ export default function App() {
                               </span>
                             )}
                           </div>
-                          <span className="text-[9px] text-zinc-500 font-mono font-semibold">
-                            ⚖️ {(c.votes.me || 0) + (c.votes.partner || 0) + (c.votes.both || 0) + (c.votes.neither || 0)} votes
-                          </span>
                         </div>
                         <h3 className="text-sm font-black text-zinc-900 mt-1 leading-snug">"{c.title}"</h3>
                         <p className="text-xs text-zinc-600 line-clamp-3 leading-relaxed mt-1.5 font-sans font-medium">{c.description}</p>

@@ -665,9 +665,6 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
                       <MessageSquare className="h-3.5 w-3.5 text-zinc-400" />
                       <span>{c.arguments?.length || 0} Opinions</span>
                     </div>
-                    <span className="text-[11px] bg-amber-50 text-[#C9A227] px-2 py-0.5 border border-amber-200/50 rounded-lg font-black shrink-0">
-                      {totalVotes} Juror Votes
-                    </span>
                   </div>
                 </div>
               </div>

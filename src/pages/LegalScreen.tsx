@@ -266,10 +266,7 @@ export default function LegalScreen({ initialTab = 'disclaimer', setScreen }: Le
 
       </div>
 
-      {/* Safety Notice Banner */}
-      <div className="mt-8 rounded-3xl border border-dashed border-[#30363D] bg-[#161B22]/40 p-5 text-center text-xs text-zinc-400">
-        BeforeRegret is built with absolute human precision to support individuals making tough relationship choices. Read wisely, evaluate your safety first, and seek certified professional counseling for specialized, tailored relationship support.
-      </div>
+      {/* Safety Notice Banner removed as requested */}
     </div>
   );
 }
