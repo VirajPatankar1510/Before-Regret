@@ -327,7 +327,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
             triggerHeartExplosion(lastEvent.senderUid === currentUser?.uid, side as 'A' | 'B');
           } else if (lastEvent.type === 'battle_win') {
             playSynthSound('success');
-            showToast(`🏆 ${lastEvent.sender} won the Blowing Battle!`);
+            showToast(`🏆 ${lastEvent.sender} synchronized the most hearts in the Heart-Sync Challenge!`);
           } else if (lastEvent.type === 'join' && lastEvent.senderUid !== currentUser?.uid) {
             showToast(`💞 ${lastEvent.sender} has entered your Breath Chamber!`);
             playSynthSound('success');
@@ -1291,10 +1291,10 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               })()}
             </motion.div>
             <p className="text-xs font-black text-white uppercase tracking-widest animate-pulse px-4">
-              🔥 Quick Blow Battle Duel Triggered!
+              💖 Quick Heart-Sync Challenge Triggered!
             </p>
             <p className="text-[10px] text-zinc-300 max-w-xs px-6 font-semibold">
-              Blow near your microphone or type messages as fast as possible to fill your side of the screen with hearts! Battle lasts exactly 20 seconds!
+              Blow near your microphone or type messages as fast as possible to fill your side of the screen with hearts! Sync challenge lasts exactly 20 seconds!
             </p>
           </div>
         )}
@@ -1313,10 +1313,10 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               <h3 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-400 to-indigo-400">
                 {battleState.winner === 'tie' 
                   ? "It's a Tie! 🤝" 
-                  : `${battleState.winner === 'A' ? (sessionData?.partnerAName || 'Partner A') : (sessionData?.partnerBName || 'Partner B')} Wins! 🏆`}
+                  : `${battleState.winner === 'A' ? (sessionData?.partnerAName || 'Partner A') : (sessionData?.partnerBName || 'Partner B')} Won! 🏆`}
               </h3>
               <p className="text-[10px] text-zinc-300 font-extrabold uppercase tracking-widest font-sans">
-                {battleState.winner === 'tie' ? "Both of you are equally powerful!" : "The Heartblower Champion!"}
+                {battleState.winner === 'tie' ? "Both of you are equally synchronized!" : "The Heart-Sync Master! ❤️"}
               </p>
             </div>
             <p className="text-[9px] text-zinc-400 font-mono font-bold leading-relaxed animate-pulse max-w-xs">
@@ -1370,7 +1370,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               <div className="bg-amber-50 border border-amber-200 text-amber-950 p-3.5 rounded-2xl text-xs space-y-1 shadow-2xs">
                 <span className="font-black text-[11px] text-amber-800 uppercase tracking-wider block">⚠️ Microphone Denied / Offline</span>
                 <p className="text-[10px] text-zinc-600 leading-normal">
-                  Your browser blocked mic access (often due to iframe sandboxing or security policies). Don't worry! You can fully play and win the battle using the Custom Bubble Message field below.
+                  Your browser blocked mic access (often due to iframe sandboxing or security policies). Don't worry! You can fully play and connect using the Custom Bubble Message field below.
                 </p>
                 <button
                   onClick={toggleMicDetection}
