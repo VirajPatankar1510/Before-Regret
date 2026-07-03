@@ -46,6 +46,7 @@ interface FloatingBubble {
   size: number; // size in px
   color: string;
   delay: number;
+  senderUid?: string;
 }
 
 interface FloatingHeart {
@@ -107,6 +108,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
   // Links and UI states
   const [copiedLink, setCopiedLink] = useState(false);
   const [certificateGenerating, setCertificateGenerating] = useState(false);
+  const [partnerExitedName, setPartnerExitedName] = useState<string | null>(null);
 
   // Refs for mic stream & detection loop
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -279,14 +281,22 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
           const lastA = data.lastBlowA || 0;
           const lastB = data.lastBlowB || 0;
           const blowDiff = Math.abs(lastA - lastB);
-          if (lastA > 0 && lastB > 0 && blowDiff < 3500) {
+
+          const sessionCreatedAt = data.createdAt ? new Date(data.createdAt).getTime() : 0;
+          const timeSinceCreation = Date.now() - sessionCreatedAt;
+
+          const lastEndedAt = battle?.endedAt || 0;
+          const timeSinceLastBattle = Date.now() - lastEndedAt;
+
+          if (lastA > 0 && lastB > 0 && blowDiff < 3500 && timeSinceCreation >= 30000 && (lastEndedAt === 0 || timeSinceLastBattle > 300000)) {
             updateDoc(docRef, {
               battleState: {
                 status: 'countdown',
                 pAScore: 0,
                 pBScore: 0,
                 winner: null,
-                startedAt: Date.now()
+                startedAt: Date.now(),
+                endedAt: battle?.endedAt || null
               }
             }).catch(console.error);
           }
@@ -306,7 +316,8 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               lastEvent.bubbleId,
               lastEvent.x,
               lastEvent.size,
-              lastEvent.color
+              lastEvent.color,
+              lastEvent.senderUid
             );
           } else if (lastEvent.type === 'pop') {
             if (lastEvent.senderUid !== currentUser?.uid) {
@@ -323,6 +334,12 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
           } else if (lastEvent.type === 'join' && lastEvent.senderUid !== currentUser?.uid) {
             showToast(`💞 ${lastEvent.sender} has entered your Breath Chamber!`);
             playSynthSound('success');
+          } else if (lastEvent.type === 'exit' && lastEvent.senderUid !== currentUser?.uid) {
+            setPartnerExitedName(lastEvent.sender);
+            stopMic();
+            setTimeout(() => {
+              setScreen({ type: 'home' });
+            }, 5000);
           }
         }
       } else {
@@ -346,7 +363,8 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
     bubbleId?: string,
     xPos?: number,
     sizeVal?: number,
-    colorVal?: string
+    colorVal?: string,
+    senderUid?: string
   ) => {
     if (!isLocal) {
       playSynthSound('blow');
@@ -358,7 +376,8 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
       x: xPos !== undefined ? xPos : (15 + Math.random() * 70), // Keep within safety range
       size: sizeVal !== undefined ? sizeVal : (130 + Math.random() * 80),
       color: colorVal || getRandomPastelColor(),
-      delay: Math.random() * 0.2
+      delay: Math.random() * 0.2,
+      senderUid: senderUid || (isLocal ? currentUser?.uid : undefined)
     };
 
     setBubbles(prev => [...prev, newBubble]);
@@ -774,6 +793,28 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
     }
   };
 
+  const handleExitChamber = async () => {
+    stopMic();
+    if (sessionId && myName) {
+      try {
+        const docRef = doc(db, 'ldr-sessions', sessionId);
+        const fieldToClear = role === 'A' ? 'partnerAName' : 'partnerBName';
+        await updateDoc(docRef, {
+          [fieldToClear]: '',
+          lastEvent: {
+            type: 'exit',
+            sender: myName,
+            senderUid: currentUser?.uid || 'anonymous',
+            timestamp: Date.now()
+          }
+        });
+      } catch (err) {
+        console.error("Error exiting chamber:", err);
+      }
+    }
+    setScreen({ type: 'home' });
+  };
+
   // Render Setup/Form view if not in a room session
   if (!sessionId) {
     return (
@@ -898,13 +939,46 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
   return (
     <div className="max-w-4xl mx-auto py-4 px-2 sm:px-4 animate-fadeIn text-zinc-900 font-sans relative">
       
+      {/* Partner Exited Notification Modal */}
+      <AnimatePresence>
+        {partnerExitedName && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="bg-white border border-zinc-200 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center space-y-5 shadow-2xl relative overflow-hidden"
+            >
+              <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-pink-500 to-indigo-500" />
+              <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto text-pink-600 text-3xl">
+                🚪
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="text-lg font-black text-zinc-900 uppercase tracking-tight">Partner Left Chamber</h3>
+                <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                  <strong>{partnerExitedName}</strong> has exited the Couple Breath Chamber. You will be redirected to the home screen in a few seconds...
+                </p>
+              </div>
+              <button
+                onClick={() => setScreen({ type: 'home' })}
+                className="w-full py-2.5 rounded-xl bg-zinc-950 hover:bg-black text-white font-extrabold text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
+              >
+                Return to Home Screen Now
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Top Controller Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white border border-zinc-200 px-4 py-3 rounded-2xl shadow-sm mb-4">
         <button
-          onClick={() => {
-            stopMic();
-            setScreen({ type: 'home' });
-          }}
+          onClick={handleExitChamber}
           className="inline-flex items-center gap-1 text-xs font-extrabold uppercase tracking-wider text-zinc-500 hover:text-zinc-900 cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4" /> Exit Chamber
@@ -1020,7 +1094,13 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
             {bubbles.map(b => (
               <motion.div
                 key={b.id}
-                onClick={() => handlePopBubble(b.id, b.x)}
+                onClick={() => {
+                  if (b.senderUid === currentUser?.uid) {
+                    showToast("⚠️ You can't pop your own bubbles!");
+                    return;
+                  }
+                  handlePopBubble(b.id, b.x);
+                }}
                 initial={{ y: 520, x: `${b.x}%`, scale: 0.2, opacity: 0 }}
                 animate={{ 
                   y: -150, 
@@ -1235,7 +1315,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               <div className="bg-amber-50 border border-amber-200 text-amber-950 p-3.5 rounded-2xl text-xs space-y-1 shadow-2xs">
                 <span className="font-black text-[11px] text-amber-800 uppercase tracking-wider block">⚠️ Microphone Denied / Offline</span>
                 <p className="text-[10px] text-zinc-600 leading-normal">
-                  Your browser blocked mic access (often due to iframe sandboxing or security policies). Don't worry! You can fully play and win the battle using the manual buttons below.
+                  Your browser blocked mic access (often due to iframe sandboxing or security policies). Don't worry! You can fully play and win the battle using the Custom Bubble Message field below.
                 </p>
                 <button
                   onClick={toggleMicDetection}
@@ -1255,16 +1335,6 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
             )}
           </div>
         )}
-
-        {/* Quick Tap Bubble Blow Button - always available as an ultra-satisfying fallback/primary action */}
-        <button
-          onClick={() => handleReleaseBubble()}
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl border border-pink-200 bg-pink-50 hover:bg-pink-100 text-pink-700 text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shadow-sm"
-        >
-          <Wind className="h-4 w-4 text-pink-500 shrink-0" />
-          <span>💨 Tap to Blow Bubble (Manual Blow)</span>
-        </button>
-
 
         
         {/* Custom Message Field */}
