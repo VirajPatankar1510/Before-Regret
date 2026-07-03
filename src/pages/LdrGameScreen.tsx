@@ -56,6 +56,21 @@ interface FloatingHeart {
   color: string;
 }
 
+interface FloatingPopText {
+  id: string;
+  x: string;
+  text: string;
+}
+
+// Mood Ring Sky configurations
+const MOODS_DATA = [
+  { id: 'calm', name: '🌌 Calm Lavender', classes: 'from-[#0F172A] via-[#1E1B4B] to-[#3B0764]' },
+  { id: 'romantic', name: '💖 Romantic Rose', classes: 'from-[#4C0519] via-[#881337] to-[#1E1B4B]' },
+  { id: 'playful', name: '👾 Playful Neon', classes: 'from-[#172554] via-[#3B0764] to-[#1E1B4B]' },
+  { id: 'cozy', name: '🌅 Cozy Sunset', classes: 'from-[#451A03] via-[#78350F] to-[#1E1B4B]' },
+  { id: 'cosmic', name: '☄️ Cosmic Stardust', classes: 'from-[#030712] via-[#1F2937] to-[#111827]' },
+];
+
 export default function LdrGameScreen({ sessionId, setScreen, currentUser, showToast }: LdrGameScreenProps) {
   // Setup state
   const [partnerAName, setPartnerAName] = useState('');
@@ -84,6 +99,10 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
   // Floating elements arrays
   const [bubbles, setBubbles] = useState<FloatingBubble[]>([]);
   const [hearts, setHearts] = useState<FloatingHeart[]>([]);
+
+  // Popping Twist states
+  const [poppedCount, setPoppedCount] = useState(0);
+  const [popTexts, setPopTexts] = useState<FloatingPopText[]>([]);
 
   // Links and UI states
   const [copiedLink, setCopiedLink] = useState(false);
@@ -251,7 +270,27 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
         }
 
         // Presence awareness badge (are both names filled?)
-        setPresenceActive(!!data.partnerAName && !!data.partnerBName);
+        const bothNamesPresent = !!data.partnerAName && !!data.partnerBName;
+        setPresenceActive(bothNamesPresent);
+
+        // Check for auto-trigger of Blowing Battle Duel if both are online & blew in last 3.5s
+        const battle = data.battleState;
+        if (bothNamesPresent && (!battle || battle.status === 'idle') && role === 'A') {
+          const lastA = data.lastBlowA || 0;
+          const lastB = data.lastBlowB || 0;
+          const blowDiff = Math.abs(lastA - lastB);
+          if (lastA > 0 && lastB > 0 && blowDiff < 3500) {
+            updateDoc(docRef, {
+              battleState: {
+                status: 'countdown',
+                pAScore: 0,
+                pBScore: 0,
+                winner: null,
+                startedAt: Date.now()
+              }
+            }).catch(console.error);
+          }
+        }
 
         // Synchronized Event Dispatcher
         const lastEvent = data.lastEvent;
@@ -260,9 +299,27 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
 
           // Trigger local animation only if event is fresh
           if (lastEvent.type === 'blow') {
-            triggerFloatingBubble(lastEvent.text, lastEvent.sender, lastEvent.senderUid === currentUser?.uid);
+            triggerFloatingBubble(
+              lastEvent.text,
+              lastEvent.sender,
+              lastEvent.senderUid === currentUser?.uid,
+              lastEvent.bubbleId,
+              lastEvent.x,
+              lastEvent.size,
+              lastEvent.color
+            );
+          } else if (lastEvent.type === 'pop') {
+            if (lastEvent.senderUid !== currentUser?.uid) {
+              handlePopBubble(lastEvent.bubbleId, lastEvent.x, true);
+            }
           } else if (lastEvent.type === 'heart') {
             triggerHeartExplosion(lastEvent.senderUid === currentUser?.uid);
+          } else if (lastEvent.type === 'battle_blow') {
+            const side = lastEvent.text; // 'A' or 'B'
+            triggerHeartExplosion(lastEvent.senderUid === currentUser?.uid, side as 'A' | 'B');
+          } else if (lastEvent.type === 'battle_win') {
+            playSynthSound('success');
+            showToast(`🏆 ${lastEvent.sender} won the Blowing Battle!`);
           } else if (lastEvent.type === 'join' && lastEvent.senderUid !== currentUser?.uid) {
             showToast(`💞 ${lastEvent.sender} has entered your Breath Chamber!`);
             playSynthSound('success');
@@ -282,35 +339,52 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
   }, [sessionId, role, currentUser]);
 
   // Bubble floating trigger
-  const triggerFloatingBubble = (text: string, sender: string, isLocal: boolean) => {
+  const triggerFloatingBubble = (
+    text: string,
+    sender: string,
+    isLocal: boolean,
+    bubbleId?: string,
+    xPos?: number,
+    sizeVal?: number,
+    colorVal?: string
+  ) => {
     if (!isLocal) {
       playSynthSound('blow');
     }
     const newBubble: FloatingBubble = {
-      id: Math.random().toString(36).substring(2, 9),
+      id: bubbleId || Math.random().toString(36).substring(2, 9),
       text,
       sender,
-      x: 15 + Math.random() * 70, // Keep within safety range
-      size: 130 + Math.random() * 80,
-      color: getRandomPastelColor(),
+      x: xPos !== undefined ? xPos : (15 + Math.random() * 70), // Keep within safety range
+      size: sizeVal !== undefined ? sizeVal : (130 + Math.random() * 80),
+      color: colorVal || getRandomPastelColor(),
       delay: Math.random() * 0.2
     };
 
     setBubbles(prev => [...prev, newBubble]);
   };
 
-  // Heart burst cascade trigger
-  const triggerHeartExplosion = (isLocal: boolean) => {
+  // Heart burst cascade trigger (supports side-by-side bounding)
+  const triggerHeartExplosion = (isLocal: boolean, side?: 'A' | 'B') => {
     if (!isLocal) {
       playSynthSound('heart');
     }
-    const newHearts: FloatingHeart[] = Array.from({ length: 12 }).map((_, i) => ({
-      id: `heart_${Math.random().toString(36).substring(2, 9)}_${i}`,
-      x: 20 + Math.random() * 60,
-      size: 20 + Math.random() * 25,
-      rotation: -30 + Math.random() * 60,
-      color: ['#EC4899', '#F43F5E', '#D946EF', '#F472B6', '#FF85A1'][Math.floor(Math.random() * 5)]
-    }));
+    const count = side ? 7 : 12;
+    const newHearts: FloatingHeart[] = Array.from({ length: count }).map((_, i) => {
+      let xPos = 20 + Math.random() * 60;
+      if (side === 'A') {
+        xPos = 5 + Math.random() * 40; // Restrict to Left half
+      } else if (side === 'B') {
+        xPos = 55 + Math.random() * 40; // Restrict to Right half
+      }
+      return {
+        id: `heart_${Math.random().toString(36).substring(2, 9)}_${i}`,
+        x: xPos,
+        size: (side ? 16 : 20) + Math.random() * 20,
+        rotation: -30 + Math.random() * 60,
+        color: ['#EC4899', '#F43F5E', '#D946EF', '#F472B6', '#FF85A1'][Math.floor(Math.random() * 5)]
+      };
+    });
 
     setHearts(prev => [...prev, ...newHearts]);
     // Clean up hearts shortly after
@@ -332,27 +406,112 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
   };
 
   // Pop a bubble manually on click (very satisfying)
-  const handlePopBubble = (bubbleId: string) => {
+  const handlePopBubble = async (bubbleId: string, xPos: number, isFromPartner: boolean = false) => {
     playSynthSound('pop');
     setBubbles(prev => prev.filter(b => b.id !== bubbleId));
+    setPoppedCount(prev => prev + 1);
+
+    // Floating text label at pop site
+    const popId = Math.random().toString(36).substring(2, 9);
+    const popLabel = isFromPartner ? '💥 Partner Popped!' : '💥 Pop!';
+    setPopTexts(prev => [...prev, { id: popId, x: `${xPos}%`, text: popLabel }]);
+    setTimeout(() => {
+      setPopTexts(prev => prev.filter(p => p.id !== popId));
+    }, 1000);
 
     // Spawn mini heart cluster at bubble pop location
-    const popHearts = Array.from({ length: 4 }).map((_, i) => ({
+    const popHearts = Array.from({ length: 5 }).map((_, i) => ({
       id: `pop_heart_${Math.random().toString(36).substring(2, 9)}_${i}`,
-      x: Math.min(100, Math.max(0, 15 + Math.random() * 70)),
+      x: Math.min(100, Math.max(0, xPos - 6 + Math.random() * 12)),
       size: 15 + Math.random() * 10,
       rotation: -20 + Math.random() * 40,
-      color: '#EC4899'
+      color: ['#EC4899', '#F43F5E', '#D946EF', '#FF85A1'][Math.floor(Math.random() * 4)]
     }));
     setHearts(prev => [...prev, ...popHearts]);
     setTimeout(() => {
       setHearts(prev => prev.filter(h => !popHearts.some(nh => nh.id === h.id)));
-    }, 2500);
+    }, 2000);
+
+    // Sync pop to Firestore if it was a local click action
+    if (!isFromPartner && sessionId) {
+      try {
+        const docRef = doc(db, 'ldr-sessions', sessionId);
+        await updateDoc(docRef, {
+          lastEvent: {
+            type: 'pop',
+            sender: myName || 'Partner',
+            senderUid: currentUser?.uid || 'anonymous',
+            bubbleId,
+            x: xPos,
+            timestamp: Date.now()
+          }
+        });
+      } catch (err) {
+        console.error("Error syncing bubble pop to Firestore:", err);
+      }
+    }
+  };
+
+  // Register a competitive battle blow (Who Fills Fastest)
+  const registerBattleBlow = async () => {
+    if (!sessionId || !sessionData) return;
+    const battle = sessionData.battleState;
+    if (!battle || battle.status !== 'active' || !role) return;
+
+    const currentScore = role === 'A' ? (battle.pAScore || 0) : (battle.pBScore || 0);
+    const nextScore = currentScore + 1;
+    const hasWon = nextScore >= 15;
+
+    playSynthSound('heart');
+
+    try {
+      const docRef = doc(db, 'ldr-sessions', sessionId);
+      const updates: any = {
+        [`battleState.p${role}Score`]: nextScore,
+        lastEvent: {
+          type: 'battle_blow',
+          sender: myName || 'Partner',
+          senderUid: currentUser?.uid || 'anonymous',
+          text: role, // 'A' or 'B'
+          timestamp: Date.now()
+        }
+      };
+
+      if (hasWon) {
+        updates['battleState.status'] = 'ended';
+        updates['battleState.winner'] = role;
+        updates.lastEvent = {
+          type: 'battle_win',
+          sender: myName || 'Partner',
+          senderUid: currentUser?.uid || 'anonymous',
+          text: role, // 'A' or 'B' won
+          timestamp: Date.now()
+        };
+      }
+
+      await updateDoc(docRef, updates);
+    } catch (err) {
+      console.error("Error registering battle blow:", err);
+    }
   };
 
   // Blow bubble action (writes to Firestore)
   const handleReleaseBubble = async (textToUse?: string) => {
     if (!sessionId || !sessionData) return;
+
+    // Check if both partners are inside the chamber before blowing
+    const bothNamesPresent = !!sessionData.partnerAName && !!sessionData.partnerBName;
+    if (!bothNamesPresent) {
+      showToast("⚠️ Waiting for your partner to enter the chamber before you can blow bubbles!");
+      return;
+    }
+
+    // Check if the competitive battle duel is currently active
+    const isBattleActive = sessionData?.battleState?.status === 'active';
+    if (isBattleActive) {
+      await registerBattleBlow();
+      return;
+    }
 
     let text = textToUse || customText.trim();
     if (!text) {
@@ -362,28 +521,32 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
 
     playSynthSound('blow');
     const sender = myName || 'Partner';
-    const currentStress = sessionData.stressLevel || 100;
-    const currentHearts = sessionData.collectiveHearts || 0;
-    const nextStress = Math.max(0, currentStress - 5);
+    const fieldToUpdate = role === 'A' ? 'lastBlowA' : 'lastBlowB';
+
+    // Pre-calculate synchronized properties
+    const bubbleId = Math.random().toString(36).substring(2, 9);
+    const x = 15 + Math.random() * 70;
+    const size = 130 + Math.random() * 80;
+    const color = getRandomPastelColor();
 
     try {
       const docRef = doc(db, 'ldr-sessions', sessionId);
       await updateDoc(docRef, {
-        stressLevel: nextStress,
-        collectiveHearts: currentHearts + 1,
+        [fieldToUpdate]: Date.now(),
         lastEvent: {
           type: 'blow',
           sender,
           senderUid: currentUser?.uid || 'anonymous',
           text,
-          timestamp: Date.now()
+          bubbleId,
+          x,
+          size,
+          color,
+          timestamp: Date.now(),
+          isDoubleBlow: false
         }
       });
       setCustomText('');
-      if (nextStress === 0 && currentStress > 0) {
-        // Just reached 0% stress! Triumphant arpeggio
-        playSynthSound('success');
-      }
     } catch (err) {
       console.error("Error releasing bubble to Firestore:", err);
     }
@@ -393,28 +556,44 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
     handleReleaseBubbleRef.current = handleReleaseBubble;
   }, [handleReleaseBubble]);
 
-  // Send pure heart cascade (writes to Firestore)
-  const handleSendHeartSpark = async () => {
-    if (!sessionId || !sessionData) return;
-    playSynthSound('heart');
-    const sender = myName || 'Partner';
-    const currentHearts = sessionData.collectiveHearts || 0;
-    try {
+  // Synchronized countdown step for battle
+  useEffect(() => {
+    if (!sessionId || role !== 'A' || !sessionData) return;
+    const battle = sessionData.battleState;
+    if (!battle || battle.status !== 'countdown') return;
+
+    const timer = setInterval(() => {
+      const elapsed = Date.now() - (battle.startedAt || 0);
+      if (elapsed >= 3000) {
+        clearInterval(timer);
+        const docRef = doc(db, 'ldr-sessions', sessionId);
+        updateDoc(docRef, {
+          'battleState.status': 'active'
+        }).catch(console.error);
+      }
+    }, 250);
+
+    return () => clearInterval(timer);
+  }, [sessionId, role, sessionData]);
+
+  // Auto reset finished battle after 8 seconds
+  useEffect(() => {
+    if (!sessionId || role !== 'A' || !sessionData) return;
+    const battle = sessionData.battleState;
+    if (!battle || battle.status !== 'ended') return;
+
+    const timeout = setTimeout(() => {
       const docRef = doc(db, 'ldr-sessions', sessionId);
-      await updateDoc(docRef, {
-        collectiveHearts: currentHearts + 1,
-        lastEvent: {
-          type: 'heart',
-          sender,
-          senderUid: currentUser?.uid || 'anonymous',
-          text: '',
-          timestamp: Date.now()
-        }
-      });
-    } catch (err) {
-      console.error("Error sending heart to Firestore:", err);
-    }
-  };
+      updateDoc(docRef, {
+        'battleState.status': 'idle',
+        'battleState.pAScore': 0,
+        'battleState.pBScore': 0,
+        'battleState.winner': null
+      }).catch(console.error);
+    }, 8000);
+
+    return () => clearTimeout(timeout);
+  }, [sessionId, role, sessionData]);
 
   // Active mic level detection routine
   const toggleMicDetection = async () => {
@@ -568,12 +747,11 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
     if (!sessionId) return;
     try {
       await updateDoc(doc(db, 'ldr-sessions', sessionId), {
-        stressLevel: 100,
         lastEvent: {
           type: 'join',
           sender: myName || 'Partner',
           senderUid: currentUser?.uid || 'anonymous',
-          text: '🔄 Stress chamber recalibrated! Reset to 100%.',
+          text: '🔄 Stress chamber recalibrated!',
           timestamp: Date.now()
         }
       });
@@ -581,6 +759,18 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
       showToast("🔄 Couple Stress Chamber Reset successfully!");
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleChangeSkyMood = async (moodId: string) => {
+    if (!sessionId) return;
+    try {
+      const docRef = doc(db, 'ldr-sessions', sessionId);
+      await updateDoc(docRef, {
+        skyMood: moodId
+      });
+    } catch (err) {
+      console.error("Error setting sky mood:", err);
     }
   };
 
@@ -606,7 +796,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               Delulu Heartblower 💨
             </h1>
             <p className="text-xs sm:text-sm text-zinc-600 max-w-md mx-auto leading-relaxed">
-              Long distance wearing you down? Create an interactive stress-relief **Couple Breath Chamber**. Blow near your mic (or tap) to launch real-time text bubble messages and hearts onto your partner's screen!
+              Long distance wearing you down? Create an interactive **Couple Breath Chamber**. Blow near your mic to launch real-time text bubble messages and hearts onto your partner's screen!
             </p>
           </div>
 
@@ -664,7 +854,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               Join <span className="text-pink-500">{sessionData.partnerAName}</span> in the Breath Chamber!
             </h1>
             <p className="text-xs text-zinc-600 max-w-sm mx-auto leading-relaxed">
-              {sessionData.partnerAName} has invited you to a real-time stress relief session. Type your name below to connect and start blowing bubbles!
+              {sessionData.partnerAName} has invited you to a real-time session. Type your name below to connect and start blowing bubbles!
             </p>
           </div>
 
@@ -699,15 +889,17 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
     );
   }
 
-  const stress = sessionData?.stressLevel ?? 100;
-  const heartsCount = sessionData?.collectiveHearts ?? 0;
   const partnerName = role === 'A' ? (sessionData?.partnerBName || 'Waiting...') : (sessionData?.partnerAName || 'Partner');
+  const activeMoodId = sessionData?.skyMood || 'calm';
+  const activeMood = MOODS_DATA.find(m => m.id === activeMoodId) || MOODS_DATA[0];
+  const battleState = sessionData?.battleState;
+  const isBattleActive = battleState?.status === 'countdown' || battleState?.status === 'active';
 
   return (
     <div className="max-w-4xl mx-auto py-4 px-2 sm:px-4 animate-fadeIn text-zinc-900 font-sans relative">
       
       {/* Top Controller Bar */}
-      <div className="flex items-center justify-between gap-4 bg-white border border-zinc-200 px-4 py-3 rounded-2xl shadow-sm mb-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white border border-zinc-200 px-4 py-3 rounded-2xl shadow-sm mb-4">
         <button
           onClick={() => {
             stopMic();
@@ -718,7 +910,26 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
           <ArrowLeft className="h-4 w-4" /> Exit Chamber
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3">
+          {/* Popped statistics */}
+          <div className="bg-amber-50 text-amber-800 border border-amber-100 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full flex items-center gap-1 select-none">
+            🎈 Pops: <span className="text-xs font-mono font-black text-amber-600">{poppedCount}</span>
+          </div>
+
+          {/* Real-time Sky Mood Ring configuration dropdown */}
+          <div className="flex items-center gap-1 bg-zinc-50 border border-zinc-200 rounded-full px-2.5 py-1">
+            <span className="text-[9px] font-black uppercase text-zinc-400">Sky Mood:</span>
+            <select
+              value={activeMoodId}
+              onChange={(e) => handleChangeSkyMood(e.target.value)}
+              className="bg-transparent text-[10px] font-bold text-zinc-700 focus:outline-none cursor-pointer"
+            >
+              {MOODS_DATA.map(m => (
+                <option key={m.id} value={m.id}>{m.name}</option>
+              ))}
+            </select>
+          </div>
+
           {/* Sound toggle button */}
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
@@ -756,7 +967,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
           <div className="flex-1 max-w-md">
             {!presenceActive ? (
               <div className="space-y-1.5">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase block">Copy & Share link with partner:</span>
+                <span className="text-[10px] font-bold text-zinc-500 uppercase block">Copy & Share link with partner to connect:</span>
                 <div className="flex items-center gap-1.5 bg-[#FAF8F2] border border-zinc-200 rounded-xl px-3 py-2">
                   <span className="text-[10px] sm:text-xs font-mono text-zinc-600 truncate flex-1 select-all">
                     {window.location.origin}/ldr-game/{sessionId}
@@ -771,9 +982,11 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2 text-xs font-bold text-emerald-700">
-                <Users className="h-4 w-4 text-emerald-500 shrink-0 animate-pulse" />
-                <span>Both of you are fully connected! Start blowing into your microphone.</span>
+              <div className="flex flex-col gap-1 text-xs">
+                <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2 font-bold text-emerald-700">
+                  <Users className="h-4 w-4 text-emerald-500 shrink-0 animate-pulse" />
+                  <span>Both connected! Blow into your mic concurrently to trigger an automatic duel.</span>
+                </div>
               </div>
             )}
           </div>
@@ -781,13 +994,13 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
       </div>
 
       {/* Interactive Breath Area Canvas / Stage */}
-      <div className="relative h-[480px] bg-gradient-to-b from-[#0F172A] to-[#1E1B4B] rounded-3xl border-2 border-zinc-800 shadow-2xl overflow-hidden mb-4">
+      <div className={`relative h-[480px] bg-gradient-to-b ${activeMood.classes} rounded-3xl border-2 border-zinc-800 shadow-2xl overflow-hidden mb-4 transition-all duration-1000`}>
         
         {/* Background breathing glow */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(236,72,153,0.15),transparent_60%)] animate-pulse pointer-events-none" />
 
         {/* Float instructions layer */}
-        {bubbles.length === 0 && (
+        {bubbles.length === 0 && !isBattleActive && (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center space-y-3 select-none pointer-events-none z-0">
             <div className="p-4 bg-pink-500/10 border border-pink-500/20 rounded-full text-pink-400 animate-bounce">
               <Wind className="h-8 w-8" />
@@ -795,7 +1008,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
             <div className="space-y-1 max-w-sm">
               <h4 className="text-white font-extrabold text-sm sm:text-base">Couple Breath Stage</h4>
               <p className="text-xs text-[#AAB2C0]/75 leading-relaxed">
-                Your bubbles and hearts will float across this live-synced sky in real-time. Turn on your microphone or use the controllers below to blow.
+                Your bubbles and hearts float across this live-synced sky. Turn on your microphone or type a custom message to blow.
               </p>
             </div>
           </div>
@@ -807,7 +1020,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
             {bubbles.map(b => (
               <motion.div
                 key={b.id}
-                onClick={() => handlePopBubble(b.id)}
+                onClick={() => handlePopBubble(b.id, b.x)}
                 initial={{ y: 520, x: `${b.x}%`, scale: 0.2, opacity: 0 }}
                 animate={{ 
                   y: -150, 
@@ -866,7 +1079,116 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               <Heart className="fill-current animate-pulse" style={{ color: h.color, width: h.size, height: h.size }} />
             </motion.div>
           ))}
+
+          {/* Floating Pop Particles */}
+          {popTexts.map(pt => (
+            <motion.div
+              key={pt.id}
+              initial={{ y: 220, x: pt.x, scale: 0.5, opacity: 1 }}
+              animate={{ y: 150, scale: 1.3, opacity: 0 }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+              className="absolute text-sm font-black text-yellow-300 drop-shadow-[0_2px_8px_rgba(234,179,8,0.4)] pointer-events-none z-30"
+            >
+              {pt.text}
+            </motion.div>
+          ))}
         </div>
+
+        {/* Divided Half Sides in Blowing Battle Duel */}
+        {battleState && (battleState.status === 'active' || battleState.status === 'ended') && (
+          <div className="absolute inset-0 z-20 flex pointer-events-none">
+            {/* Left Half: Partner A */}
+            <div className="w-1/2 h-full border-r border-dashed border-white/20 relative overflow-hidden flex flex-col items-center justify-between py-12">
+              <motion.div 
+                className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-pink-500/30 to-rose-400/20 w-full"
+                animate={{ height: `${Math.min(100, ((battleState.pAScore || 0) / 15) * 100)}%` }}
+                transition={{ type: 'spring', damping: 15 }}
+              />
+              <div className="relative z-10 text-center space-y-1">
+                <span className="bg-pink-500/20 text-pink-300 border border-pink-500/30 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider block">
+                  {sessionData?.partnerAName || 'Partner A'}
+                </span>
+                <span className="text-3xl font-black text-white drop-shadow-md">
+                  {battleState.pAScore || 0} / 15
+                </span>
+              </div>
+              <div className="relative z-10 text-[9px] text-pink-300/60 font-mono font-bold tracking-widest uppercase">
+                {sessionData?.partnerAName || 'Partner A'}
+              </div>
+            </div>
+
+            {/* Right Half: Partner B */}
+            <div className="w-1/2 h-full relative overflow-hidden flex flex-col items-center justify-between py-12">
+              <motion.div 
+                className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-indigo-500/30 to-purple-400/20 w-full"
+                animate={{ height: `${Math.min(100, ((battleState.pBScore || 0) / 15) * 100)}%` }}
+                transition={{ type: 'spring', damping: 15 }}
+              />
+              <div className="relative z-10 text-center space-y-1">
+                <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider block">
+                  {sessionData?.partnerBName || 'Partner B'}
+                </span>
+                <span className="text-3xl font-black text-white drop-shadow-md">
+                  {battleState.pBScore || 0} / 15
+                </span>
+              </div>
+              <div className="relative z-10 text-[9px] text-indigo-300/60 font-mono font-bold tracking-widest uppercase">
+                {sessionData?.partnerBName || 'Partner B'}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Countdown Overlay */}
+        {battleState && battleState.status === 'countdown' && (
+          <div className="absolute inset-0 z-30 bg-black/60 backdrop-blur-xs flex flex-col items-center justify-center text-center space-y-4">
+            <motion.div
+              key={Math.floor((Date.now() - (battleState.startedAt || 0)) / 1000)}
+              initial={{ scale: 0.2, opacity: 0 }}
+              animate={{ scale: 1.2, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 120 }}
+              className="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-indigo-400 drop-shadow-xl"
+            >
+              {(() => {
+                const elapsed = Date.now() - (battleState.startedAt || 0);
+                if (elapsed < 1000) return "3";
+                if (elapsed < 2000) return "2";
+                if (elapsed < 3000) return "1";
+                return "💨 GO!";
+              })()}
+            </motion.div>
+            <p className="text-xs font-black text-white uppercase tracking-widest animate-pulse px-4">
+              🔥 Quick Blow Battle Duel Triggered!
+            </p>
+            <p className="text-[10px] text-zinc-300 max-w-xs px-6 font-semibold">
+              Blow near your microphone or type messages as fast as possible to fill your side of the screen with hearts! First to 15 wins!
+            </p>
+          </div>
+        )}
+
+        {/* Winner Announcement Overlay */}
+        {battleState && battleState.status === 'ended' && (
+          <div className="absolute inset-0 z-40 bg-black/75 backdrop-blur-sm flex flex-col items-center justify-center text-center space-y-4 p-6">
+            <motion.div
+              initial={{ scale: 0.5, rotate: -15, opacity: 0 }}
+              animate={{ scale: 1, rotate: 0, opacity: 1 }}
+              className="w-14 h-14 bg-yellow-500/10 border border-yellow-500/30 rounded-2xl flex items-center justify-center text-yellow-500"
+            >
+              <Trophy className="h-7 w-7 animate-bounce" />
+            </motion.div>
+            <div className="space-y-1.5">
+              <h3 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-400 to-indigo-400">
+                {battleState.winner === 'A' ? (sessionData?.partnerAName || 'Partner A') : (sessionData?.partnerBName || 'Partner B')} Wins! 🏆
+              </h3>
+              <p className="text-[10px] text-zinc-300 font-extrabold uppercase tracking-widest font-sans">
+                The Heartblower Champion!
+              </p>
+            </div>
+            <p className="text-[9px] text-zinc-400 font-mono font-bold leading-relaxed animate-pulse max-w-xs">
+              Recalibrating Breath Chamber & returning to interactive mode shortly...
+            </p>
+          </div>
+        )}
 
         {/* Inflation Visualizer for mic detector */}
         {isInflating && (
@@ -874,9 +1196,9 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
             <motion.div
               initial={{ scale: 0.2, opacity: 0 }}
               animate={{ scale: 1.2, opacity: 0.8 }}
-              className="w-16 h-16 rounded-full bg-pink-500/40 border-2 border-white flex items-center justify-center text-white"
+              className="w-14 h-14 rounded-full bg-pink-500/40 border-2 border-white flex items-center justify-center text-white"
             >
-              <Wind className="h-6 w-6 animate-pulse" />
+              <Wind className="h-5 w-5 animate-pulse" />
             </motion.div>
           </div>
         )}
@@ -890,23 +1212,60 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
       {/* Blowing & Releasing Controllers Dashboard */}
       <div className="bg-white border border-zinc-200 rounded-3xl p-5 shadow-sm space-y-4">
         
-        {/* Core Control Buttons - microphone button shown only if not allowed/granted */}
-        {(!micActive && !micPermissionGranted) && (
-          <div className="flex flex-col items-stretch gap-2.5">
-            {/* Microphone Blow Detector activation */}
+        {/* Core Control Buttons - microphone status or manual toggle */}
+        {micActive ? (
+          <div className="bg-emerald-50 border border-emerald-100 text-emerald-950 p-3.5 rounded-2xl text-xs flex items-center justify-between gap-3 shadow-xs">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping shrink-0" />
+              <div className="space-y-0.5">
+                <span className="font-black text-[11px] text-emerald-800 uppercase tracking-wider block">🎙️ Mic Detector Active</span>
+                <p className="text-[10px] text-zinc-600 leading-normal">Blow gently near your microphone to launch bubble messages in real-time!</p>
+              </div>
+            </div>
             <button
-              onClick={toggleMicDetection}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-zinc-900 bg-zinc-900 hover:bg-black text-white text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
+              onClick={stopMic}
+              className="text-[10px] font-bold bg-white border border-emerald-200 text-emerald-800 hover:bg-emerald-100 px-3 py-1.5 rounded-xl cursor-pointer shrink-0 transition-colors shadow-2xs"
             >
-              <Mic className="h-4 w-4 text-pink-500 shrink-0" />
-              <span>Enable Mic Blow Detector 🎙️</span>
+              Disable
             </button>
-            
-            <p className="text-[10px] text-zinc-500 text-center leading-normal">
-              🎙️ Please grant microphone permissions to use your voice or breath to blow bubbles automatically!
-            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col items-stretch gap-2.5">
+            {micPermissionDenied ? (
+              <div className="bg-amber-50 border border-amber-200 text-amber-950 p-3.5 rounded-2xl text-xs space-y-1 shadow-2xs">
+                <span className="font-black text-[11px] text-amber-800 uppercase tracking-wider block">⚠️ Microphone Denied / Offline</span>
+                <p className="text-[10px] text-zinc-600 leading-normal">
+                  Your browser blocked mic access (often due to iframe sandboxing or security policies). Don't worry! You can fully play and win the battle using the manual buttons below.
+                </p>
+                <button
+                  onClick={toggleMicDetection}
+                  className="mt-1 text-[9px] font-bold text-amber-800 bg-white hover:bg-amber-100 border border-amber-200 px-2 py-1 rounded-lg cursor-pointer transition-colors"
+                >
+                  Retry Mic Access
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={toggleMicDetection}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-zinc-900 bg-zinc-900 hover:bg-black text-white text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
+              >
+                <Mic className="h-4 w-4 text-pink-500 shrink-0 animate-pulse" />
+                <span>Enable Mic Blow Detector 🎙️</span>
+              </button>
+            )}
           </div>
         )}
+
+        {/* Quick Tap Bubble Blow Button - always available as an ultra-satisfying fallback/primary action */}
+        <button
+          onClick={() => handleReleaseBubble()}
+          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl border border-pink-200 bg-pink-50 hover:bg-pink-100 text-pink-700 text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shadow-sm"
+        >
+          <Wind className="h-4 w-4 text-pink-500 shrink-0" />
+          <span>💨 Tap to Blow Bubble (Manual Blow)</span>
+        </button>
+
+
         
         {/* Custom Message Field */}
         <div className="pt-2 border-t border-zinc-100 space-y-2.5">
@@ -917,8 +1276,8 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               maxLength={80}
               value={customText}
               onChange={(e) => setCustomText(e.target.value)}
-              placeholder="E.g., Maya's sweater is technically Liam's sweater now..."
-              className="w-full bg-[#FAF8F2] border border-zinc-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-zinc-800 placeholder:text-[10px] sm:placeholder:text-[11px] placeholder-zinc-400 focus:outline-none focus:border-pink-500"
+              placeholder="E.g., I miss you..."
+              className="w-full bg-[#FAF8F2] border border-zinc-200 rounded-xl px-3 py-2 text-[10px] sm:text-xs font-semibold text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-pink-500 placeholder:text-[9px] sm:placeholder:text-[10px]"
             />
             <button
               onClick={() => handleReleaseBubble()}
@@ -931,7 +1290,7 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
         </div>
  
         {/* Trending Presets Chips */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 pt-1">
           <span className="text-[9px] font-black uppercase tracking-wider text-zinc-400 block">Viral Delulu Presets:</span>
           <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
             {RELATABLE_BUBBLE_MESSAGES.slice(0, 10).map((msg, idx) => (
@@ -946,107 +1305,6 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
           </div>
         </div>
       </div>
-
-      {/* Triumphed Distance Defeated Overlay Modal */}
-      {stress === 0 && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn text-zinc-900">
-          <div className="w-full max-w-xl bg-white border-2 border-pink-500/30 shadow-2xl rounded-3xl p-6 text-center relative overflow-hidden">
-            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600" />
-            
-            <div className="mx-auto w-14 h-14 bg-pink-50 border border-pink-300 rounded-2xl flex items-center justify-center text-pink-500 mb-4 animate-bounce">
-              <Trophy className="h-6 w-6" />
-            </div>
-
-            <h2 className="text-xl sm:text-2xl font-black text-zinc-900 uppercase tracking-tight">
-              Distance Defeated! 🎉
-            </h2>
-            <p className="text-xs text-zinc-500 mt-1 mb-6 leading-relaxed font-semibold max-w-sm mx-auto">
-              You both blew away all LDR stress! Download your customized official certificate below to share on TikTok/Instagram and let everyone know you are **100% Truelulu**!
-            </p>
-
-            {/* DOWNLOADABLE CERTIFICATE CONTAINER CARD */}
-            <div 
-              id="exemption-certificate-download"
-              className="p-6 sm:p-8 border-4 border-double border-zinc-200 rounded-2xl bg-gradient-to-br from-[#FAF8F2] to-white text-center relative shadow-sm mb-6 max-w-md mx-auto select-none"
-            >
-              {/* Seal details */}
-              <div className="absolute top-4 right-4 text-right flex flex-col items-end">
-                <span className="text-[6px] font-bold text-zinc-400 font-mono">CERTIFICATE ID</span>
-                <span className="text-[7px] font-mono text-zinc-500 font-bold">#BR-LDR-{sessionId.toUpperCase()}</span>
-              </div>
-
-              {/* Certificate header */}
-              <div className="space-y-1 mb-6">
-                <span className="text-[10px] font-black uppercase tracking-widest text-pink-500 font-mono block">OFFICIAL EXEMPTION FROM DISTANCE</span>
-                <h3 className="text-base font-black text-zinc-900 tracking-tight uppercase border-b border-zinc-200 pb-2">BeforeRegret Truelulu Certificate</h3>
-              </div>
-
-              {/* Declared names */}
-              <div className="space-y-4 mb-6">
-                <p className="text-[10px] text-zinc-400 italic">This document certifies that the couple:</p>
-                <div className="text-base sm:text-lg font-black text-zinc-900 tracking-wide font-sans">
-                  {sessionData?.partnerAName} & {sessionData?.partnerBName || 'Liam'}
-                </div>
-                <p className="text-[9px] text-zinc-500 max-w-xs mx-auto leading-relaxed">
-                  Have successfully completed the synchronized LDR stress-relief challenge, cleared their couple stress index, and have officially been declared:
-                </p>
-                <div className="inline-block bg-pink-100 border border-pink-200 text-pink-700 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider animate-pulse">
-                  🏆 100% Truelulu Soulmates
-                </div>
-              </div>
-
-              {/* Statistics details */}
-              <div className="grid grid-cols-2 gap-2 border-t border-zinc-150 pt-4 text-left">
-                <div>
-                  <span className="text-[7px] font-black text-zinc-400 font-mono uppercase block">CHALLENGE TIME</span>
-                  <span className="text-[9px] font-bold text-zinc-700 font-mono">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-[7px] font-black text-zinc-400 font-mono uppercase block">COLLECTIVE HEARTS SENT</span>
-                  <span className="text-[9px] font-bold text-pink-600 font-mono flex items-center justify-end gap-0.5">
-                    {heartsCount} <Heart className="h-2.5 w-2.5 fill-pink-500 text-pink-500 inline" />
-                  </span>
-                </div>
-              </div>
-
-              {/* Watermark badge */}
-              <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-center gap-1.5 text-[8px] text-zinc-400">
-                <Sparkle className="h-3 w-3 text-pink-400" />
-                <span>Verified in the BeforeRegret Relationship Court</span>
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <button
-                onClick={handleDownloadCertificate}
-                disabled={certificateGenerating}
-                className="w-full flex items-center justify-center gap-1.5 py-3 border border-pink-200 hover:bg-pink-50 disabled:bg-zinc-100 text-pink-600 rounded-xl text-xs font-bold transition-all cursor-pointer"
-              >
-                {certificateGenerating ? (
-                  <>
-                    <div className="h-3 w-3 border-2 border-pink-500 border-t-transparent rounded-full animate-spin" />
-                    <span>Saving Certificate...</span>
-                  </>
-                ) : (
-                  <>
-                    <Download className="h-4 w-4" />
-                    <span>Save Certificate (PNG)</span>
-                  </>
-                )}
-              </button>
-
-              <button
-                onClick={handleResetChamber}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-xs font-black text-white transition-all uppercase tracking-wider shadow-md cursor-pointer flex items-center justify-center gap-1.5"
-              >
-                <RefreshCw className="h-4 w-4" />
-                <span>Play Again (Reset Gauge)</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
