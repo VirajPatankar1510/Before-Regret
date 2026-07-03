@@ -24,6 +24,7 @@ import HubScreen from './pages/HubScreen';
 import AdminFeedScreen from './pages/AdminFeedScreen';
 import LegalScreen from './pages/LegalScreen';
 import GuidesScreen, { GUIDE_ARTICLES } from './pages/GuidesScreen';
+import LdrGameScreen from './pages/LdrGameScreen';
 // Core State and Seeding
 import { getInitialState, saveState } from './data/store';
 import { PRESEEDED_SITUATIONS, COUNTRIES_DATA } from './data/mockData';
@@ -181,6 +182,12 @@ export function parsePath(pathname: string): { type: string; slug?: string } {
   if (first === 'lodge' || first === 'submit' || first === 'submit-story') {
     return { type: 'question_list' };
   }
+  if (first === 'ldr-game' || first === 'heartblower' || first === 'bubble-blow' || first === 'delulu') {
+    if (parts[1]) {
+      return { type: 'ldr_game', slug: parts[1] };
+    }
+    return { type: 'ldr_game' };
+  }
 
   // Fallback
   return { type: 'home' };
@@ -251,6 +258,11 @@ export function getRelativePath(screen: { type: string; slug?: string }, store?:
       return `/legal/${screen.slug || 'disclaimer'}`;
     case 'submit_story':
       return '/boards';
+    case 'ldr_game':
+      if (screen.slug) {
+        return `/ldr-game/${screen.slug}`;
+      }
+      return '/ldr-game';
     default:
       return '/';
   }
@@ -2796,6 +2808,15 @@ export default function App() {
           <GuidesScreen
             setScreen={setScreen}
             slug={currentScreen.slug}
+          />
+        )}
+
+        {currentScreen.type === 'ldr_game' && (
+          <LdrGameScreen
+            sessionId={currentScreen.slug}
+            setScreen={setScreen}
+            currentUser={currentUser}
+            showToast={showToast}
           />
         )}
       </main>
