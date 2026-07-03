@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, ExternalLink, Tag, Compass, Shield } from 'lucide-react';
+import { Tag, Compass, Shield } from 'lucide-react';
 import AdminPanel from './AdminPanel';
 
 interface FooterProps {
@@ -11,13 +11,6 @@ interface FooterProps {
 export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
-  const resources = [
-    { name: "National Domestic Violence Support", link: "https://thehotline.org" },
-    { name: "Loveisrespect (Teen Counseling)", link: "https://loveisrespect.org" },
-    { name: "BetterHelp Couples Therapy Directory", link: "https://betterhelp.com" },
-    { name: "Gottman Institute Relationship Method", link: "https://gottman.com" }
-  ];
-
   const popularTags = [
     { name: "Marriage Commitment", code: "marriage" },
     { name: "Trust & Infidelity", code: "cheating" },
@@ -28,7 +21,7 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
   return (
     <footer className="mt-auto border-t border-[#30363D] bg-[#090D13] py-12 text-[#AAB2C0] transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
           
           {/* Column 1: Info and Tagline */}
           <div className="space-y-4">
@@ -79,7 +72,7 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
                   href="/will-i-regret"
                   onClick={(e) => {
                     e.preventDefault();
-                    setScreen({ type: 'hub', slug: 'will-i-regret' });
+                    setScreen({ type: 'will-i-regret' });
                   }} 
                   className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
                 >
@@ -142,30 +135,6 @@ export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProp
                     className="hover:text-white transition-colors text-left flex items-center gap-1"
                   >
                     <span className="text-[#AAB2C0]">#</span>{tag.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 4: Help Resources */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
-              <Heart className="h-3.5 w-3.5 text-[#FF5D5D]" /> Crisis & Therapy Resources
-            </h3>
-            <p className="text-[11px] leading-relaxed text-zinc-400">
-              If you are in an unsafe or emotionally abusive situation, direct counseling can help:
-            </p>
-            <ul className="space-y-2 text-xs">
-              {resources.map((r, i) => (
-                <li key={i}>
-                  <a 
-                    href={r.link} 
-                    target="_blank" 
-                    rel="noreferrer noopener" 
-                    className="hover:text-white transition-colors underline flex items-center gap-1 text-[11px]"
-                  >
-                    {r.name} <ExternalLink className="h-2.5 w-2.5 text-zinc-500 shrink-0" />
                   </a>
                 </li>
               ))}
