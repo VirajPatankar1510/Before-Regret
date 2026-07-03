@@ -922,6 +922,70 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
 
       </ScrollRevealSection>
 
+      {/* SECTION: DELULU HEARTBLOWER GAME PROMO BANNER */}
+      <ScrollRevealSection 
+        onClick={() => setScreen({ type: 'ldr_game' })}
+        className="rounded-2xl border-2 border-pink-500 bg-gradient-to-r from-rose-950 via-pink-950 to-indigo-950 p-6 sm:p-8 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:scale-[1.02] hover:border-pink-400 hover:shadow-pink-500/20 transition-all duration-300 relative overflow-hidden group"
+      >
+        {/* Animated background glows */}
+        <div className="absolute -top-12 -right-12 w-48 h-48 bg-pink-500/20 rounded-full blur-3xl pointer-events-none group-hover:bg-pink-500/30 transition-all duration-500" />
+        <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none group-hover:bg-indigo-500/30 transition-all duration-500" />
+        
+        {/* Playful Floating Hearts & Bubbles Animation in Background */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-70">
+          {[
+            { id: 1, text: '❤️', x: '10%', size: 16, delay: 0, duration: 6 },
+            { id: 2, text: '🫧', x: '25%', size: 20, delay: 1.5, duration: 8 },
+            { id: 3, text: '❤️', x: '60%', size: 14, delay: 3, duration: 5 },
+            { id: 4, text: '🫧', x: '80%', size: 18, delay: 0.5, duration: 7 },
+            { id: 5, text: '❤️', x: '45%', size: 12, delay: 2, duration: 6.5 },
+            { id: 6, text: '🫧', x: '90%', size: 22, delay: 4, duration: 9 },
+          ].map((item) => (
+            <motion.div
+              key={item.id}
+              initial={{ y: '120%', x: item.x, opacity: 0, scale: 0.8 }}
+              animate={{ 
+                y: '-20%', 
+                opacity: [0, 1, 1, 0],
+                scale: [0.8, 1.1, 1, 0.9]
+              }}
+              transition={{
+                duration: item.duration,
+                repeat: Infinity,
+                delay: item.delay,
+                ease: 'easeInOut'
+              }}
+              style={{ fontSize: item.size }}
+              className="absolute font-sans select-none drop-shadow-[0_0_8px_rgba(236,72,153,0.5)]"
+            />
+          ))}
+        </div>
+        
+        <div className="space-y-3 relative z-10 max-w-2xl">
+          <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider font-mono shadow-md animate-bounce">
+            ✨ Interactive Couple Play
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-white font-display flex items-center gap-2 tracking-tight">
+            Delulu Heartblower: <span className="text-pink-400 drop-shadow-[0_0_12px_rgba(244,63,94,0.4)]">Couple Bubble Blow</span> ❤️
+          </h2>
+          <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-medium">
+            Connect instantly with your partner in a shared private chamber. Blow into your mic to launch real-time floating message bubbles & hearts. Enjoy a playful 20-second Quick Heart-Sync Challenge 45 seconds after entering!
+          </p>
+        </div>
+        
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setScreen({ type: 'ldr_game' });
+          }}
+          className="bg-gradient-to-r from-pink-500 via-rose-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white text-xs font-black px-6 py-3.5 rounded-xl flex items-center gap-2 transition-all shadow-xl shadow-pink-500/20 shrink-0 uppercase tracking-widest font-mono cursor-pointer relative z-10 border border-pink-400/30"
+        >
+          Enter Chamber ❤️ <ArrowRight className="h-4 w-4 animate-pulse" />
+        </motion.button>
+      </ScrollRevealSection>
+
       {/* SECTION: RED FLAG METER PROMO BANNER */}
       <ScrollRevealSection 
         onClick={() => setScreen({ type: 'red_flag_meter' })}
