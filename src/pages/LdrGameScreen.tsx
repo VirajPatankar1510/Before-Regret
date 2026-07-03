@@ -73,8 +73,13 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
   const [customText, setCustomText] = useState('');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [micActive, setMicActive] = useState(false);
+  const [micPermissionGranted, setMicPermissionGranted] = useState(false);
+  const [micPermissionDenied, setMicPermissionDenied] = useState(false);
   const [isInflating, setIsInflating] = useState(false);
   const [inflationProgress, setInflationProgress] = useState(0);
+
+  // Ref to always have the latest bubble blower function in requestAnimationFrame
+  const handleReleaseBubbleRef = useRef<any>(null);
 
   // Floating elements arrays
   const [bubbles, setBubbles] = useState<FloatingBubble[]>([]);
@@ -384,6 +389,10 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
     }
   };
 
+  useEffect(() => {
+    handleReleaseBubbleRef.current = handleReleaseBubble;
+  }, [handleReleaseBubble]);
+
   // Send pure heart cascade (writes to Firestore)
   const handleSendHeartSpark = async () => {
     if (!sessionId || !sessionData) return;
@@ -430,6 +439,8 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
         source.connect(analyser);
 
         setMicActive(true);
+        setMicPermissionGranted(true);
+        setMicPermissionDenied(false);
         showToast("🎙️ Microphone blow detector calibrated! Blow near your mic.");
 
         const bufferLength = analyser.frequencyBinCount;
@@ -456,9 +467,11 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
               setIsInflating(true);
               setInflationProgress(100);
               
-              // Release a randomized cute bubble
+              // Release a randomized cute bubble via the latest ref closure
               setTimeout(() => {
-                handleReleaseBubble();
+                if (handleReleaseBubbleRef.current) {
+                  handleReleaseBubbleRef.current();
+                }
                 setIsInflating(false);
                 setInflationProgress(0);
               }, 600);
@@ -471,8 +484,10 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
 
       } catch (err) {
         console.error("Microphone access denied or error:", err);
-        showToast("⚠️ Microphone access declined. Try tapping 'Tap to Blow' instead!");
+        showToast("⚠️ Microphone access declined. Please enable microphone permissions in your browser settings!");
         setMicActive(false);
+        setMicPermissionDenied(true);
+        setMicPermissionGranted(false);
       }
     }
   };
@@ -492,6 +507,16 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
     }
     setMicActive(false);
   };
+
+  // Automatically trigger microphone pop-up on mounting/active session
+  useEffect(() => {
+    if (sessionId && role && !micActive && !micPermissionGranted && !micPermissionDenied) {
+      const timer = setTimeout(() => {
+        toggleMicDetection();
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [sessionId, role, micActive, micPermissionGranted, micPermissionDenied]);
 
   useEffect(() => {
     return () => {
@@ -718,77 +743,40 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
         </div>
       </div>
 
-      {/* Synchronized Stress Gauge Board */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        {/* Left Card: LDR stress meter */}
-        <div className="md:col-span-2 bg-gradient-to-br from-white to-zinc-50 border border-zinc-200 rounded-3xl p-5 shadow-sm space-y-3 flex flex-col justify-between">
-          <div className="flex items-start justify-between">
-            <div className="space-y-0.5">
-              <span className="text-[9px] font-mono font-bold tracking-wider text-indigo-500 uppercase">COUPLE DE-STRESS GAUGE</span>
-              <h2 className="text-lg font-black text-zinc-900 flex items-center gap-1">
-                {role === 'A' ? myName : sessionData?.partnerAName} <span className="text-pink-400 text-sm">❤️</span> {role === 'B' ? myName : (sessionData?.partnerBName || 'Liam')}
-              </h2>
-            </div>
-            <div className="text-right">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase block font-mono">Stress Level</span>
-              <span className={`text-xl font-black font-mono tracking-tight ${stress > 50 ? 'text-amber-500' : 'text-emerald-500'}`}>
-                {stress}%
-              </span>
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <div className="w-full bg-zinc-200 h-3 rounded-full overflow-hidden relative">
-              <div 
-                className="bg-gradient-to-r from-emerald-500 via-pink-500 to-indigo-600 h-full rounded-full transition-all duration-700"
-                style={{ width: `${stress}%` }}
-              />
-            </div>
-            <div className="flex justify-between text-[9px] text-zinc-400 font-bold font-mono">
-              <span>🟢 Defeated (0%)</span>
-              <span>⚠️ Critical (100%)</span>
-            </div>
-          </div>
-
-          <p className="text-[11px] text-zinc-600 font-medium font-sans">
-            Every breath and bubble blown releases distance stress by **5%**. Get the meter to 0% to defeat the distance and generate your Exemption Certificate!
-          </p>
-        </div>
-
-        {/* Right Card: Stats & Invite */}
-        <div className="bg-white border border-zinc-200 rounded-3xl p-5 shadow-sm flex flex-col justify-between space-y-3">
+      {/* Session Details & Invitation Card */}
+      <div className="bg-white border border-zinc-200 rounded-3xl p-5 shadow-sm space-y-4 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <span className="text-[9px] font-mono font-bold tracking-wider text-pink-500 uppercase block">COLLECTIVE HEARTS</span>
-            <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-3xl font-black text-zinc-900 font-mono">{heartsCount}</span>
-              <Heart className="h-5 w-5 text-pink-500 fill-pink-500 animate-pulse inline shrink-0" />
-            </div>
+            <span className="text-[9px] font-mono font-bold tracking-wider text-pink-500 uppercase block">COUPLE SYNC CHAMBER</span>
+            <h2 className="text-xl font-black text-zinc-900 flex items-center gap-1.5 mt-0.5">
+              {role === 'A' ? myName : sessionData?.partnerAName} <span className="text-pink-400">❤️</span> {role === 'B' ? myName : (sessionData?.partnerBName || 'Liam')}
+            </h2>
           </div>
-
-          {!presenceActive && (
-            <div className="space-y-2 border-t border-zinc-100 pt-2.5">
-              <span className="text-[9px] font-bold text-zinc-500 uppercase block">Share link with partner:</span>
-              <div className="flex items-center gap-1.5 bg-[#FAF8F2] border border-zinc-200 rounded-xl px-2.5 py-1.5">
-                <span className="text-[10px] font-mono text-zinc-600 truncate flex-1">
-                  {window.location.origin}/ldr-game/{sessionId}
-                </span>
-                <button
-                  onClick={handleCopyLink}
-                  className="p-1 rounded-lg border border-zinc-300 hover:bg-zinc-100 text-pink-600 transition-colors shrink-0 cursor-pointer"
-                  title="Copy Link"
-                >
-                  {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
-                </button>
+          
+          <div className="flex-1 max-w-md">
+            {!presenceActive ? (
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-bold text-zinc-500 uppercase block">Copy & Share link with partner:</span>
+                <div className="flex items-center gap-1.5 bg-[#FAF8F2] border border-zinc-200 rounded-xl px-3 py-2">
+                  <span className="text-[10px] sm:text-xs font-mono text-zinc-600 truncate flex-1 select-all">
+                    {window.location.origin}/ldr-game/{sessionId}
+                  </span>
+                  <button
+                    onClick={handleCopyLink}
+                    className="p-1 rounded-lg border border-zinc-300 hover:bg-zinc-100 text-pink-600 transition-colors shrink-0 cursor-pointer"
+                    title="Copy Link"
+                  >
+                    {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-
-          {presenceActive && (
-            <div className="border-t border-zinc-100 pt-2.5 flex items-center gap-2 text-xs font-semibold text-zinc-500">
-              <Users className="h-4 w-4 text-emerald-500 shrink-0" />
-              <span>Both partners are in the chamber!</span>
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2 text-xs font-bold text-emerald-700">
+                <Users className="h-4 w-4 text-emerald-500 shrink-0 animate-pulse" />
+                <span>Both of you are fully connected! Start blowing into your microphone.</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -902,72 +890,46 @@ export default function LdrGameScreen({ sessionId, setScreen, currentUser, showT
       {/* Blowing & Releasing Controllers Dashboard */}
       <div className="bg-white border border-zinc-200 rounded-3xl p-5 shadow-sm space-y-4">
         
-        {/* Core Control Buttons */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          
-          {/* Microphone Blow Detector activation */}
-          <button
-            onClick={toggleMicDetection}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer ${
-              micActive 
-                ? "bg-red-500 border-red-500 hover:bg-red-600 text-white animate-pulse" 
-                : "bg-zinc-900 border-zinc-900 hover:bg-black text-white"
-            }`}
-          >
-            {micActive ? (
-              <>
-                <MicOff className="h-4 w-4 shrink-0" />
-                <span>Disable Mic Blow Detector</span>
-              </>
-            ) : (
-              <>
-                <Mic className="h-4 w-4 text-pink-500 shrink-0" />
-                <span>Enable Mic Blow Detector 🎙️</span>
-              </>
-            )}
-          </button>
-
-          {/* Quick Release Button */}
-          <button
-            onClick={() => handleReleaseBubble()}
-            className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
-          >
-            <Wind className="h-4 w-4 text-pink-200" />
-            <span>Tap to Blow Bubble 💨</span>
-          </button>
-
-          {/* Heart Spark Burst Trigger */}
-          <button
-            onClick={handleSendHeartSpark}
-            className="shrink-0 py-3 px-5 rounded-xl border border-pink-200 hover:border-pink-300 bg-pink-50 hover:bg-pink-100 text-pink-600 font-extrabold text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
-            title="Send Heart Cascade"
-          >
-            <Heart className="h-4 w-4 fill-pink-500 text-pink-500" />
-            <span>Heart Spark</span>
-          </button>
-        </div>
-
+        {/* Core Control Buttons - microphone button shown only if not allowed/granted */}
+        {(!micActive && !micPermissionGranted) && (
+          <div className="flex flex-col items-stretch gap-2.5">
+            {/* Microphone Blow Detector activation */}
+            <button
+              onClick={toggleMicDetection}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-zinc-900 bg-zinc-900 hover:bg-black text-white text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer"
+            >
+              <Mic className="h-4 w-4 text-pink-500 shrink-0" />
+              <span>Enable Mic Blow Detector 🎙️</span>
+            </button>
+            
+            <p className="text-[10px] text-zinc-500 text-center leading-normal">
+              🎙️ Please grant microphone permissions to use your voice or breath to blow bubbles automatically!
+            </p>
+          </div>
+        )}
+        
         {/* Custom Message Field */}
-        <div className="pt-2 border-t border-zinc-100">
-          <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500 block mb-2">Write a Custom Bubble Message (Optional):</span>
-          <div className="flex gap-2">
+        <div className="pt-2 border-t border-zinc-100 space-y-2.5">
+          <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500 block">Write a Custom Bubble Message (Optional):</span>
+          <div className="space-y-2">
             <input 
               type="text"
               maxLength={80}
               value={customText}
               onChange={(e) => setCustomText(e.target.value)}
               placeholder="E.g., Maya's sweater is technically Liam's sweater now..."
-              className="flex-1 bg-[#FAF8F2] border border-zinc-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-pink-500"
+              className="w-full bg-[#FAF8F2] border border-zinc-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-zinc-800 placeholder:text-[10px] sm:placeholder:text-[11px] placeholder-zinc-400 focus:outline-none focus:border-pink-500"
             />
             <button
               onClick={() => handleReleaseBubble()}
-              className="px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-black text-white font-bold text-xs uppercase tracking-wider shrink-0 transition-all cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white font-black text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
             >
-              Blow Custom
+              <Wind className="h-4 w-4 text-pink-200" />
+              <span>Blow Custom Message 💨</span>
             </button>
           </div>
         </div>
-
+ 
         {/* Trending Presets Chips */}
         <div className="space-y-1.5">
           <span className="text-[9px] font-black uppercase tracking-wider text-zinc-400 block">Viral Delulu Presets:</span>
