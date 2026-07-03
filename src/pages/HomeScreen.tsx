@@ -391,9 +391,9 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
       bgGradient: 'from-[#0F172A] via-[#1E1B4B] to-[#0F172A]',
       accentColor: '#EC4899',
       badge: '💖 Viral Interactive Game',
-      title: "Delulu Heartblower: LDR Bubble Blow",
-      titleLines: ["Delulu Heartblower", "LDR Stress-Relief"],
-      subtitle: "Long distance wearing you down? Create a private sync chamber, copy the invite link, and blow into your mic (or tap). Instantly send real-time floating stress-relief message bubbles & hearts to your partner's screen!",
+      title: "Delulu Heartblower: Couple Bubble Blow",
+      titleLines: ["Delulu Heartblower", "Couple Stress-Relief"],
+      subtitle: "Create a private sync chamber, copy the invite link, and blow into your mic (or tap). Instantly send real-time floating stress-relief message bubbles & hearts to your partner's screen!",
       cta: "Play Bubble Blow",
       action: () => setScreen({ type: 'ldr_game' }),
       visual: (
@@ -404,7 +404,7 @@ export default function HomeScreen({ situations, courtCases, questions, latestSt
           </div>
           <div className="relative h-28 bg-gradient-to-b from-[#111827] to-[#0F172A] rounded-xl border border-zinc-800 flex flex-col justify-end p-2 overflow-hidden">
             <div className="absolute top-2 left-2 text-[9px] text-zinc-400 font-semibold font-mono">
-              Chamber: <span className="text-pink-400">#LDR-9201</span>
+              Chamber: <span className="text-pink-400">#Chamber-9201</span>
             </div>
             
             <div className="absolute bottom-16 left-4 bg-pink-500/10 border border-pink-500/30 rounded-full px-2 py-1 text-[8px] text-pink-200 animate-pulse font-bold">
