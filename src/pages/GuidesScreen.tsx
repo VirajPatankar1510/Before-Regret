@@ -30,7 +30,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "A practical look at what happens after a partner is caught cheating. We break down actual relationship split timelines, the real emotional toll of constant checking, and when it makes sense to let go.",
     icon: Award,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Compiled from 2,400+ anonymous infidelity timelines",
+    credentials: "Based on anonymous infidelity timelines",
     introduction: "Trying to forgive cheating is incredibly exhausting. When you find yourself at this crossroads, you are likely wondering: can we ever be happy again, or am I just dragging out the inevitable? According to data logged across hundreds of anonymous user stories on our platform, around 55% of couples try to stay together immediately after cheating is uncovered. However, a large percentage of those couples end up splitting up within two years because of emotional fatigue. This guide walks you through the reality of rebuilding a relationship, without the sugarcoating.",
     sections: [
       {
@@ -71,7 +71,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "When one partner wants marriage or kids and the other keeps stalling, pressure builds up. Discover why forced agreements usually lead to resentment, and how to set personal boundaries instead.",
     icon: ShieldAlert,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Based on 1,800+ commitment deadlock reviews",
+    credentials: "Based on commitment deadlock reviews",
     introduction: "When you are ready to take the next step in life—like getting married or starting a family—and your partner is completely hesitant, it feels deeply lonely. Out of frustration, many people resort to a hard line: 'Marry me by next year, or I am walking away.' But platform records show that over 60% of marriages forced by an ultimatum eventually end in separation or bitter resentment. This guide looks at why forced commitments fail and how to handle a deadlock with self-respect.",
     sections: [
       {
@@ -110,7 +110,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "Leaving your job, friends, and hometown to relocate for a partner is a massive leap. Learn how to protect your independence and keep the relationship balanced.",
     icon: Sparkles,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Derived from 950+ relocation case histories",
+    credentials: "Derived from relocation case histories",
     introduction: "Uprooting your life, leaving your professional network, and moving to another city or country for your partner's career or family is deeply romantic. However, it is also a huge personal risk. The person who moves almost always enters a period of social and financial dependence, which can quietly throw off the balance of power in the relationship. To protect your peace of mind and your relationship, you need a clear, realistic plan before you book a one-way ticket.",
     sections: [
       {
@@ -151,7 +151,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "Stop wondering if an argument is a dealbreaker. Learn to evaluate relationship issues based on how often they happen, how severe they are, and the intent behind them.",
     icon: HelpCircle,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Distilled from 3,100+ community court files",
+    credentials: "Distilled from community court files",
     introduction: "Every relationship advice column is full of warnings about 'red flags' these days. But labeling every disagreement or communication breakdown as 'toxic' makes it incredibly hard to build a real relationship. How do you tell the difference between normal growth pains—like a partner who struggles to express feelings when stressed—and actually harmful behavior patterns? This guide offers a simple, clear way to look at problems objectively.",
     sections: [
       {
@@ -191,7 +191,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "When a partner hides debt, opens secret credit cards, or stashes private cash, the breach of trust is as damaging as physical cheating. Learn how to address financial lies, assess the damage, and decide whether to stay.",
     icon: ShieldAlert,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Based on 1,400+ financial boundary dispute logs",
+    credentials: "Based on financial boundary dispute logs",
     introduction: "We talk a lot about emotional and physical affairs, but some of the most destructive relationship breakdowns happen quietly in a bank account. Financial infidelity—hiding debt, secretly spending joint savings, or opening cards without telling your partner—is incredibly common and highly toxic. According to data submitted by anonymous couples, over 40% of relationship legal separations and high-tension disputes are rooted in financial deceit. When you discover your partner has been lying about money, the immediate question is: was it a desperate mistake, or is it a deep pattern of manipulation? This guide unpacks the math and psychology of financial betrayal.",
     sections: [
       {
@@ -233,7 +233,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "Is your partner's relationship with their 'work spouse' or social media friend crossing the line? Learn how to distinguish between healthy platonic bonds and emotional affairs.",
     icon: HelpCircle,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Analyzed from 3,200+ user communication logs",
+    credentials: "Analyzed from user communication logs",
     introduction: "In the digital age, cheating doesn't require a physical meet-up. It can happen on your couch, in a text thread, or in social media direct messages while you're sitting right next to your partner. Emotional cheating is one of the hardest relationship challenges to define because the offending partner will almost always defend it as 'just a friendship.' But the emotional betrayal of sharing intimacy, secrets, and late-night messages with someone else can leave deep, lasting scars. This guide provides a clear-cut way to identify when a boundary has been crossed.",
     sections: [
       {
@@ -273,7 +273,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "When arguments turn into days of icy silence, the emotional toll is devastating. Learn to differentiate between a healthy break to cool down and the toxic silent treatment.",
     icon: BookOpen,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Derived from 2,100+ communication deadlock cases",
+    credentials: "Derived from communication deadlock cases",
     introduction: "Almost everyone has felt overwhelmed during a fight and wanted to walk away. But there is a massive, toxic difference between saying 'I am too angry to talk right now, let's take a 30-minute break' and completely ignoring your partner for days on end. The silent treatment—often called stonewalling—is one of the most painful forms of emotional control. It triggers our primal fears of rejection and abandonment. This guide breaks down why stonewalling is so damaging and how to handle it.",
     sections: [
       {
@@ -312,7 +312,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "An honest exploration of what happens when one partner makes significantly more money. How silent resentment grows around chore divisions, household control, and career sacrifices.",
     icon: Award,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Based on 1,600+ household contribution reviews",
+    credentials: "Based on household contribution reviews",
     introduction: "In an ideal world, love is a perfect 50/50 partnership. In the real world, someone usually earns more. When there is a large income gap, relationships face a subtle but powerful threat: breadwinner resentment. Whether it is the higher earner feeling taken advantage of, or the lower earner feeling controlled and devalued, income disparity can poison a relationship from the inside out. This guide explores how to build a fair, respectful partnership when the paychecks are vastly unequal.",
     sections: [
       {
@@ -351,7 +351,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "How to tell if your partner is practicing emotional gaslighting or if you are simply experiencing a normal, heated clash of memories and perspectives.",
     icon: ShieldAlert,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Based on 3,400+ relationship conflict audits",
+    credentials: "Based on relationship conflict audits",
     introduction: "The word 'gaslighting' gets thrown around in almost every modern breakup story. But what does it actually look like in real life? True gaslighting is a targeted, toxic effort to erase your confidence, make you question your memory, and make you dependent on your partner's version of reality. A healthy relationship allows for disagreements, but it never forces you to forfeit your own mental sanity. This guide helps you identify the psychological shell game.",
     sections: [
       {
@@ -393,7 +393,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "Long-distance relationships can sustain for a season, but without a concrete timeline to merge lives, they often expire. Read the actual failure factors and how to audit your future together.",
     icon: Clock,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Compiled from 1,100+ long-distance timeline outcomes",
+    credentials: "Based on long-distance timeline outcomes",
     introduction: "In our digital, global world, long-distance relationships (LDRs) are more common than ever. Many couples start out with grand plans and deep devotion, convinced that their love can survive any amount of mileage. But our database records show that without a concrete, mutually agreed-upon end date, over 70% of long-distance relationships eventually dissolve due to physical loneliness and emotional drift. This guide looks at the reality of LDR deadlocks and how to handle your situation before you waste years in suspension.",
     sections: [
       {
@@ -434,7 +434,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "Is your pre-marriage anxiety just standard cold feet, or is it your subconscious screaming at you to run? Learn how to audit your doubts with absolute clinical clarity.",
     icon: HelpCircle,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Based on 1,500+ marital regret retrospective surveys",
+    credentials: "Based on marital regret retrospective surveys",
     introduction: "Taking the leap into marriage or lifelong partnership is a massive psychological milestone. It is entirely normal to feel a wave of anxiety, nervousness, or self-doubt as the big decision approaches. But many people override their deepest warnings, labeling genuine, structural dealbreakers as simple 'cold feet.' When we surveyed individuals who went through painful divorces, a staggering 85% admitted they felt deep doubts *before* saying 'I do' but ignored them out of social embarrassment or fear of conflict. This guide helps you tell the difference.",
     sections: [
       {
@@ -477,7 +477,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     summary: "Discover the vital boundary line between healthy romantic devotion and toxic codependency where your entire mental stability is held hostage by your partner's moods.",
     icon: BookOpen,
     author: "BeforeRegret Editorial Desk",
-    credentials: "Derived from 2,800+ relationship attachment reviews",
+    credentials: "Derived from relationship attachment reviews",
     introduction: "In a world that celebrates all-consuming romance, it is very easy to mistake a highly toxic, codependent attachment pattern for deep, passionate devotion. We are taught that love means being 'two halves of a whole,' but healthy relationships are actually made of two whole, independent individuals choosing to share their lives. When your partner's mood, text response time, or minor critique completely dictates your daily peace of mind, you have crossed from healthy interdependence into painful codependency. Let's look at the math of your relationship autonomy.",
     sections: [
       {
