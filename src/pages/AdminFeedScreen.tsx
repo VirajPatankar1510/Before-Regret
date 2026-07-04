@@ -33,7 +33,8 @@ import {
   TrendingUp,
   Globe,
   FileText,
-  Check
+  Check,
+  Link2
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Story, StoryComment, CourtCase, Question, RedFlagCase } from '../types';
@@ -96,6 +97,17 @@ interface AdminFeedScreenProps {
   onAddQuestion: (q: Question) => Promise<void>;
   onAddRedFlagCase: (rf: RedFlagCase) => Promise<void>;
 }
+
+const ARTICLE_PRESETS = [
+  { name: "Infidelity Reconciliation Math", slug: "infidelity-reconciliation-math-of-forgiveness", url: "/guides/infidelity-reconciliation-math-of-forgiveness" },
+  { name: "Marriage Ultimatum Protocol", slug: "ultimatum-protocol-why-marriage-deadlocks-fail", url: "/guides/ultimatum-protocol-why-marriage-deadlocks-fail" },
+  { name: "Relocation Risk (Moving for Love)", slug: "relocation-risk-index-moving-for-love", url: "/guides/relocation-risk-index-moving-for-love" },
+  { name: "Red Flag Boundary Matrix", slug: "red-flag-evaluation-boundary-matrix", url: "/guides/red-flag-evaluation-boundary-matrix" },
+  { name: "Financial Infidelity & Secret Debt", slug: "financial-infidelity-secret-debt-private-accounts", url: "/guides/financial-infidelity-secret-debt-private-accounts" },
+  { name: "Emotional Cheating Boundaries", slug: "emotional-cheating-vs-close-friendship-boundaries", url: "/guides/emotional-cheating-vs-close-friendship-boundaries" },
+  { name: "Stonewalling & Silent Treatment", slug: "stonewalling-silent-treatment-emotional-punishment", url: "/guides/stonewalling-silent-treatment-emotional-punishment" },
+  { name: "LDR Couple Bubble Blow Game", slug: "ldr-game", url: "/ldr-game" }
+];
 
 // Deterministic hash helper to select stable templates/ctas
 const hashString = (str: string): number => {
@@ -521,6 +533,60 @@ export default function AdminFeedScreen({
   const [copyStatus, setCopyStatus] = useState<{[key: string]: boolean}>({});
   const [previewTheme, setPreviewTheme] = useState<'cream' | 'midnight' | 'notes' | 'social' | 'meme'>('cream');
   const [isDownloading, setIsDownloading] = useState(false);
+
+  // Backlink & Outreach Generator state
+  const [selectedBacklinkPreset, setSelectedBacklinkPreset] = useState({ 
+    name: "Infidelity Reconciliation Math", 
+    slug: "infidelity-reconciliation-math-of-forgiveness", 
+    url: "/guides/infidelity-reconciliation-math-of-forgiveness" 
+  });
+  const [backlinkPlatformType, setBacklinkPlatformType] = useState('blog');
+  const [backlinkPitchTone, setBacklinkPitchTone] = useState('empathetic');
+  const [isGeneratingBacklink, setIsGeneratingBacklink] = useState(false);
+  const [backlinkResultPack, setBacklinkResultPack] = useState<any | null>(null);
+  const [backlinkCopiedField, setBacklinkCopiedField] = useState<string | null>(null);
+
+  const handleCreateBacklinkPitch = async () => {
+    setIsGeneratingBacklink(true);
+    setBacklinkResultPack(null);
+    try {
+      const origin = window.location.origin;
+      const fullUrl = `${origin}${selectedBacklinkPreset.url}`;
+      
+      const res = await fetch("/api/admin/generate-backlink-outreach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetPlatform: backlinkPlatformType,
+          selectedArticle: selectedBacklinkPreset.name,
+          linkUrl: fullUrl,
+          tone: backlinkPitchTone
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error("Server responded with code: " + res.status);
+      }
+
+      const data = await res.json();
+      if (data.success && data.outreach) {
+        setBacklinkResultPack(data.outreach);
+      } else {
+        throw new Error(data.error || "Failed to parse outreach generation payload.");
+      }
+    } catch (err: any) {
+      console.error("Backlink generation failed:", err);
+      alert("Error building outreach pack: " + (err.message || err));
+    } finally {
+      setIsGeneratingBacklink(false);
+    }
+  };
+
+  const handleCopyBacklinkText = (text: string, fieldName: string) => {
+    navigator.clipboard.writeText(text);
+    setBacklinkCopiedField(fieldName);
+    setTimeout(() => setBacklinkCopiedField(null), 2500);
+  };
 
   // Compile associated comments, arguments, or votes to drive engaging, authentic social posts
   const getCommunityOpinionsForFeedItem = (item: FeedItem): string => {
@@ -1636,6 +1702,222 @@ export default function AdminFeedScreen({
                 </button>
               </div>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Backlink & Outreach Pitch Generator Card */}
+      <div className="bg-gradient-to-br from-[#1E1B4B] via-[#311042] to-[#111827] text-white border border-pink-500/30 p-6 rounded-3xl shadow-xl space-y-6" id="backlink-outreach-generator-console">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="p-1 rounded bg-pink-500/10 text-pink-400">
+                <Link2 className="h-4 w-4" />
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-pink-400 font-mono">Backlink SEO & Community Authority Engine</span>
+            </div>
+            <h2 className="text-xl font-extrabold tracking-tight">Backlink & Outreach Pitch Generator</h2>
+            <p className="text-xs text-zinc-300 max-w-2xl leading-relaxed">
+              Instantly craft personalized, high-converting cold email outreach pitches, contextual Reddit/Quora community replies, directory submissions, and viral guest post briefs to secure high-authority backlinks.
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold text-zinc-500 font-mono">Status:</span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-pink-500/10 text-pink-400 text-[10px] font-bold font-mono uppercase tracking-wider border border-pink-500/20">
+              <span className="h-1.5 w-1.5 rounded-full bg-pink-400 animate-pulse" />
+              Authority Engine Active
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2 border-t border-zinc-700/40">
+          {/* Select Article to promote */}
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-black text-pink-300 uppercase tracking-wider">1. Select Target Resource</label>
+            <select 
+              value={selectedBacklinkPreset.slug}
+              onChange={(e) => {
+                const match = ARTICLE_PRESETS.find(a => a.slug === e.target.value);
+                if (match) setSelectedBacklinkPreset(match);
+              }}
+              className="w-full text-xs rounded-xl bg-[#0D1117]/85 border border-[#30363D] text-white px-3 py-2.5 focus:border-pink-500 outline-none cursor-pointer"
+            >
+              {ARTICLE_PRESETS.map(art => (
+                <option key={art.slug} value={art.slug}>{art.name}</option>
+              ))}
+            </select>
+            <p className="text-[10px] text-zinc-400">
+              The generator will design pitches specifically targeting the content inside this guide.
+            </p>
+          </div>
+
+          {/* Target Platform Type */}
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-black text-pink-300 uppercase tracking-wider">2. Choose Platform Type</label>
+            <div className="grid grid-cols-2 gap-1.5">
+              {[
+                { id: 'blog', label: 'Partner Blog' },
+                { id: 'parenting_forum', label: 'Parent Forum' },
+                { id: 'reddit', label: 'Reddit Post' },
+                { id: 'quora', label: 'Quora Question' },
+                { id: 'directory', label: 'Resource Directory' }
+              ].map((plat) => (
+                <button
+                  key={plat.id}
+                  type="button"
+                  onClick={() => setBacklinkPlatformType(plat.id)}
+                  className={`px-2.5 py-2 rounded-xl text-left text-xs font-bold border transition-all ${
+                    backlinkPlatformType === plat.id 
+                      ? 'bg-pink-500/20 text-white border-pink-500/60 shadow-lg shadow-pink-500/5' 
+                      : 'bg-[#0D1117]/60 text-zinc-400 border-zinc-800 hover:text-white hover:bg-[#0D1117]'
+                  }`}
+                >
+                  {plat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Pitch Tone */}
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-black text-pink-300 uppercase tracking-wider">3. Desired Tone</label>
+            <div className="space-y-1.5">
+              {[
+                { id: 'empathetic', label: 'Empathetic & Caring (Community)', desc: 'Focuses on connection and help.' },
+                { id: 'professional', label: 'Professional (Editorial Cold Pitch)', desc: 'For guest blog editors and publishers.' },
+                { id: 'viral', label: 'Bold Storytelling', desc: 'Hooks users with gripping narrative style.' }
+              ].map((tn) => (
+                <button
+                  key={tn.id}
+                  type="button"
+                  onClick={() => setBacklinkPitchTone(tn.id)}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
+                    backlinkPitchTone === tn.id 
+                      ? 'bg-indigo-500/20 text-indigo-200 border-indigo-500/60' 
+                      : 'bg-[#0D1117]/60 text-zinc-400 border-zinc-800 hover:text-white hover:bg-[#0D1117]'
+                  }`}
+                >
+                  <span className="block text-white">{tn.label}</span>
+                  <span className="block text-[9px] text-zinc-400 font-normal mt-0.5">{tn.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Generate Button */}
+        <div className="pt-2">
+          <button
+            type="button"
+            disabled={isGeneratingBacklink}
+            onClick={handleCreateBacklinkPitch}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-black uppercase tracking-widest cursor-pointer disabled:opacity-50 transition-all font-mono shadow-lg shadow-pink-600/25 border border-pink-400/20"
+          >
+            <Sparkles className={`h-4 w-4 ${isGeneratingBacklink ? 'animate-spin' : ''}`} />
+            <span>{isGeneratingBacklink ? "Crafting Personalized Pitch..." : "Generate Custom Outreach Package"}</span>
+          </button>
+        </div>
+
+        {/* OUTPUT RESULTS WINDOW */}
+        {backlinkResultPack && (
+          <div className="space-y-5 pt-5 border-t border-zinc-700/50 animate-fadeIn text-left">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              {/* Left 2 Columns: Pitch copyable script */}
+              <div className="lg:col-span-2 space-y-2 bg-[#0D1117]/80 rounded-2xl p-5 border border-zinc-800/80">
+                <div className="flex items-center justify-between pb-2.5 border-b border-zinc-800">
+                  <div className="flex items-center gap-1.5">
+                    <FileText className="h-4 w-4 text-pink-400" />
+                    <span className="text-[10px] uppercase font-black text-pink-300 font-mono tracking-wider">
+                      Generated Pitch Text / Copy
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyBacklinkText(backlinkResultPack.outreachPitch, 'pitch')}
+                    className="inline-flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white bg-[#1E1B4B] hover:bg-indigo-900/50 px-3 py-1.5 rounded-xl border border-zinc-700/60 cursor-pointer transition-colors"
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>{backlinkCopiedField === 'pitch' ? 'Copied Successfully!' : 'Copy Pitch Script'}</span>
+                  </button>
+                </div>
+                <div className="text-xs text-zinc-200 leading-relaxed font-mono whitespace-pre-wrap max-h-[380px] overflow-y-auto pr-2 scrollbar-thin pt-2">
+                  {backlinkResultPack.outreachPitch}
+                </div>
+              </div>
+
+              {/* Right 1 Column: Suggestions, Anchors and Positioning Angle */}
+              <div className="space-y-4">
+                
+                {/* Anchor Text Suggestions */}
+                <div className="bg-[#0D1117]/80 rounded-2xl p-4 border border-zinc-800/80 space-y-2">
+                  <span className="text-[10px] uppercase font-black text-zinc-400 font-mono tracking-wider block">
+                    🎯 Suggested Anchor Texts
+                  </span>
+                  <p className="text-[10px] text-zinc-500 leading-normal">
+                    Overlay your backlink URL onto these natural anchor phrases to satisfy Google's NLP search algorithms:
+                  </p>
+                  <div className="space-y-1.5">
+                    {backlinkResultPack.suggestedAnchors?.map((anchor: string, idx: number) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleCopyBacklinkText(anchor, `anchor-${idx}`)}
+                        className="w-full text-left px-3 py-2 bg-[#161B22] border border-zinc-800 hover:border-pink-500/50 rounded-xl text-xs font-mono text-zinc-300 hover:text-white transition-colors flex items-center justify-between cursor-pointer"
+                      >
+                        <span>"{anchor}"</span>
+                        <span className="text-[10px] text-zinc-500">
+                          {backlinkCopiedField === `anchor-${idx}` ? 'Copied!' : 'Copy'}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Strategic Positioning Angle */}
+                {backlinkResultPack.positioningAngle && (
+                  <div className="bg-indigo-950/20 rounded-2xl p-4 border border-indigo-500/25 space-y-1.5">
+                    <span className="font-extrabold uppercase text-[10px] tracking-widest text-indigo-300 font-mono block">
+                      ⚡ Strategic Outreach Angle
+                    </span>
+                    <p className="text-xs text-indigo-200 leading-relaxed">
+                      {backlinkResultPack.positioningAngle}
+                    </p>
+                  </div>
+                )}
+                
+              </div>
+            </div>
+
+            {/* Guest Post outlines full row */}
+            {backlinkResultPack.guestPostOutlines && backlinkResultPack.guestPostOutlines.length > 0 && (
+              <div className="bg-[#0D1117]/40 rounded-2xl p-5 border border-zinc-800/60 space-y-3">
+                <span className="text-[10px] uppercase font-black text-[#4F8CFF] font-mono tracking-wider block">
+                  💡 High-Engagement Partner Guest Post Ideas & Hooks
+                </span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {backlinkResultPack.guestPostOutlines.map((outline: string, idx: number) => (
+                    <div key={idx} className="bg-[#0D1117]/80 p-4 rounded-xl border border-zinc-800/80 space-y-1.5">
+                      <span className="text-[10px] font-bold text-pink-400 block font-mono">Guest Hook Proposal #{idx + 1}</span>
+                      <p className="text-xs text-zinc-300 leading-relaxed font-sans">{outline}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Actionable Success Flow Advice */}
+            <div className="bg-emerald-500/10 rounded-2xl p-4 border border-emerald-500/20 text-xs text-emerald-200 leading-relaxed font-sans flex items-start gap-2.5">
+              <CheckCircle className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <span className="font-black uppercase text-[10px] tracking-wider text-emerald-300 block">Pro Growth Strategy Tip</span>
+                <p>
+                  Use these generated pitches when reaching out to webmasters, answering open queries on social community threads, or commenting on relevant relationship blogs. High-quality contextual backlinks from authoritative domains are the single fastest way to boost search impressions and rank first on Google!
+                </p>
+              </div>
+            </div>
+
           </div>
         )}
       </div>

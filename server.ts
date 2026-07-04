@@ -1280,6 +1280,97 @@ Deliver the output strictly in JSON matching the specified schema.`;
     }
   });
 
+  // API route to generate automated external backlink outreach and pitching packs
+  app.post("/api/admin/generate-backlink-outreach", async (req, res) => {
+    try {
+      const { targetPlatform, selectedArticle, linkUrl, tone } = req.body;
+      const apiKey = process.env.GEMINI_API_KEY;
+      
+      if (!apiKey) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "GEMINI_API_KEY is not configured in environment variables." 
+        });
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+
+      const prompt = `You are an elite SEO Backlink Outreach & Growth Strategist for BeforeRegret.com.
+We are looking to acquire organic, high-authority, external backlinks pointing to our featured resource:
+- Resource Name: "${selectedArticle}"
+- Link URL: "${linkUrl}"
+
+We are targeting this type of platform: "${targetPlatform}" (options: blog, parenting_forum, reddit, quora, directory).
+The desired tone is: "${tone || 'empathetic'}".
+
+Your task is to generate a comprehensive, highly persuasive backlink outreach and pitch pack.
+This package must contain:
+1. "outreachPitch": A fully custom, highly converting pitch text tailored to the target platform.
+   - For blogs: A premium, personalized cold outreach email to an editor suggesting a guest post or highly contextual resource link insertion. Make it sound genuine, citing the value we provide.
+   - For Reddit/Quora/Parenting Forums: A detailed, highly valuable, empathetic response to a realistic community query related to this topic, demonstrating deep expertise and naturally integrating our link as a high-quality "further reading" resource.
+   - For directories: A compelling value-add proposal explaining why adding our link enhances their resource section.
+2. "suggestedAnchors": A list of 3 highly organic, search-optimized anchor texts (phrases to overlay the link on) that feel 100% natural, contextual, and non-spammy.
+3. "guestPostOutlines": 3 high-interest, viral guest post or article ideas/hooks with 2-sentence structural summaries that would perfectly contextualize our link on a partner blog.
+4. "positioningAngle": A short strategic summary of why editors or users on this platform will love this link and want to reference it.
+
+Format your response strictly as a JSON object matching the requested schema. Make sure the content sounds written by a genuine human relationship expert, not boilerplate AI.`;
+
+      const candidateModels = ["gemini-3.5-flash", "gemini-3.1-flash-lite"];
+      let response = null;
+      let lastError = null;
+
+      for (const modelName of candidateModels) {
+        try {
+          console.log(`Attempting Backlink Pitch generation using model: ${modelName}`);
+          response = await ai.models.generateContent({
+            model: modelName,
+            contents: prompt,
+            config: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                  outreachPitch: { type: Type.STRING },
+                  suggestedAnchors: {
+                    type: Type.ARRAY,
+                    items: { type: Type.STRING }
+                  },
+                  guestPostOutlines: {
+                    type: Type.ARRAY,
+                    items: { type: Type.STRING }
+                  },
+                  positioningAngle: { type: Type.STRING }
+                },
+                required: ["outreachPitch", "suggestedAnchors", "guestPostOutlines", "positioningAngle"]
+              }
+            }
+          });
+          if (response && response.text) {
+            console.log(`Successfully generated Backlink Pitch with: ${modelName}`);
+            break;
+          }
+        } catch (err: any) {
+          console.log(`Model ${modelName} failed during backlink generation.`);
+          lastError = err;
+        }
+      }
+
+      if (!response || !response.text) {
+        throw new Error(lastError ? lastError.message : "Failed to obtain response from Gemini models.");
+      }
+
+      const backlinkData = JSON.parse(response.text);
+      return res.json({ success: true, outreach: backlinkData });
+
+    } catch (error: any) {
+      console.error("Backlink outreach generator error:", error);
+      return res.status(500).json({ 
+        success: false, 
+        error: error.message || "Failed to generate backlink outreach pack." 
+      });
+    }
+  });
+
   // Dynamic Google Search Console compatible Sitemap Generator
 
   app.get("/sitemap.xml", async (req, res) => {
