@@ -306,124 +306,6 @@ function hydrateHtml(rawHtml: string, title: string, description: string, url: s
   return html.replace('</head>', `${metaTags}\n</head>`);
 }
 
-// Helper to return high-quality, pre-crafted, contextual outreach packs based on inputs to guarantee perfect fail-safe operation
-function getFallbackBacklinkOutreach(targetPlatform: string, selectedArticle: string, linkUrl: string, tone: string) {
-  const articleName = selectedArticle || "Relationship Decision Analysis";
-  const url = linkUrl || "https://beforeregret.com/guides";
-  const pTone = tone || "empathetic";
-  const platform = targetPlatform || "blog";
-
-  let outreachPitch = "";
-  let suggestedAnchors = [
-    `comprehensive guide on ${articleName.toLowerCase()}`,
-    `${articleName.toLowerCase()} decision matrix`,
-    `relationship outcome analysis for ${articleName.toLowerCase()}`
-  ];
-  let guestPostOutlines = [
-    `The Hidden Calculus of ${articleName}: Why standard relationship advice fails when stakes are high. This guest post maps the structural patterns couples face.`,
-    `A Psychologist's Guide to ${articleName}: How to safely navigate hard choices without permanent regrets, using data-driven relationship research.`,
-    `Before You Decide: The 3 objective benchmarks for evaluating ${articleName} in modern long-term partnerships.`
-  ];
-  let positioningAngle = `Leverages objective, data-backed relationship research to shift the conversation from emotional escalation to logical, structured decision-making. Partners and editors love this because it offers fresh cognitive tools rather than standard clichés.`;
-
-  if (platform === 'blog') {
-    if (pTone === 'professional') {
-      outreachPitch = `Subject: Collaborative Resource Idea: Modern Relationship Decisions & ${articleName}
-
-Dear Editor,
-
-I’ve been following your relationship column for some time, and I particularly appreciated your recent piece analyzing hard choices couples face in modern dynamics. Your focus on practical, actionable wisdom really sets your content apart.
-
-I’m reaching out because we recently developed a deeply researched, psychologist-reviewed resource titled "${articleName}" (accessible at ${url}). It provides a structured, objective evaluation framework designed to help couples navigate this exact decision-making process with clarity and emotional safety.
-
-Given your readers' interest in realistic relationship advice, I believe a contextual link to this resource would add immense value to your existing articles on this topic. Alternatively, I would be thrilled to write a custom, high-quality guest post (e.g., "The Hidden Calculus of ${articleName}") tailored specifically for your audience.
-
-Would you be open to a quick collaboration? I’d love to send over a few outline ideas for your review.
-
-Warm regards,
-
-Admin Team & Research Panel
-BeforeRegret.com`;
-    } else if (pTone === 'viral') {
-      outreachPitch = `Subject: Why standard relationship advice is failing your readers (And how to fix it)
-
-Hey there,
-
-Most relationship advice is built on warm clichés like "follow your heart" or "it will all work out." But when couples are dealing with high-stakes choices like ${articleName}, emotional advice isn't enough—they need objective, structured blueprints.
-
-We just published a raw, deep-dive analysis on "${articleName}" (${url}) that has been trending because of its logical decision framework. It strips away the noise and looks at the actual mathematical/reconciliatory probabilities of relationship outcomes.
-
-I’d love to pitch a high-impact guest article for your blog showing how modern couples are using logical frameworks to bypass permanent regrets. 
-
-Let me know if you'd like to see the viral hooks we've prepared!
-
-Best,
-
-The BeforeRegret Team`;
-    } else { // empathetic
-      outreachPitch = `Subject: Thoughtful resource suggestion for your readers on ${articleName}
-
-Hello,
-
-I hope you're having a wonderful week. I was reading through some of your beautiful guides on modern relationships, and I was deeply moved by your empathetic, compassionate approach to helping couples heal and communicate.
-
-Decisions around ${articleName} can feel incredibly isolating and emotionally draining. To help people navigate these painful deadlocks, we put together a fully verified, supportive guide: "${articleName}" (${url}). It focuses on logical safety, emotional pacing, and structured clarity.
-
-I wanted to humbly suggest this guide as a supportive resource link for your readers, or offer to draft a compassionate guest column focusing on healing strategies.
-
-Thank you so much for the beautiful work you do to support our community.
-
-Warmest wishes,
-
-The BeforeRegret Support Team`;
-    }
-  } else if (platform === 'reddit' || platform === 'parenting_forum' || platform === 'quora') {
-    if (pTone === 'empathetic') {
-      outreachPitch = `I'm so incredibly sorry you are going through this right now. Dealing with ${articleName} is one of the most painful, confusing, and lonely experiences a partner can face. When you are stuck in this deadlock, your brain is constantly flooded with cortisol, making it almost impossible to think clearly about the future.
-
-One of the best things you can do right now is to pause, take a deep breath, and step away from the emotional crossfire. Try to evaluate the situation objectively rather than through fear of being alone or pressure to fix everything instantly.
-
-There is a really thoughtful, supportive resource on this called "${articleName}" (${url}) that walks through the actual psychological boundaries and outcomes of couples who have been exactly where you are standing. It has a beautiful, structured decision matrix that helps you categorize warning signs and make a choice you won't regret.
-
-Please be gentle with yourself. You deserve peace, respect, and clear boundaries. Sending you a lot of strength!`;
-    } else if (pTone === 'viral') {
-      outreachPitch = `Here is the hard truth about ${articleName} that nobody in relationship forums wants to admit: 
-
-Emotional advice like "just communicate" or "follow your gut" is exactly how people end up trapped in a cycle of repeated regrets for 5+ years. When you are in the thick of a relationship crisis, your emotions are a terrible compass because they are biased by history, hope, and fear of change.
-
-What you actually need is a cold, objective assessment of the situation. You need to treat relationship warnings like a structured boundary matrix, not a continuous negotiation. 
-
-Take a look at this breakdown on "${articleName}" (${url}). It uses a real outcome database to show the actual reconciliation percentages and risk indices of these decisions. Bypassing the fluff and looking at the raw structural patterns is the only way to get your clarity back. Stop guessing and look at the actual math.`;
-    } else { // professional
-      outreachPitch = `When evaluating options surrounding ${articleName}, clinical relationship research suggests focusing heavily on structured boundary-setting rather than continuous, unguided discussion. Unresolved deadlocks often degrade into emotional stonewalling or toxic codependency if clear, objective thresholds are not established.
-
-To understand the core dynamics at play, it is highly recommended to review the empirical framework outlined in this clinical analysis of "${articleName}" (${url}).
-
-This resource provides a clear, logical risk index and structured guidelines to help couples evaluate warning signs and build mutual accountability. Establishing these objective touchpoints is crucial for ensuring relationship longevity or making an amicable, regret-free decision.`;
-    }
-  } else { // directory Submission
-    outreachPitch = `Hi Directory Curation Team,
-
-I hope this message finds you well. I am writing to suggest a premium relationship resource for inclusion in your curated directory index under the relationships or personal wellness category.
-
-Our clinical-grade, psychologist-reviewed resource, "${articleName}" (available at ${url}), provides couples with a structured, objective framework to navigate high-stakes relationship decisions. It is completely free, anonymous, and designed specifically to offer clear, logical clarity during emotional deadlocks.
-
-We believe this resource would be a highly valuable addition to your directories, helping visitors find reliable, non-judgmental guidance when they need it most.
-
-Thank you for your time and for curating such a helpful index.
-
-Sincerely,
-
-The BeforeRegret Curation Panel`;
-  }
-
-  return {
-    outreachPitch,
-    suggestedAnchors,
-    guestPostOutlines,
-    positioningAngle
-  };
-}
 
 async function startServer() {
   const app = express();
@@ -837,7 +719,7 @@ Please output your response as JSON matching this schema:
     }
   });
 
-  // API route to perform ahrefs-style Keyword Research & generate high-performing human pSEO relationship submissions
+  // API route to perform professional-grade Keyword Research & generate high-performing human pSEO relationship submissions
   app.post("/api/admin/generate-seo-submission", async (req, res) => {
     try {
       const { type, topic, existingTitles } = req.body;
@@ -1198,7 +1080,7 @@ CRITICAL DIRECTIVE - AI DETECTION BYPASS (NATURAL HUMAN WRITING):
 CRITICAL DIRECTIVE - ZERO BRAND NAMES / NO TRADEMARKS:
 - DO NOT include or mention ANY real brand names, trademarked platforms, websites, apps, or services anywhere in the content, titles, keywords, or meta fields.
 - Instead of using brand names, use high-quality, professional, generic descriptions:
-  - Instead of "Google" or "Ahrefs": Use "search engine", "organic search console", "search volume analytics", or "search queries".
+  - Instead of "Google" or search index/SEO services: Use "search engine", "organic search console", "search volume analytics", or "search queries".
   - Instead of "Reddit" or "Reddit-style": Use "popular relationship forum", "anonymous online support community", "anonymous counseling thread", or "discussion board".
   - Instead of "Instagram" or "TikTok": Use "photo-sharing feed", "short-form video app", or "popular social media feed".
   - Instead of "Snapchat" or "Snapscore": Use "messaging application" or "social app activity level".
@@ -1395,98 +1277,6 @@ Deliver the output strictly in JSON matching the specified schema.`;
       return res.status(500).json({ 
         success: false, 
         error: error.message || "Failed to generate SEO submission." 
-      });
-    }
-  });
-
-  // API route to generate automated external backlink outreach and pitching packs
-  app.post("/api/admin/generate-backlink-outreach", async (req, res) => {
-    try {
-      const { targetPlatform, selectedArticle, linkUrl, tone } = req.body;
-      const apiKey = process.env.GEMINI_API_KEY;
-      
-      if (!apiKey || apiKey.trim() === "" || apiKey === "MY_GEMINI_API_KEY") {
-        console.warn("GEMINI_API_KEY is not configured or placeholder. Gracefully falling back to pre-crafted high-fidelity outreach package.");
-        const fallbackData = getFallbackBacklinkOutreach(targetPlatform, selectedArticle, linkUrl, tone);
-        return res.json({ success: true, outreach: fallbackData, isFallback: true });
-      }
-
-      const ai = new GoogleGenAI({ apiKey });
-
-      const prompt = `You are an elite SEO Backlink Outreach & Growth Strategist for BeforeRegret.com.
-We are looking to acquire organic, high-authority, external backlinks pointing to our featured resource:
-- Resource Name: "${selectedArticle}"
-- Link URL: "${linkUrl}"
-
-We are targeting this type of platform: "${targetPlatform}" (options: blog, parenting_forum, reddit, quora, directory).
-The desired tone is: "${tone || 'empathetic'}".
-
-Your task is to generate a comprehensive, highly persuasive backlink outreach and pitch pack.
-This package must contain:
-1. "outreachPitch": A fully custom, highly converting pitch text tailored to the target platform.
-   - For blogs: A premium, personalized cold outreach email to an editor suggesting a guest post or highly contextual resource link insertion. Make it sound genuine, citing the value we provide.
-   - For Reddit/Quora/Parenting Forums: A detailed, highly valuable, empathetic response to a realistic community query related to this topic, demonstrating deep expertise and naturally integrating our link as a high-quality "further reading" resource.
-   - For directories: A compelling value-add proposal explaining why adding our link enhances their resource section.
-2. "suggestedAnchors": A list of 3 highly organic, search-optimized anchor texts (phrases to overlay the link on) that feel 100% natural, contextual, and non-spammy.
-3. "guestPostOutlines": 3 high-interest, viral guest post or article ideas/hooks with 2-sentence structural summaries that would perfectly contextualize our link on a partner blog.
-4. "positioningAngle": A short strategic summary of why editors or users on this platform will love this link and want to reference it.
-
-Format your response strictly as a JSON object matching the requested schema. Make sure the content sounds written by a genuine human relationship expert, not boilerplate AI.`;
-
-      const candidateModels = ["gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"];
-      let response = null;
-      let lastError = null;
-
-      for (const modelName of candidateModels) {
-        try {
-          console.log(`Attempting Backlink Pitch generation using model: ${modelName}`);
-          response = await ai.models.generateContent({
-            model: modelName,
-            contents: prompt,
-            config: {
-              responseMimeType: "application/json",
-              responseSchema: {
-                type: Type.OBJECT,
-                properties: {
-                  outreachPitch: { type: Type.STRING },
-                  suggestedAnchors: {
-                    type: Type.ARRAY,
-                    items: { type: Type.STRING }
-                  },
-                  guestPostOutlines: {
-                    type: Type.ARRAY,
-                    items: { type: Type.STRING }
-                  },
-                  positioningAngle: { type: Type.STRING }
-                },
-                required: ["outreachPitch", "suggestedAnchors", "guestPostOutlines", "positioningAngle"]
-              }
-            }
-          });
-          if (response && response.text) {
-            console.log(`Successfully generated Backlink Pitch with: ${modelName}`);
-            break;
-          }
-        } catch (err: any) {
-          console.log(`Model ${modelName} failed during backlink generation.`, err);
-          lastError = err;
-        }
-      }
-
-      if (!response || !response.text) {
-        console.warn("All candidate Gemini models failed during backlink generation. Falling back to pre-crafted package.");
-        const fallbackData = getFallbackBacklinkOutreach(targetPlatform, selectedArticle, linkUrl, tone);
-        return res.json({ success: true, outreach: fallbackData, isFallback: true, apiError: lastError?.message });
-      }
-
-      const backlinkData = JSON.parse(response.text);
-      return res.json({ success: true, outreach: backlinkData });
-
-    } catch (error: any) {
-      console.error("Backlink outreach generator error:", error);
-      return res.status(500).json({ 
-        success: false, 
-        error: error.message || "Failed to generate backlink outreach pack." 
       });
     }
   });
