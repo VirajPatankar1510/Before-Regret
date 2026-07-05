@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { ChevronRight, ArrowLeft, SlidersHorizontal, PlusCircle, Bookmark, Share2, HelpCircle, FileText, AlertCircle, RefreshCw, BarChart2, Globe, Users, Clock, Info } from 'lucide-react';
+import { ChevronRight, ArrowLeft, SlidersHorizontal, PlusCircle, Bookmark, Share2, HelpCircle, FileText, AlertCircle, RefreshCw, BarChart2, Globe, Users, Clock, Info, BookOpen } from 'lucide-react';
 import { Situation, Story, StoryUpdate, StoryComment } from '../types';
 import StoryCard from '../components/StoryCard';
 import ChartsComponent from '../components/ChartsComponent';
+import { GUIDE_ARTICLES } from './GuidesScreen';
 
 const ALL_WORLD_COUNTRIES = [
   "Argentina", "Australia", "Austria", "Belgium", "Brazil", "Canada", "Chile", "China", 
@@ -66,6 +67,24 @@ export default function SituationScreen({
   const [filterOutcome, setFilterOutcome] = useState('All');
   const [maxRegret, setMaxRegret] = useState(10);
   const [minAge, setMinAge] = useState(18);
+
+  // Find related guides based on situation slug
+  const getRelatedGuides = () => {
+    const slugMap: Record<string, string[]> = {
+      'boyfriend-doesnt-want-marriage': ['ultimatum-protocol-why-marriage-deadlocks-fail', 'cold-feet-vs-marriage-dealbreakers'],
+      'stayed-after-cheating': ['infidelity-reconciliation-math-of-forgiveness', 'emotional-cheating-vs-close-friendship-boundaries'],
+      'partner-doesnt-want-kids': ['cold-feet-vs-marriage-dealbreakers', 'codependency-vs-interdependence-autonomy-score'],
+      'moved-for-love': ['relocation-risk-index-moving-for-love', 'codependency-vs-interdependence-autonomy-score'],
+      'long-distance-relationship': ['long-distance-deadlock-closing-the-gap'],
+      'different-religion-marriage': ['codependency-vs-interdependence-autonomy-score'],
+      'marriage-ultimatum': ['ultimatum-protocol-why-marriage-deadlocks-fail', 'cold-feet-vs-marriage-dealbreakers'],
+      'ignored-red-flags': ['red-flag-evaluation-boundary-matrix', 'narcissistic-gaslighting-vs-healthy-disagreements']
+    };
+
+    const targetSlugs = slugMap[situation.slug] || ['infidelity-reconciliation-math-of-forgiveness', 'ultimatum-protocol-why-marriage-deadlocks-fail'];
+    return GUIDE_ARTICLES.filter(article => targetSlugs.includes(article.slug));
+  };
+  const relatedGuides = getRelatedGuides();
 
   // Gather stories whose situationSlug matches the situation's slug
   let situationStories = allStories.filter(s => s.situationSlug === situation.slug);
@@ -326,10 +345,48 @@ export default function SituationScreen({
 
           </div>
 
-        </div>
+        {/* Related Expert Guides Card for Dense Internal Linking */}
+        {relatedGuides.length > 0 && (
+          <div className="rounded-2xl border border-[#E5E7EB] bg-white p-4 space-y-4 shadow-sm">
+            <span className="text-xs font-bold text-[#24324A] uppercase tracking-wider flex items-center gap-1.5 font-mono">
+              <BookOpen className="h-3.5 w-3.5 text-[#C9A227]" /> Expert Decision Guides
+            </span>
+            <p className="text-[10px] text-zinc-400 leading-normal font-sans font-medium">
+              Psychologist-reviewed editorial guides and decision matrix briefs relevant to this scenario:
+            </p>
+            <div className="space-y-3 pt-1.5 border-t border-zinc-100">
+              {relatedGuides.map(guide => (
+                <div 
+                  key={guide.id}
+                  onClick={() => {
+                    setScreen({ type: 'guides', slug: guide.slug });
+                    window.scrollTo({ top: 0 });
+                  }}
+                  className="group border border-zinc-50 hover:border-[#C9A227]/30 bg-[#FAF9F6]/50 hover:bg-[#FAF8F2] p-3 rounded-xl transition-all cursor-pointer flex flex-col justify-between"
+                >
+                  <div className="space-y-1 text-left">
+                    <div className="flex items-center justify-between text-[8px] font-bold text-[#C9A227] uppercase tracking-wider">
+                      <span>{guide.category}</span>
+                      <span>{guide.readTime}</span>
+                    </div>
+                    <h4 className="text-xs font-bold text-[#24324A] group-hover:text-[#C9A227] transition-colors line-clamp-2 leading-tight">
+                      {guide.title}
+                    </h4>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 mt-2 border-t border-zinc-100/40 text-[9px] font-bold text-[#C9A227] font-mono">
+                    <span>Read Guide</span>
+                    <ChevronRight className="h-3 w-3 transform group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-        {/* Feed Columns */}
-        <div className="lg:col-span-9 space-y-4">
+      </div>
+
+      {/* Feed Columns */}
+      <div className="lg:col-span-9 space-y-4">
           
 
 

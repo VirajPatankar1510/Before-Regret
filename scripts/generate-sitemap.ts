@@ -70,6 +70,8 @@ async function runSitemapGenerator() {
     { path: "red-flags", changefreq: "daily", priority: "0.95" },
     { path: "relationship-regrets", changefreq: "daily", priority: "0.95" },
     { path: "commitment-issues", changefreq: "daily", priority: "0.95" },
+    { path: "guides", changefreq: "weekly", priority: "0.9" },
+    { path: "ldr-game", changefreq: "weekly", priority: "0.8" },
   ];
 
   const urlTags: string[] = [];
@@ -80,6 +82,29 @@ async function runSitemapGenerator() {
     <loc>${origin}/${item.path}</loc>
     <changefreq>${item.changefreq}</changefreq>
     <priority>${item.priority}</priority>
+  </url>`);
+  }
+
+  // 1b. Expert Decision Guides
+  const guideSlugs = [
+    "infidelity-reconciliation-math-of-forgiveness",
+    "ultimatum-protocol-why-marriage-deadlocks-fail",
+    "relocation-risk-index-moving-for-love",
+    "red-flag-evaluation-boundary-matrix",
+    "financial-infidelity-secret-debt-private-accounts",
+    "emotional-cheating-vs-close-friendship-boundaries",
+    "stonewalling-silent-treatment-emotional-punishment",
+    "breadwinner-resentment-income-disparity",
+    "narcissistic-gaslighting-vs-healthy-disagreements",
+    "long-distance-deadlock-closing-the-gap",
+    "cold-feet-vs-marriage-dealbreakers",
+    "codependency-vs-interdependence-autonomy-score"
+  ];
+  for (const slug of guideSlugs) {
+    urlTags.push(`  <url>
+    <loc>${origin}/guides/${slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.88</priority>
   </url>`);
   }
 
