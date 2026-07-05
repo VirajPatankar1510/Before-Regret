@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Core Main Pages -->
   <url>
     <loc>https://beforeregret.com/</loc>
     <changefreq>daily</changefreq>
@@ -12,24 +11,49 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://beforeregret.com/ldr-game</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://beforeregret.com/regrets</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/court</loc>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/boards</loc>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/flags</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/should-i-leave</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/will-i-regret</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/red-flags</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/relationship-regrets</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/commitment-issues</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides</loc>
@@ -37,144 +61,173 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://beforeregret.com/compare</loc>
+    <loc>https://beforeregret.com/ldr-game</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://beforeregret.com/regrets</loc>
-    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
-    <loc>https://beforeregret.com/legal</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <!-- pSEO Decision Pages -->
-  <url>
-    <loc>https://beforeregret.com/decision/boyfriend-doesnt-want-marriage</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://beforeregret.com/decision/stayed-after-cheating</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://beforeregret.com/decision/partner-doesnt-want-kids</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://beforeregret.com/decision/moved-for-love</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://beforeregret.com/decision/long-distance-relationship</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://beforeregret.com/decision/different-religion-marriage</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://beforeregret.com/decision/marriage-ultimatum</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://beforeregret.com/decision/ignored-red-flags</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://beforeregret.com/decision/friend-zone</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Country pSEO Breakdown Pages -->
-  <url>
-    <loc>https://beforeregret.com/country/usa</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://beforeregret.com/country/india</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://beforeregret.com/country/canada</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Editorial Guide Articles -->
   <url>
     <loc>https://beforeregret.com/guides/infidelity-reconciliation-math-of-forgiveness</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides/ultimatum-protocol-why-marriage-deadlocks-fail</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides/relocation-risk-index-moving-for-love</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides/red-flag-evaluation-boundary-matrix</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides/financial-infidelity-secret-debt-private-accounts</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides/emotional-cheating-vs-close-friendship-boundaries</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides/stonewalling-silent-treatment-emotional-punishment</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides/breadwinner-resentment-income-disparity</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides/narcissistic-gaslighting-vs-healthy-disagreements</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides/long-distance-deadlock-closing-the-gap</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides/cold-feet-vs-marriage-dealbreakers</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
   </url>
   <url>
     <loc>https://beforeregret.com/guides/codependency-vs-interdependence-autonomy-score</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.88</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/decision/boyfriend-doesnt-want-marriage</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/decision/stayed-after-cheating</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/decision/partner-doesnt-want-kids</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/decision/moved-for-love</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/decision/long-distance-relationship</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/decision/different-religion-marriage</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/decision/marriage-ultimatum</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/decision/ignored-red-flags</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/decision/friend-zone</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/compare/boyfriend-doesnt-want-marriage-vs-stayed-after-cheating</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/compare/moved-in-together-vs-long-distance-commitment</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/compare/had-baby-to-save-marriage-vs-stayed-for-children</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/country/usa</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/country/india</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/country/canada</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/tag/marriage</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/tag/cheating</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/tag/trust</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/tag/regret</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/tag/kids</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>
+  <url>
+    <loc>https://beforeregret.com/tag/finance</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
   </url>
 </urlset>

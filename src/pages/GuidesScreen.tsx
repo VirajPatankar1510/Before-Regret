@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BookOpen, ArrowLeft, Clock, Share2, Sparkles, CheckCircle, ChevronRight, HelpCircle, ShieldAlert, Award } from 'lucide-react';
+import { PRESEEDED_SITUATIONS } from '../data/mockData';
 
 export interface GuideArticle {
   id: string;
@@ -522,6 +523,26 @@ export default function GuidesScreen({ setScreen, slug }: GuidesScreenProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
+  // Find related situations based on guide slug
+  const getRelatedSituations = (articleSlug: string) => {
+    const guideToSituationMap: Record<string, string[]> = {
+      'infidelity-reconciliation-math-of-forgiveness': ['stayed-after-cheating'],
+      'emotional-cheating-vs-close-friendship-boundaries': ['stayed-after-cheating'],
+      'ultimatum-protocol-why-marriage-deadlocks-fail': ['boyfriend-doesnt-want-marriage', 'marriage-ultimatum'],
+      'cold-feet-vs-marriage-dealbreakers': ['boyfriend-doesnt-want-marriage', 'partner-doesnt-want-kids'],
+      'relocation-risk-index-moving-for-love': ['moved-for-love'],
+      'long-distance-deadlock-closing-the-gap': ['long-distance-relationship'],
+      'codependency-vs-interdependence-autonomy-score': ['different-religion-marriage', 'partner-doesnt-want-kids'],
+      'red-flag-evaluation-boundary-matrix': ['ignored-red-flags']
+    };
+    const slugs = guideToSituationMap[articleSlug] || ['boyfriend-doesnt-want-marriage'];
+    return PRESEEDED_SITUATIONS.filter(sit => slugs.includes(sit.slug));
+  };
+
+  const getOtherGuides = (articleSlug: string) => {
+    return GUIDE_ARTICLES.filter(a => a.slug !== articleSlug).slice(0, 3);
+  };
+
   const categories = ['All', ...new Set(GUIDE_ARTICLES.map(a => a.category))];
 
   const filteredArticles = GUIDE_ARTICLES.filter(a => {
@@ -536,7 +557,7 @@ export default function GuidesScreen({ setScreen, slug }: GuidesScreenProps) {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 bg-[#FAF9F6] text-[#24324A] min-h-screen">
       {/* Back to Guides List if viewing an article */}
       {selectedArticle ? (
-        <div className="max-w-3xl mx-auto space-y-8 animate-fadeIn">
+        <div className="max-w-7xl mx-auto space-y-8 animate-fadeIn text-left">
           <button
             onClick={() => {
               setScreen({ type: 'guides' });
@@ -548,8 +569,13 @@ export default function GuidesScreen({ setScreen, slug }: GuidesScreenProps) {
             <ArrowLeft className="h-4 w-4 text-[#C9A227]" /> Back to Decision Guides
           </button>
 
-          {/* Article Full View */}
-          <article className="bg-white rounded-3xl border border-[#E5E7EB] shadow-sm p-6 sm:p-10 space-y-8">
+          {/* Main Grid with Sidebar for dense internal linking */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            {/* Main Content (8 Columns) */}
+            <div className="lg:col-span-8 space-y-8">
+              {/* Article Full View */}
+              <article className="bg-white rounded-3xl border border-[#E5E7EB] shadow-sm p-6 sm:p-10 space-y-8">
             {/* Header */}
             <div className="space-y-4 border-b border-zinc-100 pb-6">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-[#FAF8F2] border border-[#C9A227]/30 text-[#C9A227]">
@@ -652,6 +678,121 @@ export default function GuidesScreen({ setScreen, slug }: GuidesScreenProps) {
               </button>
             </div>
           </article>
+        </div>
+
+            {/* Sidebar (4 Columns) for Dense Internal Linking */}
+            <div className="lg:col-span-4 space-y-6">
+              
+              {/* Related Real-Life Situations */}
+              {getRelatedSituations(selectedArticle.slug).length > 0 && (
+                <div className="bg-white rounded-3xl border border-[#E5E7EB] p-6 space-y-4 shadow-xs">
+                  <h4 className="text-xs font-black tracking-widest text-[#24324A] uppercase font-mono flex items-center gap-1.5 border-b border-zinc-100 pb-3">
+                    <Sparkles className="h-4 w-4 text-[#C9A227]" /> Mapped Situations
+                  </h4>
+                  <p className="text-[11px] text-zinc-400 font-medium leading-relaxed text-left">
+                    Examine real peer timelines, outcome distributions, and average regret metrics compiled for this scenario:
+                  </p>
+                  <div className="space-y-3">
+                    {getRelatedSituations(selectedArticle.slug).map(sit => (
+                      <div
+                        key={sit.slug}
+                        onClick={() => {
+                          setScreen({ type: 'situation', slug: sit.slug });
+                          window.scrollTo({ top: 0 });
+                        }}
+                        className="group p-3.5 rounded-2xl border border-zinc-100 hover:border-[#C9A227]/30 bg-[#FAF9F6]/30 hover:bg-[#FAF8F2] transition-all cursor-pointer flex flex-col justify-between"
+                      >
+                        <div className="text-left">
+                          <span className="text-[9px] font-bold text-[#C9A227] uppercase tracking-wider block mb-1">
+                            {sit.category}
+                          </span>
+                          <h5 className="text-xs font-bold text-[#24324A] group-hover:text-[#C9A227] transition-colors leading-snug">
+                            {sit.name}
+                          </h5>
+                        </div>
+                        <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-zinc-100/60 text-[9px] font-bold text-zinc-400 font-mono">
+                          <span>Avg Regret: {sit.stats.avgRegret}/10</span>
+                          <span className="text-[#C9A227] group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                            Analyze Outcomes <ChevronRight className="h-3 w-3" />
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Other Expert Guides */}
+              <div className="bg-white rounded-3xl border border-[#E5E7EB] p-6 space-y-4 shadow-xs">
+                <h4 className="text-xs font-black tracking-widest text-[#24324A] uppercase font-mono flex items-center gap-1.5 border-b border-zinc-100 pb-3">
+                  <BookOpen className="h-4 w-4 text-[#C9A227]" /> Other Expert Guides
+                </h4>
+                <div className="space-y-3">
+                  {getOtherGuides(selectedArticle.slug).map(other => (
+                    <div
+                      key={other.slug}
+                      onClick={() => {
+                        setScreen({ type: 'guides', slug: other.slug });
+                        window.scrollTo({ top: 0 });
+                      }}
+                      className="group p-3 rounded-2xl border border-zinc-50 hover:border-[#C9A227]/30 bg-[#FAF9F6]/20 hover:bg-[#FAF8F2] transition-all cursor-pointer flex items-center justify-between gap-2"
+                    >
+                      <div className="space-y-0.5 text-left">
+                        <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-wider block">
+                          {other.category}
+                        </span>
+                        <h5 className="text-xs font-bold text-[#24324A] group-hover:text-[#C9A227] transition-colors line-clamp-2 leading-tight">
+                          {other.title}
+                        </h5>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-[#C9A227] shrink-0 transform group-hover:translate-x-0.5 transition-transform" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Decision Intelligence Hub Links */}
+              <div className="bg-gradient-to-br from-[#24324A] to-[#1C273A] text-white rounded-3xl p-6 space-y-4 shadow-sm border border-zinc-800">
+                <div className="space-y-1 text-left">
+                  <span className="text-[10px] font-bold text-[#C9A227] uppercase tracking-widest font-mono">
+                    Decisional Toolkit
+                  </span>
+                  <h4 className="text-sm font-bold text-white font-serif">
+                    Unbiased Support Juries & Dynamic Meters
+                  </h4>
+                </div>
+                <p className="text-[11px] text-zinc-300 leading-relaxed text-left">
+                  Connect with dynamic citizen juries, score your relationship red flags, or search our global database:
+                </p>
+                <div className="grid grid-cols-1 gap-2 pt-1">
+                  {[
+                    { label: "BR Relationship Court", desc: "Citizen jury verdicts on marital & trust disputes", screen: { type: "court_list" } },
+                    { label: "Anonymous Regret Registry", desc: "Browse authentic peer timelines & stories", screen: { type: "regret_stories" } },
+                    { label: "Red Flag Meter Analysis", desc: "Calculate your partner's specific warning indexes", screen: { type: "red_flag_meter" } },
+                    { label: "Commitment Incompatibilities", desc: "Read community-distilled outcomes", screen: { type: "hub", slug: "commitment-issues" } },
+                  ].map((tool, tIdx) => (
+                    <button
+                      key={tIdx}
+                      onClick={() => {
+                        setScreen(tool.screen);
+                        window.scrollTo({ top: 0 });
+                      }}
+                      className="w-full text-left p-3 rounded-2xl bg-white/5 border border-white/10 hover:border-[#C9A227]/40 hover:bg-white/10 transition-all cursor-pointer flex flex-col justify-between"
+                    >
+                      <span className="text-xs font-bold text-white leading-tight">
+                        {tool.label}
+                      </span>
+                      <span className="text-[9px] text-zinc-400 mt-0.5 leading-normal">
+                        {tool.desc}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+          </div>
         </div>
       ) : (
         <div className="space-y-8">
