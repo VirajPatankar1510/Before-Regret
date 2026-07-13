@@ -1,209 +1,89 @@
 import React from 'react';
-import { Tag, Compass, Shield } from 'lucide-react';
-import AdminPanel from './AdminPanel';
+import { Home, ShieldCheck, HelpCircle } from 'lucide-react';
 
 interface FooterProps {
-  setScreen: (screen: { type: string; slug?: string }) => void;
-  isAdmin: boolean;
-  onToggleAdmin: (status: boolean) => void;
+  setView: (view: string) => void;
 }
 
-export default function Footer({ setScreen, isAdmin, onToggleAdmin }: FooterProps) {
-  const currentYear = new Date().getFullYear();
-
-  const popularTags = [
-    { name: "Marriage Commitment", code: "marriage" },
-    { name: "Trust & Infidelity", code: "cheating" },
-    { name: "Long Distance (LDR)", code: "long-distance" },
-    { name: "Having Children", code: "children" }
-  ];
-
+export const Footer: React.FC<FooterProps> = ({ setView }) => {
   return (
-    <footer className="mt-auto border-t border-[#30363D] bg-[#090D13] py-12 text-[#AAB2C0] transition-colors duration-200">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-          
-          {/* Column 1: Info and Tagline */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#4F8CFF] font-bold text-white text-md">
-                BR
-              </div>
-              <span className="font-extrabold text-white text-md">BeforeRegret</span>
+    <footer className="bg-slate-900 text-slate-400 py-12 sm:py-16 border-t border-slate-800 font-sans mt-auto">
+      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+        
+        {/* Brand Description Column */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => setView('home')}>
+            <div className="bg-blue-600 text-white p-2 rounded-xl">
+              <Home className="w-5 h-5" />
             </div>
-            <p className="text-xs text-[#AAB2C0] leading-relaxed max-w-xs">
-              See what happened before making the same decision. Analyze thousands of genuine, anonymous relationship timelines, regret ratios, and post-decision updates.
-            </p>
-            <div className="text-[10px] text-zinc-500 leading-normal">
-              Disclaimer: Outcomes are self-reported. Not a substitute for professional clinical therapy or advisory. Read our binding{' '}
-              <a 
-                href="/disclaimer" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setScreen({ type: 'legal', slug: 'disclaimer' });
-                }}
-                className="text-[#F4B942] hover:underline cursor-pointer"
-              >
-                Legal Disclaimer
-              </a>.
-            </div>
+            <span className="font-display font-black text-lg tracking-tight text-white">
+              Before<span className="text-blue-500">Regret</span>
+            </span>
           </div>
-
-          {/* Column 2: Decision Intelligence Hubs */}
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-1.5">
-              <Compass className="h-3.5 w-3.5 text-indigo-400" /> Decision Hubs
-            </h3>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <a 
-                  href="/should-i-leave"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setScreen({ type: 'hub', slug: 'should-i-leave' });
-                  }} 
-                  className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
-                >
-                  Should I Leave Partner?
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="/will-i-regret"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setScreen({ type: 'will-i-regret' });
-                  }} 
-                  className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
-                >
-                  Will I Regret It?
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="/red-flags"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setScreen({ type: 'hub', slug: 'red-flags' });
-                  }} 
-                  className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
-                >
-                  Scientific Red Flags
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="/relationship-regrets"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setScreen({ type: 'hub', slug: 'relationship-regrets' });
-                  }} 
-                  className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
-                >
-                  Regret Registry Feed
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="/commitment-issues"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setScreen({ type: 'hub', slug: 'commitment-issues' });
-                  }} 
-                  className="hover:text-white text-[#AAB2C0] transition-colors text-left flex items-center gap-1"
-                >
-                  Commitment & Ultimatums
-                </a>
-              </li>
-            </ul>
+          <p className="text-xs text-slate-400 leading-relaxed max-w-xs font-medium">
+            A premium, escrow-protected resident marketplace for home buyers, renters, and migrating professionals in India to verify facts before committing to a home.
+          </p>
+          <div className="flex items-center gap-1.5 text-[10px] text-emerald-500 font-mono font-bold uppercase tracking-wider">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>Dual-Escrow Guarantee</span>
           </div>
-
-          {/* Column 3: Tag Directories */}
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-1.5">
-              <Tag className="h-3.5 w-3.5 text-pink-400" /> Tag Archives
-            </h3>
-            <ul className="space-y-2 text-xs">
-              {popularTags.map(tag => (
-                <li key={tag.code}>
-                  <a 
-                    href={`/tag/${tag.code}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setScreen({ type: 'tag', slug: tag.code });
-                    }} 
-                    className="hover:text-white transition-colors text-left flex items-center gap-1"
-                  >
-                    <span className="text-[#AAB2C0]">#</span>{tag.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
         </div>
 
-        <div className="mt-12 border-t border-[#30363D] pt-6 text-center text-xs text-zinc-500 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            © {currentYear} BeforeRegret. Built with high precision outcome analytics. All cases stored securely and anonymously.
-          </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 justify-center md:justify-end">
-            <a 
-              href="/guides" 
-              onClick={(e) => {
-                e.preventDefault();
-                setScreen({ type: 'guides' });
-              }}
-              className="hover:text-white text-[11px] font-bold text-[#C9A227] transition-colors cursor-pointer"
-            >
-              Decision Guides
-            </a>
-            <a 
-              href="/privacy" 
-              onClick={(e) => {
-                e.preventDefault();
-                setScreen({ type: 'legal', slug: 'privacy' });
-              }}
-              className="hover:text-white text-[11px] transition-colors cursor-pointer"
-            >
-              Privacy Policy
-            </a>
-            <a 
-              href="/terms" 
-              onClick={(e) => {
-                e.preventDefault();
-                setScreen({ type: 'legal', slug: 'terms' });
-              }}
-              className="hover:text-white text-[11px] transition-colors cursor-pointer"
-            >
-              Terms of Use
-            </a>
-            <a 
-              href="/disclaimer" 
-              onClick={(e) => {
-                e.preventDefault();
-                setScreen({ type: 'legal', slug: 'disclaimer' });
-              }}
-              className="hover:text-white text-[11px] transition-colors cursor-pointer"
-            >
-              Legal Disclaimer
-            </a>
-            <a 
-              href="/admin-feed"
-              onClick={(e) => {
-                e.preventDefault();
-                setScreen({ type: 'admin_feed' });
-              }}
-              className="hover:text-[#C9A227] text-[11px] flex items-center gap-1.5 transition-colors font-semibold"
-            >
-              <Shield className="h-3 w-3" />
-              <span>Admin Feed</span>
-            </a>
-            <AdminPanel isAdmin={isAdmin} onToggleAdmin={onToggleAdmin} />
-          </div>
+        {/* Links Column 1 */}
+        <div>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4 font-mono">Marketplace</h4>
+          <ul className="space-y-2 text-xs">
+            <li>
+              <button onClick={() => setView('home')} className="hover:text-white transition-colors cursor-pointer text-left">
+                Search Localities
+              </button>
+            </li>
+            <li>
+              <button onClick={() => setView('explore')} className="hover:text-white transition-colors cursor-pointer text-left">
+                Explore Societies
+              </button>
+            </li>
+            <li>
+              <button onClick={() => setView('become_expert')} className="hover:text-white transition-colors cursor-pointer text-left font-bold text-blue-400">
+                Become a Local Expert
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        {/* Links Column 2 */}
+        <div>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4 font-mono">Help & Trust</h4>
+          <ul className="space-y-2 text-xs">
+            <li>
+              <a href="#" onClick={(e) => { e.preventDefault(); alert('Before Regret Support Ticket system: Please reach out at support@beforeregret.in'); }} className="hover:text-white transition-colors flex items-center gap-1">
+                <HelpCircle className="w-3.5 h-3.5" />
+                <span>Contact Support</span>
+              </a>
+            </li>
+            <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">How Escrow Safeguard Works</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Trust Score Calculation</a></li>
+          </ul>
+        </div>
+
+        {/* Links Column 3 */}
+        <div>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4 font-mono">Legal & Policies</h4>
+          <ul className="space-y-2 text-xs">
+            <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Terms of Service</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Escrow Refund Guidelines</a></li>
+          </ul>
         </div>
 
       </div>
+
+      {/* Footer copyright */}
+      <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-800 text-center text-[11px] text-slate-500 font-mono">
+        <p>© {new Date().getFullYear()} Before Regret. All Rights Reserved. Built with uncompromised integrity in India.</p>
+        <p className="mt-1">All consulting services and resident advice are fully self-declared. Buyer discretion is advised.</p>
+      </div>
+
     </footer>
   );
-}
+};
