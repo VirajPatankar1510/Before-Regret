@@ -82,7 +82,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
           Consult {expert.fullName}
         </h1>
         <p className="text-xs text-slate-400 font-mono tracking-widest uppercase mt-1">
-          Escrow-backed direct neighbor advice
+          Protected & secure direct neighbor advice
         </p>
 
         {/* Step Indicator Bullets */}
@@ -182,7 +182,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
           <div className="flex justify-between items-start mb-4">
             <div>
               <h2 className="text-lg font-bold text-slate-900">Step 2: Describe what you want to verify</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Please be specific. Your questions are protected by escrow.</p>
+              <p className="text-xs text-slate-500 mt-0.5">Please be specific. Your questions are protected by our satisfaction guarantee.</p>
             </div>
             <span className="bg-blue-50 border border-blue-100 text-blue-700 text-[10px] font-bold px-2.5 py-1 rounded-full font-mono">
               {activePlan.title} (Rs. {activePlan.price})
@@ -282,8 +282,8 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                 </div>
                 <div className="flex justify-between items-center pb-4 border-b border-slate-100">
                   <div>
-                    <h3 className="font-bold text-slate-800 text-sm">Service Charge & Escrow Protection</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">Dual Escrow hold management</p>
+                    <h3 className="font-bold text-slate-800 text-sm">Service Charge & Payment Safeguard</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Dual hold secure management</p>
                   </div>
                   <span className="font-bold text-emerald-600 font-mono text-xs">FREE</span>
                 </div>
@@ -503,7 +503,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                   </div>
                   <h4 className="font-black text-emerald-600 text-base">Payment Successful!</h4>
                   <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
-                    Transaction authorized and settled safely via Razorpay Escrow engine. Redirecting you...
+                    Transaction authorized and settled safely via Razorpay secure engine. Redirecting you...
                   </p>
                 </div>
               )}

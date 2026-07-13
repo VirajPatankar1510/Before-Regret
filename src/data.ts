@@ -12,7 +12,7 @@ export const pricingPlans: PricingPlan[] = [
     features: [
       'Ask 1 specific question',
       'Local resident response within 24 hours',
-      'Secure escrow protection (48h)',
+      'Secure payment protection (48h)',
       '100% refund if not answered'
     ],
     cta: 'Select Basic'
@@ -29,7 +29,7 @@ export const pricingPlans: PricingPlan[] = [
       'Ask up to 3 detailed questions',
       'Direct messaging with local expert',
       'Contact protection (no spam/broker calls)',
-      'Escrow released only upon satisfaction'
+      'Payment released only upon satisfaction'
     ],
     cta: 'Select Standard'
   },
@@ -45,7 +45,7 @@ export const pricingPlans: PricingPlan[] = [
       '30-minute real-time chat with the resident',
       'Select from verified convenient time slots',
       'Instant slot booking confirmation',
-      'Secure escrow protection (48h)'
+      'Secure payment protection (48h)'
     ],
     cta: 'Select Live Chat'
   }

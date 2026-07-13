@@ -77,10 +77,10 @@ export const HowItWorks: React.FC = () => {
           </div>
           <div className="text-center sm:text-left flex-1">
             <h4 className="font-bold text-xs sm:text-sm text-slate-900">
-              Dual-Protected Escrow Safeguard
+              Dual-Protected Payment Safeguard
             </h4>
             <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-relaxed">
-              Your payment is held securely in escrow. Funds are only transferred to the resident after they have answered your questions. Otherwise, get an instant 100% refund.
+              Your payment is held securely and protected. Funds are only transferred to the resident after they have answered your questions. Otherwise, get an instant 100% refund.
             </p>
           </div>
         </div>
