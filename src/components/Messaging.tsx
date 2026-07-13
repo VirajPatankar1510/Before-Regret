@@ -39,7 +39,7 @@ export const Messaging: React.FC<MessagingProps> = ({
       id: 'msg_2',
       senderId: 'user_priya',
       senderRole: 'expert',
-      text: "Hello Rohan! Thanks for reaching out. I've been living here since 2016 and know the building inside out. I am currently compiling a verified report for Bimbisar Nagar regarding your questions. Is there anything specific you'd like me to double-check regarding the lift speed or domestic maid availability?",
+      text: "Hello Rohan! Thanks for reaching out. I've been living here since 2016 and know the building inside out. I am currently compiling a detailed report for Bimbisar Nagar regarding your questions. Is there anything specific you'd like me to double-check regarding the lift speed or domestic maid availability?",
       createdAt: new Date(new Date(query.createdAt).getTime() + 15 * 60 * 1000).toISOString()
     }
   ]);
@@ -192,7 +192,7 @@ export const Messaging: React.FC<MessagingProps> = ({
                         referrerPolicy="no-referrer"
                       />
                       <div className="p-2 bg-white text-[10px] text-slate-500 font-mono">
-                        image_attachment_verified.jpg
+                        image_attachment_shared.jpg
                       </div>
                     </div>
                   )}
@@ -277,7 +277,7 @@ export const Messaging: React.FC<MessagingProps> = ({
               </div>
               <div>
                 <h3 className="font-bold text-slate-900 text-sm">Resident Final Answers Form</h3>
-                <p className="text-xs text-slate-500 font-medium">Draft your compiled verified society report. This submits the answers and releases the pending balance.</p>
+                <p className="text-xs text-slate-500 font-medium">Draft your compiled society report. This submits the answers and releases the pending balance.</p>
               </div>
             </div>
             
@@ -293,12 +293,12 @@ export const Messaging: React.FC<MessagingProps> = ({
             <form onSubmit={handleFinalReportSubmit} className="space-y-4 pt-3 border-t border-emerald-100/60">
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                  Your final verified response message (sent to Rohan):
+                  Your final response message (sent to Rohan):
                 </label>
                 <textarea
                   rows={5}
                   required
-                  placeholder="Provide unvarnished details regarding water tanker dependency, parking restrictions, CBSE schools availability, maid rates, etc..."
+                  placeholder="Provide key details regarding water tanker dependency, parking restrictions, CBSE schools availability, maid rates, etc..."
                   value={finalAnswer}
                   onChange={(e) => setFinalAnswer(e.target.value)}
                   className="w-full p-4 text-xs sm:text-sm border border-slate-200 rounded-xl outline-hidden text-slate-800 leading-relaxed font-sans"
@@ -314,7 +314,7 @@ export const Messaging: React.FC<MessagingProps> = ({
                 type="submit"
                 className="px-6 py-3 bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer"
               >
-                Submit Verified Report & Settle Funds
+                Submit Report & Settle Funds
               </button>
             </form>
           )}

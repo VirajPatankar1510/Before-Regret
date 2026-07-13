@@ -49,42 +49,42 @@ export const Hero: React.FC<HeroProps> = ({
   };
 
   return (
-    <section className="bg-white py-16 sm:py-24 border-b border-slate-100 font-sans">
+    <section className="bg-white py-10 sm:py-16 border-b border-slate-100 font-sans">
       <div className="max-w-4xl mx-auto px-4 text-center">
         {/* Trust Highlight Badge */}
-        <div className="inline-flex items-center gap-1.5 bg-blue-50/70 border border-blue-100/50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-6 font-mono tracking-wide">
+        <div className="inline-flex items-center gap-1.5 bg-blue-50/70 border border-blue-100/50 text-blue-700 text-[10px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full mb-4 sm:mb-6 font-mono tracking-wide">
           <Sparkles className="w-3.5 h-3.5 text-blue-500 fill-blue-100" />
           <span>Before Regret: 100% Unbiased Indian Resident Network</span>
         </div>
 
         {/* Headline */}
-        <h1 className="text-3xl sm:text-5xl font-display font-black tracking-tight text-slate-900 leading-tight">
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 leading-tight">
           Talk to Someone Who <br className="hidden sm:inline" /> Already Lives There
         </h1>
 
         {/* Subheading */}
-        <p className="mt-4 sm:mt-6 text-sm sm:text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
+        <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-500 max-w-xl mx-auto leading-relaxed">
           Thinking about moving, renting or buying? <br className="hidden sm:inline" />
-          Ask verified local residents before making one of life's biggest decisions.
+          Ask local residents before making one of life's biggest decisions.
         </p>
 
-        {/* Large Search Container */}
-        <div ref={containerRef} className="mt-8 max-w-2xl mx-auto relative z-40">
-          <div className="bg-white border-2 border-slate-200 focus-within:border-blue-600 rounded-2xl flex items-center p-1.5 shadow-sm focus-within:shadow-md transition-all">
-            <div className="pl-3.5 text-slate-400">
-              <Search className="w-5 h-5" />
+        {/* Minimalist Search Container */}
+        <div ref={containerRef} className="mt-6 max-w-xl mx-auto relative z-40">
+          <div className="bg-white border border-slate-200/80 focus-within:border-blue-600 rounded-xl flex items-center p-1 shadow-xs focus-within:shadow-sm transition-all">
+            <div className="pl-2.5 text-slate-400">
+              <Search className="w-4 h-4" />
             </div>
             <input
               ref={onSearchFocusRef}
               type="text"
-              placeholder="Enter apartment, building, society name, city or zip code..."
+              placeholder="Search society or city..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setShowSuggestions(true);
               }}
               onFocus={() => setShowSuggestions(true)}
-              className="flex-1 px-3 py-3 text-slate-800 text-xs sm:text-sm font-medium outline-hidden"
+              className="flex-1 px-2 py-1.5 text-slate-800 text-xs font-medium outline-hidden"
             />
             <button
               onClick={() => {
@@ -94,9 +94,10 @@ export const Hero: React.FC<HeroProps> = ({
                   setShowSuggestions(true);
                 }
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-wider px-5 sm:px-6 py-3 rounded-xl transition-all cursor-pointer"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3.5 sm:px-4 py-2 rounded-lg transition-all cursor-pointer shrink-0"
             >
-              Find Residents
+              <span className="hidden sm:inline">Find Residents</span>
+              <span className="inline sm:hidden">Find</span>
             </button>
           </div>
 

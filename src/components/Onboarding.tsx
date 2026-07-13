@@ -108,7 +108,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
           Earn by Sharing Honest Facts About Your Society
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 mt-3 leading-relaxed">
-          People moving into your apartment building or neighborhood want unvarnished truth before buying or renting. Answer their basic queries and receive payouts held in secure payments.
+          People moving into your apartment building or neighborhood want accurate facts before buying or renting. Answer their basic queries and receive payouts held in secure payments.
         </p>
       </div>
 
@@ -119,7 +119,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
           </div>
           <h2 className="font-black text-slate-900 text-lg">Onboarding Form Submitted Successfully!</h2>
           <p className="text-xs text-slate-500 leading-relaxed">
-            Congratulations! You are now listed as a verified local expert in {neighborhood}. We are redirecting you to the home catalog...
+            Congratulations! You are now listed as a local expert in {neighborhood}. We are redirecting you to the home catalog...
           </p>
           <div className="flex justify-center pt-2">
             <RefreshCw className="w-5 h-5 text-blue-600 animate-spin" />
@@ -307,7 +307,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
               <textarea
                 rows={4}
                 required
-                placeholder="Explain what details you can verify for prospective buyers (e.g. water tanker bills frequency, local maid rates, parking space guidelines, basement dampness, late-night safety, etc.). Provide specific unvarnished insights."
+                placeholder="Explain what details you can share for prospective buyers (e.g. water tanker bills frequency, local maid rates, parking space guidelines, basement dampness, late-night safety, etc.). Provide specific honest insights."
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 className="w-full p-4 text-xs sm:text-sm border border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800"

@@ -112,7 +112,7 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  // Submit expert's verified final answer
+  // Submit expert's final answer
   const handleSubmitAnswer = (queryId: string, answerText: string) => {
     const updated = queries.map((q) => {
       if (q.id === queryId) {
@@ -139,7 +139,7 @@ export default function App() {
       return;
     }
 
-    const comment = prompt('Enter your feedback comment:', 'Amazing, unvarnished insight into Bimbisar Nagar society water limitations! Highly recommend!');
+    const comment = prompt('Enter your feedback comment:', 'Amazing, direct insight into Bimbisar Nagar society water limitations! Highly recommend!');
     if (!comment) return;
 
     const newReview: Review = {
@@ -162,7 +162,7 @@ export default function App() {
       return q;
     });
     setQueries(updated);
-    alert('Thank you! Your verified rating has been published successfully.');
+    alert('Thank you! Your rating has been published successfully.');
   };
 
   const handleAddExpertFromOnboarding = (newExpert: ExpertProfile) => {

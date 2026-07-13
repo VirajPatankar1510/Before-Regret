@@ -43,7 +43,7 @@ export const pricingPlans: PricingPlan[] = [
     pricePeriod: '/ 30 min session',
     features: [
       '30-minute real-time chat with the resident',
-      'Select from verified convenient time slots',
+      'Select from available convenient time slots',
       'Instant slot booking confirmation',
       'Secure payment protection (48h)'
     ],
@@ -245,7 +245,7 @@ export const INITIAL_EXPERTS: ExpertProfile[] = [
     id: 'exp_amit',
     userId: 'user_amit',
     fullName: 'Amit Sharma',
-    bio: 'Long-term resident at DLF Phase 5. If you are moving with your family and want unvarnished reviews about nearby CBSE/ICSE schools, safety for late-night walks, and strict pet constraints inside high-rises, let me assist.',
+    bio: 'Long-term resident at DLF Phase 5. If you are moving with your family and want authentic reviews about nearby CBSE/ICSE schools, safety for late-night walks, and strict pet constraints inside high-rises, let me assist.',
     localityId: 'loc_dlf_phase_5',
     localityName: 'DLF Phase 5',
     city: 'Gurugram',

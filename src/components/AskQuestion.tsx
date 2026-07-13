@@ -181,7 +181,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
         <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Step 2: Describe what you want to verify</h2>
+              <h2 className="text-lg font-bold text-slate-900">Step 2: Describe your questions</h2>
               <p className="text-xs text-slate-500 mt-0.5">Please be specific. Your questions are protected by our satisfaction guarantee.</p>
             </div>
             <span className="bg-blue-50 border border-blue-100 text-blue-700 text-[10px] font-bold px-2.5 py-1 rounded-full font-mono">

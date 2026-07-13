@@ -72,7 +72,7 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
           </div>
           <span className="text-slate-300">|</span>
           <span className="text-emerald-600 font-bold flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5" /> Verified Local Resident
+            <ShieldCheck className="w-3.5 h-3.5" /> Local Resident
           </span>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-1 font-bold text-amber-500 font-mono">
@@ -97,7 +97,7 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
             
             <div className="relative z-10">
               <span className="bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 border border-blue-500 rounded uppercase tracking-widest font-mono">
-                Verified Resident Locality
+                Resident Locality
               </span>
               <h2 className="text-2xl font-display font-black tracking-tight mt-3">
                 {locality.name}
@@ -177,7 +177,7 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
                 <strong className="text-slate-800 font-mono">{expert.repeatBuyersCount} buyers</strong>
               </div>
               <div>
-                <span className="text-slate-400 block mb-0.5">Verified Knowledge Areas</span>
+                <span className="text-slate-400 block mb-0.5">Knowledge Areas</span>
                 <strong className="text-slate-800">Bylaws, Water crisis, Maid logistics</strong>
               </div>
             </div>
@@ -236,7 +236,7 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
 
                     <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-semibold font-mono mt-3.5 pt-2.5 border-t border-slate-50">
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                      <span>Verified Protected Purchase Transaction</span>
+                      <span>Protected Purchase Transaction</span>
                     </div>
                   </div>
                 ))}
