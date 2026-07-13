@@ -54,7 +54,7 @@ export const Hero: React.FC<HeroProps> = ({
         {/* Trust Highlight Badge */}
         <div className="inline-flex items-center gap-1.5 bg-blue-50/70 border border-blue-100/50 text-blue-700 text-[10px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full mb-4 sm:mb-6 font-mono tracking-wide">
           <Sparkles className="w-3.5 h-3.5 text-blue-500 fill-blue-100" />
-          <span>Before Regret: 100% Unbiased Indian Resident Network</span>
+          <span>One Conversation Could Save You Years of Regret.</span>
         </div>
 
         {/* Headline */}
