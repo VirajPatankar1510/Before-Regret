@@ -1,5 +1,6 @@
 import React from 'react';
-import { Home, ShieldCheck, HelpCircle } from 'lucide-react';
+import { ShieldCheck, HelpCircle } from 'lucide-react';
+import { Logo } from './Logo';
 
 interface FooterProps {
   setView: (view: string) => void;
@@ -13,15 +14,13 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
         {/* Brand Description Column */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => setView('home')}>
-            <div className="bg-blue-600 text-white p-2 rounded-xl">
-              <Home className="w-5 h-5" />
-            </div>
-            <span className="font-display font-black text-lg tracking-tight text-white">
+            <Logo size={36} />
+            <span className="font-logo font-black text-xl tracking-tight text-white">
               Before<span className="text-blue-500">Regret</span>
             </span>
           </div>
           <p className="text-xs text-slate-400 leading-relaxed max-w-xs font-medium">
-            A premium, verified resident marketplace for home buyers, renters, and migrating professionals in India to verify facts before committing to a home.
+            A premium resident marketplace for home buyers, renters, and migrating professionals in India to check facts before committing to a home.
           </p>
         </div>
 

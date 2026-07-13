@@ -1,5 +1,6 @@
 import React from 'react';
-import { Home, MapPin, Search, Sparkles, User, LogIn, Award } from 'lucide-react';
+import { MapPin, Search, Sparkles, User, LogIn, Award } from 'lucide-react';
+import { Logo } from './Logo';
 
 interface NavbarProps {
   currentView: string;
@@ -25,15 +26,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           onClick={() => setView('home')} 
           className="flex items-center gap-2 cursor-pointer select-none group"
         >
-          <div className="bg-blue-600 text-white p-2 rounded-xl transition-transform group-hover:scale-105">
-            <Home className="w-5 h-5" />
-          </div>
+          <Logo size={36} className="transition-transform group-hover:scale-105" />
           <div>
-            <span className="font-display font-black text-lg tracking-tight text-slate-900">
+            <span className="font-logo font-black text-xl tracking-tight text-slate-900">
               Before<span className="text-blue-600">Regret</span>
             </span>
-            <span className="block text-[9px] text-slate-400 font-mono tracking-widest uppercase -mt-1">
-              Verified Resident Intelligence
+            <span className="block text-[8px] sm:text-[9px] text-slate-400 font-logo font-semibold tracking-wider sm:tracking-widest uppercase -mt-1">
+              Before You Decide, Ask.
             </span>
           </div>
         </div>

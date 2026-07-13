@@ -54,8 +54,8 @@ export const FeaturedResidents: React.FC<FeaturedResidentsProps> = ({
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-2 font-medium leading-relaxed max-w-xl">
               {selectedLocality 
-                ? `Talk directly to residents living in ${selectedLocality.name}, ${selectedLocality.city} who know the unvarnished facts.`
-                : 'Browse resident experts verified in housing societies and apartments across Mumbai, Bengaluru, and Gurugram.'}
+                ? `Talk directly to residents living in ${selectedLocality.name}, ${selectedLocality.city} who know the key facts.`
+                : 'Browse resident experts in housing societies and apartments across Mumbai, Bengaluru, and Gurugram.'}
             </p>
           </div>
 
