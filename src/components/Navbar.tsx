@@ -29,9 +29,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Logo size={36} className="transition-transform group-hover:scale-105" />
           <div>
             <span className="font-logo font-black text-xl tracking-tight text-slate-900">
-              Before<span className="text-blue-600">Regret</span>
+              Before <span className="text-slate-900">Regret</span>
             </span>
-            <span className="block text-[8px] sm:text-[9px] text-slate-400 font-logo font-semibold tracking-wider sm:tracking-widest uppercase -mt-1">
+            <span className="block text-[8px] sm:text-[9px] text-slate-400 font-logo font-semibold tracking-wider sm:tracking-widest uppercase mt-0.5">
               Before You Decide, Ask.
             </span>
           </div>
