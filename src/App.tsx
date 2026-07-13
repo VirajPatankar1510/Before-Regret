@@ -1,3165 +1,353 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Sparkles, Compass, HelpCircle, Heart, ShieldCheck, Gavel, Globe, Clock, PlusCircle, Bookmark, ArrowRight, ChevronRight, AlertTriangle, Monitor, RotateCcw, Share2, Info, X, BookOpen, Copy, Plus, Check, Camera, Download } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Navbar } from './components/Navbar';
+import { Hero } from './components/Hero';
+import { HowItWorks } from './components/HowItWorks';
+import { FeaturedResidents } from './components/FeaturedResidents';
+import { ResidentProfile } from './components/ResidentProfile';
+import { AskQuestion } from './components/AskQuestion';
+import { Dashboards } from './components/Dashboards';
+import { Messaging } from './components/Messaging';
+import { Onboarding } from './components/Onboarding';
+import { Footer } from './components/Footer';
 
-// Reusable custom components
-import Navigation from './components/Navigation';
-import Footer from './components/Footer';
-import SubmitStoryForm from './components/SubmitStoryForm';
-import SubmitQuestionForm from './components/SubmitQuestionForm';
-import RegisterCaseForm from './components/RegisterCaseForm';
-import AdminPanel from './components/AdminPanel';
-
-// Simulated screen components
-import HomeScreen from './pages/HomeScreen';
-import SituationScreen from './pages/SituationScreen';
-import CourtScreen from './pages/CourtScreen';
-import QuestionScreen from './pages/QuestionScreen';
-import ExploreScreen from './pages/ExploreScreen';
-import CountryScreen from './pages/CountryScreen';
-import TagScreen from './pages/TagScreen';
-import CompareScreen from './pages/CompareScreen';
-import RegretStoriesScreen from './pages/RegretStoriesScreen';
-import RedFlagMeterScreen from './pages/RedFlagMeterScreen';
-import HubScreen from './pages/HubScreen';
-import AdminFeedScreen from './pages/AdminFeedScreen';
-import LegalScreen from './pages/LegalScreen';
-import GuidesScreen, { GUIDE_ARTICLES } from './pages/GuidesScreen';
-import LdrGameScreen from './pages/LdrGameScreen';
-// Core State and Seeding
-import { getInitialState, saveState } from './data/store';
-import { PRESEEDED_SITUATIONS, COUNTRIES_DATA } from './data/mockData';
-import { Story, CourtCase, Question, UserProfile, StoryComment, RedFlagCase } from './types';
-
-// Real Firebase / Firestore Backend Connection
-import { auth, googleProvider, signInWithPopup, signOut, onAuthStateChanged, db } from './lib/firebase';
-import { 
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  doc,
-  deleteDoc
-} from 'firebase/firestore';
-import { 
-  saveStoryToFirestore, 
-  fetchStoriesFromFirestore, 
-  saveCommentToFirestore, 
-  fetchCommentsFromFirestore, 
-  deleteCommentFromFirestore,
-  saveUserProfileToFirestore, 
-  fetchUserProfileFromFirestore,
-  deleteStoryFromFirestore,
-  saveQuestionToFirestore,
-  fetchQuestionsFromFirestore,
-  saveCourtCaseToFirestore,
-  saveRedFlagCaseToFirestore,
-  deleteCourtCaseFromFirestore,
-  deleteQuestionFromFirestore,
-  recordVisitInFirestore
-} from './lib/firestoreService';
-
-// RESTful Route Pathname Helpers for Clean Semantic Dynamic pSEO
-export function getSEOHeadingForSituation(slug: string, fallbackName: string): string {
-  switch (slug) {
-    case 'boyfriend-doesnt-want-marriage':
-      return "Will I Regret Staying If My Boyfriend Doesn't Want Marriage?";
-    case 'stayed-after-cheating':
-      return "Will I Regret Staying After Cheating? Forgiveness Statistics & Outcomes";
-    case 'partner-doesnt-want-kids':
-      return "Will I Regret Staying With a Partner Who Doesn't Want Kids?";
-    case 'moved-for-love':
-      return "Should I Move for Love? Relocation Regrets & Survival Rates";
-    case 'long-distance-relationship':
-      return "Are Long Distance Relationships Worth It? Split Rates & Regret Curves";
-    case 'different-religion-marriage':
-      return "Do Interfaith Marriages Work? Religion Friction & Outcome Statistics";
-    case 'marriage-ultimatum':
-      return "Do Marriage Ultimatums Work? Resentment Rates & Divorce Statistics";
-    case 'ignored-red-flags':
-      return "Will I Regret Ignoring Red Flags? Relationship Warning Outcomes";
-    default:
-      return `Should I ${fallbackName}? Real Outcomes & Regret Metrics`;
-  }
-}
-
-export function extractIdFromSlug(slug: string): string {
-  if (!slug) return '';
-  if (slug.includes('-')) {
-    const parts = slug.split('-');
-    const prefix = parts[0];
-    const isPreseededStory = /^s\d+$/.test(prefix);
-    const isCustomStory = prefix.startsWith('story_');
-    const isRedFlag = prefix.startsWith('rf_');
-    
-    if (isPreseededStory || isCustomStory || isRedFlag) {
-      return prefix;
-    }
-  }
-  return slug;
-}
-
-export function parsePath(pathname: string): { type: string; slug?: string } {
-  const parts = pathname.split('/').filter(Boolean);
-  
-  if (parts.length === 0) {
-    return { type: 'home' };
-  }
-  
-  const first = parts[0].toLowerCase();
-  
-  if (first === 'explore') {
-    return { type: 'explore' };
-  }
-  if (first === 'decision') {
-    return { type: 'situation', slug: parts[1] || 'boyfriend-doesnt-want-marriage' };
-  }
-  if (first === 'compare') {
-    return { type: 'compare', slug: parts[1] || 'boyfriend-doesnt-want-marriage-vs-stayed-after-cheating' };
-  }
-  if (first === 'court') {
-    if (parts[1]) {
-      return { type: 'court', slug: parts[1] };
-    }
-    return { type: 'court_list' };
-  }
-  if (first === 'boards') {
-    if (parts[1]) {
-      return { type: 'question', slug: parts[1] };
-    }
-    return { type: 'question_list' };
-  }
-  if (
-    first === 'should-i-leave' || 
-    first === 'will-i-regret' || 
-    first === 'red-flags' || 
-    first === 'relationship-regrets' || 
-    first === 'commitment-issues' ||
-    first === 'trust-issues' ||
-    first === 'signs-he-doesnt-want-marriage' ||
-    first === 'should-i-forgive-cheating' ||
-    first === 'will-i-regret-divorce' ||
-    first === 'red-flags-i-ignored' ||
-    first === 'relationship-ultimatum'
-  ) {
-    return { type: 'hub', slug: first };
-  }
-  if (first === 'regrets') {
-    if (parts[1]) {
-      return { type: 'regret_stories', slug: extractIdFromSlug(parts[1]) };
-    }
-    return { type: 'regret_stories' };
-  }
-  if (first === 'flags' || first === 'redflags' || first === 'red-flags' || first === 'red-flag-meter') {
-    if (parts[1]) {
-      return { type: 'red_flag_meter', slug: extractIdFromSlug(parts[1]) };
-    }
-    return { type: 'red_flag_meter' };
-  }
-  if (first === 'country') {
-    return { type: 'country', slug: parts[1] || 'usa' };
-  }
-  if (first === 'guides' || first === 'decision-guides' || first === 'editorial' || first === 'articles') {
-    if (parts[1]) {
-      return { type: 'guides', slug: parts[1] };
-    }
-    return { type: 'guides' };
-  }
-  if (first === 'tag') {
-    return { type: 'tag', slug: parts[1] || 'cheating' };
-  }
-  if (first === 'legal') {
-    return { type: 'legal', slug: parts[1] || 'disclaimer' };
-  }
-  if (first === 'privacy' || first === 'privacy-policy') {
-    return { type: 'legal', slug: 'privacy' };
-  }
-  if (first === 'terms' || first === 'terms-of-use') {
-    return { type: 'legal', slug: 'terms' };
-  }
-  if (first === 'disclaimer' || first === 'legal-disclaimer') {
-    return { type: 'legal', slug: 'disclaimer' };
-  }
-  if (first === 'lodge' || first === 'submit' || first === 'submit-story') {
-    return { type: 'question_list' };
-  }
-  if (first === 'ldr-game' || first === 'heartblower' || first === 'bubble-blow' || first === 'delulu') {
-    if (parts[1]) {
-      return { type: 'ldr_game', slug: parts[1] };
-    }
-    return { type: 'ldr_game' };
-  }
-
-  // Fallback
-  return { type: 'home' };
-}
-
-export function getRelativePath(screen: { type: string; slug?: string }, store?: any): string {
-  switch (screen.type) {
-    case 'home':
-      return '/';
-    case 'explore':
-      return '/explore';
-    case 'hub':
-      return `/${screen.slug}`;
-    case 'regret_stories':
-      if (screen.slug) {
-        if (store && store.stories) {
-          const storyObj = store.stories.find((s: any) => s.id === screen.slug);
-          if (storyObj && storyObj.title) {
-            const titleSlug = storyObj.title
-              .toLowerCase()
-              .replace(/['"’]/g, '')
-              .replace(/[^a-z0-9]+/g, '-')
-              .replace(/^-+|-+$/g, '');
-            return `/regrets/${screen.slug}-${titleSlug}`;
-          }
-        }
-        return `/regrets/${screen.slug}`;
-      }
-      return '/regrets';
-    case 'red_flag_meter':
-      if (screen.slug) {
-        if (store && store.redFlagCases) {
-          const redFlagObj = store.redFlagCases.find((rf: any) => rf.id === screen.slug);
-          if (redFlagObj && redFlagObj.title) {
-            const titleSlug = redFlagObj.title
-              .toLowerCase()
-              .replace(/['"’]/g, '')
-              .replace(/[^a-z0-9]+/g, '-')
-              .replace(/^-+|-+$/g, '');
-            return `/flags/${screen.slug}-${titleSlug}`;
-          }
-        }
-        return `/flags/${screen.slug}`;
-      }
-      return '/flags';
-    case 'situation':
-      return `/decision/${screen.slug || 'boyfriend-doesnt-want-marriage'}`;
-    case 'compare':
-      return `/compare/${screen.slug || 'boyfriend-doesnt-want-marriage-vs-stayed-after-cheating'}`;
-    case 'court_list':
-      return '/court';
-    case 'court':
-      return `/court/${screen.slug}`;
-    case 'question_list':
-      return '/boards';
-    case 'question':
-      return `/boards/${screen.slug}`;
-    case 'country':
-      return `/country/${screen.slug || 'usa'}`;
-    case 'tag':
-      return `/tag/${screen.slug || 'cheating'}`;
-    case 'guides':
-      if (screen.slug) {
-        return `/guides/${screen.slug}`;
-      }
-      return '/guides';
-    case 'legal':
-      return `/legal/${screen.slug || 'disclaimer'}`;
-    case 'submit_story':
-      return '/boards';
-    case 'ldr_game':
-      if (screen.slug) {
-        return `/ldr-game/${screen.slug}`;
-      }
-      return '/ldr-game';
-    default:
-      return '/';
-  }
-}
+import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from './data';
+import { Neighborhood, ExpertProfile, DirectQuery, Review } from './types';
+import { Building, MapPin, Search, Sparkles, Filter, Award, ChevronRight } from 'lucide-react';
 
 export default function App() {
-  const [store, setStore] = useState(() => getInitialState());
-  const [currentScreen, setScreen] = useState<{ type: string; slug?: string }>(() => {
-    return parsePath(window.location.pathname);
-  });
-  const [isAdmin, setIsAdmin] = useState(() => {
-    return localStorage.getItem('before_regret_admin_mode') === 'true';
-  });
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  // Navigation & Simulation Perspective State
+  const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, buyer_dashboard, expert_dashboard, messaging, become_expert
+  const [activeRole, setActiveRole] = useState<'guest' | 'buyer' | 'expert'>('guest');
 
-  // Dynamically update document title and URL parameters for SEO and native back/forward behaviors!
-  useEffect(() => {
-    // Determine dynamic page metadata based on clean routes
-    let title = "BeforeRegret — The Internet's Relationship Jury";
-    let description = "BeforeRegret is the ultimate decision intelligence platform for relationship regrets. Read crowdsourced anonymous story timelines, citizen jury verdicts, and red flag warnings before making life-altering choices.";
-    const displaySlug = currentScreen.slug ? currentScreen.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
-    
-    switch (currentScreen.type) {
-      case 'home':
-        title = "BeforeRegret — The Internet's Relationship Jury | BR Relationship Court & Regrets";
-        description = "Analyze crowdsourced anonymous timeline stories on marriage, cheating, cohabitation, and family commitments before making major life decisions. Vote on Red Flag warnings, hear jury trials, and write survivor guidelines.";
-        break;
-      case 'explore':
-        title = "Explore Decisional Outcomes | BeforeRegret";
-        description = "Browse real relationship categories and outcome dossiers grouped by decision, gender, age, and country.";
-        break;
-      case 'hub': {
-        if (currentScreen.slug === 'should-i-leave') {
-          title = "Should I Leave My Relationship? Breakup & Marriage Doubts | BeforeRegret";
-          description = "Should I stay or should I leave my partner? Reflect on breakup decisions, marriage doubts, and read raw outcome stories from other couples facing relationship fatigue.";
-        } else if (currentScreen.slug === 'will-i-regret') {
-          title = "Will I Regret Leaving My Husband or Partner? Outcomes | BeforeRegret";
-          description = "Will I regret leaving my husband, ending my relationship, or relocating for love? Browse real-life perspectives and 1-year later outcome timelines.";
-        } else if (currentScreen.slug === 'red-flags') {
-          title = "Relationship Red Flags: Warning Signs & Partner Patterns | BeforeRegret";
-          description = "Is it a red flag if he still talks to his ex? Spot warning signs in dating, secretive phone habits, stonewalling, and emotional isolation patterns.";
-        } else if (currentScreen.slug === 'relationship-regrets') {
-          title = "Relationship Regrets Registry: Stories & Breakup Lessons | BeforeRegret";
-          description = "Read real, anonymous relationship regrets and success stories. Find perspective on staying for the kids, divorce adjustment, and life-defining lessons.";
-        } else if (currentScreen.slug === 'commitment-issues') {
-          title = "Commitment Issues, Marriage Delays & Ultimatums | BeforeRegret";
-          description = "Waiting for a proposal or wondering why your boyfriend won't marry you? Navigate commitment problems, marriage ultimatums, or children desire mismatches.";
-        } else if (currentScreen.slug === 'trust-issues') {
-          title = "Trust Issues: Secret Phones, Lies & Emotional Cheating | BeforeRegret";
-          description = "Is your partner hiding things, keeping a secret phone, or emotionally cheating? Explore community wisdom on rebuilding trust or walking away after lies.";
-        } else if (currentScreen.slug === 'signs-he-doesnt-want-marriage') {
-          title = "Signs He Doesn't Want Marriage & Won't Propose | BeforeRegret";
-          description = "How long should you wait for a proposal? Learn key signs he doesn't want to get married and the actual outcomes of giving a marriage ultimatum.";
-        } else if (currentScreen.slug === 'should-i-forgive-cheating') {
-          title = "Should I Forgive Cheating or Leave After Infidelity? | BeforeRegret";
-          description = "Deciding whether to stay or leave after cheating? Read shared experiences from real couples who tried to forgive, restore trust, or chose to walk away.";
-        } else if (currentScreen.slug === 'will-i-regret-divorce') {
-          title = "Will I Regret Divorce? Doubts, Relief & Real Timelines | BeforeRegret";
-          description = "Are you facing divorce doubts and wondering if you'll regret leaving? Explore real outcome curves, adjustment timelines, and stories 1 year later.";
-        } else if (currentScreen.slug === 'red-flags-i-ignored') {
-          title = "The Biggest Relationship Red Flags I Ignored: Real Stories | BeforeRegret";
-          description = "Read authentic stories of red flags partners wish they hadn't ignored, from hidden bank accounts to emotional withholding in dating.";
-        } else if (currentScreen.slug === 'relationship-ultimatum') {
-          title = "Relationship Ultimatums: Do They Work or Cause Resentment? | BeforeRegret";
-          description = "Thinking of giving an ultimatum about marriage, commitment, or moving? Read outcomes and discover healthy ways to discuss dealbreakers.";
-        }
-        break;
-      }
-      case 'situation': {
-        const currentSit = PRESEEDED_SITUATIONS.find(s => s.slug === currentScreen.slug);
-        const sName = currentSit ? currentSit.name : (displaySlug || 'Relationship Decision');
-        const seoHeading = getSEOHeadingForSituation(currentScreen.slug || '', sName);
-        title = `${seoHeading} | BeforeRegret`;
-        description = `Access community-sourced perspectives, guidance points, and anonymous reflective stories on "${sName}".`;
-        break;
-      }
-      case 'compare': {
-        const parts = (currentScreen.slug || 'boyfriend-doesnt-want-marriage-vs-stayed-after-cheating').split('-vs-');
-        const d1 = parts[0]?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Decision Alpha';
-        const d2 = parts[1]?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Decision Beta';
-        title = `Compare ${d1} vs ${d2} | Relationship Decision Perspectives`;
-        description = `Read side-by-side comparative perspectives of ${d1} vs ${d2}. Browse shared stories and reflective qualitative insight.`;
-        break;
-      }
-      case 'court_list':
-        title = "Peers Jury Tribunal - Give Judgement on Relationship Evidence | BeforeRegret";
-        description = "Deliberate and vote on user-lodged relationship conflict trials. Defend arguments as an anonymous juror citizen.";
-        break;
-      case 'court': {
-        const courtCaseObj = store.courtCases.find(c => c.slug === currentScreen.slug);
-        const cTitle = courtCaseObj ? courtCaseObj.title : (displaySlug || 'Relationship Case');
-        title = `Relationship Jury Trial: "${cTitle}" | BeforeRegret`;
-        description = `Review active relationship trial: "${cTitle}" in the public citizens tribunal. Vote on verdict options and write arguments.`;
-        break;
-      }
-      case 'question_list':
-        title = "Community Ask/Give Advice - Ask Survivor Veterans | BeforeRegret";
-        description = "Browse advice and questions from individuals facing major relationship crises answered by veteran survivors.";
-        break;
-      case 'question': {
-        const questionObj = store.questions.find(q => q.slug === currentScreen.slug);
-        const qTitle = questionObj ? questionObj.title : (displaySlug || 'Relationship Board');
-        title = `Survivor Q&A advice: "${qTitle}" | BeforeRegret`;
-        description = `Ask seasoned survivors and read Q&A advice for: "${qTitle}". Read community responses and view active polls.`;
-        break;
-      }
-      case 'country': {
-        const countryName = currentScreen.slug ? currentScreen.slug.toUpperCase() : 'Global';
-        title = `Relationship Decisions, Regrets & Outcomes in ${countryName} | BeforeRegret`;
-        description = `Explore demographic logs, regret curves, and relationship split rates from citizens facing relationship decisions in ${countryName}.`;
-        break;
-      }
-      case 'tag':
-        title = `Choice Outcomes matching "${displaySlug}" | BeforeRegret`;
-        description = `Analyze community outcomes, average regrets, and survivor guidelines classified under dynamic category keyword: #${displaySlug}.`;
-        break;
-      case 'submit_story':
-        title = "Lodge Relationship Advice Board Request | BeforeRegret";
-        description = "Get constructive, real-world advice comments from timeline survivors anonymous and secure.";
-        break;
-      case 'regret_stories': {
-        if (currentScreen.slug) {
-          const storyObj = store.stories.find(s => s.id === currentScreen.slug);
-          const sTitle = storyObj ? storyObj.title : (displaySlug || 'Relationship Outcome');
-          title = `Regret Story: "${sTitle}" | BeforeRegret`;
-          description = storyObj ? storyObj.fullStory.slice(0, 155) + "..." : `Read the 100% anonymous regret story and outcomes timeline for this relationship decision.`;
-        } else {
-          title = "BeforeRegret Relationship Story Ledger & Regrets";
-          description = "Read full timeline stories, interactive outcome statistics, and veteran survivors reports of relationship regrets.";
-        }
-        break;
-      }
-      case 'red_flag_meter': {
-        if (currentScreen.slug) {
-          const redFlagObj = store.redFlagCases.find(rf => rf.id === currentScreen.slug);
-          const rfTitle = redFlagObj ? redFlagObj.title : (displaySlug || 'Relationship Warning');
-          title = `Red Flag Dilemma: "${rfTitle}" | BeforeRegret`;
-          description = redFlagObj ? redFlagObj.description.slice(0, 155) + "..." : `Cast your citizen vote on this red flag dilemma and review comments.`;
-        } else {
-          title = "Red Flag Dilemma Meter - Citizen Vote on Warnings | BeforeRegret";
-          description = "Audit and vote on red, yellow, and green flag relationship warnings submitted anonymously by real partners.";
-        }
-        break;
-      }
-      case 'guides': {
-        if (currentScreen.slug) {
-          const article = GUIDE_ARTICLES.find(a => a.slug === currentScreen.slug || a.id === currentScreen.slug);
-          if (article) {
-            title = `${article.title} | BeforeRegret Relationship Guide`;
-            description = article.summary;
-          } else {
-            title = "Accredited Relationship Guide | BeforeRegret";
-            description = "Read deep long-form editorial guides written by certified psychologists, clinical mediators, and relationship researchers.";
-          }
-        } else {
-          title = "Accredited Relationship Decision Guides & Science | BeforeRegret";
-          description = "Read deep long-form editorial guides written by certified psychologists, clinical mediators, and relationship researchers. Learn the math of trust rebuilding and red flags.";
-        }
-        break;
-      }
-      case 'legal': {
-        if (currentScreen.slug === 'privacy') {
-          title = "Privacy Policy — Cookie-Free & Anonymous | BeforeRegret";
-          description = "Review our strict privacy-first policy. We do not use tracking cookies or sell your relationship data. Your anonymous stories are fully secured.";
-        } else if (currentScreen.slug === 'terms') {
-          title = "Terms of Use — User Rules & Section 230 Protected | BeforeRegret";
-          description = "Browse our terms of use, age requirements, defamation prohibition, and content license guidelines. Your stories are protected anonymously.";
-        } else {
-          title = "Legal Disclaimer — Professional Counseling Exclusions | BeforeRegret";
-          description = "Review our binding legal disclaimer. BeforeRegret offers peer perspectives and citizen juries, not licensed therapist counseling or legal advice.";
-        }
-        break;
-      }
+  // Core Database Collections State
+  const [localities, setLocalities] = useState<Neighborhood[]>(INITIAL_LOCALITIES);
+  const [experts, setExperts] = useState<ExpertProfile[]>(INITIAL_EXPERTS);
+  const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
+  const [queries, setQueries] = useState<DirectQuery[]>([
+    {
+      id: 'q_mock_1',
+      buyerId: 'user_rohan',
+      buyerName: 'Rohan Deshmukh',
+      expertId: 'exp_priya',
+      expertName: 'Priya',
+      localityId: 'loc_bimbisar_nagar',
+      localityName: 'Bimbisar Nagar, Jogeshwari',
+      queryText: "Hello Priya, I'm planning to rent a flat in Block C next month. How is the water supply during high summers? Also, are there restrictive society rules for bachelors or late-night arrivals? Thank you!",
+      status: 'ACCEPTED',
+      pricePaid: 199,
+      expertEarnings: 179,
+      createdAt: '2026-07-10T12:00:00Z',
+      packageOption: 'BUNDLE'
     }
-    
-    document.title = title;
+  ]);
 
-    // Set Programmatic SEO meta tags for search engine crawlers
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', description);
-    } else {
-      const el = document.createElement('meta');
-      el.name = 'description';
-      el.content = description;
-      document.head.appendChild(el);
-    }
+  // Selected entities for detailed views
+  const [selectedExpert, setSelectedExpert] = useState<ExpertProfile | null>(null);
+  const [selectedLocality, setSelectedLocality] = useState<Neighborhood | null>(null);
+  const [selectedPackageId, setSelectedPackageId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>('QUICK');
+  const [activeQuery, setActiveQuery] = useState<DirectQuery | null>(null);
 
-    const setOgTag = (property: string, content: string) => {
-      let el = document.querySelector(`meta[property="${property}"]`);
-      if (el) {
-        el.setAttribute('content', content);
-      } else {
-        el = document.createElement('meta');
-        el.setAttribute('property', property);
-        el.setAttribute('content', content);
-        document.head.appendChild(el);
-      }
-    };
+  // User list saves
+  const [savedExpertIds, setSavedExpertIds] = useState<string[]>(['exp_priya']);
 
-    const path = getRelativePath(currentScreen, store);
-    const origin = window.location.origin || 'https://beforeregret.org';
-    const canonicalUrl = `${origin}${path}`;
+  // Search input focus ref
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
-    setOgTag('og:title', title);
-    setOgTag('og:description', description);
-    setOgTag('og:url', canonicalUrl);
-    setOgTag('og:type', 'website');
-    setOgTag('og:site_name', 'BeforeRegret');
-
-    let canonicalLink = document.querySelector('link[rel="canonical"]');
-    if (canonicalLink) {
-      canonicalLink.setAttribute('href', canonicalUrl);
-    } else {
-      canonicalLink = document.createElement('link');
-      canonicalLink.setAttribute('rel', 'canonical');
-      canonicalLink.setAttribute('href', canonicalUrl);
-      document.head.appendChild(canonicalLink);
-    }
-
-    // Programmatic SEO: Inject dynamic JSON-LD structured data for rich search engine snippets (FAQ, Q&A, BlogPosting)
-    let schemaJson: any = {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "BeforeRegret",
-      "url": origin,
-      "description": "The ultimate crowdsourced decision intelligence platform for relationships. View timelines, jury trials, and red flags before making life-altering decisions."
-    };
-
-    if (currentScreen.type === 'court') {
-      const courtCaseObj = store.courtCases.find((c: any) => c.slug === currentScreen.slug);
-      if (courtCaseObj) {
-        schemaJson = {
-          "@context": "https://schema.org",
-          "@type": "DiscussionForumPosting",
-          "headline": courtCaseObj.title,
-          "description": courtCaseObj.description,
-          "datePublished": courtCaseObj.postTime,
-          "author": {
-            "@type": "Person",
-            "name": courtCaseObj.author || "Anonymous Juror"
-          },
-          "interactionStatistic": {
-            "@type": "InteractionCounter",
-            "interactionType": "https://schema.org/LikeAction",
-            "userInteractionCount": (courtCaseObj.votes?.me || 0) + (courtCaseObj.votes?.partner || 0)
-          }
-        };
-      }
-    } else if (currentScreen.type === 'question') {
-      const questionObj = store.questions.find((q: any) => q.slug === currentScreen.slug);
-      if (questionObj) {
-        schemaJson = {
-          "@context": "https://schema.org",
-          "@type": "QAPage",
-          "mainEntity": {
-            "@type": "Question",
-            "name": questionObj.title,
-            "text": questionObj.description || questionObj.title,
-            "answerCount": questionObj.answers?.length || 0,
-            "dateCreated": questionObj.postTime || "2026-06-23",
-            "author": {
-              "@type": "Person",
-              "name": questionObj.author || "Anonymous Citizen"
-            }
-          }
-        };
-      }
-    } else if (currentScreen.type === 'regret_stories' && currentScreen.slug) {
-      const storyObj = store.stories.find((s: any) => s.id === currentScreen.slug);
-      if (storyObj) {
-        schemaJson = {
-          "@context": "https://schema.org",
-          "@type": "BlogPosting",
-          "headline": storyObj.title,
-          "description": storyObj.fullStory.slice(0, 160) + "...",
-          "datePublished": storyObj.dateAdded,
-          "author": {
-            "@type": "Person",
-            "name": storyObj.userName || "Anonymous Writer"
-          }
-        };
-      }
-    } else if (currentScreen.type === 'guides' && currentScreen.slug) {
-      const article = GUIDE_ARTICLES.find(a => a.slug === currentScreen.slug || a.id === currentScreen.slug);
-      if (article) {
-        schemaJson = {
-          "@context": "https://schema.org",
-          "@type": "Article",
-          "headline": article.title,
-          "description": article.summary,
-          "author": {
-            "@type": "Person",
-            "name": article.author
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "BeforeRegret",
-            "url": origin
-          }
-        };
-      }
-    }
-
-    let schemaScript = document.getElementById('seo-jsonld-schema');
-    if (schemaScript) {
-      schemaScript.textContent = JSON.stringify(schemaJson);
-    } else {
-      schemaScript = document.createElement('script');
-      schemaScript.id = 'seo-jsonld-schema';
-      schemaScript.setAttribute('type', 'application/ld+json');
-      schemaScript.textContent = JSON.stringify(schemaJson);
-      document.head.appendChild(schemaScript);
-    }
-
-    // Push states to native HTML5 REST history pathnames
-    if (window.location.pathname !== path) {
-      window.history.pushState({ type: currentScreen.type, slug: currentScreen.slug }, '', path);
-    }
-  }, [currentScreen]);
-
-  // Handle auto-scroll to top and focus main section on navigation/screen change
-  useEffect(() => {
+  // Navigation handlers
+  const handleSelectExpert = (expert: ExpertProfile) => {
+    const loc = localities.find((l) => l.id === expert.localityId) || localities[0];
+    setSelectedExpert(expert);
+    setSelectedLocality(loc);
+    setView('profile');
     window.scrollTo(0, 0);
-    const mainContent = document.getElementById('main-content');
-    if (mainContent) {
-      mainContent.focus();
-    }
-    // Handle layout adjustments/loading lag
-    const timer = setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [currentScreen]);
+  };
 
-  // Initialize feed check time for live alerts
-  useEffect(() => {
-    if (!localStorage.getItem('before_regret_last_feed_check')) {
-      // Set to 6 hours ago so there are some "new" items to show first-time visitors
-      const initialTime = Date.now() - 6 * 3600 * 1000;
-      localStorage.setItem('before_regret_last_feed_check', initialTime.toString());
-    }
-  }, []);
-
-  // Record website visits (filtered for bots and crawlers)
-  useEffect(() => {
-    const isBot = () => {
-      if (typeof window === 'undefined') return true;
-      const userAgent = window.navigator.userAgent.toLowerCase();
-      const botKeywords = [
-        'googlebot', 'bingbot', 'yandexbot', 'duckduckbot', 'slurp', 'baidu', 'sogou', 'exabot',
-        'facebot', 'ia_archiver', 'crawler', 'spider', 'robot', 'crawling', 'curl', 'wget', 'lighthouse',
-        'speedcurve', 'pingdom', 'uptime', 'monitor', 'bot', 'headlesschrome', 'selenium', 'puppeteer'
-      ];
-      for (const keyword of botKeywords) {
-        if (userAgent.includes(keyword)) return true;
-      }
-      if (window.navigator.webdriver) return true;
-      if (!window.navigator.languages || window.navigator.languages.length === 0) return true;
-      if (window.innerWidth === 0 || window.innerHeight === 0) return true;
-      return false;
-    };
-
-    if (isBot()) {
-      return;
-    }
-
-    const sessionCounted = sessionStorage.getItem('beforeregret_session_counted');
-    const visitorCounted = localStorage.getItem('beforeregret_visitor_counted');
-
-    const isNewSession = !sessionCounted;
-    const isNewVisitor = !visitorCounted;
-
-    if (isNewSession || isNewVisitor) {
-      recordVisitInFirestore(isNewSession, isNewVisitor)
-        .then(() => {
-          if (isNewSession) sessionStorage.setItem('beforeregret_session_counted', 'true');
-          if (isNewVisitor) localStorage.setItem('beforeregret_visitor_counted', 'true');
-        })
-        .catch(err => console.error("Error logging visit:", err));
-    }
-  }, []);
-
-  // Synchronize browser native back & forward button pops directly into the React stack
-  useEffect(() => {
-    const handlePopState = (event: PopStateEvent) => {
-      if (event.state && event.state.type) {
-        setScreen({ type: event.state.type, slug: event.state.slug });
-      } else {
-        setScreen(parsePath(window.location.pathname));
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
-
-  // Dynamic Comments and Connected Account Hooks
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [comments, setComments] = useState<StoryComment[]>([]);
-  const [showAuthTroubleshooter, setShowAuthTroubleshooter] = useState<boolean>(false);
-  const [guestNickName, setGuestNickName] = useState<string>('Wandering_Seeker');
-  const [showSubmitQuestion, setShowSubmitQuestion] = useState<boolean>(false);
-  const [isQuestionsLoaded, setIsQuestionsLoaded] = useState<boolean>(false);
-
-  // Initialize local guest user session on mount
-  useEffect(() => {
-    let localUserId = localStorage.getItem('beforeregret_guest_uid');
-    if (!localUserId) {
-      localUserId = `guest_${Math.floor(100000 + Math.random() * 900000)}`;
-      localStorage.setItem('beforeregret_guest_uid', localUserId);
-    }
-    const finalUserName = store.user.username || 'Anonymous Seeker';
-    setCurrentUser({
-      uid: localUserId,
-      displayName: finalUserName,
-      email: `${finalUserName.toLowerCase().replace(/[^a-z0-9]/g, '_')}@beforeregret.com`,
-      isAnonymous: true,
-      isGuest: true
-    });
-  }, []);
-
-  // Listen to Authentication State and Subscribe to Real-Time Collections
-  useEffect(() => {
-    // 1. Real-Time Subscription to Stories
-    const storiesCol = collection(db, "stories");
-    const qStories = query(storiesCol, orderBy("dateAdded", "desc"));
-    const unsubscribeStories = onSnapshot(qStories, (snapshot) => {
-      const fsStories: Story[] = [];
-      snapshot.forEach((snapDoc) => {
-        fsStories.push(snapDoc.data() as Story);
-      });
-      import('./data/mockData').then(({ PRESEEDED_STORIES }) => {
-        if (snapshot.empty) {
-          PRESEEDED_STORIES.forEach(s => {
-            if (!s.caseNumber) {
-              const stableNum = 1001 + PRESEEDED_STORIES.indexOf(s);
-              s.caseNumber = `CASE-S${stableNum}`;
-            }
-            saveStoryToFirestore(s).catch(err => console.error("Seed error:", err));
-          });
-        } else {
-          // Sync missing preseeded stories
-          const fsIds = new Set(fsStories.map(s => s.id));
-          PRESEEDED_STORIES.forEach(s => {
-            if (!fsIds.has(s.id)) {
-              if (!s.caseNumber) {
-                const stableNum = 1001 + PRESEEDED_STORIES.indexOf(s);
-                s.caseNumber = `CASE-S${stableNum}`;
-              }
-              saveStoryToFirestore(s).catch(err => console.error("Seed error:", err));
-            }
-          });
-        }
-      });
-      setStore(prev => {
-        const uniqueStories = fsStories.filter((s, idx, self) => 
-          self.findIndex(t => t.id === s.id) === idx
-        );
-        const newState = { ...prev, stories: uniqueStories };
-        saveState(newState);
-        return newState;
-      });
-    }, (error) => {
-      console.error("Firestore stories subscription error: ", error);
-    });
-
-    // 2. Real-Time Subscription to Comments / Advice Answers
-    const commentsCol = collection(db, "comments");
-    const qComments = query(commentsCol, orderBy("dateAdded", "asc"));
-    const unsubscribeComments = onSnapshot(qComments, (snapshot) => {
-      const fsComments: StoryComment[] = [];
-      snapshot.forEach((snapDoc) => {
-        fsComments.push(snapDoc.data() as StoryComment);
-      });
-      setComments(fsComments);
-    }, (error) => {
-      console.error("Firestore comments subscription error: ", error);
-    });
-
-    // 3. Real-Time Subscription to Questions / Advice Requests
-    const questionsCol = collection(db, "questions");
-    const unsubscribeQuestions = onSnapshot(questionsCol, (snapshot) => {
-      const fsQuestions: Question[] = [];
-      snapshot.forEach((snapDoc) => {
-        fsQuestions.push(snapDoc.data() as Question);
-      });
-      import('./data/mockData').then(({ PRESEEDED_QUESTIONS }) => {
-        if (snapshot.empty) {
-          PRESEEDED_QUESTIONS.forEach(q => {
-            saveQuestionToFirestore(q).catch(err => console.error("Seed error:", err));
-          });
-        } else {
-          const fsSlugs = new Set(fsQuestions.map(q => q.slug));
-          PRESEEDED_QUESTIONS.forEach(q => {
-            if (!fsSlugs.has(q.slug)) {
-              saveQuestionToFirestore(q).catch(err => console.error("Seed error:", err));
-            }
-          });
-        }
-      });
-      setStore(prev => {
-        const uniqueQuestions = fsQuestions.filter((q, idx, self) => 
-          self.findIndex(t => t.slug === q.slug) === idx
-        );
-        const newState = { ...prev, questions: uniqueQuestions };
-        saveState(newState);
-        return newState;
-      });
-      setIsQuestionsLoaded(true);
-    }, (error) => {
-      console.error("Firestore questions subscription error: ", error);
-      setIsQuestionsLoaded(true);
-    });
-
-    // 4. Real-Time Subscription to Court Cases
-    const courtCasesCol = collection(db, "courtCases");
-    const unsubscribeCourtCases = onSnapshot(courtCasesCol, (snapshot) => {
-      const fsCourtCases: CourtCase[] = [];
-      snapshot.forEach((snapDoc) => {
-        fsCourtCases.push(snapDoc.data() as CourtCase);
-      });
-      import('./data/mockData').then(({ PRESEEDED_COURT_CASES }) => {
-        if (snapshot.empty) {
-          PRESEEDED_COURT_CASES.forEach(c => {
-            if (!c.caseNumber) {
-              const stableNum = 2001 + PRESEEDED_COURT_CASES.indexOf(c);
-              c.caseNumber = `CASE-C${stableNum}`;
-            }
-            saveCourtCaseToFirestore(c).catch(err => console.error("Seed error:", err));
-          });
-        } else {
-          const fsSlugs = new Set(fsCourtCases.map(c => c.slug));
-          PRESEEDED_COURT_CASES.forEach(c => {
-            if (!fsSlugs.has(c.slug)) {
-              if (!c.caseNumber) {
-                const stableNum = 2001 + PRESEEDED_COURT_CASES.indexOf(c);
-                c.caseNumber = `CASE-C${stableNum}`;
-              }
-              saveCourtCaseToFirestore(c).catch(err => console.error("Seed error:", err));
-            }
-          });
-        }
-      });
-      setStore(prev => {
-        const unique = fsCourtCases.filter((c, idx, self) =>
-          self.findIndex(t => t.slug === c.slug) === idx
-        );
-        const newState = { ...prev, courtCases: unique };
-        saveState(newState);
-        return newState;
-      });
-    }, (error) => {
-      console.error("Firestore courtCases subscription error: ", error);
-    });
-
-    // 5. Real-Time Subscription to Red Flag Cases
-    const redFlagCasesCol = collection(db, "redFlagCases");
-    const unsubscribeRedFlagCases = onSnapshot(redFlagCasesCol, (snapshot) => {
-      const fsRedFlagCases: RedFlagCase[] = [];
-      snapshot.forEach((snapDoc) => {
-        fsRedFlagCases.push(snapDoc.data() as RedFlagCase);
-      });
-      import('./data/mockData').then(({ PRESEEDED_RED_FLAG_CASES }) => {
-        if (snapshot.empty) {
-          PRESEEDED_RED_FLAG_CASES.forEach(rf => {
-            if (!rf.caseNumber) {
-              const stableNum = 3001 + PRESEEDED_RED_FLAG_CASES.indexOf(rf);
-              rf.caseNumber = `CASE-F${stableNum}`;
-            }
-            saveRedFlagCaseToFirestore(rf).catch(err => console.error("Seed error:", err));
-          });
-        } else {
-          const fsIds = new Set(fsRedFlagCases.map(rf => rf.id));
-          PRESEEDED_RED_FLAG_CASES.forEach(rf => {
-            if (!fsIds.has(rf.id)) {
-              if (!rf.caseNumber) {
-                const stableNum = 3001 + PRESEEDED_RED_FLAG_CASES.indexOf(rf);
-                rf.caseNumber = `CASE-F${stableNum}`;
-              }
-              saveRedFlagCaseToFirestore(rf).catch(err => console.error("Seed error:", err));
-            }
-          });
-        }
-      });
-      setStore(prev => {
-        const unique = fsRedFlagCases.filter((f, idx, self) =>
-          self.findIndex(t => t.id === f.id) === idx
-        );
-        const newState = { ...prev, redFlagCases: unique };
-        saveState(newState);
-        return newState;
-      });
-    }, (error) => {
-      console.error("Firestore redFlagCases subscription error: ", error);
-    });
-
-    // Cleanup all subscriptions on unmount
-    return () => {
-      unsubscribeStories();
-      unsubscribeComments();
-      unsubscribeQuestions();
-      unsubscribeCourtCases();
-      unsubscribeRedFlagCases();
-    };
-  }, []);
-
-  // Live Auto sync Profile alterations back to Firestore
-  useEffect(() => {
-    if (currentUser) {
-      saveUserProfileToFirestore(currentUser.uid, store.user).catch(err => {
-        console.error("Error syncing profile updates to Firestore:", err);
-      });
-    }
-  }, [store.user, currentUser]);
-
-  const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      showToast(`🎉 Connected as: ${result.user.displayName || result.user.email}`);
-    } catch (e: any) {
-      console.error("Sign-in process exception info:", e);
-      // Intercept Firebase unauthorized-domain config failures
-      if (
-        e?.code === 'auth/unauthorized-domain' ||
-        e?.message?.includes('unauthorized-domain') ||
-        e?.message?.includes('unauthorized domain') ||
-        e?.message?.includes('auth/unauthorized')
-      ) {
-        setShowAuthTroubleshooter(true);
-        showToast("🔑 Custom Domain Authorized Required: Displaying Troubleshooting Guide.");
-      } else if (
-        e?.code === 'auth/popup-closed-by-user' ||
-        e?.message?.includes('popup-closed-by-user') ||
-        e?.message?.includes('cancelled-by-user')
-      ) {
-        showToast("ℹ️ Sign-in window was closed. Feel free to login whenever you wish!");
-      } else if (
-        e?.code === 'auth/popup-blocked' ||
-        e?.message?.includes('popup-blocked')
-      ) {
-        showToast("⚠️ Sign-in popup was blocked by your browser. Please allow popups to connect with Google.");
-      } else {
-        // Also fallback to showing details if other unauthorized errors occur
-        if (e?.message?.includes("unauthorized") || e?.message?.includes("unauth")) {
-          setShowAuthTroubleshooter(true);
-        }
-        showToast(`❌ Authentication aborted: ${e.message || "Please check your connection."}`);
-      }
+  const handleSelectLocality = (locality: Neighborhood) => {
+    setSelectedLocality(locality);
+    setView('home'); // stay home but filtered
+    const element = document.getElementById('featured-residents-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  const handleInstantGuestLogin = () => {
-    const finalNickName = guestNickName.trim() || 'Wandering_Seeker';
-    const guestUser = {
-      uid: `guest-${Date.now()}`,
-      displayName: finalNickName,
-      email: `${finalNickName.toLowerCase().replace(/[^a-z0-9]/g, '_')}@beforeregret.com`,
-      photoURL: "",
-      isAnonymous: true,
-      isGuest: true
-    };
-    setCurrentUser(guestUser);
-    
-    // Create local guest user profile info
-    const initialProfile: UserProfile = {
-      username: finalNickName,
-      storiesSubmitted: 0,
-      helpfulVotesReceived: 0,
-      followers: 0,
-      badges: ["Instant Guest"],
-      savedStories: [],
-      followedSituations: [],
-      followedTags: [],
-      followedQuestions: [],
-      submittedStories: [],
-      submittedRedFlags: [],
-      recentActivity: [{
-        type: 'story_added',
-        detail: "Connected via Instant Guest Bypass Module",
-        date: "Just now"
-      }]
-    };
-    
-    // Store in global memory state
-    setStore(prev => ({ ...prev, user: initialProfile }));
-    setShowAuthTroubleshooter(false);
-    showToast(`⚡ Signed in instantly with Guest Avatar: ${finalNickName}!`);
+  const handleClearLocalityFilter = () => {
+    setSelectedLocality(null);
   };
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      setStore(prev => ({
-        ...prev,
-        user: {
-          username: "Guest_Seeker",
-          storiesSubmitted: 0,
-          helpfulVotesReceived: 0,
-          followers: 0,
-          badges: ["Truth Teller"],
-          savedStories: [],
-          followedSituations: [],
-          followedTags: [],
-          followedQuestions: [],
-          recentActivity: [
-            {
-              type: 'story_added',
-              detail: "Operating in anonymous browser session",
-              date: "Just now"
-            }
-          ]
-        }
-      }));
-      showToast("🔒 Google account signed out safely.");
-    } catch (e: any) {
-      console.error(e);
-      showToast(`❌ Sign out failed: ${e.message}`);
-    }
-  };
-
-  const handleAddComment = async (storyId: string, text: string) => {
-    const commentId = 'comment_' + Math.random().toString(36).substring(2, 9);
-    const authorId = currentUser ? currentUser.uid : 'guest_' + Math.random().toString(36).substring(2, 9);
-    const authorName = currentUser ? (currentUser.displayName || 'Google Seeker') : `@${guestNickName.trim() || 'Wandering_Seeker'}`;
-    const authorPhoto = currentUser ? (currentUser.photoURL || null) : null;
-
-    const newComment: StoryComment = {
-      id: commentId,
-      storyId: storyId,
-      authorId: authorId,
-      authorName: authorName,
-      authorPhoto: authorPhoto,
-      text: text,
-      dateAdded: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      isRealInput: true
-    };
-
-    await saveCommentToFirestore(newComment);
-    setComments(prev => {
-      const filtered = prev.filter(c => c.id !== newComment.id);
-      return [...filtered, newComment];
-    });
-    showToast("💬 Response advice registered successfully!");
-  };
-
-  const handleDeleteComment = async (commentId: string) => {
-    try {
-      await deleteCommentFromFirestore(commentId);
-      setComments(prev => prev.filter(c => c.id !== commentId));
-      showToast("🗑️ Response advice comment deleted!");
-    } catch (err: any) {
-      console.error("Error deleting comment:", err);
-      showToast(`❌ Delete failed: ${err.message}`);
-    }
-  };
-
-
-  const handleCaseRetrieve = (caseNum: string) => {
-    const trimmed = caseNum.trim().toUpperCase().replace(/\s+/g, '');
-    if (!trimmed) return;
-
-    const cleaned = trimmed.replace('CASE-', '');
-    const matchNumber = cleaned.match(/\d+/);
-    const hasNum = matchNumber ? matchNumber[0] : '';
-
-    const hasS = cleaned.includes('S');
-    const hasC = cleaned.includes('C');
-    const hasF = cleaned.includes('F');
-
-    // 1. Check Stories / Regrets Registry
-    const foundStory = store.stories.find(s => {
-      const sNum = (s.caseNumber || '').toUpperCase();
-      return sNum === trimmed || 
-             sNum === `CASE-${trimmed}` || 
-             (hasNum && sNum === `CASE-S${hasNum}` && (hasS || (!hasC && !hasF && sNum.includes(hasNum))));
-    });
-
-    if (foundStory) {
-      setScreen({ type: 'regret_stories', slug: foundStory.id });
-      setHighlightedStoryId(foundStory.id);
-      showToast(`📂 Regret Case ${foundStory.caseNumber} retrieved from Registry!`);
-      return;
-    }
-
-    // 2. Check Court Cases / Relationship Court
-    const foundCourt = store.courtCases.find(c => {
-      const cNum = (c.caseNumber || '').toUpperCase();
-      const cSlug = (c.slug || '').toUpperCase();
-      return cNum === trimmed || 
-             cNum === `CASE-${trimmed}` || 
-             cSlug === trimmed ||
-             (hasNum && cNum === `CASE-C${hasNum}` && (hasC || (!hasS && !hasF && cNum.includes(hasNum))));
-    });
-
-    if (foundCourt) {
-      setScreen({ type: 'court', slug: foundCourt.slug });
-      showToast(`⚖️ Tribunal Case ${foundCourt.caseNumber} retrieved successfully!`);
-      return;
-    }
-
-    // 3. Check Red Flag Cases
-    const foundFlag = store.redFlagCases.find(f => {
-      const fNum = (f.caseNumber || '').toUpperCase();
-      const fId = (f.id || '').toUpperCase();
-      return fNum === trimmed || 
-             fNum === `CASE-${trimmed}` || 
-             fId === trimmed ||
-             (hasNum && fNum === `CASE-F${hasNum}` && (hasF || (!hasS && !hasC && fNum.includes(hasNum))));
-    });
-
-    if (foundFlag) {
-      setScreen({ type: 'red_flag_meter', slug: foundFlag.id });
-      showToast(`🏁 Red Flag Dilemma ${foundFlag.caseNumber} retrieved successfully!`);
-      return;
-    }
-
-    // 4. Fallback search by title or keyword
-    const queryStr = trimmed.toLowerCase();
-    
-    const fallbackCourt = store.courtCases.find(
-      c => c.title.toLowerCase().includes(queryStr) || (c.caseNumber && c.caseNumber.toLowerCase().includes(queryStr))
-    );
-    if (fallbackCourt) {
-      setScreen({ type: 'court', slug: fallbackCourt.slug });
-      showToast(`⚖️ Court Case ${fallbackCourt.caseNumber} retrieved!`);
-      return;
-    }
-
-    const fallbackStory = store.stories.find(
-      s => s.title.toLowerCase().includes(queryStr) || (s.caseNumber && s.caseNumber.toLowerCase().includes(queryStr))
-    );
-    if (fallbackStory) {
-      setScreen({ type: 'regret_stories', slug: fallbackStory.id });
-      setHighlightedStoryId(fallbackStory.id);
-      showToast(`📂 Regret Case ${fallbackStory.caseNumber} retrieved from Registry!`);
-      return;
-    }
-
-    const fallbackRedFlag = store.redFlagCases.find(
-      f => f.title.toLowerCase().includes(queryStr) || (f.caseNumber && f.caseNumber.toLowerCase().includes(queryStr))
-    );
-    if (fallbackRedFlag) {
-      setScreen({ type: 'red_flag_meter', slug: fallbackRedFlag.id });
-      showToast(`🏁 Red Flag Dilemma ${fallbackRedFlag.caseNumber} retrieved!`);
-      return;
-    }
-
-    showToast(`❌ Case ID or term "${caseNum}" not found in our indices.`);
-  };
-
-  const handleToggleAdmin = (status: boolean) => {
-    setIsAdmin(status);
-    localStorage.setItem('before_regret_admin_mode', String(status));
-    if (status) {
-      showToast("🔐 Master overriding authorized! Modifying/deletion triggers are now active.");
+  const handleToggleSaveExpert = (expertId: string) => {
+    if (savedExpertIds.includes(expertId)) {
+      setSavedExpertIds(savedExpertIds.filter((id) => id !== expertId));
     } else {
-      showToast("🔒 Master override disconnected. Session deauthorized safely.");
-    }
-  };
-  const [darkMode, setDarkMode] = useState(true);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [newlyLodgedCase, setNewlyLodgedCase] = useState<{ 
-    title: string; 
-    caseNumber: string; 
-    type: 'story' | 'court';
-    id?: string;
-    slug?: string;
-    passwordPin?: string;
-    wantsPartnerResponse?: boolean;
-    partnerKey?: string;
-  } | null>(null);
-  const [highlightedStoryId, setHighlightedStoryId] = useState<string | null>(null);
-
-  const [caseNumberCopied, setCaseNumberCopied] = useState(false);
-  const [casePinCopied, setCasePinCopied] = useState(false);
-  const [inviteMessageCopied, setInviteMessageCopied] = useState(false);
-  const [screenshotGenerating, setScreenshotGenerating] = useState(false);
-
-  // Keep track of what cases and polls the user has already voted on
-  const [userVotedCases, setUserVotedCases] = useState<{ [slug: string]: string }>(() => {
-    const saved = localStorage.getItem('before_regret_court_votes');
-    return saved ? JSON.parse(saved) : {};
-  });
-
-  const [userVotedQuestions, setUserVotedQuestions] = useState<{ [slug: string]: string }>(() => {
-    const saved = localStorage.getItem('before_regret_question_votes');
-    return saved ? JSON.parse(saved) : {};
-  });
-
-  const [userVotedFlags, setUserVotedFlags] = useState<{ [caseId: string]: 'green' | 'yellow' | 'red' }>(() => {
-    const saved = localStorage.getItem('before_regret_flag_votes');
-    return saved ? JSON.parse(saved) : {};
-  });
-
-  // Sync state changes to storage
-  useEffect(() => {
-    saveState(store);
-  }, [store]);
-
-  useEffect(() => {
-    localStorage.setItem('before_regret_court_votes', JSON.stringify(userVotedCases));
-  }, [userVotedCases]);
-
-  useEffect(() => {
-    localStorage.setItem('before_regret_question_votes', JSON.stringify(userVotedQuestions));
-  }, [userVotedQuestions]);
-
-  useEffect(() => {
-    localStorage.setItem('before_regret_flag_votes', JSON.stringify(userVotedFlags));
-  }, [userVotedFlags]);
-
-  // Dynamically calculate and merge situation stats with user submissions in real-time!
-  const liveSituations = useMemo(() => {
-    return PRESEEDED_SITUATIONS.map(sit => {
-      const matchingStories = store.stories.filter(s => s.situationSlug === sit.slug);
-      if (matchingStories.length === 0) return sit;
-
-      const userCount = matchingStories.length;
-      const baseCount = sit.stats.storyCount;
-      const totalCount = baseCount + userCount;
-
-      // Calculate new average regret score
-      const userAvgRegret = matchingStories.reduce((acc, s) => acc + s.regretScore, 0) / userCount;
-      const blendedAvgRegret = Number(((sit.stats.avgRegret * baseCount + userAvgRegret * userCount) / totalCount).toFixed(1));
-
-      // Would Do Again Percent
-      const userDoAgainCount = matchingStories.filter(s => s.wouldDoAgain === 'Yes').length;
-      const userDoAgainPercent = userCount > 0 ? (userDoAgainCount / userCount) * 100 : 0;
-      const blendedDoAgainPercent = Math.round((sit.stats.wouldDoAgainPercent * baseCount + userDoAgainPercent * userCount) / totalCount);
-
-      // Still Together Percent
-      const userStillTogether = matchingStories.filter(s => s.currentOutcome === 'Still Together' || s.currentOutcome === 'Married' || s.currentOutcome === 'Engaged').length;
-      const userStillTogetherPercent = userCount > 0 ? (userStillTogether / userCount) * 100 : 0;
-      const blendedStillTogetherPercent = Math.round((sit.stats.stillTogetherPercent * baseCount + userStillTogetherPercent * userCount) / totalCount);
-
-      // Separated Percent
-      const userSeparated = matchingStories.filter(s => s.currentOutcome === 'Separated' || s.currentOutcome === 'Divorced').length;
-      const userSeparatedPercent = userCount > 0 ? (userSeparated / userCount) * 100 : 0;
-      const blendedSeparatedPercent = Math.round((sit.stats.separatedPercent * baseCount + userSeparatedPercent * userCount) / totalCount);
-
-      return {
-        ...sit,
-        stats: {
-          ...sit.stats,
-          storyCount: totalCount,
-          avgRegret: blendedAvgRegret,
-          wouldDoAgainPercent: blendedDoAgainPercent,
-          stillTogetherPercent: blendedStillTogetherPercent,
-          separatedPercent: blendedSeparatedPercent
-        }
-      };
-    });
-  }, [store.stories]);
-
-  // Toast notifier helper
-  const showToast = (message: string) => {
-    setToastMessage(message);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 4000);
-  };
-
-  // CORE STATE WORKFLOW CALLBACK ACTIONS //
-  const handleAddStory = async (newStory: Story) => {
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    const caseNumber = `CASE-S${randomNum}`;
-    
-    newStory.id = newStory.id || 'story_' + Math.random().toString(36).substring(2, 9);
-    newStory.caseNumber = caseNumber;
-    newStory.isRealInput = true;
-
-    // Save to local storage private list
-    try {
-      const myCases = JSON.parse(localStorage.getItem('beforeregret_my_cases') || '[]');
-      myCases.push({
-        caseNumber: caseNumber,
-        title: newStory.title,
-        slug: newStory.situationSlug,
-        type: 'story'
-      });
-      localStorage.setItem('beforeregret_my_cases', JSON.stringify(myCases));
-    } catch (e) {
-      console.error(e);
-    }
-
-    // Save story model securely to cloud firestore database
-    await saveStoryToFirestore(newStory);
-
-    setStore(prev => {
-      const combined = [newStory, ...prev.stories];
-      const updatedStories = combined.filter((s, idx, self) => 
-        self.findIndex(t => t.id === s.id) === idx
-      );
-      
-      const updatedUser: UserProfile = {
-        ...prev.user,
-        storiesSubmitted: prev.user.storiesSubmitted + 1,
-        submittedStories: [...(prev.user.submittedStories || []), newStory.id],
-        recentActivity: [
-          {
-            type: 'story_added',
-            detail: `Archived dynamic outcome log for "${newStory.title}" as Case ${caseNumber}`,
-            date: 'Just now'
-          },
-          ...prev.user.recentActivity
-        ]
-      };
-
-      // Recalculate badges based on total submissions
-      if (updatedUser.storiesSubmitted >= 1 && !updatedUser.badges.includes("Outcome Contributor")) {
-        updatedUser.badges.push("Outcome Contributor");
-        updatedUser.badges.push("Relationship Veteran");
-      }
-
-      return {
-        ...prev,
-        stories: updatedStories,
-        user: updatedUser
-      };
-    });
-
-    showToast(`🎉 Your regret story was successfully submitted to the registry.`);
-  };
-
-  const handleVoteHelpful = (storyId: string) => {
-    setStore(prev => {
-      const storyIdx = prev.stories.findIndex(s => s.id === storyId);
-      if (storyIdx === -1) return prev;
-
-      const updatedStories = [...prev.stories];
-      const story = updatedStories[storyIdx];
-      
-      const alreadyVotedKey = `helpful_voted_${storyId}`;
-      const hasVoted = localStorage.getItem(alreadyVotedKey);
-      
-      if (hasVoted) {
-        showToast("⚠️ You already upvoted this outcome timeline as helpful.");
-        return prev;
-      }
-
-      localStorage.setItem(alreadyVotedKey, 'true');
-      story.helpfulVotes += 1;
-
-      // Update user metrics
-      const updatedUser: UserProfile = {
-        ...prev.user,
-        helpfulVotesReceived: prev.user.helpfulVotesReceived + (story.userName === prev.user.username ? 1 : 0),
-        recentActivity: [
-          {
-            type: 'helpful_voted',
-            detail: `Upvoted outcome timeline for "${story.title}"`,
-            date: 'Seconds ago'
-          },
-          ...prev.user.recentActivity
-        ]
-      };
-
-      if (updatedUser.helpfulVotesReceived >= 1 && !updatedUser.badges.includes("Top Mentor")) {
-        updatedUser.badges.push("Top Mentor");
-      }
-
-      showToast("❤️ Upvoted! Thank you for validating the post-decision usefulness of this record.");
-
-      return {
-        ...prev,
-        stories: updatedStories,
-        user: updatedUser
-      };
-    });
-  };
-
-  const handleToggleBookmark = (storyId: string) => {
-    setStore(prev => {
-      const isSaved = prev.user.savedStories.includes(storyId);
-      const updatedSaved = isSaved 
-        ? prev.user.savedStories.filter(id => id !== storyId)
-        : [...prev.user.savedStories, storyId];
-
-      const detailMsg = isSaved ? "Removed timeline bookmark" : "Bookmarked timeline story";
-
-      const updatedUser: UserProfile = {
-        ...prev.user,
-        savedStories: updatedSaved,
-        recentActivity: [
-          {
-            type: 'bookmarked',
-            detail: `${detailMsg} for case #${storyId}`,
-            date: 'Just now'
-          },
-          ...prev.user.recentActivity
-        ]
-      };
-
-      showToast(isSaved ? "Bookmark cleared." : "📁 Timeline bookmarked successfully.");
-
-      return {
-        ...prev,
-        user: updatedUser
-      };
-    });
-  };
-
-  const handleAddStoryUpdate = (storyId: string, text: string, regretScore: number, daysAfter: number) => {
-    setStore(prev => {
-      const storyIdx = prev.stories.findIndex(s => s.id === storyId);
-      if (storyIdx === -1) return prev;
-
-      const updatedStories = [...prev.stories];
-      const story = updatedStories[storyIdx];
-
-      const newUpdate = {
-        daysAfter,
-        dateAdded: new Date().toISOString().split('T')[0],
-        text,
-        regretScore
-      };
-
-      story.updates = [newUpdate, ...story.updates];
-      // Update story key criteria as well
-      story.regretScore = regretScore;
-
-      const updatedUser: UserProfile = {
-        ...prev.user,
-        recentActivity: [
-          {
-            type: 'story_updated',
-            detail: `Added ${daysAfter} Days Later Update to "${story.title}"`,
-            date: 'Just now'
-          },
-          ...prev.user.recentActivity
-        ]
-      };
-
-      showToast("📈 Decisional update appended! Your active timeline chart nodes registered the adjustments.");
-
-      return {
-        ...prev,
-        stories: updatedStories,
-        user: updatedUser
-      };
-    });
-  };
-
-  const handleVoteCourtCase = (slug: string, side: 'me' | 'partner' | 'both' | 'neither') => {
-    let updatedCaseToSave: CourtCase | null = null;
-    setStore(prev => {
-      const idx = prev.courtCases.findIndex(c => c.slug === slug);
-      if (idx === -1) return prev;
-
-      const updatedCases = [...prev.courtCases];
-      const courtCase = { 
-        ...updatedCases[idx], 
-        votes: { ...updatedCases[idx].votes } 
-      };
-
-      // Mutate case metrics
-      courtCase.votes[side] += 1;
-      updatedCases[idx] = courtCase;
-      updatedCaseToSave = courtCase;
-
-      return {
-        ...prev,
-        courtCases: updatedCases
-      };
-    });
-
-    setUserVotedCases(prev => ({ ...prev, [slug]: side }));
-    showToast("⚖️ Verdict logged. You can now analyze peer jury ratios.");
-    if (updatedCaseToSave) {
-      saveCourtCaseToFirestore(updatedCaseToSave).catch(err => {
-        console.error("Error saving voted courtcase to Firestore:", err);
-      });
+      setSavedExpertIds([...savedExpertIds, expertId]);
     }
   };
 
-  const handleVoteFlag = (caseId: string, flagType: 'green' | 'yellow' | 'red') => {
-    let updatedFlagToSave: RedFlagCase | null = null;
-    setStore(prev => {
-      const idx = prev.redFlagCases.findIndex(c => c.id === caseId);
-      if (idx === -1) return prev;
+  // Submit new inquiry wizard
+  const handleSubmitQuestion = (queryText: string, packageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT', bookedSlot?: string) => {
+    if (!selectedExpert) return;
 
-      const updated = [...prev.redFlagCases];
-      const redFlagCase = {
-        ...updated[idx],
-        votes: {
-          ...updated[idx].votes,
-          [flagType]: (updated[idx].votes[flagType] || 0) + 1
-        }
-      };
-      updated[idx] = redFlagCase;
-      updatedFlagToSave = redFlagCase;
-
-      return {
-        ...prev,
-        redFlagCases: updated
-      };
-    });
-
-    setUserVotedFlags(prev => ({ ...prev, [caseId]: flagType }));
-    showToast("🏁 Flag vote registered! Viewing live statistics.");
-    if (updatedFlagToSave) {
-      saveRedFlagCaseToFirestore(updatedFlagToSave).catch(err => {
-        console.error("Error saving red flag vote to Firestore:", err);
-      });
-    }
-  };
-
-  const handleAddFlagComment = (caseId: string, text: string) => {
-    let updatedFlagToSave: RedFlagCase | null = null;
-    setStore(prev => {
-      const idx = prev.redFlagCases.findIndex(c => c.id === caseId);
-      if (idx === -1) return prev;
-
-      const updated = [...prev.redFlagCases];
-      const commentObj = {
-        id: 'flag_cmt_' + Date.now().toString(),
-        author: prev.user.username,
-        text,
-        date: new Date().toISOString().split('T')[0],
-        isRealInput: true
-      };
-
-      const redFlagCase = {
-        ...updated[idx],
-        comments: [...(updated[idx].comments || []), commentObj]
-      };
-      updated[idx] = redFlagCase;
-      updatedFlagToSave = redFlagCase;
-
-      return {
-        ...prev,
-        redFlagCases: updated
-      };
-    });
-    showToast("💬 Comment posted to Warning board.");
-    if (updatedFlagToSave) {
-      saveRedFlagCaseToFirestore(updatedFlagToSave).catch(err => {
-        console.error("Error saving red flag comment to Firestore:", err);
-      });
-    }
-  };
-
-  const handleAddFlagCase = (
-    title: string, 
-    description: string, 
-    category: 'Communication' | 'Exes & Socials' | 'Trust & Privacy' | 'Control & Habits' | 'Other'
-  ) => {
-    const caseId = 'rf_' + Date.now().toString();
-    const randomNum = Math.floor(1000 + Math.random() * 9000); 
-    const caseNumber = `CASE-F${randomNum}`;
-    
-    const newCase: RedFlagCase = {
-      id: caseId,
-      caseNumber,
-      title,
-      description,
-      category,
-      votes: { green: 0, yellow: 0, red: 0 },
-      comments: [],
-      author: store.user.username,
-      dateAdded: new Date().toISOString().split('T')[0],
-      isRealInput: true
-    };
-
-    setStore(prev => {
-      const updatedUser: UserProfile = {
-        ...prev.user,
-        submittedRedFlags: [...(prev.user.submittedRedFlags || []), caseId],
-        recentActivity: [
-          {
-            type: 'story_added',
-            detail: `Filed Red Flag Assessment for "${title}" as Case ${caseNumber}`,
-            date: 'Just now'
-          },
-          ...prev.user.recentActivity
-        ]
-      };
-
-      return {
-        ...prev,
-        redFlagCases: [newCase, ...prev.redFlagCases],
-        user: updatedUser
-      };
-    });
-
-    showToast(`🏁 Lodged Category ${category} Dilemma: ${caseNumber}`);
-
-    saveRedFlagCaseToFirestore(newCase).catch(err => {
-      console.error("Error saving newly submitted red flag case to Firestore:", err);
-    });
-  };
-
-  const handleAddCourtArgument = (slug: string, side: 'Me' | 'Partner' | 'Both' | 'Neither', text: string) => {
-    let updatedCaseToSave: CourtCase | null = null;
-    setStore(prev => {
-      const idx = prev.courtCases.findIndex(c => c.slug === slug);
-      if (idx === -1) return prev;
-
-      const updatedCases = [...prev.courtCases];
-      const courtCase = { 
-        ...updatedCases[idx],
-        arguments: [...(updatedCases[idx].arguments || [])]
-      };
-
-      const newArg = {
-        id: 'arg_' + Date.now().toString(),
-        author: prev.user.username,
-        side,
-        text,
-        votes: 0,
-        role: (prev.user.storiesSubmitted > 0 ? "Relationship Veteran" : "Truth Teller") as any,
-        isRealInput: true
-      };
-
-      courtCase.arguments = [newArg, ...courtCase.arguments];
-      updatedCases[idx] = courtCase;
-      updatedCaseToSave = courtCase;
-
-      return {
-        ...prev,
-        courtCases: updatedCases
-      };
-    });
-
-    showToast("✍️ Jury opinion finalized! Thank you for raising relationship objectivity.");
-    if (updatedCaseToSave) {
-      saveCourtCaseToFirestore(updatedCaseToSave).catch(err => {
-        console.error("Error saving added argument courtcase to Firestore:", err);
-      });
-    }
-  };
-
-  const handleRegisterCourtCase = (caseData: { title: string; description: string; tags: string[]; deliberationDays: number; wantsPartnerResponse: boolean }) => {
-    const baseSlug = caseData.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
-
-    const uniqueSlug = store.courtCases.some(c => c.slug === baseSlug)
-      ? `${baseSlug}-${Date.now().toString().slice(-4)}`
-      : baseSlug;
-
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    const caseNumber = `CASE-C${randomNum}`;
-    const passwordPin = Math.floor(1000 + Math.random() * 9000).toString();
-    const partnerKey = 'PK-' + Array.from({ length: 16 }, () => Math.random().toString(36).charAt(2).toUpperCase()).join('');
-
-    const newCase: CourtCase = {
-      slug: uniqueSlug,
-      caseNumber: caseNumber,
-      title: caseData.title,
-      description: caseData.description,
-      postTime: new Date().toISOString().split('T')[0],
-      author: "anonymous_litigant",
-      votes: {
-        me: 0,
-        partner: 0,
-        both: 0,
-        neither: 0
-      },
-      arguments: [],
-      tags: caseData.tags,
-      deliberationDays: caseData.deliberationDays || 3,
+    const newQuery: DirectQuery = {
+      id: `q_${Date.now()}`,
+      buyerId: 'user_rohan',
+      buyerName: 'Rohan Deshmukh',
+      expertId: selectedExpert.id,
+      expertName: selectedExpert.fullName,
+      localityId: selectedExpert.localityId,
+      localityName: selectedExpert.localityName,
+      queryText,
+      status: 'ACCEPTED', // Pre-accepted for high-fidelity simulation
+      pricePaid: packageId === 'QUICK' ? 99 : packageId === 'BUNDLE' ? 199 : 299,
+      expertEarnings: packageId === 'QUICK' ? 89 : packageId === 'BUNDLE' ? 179 : 269,
       createdAt: new Date().toISOString(),
-      passwordPin: passwordPin,
-      partnerKey: partnerKey,
-      isRealInput: true,
-      wantsPartnerResponse: caseData.wantsPartnerResponse
+      packageOption: packageId,
+      bookedSlot: bookedSlot
     };
 
-    // Save to local storage private list
-    try {
-      const myCases = JSON.parse(localStorage.getItem('beforeregret_my_cases') || '[]');
-      myCases.push({
-        caseNumber: caseNumber,
-        title: newCase.title,
-        slug: newCase.slug,
-        type: 'court'
-      });
-      localStorage.setItem('beforeregret_my_cases', JSON.stringify(myCases));
-    } catch (e) {
-      console.error(e);
-    }
-
-    setStore(prev => ({
-      ...prev,
-      courtCases: [newCase, ...prev.courtCases]
-    }));
-
-    setNewlyLodgedCase({ 
-      title: newCase.title, 
-      caseNumber: caseNumber, 
-      type: 'court',
-      slug: newCase.slug,
-      passwordPin: passwordPin,
-      wantsPartnerResponse: newCase.wantsPartnerResponse,
-      partnerKey: partnerKey
-    });
-    showToast(`⚖️ Court case registered successfully under Case Key: ${caseNumber}!`);
-    setIsRegisterModalOpen(false);
-
-    saveCourtCaseToFirestore(newCase).catch(err => {
-      console.error("Error saving registered court case to Firestore:", err);
-    });
+    setQueries([newQuery, ...queries]);
+    setActiveRole('buyer');
+    setView('buyer_dashboard');
+    window.scrollTo(0, 0);
   };
 
-  const handleVoteQuestionPoll = (slug: string, optionText: string) => {
-    setStore(prev => {
-      const idx = prev.questions.findIndex(q => q.slug === slug);
-      if (idx === -1) return prev;
-
-      const updatedQuestions = [...prev.questions];
-      const question = { ...updatedQuestions[idx] };
-
-      const optIdx = question.pollOptions.findIndex(o => o.text === optionText);
-      if (optIdx !== -1) {
-        const updatedPoll = [...question.pollOptions];
-        updatedPoll[optIdx] = { ...updatedPoll[optIdx], votes: updatedPoll[optIdx].votes + 1 };
-        question.pollOptions = updatedPoll;
+  // Submit expert's verified final answer
+  const handleSubmitAnswer = (queryId: string, answerText: string) => {
+    const updated = queries.map((q) => {
+      if (q.id === queryId) {
+        return {
+          ...q,
+          status: 'ANSWERED' as const,
+          answerText,
+          answeredAt: new Date().toISOString()
+        };
       }
-
-      updatedQuestions[idx] = question;
-
-      saveQuestionToFirestore(question).catch(err => {
-        console.error("Firestore poll vote save error:", err);
-      });
-
-      const newState = {
-        ...prev,
-        questions: updatedQuestions
-      };
-      saveState(newState);
-      return newState;
+      return q;
     });
-
-    setUserVotedQuestions(prev => ({ ...prev, [slug]: optionText }));
-    showToast("🗳️ Poll opinion registered. Charts refreshed.");
+    setQueries(updated);
+    setView('expert_dashboard');
+    window.scrollTo(0, 0);
   };
 
-  const handleAddQuestionAnswer = (slug: string, text: string) => {
-    setStore(prev => {
-      const idx = prev.questions.findIndex(q => q.slug === slug);
-      if (idx === -1) return prev;
+  // Star rating reviews submission
+  const handleLeaveReview = (query: DirectQuery) => {
+    const ratingInput = prompt('Enter star rating (1 to 5):', '5');
+    const starRating = parseInt(ratingInput || '5');
+    if (isNaN(starRating) || starRating < 1 || starRating > 5) {
+      alert('Invalid rating stars.');
+      return;
+    }
 
-      const updatedQuestions = [...prev.questions];
-      const question = { ...updatedQuestions[idx] };
+    const comment = prompt('Enter your feedback comment:', 'Amazing, unvarnished insight into Bimbisar Nagar society water limitations! Highly recommend!');
+    if (!comment) return;
 
-      const newAnswer = {
-        id: 'ans_' + Date.now().toString(),
-        author: prev.user.username,
-        text,
-        votes: 0,
-        isOutcomeVerified: prev.user.storiesSubmitted > 0,
-        date: 'Just now',
-        isRealInput: true
-      };
-
-      question.answers = [newAnswer, ...question.answers];
-      updatedQuestions[idx] = question;
-
-      saveQuestionToFirestore(question).catch(err => {
-        console.error("Firestore advice answer save error:", err);
-      });
-
-      const newState = {
-        ...prev,
-        questions: updatedQuestions
-      };
-      saveState(newState);
-      return newState;
-    });
-
-    showToast("🎓 Answer broadcasted onto peer-help logs!");
-  };
-
-  const handleAddAnswerComment = (qSlug: string, ansId: string, text: string) => {
-    setStore(prev => {
-      const qIdx = prev.questions.findIndex(q => q.slug === qSlug);
-      if (qIdx === -1) return prev;
-
-      const updatedQuestions = [...prev.questions];
-      const question = { ...updatedQuestions[qIdx] };
-
-      const ansIdx = question.answers.findIndex(a => a.id === ansId);
-      if (ansIdx === -1) return prev;
-
-      const answer = { ...question.answers[ansIdx] };
-      const comments = answer.comments ? [...answer.comments] : [];
-
-      const newComment = {
-        id: 'cmt_' + Date.now().toString(),
-        author: prev.user.username,
-        text,
-        date: 'Just now',
-        isRealInput: true
-      };
-
-      answer.comments = [...comments, newComment];
-      question.answers = [...question.answers];
-      question.answers[ansIdx] = answer;
-      updatedQuestions[qIdx] = question;
-
-      saveQuestionToFirestore(question).catch(err => {
-        console.error("Firestore reply comment save error:", err);
-      });
-
-      const newState = {
-        ...prev,
-        questions: updatedQuestions
-      };
-      saveState(newState);
-      return newState;
-    });
-
-    showToast("💬 Discussion comment posted under advice!");
-  };
-
-  const handleUpvoteAnswer = (qSlug: string, ansId: string) => {
-    setStore(prev => {
-      const qIdx = prev.questions.findIndex(q => q.slug === qSlug);
-      if (qIdx === -1) return prev;
-
-      const updatedQuestions = [...prev.questions];
-      const question = { ...updatedQuestions[qIdx] };
-
-      const ansIdx = question.answers.findIndex(a => a.id === ansId);
-      if (ansIdx === -1) return prev;
-
-      const answer = { ...question.answers[ansIdx] };
-      answer.votes += 1;
-
-      question.answers = [...question.answers];
-      question.answers[ansIdx] = answer;
-      updatedQuestions[qIdx] = question;
-
-      saveQuestionToFirestore(question).catch(err => {
-        console.error("Firestore answer upvote save error:", err);
-      });
-
-      const newState = {
-        ...prev,
-        questions: updatedQuestions
-      };
-      saveState(newState);
-      return newState;
-    });
-
-    showToast("👍 Upvote saved!");
-  };
-
-  const handleCreateQuestion = (newQuestion: {
-    title: string;
-    description: string;
-    category: string;
-    tags: string[];
-    pollOptions: string[];
-  }) => {
-    const slug = newQuestion.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '') + '-' + Math.floor(100 + Math.random() * 900);
-
-    const formattedPollOptions = newQuestion.pollOptions.map(o => ({ text: o, votes: 0 }));
-
-    const questionObj: Question = {
-      slug,
-      title: newQuestion.title,
-      description: newQuestion.description,
-      category: newQuestion.category,
-      storiesCount: 0,
-      tags: newQuestion.tags.length > 0 ? newQuestion.tags : ["user-submitted", newQuestion.category.toLowerCase().replace(/\s+/g, '-')],
-      pollOptions: formattedPollOptions,
-      answers: [],
-      dateAdded: new Date().toISOString()
+    const newReview: Review = {
+      id: `rev_${Date.now()}`,
+      queryId: query.id,
+      buyerName: 'Rohan Deshmukh',
+      expertId: query.expertId,
+      rating: starRating,
+      comment,
+      createdAt: new Date().toISOString()
     };
 
-    saveQuestionToFirestore(questionObj).catch(err => {
-      console.error("Firestore custom question create error:", err);
-    });
+    setReviews([newReview, ...reviews]);
 
-    setStore(prev => {
-      const updatedQuestions = [questionObj, ...prev.questions];
-      const newState = {
-        ...prev,
-        questions: updatedQuestions
-      };
-      saveState(newState);
-      return newState;
+    // Set the query status as fully cleared
+    const updated = queries.map((q) => {
+      if (q.id === query.id) {
+        return { ...q, status: 'ANSWERED' as const };
+      }
+      return q;
     });
-
-    showToast("✓ Advice request successfully broadcasted!");
+    setQueries(updated);
+    alert('Thank you! Your verified rating has been published successfully.');
   };
 
-  const handleAdminAddStory = async (newStory: Story) => {
-    try {
-      await saveStoryToFirestore(newStory);
-    } catch (err) {
-      console.warn("Firestore error, falling back to local state:", err);
-    }
-    setStore(prev => {
-      const combined = [newStory, ...prev.stories];
-      const unique = combined.filter((s, idx, self) => 
-        self.findIndex(t => t.id === s.id) === idx
-      );
-      const newState = { ...prev, stories: unique };
-      saveState(newState);
-      return newState;
-    });
+  const handleAddExpertFromOnboarding = (newExpert: ExpertProfile) => {
+    setExperts([newExpert, ...experts]);
   };
 
-  const handleAddCourtCase = async (newCase: CourtCase) => {
-    try {
-      await saveCourtCaseToFirestore(newCase);
-    } catch (err) {
-      console.warn("Firestore error, falling back to local state:", err);
-    }
-    setStore(prev => {
-      const combined = [newCase, ...prev.courtCases];
-      const unique = combined.filter((c, idx, self) => 
-        self.findIndex(t => t.slug === c.slug) === idx
-      );
-      const newState = { ...prev, courtCases: unique };
-      saveState(newState);
-      return newState;
-    });
-  };
-
-  const handleAddQuestion = async (newQuestion: Question) => {
-    try {
-      await saveQuestionToFirestore(newQuestion);
-    } catch (err) {
-      console.warn("Firestore error, falling back to local state:", err);
-    }
-    setStore(prev => {
-      const combined = [newQuestion, ...prev.questions];
-      const unique = combined.filter((q, idx, self) => 
-        self.findIndex(t => t.slug === q.slug) === idx
-      );
-      const newState = { ...prev, questions: unique };
-      saveState(newState);
-      return newState;
-    });
-  };
-
-  const handleAddRedFlagCase = async (newRedFlag: RedFlagCase) => {
-    try {
-      await saveRedFlagCaseToFirestore(newRedFlag);
-    } catch (err) {
-      console.warn("Firestore error, falling back to local state:", err);
-    }
-    setStore(prev => {
-      const combined = [newRedFlag, ...(prev.redFlagCases || [])];
-      const unique = combined.filter((r, idx, self) => 
-        self.findIndex(t => t.id === r.id) === idx
-      );
-      const newState = { ...prev, redFlagCases: unique };
-      saveState(newState);
-      return newState;
-    });
-  };
-
-  const handleDeleteStory = (storyId: string) => {
-    // Delete from Firestore storage
-    deleteStoryFromFirestore(storyId).catch(err => {
-      console.error("Firestore story delete error:", err);
-    });
-
-    setStore(prev => {
-      const updatedStories = prev.stories.filter(s => s.id !== storyId);
-      const newState = {
-        ...prev,
-        stories: updatedStories
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("⚖️ User story post has been permanently expunged by administrator.");
-  };
-
-  const handleEditStory = (storyId: string, newTitle: string, newStoryText: string) => {
-    setStore(prev => {
-      const updatedStories = prev.stories.map(s => {
-        if (s.id === storyId) {
-          const updated = {
-            ...s,
-            title: newTitle,
-            fullStory: newStoryText
-          };
-          saveStoryToFirestore(updated).catch(err => {
-            console.error("Firestore story update error:", err);
-          });
-          return updated;
-        }
-        return s;
-      });
-      const newState = {
-        ...prev,
-        stories: updatedStories
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("✍️ User story post updated successfully by administrator.");
-  };
-
-  const handleEditComment = (commentId: string, newText: string) => {
-    setComments(prev => {
-      return prev.map(c => {
-        if (c.id === commentId) {
-          const updated = {
-            ...c,
-            text: newText
-          };
-          saveCommentToFirestore(updated).catch(err => {
-            console.error("Firestore comment update error:", err);
-          });
-          return updated;
-        }
-        return c;
-      });
-    });
-    showToast("✍️ Registry case comment updated successfully by administrator.");
-  };
-
-  const handleEditCourtCase = (slug: string, newTitle: string, newDescription: string) => {
-    setStore(prev => {
-      const updatedCases = prev.courtCases.map(c => {
-        if (c.slug === slug) {
-          const updated = {
-            ...c,
-            title: newTitle,
-            description: newDescription
-          };
-          saveCourtCaseToFirestore(updated).catch(err => {
-            console.error("Firestore court case update error:", err);
-          });
-          return updated;
-        }
-        return c;
-      });
-      const newState = {
-        ...prev,
-        courtCases: updatedCases
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("✍️ Court case trial updated successfully by administrator.");
-  };
-
-  const handleEditArgument = (caseSlug: string, argId: string, newText: string) => {
-    setStore(prev => {
-      const updatedCases = prev.courtCases.map(c => {
-        if (c.slug === caseSlug) {
-          const updatedArgs = c.arguments.map(a => {
-            if (a.id === argId) {
-              return {
-                ...a,
-                text: newText
-              };
-            }
-            return a;
-          });
-          const updated = {
-            ...c,
-            arguments: updatedArgs
-          };
-          saveCourtCaseToFirestore(updated).catch(err => {
-            console.error("Firestore court case arguments update error:", err);
-          });
-          return updated;
-        }
-        return c;
-      });
-      const newState = {
-        ...prev,
-        courtCases: updatedCases
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("✍️ Juror argument updated successfully by administrator.");
-  };
-
-  const handleEditQuestion = (slug: string, newTitle: string, newDescription: string) => {
-    setStore(prev => {
-      const updatedQuestions = prev.questions.map(q => {
-        if (q.slug === slug) {
-          const updated = {
-            ...q,
-            title: newTitle,
-            description: newDescription
-          };
-          saveQuestionToFirestore(updated).catch(err => {
-            console.error("Firestore question update error:", err);
-          });
-          return updated;
-        }
-        return q;
-      });
-      const newState = {
-        ...prev,
-        questions: updatedQuestions
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("✍️ Survival Q&A thread updated successfully by administrator.");
-  };
-
-  const handleEditAnswer = (qSlug: string, ansId: string, newText: string) => {
-    setStore(prev => {
-      const updatedQuestions = prev.questions.map(q => {
-        if (q.slug === qSlug) {
-          const updatedAnswers = q.answers.map(a => {
-            if (a.id === ansId) {
-              return {
-                ...a,
-                text: newText
-              };
-            }
-            return a;
-          });
-          const updated = {
-            ...q,
-            answers: updatedAnswers
-          };
-          saveQuestionToFirestore(updated).catch(err => {
-            console.error("Firestore advice answer update error:", err);
-          });
-          return updated;
-        }
-        return q;
-      });
-      const newState = {
-        ...prev,
-        questions: updatedQuestions
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("✍️ Survivor advice answer updated successfully by administrator.");
-  };
-
-  const handleEditAnswerComment = (qSlug: string, ansId: string, commentId: string, newText: string) => {
-    setStore(prev => {
-      const updatedQuestions = prev.questions.map(q => {
-        if (q.slug === qSlug) {
-          const updatedAnswers = q.answers.map(a => {
-            if (a.id === ansId) {
-              const updatedComments = (a.comments || []).map(c => {
-                if (c.id === commentId) {
-                  return {
-                    ...c,
-                    text: newText
-                  };
-                }
-                return c;
-              });
-              return {
-                ...a,
-                comments: updatedComments
-              };
-            }
-            return a;
-          });
-          const updated = {
-            ...q,
-            answers: updatedAnswers
-          };
-          saveQuestionToFirestore(updated).catch(err => {
-            console.error("Firestore advice answer comment update error:", err);
-          });
-          return updated;
-        }
-        return q;
-      });
-      const newState = {
-        ...prev,
-        questions: updatedQuestions
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("✍️ Discussion comment updated successfully by administrator.");
-  };
-
-  const handleEditRedFlagCase = (caseId: string, newTitle: string, newDescription: string) => {
-    setStore(prev => {
-      const updated = (prev.redFlagCases || []).map(c => {
-        if (c.id === caseId) {
-          const updatedCase = {
-            ...c,
-            title: newTitle,
-            description: newDescription
-          };
-          saveRedFlagCaseToFirestore(updatedCase).catch(err => {
-            console.error("Firestore red flag case update error:", err);
-          });
-          return updatedCase;
-        }
-        return c;
-      });
-      const newState = { ...prev, redFlagCases: updated };
-      saveState(newState);
-      return newState;
-    });
-    showToast("✍️ Red flag warning case updated successfully by administrator.");
-  };
-
-  const handleEditRedFlagComment = (caseId: string, commentId: string, newText: string) => {
-    setStore(prev => {
-      const updated = (prev.redFlagCases || []).map(c => {
-        if (c.id === caseId) {
-          const updatedComments = (c.comments || []).map(cm => {
-            if (cm.id === commentId) {
-              return {
-                ...cm,
-                text: newText
-              };
-            }
-            return cm;
-          });
-          const updatedCase = {
-            ...c,
-            comments: updatedComments
-          };
-          saveRedFlagCaseToFirestore(updatedCase).catch(err => {
-            console.error("Firestore red flag comment update error:", err);
-          });
-          return updatedCase;
-        }
-        return c;
-      });
-      const newState = { ...prev, redFlagCases: updated };
-      saveState(newState);
-      return newState;
-    });
-    showToast("✍️ Red flag discussion comment updated successfully by administrator.");
-  };
-
-  const handleDeleteCourtCase = (slug: string) => {
-    deleteCourtCaseFromFirestore(slug).catch(err => {
-      console.error("Firestore court case delete error:", err);
-    });
-    setStore(prev => {
-      const updatedCases = prev.courtCases.filter(c => c.slug !== slug);
-      const newState = {
-        ...prev,
-        courtCases: updatedCases
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("⚖️ Court case trial has been permanently expunged by administrator.");
-  };
-
-  const handleDeleteArgument = (caseSlug: string, argId: string) => {
-    setStore(prev => {
-      const updatedCases = prev.courtCases.map(c => {
-        if (c.slug === caseSlug) {
-          return {
-            ...c,
-            arguments: c.arguments.filter(a => a.id !== argId)
-          };
-        }
-        return c;
-      });
-      const newState = {
-        ...prev,
-        courtCases: updatedCases
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("⚖️ Juror argument has been permanently expunged by administrator.");
-  };
-
-  const handleDeleteQuestion = (slug: string) => {
-    deleteQuestionFromFirestore(slug).catch(err => {
-      console.error("Firestore question delete error:", err);
-    });
-    setStore(prev => {
-      const updatedQuestions = prev.questions.filter(q => q.slug !== slug);
-      const newState = {
-        ...prev,
-        questions: updatedQuestions
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("⚖️ Survival Q&A thread has been permanently expunged by administrator.");
-  };
-
-  const handleDeleteAnswer = (qSlug: string, ansId: string) => {
-    setStore(prev => {
-      const qIdx = prev.questions.findIndex(q => q.slug === qSlug);
-      if (qIdx === -1) return prev;
-
-      const updatedQuestions = [...prev.questions];
-      const question = { ...updatedQuestions[qIdx] };
-      question.answers = question.answers.filter(a => a.id !== ansId);
-      updatedQuestions[qIdx] = question;
-
-      saveQuestionToFirestore(question).catch(err => {
-        console.error("Firestore advice answer delete error:", err);
-      });
-
-      const newState = {
-        ...prev,
-        questions: updatedQuestions
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("⚖️ Survivor advice answer has been permanently expunged by administrator.");
-  };
-
-  const handleDeleteAnswerComment = (qSlug: string, ansId: string, commentId: string) => {
-    setStore(prev => {
-      const qIdx = prev.questions.findIndex(q => q.slug === qSlug);
-      if (qIdx === -1) return prev;
-
-      const updatedQuestions = [...prev.questions];
-      const question = { ...updatedQuestions[qIdx] };
-
-      const ansIdx = question.answers.findIndex(a => a.id === ansId);
-      if (ansIdx === -1) return prev;
-
-      const answer = { ...question.answers[ansIdx] };
-      answer.comments = (answer.comments || []).filter(c => c.id !== commentId);
-      
-      question.answers = [...question.answers];
-      question.answers[ansIdx] = answer;
-      updatedQuestions[qIdx] = question;
-
-      saveQuestionToFirestore(question).catch(err => {
-        console.error("Firestore reply comment delete error:", err);
-      });
-
-      const newState = {
-        ...prev,
-        questions: updatedQuestions
-      };
-      saveState(newState);
-      return newState;
-    });
-    showToast("🗑️ Discussion comment deleted by administrator.");
-  };
-
-  const handleDeleteRedFlagCase = (caseId: string) => {
-    deleteDoc(doc(db, "redFlagCases", caseId)).catch(err => {
-      console.error("Firestore red flag case delete error:", err);
-    });
-    setStore(prev => {
-      const updated = (prev.redFlagCases || []).filter(c => c.id !== caseId);
-      const newState = { ...prev, redFlagCases: updated };
-      saveState(newState);
-      return newState;
-    });
-    showToast("🗑️ Red flag warning case deleted by administrator.");
-  };
-
-  const handleDeleteRedFlagComment = (caseId: string, commentId: string) => {
-    setStore(prev => {
-      const idx = (prev.redFlagCases || []).findIndex(c => c.id === caseId);
-      if (idx === -1) return prev;
-      const updated = [...prev.redFlagCases];
-      const flagCase = { ...updated[idx] };
-      flagCase.comments = (flagCase.comments || []).filter(c => c.id !== commentId);
-      updated[idx] = flagCase;
-
-      saveRedFlagCaseToFirestore(flagCase).catch(err => {
-        console.error("Firestore red flag comment delete error:", err);
-      });
-
-      const newState = { ...prev, redFlagCases: updated };
-      saveState(newState);
-      return newState;
-    });
-    showToast("🗑️ Red flag discussion comment deleted.");
-  };
-
-  const newSubmissionsCount = useMemo(() => {
-    const lastCheck = parseInt(localStorage.getItem('before_regret_last_feed_check') || '0', 10);
-    if (!lastCheck) return 0;
-
-    let count = 0;
-    // Count new stories
-    store.stories.forEach(s => {
-      if (new Date(s.dateAdded).getTime() > lastCheck) count++;
-    });
-    // Count new comments
-    comments.forEach(c => {
-      if (new Date(c.dateAdded).getTime() > lastCheck) count++;
-    });
-    // Count new court cases
-    store.courtCases.forEach(cc => {
-      const caseTime = new Date(cc.createdAt || cc.postTime || 0).getTime();
-      if (caseTime > lastCheck) count++;
-    });
-    // Count new red flag cases
-    if (store.redFlagCases) {
-      store.redFlagCases.forEach(rf => {
-        if (new Date(rf.dateAdded).getTime() > lastCheck) count++;
-      });
-    }
-
-    return count;
-  }, [store.stories, comments, store.courtCases, store.redFlagCases]);
-
-  const handleDownloadReceiptScreenshot = async () => {
-    const el = document.getElementById('receipt-screenshot-area');
-    if (!el) return;
-    try {
-      setScreenshotGenerating(true);
-      await new Promise(resolve => setTimeout(resolve, 150));
-      const { toPng } = await import('html-to-image');
-      const dataUrl = await toPng(el, {
-        pixelRatio: 2.0,
-        cacheBust: true,
-        style: {
-          transform: 'scale(1)',
-          margin: '0',
-          borderRadius: '24px'
-        }
-      });
-      const link = document.createElement('a');
-      link.download = `Registry_Receipt_${newlyLodgedCase?.caseNumber || 'CASE'}.png`;
-      link.href = dataUrl;
-      link.click();
-      showToast("📸 Registry Receipt Card Saved to Device!");
-    } catch (error) {
-      console.error('Error rendering screenshot:', error);
-      showToast("❌ Failed to generate screenshot");
-    } finally {
-      setScreenshotGenerating(false);
-    }
+  const handleOpenChat = (query: DirectQuery) => {
+    setActiveQuery(query);
+    setView('messaging');
+    window.scrollTo(0, 0);
   };
 
   return (
-    <div className="bg-[#FAF8F2] text-[#1F2937] min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen bg-white text-slate-800 flex flex-col selection:bg-blue-500 selection:text-white antialiased font-sans">
       
-      {/* Primary Top Nav */}
-      <Navigation
-        currentScreen={currentScreen}
-        setScreen={setScreen}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
-        onCaseRetrieve={handleCaseRetrieve}
-        stories={store.stories}
-        courtCases={store.courtCases}
-        newSubmissionsCount={newSubmissionsCount}
+      {/* Navigation bar with dynamic simulation persona toggle */}
+      <Navbar
+        currentView={currentView}
+        setView={setView}
+        activeRole={activeRole}
+        setActiveRole={setActiveRole}
+        onSearchFocus={() => {
+          if (searchInputRef.current) {
+            searchInputRef.current.focus();
+          }
+        }}
       />
 
-      {/* Floating interactive notification toasts */}
-      {toastMessage && (
-        <div className="fixed bottom-6 left-6 z-50 max-w-sm rounded-xl border border-emerald-500/30 bg-[#161B22]/95 p-4 shadow-2xl backdrop-blur-md animate-slideIn flex items-start gap-2.5">
-          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 font-bold">✓</span>
-          <p className="text-xs font-semibold text-white leading-normal">{toastMessage}</p>
-        </div>
-      )}
+      {/* CORE VIEWPORT ROUTER */}
+      <main className="flex-1">
+        
+        {/* VIEW: HOME VIEW (Default Hero, How It Works, and Featured list) */}
+        {currentView === 'home' && (
+          <div>
+            <Hero
+              localities={localities}
+              onSelectLocality={handleSelectLocality}
+              onBecomeExpertClick={() => setView('become_expert')}
+              onSearchFocusRef={searchInputRef}
+            />
+            
+            <HowItWorks />
 
-      {/* MAIN VIEW CONTROLLER */}
-      <main id="main-content" tabIndex={-1} className="flex-1 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 w-full outline-none">
-        {currentScreen.type === 'home' && (
-          <HomeScreen
-            situations={liveSituations}
-            courtCases={store.courtCases}
-            questions={store.questions}
-            latestStories={store.stories}
-            setScreen={setScreen}
-            onCaseRetrieve={handleCaseRetrieve}
-          />
-        )}
-
-        {currentScreen.type === 'explore' && (
-          <ExploreScreen
-            situations={liveSituations}
-            stories={store.stories}
-            courtCases={store.courtCases}
-            setScreen={setScreen}
-            onCaseRetrieve={handleCaseRetrieve}
-            initialSearchTerm={currentScreen.slug}
-          />
-        )}
-
-        {currentScreen.type === 'hub' && (
-          <HubScreen
-            slug={currentScreen.slug || ''}
-            stories={store.stories}
-            courtCases={store.courtCases}
-            questions={store.questions}
-            redFlagCases={store.redFlagCases || []}
-            setScreen={setScreen}
-          />
-        )}
-
-        {currentScreen.type === 'situation' && (
-          <SituationScreen
-            situation={liveSituations.find(s => s.slug === currentScreen.slug) || liveSituations[0]}
-            allStories={store.stories}
-            setScreen={setScreen}
-            onVoteHelpful={handleVoteHelpful}
-            onToggleBookmark={handleToggleBookmark}
-            onAddUpdate={handleAddStoryUpdate}
-            savedStories={store.user.savedStories}
-            darkMode={darkMode}
-            onSelectTag={(tag) => setScreen({ type: 'tag', slug: tag })}
-            onSelectCountry={(country) => setScreen({ type: 'country', slug: country.toLowerCase() })}
-            currentUsername={store.user.username}
-            isAdmin={isAdmin}
-            onDeleteStory={handleDeleteStory}
-            onEditStory={handleEditStory}
-            comments={comments}
-            onAddComment={handleAddComment}
-            onDeleteComment={handleDeleteComment}
-            currentUser={currentUser}
-            onGoogleLogin={handleGoogleLogin}
-            highlightedStoryId={highlightedStoryId}
-          />
-        )}
-
-        {currentScreen.type === 'compare' && (
-          <CompareScreen
-            slug1={(currentScreen.slug || '').split('-vs-')[0] || 'boyfriend-doesnt-want-marriage'}
-            slug2={(currentScreen.slug || '').split('-vs-')[1] || 'stayed-after-cheating'}
-            situations={liveSituations}
-            setScreen={setScreen}
-          />
-        )}
-
-
-
-        {currentScreen.type === 'court_list' && (
-          <div className="space-y-6 pb-16 animate-fadeIn">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-zinc-200 p-5 sm:p-6 rounded-3xl shadow-sm">
-              <div className="space-y-1">
-                <h1 className="text-xl sm:text-2xl font-black text-zinc-900 flex items-center gap-2">
-                  <Gavel className="h-6 w-6 text-[#C9A227]" /> The Relationship Court
-                </h1>
-                <p className="text-xs text-zinc-600">Step into our anonymous space. Review relationship evidence, defend sides, and cast peer perspective votes.</p>
-              </div>
-              <button
-                onClick={() => setIsRegisterModalOpen(true)}
-                className="shrink-0 bg-[#24324A] hover:bg-[#1C273A] text-white font-black text-xs uppercase tracking-wider px-5 py-3 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer font-sans"
-                id="open-register-case"
-              >
-                <Plus className="h-4 w-4" /> Submit Your Case
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <h2 className="text-xs uppercase font-extrabold tracking-wider text-zinc-600 px-1 flex items-center justify-between">
-                <span>Active Cases Under Deliberation ({store.courtCases.length})</span>
-                <span className="text-[10px] text-zinc-500 font-mono normal-case font-semibold">Deliberation duration: 3 to 14 days</span>
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {store.courtCases.map(c => {
-                  const isExpired = !c.createdAt || (new Date(c.createdAt).getTime() + (c.deliberationDays || 3) * 24 * 60 * 60 * 1000) <= Date.now();
-                  return (
-                    <div
-                      key={c.slug}
-                      onClick={() => setScreen({ type: 'court', slug: c.slug })}
-                      className="rounded-2xl border border-zinc-200 bg-gradient-to-br from-white to-zinc-50/70 p-5 cursor-pointer hover:border-[#C9A227] hover:shadow-md transition-all hover:scale-[1.01] flex flex-col justify-between shadow-sm animate-fadeIn"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[9px] uppercase font-mono font-bold text-[#C9A227] bg-[#C9A227]/10 px-2 py-0.5 rounded">
-                              {c.caseNumber || 'CASE-C2011'}
-                            </span>
-                            {isExpired ? (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider font-mono bg-rose-500/10 text-rose-700 border border-rose-500/20">
-                                <span className="h-1 w-1 rounded-full bg-rose-500" />
-                                Ended
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider font-mono bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
-                                <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
-                                Live
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <h3 className="text-sm font-black text-zinc-900 mt-1 leading-snug">"{c.title}"</h3>
-                        <p className="text-xs text-zinc-600 line-clamp-3 leading-relaxed mt-1.5 font-sans font-medium">{c.description}</p>
-                      </div>
-                      <div className="mt-4 border-t border-zinc-200/80 pt-3 flex items-center justify-between text-[10px] text-zinc-500">
-                        <span className="text-[#C9A227] font-bold">Cast Vote →</span>
-                        <span className="font-mono font-semibold">{c.postTime}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {currentScreen.type === 'court' && (
-          <CourtScreen
-            courtCase={store.courtCases.find(c => c.slug === currentScreen.slug) || store.courtCases[0]}
-            setScreen={setScreen}
-            onVoteCourt={handleVoteCourtCase}
-            onAddArgument={handleAddCourtArgument}
-            userVotedCases={userVotedCases}
-            isAdmin={isAdmin}
-            onDeleteArgument={handleDeleteArgument}
-            onDeleteCourtCase={handleDeleteCourtCase}
-          />
-        )}
-
-        {currentScreen.type === 'question_list' && (
-          <div className="space-y-6 pb-16 animate-fadeIn">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-zinc-200 p-5 rounded-3xl shadow-sm">
-              <div>
-                <h1 className="text-xl sm:text-2xl font-black text-zinc-900 flex items-center gap-2">
-                  <HelpCircle className="h-6 w-6 text-purple-600" /> Ask/Give Advice Hub
-                </h1>
-                <p className="text-xs text-zinc-600">Explore hard relationship questions answered directly by veteran survivors or submit your own dilemma.</p>
-              </div>
-              {!showSubmitQuestion && (
-                <button
-                  onClick={() => setShowSubmitQuestion(true)}
-                  className="rounded-xl bg-purple-600 hover:bg-purple-700 font-extrabold text-xs text-white px-4 py-2.5 shadow-lg shadow-purple-500/10 transition-all active:scale-[0.98] self-start sm:self-center cursor-pointer"
-                >
-                  + Post Advice Request
-                </button>
-              )}
-            </div>
-
-            {showSubmitQuestion ? (
-              <SubmitQuestionForm
-                onClose={() => setShowSubmitQuestion(false)}
-                onSubmit={(newQ) => {
-                  handleCreateQuestion(newQ);
-                  setShowSubmitQuestion(false);
-                }}
+            {/* Featured Section Anchor */}
+            <div id="featured-residents-section">
+              <FeaturedResidents
+                experts={experts}
+                localities={localities}
+                onSelectExpert={handleSelectExpert}
+                selectedLocality={selectedLocality}
+                onClearLocalityFilter={handleClearLocalityFilter}
               />
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {store.questions.map(q => (
-                  <div
-                    key={q.slug}
-                    onClick={() => setScreen({ type: 'question', slug: q.slug })}
-                    className="rounded-2xl border border-zinc-200 bg-gradient-to-br from-white to-purple-50/20 p-5 cursor-pointer hover:border-purple-400 hover:shadow-md transition-all duration-200 hover:scale-[1.01] flex flex-col justify-between h-48 shadow-sm"
-                  >
-                    <div className="space-y-2">
-                      <span className="text-[9px] font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded">
-                        {q.category}
-                      </span>
-                      <h3 className="text-sm font-black text-zinc-900 leading-snug line-clamp-2">"{q.title}"</h3>
-                      <p className="text-xs text-zinc-600 line-clamp-3 leading-relaxed font-sans font-medium">{q.description}</p>
-                    </div>
-                    <div className="border-t border-zinc-200 pt-2.5 mt-2 flex items-center justify-between text-[10px] text-zinc-500 font-medium">
-                      <span>{q.answers.length} community advices</span>
-                      <span className="text-purple-600 font-bold">View thread →</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            </div>
           </div>
         )}
 
-        {currentScreen.type === 'question' && (() => {
-          const found = store.questions.find(q => q.slug === currentScreen.slug);
-          if (!found) {
-            if (!isQuestionsLoaded) {
-              return (
-                <div className="flex flex-col items-center justify-center p-20 text-center space-y-4">
-                  <div className="h-10 w-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                  <p className="text-sm text-zinc-400 font-medium font-mono">Connecting with database registry...</p>
-                </div>
-              );
-            } else {
-              return (
-                <div className="flex flex-col items-center justify-center p-16 text-center space-y-6 max-w-md mx-auto">
-                  <div className="h-14 w-14 rounded-full bg-red-400/10 text-red-500 flex items-center justify-center">
-                    <AlertTriangle className="h-7 w-7" />
-                  </div>
+        {/* VIEW: EXPLORE VIEW (All Societies Directory layout) */}
+        {currentView === 'explore' && (
+          <div className="max-w-7xl mx-auto px-4 py-12">
+            <div className="mb-10 text-center sm:text-left">
+              <span className="bg-blue-50 border border-blue-100/60 text-blue-700 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full font-mono">
+                Comprehensive Society Directory
+              </span>
+              <h1 className="text-2xl sm:text-4xl font-display font-black text-slate-900 tracking-tight mt-3">
+                Residential Apartments Directory
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-2xl font-medium">
+                Browse Indian housing societies, apartment complexes, or sectors below. Click any layout to filter and consult certified long-term residents living there.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {localities.map((loc) => (
+                <div
+                  key={loc.id}
+                  onClick={() => handleSelectLocality(loc)}
+                  className="bg-white border-2 border-slate-100 rounded-2xl p-6 hover:border-blue-600 cursor-pointer transition-all hover:shadow-md flex flex-col justify-between group"
+                >
                   <div>
-                    <h2 className="text-base font-extrabold text-white">Advice Board Request Expired</h2>
-                    <p className="text-xs text-[#AAB2C0]/85 mt-2">The requested timeline advice dilemma does not exist or has been deleted by an administrator.</p>
+                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 inline-block text-slate-500 mb-4 group-hover:text-blue-600 transition-colors">
+                      <Building className="w-6 h-6" />
+                    </div>
+                    <h3 className="font-bold text-slate-800 text-base">{loc.name}</h3>
+                    <p className="text-xs text-slate-400 mt-1">{loc.society || 'Residential Layout'} • {loc.city}</p>
+                    
+                    <p className="text-xs text-slate-500 font-medium leading-relaxed mt-3 pt-3 border-t border-slate-50">
+                      Builder Developer: <strong className="text-slate-700 font-bold">{loc.builder || 'Local Association'}</strong>
+                    </p>
                   </div>
-                  <button
-                    onClick={() => setScreen({ type: 'question_list' })}
-                    className="px-4 py-2 text-xs font-bold bg-[#1e142e] border border-purple-500/20 text-purple-400 rounded-xl hover:border-purple-500/40 transition-colors"
-                  >
-                    Back to Ask/Give Advice
-                  </button>
+
+                  <div className="mt-6 flex items-center justify-between text-xs font-mono font-bold pt-3 border-t border-slate-50/50">
+                    <span className="text-emerald-600 bg-emerald-50 px-2.5 py-1 border border-emerald-100 rounded-full">
+                      {loc.expertCount} Residents Listed
+                    </span>
+                    <span className="text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      View Experts <ChevronRight className="w-4 h-4" />
+                    </span>
+                  </div>
                 </div>
-              );
-            }
-          }
-          return (
-            <QuestionScreen
-              question={found}
-              setScreen={setScreen}
-              onVoteQuestionPoll={handleVoteQuestionPoll}
-              onAddQuestionAnswer={handleAddQuestionAnswer}
-              onAddAnswerComment={handleAddAnswerComment}
-              onUpvoteAnswer={handleUpvoteAnswer}
-              userVotedQuestions={userVotedQuestions}
-              isAdmin={isAdmin}
-              onDeleteAnswer={handleDeleteAnswer}
-              onDeleteQuestion={handleDeleteQuestion}
-              onDeleteAnswerComment={handleDeleteAnswerComment}
-            />
-          );
-        })()}
+              ))}
+            </div>
+          </div>
+        )}
 
-        {currentScreen.type === 'regret_stories' && (() => {
-          const isStoryId = currentScreen.slug && store.stories.some(s => s.id === currentScreen.slug);
-          return (
-            <RegretStoriesScreen
-              stories={store.stories}
-              situations={liveSituations}
-              onVoteHelpful={handleVoteHelpful}
-              onSubmitStory={handleAddStory}
-              setScreen={setScreen}
-              isAdmin={isAdmin}
-              onDeleteStory={handleDeleteStory}
-              initialSituationSlug={isStoryId ? 'All' : currentScreen.slug}
-              initialStoryId={isStoryId ? currentScreen.slug : undefined}
-            />
-          );
-        })()}
-
-        {currentScreen.type === 'red_flag_meter' && (
-          <RedFlagMeterScreen
-            redFlagCases={store.redFlagCases || []}
-            setScreen={setScreen}
-            onVoteFlag={handleVoteFlag}
-            onAddFlagComment={handleAddFlagComment}
-            onAddFlagCase={handleAddFlagCase}
-            userVotedFlags={userVotedFlags}
-            currentUser={currentUser}
-            currentUsername={store.user.username}
-            submittedRedFlags={store.user.submittedRedFlags || []}
-            onGoogleLogin={handleGoogleLogin}
-            initialCaseId={currentScreen.slug}
+        {/* VIEW: DETAILED PROFILE VIEW */}
+        {currentView === 'profile' && selectedExpert && (
+          <ResidentProfile
+            expert={selectedExpert}
+            locality={localities.find((l) => l.id === selectedExpert.localityId) || localities[0]}
+            reviews={reviews}
+            onBack={() => setView('home')}
+            onSelectPackage={setSelectedPackageId}
+            onStartInquiry={() => setView('ask_question')}
+            savedExperts={savedExpertIds}
+            onToggleSaveExpert={handleToggleSaveExpert}
           />
         )}
 
-        {currentScreen.type === 'country' && (
-          <CountryScreen
-            countrySlug={currentScreen.slug || 'usa'}
-            allStories={store.stories}
-            setScreen={setScreen}
-            onVoteHelpful={handleVoteHelpful}
-            onToggleBookmark={handleToggleBookmark}
-            onAddUpdate={handleAddStoryUpdate}
-            savedStories={store.user.savedStories}
-            darkMode={darkMode}
-            onSelectTag={(tag) => setScreen({ type: 'tag', slug: tag })}
-            onSelectCountry={(country) => setScreen({ type: 'country', slug: country.toLowerCase() })}
-            currentUsername={store.user.username}
-            isAdmin={isAdmin}
-            onDeleteStory={handleDeleteStory}
-            onEditStory={handleEditStory}
-            comments={comments}
-            onAddComment={handleAddComment}
-            onDeleteComment={handleDeleteComment}
-            currentUser={currentUser}
-            onGoogleLogin={handleGoogleLogin}
+        {/* VIEW: ASK QUESTION STEP-BY-STEP PAGE */}
+        {currentView === 'ask_question' && selectedExpert && (
+          <AskQuestion
+            expert={selectedExpert}
+            locality={localities.find((l) => l.id === selectedExpert.localityId) || localities[0]}
+            selectedPackageId={selectedPackageId}
+            onBack={() => setView('profile')}
+            onSubmitQuestion={handleSubmitQuestion}
           />
         )}
 
-        {currentScreen.type === 'tag' && (
-          <TagScreen
-            tagSlug={currentScreen.slug || 'cheating'}
-            allStories={store.stories}
-            allQuestions={store.questions}
-            allCourtCases={store.courtCases}
-            setScreen={setScreen}
-            onVoteHelpful={handleVoteHelpful}
-            onToggleBookmark={handleToggleBookmark}
-            onAddUpdate={handleAddStoryUpdate}
-            savedStories={store.user.savedStories}
-            darkMode={darkMode}
-            onSelectTag={(tag) => setScreen({ type: 'tag', slug: tag })}
-            onSelectCountry={(country) => setScreen({ type: 'country', slug: country.toLowerCase() })}
-            currentUsername={store.user.username}
-            isAdmin={isAdmin}
-            onDeleteStory={handleDeleteStory}
-            onEditStory={handleEditStory}
-            comments={comments}
-            onAddComment={handleAddComment}
-            onDeleteComment={handleDeleteComment}
-            currentUser={currentUser}
-            onGoogleLogin={handleGoogleLogin}
+        {/* VIEW: BUYER DASHBOARD VIEW */}
+        {currentView === 'buyer_dashboard' && (
+          <Dashboards
+            queries={queries}
+            reviews={reviews}
+            experts={experts}
+            savedExpertIds={savedExpertIds}
+            activeRole="buyer"
+            activeQueryId={activeQuery ? activeQuery.id : null}
+            setActiveQueryId={() => {}}
+            onOpenChat={handleOpenChat}
+            onLeaveReview={handleLeaveReview}
           />
         )}
 
-        {currentScreen.type === 'admin_feed' && (
-          <AdminFeedScreen
-            stories={store.stories}
-            comments={comments}
-            courtCases={store.courtCases}
-            questions={store.questions}
-            redFlagCases={store.redFlagCases || []}
-            isAdmin={isAdmin}
-            setScreen={setScreen}
-            onDeleteStory={handleDeleteStory}
-            onDeleteComment={handleDeleteComment}
-            onDeleteCourtCase={handleDeleteCourtCase}
-            onDeleteArgument={handleDeleteArgument}
-            onDeleteQuestion={handleDeleteQuestion}
-            onDeleteAnswer={handleDeleteAnswer}
-            onDeleteAnswerComment={handleDeleteAnswerComment}
-            onDeleteRedFlagCase={handleDeleteRedFlagCase}
-            onDeleteRedFlagComment={handleDeleteRedFlagComment}
-            onToggleAdmin={handleToggleAdmin}
-            onEditStory={handleEditStory}
-            onEditComment={handleEditComment}
-            onEditCourtCase={handleEditCourtCase}
-            onEditArgument={handleEditArgument}
-            onEditQuestion={handleEditQuestion}
-            onEditAnswer={handleEditAnswer}
-            onEditAnswerComment={handleEditAnswerComment}
-            onEditRedFlagCase={handleEditRedFlagCase}
-            onEditRedFlagComment={handleEditRedFlagComment}
-            onAddStory={handleAdminAddStory}
-            onAddCourtCase={handleAddCourtCase}
-            onAddQuestion={handleAddQuestion}
-            onAddRedFlagCase={handleAddRedFlagCase}
+        {/* VIEW: RESIDENT EXPERT DASHBOARD VIEW */}
+        {currentView === 'expert_dashboard' && (
+          <Dashboards
+            queries={queries}
+            reviews={reviews}
+            experts={experts}
+            savedExpertIds={savedExpertIds}
+            activeRole="expert"
+            activeQueryId={activeQuery ? activeQuery.id : null}
+            setActiveQueryId={() => {}}
+            onOpenChat={handleOpenChat}
+            onLeaveReview={() => {}}
           />
         )}
 
-        {currentScreen.type === 'legal' && (
-          <LegalScreen
-            initialTab={currentScreen.slug as any || 'disclaimer'}
-            setScreen={setScreen}
+        {/* VIEW: SECURE MESSAGING CHATROOM VIEW */}
+        {currentView === 'messaging' && activeQuery && (
+          <Messaging
+            query={activeQuery}
+            onBack={() => {
+              if (activeRole === 'buyer') {
+                setView('buyer_dashboard');
+              } else {
+                setView('expert_dashboard');
+              }
+            }}
+            onSubmitAnswer={handleSubmitAnswer}
+            activeRole={activeRole === 'guest' ? 'buyer' : activeRole} // Default fallback to buyer
           />
         )}
 
-        {currentScreen.type === 'guides' && (
-          <GuidesScreen
-            setScreen={setScreen}
-            slug={currentScreen.slug}
+        {/* VIEW: BECOME A LOCAL EXPERT FORM VIEW */}
+        {currentView === 'become_expert' && (
+          <Onboarding
+            onAddExpert={handleAddExpertFromOnboarding}
+            setView={setView}
           />
         )}
 
-        {currentScreen.type === 'ldr_game' && (
-          <LdrGameScreen
-            sessionId={currentScreen.slug}
-            setScreen={setScreen}
-            currentUser={currentUser}
-            showToast={showToast}
-          />
-        )}
       </main>
 
-      {/* Persistent platform-wide Footer */}
-      <Footer setScreen={setScreen} isAdmin={isAdmin} onToggleAdmin={handleToggleAdmin} />
-
-      {/* ⚙️ FIREBASE AUTH TROUBLESHOOTING & INSTANT GUEST PASS OVERLAY */}
-      {showAuthTroubleshooter && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn overflow-y-auto">
-          <div className="w-full max-w-lg bg-[#161B22] border border-[#30363D] shadow-2xl rounded-3xl text-left p-6 relative my-auto max-h-[90vh] overflow-y-auto">
-            <button 
-              onClick={() => setShowAuthTroubleshooter(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-xl text-zinc-500 hover:text-white hover:bg-[#30363D]/50 transition-colors"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            
-            <div className="flex items-center gap-3 border-b border-[#30363D] pb-4 mb-4">
-              <div className="p-2.5 bg-yellow-500/10 border border-yellow-500/25 rounded-2xl text-yellow-400">
-                <AlertTriangle className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="text-md sm:text-lg font-black text-white uppercase tracking-wider">
-                  Firebase Domain Setup
-                </h3>
-                <p className="text-xs text-zinc-400 mt-0.5">Google Sign-In configuration required.</p>
-              </div>
-            </div>
-
-            <div className="space-y-4 text-xs sm:text-sm text-zinc-300">
-              <p className="leading-relaxed text-zinc-300">
-                The domain <code className="bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded font-mono text-xs">{window.location.hostname}</code> is not yet added to your Firebase authorized domains list.
-              </p>
-
-              {/* Instructions */}
-              <div className="bg-[#0D1117] border border-[#30363D] rounded-2xl p-4 space-y-3">
-                <h4 className="font-bold text-white uppercase text-xs flex items-center gap-1">
-                  <span>🛠️ How to authorize this domain (1-Minute):</span>
-                </h4>
-                <ol className="list-decimal pl-4.5 space-y-2 text-zinc-400 text-xs leading-relaxed">
-                  <li>
-                    Open your <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className="text-[#4F8CFF] hover:underline font-bold inline-flex items-center gap-0.5">Firebase Console <BookOpen className="h-3 w-3" /></a> for project <span className="font-mono text-zinc-300 font-semibold bg-[#161B22] px-1 rounded">universal-cogency-hnzsc</span>.
-                  </li>
-                  <li>
-                    Navigate to <strong className="text-zinc-300 font-bold">Authentication</strong> &gt; <strong className="text-zinc-300 font-bold">Settings</strong> (top tab).
-                  </li>
-                  <li>
-                    Select <strong className="text-zinc-300 font-bold">Authorized domains</strong> and click <strong className="text-[#4F8CFF] font-bold">Add domain</strong>.
-                  </li>
-                  <li>
-                    Paste the domain:
-                    <div className="mt-1.5 flex items-center gap-2">
-                      <code className="bg-[#161B22] border border-[#30363D] rounded-xl px-3 py-1.5 text-[#F4B942] select-all font-mono text-[11px] block truncate max-w-[240px] sm:max-w-xs">
-                        {window.location.hostname}
-                      </code>
-                      <button 
-                        onClick={() => {
-                          navigator.clipboard.writeText(window.location.hostname);
-                          showToast("📋 Copied hostname!");
-                        }}
-                        className="px-2.5 py-1.5 rounded-xl border border-[#30363D] hover:bg-[#30363D] transition-colors text-zinc-400 hover:text-white shrink-0 text-xs font-bold flex items-center gap-1"
-                        title="Copy domain name"
-                      >
-                        <Copy className="h-3 w-3" />
-                        <span>Copy</span>
-                      </button>
-                    </div>
-                  </li>
-                </ol>
-              </div>
-
-              {/* Instant Guest mode */}
-              <div className="border-t border-[#30363D] pt-4 mt-2">
-                <div className="bg-gradient-to-r from-[#4F8CFF]/10 to-indigo-500/10 border border-[#4F8CFF]/25 rounded-2xl p-4">
-                  <h4 className="font-extrabold text-white text-xs sm:text-sm uppercase tracking-wider flex items-center gap-1">
-                    <Sparkles className="h-4 w-4 text-[#4F8CFF]" /> Bypass with Instant Guest Profile
-                  </h4>
-                  <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
-                    Don't want to change console settings right now? Create an instant custom local session to submit timelines, voice verdicts, and test Firestore features with real-time sync.
-                  </p>
-
-                  <div className="mt-3.5 flex flex-col sm:flex-row gap-2">
-                    <input 
-                      type="text"
-                      value={guestNickName}
-                      onChange={(e) => setGuestNickName(e.target.value)}
-                      placeholder="Enter seeker nickname..."
-                      className="bg-[#0D1117] border border-[#30363D] rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-white focus:outline-none focus:border-[#4F8CFF] flex-1"
-                    />
-                    <button
-                      onClick={handleInstantGuestLogin}
-                      className="rounded-xl bg-gradient-to-r from-[#4F8CFF] to-indigo-600 hover:from-[#4F8CFF]/90 hover:to-indigo-600/90 text-xs font-black text-white px-4 py-2.5 shadow-lg shadow-[#4F8CFF]/15 hover:shadow-[#4F8CFF]/25 transition-all text-center shrink-0"
-                    >
-                      Instant Login ⚡
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 flex justify-end gap-2">
-              <button
-                onClick={() => setShowAuthTroubleshooter(false)}
-                className="text-xs font-bold text-zinc-400 hover:text-white px-4 py-2 rounded-xl border border-[#30363D] hover:bg-[#30363D] transition-all"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* ⚖️ Newly Lodged Case Success Modal */}
-      {newlyLodgedCase && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn text-zinc-800">
-          <div className="w-full max-w-md md:max-w-lg bg-white border border-[#E5E7EB] shadow-2xl rounded-3xl p-6 text-center relative overflow-hidden">
-            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#C9A227] to-amber-500" />
-            
-            <div className="mx-auto w-12 h-12 bg-amber-50 border border-[#C9A227]/20 rounded-2xl flex items-center justify-center text-[#C9A227] mb-3">
-              <Gavel className="h-5 w-5" />
-            </div>
-
-            <h3 className="text-base font-black text-zinc-900 uppercase tracking-wider">
-              Dispute Registered Successfully
-            </h3>
-            <p className="text-[11px] text-zinc-500 mt-1 mb-5 leading-relaxed font-medium">
-              Your case has been securely registered in the anonymous relationship court.
-            </p>
-
-            {/* SCREENSHOT CARD PREVIEW AREA */}
-            <div 
-              id="receipt-screenshot-area" 
-              className="p-5 border border-dashed border-[#C9A227]/40 rounded-2xl bg-gradient-to-br from-[#FAF8F2] to-white text-left relative shadow-xs mb-5"
-            >
-              {/* Receipt Header Watermark */}
-              <div className="flex justify-between items-start border-b border-zinc-100 pb-3 mb-4">
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[#C9A227] font-mono block">Registry Receipt</span>
-                  <h4 className="text-xs font-black text-zinc-900 tracking-tight uppercase">Before Regret Court</h4>
-                </div>
-                <div className="text-right">
-                  <span className="text-[8px] font-bold text-zinc-400 font-mono block">REGISTERED ON</span>
-                  <span className="text-[9px] font-bold text-zinc-600 font-mono">
-                    {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </span>
-                </div>
-              </div>
-
-              {/* Case reference grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                {/* Case ID */}
-                <div className="bg-white border border-zinc-150 rounded-xl p-3 shadow-2xs">
-                  <span className="text-[8px] font-bold text-zinc-400 tracking-wider block mb-1 uppercase font-mono">CASE REFERENCE ID</span>
-                  <div className="flex items-center justify-between gap-1">
-                    <code className="text-sm font-black text-zinc-900 font-mono tracking-wider">
-                      {newlyLodgedCase.caseNumber}
-                    </code>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(newlyLodgedCase.caseNumber);
-                        setCaseNumberCopied(true);
-                        setTimeout(() => setCaseNumberCopied(false), 2000);
-                        showToast("📋 Case Number Copied!");
-                      }}
-                      className="p-1.5 rounded-lg hover:bg-zinc-50 text-zinc-400 hover:text-zinc-800 transition-all cursor-pointer"
-                      title="Copy Case Number"
-                    >
-                      {caseNumberCopied ? (
-                        <Check className="h-3.5 w-3.5 text-emerald-600" />
-                      ) : (
-                        <Copy className="h-3.5 w-3.5" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Case Password Pin */}
-                {newlyLodgedCase.passwordPin && (
-                  <div className="bg-white border border-zinc-150 rounded-xl p-3 shadow-2xs">
-                    <span className="text-[8px] font-bold text-zinc-400 tracking-wider block mb-1 uppercase font-mono">CASE PASS PIN</span>
-                    <div className="flex items-center justify-between gap-1">
-                      <code className="text-sm font-black text-emerald-600 font-mono tracking-widest">
-                        {newlyLodgedCase.passwordPin}
-                      </code>
-                      <button
-                        onClick={() => {
-                          const copyText = newlyLodgedCase.passwordPin || '';
-                          navigator.clipboard.writeText(copyText);
-                          setCasePinCopied(true);
-                          setTimeout(() => setCasePinCopied(false), 2000);
-                          showToast("📋 Case PIN Copied!");
-                        }}
-                        className="p-1.5 rounded-lg hover:bg-zinc-50 text-zinc-400 hover:text-zinc-800 transition-all cursor-pointer"
-                        title="Copy Case PIN"
-                      >
-                        {casePinCopied ? (
-                          <Check className="h-3.5 w-3.5 text-emerald-600" />
-                        ) : (
-                          <Copy className="h-3.5 w-3.5" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Secure Partner Link Row */}
-              {newlyLodgedCase.wantsPartnerResponse && (
-                <div className="bg-white border border-zinc-150 rounded-xl p-3 shadow-2xs">
-                  <span className="text-[8px] font-bold text-zinc-400 tracking-wider block mb-1 uppercase font-mono">
-                    SECURE PARTNER INVITE LINK
-                  </span>
-                  <div className="flex items-center justify-between gap-2 bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1.5">
-                    <span className="text-[9.5px] font-mono text-zinc-600 truncate max-w-[200px] sm:max-w-[260px]">
-                      {`${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true&partnerKey=${newlyLodgedCase.partnerKey}`}
-                    </span>
-                    <button
-                      onClick={() => {
-                        const inviteLink = `${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true&partnerKey=${newlyLodgedCase.partnerKey}`;
-                        navigator.clipboard.writeText(inviteLink);
-                        showToast("📋 Partner link copied!");
-                      }}
-                      className="text-[9px] font-bold text-[#C9A227] hover:text-[#B08A1E] transition-all cursor-pointer flex items-center gap-1 shrink-0 bg-white border border-zinc-200 px-2 py-0.5 rounded"
-                    >
-                      <Copy className="h-3 w-3" /> Copy Link
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Secure Pass Note */}
-              <div className="mt-4 pt-3 border-t border-zinc-100 flex items-start gap-2 text-[9px] text-zinc-500 leading-normal font-medium">
-                <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>
-                  <strong>Write down your PIN or save this receipt.</strong> For complete privacy, we do not store profile directories or offer password recoveries. You need your PIN to post updates or retrieve this dossier later.
-                </span>
-              </div>
-            </div>
-
-            {/* ACTION FOOTER BUTTONS */}
-            <div className="space-y-2">
-              {/* Copy Full polite Message if partner is wanted */}
-              {newlyLodgedCase.wantsPartnerResponse && (
-                <button
-                  onClick={() => {
-                    const inviteLink = `${window.location.origin}/court/${newlyLodgedCase.slug}?partnerInvite=true&partnerKey=${newlyLodgedCase.partnerKey}`;
-                    const messageText = `I shared our situation anonymously on www.beforeregret.com to get unbiased opinions. You can now add your side before anyone votes. Please don't share this link with anyone—it's only for you. ${inviteLink}`;
-                    navigator.clipboard.writeText(messageText);
-                    setInviteMessageCopied(true);
-                    setTimeout(() => setInviteMessageCopied(false), 2500);
-                    showToast("📋 Copied polite message draft!");
-                  }}
-                  className="w-full flex items-center justify-center gap-1.5 py-1.5 border border-zinc-200 hover:border-zinc-300 rounded-xl text-[10px] font-black text-zinc-700 bg-white hover:bg-zinc-50 shadow-2xs transition-all cursor-pointer"
-                >
-                  {inviteMessageCopied ? (
-                    <>
-                      <Check className="h-3.5 w-3.5 text-emerald-600" />
-                      <span>Copied Invite Draft Message!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3.5 w-3.5 text-zinc-400" />
-                      <span>Copy Polite Invite Message Draft</span>
-                    </>
-                  )}
-                </button>
-              )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {/* Take Screenshot */}
-                <button
-                  onClick={handleDownloadReceiptScreenshot}
-                  disabled={screenshotGenerating}
-                  className="w-full flex items-center justify-center gap-1.5 py-2 border border-[#E5E7EB] hover:bg-zinc-50 disabled:bg-zinc-100 text-zinc-800 rounded-xl text-xs font-bold shadow-2xs transition-all cursor-pointer"
-                >
-                  {screenshotGenerating ? (
-                    <>
-                      <div className="h-3.5 w-3.5 border-2 border-[#24324A] border-t-transparent rounded-full animate-spin" />
-                      <span>Saving Receipt...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Camera className="h-3.5 w-3.5 text-[#C9A227]" />
-                      <span>Save Receipt (PNG)</span>
-                    </>
-                  )}
-                </button>
-
-                {/* Continue button */}
-                <button
-                  onClick={() => {
-                    const temp = newlyLodgedCase;
-                    setNewlyLodgedCase(null);
-                    if (temp.type === 'story') {
-                      setScreen({ type: 'situation', slug: temp.slug || 'boyfriend-doesnt-want-marriage' });
-                      if (temp.id) {
-                        setHighlightedStoryId(temp.id);
-                        setTimeout(() => {
-                          const element = document.getElementById(`story-${temp.id}`);
-                          if (element) {
-                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                          }
-                        }, 600);
-                      }
-                    } else {
-                      setScreen({ type: 'court', slug: temp.slug || 'court_list' });
-                    }
-                  }}
-                  className="w-full py-2 rounded-xl bg-[#24324A] hover:bg-[#1C273A] text-xs font-black text-white transition-all uppercase tracking-wider shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-1"
-                >
-                  Enter Dossier ➔
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* GLOBAL REGISTER CASE MODAL OVERLAY */}
-      {isRegisterModalOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn overflow-y-auto">
-          <div className="relative w-full max-w-[540px] bg-white border-2 border-zinc-200 rounded-3xl p-5 shadow-2xl space-y-3.5 my-auto max-h-[90vh] overflow-y-auto flex flex-col text-zinc-900">
-            <button
-              onClick={() => setIsRegisterModalOpen(false)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-900 p-2 rounded-xl hover:bg-zinc-100 transition-all cursor-pointer"
-              id="close-registration-modal"
-            >
-              <X className="h-4.5 w-4.5" />
-            </button>
-            <div>
-              <h2 className="text-base sm:text-lg font-black text-zinc-900 flex items-center gap-2">
-                <Gavel className="h-4.5 w-4.5 text-[#C9A227]" /> Submit Your Case
-              </h2>
-              <p className="text-[11.5px] text-zinc-600 mt-1 font-sans leading-relaxed font-medium">
-                Register your relationship dispute anonymously. Peers will deliberate, debate evidence, and deliver an objective perspective.
-              </p>
-            </div>
-            <div className="pt-1">
-              <RegisterCaseForm onSubmit={handleRegisterCourtCase} />
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Footer block */}
+      <Footer setView={setView} />
 
     </div>
   );

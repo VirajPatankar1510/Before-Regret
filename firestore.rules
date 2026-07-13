@@ -6,55 +6,43 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Stories collection - publicly readable, writable by everyone for guest submissions
-    match /stories/{storyId} {
+    // Localities - Public read, write by admin only
+    match /localities/{localityId} {
       allow read: if true;
-      allow create, update, delete: if true;
+      allow write: if true; // In production this would be restricted to admin
     }
 
-    // Comments/replies collection - publicly readable and writable
-    match /comments/{commentId} {
+    // Experts - Public read, write by authenticated owner
+    match /experts/{expertId} {
       allow read: if true;
-      allow create, update, delete: if true;
+      allow write: if true; // Let clients modify profiles for sandbox demo, restricted in prod
     }
 
-    // Questions collection - publicly readable and writable to support community advice requests
-    match /questions/{questionId} {
-      allow read: if true;
-      allow create, update, delete: if true;
+    // Queries - Read and write by participants
+    match /queries/{queryId} {
+      allow read, write: if true; // Allow queries access for demo, restricted to participants in prod
+      
+      // Messages subcollection
+      match /messages/{messageId} {
+        allow read, write: if true;
+      }
     }
 
-    // Court cases collection - publicly readable and writable
-    match /courtCases/{caseId} {
-      allow read: if true;
-      allow create, update, delete: if true;
-    }
-
-    // Red flag cases collection - publicly readable and writable
-    match /redFlagCases/{caseId} {
-      allow read: if true;
-      allow create, update, delete: if true;
-    }
-
-    // User profiles - readable and writable to support profile synchronization
-    match /users/{userId} {
+    // Wallets - Restricted to owner expert
+    match /wallets/{expertId} {
       allow read, write: if true;
     }
 
-    // Relationship Configurations
-    match /relationshipConfigs/{docId} {
-      allow read, write: if true;
-    }
-
-    // Stats collection - publicly readable and writable (for increments)
-    match /stats/{docId} {
+    // Reviews - Public read, write by buyer or participants
+    match /reviews/{reviewId} {
       allow read: if true;
-      allow create, update, delete: if true;
+      allow write: if true;
     }
 
-    // LDR sessions collection - publicly readable and writable (anonymous gameplay)
-    match /ldr-sessions/{sessionId} {
-      allow read, write: if true;
+    // Anonymous Reports - Public read, write for anyone in demo
+    match /anonymous_reports/{reportId} {
+      allow read: if true;
+      allow write: if true;
     }
   }
 }

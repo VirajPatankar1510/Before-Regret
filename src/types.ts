@@ -1,185 +1,112 @@
-export interface TimelineNode {
-  year: string;
-  stage: string;
-  description: string;
-}
-
-export interface StoryUpdate {
-  daysAfter: number; // e.g. 30, 90, 180, 365, 730
-  dateAdded: string;
-  text: string;
-  regretScore: number;
-}
-
-export interface StoryComment {
+export interface Neighborhood {
   id: string;
-  storyId: string;
-  authorName: string;
-  authorId: string;
-  authorPhoto?: string | null;
-  text: string;
-  dateAdded: string;
-  isRealInput?: boolean;
-}
-
-export interface Story {
-  id: string;
-  caseNumber?: string; // Unique, searchable identifier
-  userId?: string; // Optional track of authenticated Google User
-  title: string;
-  situationSlug: string;
-  situationName: string;
-  age: number;
-  gender: string;
-  country: string;
-  relationshipDuration: string;
-  decisionMade: 'Stayed' | 'Left' | 'Married' | 'Moved Together' | 'Other';
-  currentOutcome: 'Still Together' | 'Married' | 'Engaged' | 'Separated' | 'Divorced' | 'Complicated';
-  regretScore: number; // 1-10
-  regretType?: 'Past' | 'Current';
-  wouldDoAgain: 'Yes' | 'No' | 'Not Sure';
-  fullStory: string;
-  timeline: TimelineNode[];
-  userName: string;
-  helpfulVotes: number;
-  dateAdded: string;
-  updates: StoryUpdate[];
-  tags: string[];
-  isRealInput?: boolean;
-}
-
-export interface SituationStats {
-  storyCount: number;
-  avgRegret: number;
-  wouldDoAgainPercent: number; // % who would do again
-  stillTogetherPercent: number;
-  marriedPercent: number;
-  separatedPercent: number;
-  avgRelationshipLength: string;
-}
-
-export interface Situation {
-  slug: string;
   name: string;
-  category: 'Cheating' | 'Marriage' | 'Long Distance' | 'Children & Family' | 'Careers & Moving' | 'Ultimatums' | 'Red Flags';
-  description: string;
-  stats: SituationStats;
-  decisionBreakdown: { name: string; percentage: number }[]; // Pie graph style
-  outcomeBreakdown: { name: string; value: number }[]; // Bar graph style
-  regretOverTime: { period: string; level: number }[]; // Line graph style
-  countryBreakdown: { country: string; count: number; avgRegret: number }[]; // Heatmap style
+  city: string;
+  state: string;
+  pincode: string;
+  society?: string;
+  builder?: string;
+  apartmentName?: string;
+  expertCount: number;
+  averageRating: number;
+  waterTankerDependency?: number;
+  parkingDisputes?: number;
+  powerCutHistory?: number;
+  bachelorPetRules?: number;
+  monsoonFlooding?: number;
+  noiseIndex?: number;
 }
 
-export interface CourtArgument {
+export interface ExpertProfile {
   id: string;
-  author: string;
-  side: 'Me' | 'Partner' | 'Both' | 'Neither';
-  text: string;
-  votes: number;
-  role: 'Truth Teller' | 'Relationship Veteran' | 'Mentor' | 'Novice' | 'Top Mentor' | 'Poster' | 'Partner';
-  isRealInput?: boolean;
+  userId: string;
+  fullName: string;
+  bio: string;
+  localityId: string;
+  localityName: string;
+  city: string;
+  avatarUrl: string; // clean modern illustrated avatar (URL or preset key)
+  isCustomAvatar?: boolean;
+  memberSince: string;
+  questionsAnsweredCount: number;
+  responseRate: number; // e.g. 98
+  responseTime: string; // e.g. "Within 35 minutes"
+  rating: number;
+  pricingPerQuery: number; // e.g. 299 (in INR)
+  active?: boolean;
+  expertiseTags: string[];
+  areasCovered: string[]; // e.g. ["Baner", "Balewadi", "Aundh"]
+  yearsLivingThere: number; // e.g. 8
+  repeatBuyersCount: number; // e.g. 78
+  experienceLevel: 'New Local' | 'Established Local' | 'Trusted Local' | 'Neighborhood Specialist' | 'Community Favorite';
+  trustScore: number; // e.g. 94
+  languages: string[]; // e.g. ["Hindi", "English", "Marathi"]
+  availability: string; // e.g. "Available Daily"
+  availableSlots?: string[]; // e.g. ["Today 4:00 PM - 4:30 PM", "Tomorrow 10:00 AM - 10:30 AM"]
 }
 
-export interface CourtCase {
-  slug: string;
-  caseNumber?: string; // Unique, searchable identifier
+export interface DirectQuery {
+  id: string;
+  buyerId: string;
+  buyerName: string;
+  expertId: string;
+  expertName: string;
+  localityId: string;
+  localityName: string;
+  queryText: string;
+  responseStyle?: 'DETAILED' | 'CONCISE';
+  status: 'PENDING' | 'ACCEPTED' | 'ANSWERED' | 'REFUNDED' | 'DISPUTED';
+  pricePaid: number;
+  expertEarnings: number;
+  createdAt: string;
+  answeredAt?: string;
+  answerText?: string;
+  razorpayOrderId?: string;
+  holdingPeriodExpiresAt?: string;
+  packageOption?: string;
+  isDisputed?: boolean;
+  bookedSlot?: string;
+}
+
+export interface Review {
+  id: string;
+  queryId: string;
+  buyerName: string;
+  expertId: string;
+  rating: number; // 1 to 5
+  comment: string;
+  createdAt: string;
+}
+
+export interface Wallet {
+  expertId: string;
+  availableBalance: number;
+  heldBalance: number; // in 48-hour escrow hold
+  totalWithdrawn: number;
+  transactions?: WalletTransaction[];
+  upiId?: string;
+  bankAccountNumber?: string;
+  ifscCode?: string;
+}
+
+export interface WalletTransaction {
+  id: string;
+  amount: number;
+  type: 'CREDIT_PENDING' | 'CREDIT_AVAILABLE' | 'DEBIT_WITHDRAWAL';
+  status: 'PENDING' | 'COMPLETED' | 'FAILED';
+  description: string;
+  createdAt: string;
+}
+
+export interface PricingPlan {
+  id: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT';
+  badge: string;
+  badgeStyle: string;
   title: string;
   description: string;
-  postTime: string;
-  author: string;
-  votes: {
-    me: number;
-    partner: number;
-    both: number;
-    neither: number;
-  };
-  arguments: CourtArgument[];
-  tags: string[];
-  deliberationDays?: number; // Duration of active voting (min 3 days)
-  createdAt?: string;        // ISO string when created
-  passwordPin?: string;      // Random PIN/password generated at registration
-  partnerKey?: string;       // Random complex key to authenticate partner invite link
-  partnerPasswordPin?: string; // 4-digit PIN set by partner when opening link
-  recipientName?: string;    // Custom recipient name added by authenticated user
-  isRealInput?: boolean;
-  wantsPartnerResponse?: boolean; // Whether the user generated a partner invite link
+  price: number;
+  pricePeriod: string;
+  features: string[];
+  cta: string;
 }
-
-export interface QuestionAnswerComment {
-  id: string;
-  author: string;
-  text: string;
-  date: string;
-  isRealInput?: boolean;
-}
-
-export interface QuestionAnswer {
-  id: string;
-  author: string;
-  text: string;
-  votes: number;
-  isOutcomeVerified: boolean; // has submitted a story
-  date: string;
-  comments?: QuestionAnswerComment[]; // Comments below this specific advice!
-  isRealInput?: boolean;
-}
-
-export interface Question {
-  slug: string;
-  title: string;
-  description: string;
-  category: string;
-  answers: QuestionAnswer[];
-  pollOptions: { text: string; votes: number }[];
-  storiesCount: number;
-  tags: string[];
-  dateAdded?: string;
-  isRealInput?: boolean;
-}
-
-export interface UserProfile {
-  username: string;
-  storiesSubmitted: number;
-  helpfulVotesReceived: number;
-  followers: number;
-  badges: string[];
-  savedStories: string[]; // story IDs
-  followedSituations: string[]; // situation slugs
-  followedTags: string[]; // tag slugs
-  followedQuestions: string[]; // question slugs
-  submittedStories?: string[]; // IDs of submitted stories
-  submittedRedFlags?: string[]; // IDs of submitted red flag cases
-  recentActivity: {
-    type: 'story_added' | 'story_updated' | 'court_voted' | 'helpful_voted' | 'bookmarked';
-    detail: string;
-    date: string;
-  }[];
-}
-
-export interface RedFlagComment {
-  id: string;
-  author: string;
-  text: string;
-  date: string;
-  isRealInput?: boolean;
-}
-
-export interface RedFlagCase {
-  id: string;
-  caseNumber?: string;
-  title: string;
-  description: string;
-  category: 'Communication' | 'Exes & Socials' | 'Trust & Privacy' | 'Control & Habits' | 'Other';
-  votes: {
-    green: number;
-    yellow: number;
-    red: number;
-  };
-  comments?: RedFlagComment[];
-  author: string;
-  dateAdded: string;
-  isRealInput?: boolean;
-}
-
-
 

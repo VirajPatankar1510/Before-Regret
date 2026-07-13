@@ -9,10 +9,10 @@ import {
   where,
   orderBy,
   deleteDoc,
-  increment
+  increment,
+  onSnapshot
 } from "firebase/firestore";
-import { Story, StoryComment, UserProfile, Question, CourtCase, RedFlagCase } from "../types";
-import { RelationshipProblem } from "../data/relationshipProblems";
+import { Neighborhood, ExpertProfile, DirectQuery, Review, Wallet } from "../types";
 
 export enum OperationType {
   CREATE = 'create',
@@ -30,297 +30,113 @@ export interface FirestoreErrorInfo {
   authInfo: {
     userId?: string | null;
     email?: string | null;
-    emailVerified?: boolean | null;
-    isAnonymous?: boolean | null;
-    tenantId?: string | null;
-    providerInfo?: {
-      providerId?: string | null;
-      email?: string | null;
-    }[];
   }
 }
 
 function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null): never {
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
+    operationType,
+    path,
     authInfo: {
       userId: auth.currentUser?.uid || null,
       email: auth.currentUser?.email || null,
-      emailVerified: auth.currentUser?.emailVerified || null,
-      isAnonymous: auth.currentUser?.isAnonymous || null,
-      tenantId: auth.currentUser?.tenantId || null,
-      providerInfo: auth.currentUser?.providerData?.map(provider => ({
-        providerId: provider.providerId,
-        email: provider.email,
-      })) || []
-    },
-    operationType,
-    path
+    }
   };
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+  console.error("Firestore operation failure:", errInfo);
+  throw new Error(`[BeforeRegret Firestore Error] ${errInfo.error} during ${operationType} on ${path}`);
 }
 
-function cleanUndefined(obj: any): any {
-  if (obj === undefined) {
-    return null;
-  }
-  if (obj === null || typeof obj !== 'object') {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(item => cleanUndefined(item));
-  }
-  const result: any = {};
-  for (const key of Object.keys(obj)) {
-    const value = obj[key];
-    if (value !== undefined) {
-      result[key] = cleanUndefined(value);
-    }
-  }
-  return result;
-}
-
-// Dynamic Stories
-export async function saveStoryToFirestore(story: Story): Promise<void> {
-  const pathForWrite = `stories/${story.id}`;
+// ---------------------- NEIGHBORHOOD SERVICE ----------------------
+export async function getNeighborhood(id: string): Promise<Neighborhood | null> {
+  const docRef = doc(db, "neighborhoods", id);
   try {
-    const storyRef = doc(db, "stories", story.id);
-    await setDoc(storyRef, cleanUndefined(story));
-  } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, pathForWrite);
-  }
-}
-
-export async function fetchStoriesFromFirestore(): Promise<Story[]> {
-  const pathForGetDocs = "stories";
-  try {
-    const storiesCol = collection(db, "stories");
-    const q = query(storiesCol, orderBy("dateAdded", "desc"));
-    const snapshot = await getDocs(q);
-    const stories: Story[] = [];
-    snapshot.forEach((snapshotDoc) => {
-      stories.push(snapshotDoc.data() as Story);
-    });
-    return stories;
-  } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, pathForGetDocs);
-  }
-}
-
-export async function deleteStoryFromFirestore(storyId: string): Promise<void> {
-  const pathForDelete = `stories/${storyId}`;
-  try {
-    const storyRef = doc(db, "stories", storyId);
-    await deleteDoc(storyRef);
-  } catch (error) {
-    handleFirestoreError(error, OperationType.DELETE, pathForDelete);
-  }
-}
-
-// Comments / Responses
-export async function saveCommentToFirestore(comment: StoryComment): Promise<void> {
-  const pathForWrite = `comments/${comment.id}`;
-  try {
-    const commentRef = doc(db, "comments", comment.id);
-    await setDoc(commentRef, cleanUndefined(comment));
-  } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, pathForWrite);
-  }
-}
-
-export async function deleteCommentFromFirestore(commentId: string): Promise<void> {
-  const pathForDelete = `comments/${commentId}`;
-  try {
-    const commentRef = doc(db, "comments", commentId);
-    await deleteDoc(commentRef);
-  } catch (error) {
-    handleFirestoreError(error, OperationType.DELETE, pathForDelete);
-  }
-}
-
-export async function fetchCommentsFromFirestore(storyId?: string): Promise<StoryComment[]> {
-  const pathForGetDocs = "comments";
-  try {
-    const commentsCol = collection(db, "comments");
-    let q = query(commentsCol, orderBy("dateAdded", "asc"));
-    if (storyId) {
-      q = query(commentsCol, where("storyId", "==", storyId), orderBy("dateAdded", "asc"));
-    }
-    const snapshot = await getDocs(q);
-    const comments: StoryComment[] = [];
-    snapshot.forEach((snapshotDoc) => {
-      comments.push(snapshotDoc.data() as StoryComment);
-    });
-    return comments;
-  } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, pathForGetDocs);
-  }
-}
-
-// User Profiles
-export async function saveUserProfileToFirestore(uid: string, profile: UserProfile): Promise<void> {
-  const pathForWrite = `users/${uid}`;
-  try {
-    const profileRef = doc(db, "users", uid);
-    await setDoc(profileRef, cleanUndefined(profile));
-  } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, pathForWrite);
-  }
-}
-
-export async function fetchUserProfileFromFirestore(uid: string): Promise<UserProfile | null> {
-  const pathForGetDoc = `users/${uid}`;
-  try {
-    const profileRef = doc(db, "users", uid);
-    const snapshot = await getDoc(profileRef);
-    if (snapshot.exists()) {
-      return snapshot.data() as UserProfile;
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      return snap.data() as Neighborhood;
     }
     return null;
   } catch (error) {
-    handleFirestoreError(error, OperationType.GET, pathForGetDoc);
+    handleFirestoreError(error, OperationType.GET, `neighborhoods/${id}`);
   }
 }
 
-// Advice Requests / Questions
-export async function saveQuestionToFirestore(question: Question): Promise<void> {
-  const pathForWrite = `questions/${question.slug}`;
+export async function listNeighborhoods(): Promise<Neighborhood[]> {
+  const colRef = collection(db, "neighborhoods");
   try {
-    const questionRef = doc(db, "questions", question.slug);
-    await setDoc(questionRef, cleanUndefined(question));
+    const snap = await getDocs(colRef);
+    return snap.docs.map(d => d.data() as Neighborhood);
   } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, pathForWrite);
+    handleFirestoreError(error, OperationType.LIST, "neighborhoods");
   }
 }
 
-export async function fetchQuestionsFromFirestore(): Promise<Question[]> {
-  const pathForGetDocs = "questions";
+// ---------------------- EXPERTS SERVICE ----------------------
+export async function getExpertProfile(id: string): Promise<ExpertProfile | null> {
+  const docRef = doc(db, "experts", id);
   try {
-    const questionsCol = collection(db, "questions");
-    const snapshot = await getDocs(questionsCol);
-    const questions: Question[] = [];
-    snapshot.forEach((snapshotDoc) => {
-      questions.push(snapshotDoc.data() as Question);
-    });
-    return questions;
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      return snap.data() as ExpertProfile;
+    }
+    return null;
   } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, pathForGetDocs);
+    handleFirestoreError(error, OperationType.GET, `experts/${id}`);
   }
 }
 
-// Durable Court Cases Saving
-export async function saveCourtCaseToFirestore(courtCase: CourtCase): Promise<void> {
-  const pathForWrite = `courtCases/${courtCase.slug}`;
+export async function saveExpertProfile(expert: ExpertProfile): Promise<void> {
+  const docRef = doc(db, "experts", expert.id);
   try {
-    const caseRef = doc(db, "courtCases", courtCase.slug);
-    await setDoc(caseRef, cleanUndefined(courtCase));
+    await setDoc(docRef, expert, { merge: true });
   } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, pathForWrite);
+    handleFirestoreError(error, OperationType.WRITE, `experts/${expert.id}`);
   }
 }
 
-export async function deleteCourtCaseFromFirestore(slug: string): Promise<void> {
-  const pathForDelete = `courtCases/${slug}`;
+export async function listExpertsForLocality(localityId: string): Promise<ExpertProfile[]> {
+  const colRef = collection(db, "experts");
+  const q = query(colRef, where("localityId", "==", localityId));
   try {
-    const caseRef = doc(db, "courtCases", slug);
-    await deleteDoc(caseRef);
+    const snap = await getDocs(q);
+    return snap.docs.map(d => d.data() as ExpertProfile);
   } catch (error) {
-    handleFirestoreError(error, OperationType.DELETE, pathForDelete);
+    handleFirestoreError(error, OperationType.LIST, `experts?localityId=${localityId}`);
   }
 }
 
-// Durable Red Flag Cases Saving
-export async function saveRedFlagCaseToFirestore(redFlagCase: RedFlagCase): Promise<void> {
-  const pathForWrite = `redFlagCases/${redFlagCase.id}`;
+// ---------------------- DIRECT QUERIES ----------------------
+export async function createDirectQuery(queryData: DirectQuery): Promise<void> {
+  const docRef = doc(db, "queries", queryData.id);
   try {
-    const caseRef = doc(db, "redFlagCases", redFlagCase.id);
-    await setDoc(caseRef, cleanUndefined(redFlagCase));
+    await setDoc(docRef, queryData);
   } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, pathForWrite);
+    handleFirestoreError(error, OperationType.CREATE, `queries/${queryData.id}`);
   }
 }
 
-export async function deleteQuestionFromFirestore(slug: string): Promise<void> {
-  const pathForDelete = `questions/${slug}`;
+export async function getDirectQuery(id: string): Promise<DirectQuery | null> {
+  const docRef = doc(db, "queries", id);
   try {
-    const questionRef = doc(db, "questions", slug);
-    await deleteDoc(questionRef);
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      return snap.data() as DirectQuery;
+    }
+    return null;
   } catch (error) {
-    handleFirestoreError(error, OperationType.DELETE, pathForDelete);
+    handleFirestoreError(error, OperationType.GET, `queries/${id}`);
   }
 }
 
-// Dynamic Relationship Problems Configs Saving & Fetching
-export async function saveRelationshipProblemsToFirestore(problems: RelationshipProblem[]): Promise<void> {
-  const pathForWrite = "relationshipConfigs/problems";
-  try {
-    const docRef = doc(db, "relationshipConfigs", "problems");
-    await setDoc(docRef, cleanUndefined({ list: problems }));
-  } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, pathForWrite);
-  }
-}
-
-export async function fetchRelationshipProblemsFromFirestore(): Promise<RelationshipProblem[]> {
-  const pathForGetDoc = "relationshipConfigs/problems";
-  try {
-    const docRef = doc(db, "relationshipConfigs", "problems");
-    const snapshot = await getDoc(docRef);
+export function subscribeToDirectQuery(id: string, onUpdate: (q: DirectQuery | null) => void): () => void {
+  const docRef = doc(db, "queries", id);
+  return onSnapshot(docRef, (snapshot) => {
     if (snapshot.exists()) {
-      const data = snapshot.data();
-      if (data && Array.isArray(data.list)) {
-        return data.list as RelationshipProblem[];
-      }
+      onUpdate(snapshot.data() as DirectQuery);
+    } else {
+      onUpdate(null);
     }
-    return [];
-  } catch (error) {
-    handleFirestoreError(error, OperationType.GET, pathForGetDoc);
-    return [];
-  }
-}
-
-// Visit Tracker Helpers
-export interface VisitStatsData {
-  totalViews: number;
-  uniqueVisitors: number;
-}
-
-export async function fetchVisitStats(): Promise<VisitStatsData> {
-  const pathForGetDoc = "stats/visits";
-  try {
-    const docRef = doc(db, "stats", "visits");
-    const snapshot = await getDoc(docRef);
-    if (snapshot.exists()) {
-      const data = snapshot.data();
-      return {
-        totalViews: data.totalViews || 0,
-        uniqueVisitors: data.uniqueVisitors || 0
-      };
-    }
-    return { totalViews: 0, uniqueVisitors: 0 };
-  } catch (error) {
-    console.error("Error fetching visit stats:", error);
-    return { totalViews: 0, uniqueVisitors: 0 };
-  }
-}
-
-export async function recordVisitInFirestore(isNewSession: boolean, isNewVisitor: boolean): Promise<void> {
-  const pathForWrite = "stats/visits";
-  try {
-    const docRef = doc(db, "stats", "visits");
-    const updates: any = {};
-    if (isNewSession) {
-      updates.totalViews = increment(1);
-    }
-    if (isNewVisitor) {
-      updates.uniqueVisitors = increment(1);
-    }
-    
-    if (Object.keys(updates).length > 0) {
-      await setDoc(docRef, updates, { merge: true });
-    }
-  } catch (error) {
-    console.error("Error recording visit in Firestore:", error);
-  }
+  }, (error) => {
+    console.error(`Subscription error for queries/${id}:`, error);
+  });
 }

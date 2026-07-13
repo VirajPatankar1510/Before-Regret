@@ -1,6 +1,6 @@
 {
-  "name": "BeforeRegret",
-  "description": "An premium relationship outcome intelligence platform for anonymously sharing situations, decisions, outcomes, regrets, and updates to see what happens before making life-altering choices.",
-  "requestFramePermissions": ["microphone"],
+  "name": "Before Regret",
+  "description": "A premium micro-transaction knowledge marketplace for home buyers, renters, and migrating professionals in India to get verified, unvarnished truth about residential societies and localities from resident experts.",
+  "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
