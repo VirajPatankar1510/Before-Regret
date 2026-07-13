@@ -236,7 +236,7 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
 
                     <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-semibold font-mono mt-3.5 pt-2.5 border-t border-slate-50">
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                      <span>Verified Escrow Purchase Transaction</span>
+                      <span>Verified Protected Purchase Transaction</span>
                     </div>
                   </div>
                 ))}
@@ -342,27 +342,10 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
               </button>
 
               <p className="text-[10px] text-slate-400 text-center mt-3 font-mono">
-                Escrow Protected • 100% Satisfaction Guarantee
+                Payment Protected • 100% Satisfaction Guarantee
               </p>
             </div>
 
-          </div>
-
-          {/* Quick Support Widget */}
-          <div className="mt-4 bg-[#F8F9FA] border border-slate-200 rounded-2xl p-4 text-center">
-            <p className="text-xs font-bold text-slate-700 mb-1">Have custom verification requirements?</p>
-            <p className="text-[10px] text-slate-400 leading-relaxed mb-3">
-              Ask {expert.fullName} to measure active basement noises, verify water pressure, or inspect actual society guidelines.
-            </p>
-            <button
-              onClick={() => {
-                setSelectedPlanId('AUDIT');
-                onSelectPackage('AUDIT');
-              }}
-              className="w-full py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[10px] uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
-            >
-              Request Custom Audit
-            </button>
           </div>
 
         </div>

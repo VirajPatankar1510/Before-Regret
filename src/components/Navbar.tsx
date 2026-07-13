@@ -18,57 +18,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   return (
     <div className="border-b border-slate-100 bg-white sticky top-0 z-50 shadow-2xs font-sans">
-      {/* Simulation Persona Bar */}
-      <div className="bg-blue-50 border-b border-blue-100/60 px-4 py-1.5 text-center text-xs flex flex-wrap justify-between items-center gap-2">
-        <div className="flex items-center gap-1.5 text-slate-600 font-mono text-[11px] mx-auto sm:mx-0">
-          <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
-          <span>Simulation Workspace Mode: Test both sides of the marketplace</span>
-        </div>
-        <div className="flex items-center gap-1.5 justify-center mx-auto sm:mx-0">
-          <span className="text-slate-500 text-[11px] font-semibold uppercase tracking-wider">Perspective:</span>
-          <div className="inline-flex rounded-lg p-0.5 bg-slate-200/60 font-medium">
-            <button
-              onClick={() => {
-                setActiveRole('guest');
-                setView('home');
-              }}
-              className={`px-2.5 py-0.5 text-[11px] rounded-md transition-all cursor-pointer ${
-                activeRole === 'guest'
-                  ? 'bg-white text-blue-600 shadow-2xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Guest
-            </button>
-            <button
-              onClick={() => {
-                setActiveRole('buyer');
-                setView('buyer_dashboard');
-              }}
-              className={`px-2.5 py-0.5 text-[11px] rounded-md transition-all cursor-pointer ${
-                activeRole === 'buyer'
-                  ? 'bg-white text-blue-600 shadow-2xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Buyer (Rohan)
-            </button>
-            <button
-              onClick={() => {
-                setActiveRole('expert');
-                setView('expert_dashboard');
-              }}
-              className={`px-2.5 py-0.5 text-[11px] rounded-md transition-all cursor-pointer ${
-                activeRole === 'expert'
-                  ? 'bg-white text-blue-600 shadow-2xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Expert (Priya)
-            </button>
-          </div>
-        </div>
-      </div>
 
       <header className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}

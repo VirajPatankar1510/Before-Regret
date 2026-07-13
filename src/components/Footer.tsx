@@ -21,12 +21,8 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
             </span>
           </div>
           <p className="text-xs text-slate-400 leading-relaxed max-w-xs font-medium">
-            A premium, escrow-protected resident marketplace for home buyers, renters, and migrating professionals in India to verify facts before committing to a home.
+            A premium, verified resident marketplace for home buyers, renters, and migrating professionals in India to verify facts before committing to a home.
           </p>
-          <div className="flex items-center gap-1.5 text-[10px] text-emerald-500 font-mono font-bold uppercase tracking-wider">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Dual-Escrow Guarantee</span>
-          </div>
         </div>
 
         {/* Links Column 1 */}
@@ -61,7 +57,7 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
                 <span>Contact Support</span>
               </a>
             </li>
-            <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">How Escrow Safeguard Works</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">How Our Safeguard Works</a></li>
             <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Trust Score Calculation</a></li>
           </ul>
         </div>
@@ -72,7 +68,15 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
           <ul className="space-y-2 text-xs">
             <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Privacy Policy</a></li>
             <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Terms of Service</a></li>
-            <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Escrow Refund Guidelines</a></li>
+            <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Safe Refund Guidelines</a></li>
+            <li className="pt-2">
+              <button
+                onClick={() => setView('admin_panel')}
+                className="hover:text-white text-slate-500 font-mono text-[10px] transition-colors cursor-pointer flex items-center gap-1"
+              >
+                🔒 Admin
+              </button>
+            </li>
           </ul>
         </div>
 

@@ -108,7 +108,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
           Earn by Sharing Honest Facts About Your Society
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 mt-3 leading-relaxed">
-          People moving into your apartment building or neighborhood want unvarnished truth before buying or renting. Answer their basic queries and receive payouts held in secure escrow.
+          People moving into your apartment building or neighborhood want unvarnished truth before buying or renting. Answer their basic queries and receive payouts held in secure payments.
         </p>
       </div>
 

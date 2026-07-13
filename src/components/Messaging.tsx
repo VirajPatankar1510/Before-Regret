@@ -17,6 +17,7 @@ interface MessagingProps {
   onBack: () => void;
   onSubmitAnswer: (queryId: string, answerText: string) => void;
   activeRole: 'buyer' | 'expert';
+  backText?: string;
 }
 
 export const Messaging: React.FC<MessagingProps> = ({
@@ -24,6 +25,7 @@ export const Messaging: React.FC<MessagingProps> = ({
   onBack,
   onSubmitAnswer,
   activeRole,
+  backText,
 }) => {
   const [messages, setMessages] = useState<ChatMessageItem[]>([
     {
@@ -91,7 +93,7 @@ export const Messaging: React.FC<MessagingProps> = ({
   const handleFinalReportSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (finalAnswer.trim().length < 30) {
-      alert('Please provide a comprehensive answer report (minimum 30 characters) to release the escrow funds.');
+      alert('Please provide a comprehensive answer report (minimum 30 characters) to release the secured funds.');
       return;
     }
     onSubmitAnswer(query.id, finalAnswer);
@@ -108,12 +110,12 @@ export const Messaging: React.FC<MessagingProps> = ({
           className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 uppercase tracking-widest cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4 text-blue-600" />
-          <span>Exit Messaging</span>
+          <span>{backText || 'Exit Messaging'}</span>
         </button>
 
         <div className="text-right">
           <span className="bg-emerald-50 text-emerald-700 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border border-emerald-100 rounded-md">
-            ₹{query.pricePaid} Escrow Lock Active
+            ₹{query.pricePaid} Secured Hold Active
           </span>
           <p className="text-[10px] text-slate-400 mt-1 font-mono">Inquiry Ref: #{query.id.split('_')[1] || query.id}</p>
         </div>
@@ -275,7 +277,7 @@ export const Messaging: React.FC<MessagingProps> = ({
               </div>
               <div>
                 <h3 className="font-bold text-slate-900 text-sm">Resident Final Answers Form</h3>
-                <p className="text-xs text-slate-500 font-medium">Draft your compiled verified society report. This submits the answers and settles the escrow balance.</p>
+                <p className="text-xs text-slate-500 font-medium">Draft your compiled verified society report. This submits the answers and releases the pending balance.</p>
               </div>
             </div>
             
@@ -304,7 +306,7 @@ export const Messaging: React.FC<MessagingProps> = ({
               </div>
 
               <div className="flex justify-between items-center bg-white border border-emerald-100 rounded-xl p-3 text-[11px] text-slate-500">
-                <span className="flex items-center gap-1">✓ Escrow settled immediately on submission</span>
+                <span className="flex items-center gap-1">✓ Funds released immediately on submission</span>
                 <span className="font-mono">Expected payout: <strong className="text-slate-800">Rs. {query.expertEarnings}</strong></span>
               </div>
 

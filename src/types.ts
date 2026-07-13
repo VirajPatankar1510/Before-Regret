@@ -81,7 +81,7 @@ export interface Review {
 export interface Wallet {
   expertId: string;
   availableBalance: number;
-  heldBalance: number; // in 48-hour escrow hold
+  heldBalance: number; // in 48-hour pending hold
   totalWithdrawn: number;
   transactions?: WalletTransaction[];
   upiId?: string;

@@ -9,6 +9,7 @@ import { Dashboards } from './components/Dashboards';
 import { Messaging } from './components/Messaging';
 import { Onboarding } from './components/Onboarding';
 import { Footer } from './components/Footer';
+import { AdminPanel } from './components/AdminPanel';
 
 import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from './data';
 import { Neighborhood, ExpertProfile, DirectQuery, Review } from './types';
@@ -46,6 +47,7 @@ export default function App() {
   const [selectedLocality, setSelectedLocality] = useState<Neighborhood | null>(null);
   const [selectedPackageId, setSelectedPackageId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>('QUICK');
   const [activeQuery, setActiveQuery] = useState<DirectQuery | null>(null);
+  const [messagingBackView, setMessagingBackView] = useState<string>('');
 
   // User list saves
   const [savedExpertIds, setSavedExpertIds] = useState<string[]>(['exp_priya']);
@@ -169,6 +171,7 @@ export default function App() {
 
   const handleOpenChat = (query: DirectQuery) => {
     setActiveQuery(query);
+    setMessagingBackView(activeRole === 'buyer' ? 'buyer_dashboard' : 'expert_dashboard');
     setView('messaging');
     window.scrollTo(0, 0);
   };
@@ -302,6 +305,7 @@ export default function App() {
             setActiveQueryId={() => {}}
             onOpenChat={handleOpenChat}
             onLeaveReview={handleLeaveReview}
+            setView={setView}
           />
         )}
 
@@ -317,6 +321,7 @@ export default function App() {
             setActiveQueryId={() => {}}
             onOpenChat={handleOpenChat}
             onLeaveReview={() => {}}
+            setView={setView}
           />
         )}
 
@@ -325,7 +330,9 @@ export default function App() {
           <Messaging
             query={activeQuery}
             onBack={() => {
-              if (activeRole === 'buyer') {
+              if (messagingBackView) {
+                setView(messagingBackView);
+              } else if (activeRole === 'buyer') {
                 setView('buyer_dashboard');
               } else {
                 setView('expert_dashboard');
@@ -333,6 +340,7 @@ export default function App() {
             }}
             onSubmitAnswer={handleSubmitAnswer}
             activeRole={activeRole === 'guest' ? 'buyer' : activeRole} // Default fallback to buyer
+            backText={messagingBackView === 'admin_panel' ? 'Back to Admin' : 'Exit Messaging'}
           />
         )}
 
@@ -341,6 +349,25 @@ export default function App() {
           <Onboarding
             onAddExpert={handleAddExpertFromOnboarding}
             setView={setView}
+          />
+        )}
+
+        {/* VIEW: ADMIN PANEL VIEW */}
+        {currentView === 'admin_panel' && (
+          <AdminPanel
+            setView={setView}
+            activeRole={activeRole}
+            setActiveRole={setActiveRole}
+            queries={queries}
+            setQueries={setQueries}
+            experts={experts}
+            localities={localities}
+            onOpenQuery={(q) => {
+              setActiveQuery(q);
+              setMessagingBackView('admin_panel');
+              setView('messaging');
+              window.scrollTo(0, 0);
+            }}
           />
         )}
 
