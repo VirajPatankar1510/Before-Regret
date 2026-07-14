@@ -193,7 +193,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                               <h4 className="font-bold text-slate-900 text-sm mt-2">
                                 Query regarding {q.localityName}
                               </h4>
-                              <p className="text-[11px] text-slate-400 font-medium">Assigned expert: {q.expertName} • Ordered on {new Date(q.createdAt).toLocaleDateString()}</p>
+                              <p className="text-[11px] text-slate-400 font-medium">Assigned expert: {q.expertName.split(' ')[0]} • Ordered on {new Date(q.createdAt).toLocaleDateString()}</p>
                               {q.packageOption === 'LIVE_CHAT' && q.bookedSlot && (
                                 <div className="mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 border border-orange-200 text-orange-800 text-xs font-bold font-mono rounded-lg">
                                   <Clock className="w-3.5 h-3.5 text-orange-500 animate-pulse" />
@@ -251,7 +251,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                               <h4 className="font-bold text-slate-900 text-sm">
                                 society report: {q.localityName}
                               </h4>
-                              <p className="text-[11px] text-slate-400 font-medium">Answered by resident {q.expertName} on {q.answeredAt ? new Date(q.answeredAt).toLocaleDateString() : 'recently'}</p>
+                              <p className="text-[11px] text-slate-400 font-medium">Answered by resident {q.expertName.split(' ')[0]} on {q.answeredAt ? new Date(q.answeredAt).toLocaleDateString() : 'recently'}</p>
                             </div>
                             <span className="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100 flex items-center gap-1">
                               <CheckCircle className="w-3.5 h-3.5" />
@@ -319,12 +319,12 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                       <div key={exp.id} className="p-4 border border-slate-100 rounded-xl bg-slate-50/50 flex gap-3.5 items-center justify-between">
                         <div className="flex items-center gap-3">
                           <img
-                            src={`https://api.dicebear.com/7.x/adventurer/svg?seed=${exp.fullName}&backgroundColor=b6e3f4`}
+                            src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${exp.fullName}&backgroundColor=b6e3f4`}
                             alt={exp.fullName}
                             className="w-10 h-10 rounded-full border border-slate-200 p-0.5 bg-white"
                           />
                           <div>
-                            <h4 className="font-bold text-xs sm:text-sm text-slate-800">{exp.fullName}</h4>
+                            <h4 className="font-bold text-xs sm:text-sm text-slate-800">{exp.fullName.split(' ')[0]}</h4>
                             <p className="text-[10px] text-slate-400 font-semibold">{exp.localityName}</p>
                           </div>
                         </div>

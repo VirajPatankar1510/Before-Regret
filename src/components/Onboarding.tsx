@@ -1,22 +1,151 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { TOPICS_OF_EXPERTISE, MOCK_AVATARS } from '../data';
-import { ExpertProfile } from '../types';
-import { Sparkles, Check, ChevronRight, HelpCircle, Heart, ShieldCheck, RefreshCw } from 'lucide-react';
+import { ExpertProfile, Neighborhood } from '../types';
+import { Sparkles, Check, ChevronRight, HelpCircle, Heart, ShieldCheck, RefreshCw, MapPin } from 'lucide-react';
 
 interface OnboardingProps {
-  onAddExpert: (expert: ExpertProfile) => void;
+  localities: Neighborhood[];
+  onAddExpert: (expert: ExpertProfile, newLocality?: Neighborhood) => void;
   setView: (view: string) => void;
 }
 
 export const Onboarding: React.FC<OnboardingProps> = ({
+  localities,
   onAddExpert,
   setView,
 }) => {
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [bio, setBio] = useState('');
-  const [city, setCity] = useState('Mumbai');
-  const [pincode, setPincode] = useState('400063');
+  const [city, setCity] = useState('');
+  const [pincode, setPincode] = useState('');
   const [neighborhood, setNeighborhood] = useState('');
+  const [landmarks, setLandmarks] = useState('');
+  const [detailedAddress, setDetailedAddress] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isPincodeSearching, setIsPincodeSearching] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const cleaned = pincode.trim();
+    if (cleaned.length === 6 && /^\d+$/.test(cleaned)) {
+      // 1. Check local static database of prefix fallback first for instant resolution
+      const PINCODE_FALLBACKS: Record<string, string> = {
+        '400063': 'Mumbai',
+        '400001': 'Mumbai',
+        '560102': 'Bengaluru',
+        '560001': 'Bengaluru',
+        '560066': 'Bengaluru',
+        '110001': 'Delhi',
+        '122001': 'Gurugram',
+        '122002': 'Gurugram',
+        '122011': 'Gurugram',
+        '122018': 'Gurugram',
+        '400607': 'Thane',
+        '400601': 'Thane',
+      };
+
+      if (PINCODE_FALLBACKS[cleaned]) {
+        setCity(PINCODE_FALLBACKS[cleaned]);
+        return;
+      }
+
+      const getCityFromPrefix = (pin: string): string => {
+        if (pin.startsWith('11')) return 'Delhi';
+        if (pin.startsWith('122')) return 'Gurugram';
+        if (pin.startsWith('121')) return 'Faridabad';
+        if (pin.startsWith('201')) return 'Noida / Greater Noida';
+        if (pin.startsWith('56')) return 'Bengaluru';
+        if (pin.startsWith('400') || pin.startsWith('401')) return 'Mumbai / Thane';
+        if (pin.startsWith('411')) return 'Pune';
+        if (pin.startsWith('500')) return 'Hyderabad';
+        if (pin.startsWith('600')) return 'Chennai';
+        if (pin.startsWith('700')) return 'Kolkata';
+        return '';
+      };
+
+      const prefixCity = getCityFromPrefix(cleaned);
+      if (prefixCity) {
+        setCity(prefixCity);
+      }
+
+      // 2. Fetch from India Post API asynchronously for exact precision
+      setIsPincodeSearching(true);
+      fetch(`https://api.postalpincode.in/pincode/${cleaned}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data[0] && data[0].Status === 'Success') {
+            const postOffices = data[0].PostOffice;
+            if (postOffices && postOffices.length > 0) {
+              const district = postOffices[0].District;
+              if (district) {
+                setCity(district);
+              }
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Error auto-detecting city:', err);
+        })
+        .finally(() => {
+          setIsPincodeSearching(false);
+        });
+    }
+  }, [pincode]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Filter static local list based on user search query
+  const combinedLocalities = React.useMemo(() => {
+    const query = neighborhood.toLowerCase().trim();
+    if (!query) return [];
+
+    const localMatches = localities.filter((loc) => {
+      return (
+        loc.name.toLowerCase().includes(query) ||
+        loc.city.toLowerCase().includes(query) ||
+        loc.pincode.includes(query) ||
+        (loc.society && loc.society.toLowerCase().includes(query)) ||
+        (loc.apartmentName && loc.apartmentName.toLowerCase().includes(query))
+      );
+    });
+
+    const list = [...localMatches];
+
+    // If the user has typed a custom neighborhood/society, always ensure they can select it
+    // with their entered city and pincode, as a custom layout fallback
+    if (query.length >= 2) {
+      const exactMatchExists = list.some(
+        (loc) => loc.name.toLowerCase() === query
+      );
+      if (!exactMatchExists) {
+        list.push({
+          id: `custom_onboarding_${Date.now()}`,
+          name: neighborhood.trim(),
+          city: city.trim() || 'Your City',
+          state: 'India',
+          pincode: pincode.trim() || '',
+          society: neighborhood.trim(),
+          apartmentName: `${neighborhood.trim()}, ${city.trim() || 'Residential Area'}`,
+          builder: 'Independent / Custom Layout',
+          expertCount: 0,
+          averageRating: 5.0,
+          landmarks: landmarks.trim(),
+          detailedAddress: detailedAddress.trim()
+        });
+      }
+    }
+
+    return list;
+  }, [localities, neighborhood, city, pincode, landmarks, detailedAddress]);
   const [yearsLiving, setYearsLiving] = useState('5');
   const [languages, setLanguages] = useState<string[]>(['English', 'Hindi']);
   const [selectedAvatar, setSelectedAvatar] = useState(MOCK_AVATARS[0]);
@@ -27,8 +156,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({
   const availableLanguages = [
     'English',
     'Hindi',
-    'Gujarati',
     'Marathi',
+    'Gujarati',
     'Kannada',
     'Bengali',
     'Tamil',
@@ -58,17 +187,20 @@ export const Onboarding: React.FC<OnboardingProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !neighborhood.trim() || !bio.trim()) {
+    if (!firstName.trim() || !lastName.trim() || !neighborhood.trim() || !bio.trim()) {
       alert('Please fill out all required fields.');
       return;
     }
+
+    const fullName = `${firstName.trim()} ${lastName.trim()}`;
+    const localityId = `loc_${neighborhood.toLowerCase().replace(/\s+/g, '_')}`;
 
     const newExpert: ExpertProfile = {
       id: `exp_${Date.now()}`,
       userId: `user_expert_${Date.now()}`,
       fullName,
       bio,
-      localityId: `loc_${neighborhood.toLowerCase().replace(/\s+/g, '_')}`,
+      localityId,
       localityName: `${neighborhood}`,
       city,
       avatarUrl: selectedAvatar,
@@ -89,7 +221,22 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       availability
     };
 
-    onAddExpert(newExpert);
+    const newLocality: Neighborhood = {
+      id: localityId,
+      name: neighborhood.trim(),
+      city: city.trim() || 'Your City',
+      state: 'India',
+      pincode: pincode.trim(),
+      society: neighborhood.trim(),
+      apartmentName: `${neighborhood.trim()}, ${city.trim() || 'Residential Area'}`,
+      builder: 'Independent / Custom Layout',
+      expertCount: 1,
+      averageRating: 5.0,
+      landmarks: landmarks.trim(),
+      detailedAddress: detailedAddress.trim()
+    };
+
+    onAddExpert(newExpert, newLocality);
     setSubmitted(true);
     setTimeout(() => {
       setView('home');
@@ -101,9 +248,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       
       {/* Banner introduction */}
       <div className="text-center max-w-2xl mx-auto mb-10">
-        <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-4 font-mono uppercase tracking-wide">
-          <Sparkles className="w-3.5 h-3.5" /> Before Regret Resident Network
-        </span>
         <h1 className="text-2xl sm:text-4xl font-display font-black text-slate-900 tracking-tight leading-tight">
           Earn by Sharing Honest Facts About Your Society
         </h1>
@@ -136,52 +280,136 @@ export const Onboarding: React.FC<OnboardingProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs font-medium">
               <div>
-                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">Your Full Name / Alias (required)</label>
+                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">First Name (required)</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Shalini Roy"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600"
+                  placeholder="e.g. Shalini"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">City of Residence</label>
-                <select
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600"
-                >
-                  <option value="Mumbai">Mumbai</option>
-                  <option value="Pune">Pune</option>
-                  <option value="Bengaluru">Bengaluru</option>
-                  <option value="Gurugram">Gurugram</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">Pincode / Postal Code (required)</label>
+                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">Last Name (required)</label>
                 <input
                   type="text"
                   required
+                  placeholder="e.g. Roy"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1 flex items-center justify-between">
+                  <span>Pincode / Postal Code (required)</span>
+                  {isPincodeSearching && <span className="text-[9px] text-blue-600 animate-pulse font-mono lowercase">Searching...</span>}
+                </label>
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
                   placeholder="e.g. 560102"
                   value={pincode}
-                  onChange={(e) => setPincode(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600"
+                  onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px] font-mono font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">Society or Layout Name (required)</label>
+                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">City of Residence (Auto-detected)</label>
+                <input
+                  type="text"
+                  readOnly
+                  disabled
+                  placeholder="Enter pincode to auto-detect"
+                  value={city || (isPincodeSearching ? 'Detecting...' : '')}
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-slate-50 text-slate-500 font-bold outline-hidden cursor-not-allowed"
+                />
+              </div>
+
+              <div className="relative" ref={suggestionsRef}>
+                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">
+                  Society or Layout Name (required)
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Bimbisar Nagar or Prestige Shantiniketan"
+                    value={neighborhood}
+                    onChange={(e) => {
+                      setNeighborhood(e.target.value);
+                      setShowSuggestions(true);
+                    }}
+                    onFocus={() => setShowSuggestions(true)}
+                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
+                  />
+                </div>
+                {showSuggestions && combinedLocalities.length > 0 && (
+                  <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto z-50">
+                    {combinedLocalities.map((loc) => (
+                      <div
+                        key={loc.id}
+                        onClick={() => {
+                          setNeighborhood(loc.name);
+                          setCity(loc.city);
+                          setPincode(loc.pincode);
+                          setLandmarks(loc.landmarks || '');
+                          setDetailedAddress(loc.detailedAddress || '');
+                          setShowSuggestions(false);
+                        }}
+                        className="px-3 py-2 hover:bg-slate-50 cursor-pointer text-left border-b border-slate-100 last:border-b-0 flex items-center justify-between gap-2"
+                      >
+                        <div>
+                          <p className="font-bold text-slate-800 text-xs">
+                            {loc.name} {loc.society && loc.society !== loc.name ? `(${loc.society})` : ''}
+                          </p>
+                          <p className="text-[10px] text-slate-500">
+                            {loc.apartmentName || 'Residential Area'}, {loc.city}, {loc.state} - {loc.pincode}
+                          </p>
+                        </div>
+                        {loc.expertCount > 0 ? (
+                          <span className="shrink-0 text-[8px] font-mono font-bold px-1.5 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full">
+                            {loc.expertCount} Experts
+                          </span>
+                        ) : (
+                          <span className="shrink-0 text-[8px] font-mono font-bold px-1.5 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-full flex items-center gap-0.5">
+                            <MapPin className="w-2 h-2 text-blue-500" />
+                            <span>Select Layout</span>
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">Detailed Area / Wing / Phase (No Flat/House Numbers)</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Bimbisar Nagar or Prestige Shantiniketan"
-                  value={neighborhood}
-                  onChange={(e) => setNeighborhood(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600"
+                  placeholder="e.g. Block C, Phase 3, 12th Floor, Wing A (DO NOT include Flat No.)"
+                  value={detailedAddress}
+                  onChange={(e) => setDetailedAddress(e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
+                />
+                <p className="text-[10px] text-amber-600 font-semibold mt-1">⚠️ For privacy & safety, do not include flat, apartment, or house numbers.</p>
+              </div>
+
+              <div>
+                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">Key Landmark & Navigation Guide (required)</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Behind Hub Mall, near Gate No. 2, opposite Axis Bank ATM"
+                  value={landmarks}
+                  onChange={(e) => setLandmarks(e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
                 />
               </div>
             </div>
@@ -225,26 +453,23 @@ export const Onboarding: React.FC<OnboardingProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs font-medium mb-6">
               <div>
                 <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">Years Living in this society</label>
-                <input
-                  type="number"
-                  min={1}
+                <select
                   required
                   value={yearsLiving}
                   onChange={(e) => setYearsLiving(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">Standard Availability</label>
-                <input
-                  type="text"
-                  required
-                  value={availability}
-                  onChange={(e) => setAvailability(e.target.value)}
-                  placeholder="e.g. Evenings & Weekends"
-                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600"
-                />
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 bg-white"
+                >
+                  <option value="0">Less than 1 year</option>
+                  {Array.from({ length: 49 }, (_, i) => {
+                    const val = i + 1;
+                    return (
+                      <option key={val} value={String(val)}>
+                        {val} {val === 1 ? 'year' : 'years'}
+                      </option>
+                    );
+                  })}
+                  <option value="50">50+ years</option>
+                </select>
               </div>
             </div>
 
@@ -310,7 +535,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                 placeholder="Explain what details you can share for prospective buyers (e.g. water tanker bills frequency, local maid rates, parking space guidelines, basement dampness, late-night safety, etc.). Provide specific honest insights."
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                className="w-full p-4 text-xs sm:text-sm border border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800"
+                className="w-full p-4 text-xs sm:text-sm border border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800 placeholder:text-[10px] sm:placeholder:text-xs"
               />
               <span className="block text-[10px] text-slate-400 font-medium">Please compile a brief description of at least 30 characters.</span>
             </div>

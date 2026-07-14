@@ -15,12 +15,16 @@ export interface Neighborhood {
   bachelorPetRules?: number;
   monsoonFlooding?: number;
   noiseIndex?: number;
+  landmarks?: string;
+  detailedAddress?: string;
 }
 
 export interface ExpertProfile {
   id: string;
   userId: string;
   fullName: string;
+  firstName?: string;
+  lastName?: string;
   bio: string;
   localityId: string;
   localityName: string;
