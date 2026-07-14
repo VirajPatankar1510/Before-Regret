@@ -68,7 +68,9 @@ export const INITIAL_LOCALITIES: Neighborhood[] = [
     powerCutHistory: 5,
     bachelorPetRules: 10,
     monsoonFlooding: 25,
-    noiseIndex: 30
+    noiseIndex: 30,
+    landmarks: 'Behind Hub Mall, near Western Express Highway',
+    detailedAddress: 'Bimbisar Nagar, Goregaon East'
   },
   {
     id: 'loc_prestige_shantiniketan',
@@ -86,7 +88,9 @@ export const INITIAL_LOCALITIES: Neighborhood[] = [
     powerCutHistory: 10,
     bachelorPetRules: 30,
     monsoonFlooding: 5,
-    noiseIndex: 20
+    noiseIndex: 20,
+    landmarks: 'Opposite ITPL Main Gate, Whitefield',
+    detailedAddress: 'Whitefield Main Road, Hoodi'
   },
   {
     id: 'loc_dlf_phase_5',
@@ -104,7 +108,9 @@ export const INITIAL_LOCALITIES: Neighborhood[] = [
     powerCutHistory: 15,
     bachelorPetRules: 45,
     monsoonFlooding: 50,
-    noiseIndex: 35
+    noiseIndex: 35,
+    landmarks: 'Near Horizon Center, Golf Course Road',
+    detailedAddress: 'Sector 54, DLF Phase 5'
   },
   {
     id: 'loc_lodha_amara',
@@ -122,7 +128,9 @@ export const INITIAL_LOCALITIES: Neighborhood[] = [
     powerCutHistory: 5,
     bachelorPetRules: 15,
     monsoonFlooding: 15,
-    noiseIndex: 25
+    noiseIndex: 25,
+    landmarks: 'Near Kolshet Air Force Station, off Ghodbunder Road',
+    detailedAddress: 'Kolshet Road, Thane West'
   },
   {
     id: 'loc_hsr_layout',
@@ -140,7 +148,9 @@ export const INITIAL_LOCALITIES: Neighborhood[] = [
     powerCutHistory: 20,
     bachelorPetRules: 70,
     monsoonFlooding: 75,
-    noiseIndex: 40
+    noiseIndex: 40,
+    landmarks: 'Near Sector 2 BDA Complex, behind HSR Club',
+    detailedAddress: 'Sector 2, HSR Layout'
   }
 ];
 
@@ -340,12 +350,20 @@ export const TOPICS_OF_EXPERTISE = [
 ];
 
 export const MOCK_AVATARS = [
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Priya&backgroundColor=b6e3f4',
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Rahul&backgroundColor=c0aede',
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Sneha&backgroundColor=ffd5dc',
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Amit&backgroundColor=d1f4c9',
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Anya&backgroundColor=ffdf70',
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Dev&backgroundColor=ffb070',
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Riya&backgroundColor=c0aede',
-  'https://api.dicebear.com/7.x/adventurer/svg?seed=Vikram&backgroundColor=b6e3f4'
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Priya&backgroundColor=b6e3f4',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Rahul&backgroundColor=c0aede',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Sneha&backgroundColor=ffd5dc',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Amit&backgroundColor=d1f4c9',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Anya&backgroundColor=ffdf70',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Dev&backgroundColor=ffb070',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Riya&backgroundColor=c0aede',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Vikram&backgroundColor=b6e3f4',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Karan&backgroundColor=ffd5dc',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Neha&backgroundColor=d1f4c9',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Arjun&backgroundColor=ffdf70',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Diya&backgroundColor=ffb070',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Kabir&backgroundColor=b6e3f4',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Ananya&backgroundColor=c0aede',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Rohan&backgroundColor=ffd5dc',
+  'https://api.dicebear.com/9.x/adventurer/svg?seed=Meera&backgroundColor=d1f4c9'
 ];

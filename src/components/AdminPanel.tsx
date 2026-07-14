@@ -59,7 +59,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       expertName: randomExpert.fullName,
       localityId: randomExpert.localityId,
       localityName: randomExpert.localityName,
-      queryText: `Hey ${randomExpert.fullName}, I am looking to move here next week. How would you rate the power backup during thunderstorms, and is parking allotted strictly or can outsiders block resident spaces? Thank you!`,
+      queryText: `Hey ${randomExpert.fullName.split(' ')[0]}, I am looking to move here next week. How would you rate the power backup during thunderstorms, and is parking allotted strictly or can outsiders block resident spaces? Thank you!`,
       status: 'ACCEPTED',
       pricePaid: prices[chosenPkg],
       expertEarnings: earnings[chosenPkg],
@@ -69,7 +69,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     };
 
     setQueries([newQuery, ...queries]);
-    setSimulateStatusMsg(`Successfully pre-seeded a new ${chosenPkg} order for Rohan to expert ${randomExpert.fullName}!`);
+    setSimulateStatusMsg(`Successfully pre-seeded a new ${chosenPkg} order for Rohan to expert ${randomExpert.fullName.split(' ')[0]}!`);
     setTimeout(() => setSimulateStatusMsg(''), 4000);
   };
 

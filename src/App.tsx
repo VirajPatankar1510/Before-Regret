@@ -10,7 +10,6 @@ import { Messaging } from './components/Messaging';
 import { Onboarding } from './components/Onboarding';
 import { Footer } from './components/Footer';
 import { AdminPanel } from './components/AdminPanel';
-
 import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from './data';
 import { Neighborhood, ExpertProfile, DirectQuery, Review } from './types';
 import { Building, MapPin, Search, Sparkles, Filter, Award, ChevronRight } from 'lucide-react';
@@ -65,11 +64,21 @@ export default function App() {
   };
 
   const handleSelectLocality = (locality: Neighborhood) => {
+    setLocalities((prev) => {
+      const exists = prev.some((l) => l.id === locality.id);
+      if (!exists) {
+        return [locality, ...prev];
+      }
+      return prev;
+    });
+
     setSelectedLocality(locality);
-    setView('home'); // stay home but filtered
-    const element = document.getElementById('featured-residents-section');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    const matchedExpert = experts.find((e) => e.localityId === locality.id);
+    if (matchedExpert) {
+      handleSelectExpert(matchedExpert);
+    } else {
+      setView('explore');
+      window.scrollTo(0, 0);
     }
   };
 
@@ -165,8 +174,26 @@ export default function App() {
     alert('Thank you! Your rating has been published successfully.');
   };
 
-  const handleAddExpertFromOnboarding = (newExpert: ExpertProfile) => {
+  const handleAddExpertFromOnboarding = (newExpert: ExpertProfile, newLocality?: Neighborhood) => {
     setExperts([newExpert, ...experts]);
+    if (newLocality) {
+      const exists = localities.some(loc => loc.id === newLocality.id || loc.name.toLowerCase() === newLocality.name.toLowerCase());
+      if (!exists) {
+        setLocalities([...localities, newLocality]);
+      } else {
+        setLocalities(localities.map(loc => {
+          if (loc.id === newLocality.id || loc.name.toLowerCase() === newLocality.name.toLowerCase()) {
+            return {
+              ...loc,
+              expertCount: (loc.expertCount || 0) + 1,
+              landmarks: loc.landmarks || newLocality.landmarks,
+              detailedAddress: loc.detailedAddress || newLocality.detailedAddress
+            };
+          }
+          return loc;
+        }));
+      }
+    }
   };
 
   const handleOpenChat = (query: DirectQuery) => {
@@ -213,8 +240,6 @@ export default function App() {
                 experts={experts}
                 localities={localities}
                 onSelectExpert={handleSelectExpert}
-                selectedLocality={selectedLocality}
-                onClearLocalityFilter={handleClearLocalityFilter}
               />
             </div>
           </div>
@@ -223,20 +248,106 @@ export default function App() {
         {/* VIEW: EXPLORE VIEW (All Societies Directory layout) */}
         {currentView === 'explore' && (
           <div className="max-w-7xl mx-auto px-4 py-12">
-            <div className="mb-10 text-center sm:text-left">
-              <span className="bg-blue-50 border border-blue-100/60 text-blue-700 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full font-mono">
-                Comprehensive Society Directory
-              </span>
-              <h1 className="text-2xl sm:text-4xl font-display font-black text-slate-900 tracking-tight mt-3">
-                Residential Apartments Directory
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-2xl font-medium">
-                Browse Indian housing societies, apartment complexes, or sectors below. Click any layout to filter and consult certified long-term residents living there.
-              </p>
+            <div className="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="text-2xl sm:text-4xl font-display font-black text-slate-900 tracking-tight mt-3">
+                  Residential Apartments Directory
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-2xl font-medium">
+                  Browse Indian housing societies, apartment complexes, or sectors below. Click any layout to filter and consult certified long-term residents living there.
+                </p>
+              </div>
+              {selectedLocality && (
+                <button
+                  onClick={handleClearLocalityFilter}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all self-center sm:self-auto cursor-pointer"
+                >
+                  Show All Societies
+                </button>
+              )}
             </div>
 
+            {selectedLocality && (
+              <div className="mb-8 flex flex-col gap-6 lg:flex-row">
+                <div className="flex-1 p-5 bg-blue-50 border border-blue-100 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-blue-600 text-white rounded-xl shrink-0">
+                      <MapPin className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-sm">Showing map search result for:</h3>
+                      <p className="text-xs text-slate-600 font-medium mt-0.5">
+                        {selectedLocality.name}, {selectedLocality.city} {selectedLocality.pincode ? `- ${selectedLocality.pincode}` : ''}
+                      </p>
+                      {selectedLocality.apartmentName && (
+                        <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                          {selectedLocality.apartmentName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  {selectedLocality.expertCount === 0 && (
+                    <button
+                      onClick={() => setView('become_expert')}
+                      className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-sm cursor-pointer shrink-0"
+                    >
+                      Be the First Expert Here!
+                    </button>
+                  )}
+                </div>
+                <div className="w-full lg:w-96 p-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 shadow-3xs flex flex-col justify-between shrink-0">
+                  <div>
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[9px] font-mono font-bold uppercase bg-blue-50 text-blue-700 border border-blue-100 mb-2">
+                      📍 Verified Pincode Mapping
+                    </span>
+                    <h4 className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                      <span>Pincode Map Range</span>
+                      <span className="font-mono text-blue-600 font-black">{selectedLocality.pincode || "Not Set"}</span>
+                    </h4>
+                    {selectedLocality.landmarks && (
+                      <p className="text-[11px] text-slate-600 mt-2 font-medium bg-white border border-slate-100 p-2 rounded-lg">
+                        <b>Landmark:</b> {selectedLocality.landmarks}
+                      </p>
+                    )}
+                    {selectedLocality.detailedAddress && (
+                      <p className="text-[10px] text-slate-400 mt-1.5 leading-tight font-mono">
+                        {selectedLocality.detailedAddress}
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-[10px] text-slate-400 italic pt-2 border-t border-slate-100 mt-2">
+                    Verified address coordinates mapping complete.
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {selectedLocality && selectedLocality.expertCount === 0 && (
+              <div className="mb-8 p-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl text-center max-w-2xl mx-auto">
+                <Building className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                <h3 className="font-display font-black text-slate-800 text-lg">No Resident Experts Registered Yet</h3>
+                <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                  We successfully located <strong className="text-slate-700 font-bold">"{selectedLocality.name}"</strong> on the real-time live map, but no residents living there have signed up to give insider consultations yet.
+                </p>
+                <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-3">
+                  <button
+                    onClick={() => setView('become_expert')}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-sm"
+                  >
+                    I Live Here - Register & Earn
+                  </button>
+                  <button
+                    onClick={handleClearLocalityFilter}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer"
+                  >
+                    Browse Other Societies
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {localities.map((loc) => (
+              {(selectedLocality ? localities.filter(l => l.id === selectedLocality.id) : localities).map((loc) => (
                 <div
                   key={loc.id}
                   onClick={() => handleSelectLocality(loc)}
@@ -255,11 +366,15 @@ export default function App() {
                   </div>
 
                   <div className="mt-6 flex items-center justify-between text-xs font-mono font-bold pt-3 border-t border-slate-50/50">
-                    <span className="text-emerald-600 bg-emerald-50 px-2.5 py-1 border border-emerald-100 rounded-full">
-                      {loc.expertCount} Residents Listed
+                    <span className={`px-2.5 py-1 border rounded-full ${
+                      loc.expertCount > 0 
+                        ? 'text-emerald-600 bg-emerald-50 border-emerald-100' 
+                        : 'text-blue-600 bg-blue-50 border-blue-100'
+                    }`}>
+                      {loc.expertCount} {loc.expertCount === 1 ? 'Expert Listed' : 'Experts Listed'}
                     </span>
                     <span className="text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                      View Experts <ChevronRight className="w-4 h-4" />
+                      {loc.expertCount > 0 ? 'View Experts' : 'Join as Expert'} <ChevronRight className="w-4 h-4" />
                     </span>
                   </div>
                 </div>
@@ -347,6 +462,7 @@ export default function App() {
         {/* VIEW: BECOME A LOCAL EXPERT FORM VIEW */}
         {currentView === 'become_expert' && (
           <Onboarding
+            localities={localities}
             onAddExpert={handleAddExpertFromOnboarding}
             setView={setView}
           />

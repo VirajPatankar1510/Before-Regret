@@ -19,17 +19,22 @@ export const Hero: React.FC<HeroProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Filter localities based on query
-  const filteredSuggestions = localities.filter((loc) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      loc.name.toLowerCase().includes(query) ||
-      loc.city.toLowerCase().includes(query) ||
-      loc.pincode.includes(query) ||
-      (loc.society && loc.society.toLowerCase().includes(query)) ||
-      (loc.apartmentName && loc.apartmentName.toLowerCase().includes(query))
-    );
-  });
+  // Combine static and registered suggestions locally
+  const combinedSuggestions = React.useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return [];
+    
+    return localities.filter((loc) => {
+      return (
+        loc.name.toLowerCase().includes(query) ||
+        loc.city.toLowerCase().includes(query) ||
+        loc.pincode.includes(query) ||
+        (loc.society && loc.society.toLowerCase().includes(query)) ||
+        (loc.apartmentName && loc.apartmentName.toLowerCase().includes(query)) ||
+        (loc.landmarks && loc.landmarks.toLowerCase().includes(query))
+      );
+    });
+  }, [localities, searchQuery]);
 
   // Close suggestions on click outside
   useEffect(() => {
@@ -49,28 +54,41 @@ export const Hero: React.FC<HeroProps> = ({
   };
 
   return (
-    <section className="bg-white py-10 sm:py-16 border-b border-slate-100 font-sans">
-      <div className="max-w-4xl mx-auto px-4 text-center">
+    <section className="relative bg-slate-950 text-white py-12 sm:py-20 border-b border-slate-900 font-sans overflow-hidden">
+      {/* Background Image with high-end building bokeh lights */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1600&q=80"
+          alt="Luxury apartment bokeh background"
+          className="w-full h-full object-cover opacity-45 mix-blend-lighten"
+          referrerPolicy="no-referrer"
+        />
+        {/* Dark radial and linear overlay to ensure the text remains pristine and highly visible */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/50 to-slate-950/95" />
+        <div className="absolute inset-0 bg-radial-gradient from-transparent to-slate-950/80" />
+      </div>
+
+      <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
         {/* Trust Highlight Badge */}
-        <div className="inline-flex items-center gap-1.5 bg-blue-50/70 border border-blue-100/50 text-blue-700 text-[10px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full mb-4 sm:mb-6 font-mono tracking-wide">
-          <Sparkles className="w-3.5 h-3.5 text-blue-500 fill-blue-100" />
+        <div className="inline-flex items-center gap-1.5 bg-blue-500/10 border border-blue-500/20 text-blue-300 text-[10px] sm:text-xs font-bold px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full mb-4 sm:mb-6 font-mono tracking-wide">
+          <Sparkles className="w-3.5 h-3.5 text-blue-400 fill-blue-500/10" />
           <span>One Conversation Could Save You Years of Regret.</span>
         </div>
 
         {/* Headline */}
-        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-slate-900 leading-tight">
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-white leading-tight">
           Talk to Someone Who <br className="hidden sm:inline" /> Already Lives There
         </h1>
 
         {/* Subheading */}
-        <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-500 max-w-xl mx-auto leading-relaxed">
+        <p className="mt-3 sm:mt-4 text-xs sm:text-base text-slate-300 max-w-xl mx-auto leading-relaxed font-medium">
           Thinking about moving, renting or buying? <br className="hidden sm:inline" />
           Ask local residents before making one of life's biggest decisions.
         </p>
 
         {/* Minimalist Search Container */}
         <div ref={containerRef} className="mt-6 max-w-xl mx-auto relative z-40">
-          <div className="bg-white border border-slate-200/80 focus-within:border-blue-600 rounded-xl flex items-center p-1 shadow-xs focus-within:shadow-sm transition-all">
+          <div className="bg-white border border-slate-200/80 focus-within:border-blue-500 rounded-xl flex items-center p-1 shadow-xs focus-within:shadow-sm transition-all">
             <div className="pl-2.5 text-slate-400">
               <Search className="w-4 h-4" />
             </div>
@@ -84,17 +102,17 @@ export const Hero: React.FC<HeroProps> = ({
                 setShowSuggestions(true);
               }}
               onFocus={() => setShowSuggestions(true)}
-              className="flex-1 px-2 py-1.5 text-slate-800 text-xs font-medium outline-hidden"
+              className="flex-1 px-2 py-1.5 text-slate-800 text-xs font-semibold outline-hidden placeholder-slate-400 placeholder:text-[10px] sm:placeholder:text-xs"
             />
             <button
               onClick={() => {
-                if (filteredSuggestions.length > 0) {
-                  handleSuggestionClick(filteredSuggestions[0]);
+                if (combinedSuggestions.length > 0) {
+                  handleSuggestionClick(combinedSuggestions[0]);
                 } else {
                   setShowSuggestions(true);
                 }
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3.5 sm:px-4 py-2 rounded-lg transition-all cursor-pointer shrink-0"
+              className="bg-blue-600 hover:bg-blue-500 text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3.5 sm:px-4 py-2 rounded-lg transition-all cursor-pointer shrink-0 shadow-sm"
             >
               <span className="hidden sm:inline">Find Residents</span>
               <span className="inline sm:hidden">Find</span>
@@ -103,40 +121,49 @@ export const Hero: React.FC<HeroProps> = ({
 
           {/* Autocomplete suggestions */}
           {showSuggestions && searchQuery.trim() !== '' && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden max-h-64 overflow-y-auto text-left">
-              {filteredSuggestions.length > 0 ? (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900/95 backdrop-blur-md border border-slate-850 rounded-xl shadow-2xl overflow-hidden max-h-80 overflow-y-auto text-left z-50">
+              {combinedSuggestions.length > 0 ? (
                 <div>
-                  <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 text-[10px] font-bold text-slate-400 font-mono tracking-wider uppercase">
-                    Matching Societies & Localities
+                  <div className="px-4 py-2 bg-slate-950/80 border-b border-slate-850 text-[10px] font-bold text-slate-400 font-mono tracking-wider uppercase flex items-center justify-between">
+                    <span>Matching Societies & Localities</span>
                   </div>
-                  {filteredSuggestions.map((loc) => (
+                  {combinedSuggestions.map((loc) => (
                     <div
                       key={loc.id}
                       onClick={() => handleSuggestionClick(loc)}
-                      className="px-4 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-100/50 flex items-center justify-between text-xs sm:text-sm"
+                      className="px-4 py-3 hover:bg-slate-800/80 cursor-pointer border-b border-slate-800/40 flex items-center justify-between text-xs sm:text-sm transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="bg-slate-100 p-1.5 rounded-lg text-slate-500">
+                        <div className="bg-slate-800 p-1.5 rounded-lg text-slate-300">
                           <Building className="w-4 h-4" />
                         </div>
                         <div>
-                          <p className="font-bold text-slate-800">
-                            {loc.name} {loc.society ? `(${loc.society})` : ''}
+                          <p className="font-bold text-slate-100">
+                            {loc.name} {loc.society && loc.society !== loc.name ? `(${loc.society})` : ''}
                           </p>
                           <p className="text-[11px] text-slate-400 font-medium">
                             {loc.apartmentName || 'Residential Area'}, {loc.city}, {loc.state} - {loc.pincode}
                           </p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-mono text-emerald-600 bg-emerald-50 px-2 py-0.5 border border-emerald-100 rounded-full font-bold">
-                        {loc.expertCount} {loc.expertCount === 1 ? 'Expert' : 'Experts'}
-                      </span>
+                      {loc.expertCount > 0 ? (
+                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 border border-emerald-900/30 rounded-full font-bold">
+                          {loc.expertCount} {loc.expertCount === 1 ? 'Expert' : 'Experts'}
+                        </span>
+                      ) : (
+                        <span className="text-[9px] font-mono text-blue-400 bg-blue-950/40 px-2 py-0.5 border border-blue-900/30 rounded-full font-bold flex items-center gap-1">
+                          <MapPin className="w-2.5 h-2.5 text-blue-400" />
+                          <span>Layout Details Available</span>
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-4 text-center text-xs text-slate-400">
-                  No matching localities or societies found. Try searching for 'Mumbai', 'Bimbisar', 'Prestige', or 'DLF'.
+                <div>
+                  <div className="p-4 text-center text-xs text-slate-400">
+                    No matching societies found. Try typing another society name.
+                  </div>
                 </div>
               )}
             </div>
@@ -145,7 +172,7 @@ export const Hero: React.FC<HeroProps> = ({
 
         {/* Quick Suggestion Cities */}
         <div className="mt-4 flex flex-wrap justify-center items-center gap-2.5 text-xs text-slate-400">
-          <span className="font-medium">Popular:</span>
+          <span className="font-medium text-slate-500">Popular:</span>
           {['Mumbai', 'Pune', 'Bengaluru', 'Gurugram'].map((city) => (
             <button
               key={city}
@@ -153,7 +180,7 @@ export const Hero: React.FC<HeroProps> = ({
                 setSearchQuery(city);
                 setShowSuggestions(true);
               }}
-              className="px-2.5 py-1 bg-slate-50 hover:bg-slate-100 border border-slate-200/50 text-slate-600 rounded-lg transition-colors cursor-pointer"
+              className="px-2.5 py-1 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white rounded-lg transition-colors cursor-pointer text-xs"
             >
               {city}
             </button>
@@ -161,23 +188,24 @@ export const Hero: React.FC<HeroProps> = ({
         </div>
 
         {/* CTAs */}
-        <div className="mt-10 flex flex-wrap justify-center items-center gap-4">
+        <div className="mt-6 flex flex-row justify-center items-center gap-2 sm:gap-4 max-w-md mx-auto">
           <button
             onClick={() => {
               if (onSearchFocusRef.current) {
                 onSearchFocusRef.current.focus();
               }
             }}
-            className="px-6 py-3 text-xs font-bold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all cursor-pointer shadow-xs hover:shadow-md"
+            className="flex-1 sm:flex-initial px-3 py-2.5 sm:px-6 sm:py-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-500 rounded-lg sm:rounded-xl transition-all cursor-pointer shadow-xs hover:shadow-md whitespace-nowrap text-center"
           >
-            Find Local Residents
+            <span className="hidden sm:inline">Find Local Residents</span>
+            <span className="inline sm:hidden">Find Residents</span>
           </button>
           <button
             onClick={onBecomeExpertClick}
-            className="px-6 py-3 text-xs font-bold uppercase tracking-wider text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-2"
+            className="flex-1 sm:flex-initial px-3 py-2.5 sm:px-6 sm:py-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-200 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg sm:rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap text-center backdrop-blur-xs"
           >
             <span>Become a Resident</span>
-            <ArrowRight className="w-4 h-4 text-blue-600" />
+            <ArrowRight className="w-3.5 h-3.5 text-blue-400 shrink-0" />
           </button>
         </div>
       </div>

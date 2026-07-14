@@ -11,6 +11,49 @@ interface AskQuestionProps {
   onSubmitQuestion: (queryText: string, packageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT', bookedSlot?: string) => void;
 }
 
+const isSlotPassed = (slot: string): boolean => {
+  if (!slot.startsWith('Today')) {
+    return false;
+  }
+  
+  try {
+    const parts = slot.split(',');
+    if (parts.length < 2) return false;
+    
+    const timeRange = parts[1].trim(); // e.g. "04:30 PM - 05:00 PM"
+    const times = timeRange.split('-');
+    if (times.length === 0) return false;
+    
+    const startTimeStr = times[0].trim(); // e.g. "04:30 PM"
+    const match = startTimeStr.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+    if (!match) return false;
+    
+    let hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    const ampm = match[3].toUpperCase();
+    
+    if (ampm === 'PM' && hours < 12) {
+      hours += 12;
+    } else if (ampm === 'AM' && hours === 12) {
+      hours = 0;
+    }
+    
+    const now = new Date();
+    const currentHours = now.getHours();
+    const currentMinutes = now.getMinutes();
+    
+    if (currentHours > hours) {
+      return true;
+    } else if (currentHours === hours) {
+      return currentMinutes >= minutes;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error parsing time slot:', error);
+    return false;
+  }
+};
+
 export const AskQuestion: React.FC<AskQuestionProps> = ({
   expert,
   locality,
@@ -18,12 +61,21 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
   onBack,
   onSubmitQuestion,
 }) => {
+  const slotsList = expert.availableSlots && expert.availableSlots.length > 0
+    ? expert.availableSlots
+    : [
+        'Today, 04:30 PM - 05:00 PM',
+        'Today, 06:00 PM - 06:30 PM',
+        'Tomorrow, 11:00 AM - 11:30 AM',
+        'Tomorrow, 03:00 PM - 03:30 PM'
+      ];
+
+  const firstAvailableSlot = slotsList.find(slot => !isSlotPassed(slot)) || slotsList[0];
+
   const [step, setStep] = useState<1 | 2 | 3>(2); // Start at step 2 since they chose package in profile, but allow toggle
   const [packageId, setPackageId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>(selectedPackageId);
   const [queryText, setQueryText] = useState('');
-  const [selectedSlot, setSelectedSlot] = useState<string>(
-    expert.availableSlots && expert.availableSlots.length > 0 ? expert.availableSlots[0] : 'Today, 05:00 PM - 05:30 PM'
-  );
+  const [selectedSlot, setSelectedSlot] = useState<string>(firstAvailableSlot);
   const [error, setError] = useState('');
   
   // Razorpay simulation state
@@ -79,7 +131,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
       {/* Wizard Header Progress */}
       <div className="text-center mb-8">
         <h1 className="text-2xl font-display font-black text-slate-900 tracking-tight">
-          Consult {expert.fullName}
+          Consult {expert.fullName.split(' ')[0]}
         </h1>
         <p className="text-xs text-slate-400 font-mono tracking-widest uppercase mt-1">
           Protected & secure direct neighbor advice
@@ -203,21 +255,31 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                       'Tomorrow, 11:00 AM - 11:30 AM',
                       'Tomorrow, 03:00 PM - 03:30 PM'
                     ]
-                ).map((slot) => (
-                  <button
-                    key={slot}
-                    type="button"
-                    onClick={() => setSelectedSlot(slot)}
-                    className={`p-3 text-xs font-bold font-mono rounded-lg border text-left transition-all flex items-center justify-between cursor-pointer ${
-                      selectedSlot === slot
-                        ? 'bg-orange-500 border-orange-500 text-white shadow-xs'
-                        : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'
-                    }`}
-                  >
-                    <span>{slot}</span>
-                    {selectedSlot === slot && <span className="bg-white/20 px-1.5 py-0.5 rounded text-[9px] font-sans">Selected</span>}
-                  </button>
-                ))}
+                ).map((slot) => {
+                  const isPassed = isSlotPassed(slot);
+                  return (
+                    <button
+                      key={slot}
+                      type="button"
+                      disabled={isPassed}
+                      onClick={() => !isPassed && setSelectedSlot(slot)}
+                      className={`p-3 text-xs font-bold font-mono rounded-lg border text-left transition-all flex items-center justify-between ${
+                        isPassed
+                          ? 'bg-slate-50 border-slate-100 text-slate-400 line-through cursor-not-allowed opacity-50'
+                          : selectedSlot === slot
+                          ? 'bg-orange-500 border-orange-500 text-white shadow-xs cursor-pointer'
+                          : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300 cursor-pointer'
+                      }`}
+                    >
+                      <span>{slot}</span>
+                      {isPassed ? (
+                        <span className="bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded text-[9px] font-sans no-underline font-normal">Passed</span>
+                      ) : selectedSlot === slot ? (
+                        <span className="bg-white/20 px-1.5 py-0.5 rounded text-[9px] font-sans">Selected</span>
+                      ) : null}
+                    </button>
+                  );
+                })}
               </div>
               <p className="text-[10px] text-orange-700/80 mt-2 font-sans font-medium">
                 * The resident will receive an instant notification and will join the live chat room at this exact chosen hour.
@@ -227,7 +289,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
 
           <div className="space-y-4">
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
-              {packageId === 'LIVE_CHAT' ? 'Topics or questions you want to discuss live:' : `Your inquiry message to ${expert.fullName}:`}
+              {packageId === 'LIVE_CHAT' ? 'Topics or questions you want to discuss live:' : `Your inquiry message to ${expert.fullName.split(' ')[0]}:`}
             </label>
             <textarea
               rows={6}
@@ -236,7 +298,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
               placeholder={packageId === 'LIVE_CHAT' 
                 ? "Enter the topics or questions you would like to discuss during the 30-minute live chat (e.g. water leakage, parking policies, safety at night)..."
                 : "Example placeholder:\nI'm moving here with my family.\nHow safe is this area after dark? How are the schools?\nAnything I should know about the water pressure, power cut histories, or society bachelor rules before buying?"}
-              className="w-full p-4 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800 placeholder-slate-400 font-medium font-sans"
+              className="w-full p-4 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800 placeholder-slate-400 placeholder:text-[10px] sm:placeholder:text-xs font-medium font-sans"
             />
             {error && (
               <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-xl border border-red-100 text-xs">
@@ -276,7 +338,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                 <div className="flex justify-between items-center pb-4 border-b border-slate-100">
                   <div>
                     <h3 className="font-bold text-slate-800 text-sm">Consultation Fee ({activePlan.title})</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">Assigned to Local Resident: {expert.fullName}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Assigned to Local Resident: {expert.fullName.split(' ')[0]}</p>
                   </div>
                   <span className="font-black text-slate-800 font-mono">Rs. {activePlan.price}</span>
                 </div>
@@ -299,7 +361,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
               <div>
                 <h4 className="font-bold text-emerald-900 text-xs sm:text-sm">Before Regret Refund Guarantee</h4>
                 <p className="text-[11px] sm:text-xs text-emerald-800/80 mt-1 leading-relaxed">
-                  Your funds are secured until {expert.fullName} responds. If they do not answer within the standard SLA time or if the reply does not address your queries, dispute the response within 48 hours for a direct 100% refund.
+                  Your funds are secured until {expert.fullName.split(' ')[0]} responds. If they do not answer within the standard SLA time or if the reply does not address your queries, dispute the response within 48 hours for a direct 100% refund.
                 </p>
               </div>
             </div>
@@ -366,7 +428,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
             {/* Merchant Identity Panel */}
             <div className="px-5 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
               <span>Merchant: Before Regret</span>
-              <span>Inquiry with: {expert.fullName}</span>
+              <span>Inquiry with: {expert.fullName.split(' ')[0]}</span>
             </div>
 
             {/* Step Content */}
