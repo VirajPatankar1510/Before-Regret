@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DirectQuery, ExpertProfile, Review, Wallet } from '../types';
 import { MOCK_AVATARS } from '../data';
 import { MessageSquare, CheckCircle, Clock, Wallet as WalletIcon, Coins, Award, LogOut, FileText, Bookmark, Settings, Check, User, ArrowUpRight, HelpCircle, AlertCircle, Sparkles, Compass, ArrowLeft } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface DashboardsProps {
   queries: DirectQuery[];
@@ -28,6 +29,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
   onLeaveReview,
   setView,
 }) => {
+  const { user, expertProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<'questions' | 'saved' | 'invoices' | 'settings'>('questions');
   const [expertTab, setExpertTab] = useState<'new' | 'completed' | 'earnings' | 'settings'>('new');
   const [withdrawalAmount, setWithdrawalAmount] = useState('1000');
@@ -35,15 +37,18 @@ export const Dashboards: React.FC<DashboardsProps> = ({
   const [withdrawing, setWithdrawing] = useState(false);
   const [withdrawSuccess, setWithdrawSuccess] = useState('');
 
+  const currentUserId = user ? user.uid : 'user_rohan';
+  const currentExpertId = expertProfile ? expertProfile.id : 'exp_priya';
+
   // ---------------- BUYER LOGIC ----------------
   // Rohan's Queries
-  const rohanQueries = queries.filter(q => q.buyerId === 'user_rohan');
+  const rohanQueries = queries.filter(q => q.buyerId === currentUserId);
   const activeQuestions = rohanQueries.filter(q => q.status !== 'ANSWERED' && q.status !== 'REFUNDED');
   const completedQuestions = rohanQueries.filter(q => q.status === 'ANSWERED');
   const savedResidents = experts.filter(exp => savedExpertIds.includes(exp.id));
 
   // ---------------- EXPERT LOGIC (Priya) ----------------
-  const priyaQueries = queries.filter(q => q.expertId === 'exp_priya');
+  const priyaQueries = queries.filter(q => q.expertId === currentExpertId);
   const newQuestions = priyaQueries.filter(q => q.status === 'PENDING' || q.status === 'ACCEPTED');
   const finishedQuestions = priyaQueries.filter(q => q.status === 'ANSWERED' || q.status === 'DISPUTED');
 

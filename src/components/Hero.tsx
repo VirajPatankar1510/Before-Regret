@@ -54,9 +54,9 @@ export const Hero: React.FC<HeroProps> = ({
   };
 
   return (
-    <section className="relative bg-slate-950 text-white py-12 sm:py-20 border-b border-slate-900 font-sans overflow-hidden">
+    <section className="relative bg-slate-950 text-white py-12 sm:py-20 border-b border-slate-900 font-sans">
       {/* Background Image with high-end building bokeh lights */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1600&q=80"
           alt="Luxury apartment bokeh background"
@@ -95,7 +95,7 @@ export const Hero: React.FC<HeroProps> = ({
             <input
               ref={onSearchFocusRef}
               type="text"
-              placeholder="Search society or city..."
+              placeholder="Search locality, neighborhood, society or city..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -121,49 +121,62 @@ export const Hero: React.FC<HeroProps> = ({
 
           {/* Autocomplete suggestions */}
           {showSuggestions && searchQuery.trim() !== '' && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900/95 backdrop-blur-md border border-slate-850 rounded-xl shadow-2xl overflow-hidden max-h-80 overflow-y-auto text-left z-50">
+            <div className="absolute top-full left-0 right-0 mt-1.5 bg-slate-900/95 backdrop-blur-md border border-slate-850 rounded-xl shadow-2xl overflow-hidden max-h-80 overflow-y-auto text-left z-50">
               {combinedSuggestions.length > 0 ? (
                 <div>
-                  <div className="px-4 py-2 bg-slate-950/80 border-b border-slate-850 text-[10px] font-bold text-slate-400 font-mono tracking-wider uppercase flex items-center justify-between">
-                    <span>Matching Societies & Localities</span>
+                  <div className="px-3 py-1.5 bg-slate-950/80 border-b border-slate-850 text-[9px] font-bold text-slate-400 font-mono tracking-wider uppercase flex items-center justify-between">
+                    <span>Matching Localities, Areas & Gated Societies</span>
                   </div>
                   {combinedSuggestions.map((loc) => (
                     <div
                       key={loc.id}
                       onClick={() => handleSuggestionClick(loc)}
-                      className="px-4 py-3 hover:bg-slate-800/80 cursor-pointer border-b border-slate-800/40 flex items-center justify-between text-xs sm:text-sm transition-colors"
+                      className="px-3 py-2 hover:bg-slate-800/80 cursor-pointer border-b border-slate-800/30 flex items-center justify-between text-xs transition-colors"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2.5">
                         <div className="bg-slate-800 p-1.5 rounded-lg text-slate-300">
-                          <Building className="w-4 h-4" />
+                          <Building className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <p className="font-bold text-slate-100">
+                          <p className="font-bold text-slate-100 text-xs">
                             {loc.name} {loc.society && loc.society !== loc.name ? `(${loc.society})` : ''}
                           </p>
-                          <p className="text-[11px] text-slate-400 font-medium">
+                          <p className="text-[10px] text-slate-400 font-medium">
                             {loc.apartmentName || 'Residential Area'}, {loc.city}, {loc.state} - {loc.pincode}
                           </p>
                         </div>
                       </div>
                       {loc.expertCount > 0 ? (
-                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 border border-emerald-900/30 rounded-full font-bold">
+                        <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 border border-emerald-900/30 rounded-full font-bold shrink-0">
                           {loc.expertCount} {loc.expertCount === 1 ? 'Expert' : 'Experts'}
                         </span>
                       ) : (
-                        <span className="text-[9px] font-mono text-blue-400 bg-blue-950/40 px-2 py-0.5 border border-blue-900/30 rounded-full font-bold flex items-center gap-1">
+                        <span className="text-[8px] font-mono text-blue-400 bg-blue-950/40 px-2 py-0.5 border border-blue-900/30 rounded-full font-bold flex items-center gap-1 shrink-0">
                           <MapPin className="w-2.5 h-2.5 text-blue-400" />
-                          <span>Layout Details Available</span>
+                          <span>Details Available</span>
                         </span>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div>
-                  <div className="p-4 text-center text-xs text-slate-400">
-                    No matching societies found. Try typing another society name.
+                <div className="p-6 text-center space-y-4 bg-slate-900">
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-slate-300">No matching areas or societies found.</p>
+                    <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
+                      We're expanding rapidly. Be the first to represent your neighborhood or society and help homeseekers in your area!
+                    </p>
                   </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onBecomeExpertClick();
+                    }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer font-bold shadow-md shadow-amber-400/5"
+                  >
+                    <span>Become a Local Expert & Earn</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               )}
             </div>
@@ -187,27 +200,7 @@ export const Hero: React.FC<HeroProps> = ({
           ))}
         </div>
 
-        {/* CTAs */}
-        <div className="mt-6 flex flex-row justify-center items-center gap-2 sm:gap-4 max-w-md mx-auto">
-          <button
-            onClick={() => {
-              if (onSearchFocusRef.current) {
-                onSearchFocusRef.current.focus();
-              }
-            }}
-            className="flex-1 sm:flex-initial px-3 py-2.5 sm:px-6 sm:py-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-500 rounded-lg sm:rounded-xl transition-all cursor-pointer shadow-xs hover:shadow-md whitespace-nowrap text-center"
-          >
-            <span className="hidden sm:inline">Find Local Residents</span>
-            <span className="inline sm:hidden">Find Residents</span>
-          </button>
-          <button
-            onClick={onBecomeExpertClick}
-            className="flex-1 sm:flex-initial px-3 py-2.5 sm:px-6 sm:py-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-200 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg sm:rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap text-center backdrop-blur-xs"
-          >
-            <span>Become a Resident</span>
-            <ArrowRight className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-          </button>
-        </div>
+
       </div>
     </section>
   );
