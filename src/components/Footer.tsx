@@ -9,7 +9,7 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ setView }) => {
   return (
     <footer className="bg-slate-900 text-slate-400 py-12 sm:py-16 border-t border-slate-800 font-sans mt-auto">
-      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
         
         {/* Brand Description Column */}
         <div className="space-y-4">
@@ -47,21 +47,6 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
         </div>
 
         {/* Links Column 2 */}
-        <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4 font-mono">Help & Trust</h4>
-          <ul className="space-y-2 text-xs">
-            <li>
-              <a href="#" onClick={(e) => { e.preventDefault(); alert('Before Regret Support Ticket system: Please reach out at support@beforeregret.in'); }} className="hover:text-white transition-colors flex items-center gap-1">
-                <HelpCircle className="w-3.5 h-3.5" />
-                <span>Contact Support</span>
-              </a>
-            </li>
-            <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">How Our Safeguard Works</a></li>
-            <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Trust Score Calculation</a></li>
-          </ul>
-        </div>
-
-        {/* Links Column 3 */}
         <div>
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4 font-mono">Legal & Policies</h4>
           <ul className="space-y-2 text-xs">

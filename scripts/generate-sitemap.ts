@@ -10,11 +10,16 @@ async function runSitemapGenerator() {
     { path: "search", changefreq: "daily", priority: "0.9" },
     { path: "how-it-works", changefreq: "weekly", priority: "0.8" },
     { path: "become-expert", changefreq: "weekly", priority: "0.8" },
+    { path: "wiki", changefreq: "daily", priority: "0.95" },
   ];
 
-  const popularCities = ["bengaluru", "mumbai", "gurugram", "hyderabad", "delhi-ncr"];
+  const popularCities = ["bengaluru", "mumbai", "gurugram", "hyderabad", "delhi-ncr", "thane", "palghar"];
   const popularLocalities = [
-    "indiranagar", "hsr-layout", "koramangala", "bandra-west", "dlf-phase-3", "gachibowli"
+    "indiranagar", "hsr-layout", "koramangala", "bandra-west", "dlf-phase-3", "gachibowli", "goregagon-east", "whitefield", "kolshet-road", "nallasopara-west"
+  ];
+
+  const specificSocieties = [
+    "loc_bimbisar_nagar", "loc_prestige_shantiniketan", "loc_dlf_phase_5", "loc_lodha_amara", "loc_hsr_layout", "loc_nallasopara_west"
   ];
 
   const urlTags: string[] = [];
@@ -43,6 +48,15 @@ async function runSitemapGenerator() {
     <loc>${origin}/locality/${locality}</loc>
     <changefreq>daily</changefreq>
     <priority>0.80</priority>
+  </url>`);
+  }
+
+  // 4. Specific Housing Society Guides
+  for (const society of specificSocieties) {
+    urlTags.push(`  <url>
+    <loc>${origin}/wiki/${society}</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
   </url>`);
   }
 

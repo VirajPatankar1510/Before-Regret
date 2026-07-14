@@ -10,6 +10,7 @@ import { Messaging } from './components/Messaging';
 import { Onboarding } from './components/Onboarding';
 import { Footer } from './components/Footer';
 import { AdminPanel } from './components/AdminPanel';
+import { NeighborhoodWiki } from './components/NeighborhoodWiki';
 import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from './data';
 import { Neighborhood, ExpertProfile, DirectQuery, Review } from './types';
 import { Building, MapPin, Search, Sparkles, Filter, Award, ChevronRight } from 'lucide-react';
@@ -53,6 +54,11 @@ export default function App() {
 
   // Search input focus ref
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Automatically scroll to top on any view transition
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentView]);
 
   // Navigation handlers
   const handleSelectExpert = (expert: ExpertProfile) => {
@@ -484,6 +490,21 @@ export default function App() {
               setView('messaging');
               window.scrollTo(0, 0);
             }}
+          />
+        )}
+
+        {/* VIEW: NEIGHBORHOOD WIKI SECTOR (SEO STRATEGY) */}
+        {currentView === 'wiki' && (
+          <NeighborhoodWiki
+            onSelectLocalityFromWiki={(localityId) => {
+              const matchedLocality = localities.find(l => l.id === localityId);
+              if (matchedLocality) {
+                handleSelectLocality(matchedLocality);
+              } else {
+                setView('explore');
+              }
+            }}
+            onBackToHome={() => setView('home')}
           />
         )}
 
