@@ -130,14 +130,14 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-5">
               <div className="space-y-1">
-                <h4 className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-mono">Detailed Resident Address</h4>
+                <h4 className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-mono">Building Name (General)</h4>
                 <p className="text-xs font-bold text-slate-800 leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-100">
                   {locality.detailedAddress || `${locality.name}, ${locality.city}, ${locality.state}`}
                 </p>
               </div>
 
               <div className="space-y-1">
-                <h4 className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-mono">Key Landmark & Navigation Guide</h4>
+                <h4 className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-mono">Key Landmark & Area Guide</h4>
                 <p className="text-xs font-bold text-blue-800 leading-relaxed bg-blue-50/30 p-3 rounded-xl border border-blue-100/30">
                   📍 {locality.landmarks || "No specific landmarks registered yet. Ask the resident expert directly."}
                 </p>
@@ -145,9 +145,9 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
             </div>
 
             <div className="mt-5 p-4 bg-amber-50/40 rounded-2xl border border-amber-100/40 text-[11px] text-amber-800 leading-relaxed flex items-start gap-3">
-              <span className="text-sm shrink-0 mt-0.5">💡</span>
+              <span className="text-sm shrink-0 mt-0.5">🛡️</span>
               <p>
-                <b>Honest Local Verification:</b> Since satellite maps often miss Indian sub-localities and exact gates, our expert residents list detailed navigation rules, security cabin positions, and nearby transit cues above for absolute accuracy.
+                <b>Privacy & Safety Mandate:</b> To guarantee complete safety, our experts never disclose exact flat, floor, or house numbers. They provide general building names and neighborhood transit cues so you can consult with absolute peace of mind.
               </p>
             </div>
           </div>

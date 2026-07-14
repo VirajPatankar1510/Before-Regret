@@ -31,18 +31,21 @@ export const Onboarding: React.FC<OnboardingProps> = ({
     if (cleaned.length === 6 && /^\d+$/.test(cleaned)) {
       // 1. Check local static database of prefix fallback first for instant resolution
       const PINCODE_FALLBACKS: Record<string, string> = {
-        '400063': 'Mumbai',
-        '400001': 'Mumbai',
-        '560102': 'Bengaluru',
-        '560001': 'Bengaluru',
-        '560066': 'Bengaluru',
-        '110001': 'Delhi',
-        '122001': 'Gurugram',
-        '122002': 'Gurugram',
-        '122011': 'Gurugram',
-        '122018': 'Gurugram',
-        '400607': 'Thane',
-        '400601': 'Thane',
+        '400063': 'Goregaon East',
+        '400001': 'Colaba',
+        '560102': 'HSR Layout',
+        '560001': 'Kanteerava',
+        '560048': 'Whitefield',
+        '560066': 'Whitefield',
+        '110001': 'Connaught Place',
+        '122001': 'Gurugram Sector 14',
+        '122002': 'DLF Phase 1',
+        '122009': 'DLF Phase 5',
+        '122011': 'DLF Phase 5',
+        '122018': 'Gurugram Sector 32',
+        '400607': 'Kolshet Road, Thane',
+        '400601': 'Thane West',
+        '401203': 'Nallasopara West',
       };
 
       if (PINCODE_FALLBACKS[cleaned]) {
@@ -50,23 +53,25 @@ export const Onboarding: React.FC<OnboardingProps> = ({
         return;
       }
 
-      const getCityFromPrefix = (pin: string): string => {
-        if (pin.startsWith('11')) return 'Delhi';
-        if (pin.startsWith('122')) return 'Gurugram';
-        if (pin.startsWith('121')) return 'Faridabad';
-        if (pin.startsWith('201')) return 'Noida / Greater Noida';
-        if (pin.startsWith('56')) return 'Bengaluru';
+      const getAreaFromPrefix = (pin: string): string => {
+        if (pin.startsWith('11')) return 'Connaught Place, Delhi';
+        if (pin.startsWith('122')) return 'DLF Phase, Gurugram';
+        if (pin.startsWith('121')) return 'Faridabad Area';
+        if (pin.startsWith('201')) return 'Noida Sector';
+        if (pin.startsWith('560102')) return 'HSR Layout, Bengaluru';
+        if (pin.startsWith('56')) return 'Whitefield / Bengaluru';
+        if (pin.startsWith('400063')) return 'Goregaon East';
         if (pin.startsWith('400') || pin.startsWith('401')) return 'Mumbai / Thane';
-        if (pin.startsWith('411')) return 'Pune';
-        if (pin.startsWith('500')) return 'Hyderabad';
-        if (pin.startsWith('600')) return 'Chennai';
-        if (pin.startsWith('700')) return 'Kolkata';
+        if (pin.startsWith('411')) return 'Pune Area';
+        if (pin.startsWith('500')) return 'Hyderabad Area';
+        if (pin.startsWith('600')) return 'Chennai Area';
+        if (pin.startsWith('700')) return 'Kolkata Area';
         return '';
       };
 
-      const prefixCity = getCityFromPrefix(cleaned);
-      if (prefixCity) {
-        setCity(prefixCity);
+      const prefixArea = getAreaFromPrefix(cleaned);
+      if (prefixArea) {
+        setCity(prefixArea);
       }
 
       // 2. Fetch from India Post API asynchronously for exact precision
@@ -77,15 +82,20 @@ export const Onboarding: React.FC<OnboardingProps> = ({
           if (data && data[0] && data[0].Status === 'Success') {
             const postOffices = data[0].PostOffice;
             if (postOffices && postOffices.length > 0) {
+              const officeName = postOffices[0].Name;
               const district = postOffices[0].District;
-              if (district) {
+              if (officeName) {
+                // If the office name is Nallasopara, we might format it or display as Nallasopara
+                // Let's check if the name already contains West/East, or present it nicely
+                setCity(officeName);
+              } else if (district) {
                 setCity(district);
               }
             }
           }
         })
         .catch(err => {
-          console.error('Error auto-detecting city:', err);
+          console.error('Error auto-detecting area:', err);
         })
         .finally(() => {
           setIsPincodeSearching(false);
@@ -320,12 +330,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({
               </div>
 
               <div>
-                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">City of Residence (Auto-detected)</label>
+                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">Area of Residence (Auto-detected)</label>
                 <input
                   type="text"
                   readOnly
                   disabled
-                  placeholder="Enter pincode to auto-detect"
+                  placeholder="Enter pincode to auto-detect area"
                   value={city || (isPincodeSearching ? 'Detecting...' : '')}
                   className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-slate-50 text-slate-500 font-bold outline-hidden cursor-not-allowed"
                 />
@@ -389,16 +399,15 @@ export const Onboarding: React.FC<OnboardingProps> = ({
               </div>
 
               <div>
-                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">Detailed Area / Wing / Phase (No Flat/House Numbers)</label>
+                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">Building Name (Optional)</label>
                 <input
                   type="text"
-                  required
-                  placeholder="e.g. Block C, Phase 3, 12th Floor, Wing A (DO NOT include Flat No.)"
+                  placeholder="e.g. Bimbisar Tower A, Iris Court, etc. (Strictly NO wing names, flat/house numbers, or floor details)"
                   value={detailedAddress}
                   onChange={(e) => setDetailedAddress(e.target.value)}
                   className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
                 />
-                <p className="text-[10px] text-amber-600 font-semibold mt-1">⚠️ For privacy & safety, do not include flat, apartment, or house numbers.</p>
+                <p className="text-[10px] text-amber-600 font-semibold mt-1">⚠️ For privacy & safety reasons, do not write house, flat, unit, wing, or floor numbers. Only include the general building name.</p>
               </div>
 
               <div>

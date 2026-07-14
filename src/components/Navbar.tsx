@@ -56,6 +56,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             Explore
           </button>
           <button
+            onClick={() => setView('wiki')}
+            className="hover:text-blue-600 transition-colors cursor-pointer"
+          >
+            Society Guides
+          </button>
+          <button
             onClick={() => setView('become_expert')}
             className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-semibold"
           >
