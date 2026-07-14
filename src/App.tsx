@@ -10,15 +10,26 @@ import { Messaging } from './components/Messaging';
 import { Onboarding } from './components/Onboarding';
 import { Footer } from './components/Footer';
 import { AdminPanel } from './components/AdminPanel';
-import { NeighborhoodWiki } from './components/NeighborhoodWiki';
+import { Policies } from './components/Policies';
+import { RegretFiles } from './components/RegretFiles';
 import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from './data';
 import { Neighborhood, ExpertProfile, DirectQuery, Review } from './types';
 import { Building, MapPin, Search, Sparkles, Filter, Award, ChevronRight } from 'lucide-react';
+import { useAuth } from './context/AuthContext';
 
 export default function App() {
+  const { user, activeRole, setActiveRole } = useAuth();
+
   // Navigation & Simulation Perspective State
-  const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, buyer_dashboard, expert_dashboard, messaging, become_expert
-  const [activeRole, setActiveRole] = useState<'guest' | 'buyer' | 'expert'>('guest');
+  const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, buyer_dashboard, expert_dashboard, messaging, become_expert, policies
+  const [policiesTab, setPoliciesTab] = useState<'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer'>('disclaimer');
+
+  // Helper to open a specific policy tab
+  const handleNavigateToPolicy = (tab: 'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer') => {
+    setPoliciesTab(tab);
+    setView('policies');
+    window.scrollTo(0, 0);
+  };
 
   // Core Database Collections State
   const [localities, setLocalities] = useState<Neighborhood[]>(INITIAL_LOCALITIES);
@@ -106,8 +117,8 @@ export default function App() {
 
     const newQuery: DirectQuery = {
       id: `q_${Date.now()}`,
-      buyerId: 'user_rohan',
-      buyerName: 'Rohan Deshmukh',
+      buyerId: user ? user.uid : 'user_rohan',
+      buyerName: user ? (user.displayName || user.email || 'Anonymous') : 'Rohan Deshmukh',
       expertId: selectedExpert.id,
       expertName: selectedExpert.fullName,
       localityId: selectedExpert.localityId,
@@ -160,7 +171,7 @@ export default function App() {
     const newReview: Review = {
       id: `rev_${Date.now()}`,
       queryId: query.id,
-      buyerName: 'Rohan Deshmukh',
+      buyerName: user ? (user.displayName || user.email || 'Anonymous') : 'Rohan Deshmukh',
       expertId: query.expertId,
       rating: starRating,
       comment,
@@ -239,6 +250,41 @@ export default function App() {
             />
             
             <HowItWorks />
+
+            {/* TEASER BANNER: THE REGRET FILES EDITORIAL HUB */}
+            <div className="bg-slate-50 border-y border-slate-100 py-12">
+              <div className="max-w-7xl mx-auto px-4">
+                <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-10 shadow-lg border border-slate-800 flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                  
+                  <div className="space-y-4 max-w-2xl text-center lg:text-left relative z-10">
+                    <h2 className="text-2xl sm:text-3xl font-display font-black tracking-tight leading-tight">
+                      "I Wish Someone Had Asked This One Question..."
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-medium">
+                      Brokers show you the grand clubhouse; we show you what lies beneath. Read real, anonymous society secrets, neighborhood icebergs, and hard lessons from home buyers who regretted their ₹1 Crore+ purchases.
+                    </p>
+                    <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
+                      <span className="text-[11px] font-mono text-amber-400 font-bold">• The ₹1 Crore Mistake</span>
+                      <span className="text-[11px] font-mono text-amber-400 font-bold">• Gated Society Insights</span>
+                      <span className="text-[11px] font-mono text-amber-400 font-bold">• Neighborhood Icebergs</span>
+                    </div>
+                  </div>
+                  
+                  <div className="w-full lg:w-auto shrink-0 flex flex-col items-center gap-3 relative z-10">
+                    <button
+                      onClick={() => {
+                        setView('regret_files');
+                        window.scrollTo(0, 0);
+                      }}
+                      className="w-full sm:w-auto px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md hover:shadow-lg cursor-pointer text-center"
+                    >
+                      Read The Regret Files
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Featured Section Anchor */}
             <div id="featured-residents-section">
@@ -493,25 +539,23 @@ export default function App() {
           />
         )}
 
-        {/* VIEW: NEIGHBORHOOD WIKI SECTOR (SEO STRATEGY) */}
-        {currentView === 'wiki' && (
-          <NeighborhoodWiki
-            onSelectLocalityFromWiki={(localityId) => {
-              const matchedLocality = localities.find(l => l.id === localityId);
-              if (matchedLocality) {
-                handleSelectLocality(matchedLocality);
-              } else {
-                setView('explore');
-              }
-            }}
+        {/* VIEW: POLICIES COMPLIANCE CENTER */}
+        {currentView === 'policies' && (
+          <Policies
+            initialTab={policiesTab}
             onBackToHome={() => setView('home')}
           />
+        )}
+
+        {/* VIEW: REGRET FILES EDITORIALS */}
+        {currentView === 'regret_files' && (
+          <RegretFiles onBackToHome={() => { setView('explore'); window.scrollTo(0, 0); }} />
         )}
 
       </main>
 
       {/* Footer block */}
-      <Footer setView={setView} />
+      <Footer setView={setView} onNavigateToPolicy={handleNavigateToPolicy} />
 
     </div>
   );

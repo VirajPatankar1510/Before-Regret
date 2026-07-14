@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DirectQuery } from '../types';
 import { MapPin, Image, Paperclip, Send, ArrowLeft, ShieldCheck, Check, Clock, Eye, AlertCircle, FileText } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface ChatMessageItem {
   id: string;
@@ -27,19 +28,23 @@ export const Messaging: React.FC<MessagingProps> = ({
   activeRole,
   backText,
 }) => {
+  const { user, expertProfile } = useAuth();
+  const currentUserId = user ? user.uid : 'user_rohan';
+  const currentExpertId = expertProfile ? expertProfile.id : 'user_priya';
+
   const [messages, setMessages] = useState<ChatMessageItem[]>([
     {
       id: 'msg_1',
-      senderId: 'user_rohan',
+      senderId: query.buyerId || 'user_rohan',
       senderRole: 'buyer',
       text: query.queryText,
       createdAt: query.createdAt
     },
     {
       id: 'msg_2',
-      senderId: 'user_priya',
+      senderId: query.expertId || 'user_priya',
       senderRole: 'expert',
-      text: "Hello Rohan! Thanks for reaching out. I've been living here since 2016 and know the building inside out. I am currently compiling a detailed report for Bimbisar Nagar regarding your questions. Is there anything specific you'd like me to double-check regarding the lift speed or domestic maid availability?",
+      text: "Hello! Thanks for reaching out. I'm currently looking into the points you raised and will compile a comprehensive resident audit/report for you very soon. Let me know if there are any specific local issues you'd like me to address!",
       createdAt: new Date(new Date(query.createdAt).getTime() + 15 * 60 * 1000).toISOString()
     }
   ]);
@@ -54,7 +59,7 @@ export const Messaging: React.FC<MessagingProps> = ({
 
     const newMsg: ChatMessageItem = {
       id: `msg_${Date.now()}`,
-      senderId: activeRole === 'buyer' ? 'user_rohan' : 'user_priya',
+      senderId: activeRole === 'buyer' ? currentUserId : currentExpertId,
       senderRole: activeRole,
       text: inputText,
       createdAt: new Date().toISOString()
@@ -68,7 +73,7 @@ export const Messaging: React.FC<MessagingProps> = ({
   const handleAttachImage = () => {
     const newMsg: ChatMessageItem = {
       id: `msg_${Date.now()}`,
-      senderId: activeRole === 'buyer' ? 'user_rohan' : 'user_priya',
+      senderId: activeRole === 'buyer' ? currentUserId : currentExpertId,
       senderRole: activeRole,
       text: "Attached a snapshot of the main entrance gate parking rules notice board:",
       createdAt: new Date().toISOString(),
@@ -81,11 +86,11 @@ export const Messaging: React.FC<MessagingProps> = ({
   const handleAttachMap = () => {
     const newMsg: ChatMessageItem = {
       id: `msg_${Date.now()}`,
-      senderId: activeRole === 'buyer' ? 'user_rohan' : 'user_priya',
+      senderId: activeRole === 'buyer' ? currentUserId : currentExpertId,
       senderRole: activeRole,
       text: "Pinned the exact location of the borewell pump room and water tanker queues:",
       createdAt: new Date().toISOString(),
-      mapPin: { name: "Bimbisar Nagar Pump Station, Jogeshwari", coordinates: "19.1356° N, 72.8583° E" }
+      mapPin: { name: "Society Pump House & Tanker Gate", coordinates: "19.1356° N, 72.8583° E" }
     };
     setMessages([...messages, newMsg]);
   };
