@@ -18,7 +18,7 @@ import firebaseConfig from '../../firebase-applet-config.json';
 import { Neighborhood, ExpertProfile, DirectQuery, Review, Wallet, WalletTransaction } from '../types';
 
 // Initialize Firebase App
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 // CRITICAL: Express the databaseId as required for AI Studio projects
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);

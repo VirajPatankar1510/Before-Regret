@@ -16,6 +16,7 @@ import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from './data';
 import { Neighborhood, ExpertProfile, DirectQuery, Review } from './types';
 import { Building, MapPin, Search, Sparkles, Filter, Award, ChevronRight } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
+import { triggerTestPushNotification } from './lib/notificationService';
 
 export default function App() {
   const { user, activeRole, setActiveRole } = useAuth();
@@ -448,10 +449,20 @@ export default function App() {
     setActiveRole('buyer');
     setView('buyer_dashboard');
     window.scrollTo(0, 0);
+
+    // Trigger instant background push notification alert to the expert
+    triggerTestPushNotification(
+      selectedExpert.id,
+      'New Resident Audit Request! 📣',
+      `A buyer requested water and rule details for ${selectedExpert.localityName}: "${queryText.substring(0, 50)}..."`,
+      'expert_dashboard'
+    ).catch(err => console.error('FCM dispatch failed:', err));
   };
 
   // Submit expert's final answer
   const handleSubmitAnswer = (queryId: string, answerText: string) => {
+    const matchedQuery = queries.find((q) => q.id === queryId);
+
     const updated = queries.map((q) => {
       if (q.id === queryId) {
         return {
@@ -466,6 +477,16 @@ export default function App() {
     setQueries(updated);
     setView('expert_dashboard');
     window.scrollTo(0, 0);
+
+    // Trigger instant background push notification alert to the buyer
+    if (matchedQuery) {
+      triggerTestPushNotification(
+        matchedQuery.buyerId,
+        'Resident Audit Completed! 🌟',
+        `Your resident report for ${matchedQuery.localityName} has been fully completed by local expert ${matchedQuery.expertName}!`,
+        'buyer_dashboard'
+      ).catch(err => console.error('FCM dispatch failed:', err));
+    }
   };
 
   // Star rating reviews submission
