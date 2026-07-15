@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Search, Sparkles, User, LogIn, LogOut, Award, BookOpen, ChevronDown, Check } from 'lucide-react';
+import { MapPin, Search, Sparkles, User, LogIn, LogOut, Award, BookOpen, ChevronDown, Check, Menu, X } from 'lucide-react';
 import { Logo } from './Logo';
 import { useAuth } from '../context/AuthContext';
 
@@ -20,6 +20,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { user, loginWithGoogle, logout, expertProfile } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleGoogleLogin = async () => {
     try {
@@ -94,8 +95,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </nav>
 
-        {/* Action Button */}
-        <div className="flex items-center gap-3 relative">
+        {/* Action Button & Mobile Menu Toggle */}
+        <div className="flex items-center gap-2 sm:gap-3 relative">
           {!user ? (
             <button
               onClick={handleGoogleLogin}
@@ -213,8 +214,114 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
           )}
+
+          {/* Mobile Menu Toggle Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-1.5 sm:p-2 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-colors cursor-pointer border border-slate-100"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </header>
+
+      {/* Mobile Menu Panel */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-slate-100 bg-white px-4 py-4 space-y-2 shadow-inner">
+          <button
+            onClick={() => {
+              onSearchFocus();
+              setView('home');
+              setMobileMenuOpen(false);
+            }}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-all text-left"
+          >
+            <Search className="w-4 h-4 text-slate-400" />
+            <span>Search Neighborhoods</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              setView('explore');
+              setMobileMenuOpen(false);
+            }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-left transition-all ${
+              currentView === 'explore'
+                ? 'bg-blue-50/70 text-blue-600 font-bold'
+                : 'text-slate-700 hover:bg-slate-50 hover:text-blue-600'
+            }`}
+          >
+            <MapPin className="w-4 h-4 text-slate-400" />
+            <span>Explore Societies</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              setView('regret_files');
+              window.scrollTo(0, 0);
+              setMobileMenuOpen(false);
+            }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all ${
+              currentView === 'regret_files'
+                ? 'bg-amber-500 text-slate-900 shadow-xs'
+                : 'bg-amber-500/10 text-amber-800 hover:bg-amber-500/20'
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>The Regret Files</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              setView('become_expert');
+              setMobileMenuOpen(false);
+            }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all ${
+              currentView === 'become_expert'
+                ? 'bg-emerald-50 text-emerald-700'
+                : 'text-blue-600 hover:bg-blue-50'
+            }`}
+          >
+            <Award className="w-4 h-4 text-emerald-500" />
+            <span>Become a Local Expert</span>
+          </button>
+
+          {user && (
+            <div className="pt-2 border-t border-slate-100 mt-2 space-y-1">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-4 py-1">
+                Active Dashboards
+              </div>
+              <button
+                onClick={() => {
+                  setActiveRole('buyer');
+                  setView('buyer_dashboard');
+                  setMobileMenuOpen(false);
+                }}
+                className={`w-full flex items-center justify-between text-left px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
+                  activeRole === 'buyer' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <span>Buyer Dashboard</span>
+                {activeRole === 'buyer' && <Check className="w-3.5 h-3.5" />}
+              </button>
+              <button
+                onClick={() => {
+                  setActiveRole('expert');
+                  setView('expert_dashboard');
+                  setMobileMenuOpen(false);
+                }}
+                className={`w-full flex items-center justify-between text-left px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
+                  activeRole === 'expert' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <span>Local Expert Dashboard</span>
+                {activeRole === 'expert' && <Check className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
