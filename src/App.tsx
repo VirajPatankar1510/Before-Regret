@@ -86,22 +86,88 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [currentView]);
 
-  // Sync state collections to local storage
+  // Track if initial server-side load has completed to avoid overwriting database
+  const [hasLoadedFromServer, setHasLoadedFromServer] = useState(false);
+
+  // Load from server database on mount
+  useEffect(() => {
+    const loadServerData = async () => {
+      try {
+        const [locRes, expRes, revRes, qRes] = await Promise.all([
+          fetch('/api/localities'),
+          fetch('/api/experts'),
+          fetch('/api/reviews'),
+          fetch('/api/queries')
+        ]);
+        if (locRes.ok) {
+          const lData = await locRes.json();
+          setLocalities(lData);
+        }
+        if (expRes.ok) {
+          const eData = await expRes.json();
+          setExperts(eData);
+        }
+        if (revRes.ok) {
+          const rData = await revRes.json();
+          setReviews(rData);
+        }
+        if (qRes.ok) {
+          const qData = await qRes.json();
+          setQueries(qData);
+        }
+        setHasLoadedFromServer(true);
+      } catch (err) {
+        console.error("Failed to fetch server database, using local offline storage fallback:", err);
+        setHasLoadedFromServer(true);
+      }
+    };
+    loadServerData();
+  }, []);
+
+  // Sync state collections to local storage and server
   useEffect(() => {
     localStorage.setItem('br_localities', JSON.stringify(localities));
-  }, [localities]);
+    if (hasLoadedFromServer) {
+      fetch('/api/data/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ localities })
+      }).catch(err => console.error("Locality server sync error:", err));
+    }
+  }, [localities, hasLoadedFromServer]);
 
   useEffect(() => {
     localStorage.setItem('br_experts', JSON.stringify(experts));
-  }, [experts]);
+    if (hasLoadedFromServer) {
+      fetch('/api/data/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ experts })
+      }).catch(err => console.error("Experts server sync error:", err));
+    }
+  }, [experts, hasLoadedFromServer]);
 
   useEffect(() => {
     localStorage.setItem('br_reviews', JSON.stringify(reviews));
-  }, [reviews]);
+    if (hasLoadedFromServer) {
+      fetch('/api/data/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviews })
+      }).catch(err => console.error("Reviews server sync error:", err));
+    }
+  }, [reviews, hasLoadedFromServer]);
 
   useEffect(() => {
     localStorage.setItem('br_queries', JSON.stringify(queries));
-  }, [queries]);
+    if (hasLoadedFromServer) {
+      fetch('/api/data/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ queries })
+      }).catch(err => console.error("Queries server sync error:", err));
+    }
+  }, [queries, hasLoadedFromServer]);
 
   // Handle popstate (browser back/forward or direct landing on URL)
   useEffect(() => {

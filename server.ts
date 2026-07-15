@@ -3,8 +3,80 @@ import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
+import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from "./src/data";
 
 dotenv.config();
+
+const DB_PATH = path.join(process.cwd(), "db.json");
+
+interface DbSchema {
+  users: Array<{ uid: string; email: string; password?: string; displayName: string | null; photoURL: string | null }>;
+  localities: any[];
+  experts: any[];
+  reviews: any[];
+  queries: any[];
+}
+
+// Read database or initialize if not present
+function getDb(): DbSchema {
+  if (!fs.existsSync(DB_PATH)) {
+    const initialDb: DbSchema = {
+      users: [
+        {
+          uid: 'mock_buyer_amit',
+          displayName: 'Amit Kumar',
+          email: 'amit.buyer@beforeregret.com',
+          password: 'password123',
+          photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100'
+        },
+        {
+          uid: 'user_rahul',
+          displayName: 'Rahul K.',
+          email: 'rahul.expert@beforeregret.com',
+          password: 'password123',
+          photoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100'
+        }
+      ],
+      localities: INITIAL_LOCALITIES,
+      experts: INITIAL_EXPERTS,
+      reviews: INITIAL_REVIEWS,
+      queries: [
+        {
+          id: 'q_mock_1',
+          buyerId: 'user_rohan',
+          buyerName: 'Rohan Deshmukh',
+          expertId: 'exp_priya',
+          expertName: 'Priya',
+          localityId: 'loc_bimbisar_nagar',
+          localityName: 'Bimbisar Nagar, Jogeshwari',
+          queryText: "Hello Priya, I'm planning to rent a flat in Block C next month. How is the water supply during high summers? Also, are there restrictive society rules for bachelors or late-night arrivals? Thank you!",
+          status: 'ACCEPTED',
+          pricePaid: 199,
+          expertEarnings: 179,
+          createdAt: '2026-07-10T12:00:00Z',
+          packageOption: 'BUNDLE'
+        }
+      ]
+    };
+    fs.writeFileSync(DB_PATH, JSON.stringify(initialDb, null, 2), "utf-8");
+    return initialDb;
+  }
+  try {
+    const content = fs.readFileSync(DB_PATH, "utf-8");
+    return JSON.parse(content);
+  } catch (err) {
+    console.error("Error reading db.json, returning empty structure:", err);
+    return { users: [], localities: [], experts: [], reviews: [], queries: [] };
+  }
+}
+
+function saveDb(db: DbSchema) {
+  try {
+    fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
+  } catch (err) {
+    console.error("Error writing to db.json:", err);
+  }
+}
 
 async function startServer() {
   const app = express();
@@ -21,11 +93,8 @@ async function startServer() {
 
   // Placeholder for expert list
   app.get("/api/experts/featured", (req, res) => {
-    res.json([
-      { id: "exp_01", name: "Rohan Sharma", area: "Indiranagar", city: "Bengaluru", rating: 4.9, activeRequests: 3 },
-      { id: "exp_02", name: "Ananya Iyer", area: "HSR Layout", city: "Bengaluru", rating: 4.8, activeRequests: 1 },
-      { id: "exp_03", name: "Vikram Malhotra", area: "Bandra West", city: "Mumbai", rating: 4.7, activeRequests: 5 }
-    ]);
+    const dbData = getDb();
+    res.json(dbData.experts.slice(0, 3));
   });
 
   // In-memory store for simulated / fallback notifications when Firebase credentials are not yet fully injected in the environment
@@ -118,6 +187,206 @@ async function startServer() {
       });
     }
     res.json({ success: true });
+  });
+
+  // --- CUSTOM DATABASE API ENDPOINTS ---
+
+  // Auth: Signup
+  app.post("/api/auth/signup", (req, res) => {
+    const { email, password, displayName } = req.body;
+    if (!email || !password || !displayName) {
+      return res.status(400).json({ error: "Missing email, password, or displayName." });
+    }
+    try {
+      const dbData = getDb();
+      const emailLower = email.toLowerCase().trim();
+      const exists = dbData.users.find(u => u.email === emailLower);
+      if (exists) {
+        return res.status(400).json({ error: "This email is already in use." });
+      }
+
+      const newUser = {
+        uid: "user_" + Math.random().toString(36).substr(2, 9),
+        email: emailLower,
+        password,
+        displayName,
+        photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(displayName)}`
+      };
+
+      dbData.users.push(newUser);
+      saveDb(dbData);
+
+      const { password: _, ...userSafe } = newUser;
+      res.json({ user: userSafe });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Signup failed." });
+    }
+  });
+
+  // Auth: Signin
+  app.post("/api/auth/signin", (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: "Missing email or password." });
+    }
+    try {
+      const dbData = getDb();
+      const emailLower = email.toLowerCase().trim();
+      const found = dbData.users.find(u => u.email === emailLower && u.password === password);
+      if (!found) {
+        return res.status(400).json({ error: "Incorrect email or password." });
+      }
+
+      const { password: _, ...userSafe } = found;
+      res.json({ user: userSafe });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Signin failed." });
+    }
+  });
+
+  // Auth: Register/Get Mock User
+  app.post("/api/auth/mock", (req, res) => {
+    const { uid, displayName, email, photoURL } = req.body;
+    if (!uid) return res.status(400).json({ error: "Missing uid." });
+
+    try {
+      const dbData = getDb();
+      let found = dbData.users.find(u => u.uid === uid);
+      if (!found) {
+        found = {
+          uid,
+          displayName: displayName || "Mock User",
+          email: email || `${uid}@beforeregret.com`,
+          photoURL: photoURL || null,
+          password: "password123"
+        };
+        dbData.users.push(found);
+        saveDb(dbData);
+      }
+      const { password: _, ...userSafe } = found;
+      res.json({ user: userSafe });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Mock Auth failed." });
+    }
+  });
+
+  // Data: Localities (Get & Post)
+  app.get("/api/localities", (req, res) => {
+    try {
+      const dbData = getDb();
+      res.json(dbData.localities);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to load localities." });
+    }
+  });
+
+  app.post("/api/localities", (req, res) => {
+    try {
+      const dbData = getDb();
+      const newLocality = req.body;
+      const index = dbData.localities.findIndex(l => l.id === newLocality.id);
+      if (index > -1) {
+        dbData.localities[index] = newLocality;
+      } else {
+        dbData.localities.push(newLocality);
+      }
+      saveDb(dbData);
+      res.json({ success: true, locality: newLocality });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to save locality." });
+    }
+  });
+
+  // Data: Experts (Get & Post)
+  app.get("/api/experts", (req, res) => {
+    try {
+      const dbData = getDb();
+      res.json(dbData.experts);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to load experts." });
+    }
+  });
+
+  app.post("/api/experts", (req, res) => {
+    try {
+      const dbData = getDb();
+      const expert = req.body;
+      const index = dbData.experts.findIndex(e => e.id === expert.id || (expert.userId && e.userId === expert.userId));
+      if (index > -1) {
+        dbData.experts[index] = { ...dbData.experts[index], ...expert };
+      } else {
+        dbData.experts.push(expert);
+      }
+      saveDb(dbData);
+      res.json({ success: true, expert });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to save expert." });
+    }
+  });
+
+  // Data: Reviews (Get & Post)
+  app.get("/api/reviews", (req, res) => {
+    try {
+      const dbData = getDb();
+      res.json(dbData.reviews);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to load reviews." });
+    }
+  });
+
+  app.post("/api/reviews", (req, res) => {
+    try {
+      const dbData = getDb();
+      const review = req.body;
+      dbData.reviews.push(review);
+      saveDb(dbData);
+      res.json({ success: true, review });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to save review." });
+    }
+  });
+
+  // Data: Queries (Get & Post)
+  app.get("/api/queries", (req, res) => {
+    try {
+      const dbData = getDb();
+      res.json(dbData.queries);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to load queries." });
+    }
+  });
+
+  app.post("/api/queries", (req, res) => {
+    try {
+      const dbData = getDb();
+      const query = req.body;
+      const index = dbData.queries.findIndex(q => q.id === query.id);
+      if (index > -1) {
+        dbData.queries[index] = { ...dbData.queries[index], ...query };
+      } else {
+        dbData.queries.push(query);
+      }
+      saveDb(dbData);
+      res.json({ success: true, query });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to save query." });
+    }
+  });
+
+  // Bulk master sync route to persist all local states to server
+  app.post("/api/data/sync", (req, res) => {
+    try {
+      const { localities, experts, reviews, queries } = req.body;
+      const dbData = getDb();
+      if (localities) dbData.localities = localities;
+      if (experts) dbData.experts = experts;
+      if (reviews) dbData.reviews = reviews;
+      if (queries) dbData.queries = queries;
+      saveDb(dbData);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Sync failed." });
+    }
   });
 
   // Vite Integration for Hot Module Replacement in dev or Static Assets in prod
