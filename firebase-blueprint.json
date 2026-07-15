@@ -134,9 +134,39 @@
         "block": { "type": "string" }
       },
       "required": ["id", "localityId", "tag", "tagLabel", "comment", "timestamp", "block"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User notification configuration and properties",
+      "type": "object",
+      "properties": {
+        "pushToken": { "type": "string" },
+        "lastUpdated": { "type": "string" }
+      }
+    },
+    "PushTokenInfo": {
+      "title": "Push Token Information",
+      "description": "FCM tokens mapped to users for backend notification dispatch",
+      "type": "object",
+      "properties": {
+        "token": { "type": "string" },
+        "userId": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "userAgent": { "type": "string" },
+        "deviceType": { "type": "string", "enum": ["desktop", "mobile"] }
+      },
+      "required": ["token", "userId", "updatedAt"]
     }
   },
   "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of user notification configurations and state"
+    },
+    "/fcm_tokens/{tokenId}": {
+      "schema": "PushTokenInfo",
+      "description": "Registered FCM push tokens for users"
+    },
     "/localities/{localityId}": {
       "schema": "Locality",
       "description": "Collection of Indian apartments, residential societies, and localities"
