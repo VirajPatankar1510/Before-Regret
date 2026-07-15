@@ -49,11 +49,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshExpertProfile = async (uid: string) => {
     try {
+      const res = await fetch('/api/experts');
+      if (res.ok) {
+        const allExperts = await res.json();
+        const matched = allExperts.find((e: any) => e.userId === uid);
+        if (matched) {
+          setExpertProfile(matched);
+          setActiveRole('expert');
+          return;
+        }
+      }
+      
+      // Fallback to local storage if API is slow/not loaded
       const expertsRaw = localStorage.getItem('br_experts');
-      const allExperts = expertsRaw ? JSON.parse(expertsRaw) : [];
-      const matched = allExperts.find((e: any) => e.userId === uid);
-      if (matched) {
-        setExpertProfile(matched);
+      const allExpertsLocal = expertsRaw ? JSON.parse(expertsRaw) : [];
+      const matchedLocal = allExpertsLocal.find((e: any) => e.userId === uid);
+      if (matchedLocal) {
+        setExpertProfile(matchedLocal);
         setActiveRole('expert');
       } else {
         setExpertProfile(null);
@@ -88,26 +100,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUpWithEmail = async (email: string, pass: string, name: string) => {
     setLoading(true);
     try {
-      const usersRaw = localStorage.getItem('br_registered_users');
-      const users = usersRaw ? JSON.parse(usersRaw) : [...defaultRegisteredUsers];
-      
-      const emailLower = email.toLowerCase().trim();
-      const exists = users.find((u: any) => u.email === emailLower);
-      if (exists) {
-        const error = new Error('This email is already in use.');
-        (error as any).code = 'auth/email-already-in-use';
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass, displayName: name })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        const error = new Error(errData.error || 'Signup failed.');
+        if (errData.error?.includes('email is already in use')) {
+          (error as any).code = 'auth/email-already-in-use';
+        }
         throw error;
       }
 
-      const newUser: User = {
-        uid: 'user_' + Math.random().toString(36).substr(2, 9),
-        email: emailLower,
-        displayName: name,
-        photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name)}`
-      };
-
-      users.push({ ...newUser, password: pass });
-      localStorage.setItem('br_registered_users', JSON.stringify(users));
+      const { user: newUser } = await res.json();
       localStorage.setItem('br_current_user', JSON.stringify(newUser));
       setUser(newUser);
       await refreshExpertProfile(newUser.uid);
@@ -120,24 +128,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signInWithEmail = async (email: string, pass: string) => {
     setLoading(true);
     try {
-      const usersRaw = localStorage.getItem('br_registered_users');
-      const users = usersRaw ? JSON.parse(usersRaw) : [...defaultRegisteredUsers];
-      
-      const emailLower = email.toLowerCase().trim();
-      const found = users.find((u: any) => u.email === emailLower && u.password === pass);
-      if (!found) {
-        const error = new Error('Incorrect email or password.');
+      const res = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        const error = new Error(errData.error || 'Incorrect email or password.');
         (error as any).code = 'auth/invalid-credential';
         throw error;
       }
 
-      const loggedUser: User = {
-        uid: found.uid,
-        email: found.email,
-        displayName: found.displayName,
-        photoURL: found.photoURL
-      };
-
+      const { user: loggedUser } = await res.json();
       localStorage.setItem('br_current_user', JSON.stringify(loggedUser));
       setUser(loggedUser);
       await refreshExpertProfile(loggedUser.uid);
@@ -150,15 +154,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithMockUser = async (mockUserObj: { uid: string; displayName: string; email: string; photoURL?: string }) => {
     setLoading(true);
     try {
-      const standardUser: User = {
-        uid: mockUserObj.uid,
-        email: mockUserObj.email,
-        displayName: mockUserObj.displayName,
-        photoURL: mockUserObj.photoURL || null
-      };
+      const res = await fetch('/api/auth/mock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: mockUserObj.uid,
+          displayName: mockUserObj.displayName,
+          email: mockUserObj.email,
+          photoURL: mockUserObj.photoURL || null
+        })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed mock registration');
+      }
+
+      const { user: standardUser } = await res.json();
       localStorage.setItem('br_current_user', JSON.stringify(standardUser));
       setUser(standardUser);
-      await refreshExpertProfile(mockUserObj.uid);
+      await refreshExpertProfile(standardUser.uid);
       return standardUser;
     } finally {
       setLoading(false);
