@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BookOpen, ShieldAlert, Users, Compass, CheckCircle2, MessageSquare, ArrowRight, HelpCircle, AlertTriangle, Sparkles, User, ThumbsUp, ChevronRight, Search, Play, Award, Eye, Calendar } from 'lucide-react';
 
-interface Article {
+export interface Article {
   id: string;
   category: 'mistake' | 'confessions' | 'iceberg' | 'redflags' | 'regret';
   categoryLabel: string;
@@ -32,7 +32,7 @@ interface Article {
   };
 }
 
-const ARTICLES: Article[] = [
+export const ARTICLES: Article[] = [
   {
     id: 'powai-mistake',
     category: 'mistake',
@@ -44,7 +44,7 @@ const ARTICLES: Article[] = [
     views: '4.8k reads',
     author: {
       name: 'Anirudh & Meera K.',
-      role: 'Former Tech Lead & Product Designer',
+      role: '',
       avatarInitials: 'AM'
     },
     content: [
@@ -67,7 +67,7 @@ const ARTICLES: Article[] = [
     targetPincode: '400076',
     expertAvailable: {
       name: 'Rakesh Mehta',
-      society: 'Supreme Towers (Adjacent to Eden), Powai',
+      society: 'Supreme Towers Compound, Powai',
       role: 'Local Resident & Property Inspector',
       rating: '4.9',
       charges: '₹199'
@@ -84,7 +84,7 @@ const ARTICLES: Article[] = [
     views: '12.4k reads',
     author: {
       name: 'Anonymous Resident',
-      role: 'Ex-Committee Member (Thane Gated Society)',
+      role: '',
       avatarInitials: 'AR'
     },
     content: [
@@ -107,7 +107,7 @@ const ARTICLES: Article[] = [
     targetPincode: '400607',
     expertAvailable: {
       name: 'Vikram Phadke',
-      society: 'Kolshet Road Federations, Thane',
+      society: 'Kolshet Road Community, Thane',
       role: 'Water Quality Inspector & 8-Year Resident',
       rating: '5.0',
       charges: '₹299'
@@ -124,7 +124,7 @@ const ARTICLES: Article[] = [
     views: '8.1k reads',
     author: {
       name: 'Pranav S.',
-      role: 'Acoustic Analyst & Whitefield Resident',
+      role: '',
       avatarInitials: 'PS'
     },
     content: [
@@ -146,20 +146,163 @@ const ARTICLES: Article[] = [
     targetPincode: '560048',
     expertAvailable: {
       name: 'Suhas K. Swamy',
-      society: 'Shantiniketan Block B, Whitefield',
+      society: 'Shantiniketan Complex, Whitefield',
       role: 'Civil Engineer & 10-Year Resident',
       rating: '4.8',
       charges: '₹99'
     }
+  },
+  {
+    id: 'hsr-no-oc-trap',
+    category: 'redflags',
+    categoryLabel: 'Red Flags',
+    title: 'Living Without an Occupancy Certificate (OC): The Cauvery Water & Penalty Tax Nightmare in HSR Layout',
+    excerpt: 'We bought our semi-luxury apartment in HSR Layout Sector 3 after the builder offered a "discounted spot booking" and assured us the Occupancy Certificate (OC) was just a procedural formality. Three years later, we are paying double property tax, commercial electricity tariffs, and buying 100% of our domestic water from private tankers.',
+    readTime: '7 min read',
+    date: 'July 14, 2026',
+    views: '11.2k reads',
+    author: {
+      name: 'Pradeep & Kavitha Nair',
+      role: '',
+      avatarInitials: 'PK'
+    },
+    content: [
+      "Buying a home in Bengaluru is a milestone most tech professionals dream of. When Kavitha and I came across a newly constructed standalone builder-floor apartment with premium Italian marble flooring and custom woodwork in HSR Layout Sector 3, we thought we found a gem. The builder was offering a 10% discount if we registered the property within 30 days. When we asked about the Occupancy Certificate (OC), the sales manager waved it off: 'Sir, the building has a valid Commencement Certificate (CC), and OC is just a procedural stamp that takes 2-3 months. Over 20 families have already moved in.'",
+      "Trusting his word, we completed the registration and took possession. That was our biggest mistake. We soon realized the builder had deviated from the BBMP (Bruhat Bengaluru Mahanagara Palike) approved building plan by constructing an extra penthouse floor and ignoring the mandatory setback rules (the open space distance between the building wall and the adjacent property line). Because of these structural deviations, the municipal authorities refused to issue the Occupancy Certificate.",
+      "The lack of an Occupancy Certificate has completely ruined our living experience and monthly budget. In Bengaluru, municipal water connections (like Cauvery water) are not sanctioned to buildings without an OC. This forces our society of 16 flats to buy up to 4 private water tankers every single day, costing us an extra ₹4,500 per month per flat just for basic water supply.",
+      "It gets worse. Since we do not have an OC, our BESCOM electricity connection remains classified under temporary or commercial tariff rates instead of domestic ones, leading to monthly power bills that are 2.5 times higher than normal. Furthermore, the BBMP charges us a flat double property tax as an annual penalty for residing in an unauthorized building. When we tried to get a top-up home loan for renovation last year, every major bank rejected our application instantly, citing the missing OC. Even worse, the resale value of our flat has plummeted by 30% because no smart buyer will touch a non-OC property."
+    ],
+    lesson: "Never, under any circumstances, take possession or register a flat without a physical copy of the Occupancy Certificate (OC) issued by the local municipal body (BBMP/MMRDA). Do not fall for builder excuses about 'procurement delays' or 'temporary water connections.' An OC is the only legal proof that the building is safe, fully authorized, and fit for human habitation.",
+    theOneQuestion: "Has the municipal body issued a final Occupancy Certificate for this specific tower/unit, and are there any active building deviation penalties being charged?",
+    pollQuestion: "Would you consider purchasing an apartment if it has a valid CC (Commencement Certificate) but no OC?",
+    pollOptions: [
+      "Absolutely not, a missing OC is a legal and financial time-bomb",
+      "Only if the developer offers a massive 40%+ discount on market value",
+      "Yes, if other families are already residing there and things seem fine"
+    ],
+    pollResults: [89, 8, 3],
+    targetSociety: 'Standalone Premium Floor, HSR Layout',
+    targetPincode: '560102',
+    expertAvailable: {
+      name: 'Sridhar Murthy',
+      society: 'HSR Sector 3 Neighbors, Bengaluru',
+      role: 'BBMP Property Consultant & 12-Year Resident',
+      rating: '4.9',
+      charges: '₹199'
+    }
+  },
+  {
+    id: 'gurugram-top-floor-seepage',
+    category: 'regret',
+    categoryLabel: 'Top-Floor Regrets',
+    title: 'The Top-Floor Apartment Trap: Blistering Summer Heatwaves & Monsoon Water Seepage in Gurugram',
+    excerpt: 'We paid a heavy premium for a penthouse-style top-floor 3BHK in Gurugram, seduced by the promise of private terrace access, zero overhead footstep noise, and fresh air. Instead, we got ₹15,000 monthly AC bills and yellow water dampness stains creeping across our master bedroom ceiling during every monsoon.',
+    readTime: '9 min read',
+    date: 'July 14, 2026',
+    views: '9.5k reads',
+    author: {
+      name: 'Vikram & Ritika Sen',
+      role: '',
+      avatarInitials: 'VR'
+    },
+    content: [
+      "When Ritika and I were looking to buy a flat in Gurugram, we wanted privacy. Having lived below a noisy family with two toddlers in our previous rental, we swore we would only buy the topmost floor of a high-rise. We found a beautiful top-floor 3BHK overlooking the skyline. The sales team pitched it as a luxury option with private terrace privileges. Sucked in by the peaceful views and the absence of overhead neighbor noise, we paid a ₹15 Lakhs premium over the middle-floor units.",
+      "The reality of top-floor living in North India hit us during our first summer. Gurugram temperatures easily cross 46°C in May and June. Because the concrete terrace slab is directly exposed to the blazing sun all day long, it acts as a massive thermal radiator. Even at midnight, our ceiling was hot to the touch. Our air conditioners had to run 24/7 on maximum power just to make the rooms livable, resulting in a staggering electricity bill of ₹16,500 for June alone.",
+      "But summer was just the preamble. The real disaster arrived with the monsoon. Gurugram is infamous for intense, heavy downpours that cause instant waterlogging. Within two weeks of rains, we noticed damp, dark circular stains on our master bedroom ceiling. The joint lines of the terrace tiles had developed microscopic cracks, letting rainwater seep directly into our roof slab. Within a month, the premium plaster of paris ceiling started crumbling, ruining our custom modular wardrobes and leaving a permanent, musty smell of mold in the house.",
+      "When we approached the residential management committee to waterproof the terrace, they refused, claiming the terrace is common property and its repairs must be funded by the society's common maintenance reserve. However, the committee delayed the approval for nine months due to 'internal budget constraints' and political infighting. We were trapped: we couldn't waterproof it ourselves because the building rules forbid modifying common areas, yet the committee wouldn't fix it. Our luxury top-floor apartment turned into a damp, humid sauna that was practically unlivable for a quarter of the year."
+    ],
+    lesson: "If you buy a top-floor flat, inspect the quality of the terrace waterproofing (ask for the developer's warranty certificate) and ensure there is an active heat-reflective paint or polyurethane insulation layer on the slab. Most importantly, check the society's maintenance guidelines on who is financially and legally responsible for immediate terrace leak repairs.",
+    theOneQuestion: "What is the warranty period of the terrace waterproofing, and do the building's bylaws explicitly permit the top-floor owner to execute waterproofing repairs if the committee delays?",
+    pollQuestion: "Do you think top-floor apartments in India are worth the premium despite heat and leakage risks?",
+    pollOptions: [
+      "No, the middle floors are far safer and more energy-efficient",
+      "Yes, the privacy and lack of overhead noise are worth the extra hassle",
+      "Only if the terrace has a double-layered waterproofing warranty in writing"
+    ],
+    pollResults: [68, 12, 20],
+    targetSociety: 'DLF Phase 3 Enclave, Gurugram',
+    targetPincode: '122002',
+    expertAvailable: {
+      name: 'Harpreet Singh',
+      society: 'DLF Phase 3 Community, Gurugram',
+      role: 'Structural Auditor & Waterproofing Expert',
+      rating: '4.8',
+      charges: '₹249'
+    }
+  },
+  {
+    id: 'pune-rwa-bachelor-ban',
+    category: 'confessions',
+    categoryLabel: 'Society Insights',
+    title: 'Investment Flat Turned Vacant Liability: How a Kharadi Society’s Anti-Bachelor Rules Blocked My Rental Income',
+    excerpt: 'I bought a 2BHK flat in Kharadi, Pune, as a pure rental investment, planning to host high-paying IT professionals working nearby. But as soon as the builder handed over control to the resident management committee, they passed arbitrary bylaws banning single tenants, imposing ₹25,000 move-in charges, and subjecting young engineers to moral policing.',
+    readTime: '8 min read',
+    date: 'July 14, 2026',
+    views: '15.1k reads',
+    author: {
+      name: 'Ganesh Deshmukh',
+      role: '',
+      avatarInitials: 'GD'
+    },
+    content: [
+      "In 2021, I invested ₹85 Lakhs of my retirement savings in a premium 2BHK apartment in Kharadi, Pune, which is a major IT corridor. My calculation was simple: a continuous stream of young, high-earning software developers from the nearby IT parks would easily rent the flat for ₹30,000 per month, helping me offset my home loan EMIs. For the first two years, things went smoothly. I rented it to three decent, quiet software engineers who paid rent on the first of every month.",
+      "The nightmare began when the developer handed over the society administration to an elected resident committee. A group of ultra-conservative, retired homeowners took control of the management committee. Within their first month, they introduced an arbitrary, moral-policing agenda. They passed a new bylaw stating that 'bachelors and single working professionals are strictly banned from renting apartments' in the society, citing vague concerns about 'late-night entries' and 'security threats.'",
+      "When my tenant lease expired, I was shocked to learn about this new rule. The security gate refused to let any prospective single tenants inside for viewing. When I protested, the committee pointed to a clause in the society bylaws that allowed them to pass rules 'for the peace and safety of residents.' They also introduced a non-refundable 'tenant move-in fee' of ₹25,000 and slapped a 10% premium on my monthly maintenance bill as a 'Non-Occupancy fee' just because I lived elsewhere.",
+      "Because of these hostile policies, my flat remained vacant for seven months. Most families who looked at the society preferred newer, more relaxed projects, and the bachelors who were ready to pay premium rent were locked out. I was forced to pay the monthly EMI of ₹42,000 entirely out of my pension pocket. When I finally found a family, they demanded a deep rent cut because they knew I was desperate. If you are buying a property for rental yield, never assume the rules will remain tenant-friendly. Committee politics can destroy your investment overnight."
+    ],
+    lesson: "Before buying a flat for rental income, read the draft society bylaws (the 'Deed of Declaration') and talk to existing landlords. Be extremely wary of societies dominated by retired self-appointed moral guardians who frequently target single tenants, as this can severely restrict your tenant pool and kill your rental yield.",
+    theOneQuestion: "Does the society's registered bylaws contain any clauses restricting tenant profiling, single professionals, or imposing discriminatory non-occupancy fees?",
+    pollQuestion: "Do you think resident committees should have the legal right to ban bachelors or single professionals?",
+    pollOptions: [
+      "Absolutely not, it is illegal, unconstitutional, and discriminatory",
+      "Yes, societies have the right to set rules to preserve their community culture",
+      "Only if the ban is approved by 100% of the flat owners in writing"
+    ],
+    pollResults: [91, 5, 4],
+    targetSociety: 'Eon Waterfront Phase 2, Kharadi',
+    targetPincode: '411014',
+    expertAvailable: {
+      name: 'Sandip Thorat',
+      society: 'Kharadi Property Owners Group, Pune',
+      role: 'Real Estate Lawyer & Active Owner',
+      rating: '5.0',
+      charges: '₹299'
+    }
   }
 ];
 
-interface RegretFilesProps {
+export interface RegretFilesProps {
   onBackToHome: () => void;
+  selectedArticleId?: string | null;
+  onSelectArticle?: (id: string | null) => void;
 }
 
-export const RegretFiles: React.FC<RegretFilesProps> = ({ onBackToHome }) => {
+export const RegretFiles: React.FC<RegretFilesProps> = ({ 
+  onBackToHome,
+  selectedArticleId = null,
+  onSelectArticle
+}) => {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+
+  React.useEffect(() => {
+    if (selectedArticleId) {
+      const art = ARTICLES.find(a => a.id === selectedArticleId);
+      if (art) {
+        setSelectedArticle(art);
+      } else {
+        setSelectedArticle(null);
+      }
+    } else {
+      setSelectedArticle(null);
+    }
+  }, [selectedArticleId]);
+
+  const handleSelectArticle = (art: Article | null) => {
+    setSelectedArticle(art);
+    if (onSelectArticle) {
+      onSelectArticle(art ? art.id : null);
+    }
+  };
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [votedPolls, setVotedPolls] = useState<Record<string, number>>({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -218,11 +361,13 @@ export const RegretFiles: React.FC<RegretFilesProps> = ({ onBackToHome }) => {
             { id: 'all', label: 'All Stories' },
             { id: 'mistake', label: '₹1 Cr Mistakes' },
             { id: 'confessions', label: 'Society Insights' },
-            { id: 'iceberg', label: 'Iceberg Realities' }
+            { id: 'iceberg', label: 'Iceberg Realities' },
+            { id: 'redflags', label: 'Red Flags' },
+            { id: 'regret', label: 'Top-Floor Regrets' }
           ].map((cat) => (
             <button
               key={cat.id}
-              onClick={() => { setSelectedCategory(cat.id); setSelectedArticle(null); }}
+              onClick={() => { setSelectedCategory(cat.id); handleSelectArticle(null); }}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 selectedCategory === cat.id
                   ? 'bg-slate-900 text-white shadow-xs'
@@ -266,7 +411,7 @@ export const RegretFiles: React.FC<RegretFilesProps> = ({ onBackToHome }) => {
                 filteredArticles.map((art) => (
                   <article 
                     key={art.id}
-                    onClick={() => { setSelectedArticle(art); window.scrollTo(0, 0); }}
+                    onClick={() => { handleSelectArticle(art); window.scrollTo(0, 0); }}
                     className="bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-3xs hover:border-blue-200 hover:shadow-xs transition-all flex flex-col justify-between cursor-pointer group"
                   >
                     <div>
@@ -274,6 +419,8 @@ export const RegretFiles: React.FC<RegretFilesProps> = ({ onBackToHome }) => {
                         <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider ${
                           art.category === 'mistake' ? 'bg-rose-50 text-rose-700 border border-rose-100' :
                           art.category === 'confessions' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
+                          art.category === 'redflags' ? 'bg-red-50 text-red-700 border border-red-100' :
+                          art.category === 'regret' ? 'bg-orange-50 text-orange-700 border border-orange-100' :
                           'bg-indigo-50 text-indigo-700 border border-indigo-100'
                         }`}>
                           {art.categoryLabel}
@@ -300,7 +447,6 @@ export const RegretFiles: React.FC<RegretFilesProps> = ({ onBackToHome }) => {
                         </div>
                         <div>
                           <div className="text-[11px] font-bold text-slate-800">{art.author.name}</div>
-                          <div className="text-[9px] text-slate-400 font-mono">{art.author.role}</div>
                         </div>
                       </div>
 
@@ -318,7 +464,7 @@ export const RegretFiles: React.FC<RegretFilesProps> = ({ onBackToHome }) => {
             <article className="bg-white border border-slate-150 rounded-3xl p-6 sm:p-10 shadow-3xs space-y-6">
               
               <button
-                onClick={() => setSelectedArticle(null)}
+                onClick={() => handleSelectArticle(null)}
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer mb-2"
               >
                 ← Back to all stories
@@ -328,6 +474,8 @@ export const RegretFiles: React.FC<RegretFilesProps> = ({ onBackToHome }) => {
                 <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider mb-4 ${
                   selectedArticle.category === 'mistake' ? 'bg-rose-50 text-rose-700 border border-rose-100' :
                   selectedArticle.category === 'confessions' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
+                  selectedArticle.category === 'redflags' ? 'bg-red-50 text-red-700 border border-red-100' :
+                  selectedArticle.category === 'regret' ? 'bg-orange-50 text-orange-700 border border-orange-100' :
                   'bg-indigo-50 text-indigo-700 border border-indigo-100'
                 }`}>
                   {selectedArticle.categoryLabel}
@@ -426,7 +574,7 @@ export const RegretFiles: React.FC<RegretFilesProps> = ({ onBackToHome }) => {
               {/* Bottom Navigation */}
               <div className="pt-6 border-t border-slate-100 flex justify-between items-center">
                 <button
-                  onClick={() => { setSelectedArticle(null); window.scrollTo(0, 0); }}
+                  onClick={() => { handleSelectArticle(null); window.scrollTo(0, 0); }}
                   className="text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer"
                 >
                   ← Back to stories

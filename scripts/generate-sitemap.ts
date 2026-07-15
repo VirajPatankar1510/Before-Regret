@@ -7,19 +7,34 @@ async function runSitemapGenerator() {
   
   const staticUrls = [
     { path: "", changefreq: "daily", priority: "1.0" },
-    { path: "search", changefreq: "daily", priority: "0.9" },
-    { path: "how-it-works", changefreq: "weekly", priority: "0.8" },
+    { path: "explore", changefreq: "daily", priority: "0.9" },
+    { path: "stories", changefreq: "daily", priority: "0.9" },
     { path: "become-expert", changefreq: "weekly", priority: "0.8" },
-    { path: "wiki", changefreq: "daily", priority: "0.95" },
+    { path: "legal-disclaimer", changefreq: "monthly", priority: "0.6" },
+    { path: "terms-and-conditions", changefreq: "monthly", priority: "0.6" },
+    { path: "privacy-policy", changefreq: "monthly", priority: "0.6" },
+    { path: "refund-policy", changefreq: "monthly", priority: "0.6" },
+    { path: "shipping-policy", changefreq: "monthly", priority: "0.6" },
+    { path: "contact-us", changefreq: "monthly", priority: "0.6" },
   ];
 
-  const popularCities = ["bengaluru", "mumbai", "gurugram", "hyderabad", "delhi-ncr", "thane", "palghar"];
-  const popularLocalities = [
-    "indiranagar", "hsr-layout", "koramangala", "bandra-west", "dlf-phase-3", "gachibowli", "goregagon-east", "whitefield", "kolshet-road", "nallasopara-west"
+  const popularCities = ["mumbai", "bengaluru", "gurugram", "thane"];
+  const popularLocalities = ["loc_bimbisar_nagar", "loc_prestige_shantiniketan", "loc_dlf_phase_5", "loc_lodha_amara", "loc_hsr_layout"];
+
+  const regretStories = [
+    "powai-mistake",
+    "gated-confessions",
+    "whitefield-iceberg",
+    "hsr-no-oc-trap",
+    "gurugram-top-floor-seepage",
+    "pune-rwa-bachelor-ban"
   ];
 
-  const specificSocieties = [
-    "loc_bimbisar_nagar", "loc_prestige_shantiniketan", "loc_dlf_phase_5", "loc_lodha_amara", "loc_hsr_layout", "loc_nallasopara_west"
+  const expertProfiles = [
+    "exp_priya",
+    "exp_rahul",
+    "exp_sneha",
+    "exp_amit"
   ];
 
   const urlTags: string[] = [];
@@ -33,7 +48,7 @@ async function runSitemapGenerator() {
   </url>`);
   }
 
-  // 2. City Pages
+  // 2. City Hub Pages
   for (const city of popularCities) {
     urlTags.push(`  <url>
     <loc>${origin}/city/${city}</loc>
@@ -42,21 +57,36 @@ async function runSitemapGenerator() {
   </url>`);
   }
 
-  // 3. Locality Pages
+  // 3. Locality / Society Pages
   for (const locality of popularLocalities) {
     urlTags.push(`  <url>
     <loc>${origin}/locality/${locality}</loc>
     <changefreq>daily</changefreq>
-    <priority>0.80</priority>
+    <priority>0.85</priority>
   </url>`);
   }
 
-  // 4. Specific Housing Society Guides
-  for (const society of specificSocieties) {
+  // 4. Regret Editorial Stories
+  for (const story of regretStories) {
     urlTags.push(`  <url>
-    <loc>${origin}/wiki/${society}</loc>
-    <changefreq>daily</changefreq>
+    <loc>${origin}/stories/${story}</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.90</priority>
+  </url>`);
+  }
+
+  // 5. Resident Expert Pages
+  for (const expert of expertProfiles) {
+    urlTags.push(`  <url>
+    <loc>${origin}/expert/${expert}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>`);
+    // Include their direct booking page as well
+    urlTags.push(`  <url>
+    <loc>${origin}/expert/${expert}/ask</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.70</priority>
   </url>`);
   }
 

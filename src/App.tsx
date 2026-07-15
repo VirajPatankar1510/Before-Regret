@@ -11,7 +11,7 @@ import { Onboarding } from './components/Onboarding';
 import { Footer } from './components/Footer';
 import { AdminPanel } from './components/AdminPanel';
 import { Policies } from './components/Policies';
-import { RegretFiles } from './components/RegretFiles';
+import { RegretFiles, ARTICLES } from './components/RegretFiles';
 import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from './data';
 import { Neighborhood, ExpertProfile, DirectQuery, Review } from './types';
 import { Building, MapPin, Search, Sparkles, Filter, Award, ChevronRight } from 'lucide-react';
@@ -23,6 +23,7 @@ export default function App() {
   // Navigation & Simulation Perspective State
   const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, buyer_dashboard, expert_dashboard, messaging, become_expert, policies
   const [policiesTab, setPoliciesTab] = useState<'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer'>('disclaimer');
+  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
 
   // Helper to open a specific policy tab
   const handleNavigateToPolicy = (tab: 'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer') => {
@@ -70,6 +71,317 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentView]);
+
+  // Handle popstate (browser back/forward or direct landing on URL)
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      const p = path.replace(/\/$/, '') || '/';
+
+      if (p === '/') {
+        setView('home');
+        setSelectedArticleId(null);
+        setSelectedExpert(null);
+        setSelectedLocality(null);
+      } else if (p === '/explore' || p === '/societies') {
+        setView('explore');
+        setSelectedArticleId(null);
+      } else if (p === '/become-expert') {
+        setView('become_expert');
+        setSelectedArticleId(null);
+      } else if (p === '/disclaimer' || p === '/legal-disclaimer') {
+        setView('policies');
+        setSelectedArticleId(null);
+        setPoliciesTab('disclaimer');
+      } else if (p === '/terms' || p === '/terms-and-conditions') {
+        setView('policies');
+        setSelectedArticleId(null);
+        setPoliciesTab('terms');
+      } else if (p === '/privacy' || p === '/privacy-policy') {
+        setView('policies');
+        setSelectedArticleId(null);
+        setPoliciesTab('privacy');
+      } else if (p === '/refunds' || p === '/refund-policy') {
+        setView('policies');
+        setSelectedArticleId(null);
+        setPoliciesTab('refunds');
+      } else if (p === '/shipping' || p === '/shipping-policy') {
+        setView('policies');
+        setSelectedArticleId(null);
+        setPoliciesTab('shipping');
+      } else if (p === '/contact' || p === '/contact-us') {
+        setView('policies');
+        setSelectedArticleId(null);
+        setPoliciesTab('contact');
+      } else if (p === '/policies' || p.startsWith('/policies/')) {
+        setView('policies');
+        setSelectedArticleId(null);
+        const parts = p.split('/');
+        if (parts[2]) {
+          const tab = parts[2] as 'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer';
+          setPoliciesTab(tab);
+        } else {
+          setPoliciesTab('disclaimer');
+        }
+      } else if (p === '/dashboard/buyer') {
+        setView('buyer_dashboard');
+        setSelectedArticleId(null);
+      } else if (p === '/dashboard/expert') {
+        setView('expert_dashboard');
+        setSelectedArticleId(null);
+      } else if (p === '/admin') {
+        setView('admin_panel');
+        setSelectedArticleId(null);
+      } else if (p === '/stories' || p === '/regret-files') {
+        setView('regret_files');
+        setSelectedArticleId(null);
+      } else if (p.startsWith('/stories/') || p.startsWith('/regret-files/')) {
+        const parts = p.split('/');
+        const storyId = parts[2];
+        setView('regret_files');
+        setSelectedArticleId(storyId);
+      } else if (p.startsWith('/expert/')) {
+        const parts = p.split('/');
+        const expertId = parts[2];
+        const isAsk = parts[3] === 'ask';
+        const expert = experts.find(e => e.id === expertId);
+        if (expert) {
+          const loc = localities.find(l => l.id === expert.localityId) || localities[0];
+          setSelectedExpert(expert);
+          setSelectedLocality(loc);
+          setView(isAsk ? 'ask_question' : 'profile');
+        } else {
+          setView('home');
+        }
+      } else if (p.startsWith('/locality/')) {
+        const parts = p.split('/');
+        const locId = parts[2];
+        const loc = localities.find(l => l.id === locId);
+        if (loc) {
+          setSelectedLocality(loc);
+          const matchedExpert = experts.find((e) => e.localityId === loc.id);
+          if (matchedExpert) {
+            setSelectedExpert(matchedExpert);
+            setView('profile');
+          } else {
+            setView('explore');
+          }
+        } else {
+          setView('explore');
+        }
+      } else if (p.startsWith('/city/')) {
+        const parts = p.split('/');
+        const cityName = parts[2];
+        setView('explore');
+        const foundLoc = localities.find(l => l.city.toLowerCase() === cityName.toLowerCase());
+        if (foundLoc) {
+          setSelectedLocality(foundLoc);
+        } else {
+          setSelectedLocality(null);
+        }
+      }
+    };
+
+    // Run initial sync on mount
+    handlePopState();
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [localities, experts]);
+
+  // Synchronize browser URL history whenever view, story, expert or query changes
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    let targetPath = '/';
+
+    if (currentView === 'home') {
+      targetPath = '/';
+    } else if (currentView === 'explore') {
+      targetPath = '/explore';
+    } else if (currentView === 'regret_files') {
+      targetPath = selectedArticleId ? `/stories/${selectedArticleId}` : '/stories';
+    } else if (currentView === 'profile' && selectedExpert) {
+      targetPath = `/expert/${selectedExpert.id}`;
+    } else if (currentView === 'ask_question' && selectedExpert) {
+      targetPath = `/expert/${selectedExpert.id}/ask`;
+    } else if (currentView === 'become_expert') {
+      targetPath = '/become-expert';
+    } else if (currentView === 'policies') {
+      if (policiesTab === 'disclaimer') targetPath = '/legal-disclaimer';
+      else if (policiesTab === 'terms') targetPath = '/terms-and-conditions';
+      else if (policiesTab === 'privacy') targetPath = '/privacy-policy';
+      else if (policiesTab === 'refunds') targetPath = '/refund-policy';
+      else if (policiesTab === 'shipping') targetPath = '/shipping-policy';
+      else if (policiesTab === 'contact') targetPath = '/contact-us';
+      else targetPath = '/legal-disclaimer';
+    } else if (currentView === 'buyer_dashboard') {
+      targetPath = '/dashboard/buyer';
+    } else if (currentView === 'expert_dashboard') {
+      targetPath = '/dashboard/expert';
+    } else if (currentView === 'messaging' && activeQuery) {
+      targetPath = `/messaging/${activeQuery.id}`;
+    } else if (currentView === 'admin_panel') {
+      targetPath = '/admin';
+    }
+
+    if (currentPath !== targetPath) {
+      window.history.pushState(null, '', targetPath);
+    }
+  }, [currentView, selectedArticleId, selectedExpert?.id, activeQuery?.id, policiesTab]);
+
+  // Update page title & meta elements dynamically for premium SEO crawlability
+  useEffect(() => {
+    let title = "BeforeRegret | Verified Resident Insider Consultations for Gated Societies";
+    let description = "Read real, anonymous gated society confessions, water issues, power cut histories, and contact long-term residents directly before renting or buying a home in India.";
+
+    if (currentView === 'explore') {
+      title = "Explore Gated Societies in India | BeforeRegret Residential Directory";
+      description = "Browse premium apartments and housing societies in Bangalore, Mumbai, Gurugram, Thane. Filter water dependencies and rules.";
+    } else if (currentView === 'regret_files') {
+      if (selectedArticleId) {
+        const art = ARTICLES.find(a => a.id === selectedArticleId);
+        if (art) {
+          title = `${art.title} | BeforeRegret Stories`;
+          description = art.excerpt;
+        } else {
+          title = "Gated Society Cautionary Tales & Confessions | The Regret Files";
+        }
+      } else {
+        title = "The Regret Files Editorial | Real Gated Society Cautionary Tales";
+        description = "Read unvarnished confessions and hard lessons from home buyers who regretted their ₹1 Crore+ purchases before checking utilities and resident reviews.";
+      }
+    } else if (currentView === 'profile' && selectedExpert) {
+      title = `Consult ${selectedExpert.fullName} - ${selectedExpert.localityName} Resident Expert`;
+      description = `Ask ${selectedExpert.fullName} about water hardness, power back-up, committee rules, and maid charges in ${selectedExpert.localityName} before you decide.`;
+    } else if (currentView === 'become_expert') {
+      title = "Earn as a Certified Local Resident Expert | BeforeRegret Onboarding";
+      description = "Help prospective buyers and tenants make informed decisions about your society. Share honest reviews and earn per consultation.";
+    } else if (currentView === 'policies') {
+      if (policiesTab === 'disclaimer') {
+        title = "Comprehensive Legal Disclaimer & Waiver of Liability | BeforeRegret";
+        description = "Review the BeforeRegret legal disclaimer and liability waiver covering unverified crowdsourced resident feedback and Indian property laws.";
+      } else if (policiesTab === 'terms') {
+        title = "Terms of Service & Platform Guidelines | BeforeRegret";
+        description = "Read our standard user agreement, code of conduct, intermediary safe harbor conditions, and binding arbitration details.";
+      } else if (policiesTab === 'privacy') {
+        title = "Privacy Policy & Resident Anonymity Statement | BeforeRegret";
+        description = "We protect our local experts and seeker identities with end-to-end masked databases. Read our comprehensive data privacy standard.";
+      } else if (policiesTab === 'refunds') {
+        title = "Refund and Cancellation Policy | BeforeRegret";
+        description = "Learn about our 100% moneyback guarantee on peer consultation bookings if the resident expert fails to connect within 48 hours.";
+      } else if (policiesTab === 'shipping') {
+        title = "Service Fulfillment Policy | BeforeRegret";
+        description = "Understand peer-to-peer delivery structures, electronic chats, and service timeline completions for gated society consulting.";
+      } else if (policiesTab === 'contact') {
+        title = "Official Contact & Support desk | BeforeRegret";
+        description = "Get in touch with Atmostellar regarding billing, corporate partnership, grievance redressal, or RWA complaints.";
+      } else {
+        title = "BeforeRegret Policies and Legal Compliance Center";
+        description = "Review our Terms of Service, Privacy Policy, Refund policy, and Disclaimer for neighborhood research.";
+      }
+    } else if (currentView === 'buyer_dashboard') {
+      title = "Home Buyer Consulting Dashboard | BeforeRegret";
+    } else if (currentView === 'expert_dashboard') {
+      title = "Resident Expert Consultant Dashboard | BeforeRegret";
+    }
+
+    document.title = title;
+
+    // Update meta description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', description);
+
+    // Update OpenGraph meta tags
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    if (!ogTitle) {
+      ogTitle = document.createElement('meta');
+      ogTitle.setAttribute('property', 'og:title');
+      document.head.appendChild(ogTitle);
+    }
+    ogTitle.setAttribute('content', title);
+
+    let ogDesc = document.querySelector('meta[property="og:description"]');
+    if (!ogDesc) {
+      ogDesc = document.createElement('meta');
+      ogDesc.setAttribute('property', 'og:description');
+      document.head.appendChild(ogDesc);
+    }
+    ogDesc.setAttribute('content', description);
+
+    // 1. Dynamic Canonical Link injection
+    const currentPath = window.location.pathname;
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', `https://beforeregret.com${currentPath}`);
+
+    // 2. Structured Schema JSON-LD Data Injection (for visual rich results in Google Search)
+    let schemaScript = document.getElementById('jsonld-schema');
+    if (schemaScript) {
+      schemaScript.remove();
+    }
+
+    let schemaData: any = null;
+
+    if (currentView === 'regret_files' && selectedArticleId) {
+      const art = ARTICLES.find(a => a.id === selectedArticleId);
+      if (art) {
+        schemaData = {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": art.title,
+          "description": art.excerpt,
+          "datePublished": "2026-07-14T12:00:00Z",
+          "author": {
+            "@type": "Person",
+            "name": art.author.name
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "BeforeRegret",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://beforeregret.com/favicon.svg"
+            }
+          }
+        };
+      }
+    } else if (currentView === 'profile' && selectedExpert) {
+      schemaData = {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "mainEntity": {
+          "@type": "Person",
+          "name": selectedExpert.fullName,
+          "description": selectedExpert.bio,
+          "jobTitle": "Certified Gated Society Resident Expert",
+          "knowsAbout": selectedExpert.expertiseTags,
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": selectedExpert.localityName,
+            "addressRegion": selectedExpert.city,
+            "addressCountry": "IN"
+          }
+        }
+      };
+    }
+
+    if (schemaData) {
+      const script = document.createElement('script');
+      script.id = 'jsonld-schema';
+      script.type = 'application/ld+json';
+      script.innerHTML = JSON.stringify(schemaData);
+      document.head.appendChild(script);
+    }
+  }, [currentView, selectedArticleId, selectedExpert]);
 
   // Navigation handlers
   const handleSelectExpert = (expert: ExpertProfile) => {
@@ -251,6 +563,15 @@ export default function App() {
             
             <HowItWorks />
 
+            {/* Featured Section Anchor */}
+            <div id="featured-residents-section">
+              <FeaturedResidents
+                experts={experts}
+                localities={localities}
+                onSelectExpert={handleSelectExpert}
+              />
+            </div>
+
             {/* TEASER BANNER: THE REGRET FILES EDITORIAL HUB */}
             <div className="bg-slate-50 border-y border-slate-100 py-12">
               <div className="max-w-7xl mx-auto px-4">
@@ -284,15 +605,6 @@ export default function App() {
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Featured Section Anchor */}
-            <div id="featured-residents-section">
-              <FeaturedResidents
-                experts={experts}
-                localities={localities}
-                onSelectExpert={handleSelectExpert}
-              />
             </div>
           </div>
         )}
@@ -549,7 +861,11 @@ export default function App() {
 
         {/* VIEW: REGRET FILES EDITORIALS */}
         {currentView === 'regret_files' && (
-          <RegretFiles onBackToHome={() => { setView('explore'); window.scrollTo(0, 0); }} />
+          <RegretFiles 
+            onBackToHome={() => { setView('explore'); window.scrollTo(0, 0); }} 
+            selectedArticleId={selectedArticleId}
+            onSelectArticle={(id) => setSelectedArticleId(id)}
+          />
         )}
 
       </main>
