@@ -6,6 +6,16 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Users - Public read, write for notification settings
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // FCM Tokens - Public read, write for push token registration
+    match /fcm_tokens/{tokenId} {
+      allow read, write: if true;
+    }
+
     // Localities - Public read, write by admin only
     match /localities/{localityId} {
       allow read: if true;

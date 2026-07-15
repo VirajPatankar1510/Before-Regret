@@ -18,6 +18,7 @@ interface AuthContextType {
   expertProfile: ExpertProfile | null;
   setExpertProfile: (profile: ExpertProfile | null) => void;
   loginWithGoogle: () => Promise<User | null>;
+  loginWithMockUser: (mockUserObj: { uid: string; displayName: string; email: string; photoURL?: string }) => Promise<User | null>;
   logout: () => Promise<void>;
   refreshExpertProfile: (uid: string) => Promise<void>;
 }
@@ -51,7 +52,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    // 1. Synchronous check for active mock session to prevent guest layout flickering
+    const mockSession = localStorage.getItem('before_regret_mock_user');
+    if (mockSession) {
+      try {
+        const parsed = JSON.parse(mockSession);
+        setUser(parsed);
+        refreshExpertProfile(parsed.uid).then(() => {
+          setLoading(false);
+        });
+      } catch (e) {
+        localStorage.removeItem('before_regret_mock_user');
+      }
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      // If there is an active mock session, do not let real Firebase empty state override it
+      const activeMock = localStorage.getItem('before_regret_mock_user');
+      if (activeMock) {
+        setLoading(false);
+        return;
+      }
+
       setUser(firebaseUser);
       if (firebaseUser) {
         await refreshExpertProfile(firebaseUser.uid);
@@ -89,9 +111,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const loginWithMockUser = async (mockUserObj: { uid: string; displayName: string; email: string; photoURL?: string }) => {
+    setLoading(true);
+    try {
+      localStorage.setItem('before_regret_mock_user', JSON.stringify(mockUserObj));
+      setUser(mockUserObj as any);
+      await refreshExpertProfile(mockUserObj.uid);
+      return mockUserObj as any;
+    } catch (err) {
+      console.error('Mock Sign-In error:', err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = async () => {
     setLoading(true);
     try {
+      localStorage.removeItem('before_regret_mock_user');
       await signOut(auth);
       setUser(null);
       setExpertProfile(null);
@@ -112,6 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       expertProfile,
       setExpertProfile,
       loginWithGoogle,
+      loginWithMockUser,
       logout,
       refreshExpertProfile
     }}>
