@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   User, 
-  signInWithPopup, 
-  GoogleAuthProvider, 
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  updateProfile
 } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -17,7 +18,8 @@ interface AuthContextType {
   setActiveRole: (role: 'guest' | 'buyer' | 'expert') => void;
   expertProfile: ExpertProfile | null;
   setExpertProfile: (profile: ExpertProfile | null) => void;
-  loginWithGoogle: () => Promise<User | null>;
+  signUpWithEmail: (email: string, pass: string, name: string) => Promise<User | null>;
+  signInWithEmail: (email: string, pass: string) => Promise<User | null>;
   loginWithMockUser: (mockUserObj: { uid: string; displayName: string; email: string; photoURL?: string }) => Promise<User | null>;
   logout: () => Promise<void>;
   refreshExpertProfile: (uid: string) => Promise<void>;
@@ -87,12 +89,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribe();
   }, []);
 
-  const loginWithGoogle = async () => {
+  const signUpWithEmail = async (email: string, pass: string, name: string) => {
     setLoading(true);
-    const provider = new GoogleAuthProvider();
-    // Prompt Google sign-in
     try {
-      const result = await signInWithPopup(auth, provider);
+      const result = await createUserWithEmailAndPassword(auth, email, pass);
+      if (result.user) {
+        await updateProfile(result.user, { displayName: name });
+        // Create a copy of user with updated profile to force state update
+        const updatedUser = { ...result.user, displayName: name } as any;
+        setUser(updatedUser);
+        await refreshExpertProfile(result.user.uid);
+        return updatedUser;
+      }
+      return null;
+    } catch (err: any) {
+      console.error('Error signing up with email:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signInWithEmail = async (email: string, pass: string) => {
+    setLoading(true);
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, pass);
       if (result.user) {
         setUser(result.user);
         await refreshExpertProfile(result.user.uid);
@@ -100,11 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return null;
     } catch (err: any) {
-      if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') {
-        console.info('Google sign-in popup was closed or cancelled by the user.');
-        return null;
-      }
-      console.error('Error signing in with Google:', err);
+      console.error('Error signing in with email:', err);
       throw err;
     } finally {
       setLoading(false);
@@ -149,7 +166,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setActiveRole,
       expertProfile,
       setExpertProfile,
-      loginWithGoogle,
+      signUpWithEmail,
+      signInWithEmail,
       loginWithMockUser,
       logout,
       refreshExpertProfile

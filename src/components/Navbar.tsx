@@ -42,12 +42,17 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveRole,
   onSearchFocus,
 }) => {
-  const { user, loginWithGoogle, loginWithMockUser, logout, expertProfile } = useAuth();
+  const { user, signUpWithEmail, signInWithEmail, loginWithMockUser, logout, expertProfile } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Authentication & Testing Modal states
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authName, setAuthName] = useState('');
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const [authError, setAuthError] = useState('');
   const [customName, setCustomName] = useState('');
   const [customRole, setCustomRole] = useState<'buyer' | 'expert'>('buyer');
 
@@ -222,16 +227,48 @@ export const Navbar: React.FC<NavbarProps> = ({
     window.scrollTo(0, 0);
   };
 
-  const handleGoogleLogin = async () => {
+  const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError('');
     try {
-      const loggedInUser = await loginWithGoogle();
-      if (loggedInUser) {
-        setAuthModalOpen(false);
-        setView('explore');
+      if (authMode === 'signup') {
+        if (!authName.trim()) {
+          setAuthError('Please enter your full name.');
+          return;
+        }
+        if (authPassword.length < 6) {
+          setAuthError('Password must be at least 6 characters.');
+          return;
+        }
+        const loggedInUser = await signUpWithEmail(authEmail, authPassword, authName.trim());
+        if (loggedInUser) {
+          setAuthModalOpen(false);
+          setView('explore');
+          setAuthEmail('');
+          setAuthPassword('');
+          setAuthName('');
+        }
+      } else {
+        const loggedInUser = await signInWithEmail(authEmail, authPassword);
+        if (loggedInUser) {
+          setAuthModalOpen(false);
+          setView('explore');
+          setAuthEmail('');
+          setAuthPassword('');
+        }
       }
     } catch (err: any) {
-      if (err?.code !== 'auth/popup-closed-by-user' && err?.code !== 'auth/cancelled-popup-request') {
-        console.error('Failed to log in', err);
+      console.error('Email Authentication error:', err);
+      if (err.code === 'auth/email-already-in-use') {
+        setAuthError('This email is already in use.');
+      } else if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        setAuthError('Incorrect email or password.');
+      } else if (err.code === 'auth/invalid-email') {
+        setAuthError('Please enter a valid email address.');
+      } else if (err.code === 'auth/user-not-found') {
+        setAuthError('No user found with this email.');
+      } else {
+        setAuthError(err.message || 'Authentication failed. Please try again.');
       }
     }
   };
@@ -734,32 +771,81 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Modal Body */}
             <div className="p-6 space-y-6 max-h-[480px] overflow-y-auto">
-              {/* Option A: Google Login */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs font-bold font-mono flex items-center justify-center">A</span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Standard Google Sign-In</span>
+              {/* Option A: Email & Password */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs font-bold font-mono flex items-center justify-center">A</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
+                      {authMode === 'signin' ? 'Sign In' : 'Create Account'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+                      setAuthError('');
+                    }}
+                    className="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer"
+                  >
+                    {authMode === 'signin' ? 'Need an account? Sign Up' : 'Already have an account? Sign In'}
+                  </button>
                 </div>
-                
-                <button
-                  onClick={handleGoogleLogin}
-                  className="w-full flex items-center justify-center gap-2.5 px-4 py-3 border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 rounded-2xl transition-all font-semibold text-slate-800 text-xs shadow-xs hover:shadow-md cursor-pointer"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05" />
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335" />
-                  </svg>
-                  <span>Connect via Google Account</span>
-                </button>
 
-                <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-3.5 flex gap-2.5">
-                  <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-[10px] text-blue-700 leading-normal">
-                    <strong>Preview Sandbox Tip:</strong> Inside the Google AI Studio iframe environment, standard popups may be blocked by your browser. Open the application in a new tab if you want to use standard Google Auth, or use the <strong>Sandbox Bypass</strong> presets below!
-                  </p>
-                </div>
+                {authError && (
+                  <div className="bg-rose-50 border border-rose-100 rounded-xl p-3 text-[11px] text-rose-600 font-medium">
+                    {authError}
+                  </div>
+                )}
+
+                <form onSubmit={handleEmailAuth} className="space-y-3">
+                  {authMode === 'signup' && (
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 font-mono">Full Name</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="John Doe"
+                        value={authName}
+                        onChange={(e) => setAuthName(e.target.value)}
+                        className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
+                      />
+                    </div>
+                  )}
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 font-mono">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="your.email@domain.com"
+                      value={authEmail}
+                      onChange={(e) => setAuthEmail(e.target.value)}
+                      className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 font-mono">Password</label>
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      placeholder="••••••"
+                      value={authPassword}
+                      onChange={(e) => setAuthPassword(e.target.value)}
+                      className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:shadow-md cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>{authMode === 'signin' ? 'Sign In' : 'Create Account'}</span>
+                  </button>
+                </form>
               </div>
 
               {/* Divider */}
