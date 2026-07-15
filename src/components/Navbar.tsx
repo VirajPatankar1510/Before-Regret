@@ -24,10 +24,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handleGoogleLogin = async () => {
     try {
-      await loginWithGoogle();
-      setView('explore');
-    } catch (err) {
-      console.error('Failed to log in', err);
+      const loggedInUser = await loginWithGoogle();
+      if (loggedInUser) {
+        setView('explore');
+      }
+    } catch (err: any) {
+      if (err?.code !== 'auth/popup-closed-by-user' && err?.code !== 'auth/cancelled-popup-request') {
+        console.error('Failed to log in', err);
+      }
     }
   };
 
