@@ -34,26 +34,39 @@ export default function App() {
   };
 
   // Core Database Collections State
-  const [localities, setLocalities] = useState<Neighborhood[]>(INITIAL_LOCALITIES);
-  const [experts, setExperts] = useState<ExpertProfile[]>(INITIAL_EXPERTS);
-  const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
-  const [queries, setQueries] = useState<DirectQuery[]>([
-    {
-      id: 'q_mock_1',
-      buyerId: 'user_rohan',
-      buyerName: 'Rohan Deshmukh',
-      expertId: 'exp_priya',
-      expertName: 'Priya',
-      localityId: 'loc_bimbisar_nagar',
-      localityName: 'Bimbisar Nagar, Jogeshwari',
-      queryText: "Hello Priya, I'm planning to rent a flat in Block C next month. How is the water supply during high summers? Also, are there restrictive society rules for bachelors or late-night arrivals? Thank you!",
-      status: 'ACCEPTED',
-      pricePaid: 199,
-      expertEarnings: 179,
-      createdAt: '2026-07-10T12:00:00Z',
-      packageOption: 'BUNDLE'
-    }
-  ]);
+  const [localities, setLocalities] = useState<Neighborhood[]>(() => {
+    const saved = localStorage.getItem('br_localities');
+    return saved ? JSON.parse(saved) : INITIAL_LOCALITIES;
+  });
+  const [experts, setExperts] = useState<ExpertProfile[]>(() => {
+    const saved = localStorage.getItem('br_experts');
+    return saved ? JSON.parse(saved) : INITIAL_EXPERTS;
+  });
+  const [reviews, setReviews] = useState<Review[]>(() => {
+    const saved = localStorage.getItem('br_reviews');
+    return saved ? JSON.parse(saved) : INITIAL_REVIEWS;
+  });
+  const [queries, setQueries] = useState<DirectQuery[]>(() => {
+    const saved = localStorage.getItem('br_queries');
+    if (saved) return JSON.parse(saved);
+    return [
+      {
+        id: 'q_mock_1',
+        buyerId: 'user_rohan',
+        buyerName: 'Rohan Deshmukh',
+        expertId: 'exp_priya',
+        expertName: 'Priya',
+        localityId: 'loc_bimbisar_nagar',
+        localityName: 'Bimbisar Nagar, Jogeshwari',
+        queryText: "Hello Priya, I'm planning to rent a flat in Block C next month. How is the water supply during high summers? Also, are there restrictive society rules for bachelors or late-night arrivals? Thank you!",
+        status: 'ACCEPTED',
+        pricePaid: 199,
+        expertEarnings: 179,
+        createdAt: '2026-07-10T12:00:00Z',
+        packageOption: 'BUNDLE'
+      }
+    ];
+  });
 
   // Selected entities for detailed views
   const [selectedExpert, setSelectedExpert] = useState<ExpertProfile | null>(null);
@@ -72,6 +85,23 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentView]);
+
+  // Sync state collections to local storage
+  useEffect(() => {
+    localStorage.setItem('br_localities', JSON.stringify(localities));
+  }, [localities]);
+
+  useEffect(() => {
+    localStorage.setItem('br_experts', JSON.stringify(experts));
+  }, [experts]);
+
+  useEffect(() => {
+    localStorage.setItem('br_reviews', JSON.stringify(reviews));
+  }, [reviews]);
+
+  useEffect(() => {
+    localStorage.setItem('br_queries', JSON.stringify(queries));
+  }, [queries]);
 
   // Handle popstate (browser back/forward or direct landing on URL)
   useEffect(() => {

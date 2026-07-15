@@ -1,15 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  User, 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut, 
-  onAuthStateChanged,
-  updateProfile
-} from 'firebase/auth';
-import { auth, db } from '../lib/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
 import { ExpertProfile } from '../types';
+
+export interface User {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -27,6 +24,23 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const defaultRegisteredUsers = [
+  {
+    uid: 'mock_buyer_amit',
+    displayName: 'Amit Kumar',
+    email: 'amit.buyer@beforeregret.com',
+    password: 'password123',
+    photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100'
+  },
+  {
+    uid: 'user_rahul',
+    displayName: 'Rahul K.',
+    email: 'rahul.expert@beforeregret.com',
+    password: 'password123',
+    photoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100'
+  }
+];
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -35,12 +49,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshExpertProfile = async (uid: string) => {
     try {
-      const q = query(collection(db, 'experts'), where('userId', '==', uid));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const expertData = querySnapshot.docs[0].data() as ExpertProfile;
-        setExpertProfile(expertData);
-        // If the user already has an expert profile, default their role to expert or let them switch
+      const expertsRaw = localStorage.getItem('br_experts');
+      const allExperts = expertsRaw ? JSON.parse(expertsRaw) : [];
+      const matched = allExperts.find((e: any) => e.userId === uid);
+      if (matched) {
+        setExpertProfile(matched);
         setActiveRole('expert');
       } else {
         setExpertProfile(null);
@@ -54,57 +67,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // 1. Synchronous check for active mock session to prevent guest layout flickering
-    const mockSession = localStorage.getItem('before_regret_mock_user');
-    if (mockSession) {
+    // Load active session from local storage on mount
+    const savedUser = localStorage.getItem('br_current_user');
+    if (savedUser) {
       try {
-        const parsed = JSON.parse(mockSession);
+        const parsed = JSON.parse(savedUser);
         setUser(parsed);
         refreshExpertProfile(parsed.uid).then(() => {
           setLoading(false);
         });
       } catch (e) {
-        localStorage.removeItem('before_regret_mock_user');
-      }
-    }
-
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      // If there is an active mock session, do not let real Firebase empty state override it
-      const activeMock = localStorage.getItem('before_regret_mock_user');
-      if (activeMock) {
+        localStorage.removeItem('br_current_user');
         setLoading(false);
-        return;
       }
-
-      setUser(firebaseUser);
-      if (firebaseUser) {
-        await refreshExpertProfile(firebaseUser.uid);
-      } else {
-        setExpertProfile(null);
-        setActiveRole('guest');
-      }
+    } else {
       setLoading(false);
-    });
-
-    return () => unsubscribe();
+    }
   }, []);
 
   const signUpWithEmail = async (email: string, pass: string, name: string) => {
     setLoading(true);
     try {
-      const result = await createUserWithEmailAndPassword(auth, email, pass);
-      if (result.user) {
-        await updateProfile(result.user, { displayName: name });
-        // Create a copy of user with updated profile to force state update
-        const updatedUser = { ...result.user, displayName: name } as any;
-        setUser(updatedUser);
-        await refreshExpertProfile(result.user.uid);
-        return updatedUser;
+      const usersRaw = localStorage.getItem('br_registered_users');
+      const users = usersRaw ? JSON.parse(usersRaw) : [...defaultRegisteredUsers];
+      
+      const emailLower = email.toLowerCase().trim();
+      const exists = users.find((u: any) => u.email === emailLower);
+      if (exists) {
+        const error = new Error('This email is already in use.');
+        (error as any).code = 'auth/email-already-in-use';
+        throw error;
       }
-      return null;
-    } catch (err: any) {
-      console.error('Error signing up with email:', err);
-      throw err;
+
+      const newUser: User = {
+        uid: 'user_' + Math.random().toString(36).substr(2, 9),
+        email: emailLower,
+        displayName: name,
+        photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name)}`
+      };
+
+      users.push({ ...newUser, password: pass });
+      localStorage.setItem('br_registered_users', JSON.stringify(users));
+      localStorage.setItem('br_current_user', JSON.stringify(newUser));
+      setUser(newUser);
+      await refreshExpertProfile(newUser.uid);
+      return newUser;
     } finally {
       setLoading(false);
     }
@@ -113,16 +120,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signInWithEmail = async (email: string, pass: string) => {
     setLoading(true);
     try {
-      const result = await signInWithEmailAndPassword(auth, email, pass);
-      if (result.user) {
-        setUser(result.user);
-        await refreshExpertProfile(result.user.uid);
-        return result.user;
+      const usersRaw = localStorage.getItem('br_registered_users');
+      const users = usersRaw ? JSON.parse(usersRaw) : [...defaultRegisteredUsers];
+      
+      const emailLower = email.toLowerCase().trim();
+      const found = users.find((u: any) => u.email === emailLower && u.password === pass);
+      if (!found) {
+        const error = new Error('Incorrect email or password.');
+        (error as any).code = 'auth/invalid-credential';
+        throw error;
       }
-      return null;
-    } catch (err: any) {
-      console.error('Error signing in with email:', err);
-      throw err;
+
+      const loggedUser: User = {
+        uid: found.uid,
+        email: found.email,
+        displayName: found.displayName,
+        photoURL: found.photoURL
+      };
+
+      localStorage.setItem('br_current_user', JSON.stringify(loggedUser));
+      setUser(loggedUser);
+      await refreshExpertProfile(loggedUser.uid);
+      return loggedUser;
     } finally {
       setLoading(false);
     }
@@ -131,13 +150,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithMockUser = async (mockUserObj: { uid: string; displayName: string; email: string; photoURL?: string }) => {
     setLoading(true);
     try {
-      localStorage.setItem('before_regret_mock_user', JSON.stringify(mockUserObj));
-      setUser(mockUserObj as any);
+      const standardUser: User = {
+        uid: mockUserObj.uid,
+        email: mockUserObj.email,
+        displayName: mockUserObj.displayName,
+        photoURL: mockUserObj.photoURL || null
+      };
+      localStorage.setItem('br_current_user', JSON.stringify(standardUser));
+      setUser(standardUser);
       await refreshExpertProfile(mockUserObj.uid);
-      return mockUserObj as any;
-    } catch (err) {
-      console.error('Mock Sign-In error:', err);
-      return null;
+      return standardUser;
     } finally {
       setLoading(false);
     }
@@ -146,13 +168,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     setLoading(true);
     try {
-      localStorage.removeItem('before_regret_mock_user');
-      await signOut(auth);
+      localStorage.removeItem('br_current_user');
       setUser(null);
       setExpertProfile(null);
       setActiveRole('guest');
-    } catch (err) {
-      console.error('Error signing out:', err);
     } finally {
       setLoading(false);
     }
