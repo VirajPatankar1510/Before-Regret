@@ -384,8 +384,9 @@ export default function App() {
 
     document.title = title;
 
-    // Update meta description
-    let metaDesc = document.querySelector('meta[name="description"]');
+    // Update meta description safely without querySelector attribute selectors
+    const metaElements = Array.from(document.getElementsByTagName('meta'));
+    let metaDesc = metaElements.find(m => m.getAttribute('name') === 'description');
     if (!metaDesc) {
       metaDesc = document.createElement('meta');
       metaDesc.setAttribute('name', 'description');
@@ -393,8 +394,8 @@ export default function App() {
     }
     metaDesc.setAttribute('content', description);
 
-    // Update OpenGraph meta tags
-    let ogTitle = document.querySelector('meta[property="og:title"]');
+    // Update OpenGraph meta tags safely (colons in selectors can throw in some iframe/webview sandboxes)
+    let ogTitle = metaElements.find(m => m.getAttribute('property') === 'og:title');
     if (!ogTitle) {
       ogTitle = document.createElement('meta');
       ogTitle.setAttribute('property', 'og:title');
@@ -402,7 +403,7 @@ export default function App() {
     }
     ogTitle.setAttribute('content', title);
 
-    let ogDesc = document.querySelector('meta[property="og:description"]');
+    let ogDesc = metaElements.find(m => m.getAttribute('property') === 'og:description');
     if (!ogDesc) {
       ogDesc = document.createElement('meta');
       ogDesc.setAttribute('property', 'og:description');
@@ -410,9 +411,10 @@ export default function App() {
     }
     ogDesc.setAttribute('content', description);
 
-    // 1. Dynamic Canonical Link injection
+    // 1. Dynamic Canonical Link injection safely
     const currentPath = window.location.pathname;
-    let canonical = document.querySelector('link[rel="canonical"]');
+    const linkElements = Array.from(document.getElementsByTagName('link'));
+    let canonical = linkElements.find(l => l.getAttribute('rel') === 'canonical');
     if (!canonical) {
       canonical = document.createElement('link');
       canonical.setAttribute('rel', 'canonical');
