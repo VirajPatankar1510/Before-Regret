@@ -322,163 +322,171 @@ export default function App() {
     }
 
     if (currentPath !== targetPath) {
-      window.history.pushState(null, '', targetPath);
+      try {
+        window.history.pushState(null, '', targetPath);
+      } catch (err) {
+        console.warn("Could not update browser history path via pushState:", err);
+      }
     }
   }, [currentView, selectedArticleId, selectedExpert?.id, activeQuery?.id, policiesTab]);
 
   // Update page title & meta elements dynamically for premium SEO crawlability
   useEffect(() => {
-    let title = "BeforeRegret | Verified Resident Insider Consultations for Gated Societies";
-    let description = "Read real, anonymous gated society confessions, water issues, power cut histories, and contact long-term residents directly before renting or buying a home in India.";
+    try {
+      let title = "BeforeRegret | Verified Resident Insider Consultations for Gated Societies";
+      let description = "Read real, anonymous gated society confessions, water issues, power cut histories, and contact long-term residents directly before renting or buying a home in India.";
 
-    if (currentView === 'explore') {
-      title = "Explore Gated Societies in India | BeforeRegret Residential Directory";
-      description = "Browse premium apartments and housing societies in Bangalore, Mumbai, Gurugram, Thane. Filter water dependencies and rules.";
-    } else if (currentView === 'regret_files') {
-      if (selectedArticleId) {
+      if (currentView === 'explore') {
+        title = "Explore Gated Societies in India | BeforeRegret Residential Directory";
+        description = "Browse premium apartments and housing societies in Bangalore, Mumbai, Gurugram, Thane. Filter water dependencies and rules.";
+      } else if (currentView === 'regret_files') {
+        if (selectedArticleId) {
+          const art = ARTICLES.find(a => a.id === selectedArticleId);
+          if (art) {
+            title = `${art.title} | BeforeRegret Stories`;
+            description = art.excerpt;
+          } else {
+            title = "Gated Society Cautionary Tales & Confessions | The Regret Files";
+          }
+        } else {
+          title = "The Regret Files Editorial | Real Gated Society Cautionary Tales";
+          description = "Read unvarnished confessions and hard lessons from home buyers who regretted their ₹1 Crore+ purchases before checking utilities and resident reviews.";
+        }
+      } else if (currentView === 'profile' && selectedExpert) {
+        title = `Consult ${selectedExpert.fullName} - ${selectedExpert.localityName} Resident Expert`;
+        description = `Ask ${selectedExpert.fullName} about water hardness, power back-up, committee rules, and maid charges in ${selectedExpert.localityName} before you decide.`;
+      } else if (currentView === 'become_expert') {
+        title = "Earn as a Certified Local Resident Expert | BeforeRegret Onboarding";
+        description = "Help prospective buyers and tenants make informed decisions about your society. Share honest reviews and earn per consultation.";
+      } else if (currentView === 'policies') {
+        if (policiesTab === 'disclaimer') {
+          title = "Comprehensive Legal Disclaimer & Waiver of Liability | BeforeRegret";
+          description = "Review the BeforeRegret legal disclaimer and liability waiver covering unverified crowdsourced resident feedback and Indian property laws.";
+        } else if (policiesTab === 'terms') {
+          title = "Terms of Service & Platform Guidelines | BeforeRegret";
+          description = "Read our standard user agreement, code of conduct, intermediary safe harbor conditions, and binding arbitration details.";
+        } else if (policiesTab === 'privacy') {
+          title = "Privacy Policy & Resident Anonymity Statement | BeforeRegret";
+          description = "We protect our local experts and seeker identities with end-to-end masked databases. Read our comprehensive data privacy standard.";
+        } else if (policiesTab === 'refunds') {
+          title = "Refund and Cancellation Policy | BeforeRegret";
+          description = "Learn about our 100% moneyback guarantee on peer consultation bookings if the resident expert fails to connect within 48 hours.";
+        } else if (policiesTab === 'shipping') {
+          title = "Service Fulfillment Policy | BeforeRegret";
+          description = "Understand peer-to-peer delivery structures, electronic chats, and service timeline completions for gated society consulting.";
+        } else if (policiesTab === 'contact') {
+          title = "Official Contact & Support desk | BeforeRegret";
+          description = "Get in touch with Atmostellar regarding billing, corporate partnership, grievance redressal, or RWA complaints.";
+        } else {
+          title = "BeforeRegret Policies and Legal Compliance Center";
+          description = "Review our Terms of Service, Privacy Policy, Refund policy, and Disclaimer for neighborhood research.";
+        }
+      } else if (currentView === 'buyer_dashboard') {
+        title = "Home Buyer Consulting Dashboard | BeforeRegret";
+      } else if (currentView === 'expert_dashboard') {
+        title = "Resident Expert Consultant Dashboard | BeforeRegret";
+      }
+
+      document.title = title;
+
+      // Update meta description safely without querySelector attribute selectors
+      const metaElements = Array.from(document.getElementsByTagName('meta'));
+      let metaDesc = metaElements.find(m => m.getAttribute('name') === 'description');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.setAttribute('name', 'description');
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.setAttribute('content', description);
+
+      // Update OpenGraph meta tags safely (colons in selectors can throw in some iframe/webview sandboxes)
+      let ogTitle = metaElements.find(m => m.getAttribute('property') === 'og:title');
+      if (!ogTitle) {
+        ogTitle = document.createElement('meta');
+        ogTitle.setAttribute('property', 'og:title');
+        document.head.appendChild(ogTitle);
+      }
+      ogTitle.setAttribute('content', title);
+
+      let ogDesc = metaElements.find(m => m.getAttribute('property') === 'og:description');
+      if (!ogDesc) {
+        ogDesc = document.createElement('meta');
+        ogDesc.setAttribute('property', 'og:description');
+        document.head.appendChild(ogDesc);
+      }
+      ogDesc.setAttribute('content', description);
+
+      // 1. Dynamic Canonical Link injection safely
+      const currentPath = window.location.pathname;
+      const linkElements = Array.from(document.getElementsByTagName('link'));
+      let canonical = linkElements.find(l => l.getAttribute('rel') === 'canonical');
+      if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute('href', `https://beforeregret.com${currentPath}`);
+
+      // 2. Structured Schema JSON-LD Data Injection (for visual rich results in Google Search)
+      let schemaScript = document.getElementById('jsonld-schema');
+      if (schemaScript) {
+        schemaScript.remove();
+      }
+
+      let schemaData: any = null;
+
+      if (currentView === 'regret_files' && selectedArticleId) {
         const art = ARTICLES.find(a => a.id === selectedArticleId);
         if (art) {
-          title = `${art.title} | BeforeRegret Stories`;
-          description = art.excerpt;
-        } else {
-          title = "Gated Society Cautionary Tales & Confessions | The Regret Files";
+          schemaData = {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": art.title,
+            "description": art.excerpt,
+            "datePublished": "2026-07-14T12:00:00Z",
+            "author": {
+              "@type": "Person",
+              "name": art.author.name
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "BeforeRegret",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://beforeregret.com/favicon.svg"
+              }
+            }
+          };
         }
-      } else {
-        title = "The Regret Files Editorial | Real Gated Society Cautionary Tales";
-        description = "Read unvarnished confessions and hard lessons from home buyers who regretted their ₹1 Crore+ purchases before checking utilities and resident reviews.";
-      }
-    } else if (currentView === 'profile' && selectedExpert) {
-      title = `Consult ${selectedExpert.fullName} - ${selectedExpert.localityName} Resident Expert`;
-      description = `Ask ${selectedExpert.fullName} about water hardness, power back-up, committee rules, and maid charges in ${selectedExpert.localityName} before you decide.`;
-    } else if (currentView === 'become_expert') {
-      title = "Earn as a Certified Local Resident Expert | BeforeRegret Onboarding";
-      description = "Help prospective buyers and tenants make informed decisions about your society. Share honest reviews and earn per consultation.";
-    } else if (currentView === 'policies') {
-      if (policiesTab === 'disclaimer') {
-        title = "Comprehensive Legal Disclaimer & Waiver of Liability | BeforeRegret";
-        description = "Review the BeforeRegret legal disclaimer and liability waiver covering unverified crowdsourced resident feedback and Indian property laws.";
-      } else if (policiesTab === 'terms') {
-        title = "Terms of Service & Platform Guidelines | BeforeRegret";
-        description = "Read our standard user agreement, code of conduct, intermediary safe harbor conditions, and binding arbitration details.";
-      } else if (policiesTab === 'privacy') {
-        title = "Privacy Policy & Resident Anonymity Statement | BeforeRegret";
-        description = "We protect our local experts and seeker identities with end-to-end masked databases. Read our comprehensive data privacy standard.";
-      } else if (policiesTab === 'refunds') {
-        title = "Refund and Cancellation Policy | BeforeRegret";
-        description = "Learn about our 100% moneyback guarantee on peer consultation bookings if the resident expert fails to connect within 48 hours.";
-      } else if (policiesTab === 'shipping') {
-        title = "Service Fulfillment Policy | BeforeRegret";
-        description = "Understand peer-to-peer delivery structures, electronic chats, and service timeline completions for gated society consulting.";
-      } else if (policiesTab === 'contact') {
-        title = "Official Contact & Support desk | BeforeRegret";
-        description = "Get in touch with Atmostellar regarding billing, corporate partnership, grievance redressal, or RWA complaints.";
-      } else {
-        title = "BeforeRegret Policies and Legal Compliance Center";
-        description = "Review our Terms of Service, Privacy Policy, Refund policy, and Disclaimer for neighborhood research.";
-      }
-    } else if (currentView === 'buyer_dashboard') {
-      title = "Home Buyer Consulting Dashboard | BeforeRegret";
-    } else if (currentView === 'expert_dashboard') {
-      title = "Resident Expert Consultant Dashboard | BeforeRegret";
-    }
-
-    document.title = title;
-
-    // Update meta description safely without querySelector attribute selectors
-    const metaElements = Array.from(document.getElementsByTagName('meta'));
-    let metaDesc = metaElements.find(m => m.getAttribute('name') === 'description');
-    if (!metaDesc) {
-      metaDesc = document.createElement('meta');
-      metaDesc.setAttribute('name', 'description');
-      document.head.appendChild(metaDesc);
-    }
-    metaDesc.setAttribute('content', description);
-
-    // Update OpenGraph meta tags safely (colons in selectors can throw in some iframe/webview sandboxes)
-    let ogTitle = metaElements.find(m => m.getAttribute('property') === 'og:title');
-    if (!ogTitle) {
-      ogTitle = document.createElement('meta');
-      ogTitle.setAttribute('property', 'og:title');
-      document.head.appendChild(ogTitle);
-    }
-    ogTitle.setAttribute('content', title);
-
-    let ogDesc = metaElements.find(m => m.getAttribute('property') === 'og:description');
-    if (!ogDesc) {
-      ogDesc = document.createElement('meta');
-      ogDesc.setAttribute('property', 'og:description');
-      document.head.appendChild(ogDesc);
-    }
-    ogDesc.setAttribute('content', description);
-
-    // 1. Dynamic Canonical Link injection safely
-    const currentPath = window.location.pathname;
-    const linkElements = Array.from(document.getElementsByTagName('link'));
-    let canonical = linkElements.find(l => l.getAttribute('rel') === 'canonical');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonical);
-    }
-    canonical.setAttribute('href', `https://beforeregret.com${currentPath}`);
-
-    // 2. Structured Schema JSON-LD Data Injection (for visual rich results in Google Search)
-    let schemaScript = document.getElementById('jsonld-schema');
-    if (schemaScript) {
-      schemaScript.remove();
-    }
-
-    let schemaData: any = null;
-
-    if (currentView === 'regret_files' && selectedArticleId) {
-      const art = ARTICLES.find(a => a.id === selectedArticleId);
-      if (art) {
+      } else if (currentView === 'profile' && selectedExpert) {
         schemaData = {
           "@context": "https://schema.org",
-          "@type": "BlogPosting",
-          "headline": art.title,
-          "description": art.excerpt,
-          "datePublished": "2026-07-14T12:00:00Z",
-          "author": {
+          "@type": "ProfilePage",
+          "mainEntity": {
             "@type": "Person",
-            "name": art.author.name
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "BeforeRegret",
-            "logo": {
-              "@type": "ImageObject",
-              "url": "https://beforeregret.com/favicon.svg"
+            "name": selectedExpert.fullName,
+            "description": selectedExpert.bio,
+            "jobTitle": "Certified Gated Society Resident Expert",
+            "knowsAbout": selectedExpert.expertiseTags,
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": selectedExpert.localityName,
+              "addressRegion": selectedExpert.city,
+              "addressCountry": "IN"
             }
           }
         };
       }
-    } else if (currentView === 'profile' && selectedExpert) {
-      schemaData = {
-        "@context": "https://schema.org",
-        "@type": "ProfilePage",
-        "mainEntity": {
-          "@type": "Person",
-          "name": selectedExpert.fullName,
-          "description": selectedExpert.bio,
-          "jobTitle": "Certified Gated Society Resident Expert",
-          "knowsAbout": selectedExpert.expertiseTags,
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": selectedExpert.localityName,
-            "addressRegion": selectedExpert.city,
-            "addressCountry": "IN"
-          }
-        }
-      };
-    }
 
-    if (schemaData) {
-      const script = document.createElement('script');
-      script.id = 'jsonld-schema';
-      script.type = 'application/ld+json';
-      script.innerHTML = JSON.stringify(schemaData);
-      document.head.appendChild(script);
+      if (schemaData) {
+        const script = document.createElement('script');
+        script.id = 'jsonld-schema';
+        script.type = 'application/ld+json';
+        script.innerHTML = JSON.stringify(schemaData);
+        document.head.appendChild(script);
+      }
+    } catch (err) {
+      console.warn("Dynamic SEO and meta tag update failed safely:", err);
     }
   }, [currentView, selectedArticleId, selectedExpert]);
 
