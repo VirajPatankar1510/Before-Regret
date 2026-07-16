@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { useAuth } from '../context/AuthContext';
+import { ResidentAvatar } from './ResidentAvatar';
 import { 
   isPushSupported, 
   requestAndSavePushToken, 
@@ -522,18 +523,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="inline-flex items-center gap-2 border border-slate-200 px-3 py-1.5 rounded-xl hover:border-slate-300 transition-all cursor-pointer bg-slate-50 text-slate-800"
               >
-                {user.photoURL ? (
-                  <img 
-                    src={user.photoURL} 
-                    referrerPolicy="no-referrer" 
-                    alt={user.displayName || 'User'} 
-                    className="w-6 h-6 rounded-full object-cover border border-slate-200"
-                  />
-                ) : (
-                  <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700 font-mono">
-                    {(user.displayName || user.email || 'G').charAt(0).toUpperCase()}
-                  </div>
-                )}
+                <ResidentAvatar name={user.displayName || user.email || 'Guest'} className="w-6 h-6 border border-slate-200" />
                 <span className="text-xs font-semibold capitalize hidden sm:inline max-w-[120px] truncate">
                   {user.displayName || user.email?.split('@')[0]}
                 </span>

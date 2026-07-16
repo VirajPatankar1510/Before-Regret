@@ -1,6 +1,7 @@
 import React from 'react';
 import { Star, Clock, MessageSquare, ChevronRight, Eye } from 'lucide-react';
 import { ExpertProfile, Neighborhood } from '../types';
+import { ResidentAvatar } from './ResidentAvatar';
 
 interface FeaturedResidentsProps {
   experts: ExpertProfile[];
@@ -32,95 +33,91 @@ export const FeaturedResidents: React.FC<FeaturedResidentsProps> = ({
         {experts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {experts.map((expert) => {
-              // Convert standard image urls to simple avatars to guarantee we don't display photos
-              const avatarId = expert.fullName.charAt(0);
-              const fallbackAvatarSeed = `https://api.dicebear.com/9.x/adventurer/svg?seed=${expert.fullName}&backgroundColor=b6e3f4`;
+              const repliesInHours = expert.responseTime.toLowerCase().includes('1 hour') 
+                ? '1h' 
+                : expert.responseTime.toLowerCase().includes('2 hours') 
+                  ? '2h' 
+                  : expert.responseTime.toLowerCase().includes('3 hours') 
+                    ? '3h' 
+                    : '4h';
 
               return (
                 <div
                   key={expert.id}
                   onClick={() => onSelectExpert(expert)}
-                  className="bg-slate-50/50 border border-slate-200/60 rounded-2xl p-5 hover:border-slate-300 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between cursor-pointer group"
+                  className="bg-white border border-slate-200 hover:border-blue-600 rounded-xl p-4 hover:shadow-md transition-all duration-200 flex flex-col justify-between cursor-pointer group"
                 >
                   <div>
                     {/* Header: Avatar, Location info */}
-                    <div className="flex items-start gap-3.5 mb-4">
-                      {/* Strictly No Profile Photo - Illustrated Avatar Only */}
+                    <div className="flex items-center gap-3">
                       <div className="relative shrink-0">
-                        <img
-                          src={fallbackAvatarSeed}
-                          alt={expert.fullName}
-                          className="w-12 h-12 rounded-full object-cover bg-slate-100 border border-slate-200 p-0.5"
-                          referrerPolicy="no-referrer"
-                        />
-                        <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white"></span>
+                        <ResidentAvatar name={expert.fullName} className="w-11 h-11" />
+                        {expert.stillLivesThere !== false && (
+                          <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border border-white"></span>
+                          </span>
+                        )}
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors leading-tight truncate">
                           {expert.fullName.split(' ')[0]}
                         </h3>
-                        <p className="text-[11px] text-slate-500 font-semibold leading-tight">
-                          {expert.localityName}
+                        <p className="text-[11px] text-slate-600 font-bold truncate leading-tight mt-0.5">
+                          {expert.localityName.split(',')[0]} • {expert.city}
                         </p>
-                        <p className="text-[10px] text-slate-400 font-medium">
-                          {expert.city}
+                        <p className="text-[10px] text-slate-400 font-medium leading-none mt-0.5">
+                          Living here since {new Date().getFullYear() - (expert.yearsLivingThere || 5)}
                         </p>
                       </div>
                     </div>
 
-                    {/* Quick bio snippet */}
-                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4">
-                      {expert.bio}
-                    </p>
+                    {/* Primary Value Proposition: Ask me about tags */}
+                    <div className="mt-3.5 pt-3 border-t border-slate-100/60">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block mb-1.5">Ask me about</span>
+                      <div className="flex flex-wrap gap-x-2.5 gap-y-1 text-[11px] text-slate-600 font-semibold">
+                        {expert.expertiseTags.slice(0, 4).map((tag, idx) => (
+                          <span key={idx} className="flex items-center gap-1 shrink-0">
+                            <span className="w-1 h-1 rounded-full bg-blue-500/80"></span>
+                            <span>{tag}</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
 
-                    {/* Key Attributes List */}
-                    <div className="space-y-1.5 border-t border-b border-slate-200/40 py-3 mb-4 text-[11px] text-slate-500">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-slate-400">Residency:</span>
-                        <span className="font-bold text-slate-700">
-                          {expert.stillLivesThere !== false ? 'since' : 'for'} {expert.yearsLivingThere === 0 ? 'less than a year' : expert.yearsLivingThere >= 50 ? '50+ years' : `${expert.yearsLivingThere} years`}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-slate-400">Current Status:</span>
-                        <span className={`font-bold px-1.5 py-0.5 rounded-md text-[9px] ${
-                          expert.stillLivesThere !== false
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                            : 'bg-amber-50 text-amber-700 border border-amber-100'
-                        }`}>
-                          {expert.stillLivesThere !== false ? '🟢 Currently Lives Here' : '⚪ Former Resident'}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-slate-400">Response Rate:</span>
-                        <span className="font-bold text-emerald-600 font-mono">{expert.responseRate}%</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-slate-400">Usually Replies:</span>
-                        <span className="font-semibold text-slate-700 flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-slate-400" />
-                          {expert.responseTime.replace('Replies within ', '')}
-                        </span>
+                    {/* Trust Signals Block */}
+                    <div className="mt-3.5 pt-3 border-t border-slate-100/60 space-y-1.5">
+                      {/* Live Status Badge */}
+                      {expert.stillLivesThere !== false && (
+                        <div className="flex items-center gap-1 text-[10px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-100/40 px-1.5 py-0.5 rounded-md w-fit">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                          </span>
+                          <span>Current Resident</span>
+                        </div>
+                      )}
+
+                      {/* Compact parameters list */}
+                      <div className="flex flex-wrap items-center gap-x-1.5 text-[11px] text-slate-500 font-semibold">
+                        <span className="text-slate-800 font-bold flex items-center gap-0.5">⭐ {expert.rating}</span>
+                        <span className="text-slate-300 font-normal">•</span>
+                        <span>{expert.questionsAnsweredCount} Answers</span>
+                        <span className="text-slate-300 font-normal">•</span>
+                        <span>Lives Here {expert.yearsLivingThere} Years</span>
+                        <span className="text-slate-300 font-normal">•</span>
+                        <span>Replies in {repliesInHours}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Pricing and Action CTA */}
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-1">
-                        <span className="text-amber-500 font-bold text-xs sm:text-sm">★</span>
-                        <span className="font-bold text-slate-800 text-xs sm:text-sm">{expert.rating}</span>
-                        <span className="text-slate-400 text-[10px]">
-                          ({expert.questionsAnsweredCount} answered)
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Starting At</p>
-                        <p className="font-black text-slate-900 font-mono text-sm leading-none">
-                          Rs. {expert.pricingPerQuery}
-                        </p>
-                      </div>
+                  <div className="mt-4 pt-3.5 border-t border-slate-100 flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider leading-none">Starts at</p>
+                      <p className="font-extrabold text-slate-900 font-mono text-sm mt-0.5 leading-none">
+                        ₹{expert.pricingPerQuery}
+                      </p>
                     </div>
 
                     <button
@@ -128,10 +125,10 @@ export const FeaturedResidents: React.FC<FeaturedResidentsProps> = ({
                         e.stopPropagation();
                         onSelectExpert(expert);
                       }}
-                      className="w-full bg-blue-600 group-hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-wider py-2.5 rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer"
+                      className="px-3 py-1.5 bg-blue-600 group-hover:bg-blue-700 text-white text-[11px] font-bold rounded-lg transition-colors flex items-center gap-1 cursor-pointer shrink-0"
                     >
-                      <span>Ask {expert.fullName.split(' ')[0]}</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
+                      <span>Ask Before You Decide</span>
+                      <span className="text-xs font-bold">→</span>
                     </button>
                   </div>
                 </div>
