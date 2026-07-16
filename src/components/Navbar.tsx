@@ -537,9 +537,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-xs font-semibold capitalize hidden sm:inline max-w-[120px] truncate">
                   {user.displayName || user.email?.split('@')[0]}
                 </span>
-                <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-bold uppercase tracking-wider scale-90">
-                  {activeRole}
-                </span>
+                {activeRole !== 'buyer' && (
+                  <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-bold uppercase tracking-wider scale-90">
+                    {activeRole}
+                  </span>
+                )}
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
 

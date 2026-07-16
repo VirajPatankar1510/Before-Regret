@@ -12,6 +12,7 @@ interface ResidentProfileProps {
   onStartInquiry: () => void;
   savedExperts: string[];
   onToggleSaveExpert: (expertId: string) => void;
+  currentUserUid?: string;
 }
 
 export const ResidentProfile: React.FC<ResidentProfileProps> = ({
@@ -23,9 +24,11 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
   onStartInquiry,
   savedExperts,
   onToggleSaveExpert,
+  currentUserUid,
 }) => {
   const [selectedPlanId, setSelectedPlanId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>('QUICK');
   const isSaved = savedExperts.includes(expert.id);
+  const isOwnListing = currentUserUid && currentUserUid === expert.userId;
 
   // Filter reviews matching current expert
   const expertReviews = reviews.filter((rev) => rev.expertId === expert.id);
@@ -168,9 +171,16 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
               <div className="text-center sm:text-left flex-1">
                 <h4 className="font-bold text-slate-900 text-base">{expert.fullName.split(' ')[0]}</h4>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Residing in {locality.name} since {expert.memberSince.split(' ')[1] || '2016'} ({expert.yearsLivingThere === 0 ? 'less than a year' : expert.yearsLivingThere >= 50 ? '50+ years' : `${expert.yearsLivingThere} years`})
+                  {expert.stillLivesThere !== false ? 'Residing in' : 'Resided in'} {locality.name} • {expert.stillLivesThere !== false ? 'since' : 'for'} {expert.yearsLivingThere === 0 ? 'less than a year' : expert.yearsLivingThere >= 50 ? '50+ years' : `${expert.yearsLivingThere} years`}
                 </p>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-3">
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                    expert.stillLivesThere !== false
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-100'
+                      : 'bg-amber-50 text-amber-800 border-amber-100'
+                  }`}>
+                    {expert.stillLivesThere !== false ? '🟢 Currently Lives Here' : '⚪ Former Resident'}
+                  </span>
                   <span className="bg-slate-50 text-slate-700 text-[10px] font-bold px-2 py-0.5 border border-slate-200 rounded-md">
                     ⭐ {expert.rating} Stars
                   </span>
@@ -355,13 +365,27 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
               </div>
 
               {/* Order Button */}
-              <button
-                onClick={onStartInquiry}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs hover:shadow-md"
-              >
-                <span>Continue (Rs. {activePlan.price})</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {isOwnListing ? (
+                <div className="space-y-3">
+                  <button
+                    disabled
+                    className="w-full bg-slate-100 border border-slate-200 text-slate-400 font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    <span>Cannot Ask Own Listing</span>
+                  </button>
+                  <p className="text-[10px] text-amber-600 font-medium leading-relaxed bg-amber-50 border border-amber-100 p-3 rounded-xl text-left">
+                    ⚠️ You are registered as the owner of this resident expert profile. The system restricts users from initiating paid consultations or posting questions on their own active listing.
+                  </p>
+                </div>
+              ) : (
+                <button
+                  onClick={onStartInquiry}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs hover:shadow-md"
+                >
+                  <span>Continue (Rs. {activePlan.price})</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
 
               <p className="text-[10px] text-slate-400 text-center mt-3 font-mono">
                 Payment Protected • 100% Satisfaction Guarantee

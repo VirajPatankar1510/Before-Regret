@@ -164,22 +164,9 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
       }
     } else {
-      // Mock Auth Fallback Mode
-      const savedUser = localStorage.getItem('br_current_user');
-      if (savedUser) {
-        try {
-          const parsed = JSON.parse(savedUser);
-          setUser(parsed);
-          refreshExpertProfile(parsed.uid).then(() => {
-            setLoading(false);
-          });
-        } catch (e) {
-          localStorage.removeItem('br_current_user');
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
+      // Mock Auth Fallback Mode - No Session Persistence to demonstrate Loophole 5 (State Reset on Refresh)
+      // We explicitly do not restore user from localStorage on refresh, resetting to guest!
+      setLoading(false);
     }
   }, [isClerkActive, isClerkLoaded, isClerkSignedIn, clerkUser]);
 

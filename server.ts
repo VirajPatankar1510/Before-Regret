@@ -43,8 +43,8 @@ function getDb(): DbSchema {
       queries: [
         {
           id: 'q_mock_1',
-          buyerId: 'user_rohan',
-          buyerName: 'Rohan Deshmukh',
+          buyerId: 'mock_buyer_amit',
+          buyerName: 'Amit Kumar',
           expertId: 'exp_priya',
           expertName: 'Priya',
           localityId: 'loc_bimbisar_nagar',

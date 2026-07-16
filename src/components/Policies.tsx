@@ -161,7 +161,7 @@ export const Policies: React.FC<PoliciesProps> = ({ initialTab = 'terms', onBack
                   Payments made through BeforeRegret are processed using secure third-party payment providers.
                 </p>
                 <p className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 leading-relaxed">
-                  Payments made through BeforeRegret are securely processed via certified third-party payment gateways (e.g., Razorpay). The Company acts strictly as a facilitating marketplace engine. Funds are split programmatically between the platform and the Local Expert only upon successful delivery of the service. Automated reversals or cancellations due to non-response by a Local Expert within the designated platform window are subject to standard banking and gateway settlement timelines. We hold no liability for minor gateway processing latencies.
+                  Payments made through BeforeRegret are securely processed via secured third-party payment gateways (e.g., Razorpay). The Company acts strictly as a facilitating marketplace engine. Funds are split programmatically between the platform and the Local Expert only upon successful delivery of the service. Automated reversals or cancellations due to non-response by a Local Expert within the designated platform window are subject to standard banking and gateway settlement timelines. We hold no liability for minor gateway processing latencies.
                 </p>
                 <p>
                   Refunds, cancellations and payment disputes are governed by our Refund & Cancellation Policy.

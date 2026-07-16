@@ -29,20 +29,20 @@ export const Messaging: React.FC<MessagingProps> = ({
   backText,
 }) => {
   const { user, expertProfile } = useAuth();
-  const currentUserId = user ? user.uid : 'user_rohan';
-  const currentExpertId = expertProfile ? expertProfile.id : 'user_priya';
+  const currentUserId = user ? user.uid : '';
+  const currentExpertId = expertProfile ? expertProfile.id : '';
 
   const [messages, setMessages] = useState<ChatMessageItem[]>([
     {
       id: 'msg_1',
-      senderId: query.buyerId || 'user_rohan',
+      senderId: query.buyerId,
       senderRole: 'buyer',
       text: query.queryText,
       createdAt: query.createdAt
     },
     {
       id: 'msg_2',
-      senderId: query.expertId || 'user_priya',
+      senderId: query.expertId,
       senderRole: 'expert',
       text: "Hello! Thanks for reaching out. I'm currently looking into the points you raised and will compile a comprehensive resident audit/report for you very soon. Let me know if there are any specific local issues you'd like me to address!",
       createdAt: new Date(new Date(query.createdAt).getTime() + 15 * 60 * 1000).toISOString()
@@ -234,14 +234,6 @@ export const Messaging: React.FC<MessagingProps> = ({
             
             {/* Quick Actions Attachments */}
             <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={handleAttachImage}
-                title="Attach Photo"
-                className="p-2 border border-slate-200 hover:border-slate-300 rounded-xl text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-              >
-                <Image className="w-4 h-4" />
-              </button>
               <button
                 type="button"
                 onClick={handleAttachMap}

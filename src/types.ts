@@ -41,12 +41,15 @@ export interface ExpertProfile {
   expertiseTags: string[];
   areasCovered: string[]; // e.g. ["Baner", "Balewadi", "Aundh"]
   yearsLivingThere: number; // e.g. 8
+  stillLivesThere: boolean;
   repeatBuyersCount: number; // e.g. 78
   experienceLevel: 'New Local' | 'Established Local' | 'Trusted Local' | 'Neighborhood Specialist' | 'Community Favorite';
   trustScore: number; // e.g. 94
   languages: string[]; // e.g. ["Hindi", "English", "Marathi"]
   availability: string; // e.g. "Available Daily"
   availableSlots?: string[]; // e.g. ["Today 4:00 PM - 4:30 PM", "Tomorrow 10:00 AM - 10:30 AM"]
+  upiId?: string;
+  bankAccountNumber?: string;
 }
 
 export interface DirectQuery {
