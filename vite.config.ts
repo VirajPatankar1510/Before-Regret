@@ -4,6 +4,13 @@ import path from 'path';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
+  const envDefine = Object.keys(process.env).reduce((acc, key) => {
+    if (key.startsWith('VITE_')) {
+      acc[`import.meta.env.${key}`] = JSON.stringify(process.env[key]);
+    }
+    return acc;
+  }, {} as Record<string, string>);
+
   return {
     plugins: [react(), tailwindcss()],
     resolve: {
@@ -11,6 +18,7 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    define: envDefine,
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
