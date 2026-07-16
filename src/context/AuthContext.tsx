@@ -29,29 +29,44 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Helper to get environment variables securely at runtime (Express-injected or fallback to Vite build env)
+export const getEnv = (key: string): string => {
+  if (typeof window !== 'undefined' && (window as any).__ENV__ && (window as any).__ENV__[key] !== undefined) {
+    return (window as any).__ENV__[key];
+  }
+  return import.meta.env[key] || '';
+};
+
 // Helper to check if Clerk Publishable Key is present and configured
 export const getClerkPublishableKey = (): string => {
-  const rawKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || '';
-  if (!rawKey || rawKey === 'YOUR_CLERK_PUBLISHABLE_KEY' || rawKey.trim() === '' || rawKey.startsWith('YOUR_')) {
-    return '';
-  }
-  // Robust extraction of pk_test_... or pk_live_... to handle accidental multi-variable paste errors gracefully
-  const match = rawKey.match(/pk_(test|live)_[a-zA-Z0-9$]+/);
-  const keyToUse = match ? match[0] : rawKey;
+  const rawKey = getEnv('VITE_CLERK_PUBLISHABLE_KEY');
 
-  // If the key is a live key but we are not on the production domain (beforeregret.com),
-  // using it directly will crash the client due to Clerk domain/CORS restrictions.
-  // We fall back to the development test key for local/preview testing.
+  // Automatic domain detection to handle static deployments like Vercel elegantly
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     const isProductionDomain = hostname === 'beforeregret.com' || hostname.endsWith('.beforeregret.com');
-    if (keyToUse.startsWith('pk_live_') && !isProductionDomain) {
-      console.warn("Clerk live key detected on development domain. Falling back to development test key to prevent domain mismatch crash.");
-      return 'pk_test_YW11c2luZy1nYXplbGxlLTQ4LmNsZXJrLmFjY291bnRzLmRldiQ';
+
+    if (isProductionDomain) {
+      // For production domain, return the live production key directly if no override is provided
+      if (!rawKey || rawKey === 'YOUR_CLERK_PUBLISHABLE_KEY' || rawKey.trim() === '' || rawKey.startsWith('YOUR_')) {
+        return 'pk_live_Y2xlcmsuYmVmb3JlcmVncmV0LmNvbSQ';
+      }
+    } else {
+      // For development or preview environment, automatically use the development test key.
+      // This prevents live key CORS domain mismatch crashes during development and testing.
+      if (!rawKey || rawKey.startsWith('pk_live_') || rawKey === 'YOUR_CLERK_PUBLISHABLE_KEY' || rawKey.trim() === '') {
+        return 'pk_test_YW11c2luZy1nYXplbGxlLTQ4LmNsZXJrLmFjY291bnRzLmRldiQ';
+      }
     }
   }
 
-  return keyToUse;
+  if (!rawKey || rawKey === 'YOUR_CLERK_PUBLISHABLE_KEY' || rawKey.trim() === '' || rawKey.startsWith('YOUR_')) {
+    return '';
+  }
+
+  // Robust extraction of pk_test_... or pk_live_... to handle accidental multi-variable paste errors gracefully
+  const match = rawKey.match(/pk_(test|live)_[a-zA-Z0-9$]+/);
+  return match ? match[0] : rawKey;
 };
 
 // Internal provider implementing auth logic and Clerk hook synchronization
