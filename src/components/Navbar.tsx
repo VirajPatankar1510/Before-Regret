@@ -42,7 +42,16 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveRole,
   onSearchFocus,
 }) => {
-  const { user, signInWithGoogle, loginWithMockUser, logout, expertProfile } = useAuth();
+  const { 
+    user, 
+    signInWithGoogle, 
+    loginWithMockUser, 
+    logout, 
+    expertProfile,
+    isClerkActive,
+    triggerClerkSignIn,
+    triggerClerkSignUp
+  } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -495,7 +504,13 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {!user ? (
             <button
-              onClick={() => setAuthModalOpen(true)}
+              onClick={() => {
+                if (isClerkActive) {
+                  triggerClerkSignIn();
+                } else {
+                  setAuthModalOpen(true);
+                }
+              }}
               className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all cursor-pointer shadow-xs hover:shadow-md"
             >
               <LogIn className="w-3.5 h-3.5" />
@@ -744,105 +759,138 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Modal Body */}
             <div className="p-6 space-y-6 max-h-[480px] overflow-y-auto">
-              {/* Option A: Google Authentication */}
+              {/* Option A: Secure Authentication */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs font-bold font-mono flex items-center justify-center">A</span>
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
-                    Google Single Sign-On
+                    {isClerkActive ? "Clerk Secure Authentication" : "Google Single Sign-On"}
                   </span>
                 </div>
 
-                {authError && (
-                  <div className="space-y-2">
-                    <div className="bg-rose-50 border border-rose-100 rounded-xl p-3 text-[11px] text-rose-600 font-medium">
-                      {authError}
+                {isClerkActive ? (
+                  <div className="space-y-4 pt-1">
+                    <p className="text-xs text-slate-500 leading-relaxed font-medium bg-blue-50/50 border border-blue-100/30 p-3 rounded-2xl">
+                      BeforeRegret now secures user authentication via <strong>Clerk</strong>. Click below to sign in or register securely on any browser or device.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        triggerClerkSignIn();
+                        setAuthModalOpen(false);
+                      }}
+                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold tracking-tight transition-all hover:shadow-md cursor-pointer flex items-center justify-center gap-2.5 active:scale-98"
+                    >
+                      <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+                      <span>Continue with Clerk</span>
+                    </button>
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          triggerClerkSignUp();
+                          setAuthModalOpen(false);
+                        }}
+                        className="text-xs text-blue-600 hover:underline font-bold"
+                      >
+                        Don't have an account? Create one with Clerk &rarr;
+                      </button>
                     </div>
-                    {authError.toLowerCase().includes('unauthorized-domain') && (
-                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl space-y-3 text-xs text-amber-900 leading-normal">
-                        <div className="font-bold flex items-center gap-1.5 text-amber-800">
-                          <svg className="w-4.5 h-4.5 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                          </svg>
-                          Authorize this domain in Firebase
-                        </div>
-                        <p>
-                          To allow Google Sign-In, please add this workspace domain to your Firebase Console under authorized domains.
-                        </p>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between gap-2 p-2 bg-white rounded-lg border border-amber-200 shadow-3xs">
-                            <span className="font-mono text-xs select-all break-all text-slate-700">{window.location.hostname}</span>
-                            <button
-                              type="button"
-                              onClick={copyToClipboard}
-                              className="px-2.5 py-1 text-[10px] font-semibold bg-amber-600 hover:bg-amber-700 text-white rounded-md transition-all active:scale-95 cursor-pointer shrink-0"
-                            >
-                              {copiedDomain ? 'Copied!' : 'Copy'}
-                            </button>
-                          </div>
-                          <div className="text-[11px] space-y-1 text-amber-800">
-                            <p className="font-bold">Instructions:</p>
-                            <ol className="list-decimal pl-4 space-y-1">
-                              <li>Open the <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" className="underline font-bold hover:text-amber-950">Firebase Console</a>.</li>
-                              <li>Go to <strong>Authentication</strong> &rarr; <strong>Settings</strong> &rarr; <strong>Authorized domains</strong>.</li>
-                              <li>Click <strong>Add domain</strong>, paste the copied domain, and save.</li>
-                            </ol>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {authError.toLowerCase().includes('operation-not-allowed') && (
-                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl space-y-3 text-xs text-amber-900 leading-normal">
-                        <div className="font-bold flex items-center gap-1.5 text-amber-800">
-                          <svg className="w-4.5 h-4.5 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                          </svg>
-                          Enable Google Sign-In Provider
-                        </div>
-                        <p>
-                          Google Sign-In is not currently enabled as a sign-in provider in your Firebase project.
-                        </p>
-                        <div className="text-[11px] space-y-1.5 text-amber-800">
-                          <p className="font-bold">How to enable Google Sign-In:</p>
-                          <ol className="list-decimal pl-4 space-y-1">
-                            <li>Open the <a href={`https://console.firebase.google.com/project/${(import.meta as any).env.VITE_FIREBASE_PROJECT_ID || 'before-regret'}/authentication/providers`} target="_blank" rel="noopener noreferrer" className="underline font-bold hover:text-amber-950">Firebase Authentication Sign-In Method page</a>.</li>
-                            <li>Click <strong>Add new provider</strong> (or edit existing) and select <strong>Google</strong>.</li>
-                            <li>Toggle the switch to <strong>Enable</strong>.</li>
-                            <li>Select a project support email (your email) and click <strong>Save</strong>.</li>
-                          </ol>
-                        </div>
-                      </div>
-                    )}
                   </div>
-                )}
+                ) : (
+                  <>
+                    {authError && (
+                      <div className="space-y-2">
+                        <div className="bg-rose-50 border border-rose-100 rounded-xl p-3 text-[11px] text-rose-600 font-medium">
+                          {authError}
+                        </div>
+                        {authError.toLowerCase().includes('unauthorized-domain') && (
+                          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl space-y-3 text-xs text-amber-900 leading-normal">
+                            <div className="font-bold flex items-center gap-1.5 text-amber-800">
+                              <svg className="w-4.5 h-4.5 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                              </svg>
+                              Authorize this domain in Firebase
+                            </div>
+                            <p>
+                              To allow Google Sign-In, please add this workspace domain to your Firebase Console under authorized domains.
+                            </p>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between gap-2 p-2 bg-white rounded-lg border border-amber-200 shadow-3xs">
+                                <span className="font-mono text-xs select-all break-all text-slate-700">{window.location.hostname}</span>
+                                <button
+                                  type="button"
+                                  onClick={copyToClipboard}
+                                  className="px-2.5 py-1 text-[10px] font-semibold bg-amber-600 hover:bg-amber-700 text-white rounded-md transition-all active:scale-95 cursor-pointer shrink-0"
+                                >
+                                  {copiedDomain ? 'Copied!' : 'Copy'}
+                                </button>
+                              </div>
+                              <div className="text-[11px] space-y-1 text-amber-800">
+                                <p className="font-bold">Instructions:</p>
+                                <ol className="list-decimal pl-4 space-y-1">
+                                  <li>Open the <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" className="underline font-bold hover:text-amber-950">Firebase Console</a>.</li>
+                                  <li>Go to <strong>Authentication</strong> &rarr; <strong>Settings</strong> &rarr; <strong>Authorized domains</strong>.</li>
+                                  <li>Click <strong>Add domain</strong>, paste the copied domain, and save.</li>
+                                </ol>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        {authError.toLowerCase().includes('operation-not-allowed') && (
+                          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl space-y-3 text-xs text-amber-900 leading-normal">
+                            <div className="font-bold flex items-center gap-1.5 text-amber-800">
+                              <svg className="w-4.5 h-4.5 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                              </svg>
+                              Enable Google Sign-In Provider
+                            </div>
+                            <p>
+                              Google Sign-In is not currently enabled as a sign-in provider in your Firebase project.
+                            </p>
+                            <div className="text-[11px] space-y-1.5 text-amber-800">
+                              <p className="font-bold">How to enable Google Sign-In:</p>
+                              <ol className="list-decimal pl-4 space-y-1">
+                                <li>Open the <a href={`https://console.firebase.google.com/project/${(import.meta as any).env.VITE_FIREBASE_PROJECT_ID || 'before-regret'}/authentication/providers`} target="_blank" rel="noopener noreferrer" className="underline font-bold hover:text-amber-950">Firebase Authentication Sign-In Method page</a>.</li>
+                                <li>Click <strong>Add new provider</strong> (or edit existing) and select <strong>Google</strong>.</li>
+                                <li>Toggle the switch to <strong>Enable</strong>.</li>
+                                <li>Select a project support email (your email) and click <strong>Save</strong>.</li>
+                              </ol>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-                <div className="pt-1">
-                  <button
-                    type="button"
-                    onClick={handleGoogleSignIn}
-                    className="w-full py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-sm font-semibold tracking-tight transition-all hover:shadow-2xs cursor-pointer flex items-center justify-center gap-2.5 active:scale-98 group"
-                  >
-                    <svg className="w-4.5 h-4.5 transition-transform group-hover:scale-105" viewBox="0 0 24 24" width="18" height="18">
-                      <path
-                        fill="#EA4335"
-                        d="M20.64,12.2c0-0.63-0.06-1.25-0.16-1.84H12v3.78h4.84c-0.21,1.12-0.84,2.07-1.79,2.7l2.79,2.16 C19.47,17.43,20.64,15.06,20.64,12.2z"
-                      />
-                      <path
-                        fill="#4285F4"
-                        d="M12,21c2.43,0,4.47-0.8,5.96-2.2l-2.79-2.16c-0.77,0.52-1.77,0.83-3.17,0.83c-2.43,0-4.5-1.64-5.23-3.84 H1.17v2.28C2.66,18.84,7.03,21,12,21z"
-                      />
-                      <path
-                        fill="#FBBC05"
-                        d="M6.77,13.63C6.57,13.03,6.46,12.4,6.46,11.75c0-0.65,0.11-1.28,0.31-1.88V7.59H1.17c-0.67,1.34-1.06,2.85-1.06,4.45 c0,1.6,0.39,3.11,1.06,4.45L6.77,13.63z"
-                      />
-                      <path
-                        fill="#34A853"
-                        d="M12,5.38c1.32,0,2.51,0.45,3.44,1.35l2.58-2.58C16.47,2.7,14.43,2,12,2C7.03,2,2.66,4.16,1.17,7.59l3.54,2.74 C5.5,8.12,7.57,5.38,12,5.38z"
-                      />
-                    </svg>
-                    <span className="font-bold">Continue with Google</span>
-                  </button>
-                </div>
+                    <div className="pt-1">
+                      <button
+                        type="button"
+                        onClick={handleGoogleSignIn}
+                        className="w-full py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-sm font-semibold tracking-tight transition-all hover:shadow-2xs cursor-pointer flex items-center justify-center gap-2.5 active:scale-98 group"
+                      >
+                        <svg className="w-4.5 h-4.5 transition-transform group-hover:scale-105" viewBox="0 0 24 24" width="18" height="18">
+                          <path
+                            fill="#EA4335"
+                            d="M20.64,12.2c0-0.63-0.06-1.25-0.16-1.84H12v3.78h4.84c-0.21,1.12-0.84,2.07-1.79,2.7l2.79,2.16 C19.47,17.43,20.64,15.06,20.64,12.2z"
+                          />
+                          <path
+                            fill="#4285F4"
+                            d="M12,21c2.43,0,4.47-0.8,5.96-2.2l-2.79-2.16c-0.77,0.52-1.77,0.83-3.17,0.83c-2.43,0-4.5-1.64-5.23-3.84 H1.17v2.28C2.66,18.84,7.03,21,12,21z"
+                          />
+                          <path
+                            fill="#FBBC05"
+                            d="M6.77,13.63C6.57,13.03,6.46,12.4,6.46,11.75c0-0.65,0.11-1.28,0.31-1.88V7.59H1.17c-0.67,1.34-1.06,2.85-1.06,4.45 c0,1.6,0.39,3.11,1.06,4.45L6.77,13.63z"
+                          />
+                          <path
+                            fill="#34A853"
+                            d="M12,5.38c1.32,0,2.51,0.45,3.44,1.35l2.58-2.58C16.47,2.7,14.43,2,12,2C7.03,2,2.66,4.16,1.17,7.59l3.54,2.74 C5.5,8.12,7.57,5.38,12,5.38z"
+                          />
+                        </svg>
+                        <span className="font-bold">Continue with Google</span>
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Divider */}
