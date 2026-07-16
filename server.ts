@@ -120,21 +120,7 @@ async function startServer() {
     console.log(`[BeforeRegret Notifications] Dispatching alert to User: ${userId}`);
     console.log(`[BeforeRegret Notifications] Content: "${title}" - ${body}`);
 
-    // If real Firebase Service Account is configured, we can trigger the official Google FCM API.
-    // Otherwise, we log the details and push to our real-time in-app dashboard stream.
-    const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-    let sentViaFCM = false;
-
-    if (serviceAccountKey && token) {
-      try {
-        console.log("[BeforeRegret Notifications] Firebase Service Account detected. Preparing Google FCM API request...");
-        // Here we could parse the serviceAccountKey and use standard oauth2/googleapis or firebase-admin to send a native push.
-        // For portability, we also keep the robust in-memory stream active.
-        sentViaFCM = true;
-      } catch (fcmError) {
-        console.error("[BeforeRegret Notifications] Official FCM Dispatch failed, falling back to instant stream:", fcmError);
-      }
-    }
+    // Dispatch the alert to real-time in-app dashboard stream.
 
     // Always push to the pending state so the UI displays it immediately with high fidelity
     const newNotification = {
@@ -158,7 +144,7 @@ async function startServer() {
 
     res.json({
       success: true,
-      deliveredChannel: sentViaFCM ? "FCM_NATIVE" : "SIMULATED_PUSH_STREAM",
+      deliveredChannel: "SIMULATED_PUSH_STREAM",
       notification: newNotification
     });
   });
