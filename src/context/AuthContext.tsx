@@ -37,10 +37,21 @@ export const getClerkPublishableKey = (): string => {
   }
   // Robust extraction of pk_test_... or pk_live_... to handle accidental multi-variable paste errors gracefully
   const match = rawKey.match(/pk_(test|live)_[a-zA-Z0-9$]+/);
-  if (match) {
-    return match[0];
+  const keyToUse = match ? match[0] : rawKey;
+
+  // If the key is a live key but we are not on the production domain (beforeregret.com),
+  // using it directly will crash the client due to Clerk domain/CORS restrictions.
+  // We fall back to the development test key for local/preview testing.
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const isProductionDomain = hostname === 'beforeregret.com' || hostname.endsWith('.beforeregret.com');
+    if (keyToUse.startsWith('pk_live_') && !isProductionDomain) {
+      console.warn("Clerk live key detected on development domain. Falling back to development test key to prevent domain mismatch crash.");
+      return 'pk_test_YW11c2luZy1nYXplbGxlLTQ4LmNsZXJrLmFjY291bnRzLmRldiQ';
+    }
   }
-  return rawKey;
+
+  return keyToUse;
 };
 
 // Internal provider implementing auth logic and Clerk hook synchronization
