@@ -97,7 +97,7 @@ async function startServer() {
     res.json(dbData.experts.slice(0, 3));
   });
 
-  // In-memory store for simulated / fallback notifications when Firebase credentials are not yet fully injected in the environment
+  // In-memory store for simulated / fallback notifications when external keys are not yet fully injected in the environment
   const pendingNotifications: Array<{
     id: string;
     userId: string;
@@ -108,7 +108,7 @@ async function startServer() {
     read: boolean;
   }> = [];
 
-  // API to send Web Push Notifications via Firebase (or fall back to simulated push stream)
+  // API to send Web Push Notifications via Clerk/simulated push stream
   app.post("/api/notifications/send", async (req, res) => {
     const { token, userId, title, body, clickAction } = req.body;
 
