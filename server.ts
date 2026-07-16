@@ -384,9 +384,22 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, { index: false }));
     app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+      const indexPath = path.join(distPath, 'index.html');
+      if (fs.existsSync(indexPath)) {
+        let html = fs.readFileSync(indexPath, 'utf8');
+        const env = {
+          VITE_CLERK_PUBLISHABLE_KEY: process.env.VITE_CLERK_PUBLISHABLE_KEY || '',
+        };
+        html = html.replace(
+          '<head>',
+          `<head><script>window.__ENV__ = ${JSON.stringify(env)};</script>`
+        );
+        res.send(html);
+      } else {
+        res.status(404).send('Not found');
+      }
     });
   }
 
