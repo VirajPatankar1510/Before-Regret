@@ -3,6 +3,7 @@ import { DirectQuery, ExpertProfile, Review, Wallet } from '../types';
 import { MOCK_AVATARS } from '../data';
 import { MessageSquare, CheckCircle, Clock, Wallet as WalletIcon, Coins, Award, LogOut, FileText, Bookmark, Settings, Check, User, ArrowUpRight, HelpCircle, AlertCircle, Sparkles, Compass, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { ResidentAvatar } from './ResidentAvatar';
 
 interface DashboardsProps {
   queries: DirectQuery[];
@@ -336,11 +337,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                     {savedResidents.map((exp) => (
                       <div key={exp.id} className="p-4 border border-slate-100 rounded-xl bg-slate-50/50 flex gap-3.5 items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <img
-                            src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${exp.fullName}&backgroundColor=b6e3f4`}
-                            alt={exp.fullName}
-                            className="w-10 h-10 rounded-full border border-slate-200 p-0.5 bg-white"
-                          />
+                          <ResidentAvatar name={exp.fullName} className="w-10 h-10 border border-slate-200" />
                           <div>
                             <h4 className="font-bold text-xs sm:text-sm text-slate-800">{exp.fullName.split(' ')[0]}</h4>
                             <p className="text-[10px] text-slate-400 font-semibold">{exp.localityName}</p>

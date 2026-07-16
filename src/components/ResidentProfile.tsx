@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ExpertProfile, Review, Neighborhood } from '../types';
 import { pricingPlans } from '../data';
 import { ChevronLeft, Clock, ShieldCheck, Check, ArrowRight, MessageSquare, Heart, Award, Star, ThumbsUp, MapPin } from 'lucide-react';
+import { ResidentAvatar } from './ResidentAvatar';
 
 interface ResidentProfileProps {
   expert: ExpertProfile;
@@ -162,12 +163,7 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
             </h3>
 
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 pb-6 border-b border-slate-100 mb-6">
-              <img
-                src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${expert.fullName}&backgroundColor=b6e3f4`}
-                alt={expert.fullName}
-                className="w-16 h-16 rounded-full object-cover bg-slate-50 border border-slate-200 p-1 shadow-2xs"
-                referrerPolicy="no-referrer"
-              />
+              <ResidentAvatar name={expert.fullName} className="w-16 h-16 shadow-2xs border border-slate-200" />
               <div className="text-center sm:text-left flex-1">
                 <h4 className="font-bold text-slate-900 text-base">{expert.fullName.split(' ')[0]}</h4>
                 <p className="text-xs text-slate-500 mt-0.5">
