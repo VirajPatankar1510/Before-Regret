@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { HowItWorks } from './components/HowItWorks';
+import { IntroStoryHero } from './components/IntroStoryHero';
 import { FeaturedResidents } from './components/FeaturedResidents';
 import { ResidentProfile } from './components/ResidentProfile';
 import { AskQuestion } from './components/AskQuestion';
@@ -697,6 +698,7 @@ export default function App() {
         {/* VIEW: HOME VIEW (Default Hero, How It Works, and Featured list) */}
         {currentView === 'home' && (
           <div>
+            <IntroStoryHero />
             <Hero
               localities={localities}
               onSelectLocality={handleSelectLocality}
