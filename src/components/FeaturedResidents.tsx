@@ -76,13 +76,19 @@ export const FeaturedResidents: React.FC<FeaturedResidentsProps> = ({
                     {/* Key Attributes List */}
                     <div className="space-y-1.5 border-t border-b border-slate-200/40 py-3 mb-4 text-[11px] text-slate-500">
                       <div className="flex items-center justify-between">
-                        <span className="font-medium text-slate-400">Residing Since:</span>
-                        <span className="font-bold text-slate-700">{expert.memberSince.split(' ')[1] || '2016'}</span>
+                        <span className="font-medium text-slate-400">Residency:</span>
+                        <span className="font-bold text-slate-700">
+                          {expert.stillLivesThere !== false ? 'since' : 'for'} {expert.yearsLivingThere === 0 ? 'less than a year' : expert.yearsLivingThere >= 50 ? '50+ years' : `${expert.yearsLivingThere} years`}
+                        </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="font-medium text-slate-400">Years Living There:</span>
-                        <span className="font-mono font-black text-slate-700">
-                          {expert.yearsLivingThere === 0 ? '< 1 yr' : expert.yearsLivingThere >= 50 ? '50+ yrs' : `${expert.yearsLivingThere} yrs`}
+                        <span className="font-medium text-slate-400">Current Status:</span>
+                        <span className={`font-bold px-1.5 py-0.5 rounded-md text-[9px] ${
+                          expert.stillLivesThere !== false
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                            : 'bg-amber-50 text-amber-700 border border-amber-100'
+                        }`}>
+                          {expert.stillLivesThere !== false ? '🟢 Currently Lives Here' : '⚪ Former Resident'}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">

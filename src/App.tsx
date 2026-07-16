@@ -19,7 +19,7 @@ import { useAuth } from './context/AuthContext';
 import { triggerTestPushNotification } from './lib/notificationService';
 
 export default function App() {
-  const { user, activeRole, setActiveRole } = useAuth();
+  const { user, activeRole, setActiveRole, setExpertProfile } = useAuth();
 
   // Navigation & Simulation Perspective State
   const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, buyer_dashboard, expert_dashboard, messaging, become_expert, policies
@@ -52,8 +52,8 @@ export default function App() {
     return [
       {
         id: 'q_mock_1',
-        buyerId: 'user_rohan',
-        buyerName: 'Rohan Deshmukh',
+        buyerId: 'mock_buyer_amit',
+        buyerName: 'Amit Kumar',
         expertId: 'exp_priya',
         expertName: 'Priya',
         localityId: 'loc_bimbisar_nagar',
@@ -356,7 +356,7 @@ export default function App() {
         title = `Consult ${selectedExpert.fullName} - ${selectedExpert.localityName} Resident Expert`;
         description = `Ask ${selectedExpert.fullName} about water hardness, power back-up, committee rules, and maid charges in ${selectedExpert.localityName} before you decide.`;
       } else if (currentView === 'become_expert') {
-        title = "Earn as a Certified Local Resident Expert | BeforeRegret Onboarding";
+        title = "Earn as a Verified Local Resident Expert | BeforeRegret Onboarding";
         description = "Help prospective buyers and tenants make informed decisions about your society. Share honest reviews and earn per consultation.";
       } else if (currentView === 'policies') {
         if (policiesTab === 'disclaimer') {
@@ -466,7 +466,7 @@ export default function App() {
             "@type": "Person",
             "name": selectedExpert.fullName,
             "description": selectedExpert.bio,
-            "jobTitle": "Certified Gated Society Resident Expert",
+            "jobTitle": "Verified Gated Society Resident Expert",
             "knowsAbout": selectedExpert.expertiseTags,
             "address": {
               "@type": "PostalAddress",
@@ -530,14 +530,28 @@ export default function App() {
     }
   };
 
+  const handleUpdateExpert = (updated: ExpertProfile) => {
+    setExperts((prev) => prev.map((e) => e.id === updated.id ? updated : e));
+  };
+
   // Submit new inquiry wizard
   const handleSubmitQuestion = (queryText: string, packageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT', bookedSlot?: string) => {
     if (!selectedExpert) return;
 
+    if (!user) {
+      alert("Error: You must be signed in to submit a question.");
+      return;
+    }
+
+    if (user && selectedExpert && user.uid === selectedExpert.userId) {
+      alert("Error: You cannot submit questions or consult on your own listing.");
+      return;
+    }
+
     const newQuery: DirectQuery = {
       id: `q_${Date.now()}`,
-      buyerId: user ? user.uid : 'user_rohan',
-      buyerName: user ? (user.displayName || user.email || 'Anonymous') : 'Rohan Deshmukh',
+      buyerId: user.uid,
+      buyerName: user.displayName || user.email || 'Anonymous',
       expertId: selectedExpert.id,
       expertName: selectedExpert.fullName,
       localityId: selectedExpert.localityId,
@@ -650,6 +664,8 @@ export default function App() {
         }));
       }
     }
+    setActiveRole('expert');
+    setExpertProfile(newExpert);
   };
 
   const handleOpenChat = (query: DirectQuery) => {
@@ -745,7 +761,7 @@ export default function App() {
                   Residential Apartments Directory
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-2xl font-medium">
-                  Browse Indian housing societies, apartment complexes, or sectors below. Click any layout to filter and consult certified long-term residents living there.
+                  Browse Indian housing societies, apartment complexes, or sectors below. Click any layout to filter and consult verified long-term residents living there.
                 </p>
               </div>
               {selectedLocality && (
@@ -882,9 +898,19 @@ export default function App() {
             reviews={reviews}
             onBack={() => setView('home')}
             onSelectPackage={setSelectedPackageId}
-            onStartInquiry={() => setView('ask_question')}
+            onStartInquiry={() => {
+              if (!user) {
+                alert("Please Sign In: To submit an inquiry, you must first create or sign in to your BeforeRegret account.");
+                return;
+              }
+              if (user && user.uid === selectedExpert.userId) {
+                return;
+              }
+              setView('ask_question');
+            }}
             savedExperts={savedExpertIds}
             onToggleSaveExpert={handleToggleSaveExpert}
+            currentUserUid={user?.uid}
           />
         )}
 
@@ -912,6 +938,7 @@ export default function App() {
             onOpenChat={handleOpenChat}
             onLeaveReview={handleLeaveReview}
             setView={setView}
+            onUpdateExpert={handleUpdateExpert}
           />
         )}
 
@@ -928,6 +955,7 @@ export default function App() {
             onOpenChat={handleOpenChat}
             onLeaveReview={() => {}}
             setView={setView}
+            onUpdateExpert={handleUpdateExpert}
           />
         )}
 

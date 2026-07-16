@@ -53,8 +53,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
     const newQuery: DirectQuery = {
       id: `q_${Date.now()}`,
-      buyerId: 'user_rohan',
-      buyerName: 'Rohan Deshmukh',
+      buyerId: 'mock_buyer_amit',
+      buyerName: 'Amit Kumar',
       expertId: randomExpert.id,
       expertName: randomExpert.fullName,
       localityId: randomExpert.localityId,
@@ -69,7 +69,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     };
 
     setQueries([newQuery, ...queries]);
-    setSimulateStatusMsg(`Successfully pre-seeded a new ${chosenPkg} order for Rohan to expert ${randomExpert.fullName.split(' ')[0]}!`);
+    setSimulateStatusMsg(`Successfully pre-seeded a new ${chosenPkg} order for Amit to expert ${randomExpert.fullName.split(' ')[0]}!`);
     setTimeout(() => setSimulateStatusMsg(''), 4000);
   };
 
@@ -96,8 +96,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setQueries([
       {
         id: 'q_mock_1',
-        buyerId: 'user_rohan',
-        buyerName: 'Rohan Deshmukh',
+        buyerId: 'mock_buyer_amit',
+        buyerName: 'Amit Kumar',
         expertId: 'exp_priya',
         expertName: 'Priya',
         localityId: 'loc_bimbisar_nagar',
@@ -115,7 +115,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   const activeRoleName = () => {
-    if (activeRole === 'buyer') return 'Rohan Deshmukh (Buyer)';
+    if (activeRole === 'buyer') return 'Amit Kumar (Buyer)';
     if (activeRole === 'expert') return 'Priya (Local Resident)';
     return 'Guest / Unlogged';
   };
@@ -291,7 +291,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
               <h4 className="font-bold text-slate-800 text-base">Unauthenticated Visitor</h4>
               <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                Acts as a fresh guest visiting the page. Can browse apartments, look at certified resident bios, read reviews, and select consultation pricing packages.
+                Acts as a fresh guest visiting the page. Can browse apartments, look at verified resident bios, read reviews, and select consultation pricing packages.
               </p>
               <button
                 onClick={() => {
@@ -306,13 +306,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </button>
             </div>
 
-            {/* RO_HAN BUYER */}
+            {/* AMIT KUMAR BUYER */}
             <div className={`border-2 rounded-2xl p-6 transition-all bg-white ${activeRole === 'buyer' ? 'border-blue-600 shadow-xs' : 'border-slate-200'}`}>
               <div className="flex items-center justify-between mb-4">
                 <span className="text-[10px] font-mono font-bold uppercase bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">Pre-seeded Buyer</span>
                 {activeRole === 'buyer' && <span className="text-xs text-blue-600 font-bold flex items-center gap-0.5"><Check className="w-3.5 h-3.5" /> Active Session</span>}
               </div>
-              <h4 className="font-bold text-slate-800 text-base">Rohan Deshmukh</h4>
+              <h4 className="font-bold text-slate-800 text-base">Amit Kumar</h4>
               <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                 Pre-loaded with pending queries and scheduled 30-min live consults. Can access the **Buyer Dashboard** to track orders, message residents, or complete review feedback.
               </p>
@@ -320,12 +320,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 onClick={() => {
                   setActiveRole('buyer');
                   setView('buyer_dashboard');
-                  setSimulateStatusMsg('Logged in as Rohan Deshmukh (Buyer). Redirected to Buyer Dashboard!');
+                  setSimulateStatusMsg('Logged in as Amit Kumar (Buyer). Redirected to Buyer Dashboard!');
                   setTimeout(() => setSimulateStatusMsg(''), 2500);
                 }}
                 className="w-full mt-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
               >
-                Log In as Rohan (Buyer)
+                Log In as Amit (Buyer)
               </button>
             </div>
 
@@ -335,9 +335,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <span className="text-[10px] font-mono font-bold uppercase bg-blue-50 text-blue-700 px-2 py-0.5 rounded">Pre-seeded Expert</span>
                 {activeRole === 'expert' && <span className="text-xs text-blue-600 font-bold flex items-center gap-0.5"><Check className="w-3.5 h-3.5" /> Active Session</span>}
               </div>
-              <h4 className="font-bold text-slate-800 text-base">Priya (Certified Local)</h4>
+              <h4 className="font-bold text-slate-800 text-base">Priya (Verified Local)</h4>
               <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                Assigned to Rohan\'s queries for Bimbisar Nagar. Can access the **Expert Dashboard** to reply to messages, draft compiled society reports, and request payouts.
+                Assigned to Amit\'s queries for Bimbisar Nagar. Can access the **Expert Dashboard** to reply to messages, reply to queries, submit answers, and request payouts.
               </p>
               <button
                 onClick={() => {
@@ -495,7 +495,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <div className="bg-slate-900 rounded-xl p-4 font-mono text-[10px] text-slate-300 space-y-1 select-none">
               <p className="text-slate-500">[{new Date().toLocaleTimeString()}] System booted successfully.</p>
               <p className="text-slate-500">[{new Date().toLocaleTimeString()}] Configured developer password protection: "BR1510"</p>
-              <p className="text-emerald-400">[{new Date().toLocaleTimeString()}] Pre-loaded certified expert catalog: {experts.length} active experts</p>
+              <p className="text-emerald-400">[{new Date().toLocaleTimeString()}] Pre-loaded verified expert catalog: {experts.length} active experts</p>
               <p className="text-blue-400">[{new Date().toLocaleTimeString()}] Active role: "{activeRoleName()}"</p>
               <p className="text-amber-400">[{new Date().toLocaleTimeString()}] Memory order database: {queries.length} listings</p>
             </div>

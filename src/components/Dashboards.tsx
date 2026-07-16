@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DirectQuery, ExpertProfile, Review, Wallet } from '../types';
 import { MOCK_AVATARS } from '../data';
 import { MessageSquare, CheckCircle, Clock, Wallet as WalletIcon, Coins, Award, LogOut, FileText, Bookmark, Settings, Check, User, ArrowUpRight, HelpCircle, AlertCircle, Sparkles, Compass, ArrowLeft } from 'lucide-react';
@@ -28,16 +28,29 @@ export const Dashboards: React.FC<DashboardsProps> = ({
   onOpenChat,
   onLeaveReview,
   setView,
+  onUpdateExpert,
 }) => {
-  const { user, expertProfile } = useAuth();
+  const { user, expertProfile, setExpertProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<'questions' | 'saved' | 'invoices' | 'settings'>('questions');
   const [expertTab, setExpertTab] = useState<'new' | 'completed' | 'earnings' | 'settings'>('new');
   const [withdrawalAmount, setWithdrawalAmount] = useState('1000');
-  const [upiId, setUpiId] = useState('priya@okhdfcbank');
+  const [upiId, setUpiId] = useState(expertProfile?.upiId || 'priya@okhdfcbank');
   const [withdrawing, setWithdrawing] = useState(false);
   const [withdrawSuccess, setWithdrawSuccess] = useState('');
 
-  const currentUserId = user ? user.uid : 'user_rohan';
+  const [settingsName, setSettingsName] = useState(expertProfile?.fullName || '');
+  const [settingsBio, setSettingsBio] = useState(expertProfile?.bio || '');
+  const [settingsSuccess, setSettingsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (expertProfile) {
+      setSettingsName(expertProfile.fullName || '');
+      setSettingsBio(expertProfile.bio || '');
+      setUpiId(expertProfile.upiId || 'priya@okhdfcbank');
+    }
+  }, [expertProfile]);
+
+  const currentUserId = user ? user.uid : '';
   const currentExpertId = expertProfile ? expertProfile.id : 'exp_priya';
 
   // ---------------- BUYER LOGIC ----------------
@@ -638,22 +651,73 @@ export const Dashboards: React.FC<DashboardsProps> = ({
             {/* PROFILE SETTINGS PANEL */}
             {expertTab === 'settings' && (
               <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-6">
-                <h3 className="font-display font-black text-slate-900 text-base">Local Resident Profile Settings</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-display font-black text-slate-900 text-base">Local Resident Profile Settings</h3>
+                  {settingsSuccess && (
+                    <span className="text-xs text-emerald-600 font-bold bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-lg animate-fade-in">
+                      ✓ Settings Saved Successfully!
+                    </span>
+                  )}
+                </div>
+                
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-medium">
                   <div>
                     <label className="text-slate-400 block mb-1">Full Name</label>
-                    <input type="text" defaultValue="Priya" className="w-full px-3 py-2 border border-slate-200 rounded-xl text-slate-800 outline-hidden" />
+                    <input 
+                      type="text" 
+                      value={settingsName} 
+                      onChange={(e) => setSettingsName(e.target.value)} 
+                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-slate-800 outline-hidden focus:border-blue-500" 
+                    />
                   </div>
                   <div>
                     <label className="text-slate-400 block mb-1">Locality / Society Covered</label>
-                    <input type="text" defaultValue="Bimbisar Nagar, Jogeshwari" disabled className="w-full px-3 py-2 border border-slate-100 bg-slate-50 rounded-xl text-slate-400 cursor-not-allowed outline-hidden" />
+                    <input 
+                      type="text" 
+                      defaultValue={expertProfile?.localityName || "Bimbisar Nagar, Jogeshwari"} 
+                      disabled 
+                      className="w-full px-3 py-2 border border-slate-100 bg-slate-50 rounded-xl text-slate-400 cursor-not-allowed outline-hidden" 
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-slate-400 block mb-1">UPI ID for Direct Payout Routing</label>
+                    <input 
+                      type="text" 
+                      value={upiId} 
+                      onChange={(e) => setUpiId(e.target.value)} 
+                      placeholder="e.g. name@upi"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-slate-800 outline-hidden focus:border-blue-500 font-mono" 
+                    />
+                    <p className="text-[10px] text-slate-400 mt-1">Updates your payout address for all future direct settlements.</p>
                   </div>
                   <div className="sm:col-span-2">
                     <label className="text-slate-400 block mb-1">Short Introduction Bio</label>
-                    <textarea rows={3} defaultValue="Resident since 2016. I can consult you on water supply hours, maid availability, parking constraints, and MHADA complex rules." className="w-full px-3 py-2 border border-slate-200 rounded-xl text-slate-800 outline-hidden leading-relaxed" />
+                    <textarea 
+                      rows={3} 
+                      value={settingsBio} 
+                      onChange={(e) => setSettingsBio(e.target.value)} 
+                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-slate-800 outline-hidden leading-relaxed focus:border-blue-500" 
+                    />
                   </div>
                 </div>
-                <button className="px-5 py-2.5 bg-blue-600 text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-blue-700 cursor-pointer">
+                <button 
+                  onClick={() => {
+                    if (!expertProfile) return;
+                    const updated: ExpertProfile = {
+                      ...expertProfile,
+                      fullName: settingsName,
+                      bio: settingsBio,
+                      upiId: upiId
+                    };
+                    if (onUpdateExpert) {
+                      onUpdateExpert(updated);
+                    }
+                    setExpertProfile(updated);
+                    setSettingsSuccess(true);
+                    setTimeout(() => setSettingsSuccess(false), 3000);
+                  }}
+                  className="px-5 py-2.5 bg-blue-600 text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-blue-700 cursor-pointer"
+                >
                   Save Settings
                 </button>
               </div>
