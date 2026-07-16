@@ -31,11 +31,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Helper to check if Clerk Publishable Key is present and configured
 export const getClerkPublishableKey = (): string => {
-  const key = (import.meta as any).env.VITE_CLERK_PUBLISHABLE_KEY;
-  if (!key || key === 'YOUR_CLERK_PUBLISHABLE_KEY' || key.trim() === '' || key.startsWith('YOUR_')) {
+  const rawKey = (import.meta as any).env.VITE_CLERK_PUBLISHABLE_KEY || '';
+  if (!rawKey || rawKey === 'YOUR_CLERK_PUBLISHABLE_KEY' || rawKey.trim() === '' || rawKey.startsWith('YOUR_')) {
     return '';
   }
-  return key;
+  // Robust extraction of pk_test_... or pk_live_... to handle accidental multi-variable paste errors gracefully
+  const match = rawKey.match(/pk_(test|live)_[a-zA-Z0-9$]+/);
+  if (match) {
+    return match[0];
+  }
+  return rawKey;
 };
 
 // Internal provider implementing auth logic and Clerk hook synchronization
