@@ -674,7 +674,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({
             <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div className="text-left">
                 <h4 className="font-bold text-slate-800 text-xs">Do you still live in this society?</h4>
-                <p className="text-[10px] text-slate-400 mt-0.5">We welcome current and former residents. Landlords, developers, or real estate brokers are strictly prohibited from listing.</p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
