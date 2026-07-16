@@ -1,14 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  updateProfile
-} from 'firebase/auth';
-import { auth, isFirebaseEnabled } from '../lib/firebase';
+import { ClerkProvider, useUser, useClerk } from '@clerk/clerk-react';
 import { ExpertProfile } from '../types';
 
 export interface User {
@@ -31,15 +22,49 @@ interface AuthContextType {
   loginWithMockUser: (mockUserObj: { uid: string; displayName: string; email: string; photoURL?: string }) => Promise<User | null>;
   logout: () => Promise<void>;
   refreshExpertProfile: (uid: string) => Promise<void>;
+  isClerkActive: boolean;
+  triggerClerkSignIn: () => void;
+  triggerClerkSignUp: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// Helper to check if Clerk Publishable Key is present and configured
+export const getClerkPublishableKey = (): string => {
+  const key = (import.meta as any).env.VITE_CLERK_PUBLISHABLE_KEY;
+  if (!key || key === 'YOUR_CLERK_PUBLISHABLE_KEY' || key.trim() === '' || key.startsWith('YOUR_')) {
+    return '';
+  }
+  return key;
+};
+
+// Internal provider implementing auth logic and Clerk hook synchronization
+const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeRole, setActiveRole] = useState<'guest' | 'buyer' | 'expert'>('guest');
   const [expertProfile, setExpertProfile] = useState<ExpertProfile | null>(null);
+
+  const clerkPublishableKey = getClerkPublishableKey();
+  const isClerkActive = !!clerkPublishableKey;
+
+  // Conditionally hook into Clerk if key is available
+  let clerkUser: any = null;
+  let isClerkLoaded = false;
+  let isClerkSignedIn = false;
+  let clerkInstance: any = null;
+
+  if (isClerkActive) {
+    try {
+      const clerkData = useUser();
+      clerkUser = clerkData.user;
+      isClerkLoaded = clerkData.isLoaded;
+      isClerkSignedIn = clerkData.isSignedIn ?? false;
+      clerkInstance = useClerk();
+    } catch (err) {
+      console.warn("Clerk hooks called outside ClerkProvider scope:", err);
+    }
+  }
 
   const refreshExpertProfile = async (uid: string) => {
     try {
@@ -54,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
       
-      // Fallback to local storage if API is slow/not loaded
+      // Fallback local storage lookup
       const expertsRaw = localStorage.getItem('br_experts');
       const allExpertsLocal = expertsRaw ? JSON.parse(expertsRaw) : [];
       const matchedLocal = allExpertsLocal.find((e: any) => e.userId === uid);
@@ -72,22 +97,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // 1. Hook into Firebase onAuthStateChanged if enabled
+  // Sync state between Clerk and local session variables
   useEffect(() => {
-    if (isFirebaseEnabled() && auth) {
-      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-        if (firebaseUser) {
+    if (isClerkActive) {
+      if (isClerkLoaded) {
+        if (isClerkSignedIn && clerkUser) {
           const mappedUser: User = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(firebaseUser.displayName || firebaseUser.email || 'user')}`
+            uid: clerkUser.id,
+            email: clerkUser.primaryEmailAddress?.emailAddress || null,
+            displayName: clerkUser.fullName || clerkUser.firstName || 'Clerk User',
+            photoURL: clerkUser.imageUrl || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(clerkUser.id)}`
           };
           setUser(mappedUser);
           localStorage.setItem('br_current_user', JSON.stringify(mappedUser));
-          await refreshExpertProfile(firebaseUser.uid);
+          refreshExpertProfile(clerkUser.id).then(() => {
+            setLoading(false);
+          });
         } else {
-          // Only clear if we were using Firebase
+          // If Clerk is signed out, clear any stale non-mock user session
           const storedUser = localStorage.getItem('br_current_user');
           if (storedUser) {
             try {
@@ -102,12 +129,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               // ignore
             }
           }
+          setLoading(false);
         }
-        setLoading(false);
-      });
-      return () => unsubscribe();
+      }
     } else {
-      // Load active session from local storage on mount (Mock fallback mode)
+      // Mock Auth Fallback Mode
       const savedUser = localStorage.getItem('br_current_user');
       if (savedUser) {
         try {
@@ -124,164 +150,106 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(false);
       }
     }
-  }, []);
+  }, [isClerkActive, isClerkLoaded, isClerkSignedIn, clerkUser]);
+
+  const triggerClerkSignIn = () => {
+    if (clerkInstance) {
+      clerkInstance.openSignIn();
+    } else {
+      console.warn("Clerk instance is not initialized or Clerk key is missing.");
+    }
+  };
+
+  const triggerClerkSignUp = () => {
+    if (clerkInstance) {
+      clerkInstance.openSignUp();
+    } else {
+      console.warn("Clerk instance is not initialized or Clerk key is missing.");
+    }
+  };
 
   const signUpWithEmail = async (email: string, pass: string, name: string) => {
+    if (isClerkActive) {
+      triggerClerkSignUp();
+      return null;
+    }
+
     setLoading(true);
     try {
-      if (isFirebaseEnabled() && auth) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-        await updateProfile(userCredential.user, {
-          displayName: name,
-          photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name)}`
-        });
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass, displayName: name })
+      });
 
-        const newUser: User = {
-          uid: userCredential.user.uid,
-          email: userCredential.user.email,
-          displayName: name,
-          photoURL: userCredential.user.photoURL
-        };
-
-        // Sync with our backend mock database as well if needed
-        try {
-          await fetch('/api/auth/signup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uid: newUser.uid, email, displayName: name, photoURL: newUser.photoURL })
-          });
-        } catch (e) {
-          console.warn('Backend sync failed, continuing client auth:', e);
+      if (!res.ok) {
+        const errData = await res.json();
+        const error = new Error(errData.error || 'Signup failed.');
+        if (errData.error?.includes('email is already in use')) {
+          (error as any).code = 'auth/email-already-in-use';
         }
-
-        setUser(newUser);
-        localStorage.setItem('br_current_user', JSON.stringify(newUser));
-        await refreshExpertProfile(newUser.uid);
-        return newUser;
-      } else {
-        // Fallback mock signup API
-        const res = await fetch('/api/auth/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password: pass, displayName: name })
-        });
-
-        if (!res.ok) {
-          const errData = await res.json();
-          const error = new Error(errData.error || 'Signup failed.');
-          if (errData.error?.includes('email is already in use')) {
-            (error as any).code = 'auth/email-already-in-use';
-          }
-          throw error;
-        }
-
-        const { user: newUser } = await res.json();
-        localStorage.setItem('br_current_user', JSON.stringify(newUser));
-        setUser(newUser);
-        await refreshExpertProfile(newUser.uid);
-        return newUser;
+        throw error;
       }
+
+      const { user: newUser } = await res.json();
+      localStorage.setItem('br_current_user', JSON.stringify(newUser));
+      setUser(newUser);
+      await refreshExpertProfile(newUser.uid);
+      return newUser;
     } finally {
       setLoading(false);
     }
   };
 
   const signInWithEmail = async (email: string, pass: string) => {
+    if (isClerkActive) {
+      triggerClerkSignIn();
+      return null;
+    }
+
     setLoading(true);
     try {
-      if (isFirebaseEnabled() && auth) {
-        const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-        const loggedUser: User = {
-          uid: userCredential.user.uid,
-          email: userCredential.user.email,
-          displayName: userCredential.user.displayName,
-          photoURL: userCredential.user.photoURL
-        };
-        setUser(loggedUser);
-        localStorage.setItem('br_current_user', JSON.stringify(loggedUser));
-        await refreshExpertProfile(loggedUser.uid);
-        return loggedUser;
-      } else {
-        // Fallback mock signin API
-        const res = await fetch('/api/auth/signin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password: pass })
-        });
+      const res = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass })
+      });
 
-        if (!res.ok) {
-          const errData = await res.json();
-          const error = new Error(errData.error || 'Incorrect email or password.');
-          (error as any).code = 'auth/invalid-credential';
-          throw error;
-        }
-
-        const { user: loggedUser } = await res.json();
-        localStorage.setItem('br_current_user', JSON.stringify(loggedUser));
-        setUser(loggedUser);
-        await refreshExpertProfile(loggedUser.uid);
-        return loggedUser;
+      if (!res.ok) {
+        const errData = await res.json();
+        const error = new Error(errData.error || 'Incorrect email or password.');
+        (error as any).code = 'auth/invalid-credential';
+        throw error;
       }
+
+      const { user: loggedUser } = await res.json();
+      localStorage.setItem('br_current_user', JSON.stringify(loggedUser));
+      setUser(loggedUser);
+      await refreshExpertProfile(loggedUser.uid);
+      return loggedUser;
     } finally {
       setLoading(false);
     }
   };
 
   const signInWithGoogle = async () => {
-    setLoading(true);
-    try {
-      if (isFirebaseEnabled() && auth) {
-        const provider = new GoogleAuthProvider();
-        const userCredential = await signInWithPopup(auth, provider);
-        const firebaseUser = userCredential.user;
-        const displayName = firebaseUser.displayName || 'Google User';
-        const photoURL = firebaseUser.photoURL || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(displayName)}`;
-
-        const loggedInUser: User = {
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: displayName,
-          photoURL: photoURL
-        };
-
-        // Sync with backend mock database to ensure user record exists
-        try {
-          await fetch('/api/auth/mock', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              uid: firebaseUser.uid,
-              displayName,
-              email: firebaseUser.email || '',
-              photoURL
-            })
-          });
-        } catch (e) {
-          console.warn('Backend sync failed, continuing:', e);
-        }
-
-        setUser(loggedInUser);
-        localStorage.setItem('br_current_user', JSON.stringify(loggedInUser));
-        await refreshExpertProfile(firebaseUser.uid);
-        return loggedInUser;
-      } else {
-        // Fallback mock login
-        const mockName = 'Google User';
-        const mockEmail = 'google.user@example.com';
-        const mockUid = `mock_google_${Date.now()}`;
-        const mockUser = {
-          uid: mockUid,
-          displayName: mockName,
-          email: mockEmail,
-          photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(mockName)}`
-        };
-
-        const loggedInUser = await loginWithMockUser(mockUser);
-        return loggedInUser;
-      }
-    } finally {
-      setLoading(false);
+    if (isClerkActive) {
+      triggerClerkSignIn();
+      return null;
     }
+
+    // Fallback Mock Sign-In
+    const mockName = 'Google User';
+    const mockEmail = 'google.user@example.com';
+    const mockUid = `mock_google_${Date.now()}`;
+    const mockUser = {
+      uid: mockUid,
+      displayName: mockName,
+      email: mockEmail,
+      photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(mockName)}`
+    };
+
+    return loginWithMockUser(mockUser);
   };
 
   const loginWithMockUser = async (mockUserObj: { uid: string; displayName: string; email: string; photoURL?: string }) => {
@@ -316,8 +284,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     setLoading(true);
     try {
-      if (isFirebaseEnabled() && auth) {
-        await firebaseSignOut(auth);
+      if (isClerkActive && clerkInstance) {
+        await clerkInstance.signOut();
       }
       localStorage.removeItem('br_current_user');
       setUser(null);
@@ -341,10 +309,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       signInWithGoogle,
       loginWithMockUser,
       logout,
-      refreshExpertProfile
+      refreshExpertProfile,
+      isClerkActive,
+      triggerClerkSignIn,
+      triggerClerkSignUp
     }}>
       {children}
     </AuthContext.Provider>
+  );
+};
+
+// Main Export wraps children in ClerkProvider only if Publishable Key is specified
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const clerkPublishableKey = getClerkPublishableKey();
+
+  if (clerkPublishableKey) {
+    return (
+      <ClerkProvider publishableKey={clerkPublishableKey}>
+        <AuthContextImplProvider>
+          {children}
+        </AuthContextImplProvider>
+      </ClerkProvider>
+    );
+  }
+
+  return (
+    <AuthContextImplProvider>
+      {children}
+    </AuthContextImplProvider>
   );
 };
 
