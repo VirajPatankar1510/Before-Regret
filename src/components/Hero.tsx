@@ -122,10 +122,9 @@ export const Hero: React.FC<HeroProps> = ({
 
       <div className="absolute inset-0 z-0 overflow-hidden bg-slate-950">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50 brightness-105 filter contrast-105 saturate-100"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-scroll md:bg-fixed opacity-50 brightness-105 filter contrast-105 saturate-100"
           style={{
             backgroundImage: `url(${heroBg})`,
-            backgroundAttachment: 'fixed',
           }}
         />
         {/* Soft dark linear overlay to ensure pristine contrast and readability */}
