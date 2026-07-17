@@ -65,7 +65,7 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
       {/* Fiverr Gig Title Header */}
       <div className="mb-8 border-b border-slate-100 pb-6">
         <h1 className="text-xl sm:text-3xl font-display font-black tracking-tight text-slate-900 leading-tight">
-          I will consult you on {locality.name}'s water hours, maid rates, and actual society guidelines
+          {expert.listingHeadline || `I will consult you on ${locality.name}'s water hours, maid rates, and actual society guidelines`}
         </h1>
         <div className="flex flex-wrap items-center gap-3 mt-4 text-xs text-slate-500 font-medium">
           <div className="flex items-center gap-2">
@@ -107,64 +107,67 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
         {/* Left Column: Gig/Profile details */}
         <div className="lg:col-span-2 space-y-8">
           
-          {/* Cover / Society Information Card */}
-          <div className="bg-gradient-to-tr from-slate-900 via-slate-800 to-blue-950 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xs">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.15),transparent_50%)]"></div>
-            
-            <div className="relative z-10">
-              <span className="bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 border border-blue-500 rounded uppercase tracking-widest font-mono">
-                Resident Locality
-              </span>
-              <h2 className="text-2xl font-display font-black tracking-tight mt-3">
-                {locality.name}
-              </h2>
-              <p className="text-xs text-slate-300 mt-1">
-                {locality.apartmentName || 'Apartment Complex'} • {locality.city}, {locality.state} - {locality.pincode}
-              </p>
-            </div>
-          </div>
-
-          {/* Detailed Address, Landmarks & Pincode Mapping Card */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-3xs overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-              <div>
-                <h3 className="font-display font-black text-slate-900 text-base flex items-center gap-2">
-                  <span className="p-1.5 bg-blue-50 text-blue-600 rounded-lg shrink-0">
-                    <MapPin className="w-4 h-4" />
-                  </span>
-                  <span>Registered Pincode & Landmark Details</span>
-                </h3>
-                <p className="text-[11px] text-slate-500 mt-0.5">
-                  Verified address mapping and landmarks for {locality.name}
-                </p>
-              </div>
-              <div className="px-3 py-1 bg-slate-100 text-slate-850 rounded-full font-mono font-bold text-[11px] tracking-wide self-start sm:self-auto flex items-center gap-1 border">
-                <span>PIN:</span>
-                <span className="text-blue-600">{locality.pincode || "Not Set"}</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-5">
-              <div className="space-y-1">
-                <h4 className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-mono">Building Name (General)</h4>
-                <p className="text-xs font-bold text-slate-800 leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-100">
-                  {locality.detailedAddress || `${locality.name}, ${locality.city}, ${locality.state}`}
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <h4 className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-mono">Key Landmark & Area Guide</h4>
-                <p className="text-xs font-bold text-blue-800 leading-relaxed bg-blue-50/30 p-3 rounded-xl border border-blue-100/30">
-                  📍 {locality.landmarks || "No specific landmarks registered yet. Ask the resident expert directly."}
+          {/* Combined Resident Locality, Pincode & Landmark Details Card */}
+          <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm overflow-hidden">
+            {/* Locality Header Banner */}
+            <div className="bg-gradient-to-tr from-slate-900 via-slate-800 to-blue-950 p-6 sm:p-8 text-white relative overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.15),transparent_50%)]"></div>
+              
+              <div className="relative z-10">
+                <span className="bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 border border-blue-500 rounded uppercase tracking-widest font-mono">
+                  Resident Locality
+                </span>
+                <h2 className="text-2xl font-display font-black tracking-tight mt-3">
+                  {locality.name}
+                </h2>
+                <p className="text-xs text-slate-300 mt-1">
+                  {locality.apartmentName || 'Apartment Complex'} • {locality.city}, {locality.state} - {locality.pincode}
                 </p>
               </div>
             </div>
 
-            <div className="mt-5 p-4 bg-amber-50/40 rounded-2xl border border-amber-100/40 text-[11px] text-amber-800 leading-relaxed flex items-start gap-3">
-              <span className="text-sm shrink-0 mt-0.5">🛡️</span>
-              <p>
-                <b>Privacy & Safety Mandate:</b> To guarantee complete safety, our experts never disclose exact flat, floor, or house numbers. They provide general building names and neighborhood transit cues so you can consult with absolute peace of mind.
-              </p>
+            {/* Address & Landmark Details inside same container */}
+            <div className="p-6 sm:p-8 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                <div>
+                  <h3 className="font-display font-black text-slate-900 text-base flex items-center gap-2">
+                    <span className="p-1.5 bg-blue-50 text-blue-600 rounded-lg shrink-0">
+                      <MapPin className="w-4 h-4" />
+                    </span>
+                    <span>Registered Pincode & Landmark Details</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Verified address mapping and landmarks for {locality.name}
+                  </p>
+                </div>
+                <div className="px-3 py-1 bg-slate-100 text-slate-850 rounded-full font-mono font-bold text-[11px] tracking-wide self-start sm:self-auto flex items-center gap-1 border">
+                  <span>PIN:</span>
+                  <span className="text-blue-600">{locality.pincode || "Not Set"}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1">
+                  <h4 className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-mono">Building Name (General)</h4>
+                  <p className="text-xs font-bold text-slate-800 leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-100">
+                    {locality.detailedAddress || `${locality.name}, ${locality.city}, ${locality.state}`}
+                  </p>
+                </div>
+
+                <div className="space-y-1">
+                  <h4 className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-mono">Key Landmark & Area Guide</h4>
+                  <p className="text-xs font-bold text-blue-800 leading-relaxed bg-blue-50/30 p-3 rounded-xl border border-blue-100/30">
+                    📍 {locality.landmarks || "No specific landmarks registered yet. Ask the resident expert directly."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-amber-50/40 rounded-2xl border border-amber-100/40 text-[11px] text-amber-800 leading-relaxed flex items-start gap-3">
+                <span className="text-sm shrink-0 mt-0.5">🛡️</span>
+                <p>
+                  <b>Privacy & Safety Mandate:</b> To guarantee complete safety, our experts never disclose exact flat, floor, or house numbers. They provide general building names and neighborhood transit cues so you can consult with absolute peace of mind.
+                </p>
+              </div>
             </div>
           </div>
 

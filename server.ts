@@ -56,7 +56,26 @@ function getDb(): DbSchema {
           pricePaid: 199,
           expertEarnings: 179,
           createdAt: '2026-07-10T12:00:00Z',
-          packageOption: 'BUNDLE'
+          packageOption: 'BUNDLE',
+          structuredQuestions: [
+            {
+              id: 'q1',
+              text: "How is the water supply in Bimbisar Nagar during high summers?",
+              answer: "In Block C, water supply is limited to 2 hours in the morning (6 AM to 8 AM) during high summer (April-June). However, the society compensates with tanker water, which is managed well but adds around ₹500 extra to maintenance costs."
+            },
+            {
+              id: 'q2',
+              text: "Are there restrictive society rules for bachelors?",
+              clarificationRequested: true,
+              clarificationQuestion: "Are you planning to share the flat with friends, or live alone? Also, do you own a vehicle?",
+              clarificationAnswer: "I'm sharing with 1 friend. We have 1 hatchback car."
+            },
+            {
+              id: 'q3',
+              text: "Are late-night arrivals allowed easily for tenants?",
+              answer: ""
+            }
+          ]
         }
       ]
     };

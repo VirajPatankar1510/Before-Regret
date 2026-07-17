@@ -29,6 +29,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
   const [neighborhood, setNeighborhood] = useState('');
   const [landmarks, setLandmarks] = useState('');
   const [detailedAddress, setDetailedAddress] = useState('');
+  const [listingHeadline, setListingHeadline] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isPincodeSearching, setIsPincodeSearching] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
@@ -420,6 +421,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       userId: user ? user.uid : `user_expert_${Date.now()}`,
       fullName,
       bio,
+      listingHeadline: listingHeadline.trim() || undefined,
       localityId,
       localityName: `${neighborhood}`,
       city,
@@ -1001,6 +1003,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                           setPincode(loc.pincode);
                           setLandmarks(loc.landmarks || '');
                           setDetailedAddress(loc.detailedAddress || '');
+                          setListingHeadline(`I will consult you on ${loc.name}'s water hours, maid rates, and actual society guidelines`);
                           setShowSuggestions(false);
                         }}
                         className="px-3 py-2 hover:bg-slate-50 cursor-pointer text-left border-b border-slate-100 last:border-b-0 flex items-center justify-between gap-2"
@@ -1051,6 +1054,21 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                   onChange={(e) => setLandmarks(e.target.value)}
                   className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
                 />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">
+                  Main Listing Headline / Hook (required)
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. I will consult you on Prestige Shantiniketan's water supply, power history, and security"
+                  value={listingHeadline}
+                  onChange={(e) => setListingHeadline(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px] sm:placeholder:text-xs"
+                />
+                <p className="text-[10px] text-slate-400 mt-1 font-medium">This will be the main header/title displayed on your profile page to prospective buyers. Make it descriptive and trustworthy.</p>
               </div>
             </div>
           </div>

@@ -26,6 +26,7 @@ export interface ExpertProfile {
   firstName?: string;
   lastName?: string;
   bio: string;
+  listingHeadline?: string;
   localityId: string;
   localityName: string;
   city: string;
@@ -79,6 +80,15 @@ export interface DayAvailability {
   timeWindows: TimeWindow[];
 }
 
+export interface StructuredQuestion {
+  id: string;
+  text: string;
+  clarificationRequested?: boolean;
+  clarificationQuestion?: string;
+  clarificationAnswer?: string;
+  answer?: string;
+}
+
 export interface DirectQuery {
   id: string;
   buyerId: string;
@@ -104,6 +114,7 @@ export interface DirectQuery {
   packageOption?: string;
   isDisputed?: boolean;
   bookedSlot?: string;
+  structuredQuestions?: StructuredQuestion[];
 }
 
 export interface Review {
