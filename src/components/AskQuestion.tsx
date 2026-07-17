@@ -109,7 +109,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
         return;
       }
 
-      const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TEa01oUggBrtUA";
+      const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TEbQk9tlMHk3bZ";
 
       // 2. Open Razorpay modal with order_id
       const options = {
