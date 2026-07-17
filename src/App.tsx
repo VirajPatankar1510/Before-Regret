@@ -16,10 +16,18 @@ import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from './data';
 import { Neighborhood, ExpertProfile, DirectQuery, Review } from './types';
 import { Building, MapPin, Search, Sparkles, Filter, Award, ChevronRight } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
-import { triggerTestPushNotification } from './lib/notificationService';
+import { triggerTestPushNotification, registerServiceWorker } from './lib/notificationService';
+import { parseSlotTimeRange, isReminderTime, isSlotActive } from './utils/slotHelper';
 
 export default function App() {
   const { user, activeRole, setActiveRole, setExpertProfile } = useAuth();
+
+  // Register background Service Worker for closed-tab notification polling
+  useEffect(() => {
+    if (user && user.uid) {
+      registerServiceWorker(user.uid).catch((err) => console.error("SW Register error:", err));
+    }
+  }, [user]);
 
   // Navigation & Simulation Perspective State
   const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, buyer_dashboard, expert_dashboard, messaging, become_expert, policies
@@ -78,6 +86,11 @@ export default function App() {
   // User list saves
   const [savedExpertIds, setSavedExpertIds] = useState<string[]>(['exp_priya']);
 
+  // Live Chat scheduling, reminder & bypass states
+  const [notifiedQueries, setNotifiedQueries] = useState<string[]>([]);
+  const [bypassOpenQueries, setBypassOpenQueries] = useState<string[]>([]);
+  const [activeReminders, setActiveReminders] = useState<{ id: string; message: string; submessage: string; query: DirectQuery }[]>([]);
+
   // Search input focus ref
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -85,6 +98,51 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentView]);
+
+  // Poll for upcoming Live Chat sessions (15-min reminder trigger)
+  useEffect(() => {
+    const checkLiveChatSchedules = () => {
+      queries.forEach((q) => {
+        if (q.packageOption === 'LIVE_CHAT' && q.status === 'ACCEPTED' && q.bookedSlot) {
+          if (isReminderTime(q.bookedSlot) && !notifiedQueries.includes(q.id)) {
+            // Trigger push notifications
+            triggerTestPushNotification(
+              q.expertId,
+              'Live Chat Starts in 15 mins! ⏰',
+              `Reminder: Your 30-min live consultation slot "${q.bookedSlot}" with buyer ${q.buyerName} starts in 15 minutes!`,
+              'expert_dashboard'
+            ).catch(err => console.error('Expert slot remind failed:', err));
+
+            triggerTestPushNotification(
+              q.buyerId,
+              'Live Chat Starts in 15 mins! ⏰',
+              `Reminder: Your 30-min live consultation slot "${q.bookedSlot}" with expert ${q.expertName} starts in 15 minutes!`,
+              'buyer_dashboard'
+            ).catch(err => console.error('Buyer slot remind failed:', err));
+
+            // Add to notified query list
+            setNotifiedQueries((prev) => [...prev, q.id]);
+
+            // Add a beautiful floating toast reminder in-app
+            setActiveReminders((prev) => [
+              ...prev,
+              {
+                id: `remind_${q.id}_${Date.now()}`,
+                message: `🔔 Live Chat Reminder (15 Mins Before Slot)`,
+                submessage: `Your live consultation session for ${q.localityName} is scheduled to start soon! Slot: ${q.bookedSlot}. Notification sent to both Expert (${q.expertName}) and Buyer (${q.buyerName}).`,
+                query: q,
+              },
+            ]);
+          }
+        }
+      });
+    };
+
+    // Run immediately and then poll every 10 seconds
+    checkLiveChatSchedules();
+    const interval = setInterval(checkLiveChatSchedules, 10000);
+    return () => clearInterval(interval);
+  }, [queries, notifiedQueries]);
 
   // Track if initial server-side load has completed to avoid overwriting database
   const [hasLoadedFromServer, setHasLoadedFromServer] = useState(false);
@@ -922,6 +980,7 @@ export default function App() {
             selectedPackageId={selectedPackageId}
             onBack={() => setView('profile')}
             onSubmitQuestion={handleSubmitQuestion}
+            queries={queries}
           />
         )}
 

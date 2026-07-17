@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { ExpertProfile, Neighborhood } from '../types';
+import { ExpertProfile, Neighborhood, DirectQuery } from '../types';
 import { pricingPlans } from '../data';
 import { Check, ArrowRight, ArrowLeft, ShieldCheck, CreditCard, Lock, Eye, AlertCircle, RefreshCw } from 'lucide-react';
+import { parseSlotTimeRange } from '../utils/slotHelper';
 
 interface AskQuestionProps {
   expert: ExpertProfile;
@@ -9,47 +10,14 @@ interface AskQuestionProps {
   selectedPackageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT';
   onBack: () => void;
   onSubmitQuestion: (queryText: string, packageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT', bookedSlot?: string) => void;
+  queries: DirectQuery[];
 }
 
 const isSlotPassed = (slot: string): boolean => {
-  if (!slot.startsWith('Today')) {
-    return false;
-  }
-  
   try {
-    const parts = slot.split(',');
-    if (parts.length < 2) return false;
-    
-    const timeRange = parts[1].trim(); // e.g. "04:30 PM - 05:00 PM"
-    const times = timeRange.split('-');
-    if (times.length === 0) return false;
-    
-    const startTimeStr = times[0].trim(); // e.g. "04:30 PM"
-    const match = startTimeStr.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
-    if (!match) return false;
-    
-    let hours = parseInt(match[1], 10);
-    const minutes = parseInt(match[2], 10);
-    const ampm = match[3].toUpperCase();
-    
-    if (ampm === 'PM' && hours < 12) {
-      hours += 12;
-    } else if (ampm === 'AM' && hours === 12) {
-      hours = 0;
-    }
-    
-    const now = new Date();
-    const currentHours = now.getHours();
-    const currentMinutes = now.getMinutes();
-    
-    if (currentHours > hours) {
-      return true;
-    } else if (currentHours === hours) {
-      return currentMinutes >= minutes;
-    }
-    return false;
-  } catch (error) {
-    console.error('Error parsing time slot:', error);
+    const { start } = parseSlotTimeRange(slot);
+    return new Date() > start;
+  } catch (err) {
     return false;
   }
 };
@@ -60,6 +28,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
   selectedPackageId,
   onBack,
   onSubmitQuestion,
+  queries,
 }) => {
   const slotsList = expert.availableSlots && expert.availableSlots.length > 0
     ? expert.availableSlots
@@ -70,7 +39,11 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
         'Tomorrow, 03:00 PM - 03:30 PM'
       ];
 
-  const firstAvailableSlot = slotsList.find(slot => !isSlotPassed(slot)) || slotsList[0];
+  const isSlotBooked = (slot: string) => {
+    return queries.some(q => q.expertId === expert.id && q.packageOption === 'LIVE_CHAT' && q.bookedSlot === slot);
+  };
+
+  const firstAvailableSlot = slotsList.find(slot => !isSlotPassed(slot) && !isSlotBooked(slot)) || slotsList[0];
 
   const [step, setStep] = useState<1 | 2 | 3>(2); // Start at step 2 since they chose package in profile, but allow toggle
   const [packageId, setPackageId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>(selectedPackageId);
@@ -257,14 +230,16 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                     ]
                 ).map((slot) => {
                   const isPassed = isSlotPassed(slot);
+                  const isBooked = isSlotBooked(slot);
+                  const isDisabled = isPassed || isBooked;
                   return (
                     <button
                       key={slot}
                       type="button"
-                      disabled={isPassed}
-                      onClick={() => !isPassed && setSelectedSlot(slot)}
+                      disabled={isDisabled}
+                      onClick={() => !isDisabled && setSelectedSlot(slot)}
                       className={`p-3 text-xs font-bold font-mono rounded-lg border text-left transition-all flex items-center justify-between ${
-                        isPassed
+                        isDisabled
                           ? 'bg-slate-50 border-slate-100 text-slate-400 line-through cursor-not-allowed opacity-50'
                           : selectedSlot === slot
                           ? 'bg-orange-500 border-orange-500 text-white shadow-xs cursor-pointer'
@@ -274,6 +249,8 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                       <span>{slot}</span>
                       {isPassed ? (
                         <span className="bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded text-[9px] font-sans no-underline font-normal">Passed</span>
+                      ) : isBooked ? (
+                        <span className="bg-red-100 text-red-700 px-1.5 py-0.5 rounded text-[9px] font-sans no-underline font-normal">Paid/Booked</span>
                       ) : selectedSlot === slot ? (
                         <span className="bg-white/20 px-1.5 py-0.5 rounded text-[9px] font-sans">Selected</span>
                       ) : null}

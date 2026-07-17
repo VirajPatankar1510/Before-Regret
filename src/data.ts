@@ -27,9 +27,7 @@ export const pricingPlans: PricingPlan[] = [
     pricePeriod: '/ 3 questions',
     features: [
       'Ask up to 3 detailed questions',
-      'Direct messaging with local expert',
-      'Contact protection (no spam/broker calls)',
-      'Payment released only upon satisfaction'
+      'Contact protection (no spam/broker calls)'
     ],
     cta: 'Select Standard'
   },
