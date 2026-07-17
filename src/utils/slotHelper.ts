@@ -1,6 +1,6 @@
 /**
- * Utility helper to parse and evaluate 30-minute resident time slots.
- * Format expected: "Today, 04:30 PM - 05:00 PM", "Tomorrow, 11:00 AM - 11:30 AM", etc.
+ * Utility helper to parse and evaluate 20-minute resident time slots.
+ * Format expected: "Today, 04:20 PM - 04:40 PM", "Tomorrow, 11:00 AM - 11:20 AM", etc.
  */
 
 export interface SlotTimeRange {
@@ -13,7 +13,7 @@ export function parseSlotTimeRange(slotStr: string): SlotTimeRange {
   const now = new Date();
   // Set default fallback dates
   const start = new Date(now);
-  const end = new Date(now.getTime() + 30 * 60 * 1000);
+  const end = new Date(now.getTime() + 20 * 60 * 1000);
   const startRemind = new Date(start.getTime() - 15 * 60 * 1000);
 
   if (!slotStr) {
@@ -97,6 +97,86 @@ export function parseSlotTimeRange(slotStr: string): SlotTimeRange {
     console.error('Error parsing slot string:', slotStr, err);
     return { start, end, startRemind };
   }
+}
+
+/**
+ * Helpers to parse a 12-hour AM/PM time string into hours and minutes
+ */
+export function parseTimeString(tStr: string): { hours: number; minutes: number } {
+  const match = tStr.trim().match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+  if (!match) return { hours: 0, minutes: 0 };
+  let hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const ampm = match[3].toUpperCase();
+  if (ampm === 'PM' && hours < 12) hours += 12;
+  else if (ampm === 'AM' && hours === 12) hours = 0;
+  return { hours, minutes };
+}
+
+/**
+ * Generates 20-minute interval strings from a start and end time window
+ */
+export function generate20MinSlotsFromWindow(startStr: string, endStr: string): string[] {
+  const slots: string[] = [];
+  const start = parseTimeString(startStr);
+  const end = parseTimeString(endStr);
+  
+  let currentMinutes = start.hours * 60 + start.minutes;
+  const endMinutes = end.hours * 60 + end.minutes;
+  
+  const formatMinsToAMPM = (totMins: number): string => {
+    let hrs = Math.floor(totMins / 60);
+    const mins = totMins % 60;
+    const ampm = hrs >= 12 ? 'PM' : 'AM';
+    hrs = hrs % 12;
+    hrs = hrs ? hrs : 12;
+    const minsStr = mins < 10 ? '0' + mins : mins;
+    return `${hrs}:${minsStr} ${ampm}`;
+  };
+
+  while (currentMinutes + 20 <= endMinutes) {
+    const sLabel = formatMinsToAMPM(currentMinutes);
+    const eLabel = formatMinsToAMPM(currentMinutes + 20);
+    slots.push(`${sLabel} - ${eLabel}`);
+    currentMinutes += 20;
+  }
+  return slots;
+}
+
+/**
+ * Generates dynamic dates and corresponding 20-minute slots for the next 7 days based on weekly recurring availability rules
+ */
+export function generateAvailableSlotsFromWeekly(weekly?: any[]): string[] {
+  if (!weekly || weekly.length === 0) return [];
+  
+  const slots: string[] = [];
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  
+  const now = new Date();
+  
+  for (let i = 0; i < 7; i++) {
+    const d = new Date();
+    d.setDate(now.getDate() + i);
+    const dayName = daysOfWeek[d.getDay()];
+    
+    const dayConfig = weekly.find(w => w.day === dayName);
+    if (dayConfig && dayConfig.available) {
+      const monthName = months[d.getMonth()];
+      const dateNum = d.getDate();
+      const label = `${monthName} ${dateNum} (${dayName.substring(0, 3)})`;
+      
+      if (dayConfig.timeWindows && Array.isArray(dayConfig.timeWindows)) {
+        dayConfig.timeWindows.forEach((window: any) => {
+          const subSlots = generate20MinSlotsFromWindow(window.start, window.end);
+          subSlots.forEach(sub => {
+            slots.push(`${label}, ${sub}`);
+          });
+        });
+      }
+    }
+  }
+  return slots;
 }
 
 /**

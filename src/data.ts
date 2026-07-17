@@ -33,14 +33,14 @@ export const pricingPlans: PricingPlan[] = [
   },
   {
     id: 'LIVE_CHAT',
-    badge: '30-Min Live Consultation',
+    badge: '20-Min Live Consultation',
     badgeStyle: 'bg-orange-50 text-orange-700 font-semibold',
-    title: '30 Mins Live Chat',
-    description: 'Book a direct real-time 30-minute chat consultation with the resident at a scheduled convenient slot.',
-    price: 299,
-    pricePeriod: '/ 30 min session',
+    title: '20 Mins Live Chat',
+    description: 'Book a direct real-time 20-minute chat consultation with the resident at a scheduled convenient slot.',
+    price: 220,
+    pricePeriod: '/ 20 min session',
     features: [
-      '30-minute real-time chat with the resident',
+      '20-minute real-time chat with the resident',
       'Select from available convenient time slots',
       'Instant slot booking confirmation',
       'Secure payment protection (48h)'
@@ -178,6 +178,16 @@ export const INITIAL_EXPERTS: ExpertProfile[] = [
     trustScore: 95,
     languages: ['Hindi', 'English', 'Marathi'],
     availability: 'Everyday (10 AM - 9 PM)',
+    isInstantChatEnabled: true,
+    weeklyAvailability: [
+      { day: 'Monday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
+      { day: 'Tuesday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
+      { day: 'Wednesday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
+      { day: 'Thursday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
+      { day: 'Friday', available: true, timeWindows: [{ start: '07:00 PM', end: '10:00 PM' }] },
+      { day: 'Saturday', available: true, timeWindows: [{ start: '10:00 AM', end: '01:00 PM' }] },
+      { day: 'Sunday', available: true, timeWindows: [{ start: '04:00 PM', end: '08:00 PM' }] }
+    ],
     availableSlots: [
       'Today, 04:30 PM - 05:00 PM',
       'Today, 06:00 PM - 06:30 PM',
@@ -211,6 +221,16 @@ export const INITIAL_EXPERTS: ExpertProfile[] = [
     trustScore: 98,
     languages: ['English', 'Hindi', 'Kannada'],
     availability: 'Weekends & Evenings',
+    isInstantChatEnabled: false,
+    weeklyAvailability: [
+      { day: 'Monday', available: false, timeWindows: [] },
+      { day: 'Tuesday', available: false, timeWindows: [] },
+      { day: 'Wednesday', available: false, timeWindows: [] },
+      { day: 'Thursday', available: false, timeWindows: [] },
+      { day: 'Friday', available: true, timeWindows: [{ start: '07:00 PM', end: '10:00 PM' }] },
+      { day: 'Saturday', available: true, timeWindows: [{ start: '10:00 AM', end: '01:00 PM' }] },
+      { day: 'Sunday', available: true, timeWindows: [{ start: '04:00 PM', end: '08:00 PM' }] }
+    ],
     availableSlots: [
       'Today, 05:00 PM - 05:30 PM',
       'Today, 08:00 PM - 08:30 PM',
@@ -244,6 +264,16 @@ export const INITIAL_EXPERTS: ExpertProfile[] = [
     trustScore: 91,
     languages: ['English', 'Bengali', 'Hindi'],
     availability: 'Flexible timing',
+    isInstantChatEnabled: true,
+    weeklyAvailability: [
+      { day: 'Monday', available: true, timeWindows: [{ start: '03:00 PM', end: '05:00 PM' }] },
+      { day: 'Tuesday', available: true, timeWindows: [{ start: '03:00 PM', end: '05:00 PM' }] },
+      { day: 'Wednesday', available: true, timeWindows: [{ start: '03:00 PM', end: '05:00 PM' }] },
+      { day: 'Thursday', available: true, timeWindows: [{ start: '03:00 PM', end: '05:00 PM' }] },
+      { day: 'Friday', available: true, timeWindows: [{ start: '03:00 PM', end: '06:00 PM' }] },
+      { day: 'Saturday', available: true, timeWindows: [{ start: '01:00 PM', end: '04:00 PM' }] },
+      { day: 'Sunday', available: true, timeWindows: [{ start: '01:00 PM', end: '04:00 PM' }] }
+    ],
     availableSlots: [
       'Today, 03:00 PM - 03:30 PM',
       'Today, 07:00 PM - 07:30 PM',
@@ -277,6 +307,16 @@ export const INITIAL_EXPERTS: ExpertProfile[] = [
     trustScore: 99,
     languages: ['Hindi', 'English', 'Punjabi'],
     availability: 'Daily (9 AM - 10 PM)',
+    isInstantChatEnabled: true,
+    weeklyAvailability: [
+      { day: 'Monday', available: true, timeWindows: [{ start: '09:00 AM', end: '11:00 AM' }, { start: '04:00 PM', end: '07:00 PM' }] },
+      { day: 'Tuesday', available: true, timeWindows: [{ start: '09:00 AM', end: '11:00 AM' }, { start: '04:00 PM', end: '07:00 PM' }] },
+      { day: 'Wednesday', available: true, timeWindows: [{ start: '09:00 AM', end: '11:00 AM' }, { start: '04:00 PM', end: '07:00 PM' }] },
+      { day: 'Thursday', available: true, timeWindows: [{ start: '09:00 AM', end: '11:00 AM' }, { start: '04:00 PM', end: '07:00 PM' }] },
+      { day: 'Friday', available: true, timeWindows: [{ start: '09:00 AM', end: '11:00 AM' }, { start: '04:00 PM', end: '07:00 PM' }] },
+      { day: 'Saturday', available: true, timeWindows: [{ start: '10:00 AM', end: '02:00 PM' }] },
+      { day: 'Sunday', available: true, timeWindows: [{ start: '10:00 AM', end: '02:00 PM' }] }
+    ],
     availableSlots: [
       'Today, 04:00 PM - 04:30 PM',
       'Today, 06:30 PM - 07:00 PM',

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, MapPin, Sparkles, Building, ArrowRight } from 'lucide-react';
 import { Neighborhood } from '../types';
 import heroBg from '../assets/images/regenerated_image_1784228757923.png';
+import { useAuth } from '../context/AuthContext';
 
 interface HeroProps {
   localities: Neighborhood[];
@@ -44,6 +45,7 @@ export const Hero: React.FC<HeroProps> = ({
   onBecomeExpertClick,
   onSearchFocusRef,
 }) => {
+  const { expertProfile } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -230,7 +232,7 @@ export const Hero: React.FC<HeroProps> = ({
                     }}
                     className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer font-bold shadow-md shadow-amber-400/5"
                   >
-                    <span>Become a Local Expert & Earn</span>
+                    <span>{expertProfile ? 'Go to Resident Dashboard' : 'Become a Local Expert & Earn'}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

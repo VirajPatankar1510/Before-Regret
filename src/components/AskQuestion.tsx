@@ -217,16 +217,16 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
           {packageId === 'LIVE_CHAT' && (
             <div className="mb-6 p-4 bg-orange-50/40 border border-orange-100 rounded-xl">
               <label className="block text-xs font-bold text-orange-800 uppercase tracking-wider mb-2.5 font-sans">
-                📅 Select Your Preferred 30-Minute Time Slot:
+                📅 Select Your Preferred 20-Minute Time Slot:
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {(expert.availableSlots && expert.availableSlots.length > 0
                   ? expert.availableSlots
                   : [
-                      'Today, 04:30 PM - 05:00 PM',
-                      'Today, 06:00 PM - 06:30 PM',
-                      'Tomorrow, 11:00 AM - 11:30 AM',
-                      'Tomorrow, 03:00 PM - 03:30 PM'
+                      'Today, 04:30 PM - 04:50 PM',
+                      'Today, 06:00 PM - 06:20 PM',
+                      'Tomorrow, 11:00 AM - 11:20 AM',
+                      'Tomorrow, 03:00 PM - 03:20 PM'
                     ]
                 ).map((slot) => {
                   const isPassed = isSlotPassed(slot);
@@ -273,7 +273,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
               value={queryText}
               onChange={(e) => setQueryText(e.target.value)}
               placeholder={packageId === 'LIVE_CHAT' 
-                ? "Enter the topics or questions you would like to discuss during the 30-minute live chat (e.g. water leakage, parking policies, safety at night)..."
+                ? "Enter the topics or questions you would like to discuss during the 20-minute live chat (e.g. water leakage, parking policies, safety at night)..."
                 : "Example placeholder:\nI'm moving here with my family.\nHow safe is this area after dark? How are the schools?\nAnything I should know about the water pressure, power cut histories, or society bachelor rules before buying?"}
               className="w-full p-4 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800 placeholder-slate-400 placeholder:text-[10px] sm:placeholder:text-xs font-medium font-sans"
             />

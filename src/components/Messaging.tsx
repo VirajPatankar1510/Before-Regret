@@ -185,7 +185,7 @@ export const Messaging: React.FC<MessagingProps> = ({
               <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isAfter && !forceOpen ? 'bg-slate-400' : 'bg-orange-500 animate-pulse'}`} />
               <div>
                 <span className="text-[10px] font-bold text-orange-800 uppercase tracking-wider block font-sans">
-                  {isAfter && !forceOpen ? 'Live Chat Concluded' : 'Live 30-Min Chat Consult Active'}
+                  {isAfter && !forceOpen ? 'Live Chat Concluded' : 'Live 20-Min Chat Consult Active'}
                 </span>
                 <span className="text-[11px] text-orange-700 font-medium font-mono">
                   Slot: {query.bookedSlot || 'Today, 05:00 PM - 05:30 PM'}
@@ -207,7 +207,7 @@ export const Messaging: React.FC<MessagingProps> = ({
           <div className="p-3 bg-amber-50 border-b border-amber-200 text-amber-800 text-[11px] font-medium flex items-center gap-2.5 leading-relaxed z-10">
             <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
             <span>
-              This live 30-minute session has concluded. The chat is archived. The resident expert can now compile the final society report to release the held session payout.
+              This live 20-minute session has concluded. The chat is archived. The resident expert can now compile the final society report to release the held session payout.
             </span>
           </div>
         )}

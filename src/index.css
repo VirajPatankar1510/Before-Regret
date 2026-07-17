@@ -35,4 +35,15 @@
   }
 }
 
+/* Hide WebKit native time/date picker indicator icons */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  background: none !important;
+  display: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+
 
