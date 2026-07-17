@@ -350,12 +350,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>Search</span>
           </button>
           <button
-            onClick={() => setView('explore')}
-            className="hover:text-blue-600 transition-colors cursor-pointer"
-          >
-            Explore
-          </button>
-          <button
             onClick={() => { setView('regret_files'); window.scrollTo(0, 0); }}
             className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${currentView === 'regret_files' ? 'bg-amber-500 text-slate-900' : 'bg-amber-500/10 text-amber-700 hover:bg-amber-500/20'}`}
           >

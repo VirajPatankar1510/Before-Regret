@@ -177,6 +177,42 @@ export const Onboarding: React.FC<OnboardingProps> = ({
   const [selectedTopics, setSelectedTopics] = useState<string[]>(['Schools', 'Safety']);
   const [availability, setAvailability] = useState('Weekends & Evenings');
   const [submitted, setSubmitted] = useState(false);
+  const [isLiveChatAvailable, setIsLiveChatAvailable] = useState(false);
+  const [liveChatSlots, setLiveChatSlots] = useState<string[]>([]);
+
+  const generateDynamicSlots = () => {
+    const slots: string[] = [];
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const timeRanges = [
+      '09:00 AM - 09:30 AM',
+      '10:30 AM - 11:00 AM',
+      '11:30 AM - 12:00 PM',
+      '02:00 PM - 02:30 PM',
+      '04:30 PM - 05:00 PM',
+      '06:00 PM - 06:30 PM',
+      '08:00 PM - 08:30 PM'
+    ];
+    
+    const now = new Date();
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(now.getDate() + i);
+      const dayName = days[d.getDay()];
+      const monthName = months[d.getMonth()];
+      const dateNum = d.getDate();
+      
+      const label = `${monthName} ${dateNum} (${dayName})`;
+      // Mix of slots per day to keep choices interesting
+      const slotsForDay = i % 2 === 0 ? [0, 2, 4, 6] : [1, 3, 5];
+      slotsForDay.forEach(idx => {
+        slots.push(`${label}, ${timeRanges[idx]}`);
+      });
+    }
+    return slots;
+  };
+
+  const AVAILABLE_SLOT_OPTIONS = generateDynamicSlots();
 
   const availableLanguages = [
     'English',
@@ -262,7 +298,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       trustScore: 90,
       languages,
       availability,
-      upiId: upiId.trim() || undefined
+      upiId: upiId.trim() || undefined,
+      isLiveChatAvailable,
+      availableSlots: isLiveChatAvailable ? liveChatSlots : [],
     };
 
     const newLocality: Neighborhood = {
@@ -750,10 +788,137 @@ export const Onboarding: React.FC<OnboardingProps> = ({
             </div>
           </div>
 
-          {/* Section 4: Bio / Intro */}
+          {/* Section 4: Live Chat Availability */}
+          <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-5">
+            <div>
+              <h3 className="font-display font-black text-slate-900 text-base flex items-center gap-2">
+                <span className="p-1.5 bg-orange-100 text-orange-600 rounded-lg text-[10px] font-mono tracking-wider font-bold uppercase">⚡ NEW</span>
+                <span>4. Live Chat Availability (Optional)</span>
+              </h3>
+              <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                Offer real-time 30-minute consultation chats to home seekers for premium payouts. When a buyer books a slot, a secure chatroom opens automatically at that exact scheduled time.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white border border-slate-200/60 rounded-xl">
+              <div>
+                <span className="block text-xs font-bold text-slate-700">Enable Live Chat consultations</span>
+                <span className="text-[10px] text-slate-400">Receive ₹269 per live chat session (held securely for payout)</span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsLiveChatAvailable(true);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    isLiveChatAvailable
+                      ? 'bg-orange-600 text-white shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  Yes, Enable
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsLiveChatAvailable(false);
+                    setLiveChatSlots([]);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    !isLiveChatAvailable
+                      ? 'bg-slate-600 text-white shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  No, Skip
+                </button>
+              </div>
+            </div>
+
+            {isLiveChatAvailable && (
+              <div className="space-y-4 pt-2 border-t border-slate-200/60">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider">
+                      Select Available Time Slots (30 mins each):
+                    </label>
+                    <span className={`text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full ${
+                      liveChatSlots.length === 10 ? 'bg-amber-100 text-amber-800 border border-amber-200 animate-pulse' : 'bg-orange-50 text-orange-700'
+                    }`}>
+                      {liveChatSlots.length} of 10 slots selected
+                    </span>
+                  </div>
+                  
+                  <p className="text-[10px] text-slate-400 mb-3">
+                    Click to select up to 10 slots. Both you and the buyer will receive automated reminder notifications exactly 15 minutes before your slot begins.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto p-1.5 border border-slate-200/60 rounded-xl bg-white">
+                    {AVAILABLE_SLOT_OPTIONS.map((slot) => {
+                      const isSelected = liveChatSlots.includes(slot);
+                      return (
+                        <button
+                          type="button"
+                          key={slot}
+                          onClick={() => {
+                            if (isSelected) {
+                              setLiveChatSlots(liveChatSlots.filter(s => s !== slot));
+                            } else {
+                              if (liveChatSlots.length >= 10) {
+                                alert('Maximum 10 slots allowed. Please unselect another slot before adding a new one.');
+                                return;
+                              }
+                              setLiveChatSlots([...liveChatSlots, slot]);
+                            }
+                          }}
+                          className={`px-3 py-2 text-left text-xs rounded-lg border transition-all flex items-center justify-between gap-1 cursor-pointer ${
+                            isSelected
+                              ? 'bg-orange-50 border-orange-400 text-orange-800 font-bold shadow-3xs'
+                              : 'bg-slate-50/50 hover:bg-slate-50 border-slate-100 text-slate-600'
+                          }`}
+                        >
+                          <span>{slot}</span>
+                          {isSelected && (
+                            <span className="w-4 h-4 rounded-full bg-orange-500 text-white flex items-center justify-center text-[9px] font-black">
+                              ✓
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {liveChatSlots.length > 0 && (
+                  <div className="bg-orange-50/30 border border-orange-100/60 p-3.5 rounded-xl">
+                    <span className="block text-[10px] font-bold text-orange-800 uppercase tracking-wider mb-2">
+                      Selected Slots Preview:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {liveChatSlots.map(slot => (
+                        <span key={slot} className="px-2 py-1 bg-white border border-orange-200 text-orange-800 text-[10px] font-mono font-bold rounded-md flex items-center gap-1">
+                          <span>{slot}</span>
+                          <button
+                            type="button"
+                            onClick={() => setLiveChatSlots(liveChatSlots.filter(s => s !== slot))}
+                            className="text-orange-400 hover:text-orange-600 font-black px-1"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Section 5: Short Introduction Bio */}
           <div>
             <h3 className="font-display font-black text-slate-900 text-base border-b border-slate-100 pb-3 mb-5">
-              4. Short Introduction Bio
+              5. Short Introduction Bio
             </h3>
             
             <div className="space-y-2">

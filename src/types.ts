@@ -50,6 +50,7 @@ export interface ExpertProfile {
   availableSlots?: string[]; // e.g. ["Today 4:00 PM - 4:30 PM", "Tomorrow 10:00 AM - 10:30 AM"]
   upiId?: string;
   bankAccountNumber?: string;
+  isLiveChatAvailable?: boolean;
 }
 
 export interface DirectQuery {
