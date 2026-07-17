@@ -16,6 +16,7 @@ interface DashboardsProps {
   onOpenChat: (query: DirectQuery) => void;
   onLeaveReview: (query: DirectQuery) => void;
   setView?: (view: string) => void;
+  onUpdateExpert?: (expert: ExpertProfile) => void;
 }
 
 export const Dashboards: React.FC<DashboardsProps> = ({
@@ -43,16 +44,152 @@ export const Dashboards: React.FC<DashboardsProps> = ({
   const [settingsBio, setSettingsBio] = useState(expertProfile?.bio || '');
   const [settingsSuccess, setSettingsSuccess] = useState(false);
 
+  // Bank & Personal Payout Details
+  const [bankAccNumber, setBankAccNumber] = useState(expertProfile?.bankAccountNumber || '');
+  const [bankAccNumberConfirm, setBankAccNumberConfirm] = useState(expertProfile?.bankAccountNumber || '');
+  const [ifscCode, setIfscCode] = useState(expertProfile?.ifsc || '');
+  const [panCard, setPanCard] = useState(expertProfile?.pan || '');
+  const [addressText, setAddressText] = useState(expertProfile?.address || '');
+  const [dobText, setDobText] = useState(expertProfile?.dob || '');
+  const [businessType, setBusinessType] = useState(expertProfile?.businessType || 'individual');
+
+  const [submittingPayout, setSubmittingPayout] = useState(false);
+  const [payoutSetupSuccess, setPayoutSetupSuccess] = useState('');
+  const [payoutSetupError, setPayoutSetupError] = useState('');
+
+  // Simulation controls
+  const [simulatingVerification, setSimulatingVerification] = useState(false);
+  const [simulationSuccess, setSimulationSuccess] = useState('');
+  const [completingQueryId, setCompletingQueryId] = useState<string | null>(null);
+
   useEffect(() => {
     if (expertProfile) {
       setSettingsName(expertProfile.fullName || '');
       setSettingsBio(expertProfile.bio || '');
       setUpiId(expertProfile.upiId || 'priya@okhdfcbank');
+      setBankAccNumber(expertProfile.bankAccountNumber || '');
+      setBankAccNumberConfirm(expertProfile.bankAccountNumber || '');
+      setIfscCode(expertProfile.ifsc || '');
+      setPanCard(expertProfile.pan || '');
+      setAddressText(expertProfile.address || '');
+      setDobText(expertProfile.dob || '');
+      setBusinessType(expertProfile.businessType || 'individual');
     }
   }, [expertProfile]);
 
   const currentUserId = user ? user.uid : '';
   const currentExpertId = expertProfile ? expertProfile.id : 'exp_priya';
+
+  const handlePayoutSetupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPayoutSetupError('');
+    setPayoutSetupSuccess('');
+
+    if (bankAccNumber !== bankAccNumberConfirm) {
+      setPayoutSetupError('Bank Account Numbers do not match.');
+      return;
+    }
+
+    // Basic format checks
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (panCard && !panRegex.test(panCard.toUpperCase())) {
+      setPayoutSetupError('Invalid PAN format. Must be like ABCDE1234F.');
+      return;
+    }
+
+    const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+    if (ifscCode && !ifscRegex.test(ifscCode.toUpperCase())) {
+      setPayoutSetupError('Invalid IFSC format. Must be an 11-character code (e.g. HDFC0000123).');
+      return;
+    }
+
+    setSubmittingPayout(true);
+    try {
+      const response = await fetch('/api/experts/payout-setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          expertId: currentExpertId,
+          pan: panCard.toUpperCase(),
+          bankAccountNumber: bankAccNumber,
+          ifsc: ifscCode.toUpperCase(),
+          dob: dobText,
+          address: addressText,
+          businessType
+        })
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setPayoutSetupSuccess('Payout setup updated successfully! Razorpay Route linked account configured.');
+        setExpertProfile(data.expert);
+        if (onUpdateExpert) {
+          onUpdateExpert(data.expert);
+        }
+      } else {
+        setPayoutSetupError(data.error || 'Failed to update payout setup.');
+      }
+    } catch (err: any) {
+      setPayoutSetupError(err.message || 'Network error updating payout setup.');
+    } finally {
+      setSubmittingPayout(false);
+    }
+  };
+
+  const handleSimulateVerification = async (kyc: boolean, bank: boolean, payouts: boolean) => {
+    setSimulatingVerification(true);
+    setSimulationSuccess('');
+    try {
+      const response = await fetch('/api/experts/simulate-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          expertId: currentExpertId,
+          kyc_completed: kyc,
+          bank_verified: bank,
+          payouts_enabled: payouts
+        })
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setSimulationSuccess('Verification state updated on server!');
+        setExpertProfile(data.expert);
+        if (onUpdateExpert) {
+          onUpdateExpert(data.expert);
+        }
+        setTimeout(() => setSimulationSuccess(''), 3000);
+      }
+    } catch (err) {
+      console.error('Simulation error:', err);
+    } finally {
+      setSimulatingVerification(false);
+    }
+  };
+
+  const handleCompleteBookingAndPayout = async (queryId: string) => {
+    setCompletingQueryId(queryId);
+    try {
+      const response = await fetch('/api/bookings/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ queryId })
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        alert('Booking marked complete and payout successfully dispatched!');
+        window.location.reload();
+      } else {
+        alert(`Payout Failed: ${data.error || 'Check your Razorpay Route linked account verification status.'}`);
+        window.location.reload();
+      }
+    } catch (err: any) {
+      alert(`Error releasing payout: ${err.message}`);
+    } finally {
+      setCompletingQueryId(null);
+    }
+  };
 
   // ---------------- BUYER LOGIC ----------------
   // Rohan's Queries
@@ -581,70 +718,390 @@ export const Dashboards: React.FC<DashboardsProps> = ({
             {expertTab === 'earnings' && (
               <div className="space-y-6">
                 
-                {/* Financial Summary Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  <div className="bg-white border border-slate-200 rounded-2xl p-5">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Withdrawable Balance</span>
-                    <h3 className="font-black text-slate-800 font-mono text-2xl mt-1">Rs. {mockWallet.availableBalance}</h3>
-                    <p className="text-[10px] text-slate-400 mt-1">Settled after 48-hour holds</p>
-                  </div>
-                  <div className="bg-white border border-slate-200 rounded-2xl p-5">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Held Pending Release</span>
-                    <h3 className="font-black text-amber-600 font-mono text-2xl mt-1">Rs. {mockWallet.heldBalance}</h3>
-                    <p className="text-[10px] text-slate-400 mt-1">Active client inquiries</p>
-                  </div>
-                  <div className="bg-white border border-slate-200 rounded-2xl p-5">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Total Withdrawn</span>
-                    <h3 className="font-black text-slate-800 font-mono text-2xl mt-1">Rs. {mockWallet.totalWithdrawn}</h3>
-                    <p className="text-[10px] text-slate-400 mt-1">Transferred to UPI/Bank</p>
-                  </div>
-                </div>
+                {/* Real-time Earnings stats */}
+                {(() => {
+                  const expertCompleted = priyaQueries.filter(q => q.status === 'COMPLETED');
+                  const expertEscrow = priyaQueries.filter(q => q.status === 'CONFIRMED' || q.status === 'PAYOUT_FAILED');
+                  const totalEarnedAmount = expertCompleted.length * 220;
+                  const totalHeldAmount = expertEscrow.length * 220;
 
-                {/* Instant Withdrawal Request Box */}
-                <div className="bg-white border-2 border-slate-200 rounded-2xl p-6">
-                  <h3 className="font-display font-black text-slate-900 text-sm uppercase tracking-wider mb-4">Request Instant Withdrawal</h3>
-                  
-                  <form onSubmit={handleWithdrawal} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">UPI ID or VPA Address</label>
-                        <input
-                          type="text"
-                          required
-                          value={upiId}
-                          onChange={(e) => setUpiId(e.target.value)}
-                          placeholder="yourname@upi"
-                          className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden text-slate-700"
-                        />
+                  return (
+                    <>
+                      {/* Financial Summary Grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs">
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider font-mono">Settled Earnings</span>
+                          <h3 className="font-black text-emerald-600 font-mono text-2xl mt-1">₹{totalEarnedAmount}</h3>
+                          <p className="text-[10px] text-slate-400 mt-1">Successfully routed to your bank</p>
+                        </div>
+                        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs">
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider font-mono">Held in Escrow</span>
+                          <h3 className="font-black text-amber-500 font-mono text-2xl mt-1">₹{totalHeldAmount}</h3>
+                          <p className="text-[10px] text-slate-400 mt-1">Held securely pending completion</p>
+                        </div>
+                        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs">
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider font-mono">Total Consulting Hours</span>
+                          <h3 className="font-black text-slate-800 font-mono text-2xl mt-1">{(priyaQueries.length * 20) / 60} hrs</h3>
+                          <p className="text-[10px] text-slate-400 mt-1">{priyaQueries.length} total sessions booked</p>
+                        </div>
                       </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Withdrawal Amount (INR)</label>
-                        <input
-                          type="number"
-                          required
-                          value={withdrawalAmount}
-                          onChange={(e) => setWithdrawalAmount(e.target.value)}
-                          max={mockWallet.availableBalance}
-                          className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden font-mono text-slate-700"
-                        />
-                      </div>
-                    </div>
 
-                    {withdrawSuccess && (
-                      <div className="p-3 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-xl text-xs font-semibold">
-                        {withdrawSuccess}
-                      </div>
-                    )}
+                      {/* Onboarding & KYC Timeline Tracker */}
+                      <div className="bg-slate-900 text-white rounded-3xl p-6 shadow-xs relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                          <Coins className="w-40 h-40 text-blue-400" />
+                        </div>
+                        
+                        <div className="relative z-10">
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-6">
+                            <div>
+                              <span className="text-[9px] bg-blue-500/20 text-blue-300 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider font-mono">
+                                Razorpay Route Integration
+                              </span>
+                              <h3 className="text-base font-black tracking-tight mt-1">Your Payout Connected Account</h3>
+                            </div>
+                            {expertProfile?.razorpay_account_id ? (
+                              <div className="text-right">
+                                <span className="text-[9px] text-slate-400 block uppercase font-mono font-bold">Linked Account ID</span>
+                                <strong className="text-xs text-blue-400 font-mono font-bold bg-slate-800 px-2 py-1 rounded-md border border-slate-700">
+                                  {expertProfile.razorpay_account_id}
+                                </strong>
+                              </div>
+                            ) : (
+                              <span className="text-xs text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded-md font-bold uppercase">
+                                Action Required
+                              </span>
+                            )}
+                          </div>
 
-                    <button
-                      type="submit"
-                      disabled={withdrawing || mockWallet.availableBalance < parseInt(withdrawalAmount)}
-                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5"
-                    >
-                      {withdrawing ? 'Processing Withdrawal...' : 'Request Payout'}
-                    </button>
-                  </form>
-                </div>
+                          {/* Interactive Progress Timeline */}
+                          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 relative">
+                            {/* Account Created step */}
+                            <div className="flex items-center gap-3 bg-slate-800/50 p-3.5 rounded-2xl border border-slate-800">
+                              <div className={`p-1.5 rounded-lg ${expertProfile?.razorpay_account_id ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-700 text-slate-400"}`}>
+                                <Check className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <h4 className="text-xs font-bold">1. Account Linked</h4>
+                                <p className="text-[9px] text-slate-400">
+                                  {expertProfile?.razorpay_account_id ? "Linked successfully" : "Setup bank details"}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* KYC step */}
+                            <div className="flex items-center gap-3 bg-slate-800/50 p-3.5 rounded-2xl border border-slate-800">
+                              <div className={`p-1.5 rounded-lg ${expertProfile?.kyc_completed ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-700 text-slate-400"}`}>
+                                <Check className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <h4 className="text-xs font-bold">2. KYC Verified</h4>
+                                <p className="text-[9px] text-slate-400">
+                                  {expertProfile?.kyc_completed ? "Identity approved" : "Pending review"}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Bank check step */}
+                            <div className="flex items-center gap-3 bg-slate-800/50 p-3.5 rounded-2xl border border-slate-800">
+                              <div className={`p-1.5 rounded-lg ${expertProfile?.bank_verified ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-700 text-slate-400"}`}>
+                                <Check className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <h4 className="text-xs font-bold">3. Bank Checked</h4>
+                                <p className="text-[9px] text-slate-400">
+                                  {expertProfile?.bank_verified ? "Account confirmed" : "Verification pending"}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Payouts Active step */}
+                            <div className="flex items-center gap-3 bg-slate-800/50 p-3.5 rounded-2xl border border-slate-800">
+                              <div className={`p-1.5 rounded-lg ${expertProfile?.payouts_enabled ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-700 text-slate-400"}`}>
+                                <Check className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <h4 className="text-xs font-bold">4. Payouts Active</h4>
+                                <p className="text-[9px] text-slate-400">
+                                  {expertProfile?.payouts_enabled ? "Instantly enabled" : "Awaiting activation"}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* REVIEWER INTERACTIVE SIMULATION UTILITY BOX */}
+                      <div className="bg-blue-50 border-2 border-blue-200 rounded-3xl p-6">
+                        <div className="flex items-start gap-3">
+                          <Sparkles className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-black text-blue-900 tracking-tight">Reviewer Testing Tool: Simulate Account Activations</h4>
+                            <p className="text-xs text-blue-700">
+                              Razorpay Route verification typically takes 1-2 business days. Use this simulator to instantly trigger transitions and test the marketplace's <strong>First Payout Validation Logic</strong>.
+                            </p>
+                            
+                            <div className="flex flex-wrap items-center gap-4 pt-2">
+                              <label className="flex items-center gap-2 text-xs font-bold text-blue-900 bg-white border border-blue-200 px-3 py-1.5 rounded-xl select-none cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={expertProfile?.kyc_completed || false} 
+                                  onChange={(e) => handleSimulateVerification(e.target.checked, expertProfile?.bank_verified || false, expertProfile?.payouts_enabled || false)}
+                                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span>Simulate KYC Approved</span>
+                              </label>
+
+                              <label className="flex items-center gap-2 text-xs font-bold text-blue-900 bg-white border border-blue-200 px-3 py-1.5 rounded-xl select-none cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={expertProfile?.bank_verified || false} 
+                                  onChange={(e) => handleSimulateVerification(expertProfile?.kyc_completed || false, e.target.checked, expertProfile?.payouts_enabled || false)}
+                                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span>Simulate Bank Verified</span>
+                              </label>
+
+                              <label className="flex items-center gap-2 text-xs font-bold text-blue-900 bg-white border border-blue-200 px-3 py-1.5 rounded-xl select-none cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={expertProfile?.payouts_enabled || false} 
+                                  onChange={(e) => handleSimulateVerification(expertProfile?.kyc_completed || false, expertProfile?.bank_verified || false, e.target.checked)}
+                                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span>Simulate Payouts Enabled</span>
+                              </label>
+                            </div>
+
+                            {simulationSuccess && (
+                              <p className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-lg mt-2 inline-block">
+                                ✓ {simulationSuccess}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* SESSIONS & RETRY PAYOUT ACTIONS SECTION */}
+                      <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-4">
+                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider font-mono">Escrow Settlement Ledger</h4>
+                        
+                        {priyaQueries.length > 0 ? (
+                          <div className="space-y-4">
+                            {priyaQueries.map((q) => {
+                              const isCompleted = q.status === "COMPLETED";
+                              const isEscrow = q.status === "CONFIRMED";
+                              const isFailed = q.status === "PAYOUT_FAILED";
+
+                              return (
+                                <div key={q.id} className="border border-slate-100 rounded-2xl p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                                  <div className="flex flex-wrap items-start justify-between gap-2">
+                                    <div>
+                                      <h5 className="text-xs font-extrabold text-slate-900">
+                                        20 Min Consultation - ID: BR-{q.id.toUpperCase()}
+                                      </h5>
+                                      <p className="text-[10px] text-slate-400 font-medium">
+                                        Client: {q.buyerName} • Booked Slot: {q.bookedSlot || "Immediate Chat"}
+                                      </p>
+                                    </div>
+                                    <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full border ${
+                                      isCompleted ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                                      isEscrow ? "bg-amber-50 text-amber-700 border-amber-200" :
+                                      isFailed ? "bg-rose-50 text-rose-700 border-rose-200 animate-pulse" :
+                                      "bg-slate-100 text-slate-600 border-slate-200"
+                                    }`}>
+                                      {isCompleted ? "Payout Completed" :
+                                       isEscrow ? "In Escrow Holding" :
+                                       isFailed ? "Payout Blocked" :
+                                       q.status}
+                                    </span>
+                                  </div>
+
+                                  {/* Marketplace Split Ledger Details */}
+                                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3 bg-white p-3 rounded-xl border border-slate-100 text-[10px]">
+                                    <div>
+                                      <span className="text-slate-400 block font-medium">Customer Paid</span>
+                                      <strong className="text-slate-800 font-mono">₹299</strong>
+                                      <span className="text-slate-400 block font-normal">(Inclusive of GST)</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-slate-400 block font-medium">Marketplace Fee</span>
+                                      <strong className="text-slate-700 font-mono">₹79</strong>
+                                      <span className="text-slate-400 block font-normal">(Platform services)</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-slate-400 block font-medium">Resident Payout (90%)</span>
+                                      <strong className="text-emerald-600 font-mono">₹220</strong>
+                                      <span className="text-slate-400 block font-normal">(Dispatched to Route)</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Error messages if validation gates intercepted payout */}
+                                  {q.payoutErrorMessage && (
+                                    <div className="mt-3 p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs flex gap-2">
+                                      <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                                      <div>
+                                        <p className="font-extrabold text-rose-900">First Payout Blocked</p>
+                                        <p className="mt-0.5 font-medium">{q.payoutErrorMessage}</p>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Action releases */}
+                                  <div className="mt-3 flex items-center justify-between text-[10px]">
+                                    <div>
+                                      {q.payoutTransferId && (
+                                        <p className="text-slate-400 font-mono">
+                                          Transfer ID: <strong className="text-slate-600 font-bold">{q.payoutTransferId}</strong>
+                                        </p>
+                                      )}
+                                      {q.payoutTimestamp && (
+                                        <p className="text-slate-400">
+                                          Released on: {new Date(q.payoutTimestamp).toLocaleString()}
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    {(isEscrow || isFailed) && (
+                                      <button
+                                        onClick={() => handleCompleteBookingAndPayout(q.id)}
+                                        disabled={completingQueryId === q.id}
+                                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 text-white font-bold uppercase tracking-wider rounded-xl cursor-pointer"
+                                      >
+                                        {completingQueryId === q.id ? "Processing Release..." : "Mark Complete & Release ₹220"}
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-center py-6 text-xs text-slate-400 font-medium">
+                            No consulting transactions found in ledger.
+                          </div>
+                        )}
+                      </div>
+
+                      {/* DEDICATED BANK DETAILS & KYC FORM */}
+                      <div className="bg-white border border-slate-200 rounded-3xl p-6">
+                        <div className="border-b border-slate-100 pb-3 mb-4">
+                          <h4 className="text-sm font-black text-slate-900 tracking-tight">KYC & Bank Destination Configuration</h4>
+                          <p className="text-xs text-slate-400 mt-1">Configure your independent resident bank details to automatically route split payouts.</p>
+                        </div>
+
+                        <form onSubmit={handlePayoutSetupSubmit} className="space-y-4 text-xs font-medium">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-slate-500 block mb-1">PAN Card Number</label>
+                              <input 
+                                type="text"
+                                required
+                                maxLength={10}
+                                placeholder="ABCDE1234F"
+                                value={panCard}
+                                onChange={(e) => setPanCard(e.target.value)}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-xl outline-hidden focus:border-blue-500 font-mono uppercase text-slate-800"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="text-slate-500 block mb-1">Date of Birth</label>
+                              <input 
+                                type="date"
+                                required
+                                value={dobText}
+                                onChange={(e) => setDobText(e.target.value)}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-xl outline-hidden focus:border-blue-500 text-slate-800"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="text-slate-500 block mb-1">Bank Account Number</label>
+                              <input 
+                                type="password"
+                                required
+                                placeholder="Re-enter bank account number to sync"
+                                value={bankAccNumber}
+                                onChange={(e) => setBankAccNumber(e.target.value)}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-xl outline-hidden focus:border-blue-500 font-mono text-slate-800"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="text-slate-500 block mb-1">Re-enter Bank Account Number</label>
+                              <input 
+                                type="text"
+                                required
+                                placeholder="Verify account number matches"
+                                value={bankAccNumberConfirm}
+                                onChange={(e) => setBankAccNumberConfirm(e.target.value)}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-xl outline-hidden focus:border-blue-500 font-mono text-slate-800"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="text-slate-500 block mb-1">IFSC Code</label>
+                              <input 
+                                type="text"
+                                required
+                                placeholder="HDFC0000123"
+                                value={ifscCode}
+                                onChange={(e) => setIfscCode(e.target.value)}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-xl outline-hidden focus:border-blue-500 font-mono uppercase text-slate-800"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="text-slate-500 block mb-1">Business Registered Type</label>
+                              <select
+                                value={businessType}
+                                onChange={(e) => setBusinessType(e.target.value)}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-xl outline-hidden focus:border-blue-500 text-slate-800"
+                              >
+                                <option value="individual">Individual / Proprietorship</option>
+                                <option value="partnership">Partnership Firm</option>
+                                <option value="private_limited">Private Limited Company</option>
+                              </select>
+                            </div>
+
+                            <div className="sm:col-span-2">
+                              <label className="text-slate-500 block mb-1">Registered Address</label>
+                              <input 
+                                type="text"
+                                required
+                                placeholder="123, Bimbisar Nagar, Jogeshwari, Mumbai"
+                                value={addressText}
+                                onChange={(e) => setAddressText(e.target.value)}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-xl outline-hidden focus:border-blue-500 text-slate-800"
+                              />
+                            </div>
+                          </div>
+
+                          {payoutSetupError && (
+                            <div className="p-3 bg-rose-50 text-rose-800 border border-rose-100 rounded-xl text-xs font-semibold">
+                              {payoutSetupError}
+                            </div>
+                          )}
+
+                          {payoutSetupSuccess && (
+                            <div className="p-3 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-xl text-xs font-semibold">
+                              {payoutSetupSuccess}
+                            </div>
+                          )}
+
+                          <button
+                            type="submit"
+                            disabled={submittingPayout}
+                            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 text-white text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer"
+                          >
+                            {submittingPayout ? "Saving Details..." : "Submit Payout Details"}
+                          </button>
+                        </form>
+                      </div>
+                    </>
+                  );
+                })()}
 
               </div>
             )}

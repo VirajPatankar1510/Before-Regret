@@ -37,7 +37,7 @@ export const pricingPlans: PricingPlan[] = [
     badgeStyle: 'bg-orange-50 text-orange-700 font-semibold',
     title: '20 Mins Live Chat',
     description: 'Book a direct real-time 20-minute chat consultation with the resident at a scheduled convenient slot.',
-    price: 220,
+    price: 299,
     pricePeriod: '/ 20 min session',
     features: [
       '20-minute real-time chat with the resident',

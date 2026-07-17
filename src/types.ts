@@ -53,6 +53,19 @@ export interface ExpertProfile {
   upiId?: string;
   bankAccountNumber?: string;
   isLiveChatAvailable?: boolean;
+
+  // Razorpay Route Marketplace fields
+  razorpay_account_id?: string | null;
+  razorpay_account_status?: string | null;
+  kyc_completed?: boolean;
+  bank_verified?: boolean;
+  payouts_enabled?: boolean;
+  onboarding_completed?: boolean;
+  pan?: string | null;
+  ifsc?: string | null;
+  address?: string | null;
+  dob?: string | null;
+  businessType?: string | null;
 }
 
 export interface TimeWindow {
@@ -76,13 +89,17 @@ export interface DirectQuery {
   localityName: string;
   queryText: string;
   responseStyle?: 'DETAILED' | 'CONCISE';
-  status: 'PENDING' | 'ACCEPTED' | 'ANSWERED' | 'REFUNDED' | 'DISPUTED';
+  status: 'PENDING' | 'ACCEPTED' | 'ANSWERED' | 'REFUNDED' | 'DISPUTED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED' | 'PAYOUT_PENDING' | 'PAYOUT_COMPLETED' | 'PAYOUT_FAILED';
   pricePaid: number;
   expertEarnings: number;
   createdAt: string;
   answeredAt?: string;
   answerText?: string;
   razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  payoutTransferId?: string;
+  payoutErrorMessage?: string;
+  payoutTimestamp?: string;
   holdingPeriodExpiresAt?: string;
   packageOption?: string;
   isDisputed?: boolean;
