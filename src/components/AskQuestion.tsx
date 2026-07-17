@@ -22,24 +22,6 @@ const isSlotPassed = (slot: string): boolean => {
   }
 };
 
-const loadRazorpayScript = (): Promise<boolean> => {
-  return new Promise((resolve) => {
-    if (typeof window === "undefined") {
-      resolve(false);
-      return;
-    }
-    if ((window as any).Razorpay) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
-
 export const AskQuestion: React.FC<AskQuestionProps> = ({
   expert,
   locality,
@@ -94,62 +76,68 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
     setError("");
 
     try {
-      // 1. Try to load Razorpay script
-      const scriptLoaded = await loadRazorpayScript();
-      
-      // 2. Request order creation on our secure backend
-      const res = await fetch("/api/payments/create-order", {
+      // 1. Request order creation on our secure backend using standard create-order (with amount in paise)
+      const amountInPaise = Math.round(activePlan.price * 100);
+
+      const res = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: activePlan.price,
+          amount: amountInPaise,
           currency: "INR",
-          queryId: `qry_${Date.now()}`
+          receipt: `rcpt_${Date.now()}`
         })
       });
 
       if (!res.ok) {
-        throw new Error("Failed to create order on backend");
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to create order on backend");
       }
 
       const orderData = await res.json();
       
-      // If script failed to load OR keys are mock/sandbox, fallback to our built-in high-fidelity simulator
-      if (!scriptLoaded || orderData.isSandbox || !orderData.id) {
-        console.warn("[Razorpay] Falling back to high-fidelity simulated overlay.");
-        setIsProcessing(false);
+      if (!orderData || !orderData.id) {
+        throw new Error("Invalid order data returned by the server");
+      }
+
+      // Check if window.Razorpay is available
+      if (!(window as any).Razorpay) {
+        console.warn("[Razorpay] checkout.js not loaded. Loading high-fidelity simulator.");
         setShowRazorpay(true);
         setRazorpayStep('details');
+        setIsProcessing(false);
         return;
       }
 
-      // 3. Script loaded and real keys are present. Trigger actual Razorpay Checkout modal
+      const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TEa01oUggBrtUA";
+
+      // 2. Open Razorpay modal with order_id
       const options = {
-        key: orderData.keyId,
+        key: keyId,
         amount: orderData.amount,
         currency: orderData.currency,
         name: "Before Regret",
         description: `Consultation Fee (${activePlan.title})`,
-        image: "https://assets.mixkit.co/active_storage/sfx/2869/2869-600.wav",
+        image: "https://images.unsplash.com/photo-1444724215202-914050236173?w=128",
         order_id: orderData.id,
         handler: async function (response: any) {
           setIsProcessing(true);
           try {
-            const verifyRes = await fetch("/api/payments/verify-payment", {
+            // 3. Send payment details to verify endpoint
+            const verifyRes = await fetch("/api/verify-payment", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                isSandbox: false
+                razorpay_signature: response.razorpay_signature
               })
             });
 
             if (verifyRes.ok) {
               const verifyData = await verifyRes.json();
               if (verifyData.success) {
-                // Succeeded! Transition to local success indicator and submit question
+                // Success! Transition to local success indicator and submit question
                 setRazorpayStep('success');
                 setShowRazorpay(true);
                 setTimeout(() => {
@@ -160,7 +148,8 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                 setError("Payment verification failed. Please try again.");
               }
             } else {
-              setError("Failed to verify payment signature on the backend.");
+              const errData = await verifyRes.json().catch(() => ({}));
+              setError(errData.error || "Failed to verify payment signature on the backend.");
             }
           } catch (err: any) {
             console.error("Verification error:", err);
@@ -187,19 +176,20 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
       };
 
       setIsProcessing(false);
-      const rzp1 = new (window as any).Razorpay(options);
+      const rzp = new (window as any).Razorpay(options);
 
-      rzp1.on("payment.failed", function (response: any) {
+      rzp.on("payment.failed", function (response: any) {
         console.error("Razorpay payment failed:", response.error);
         setError(`Payment failed: ${response.error.description || "Verification failed. Please try again."}`);
         setIsProcessing(false);
       });
 
-      rzp1.open();
+      rzp.open();
 
     } catch (err: any) {
       console.error("[Razorpay Checkout Error]:", err);
       // Failover to simulation overlay so experience is never blocked in sandbox modes
+      setError(err.message || "An unexpected error occurred during checkout initialization.");
       setIsProcessing(false);
       setShowRazorpay(true);
       setRazorpayStep('details');
@@ -493,6 +483,13 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                 <CreditCard className="w-4 h-4" />
                 <span>Pay via Razorpay</span>
               </button>
+
+              {error && (
+                <div className="mt-3 flex items-center gap-1.5 p-2.5 bg-red-50 text-red-700 rounded-lg border border-red-100 text-[10px] text-left leading-relaxed">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
 
               <div className="mt-4 flex items-center justify-center gap-1.5 text-[10px] text-slate-400 font-semibold font-mono">
                 <Lock className="w-3 h-3 text-slate-400" />
