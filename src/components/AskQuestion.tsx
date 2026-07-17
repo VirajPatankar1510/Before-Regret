@@ -22,6 +22,24 @@ const isSlotPassed = (slot: string): boolean => {
   }
 };
 
+const loadRazorpayScript = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") {
+      resolve(false);
+      return;
+    }
+    if ((window as any).Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 export const AskQuestion: React.FC<AskQuestionProps> = ({
   expert,
   locality,
@@ -71,9 +89,121 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
     setStep(3);
   };
 
-  const startRazorpayPayment = () => {
-    setShowRazorpay(true);
-    setRazorpayStep('details');
+  const startRazorpayPayment = async () => {
+    setIsProcessing(true);
+    setError("");
+
+    try {
+      // 1. Try to load Razorpay script
+      const scriptLoaded = await loadRazorpayScript();
+      
+      // 2. Request order creation on our secure backend
+      const res = await fetch("/api/payments/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: activePlan.price,
+          currency: "INR",
+          queryId: `qry_${Date.now()}`
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to create order on backend");
+      }
+
+      const orderData = await res.json();
+      
+      // If script failed to load OR keys are mock/sandbox, fallback to our built-in high-fidelity simulator
+      if (!scriptLoaded || orderData.isSandbox || !orderData.id) {
+        console.warn("[Razorpay] Falling back to high-fidelity simulated overlay.");
+        setIsProcessing(false);
+        setShowRazorpay(true);
+        setRazorpayStep('details');
+        return;
+      }
+
+      // 3. Script loaded and real keys are present. Trigger actual Razorpay Checkout modal
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Before Regret",
+        description: `Consultation Fee (${activePlan.title})`,
+        image: "https://assets.mixkit.co/active_storage/sfx/2869/2869-600.wav",
+        order_id: orderData.id,
+        handler: async function (response: any) {
+          setIsProcessing(true);
+          try {
+            const verifyRes = await fetch("/api/payments/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                isSandbox: false
+              })
+            });
+
+            if (verifyRes.ok) {
+              const verifyData = await verifyRes.json();
+              if (verifyData.success) {
+                // Succeeded! Transition to local success indicator and submit question
+                setRazorpayStep('success');
+                setShowRazorpay(true);
+                setTimeout(() => {
+                  setShowRazorpay(false);
+                  onSubmitQuestion(queryText, packageId, packageId === 'LIVE_CHAT' ? selectedSlot : undefined);
+                }, 1500);
+              } else {
+                setError("Payment verification failed. Please try again.");
+              }
+            } else {
+              setError("Failed to verify payment signature on the backend.");
+            }
+          } catch (err: any) {
+            console.error("Verification error:", err);
+            setError("An error occurred during payment verification.");
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+        prefill: {
+          name: "Rohan Deshmukh",
+          email: "rohan@example.com",
+          contact: "9999999999"
+        },
+        theme: {
+          color: "#2563EB"
+        },
+        modal: {
+          ondismiss: function() {
+            console.log("Checkout modal dismissed by user");
+            setIsProcessing(false);
+            setError("Payment session was closed by the user.");
+          }
+        }
+      };
+
+      setIsProcessing(false);
+      const rzp1 = new (window as any).Razorpay(options);
+
+      rzp1.on("payment.failed", function (response: any) {
+        console.error("Razorpay payment failed:", response.error);
+        setError(`Payment failed: ${response.error.description || "Verification failed. Please try again."}`);
+        setIsProcessing(false);
+      });
+
+      rzp1.open();
+
+    } catch (err: any) {
+      console.error("[Razorpay Checkout Error]:", err);
+      // Failover to simulation overlay so experience is never blocked in sandbox modes
+      setIsProcessing(false);
+      setShowRazorpay(true);
+      setRazorpayStep('details');
+    }
   };
 
   const handleProcessRazorpayDetails = (e: React.FormEvent) => {

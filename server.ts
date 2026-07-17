@@ -4,6 +4,8 @@ import fs from "fs";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
 import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from "./src/data";
+import Razorpay from "razorpay";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -358,6 +360,138 @@ async function startServer() {
       res.status(500).json({ error: err.message || "Failed to save query." });
     }
   });
+
+  // --- RAZORPAY PAYMENT GATEWAY ENDPOINTS ---
+  let razorpayInstance: any = null;
+
+  function getRazorpayInstance() {
+    const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!keyId || !keySecret) {
+      return null;
+    }
+
+    if (!razorpayInstance) {
+      razorpayInstance = new Razorpay({
+        key_id: keyId,
+        key_secret: keySecret,
+      });
+    }
+    return razorpayInstance;
+  }
+
+  // Unified Order Creation Logic
+  const handleCreateOrder = async (req: any, res: any, isAmountInPaise: boolean) => {
+    const { amount, currency = "INR", receipt } = req.body;
+
+    if (amount === undefined || amount === null) {
+      return res.status(400).json({ error: "Amount is required" });
+    }
+
+    // Convert to paise if the endpoint expects rupees
+    const amountInPaise = isAmountInPaise ? Number(amount) : Math.round(Number(amount) * 100);
+
+    // Minimum amount: 100 paise
+    if (isNaN(amountInPaise) || amountInPaise < 100) {
+      return res.status(400).json({ error: "Amount must be a valid number and at least 100 paise" });
+    }
+
+    try {
+      const rzp = getRazorpayInstance();
+      if (!rzp) {
+        console.warn("[Razorpay] Missing RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET in environment. Operating in sandbox fallback mode.");
+        const mockOrderId = `order_mock_${Math.random().toString(36).substr(2, 9)}`;
+        return res.json({
+          id: mockOrderId,
+          order_id: mockOrderId,
+          amount: amountInPaise,
+          currency,
+          isSandbox: true,
+          keyId: process.env.VITE_RAZORPAY_KEY_ID || "rzp_test_mock_keys_not_set"
+        });
+      }
+
+      const options = {
+        amount: amountInPaise,
+        currency,
+        receipt: receipt || `rcpt_${Date.now()}`
+      };
+
+      const order = await rzp.orders.create(options);
+      res.json({
+        id: order.id,
+        order_id: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        isSandbox: false,
+        keyId: process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID
+      });
+    } catch (err: any) {
+      console.error("[Razorpay] Error creating order:", err);
+      // Handle authentication failures with a 401 status code
+      if (err.statusCode === 401 || (err.message && err.message.toLowerCase().includes("auth"))) {
+        return res.status(401).json({ error: "Razorpay authentication failed. Please check your API keys." });
+      }
+      res.status(500).json({ error: err.message || "Failed to create Razorpay order" });
+    }
+  };
+
+  // Standard Standard Web Checkout Endpoint (amount in paise)
+  app.post("/api/create-order", (req, res) => {
+    handleCreateOrder(req, res, true);
+  });
+
+  // Client-Friendly ESCROW Consultations Endpoint (amount in rupees)
+  app.post("/api/payments/create-order", (req, res) => {
+    handleCreateOrder(req, res, false);
+  });
+
+  // Unified Verification Logic
+  const handleVerifyPayment = async (req: any, res: any) => {
+    const { 
+      razorpay_order_id, 
+      razorpay_payment_id, 
+      razorpay_signature,
+      isSandbox
+    } = req.body;
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ error: "Missing required verification fields (razorpay_order_id, razorpay_payment_id, razorpay_signature)" });
+    }
+
+    try {
+      if (isSandbox || razorpay_order_id?.startsWith("order_mock_")) {
+        console.log("[Razorpay] Verifying simulated payment in sandbox mode");
+        return res.json({ success: true, message: "Simulated payment verified successfully!" });
+      }
+
+      const rzp = getRazorpayInstance();
+      if (!rzp) {
+        return res.status(400).json({ error: "Razorpay instance is not initialized. Keys are missing." });
+      }
+
+      const keySecret = process.env.RAZORPAY_KEY_SECRET!;
+      const hmac = crypto.createHmac("sha256", keySecret);
+      hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+      const generatedSignature = hmac.digest("hex");
+
+      if (generatedSignature !== razorpay_signature) {
+        console.warn("[Razorpay] Cryptographic signature verification failed");
+        return res.status(400).json({ error: "Invalid payment signature verification failed" });
+      }
+
+      console.log("[Razorpay] Cryptographic signature verified successfully!");
+      res.json({ success: true, message: "Payment verified successfully!" });
+    } catch (err: any) {
+      console.error("[Razorpay] Error verifying signature:", err);
+      res.status(500).json({ error: err.message || "Failed to verify Razorpay signature" });
+    }
+  };
+
+  // Standard Signature Verification Endpoints
+  app.post("/api/verify-payment", handleVerifyPayment);
+  app.post("/api/payments/verify-payment", handleVerifyPayment);
 
   // Bulk master sync route to persist all local states to server
   app.post("/api/data/sync", (req, res) => {
