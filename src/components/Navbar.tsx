@@ -356,13 +356,26 @@ export const Navbar: React.FC<NavbarProps> = ({
             <BookOpen className="w-3.5 h-3.5" />
             <span>The Regret Files</span>
           </button>
-          <button
-            onClick={() => setView('become_expert')}
-            className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-semibold"
-          >
-            <Award className="w-4 h-4 text-emerald-500" />
-            <span>Become a Local Expert</span>
-          </button>
+          {expertProfile ? (
+            <button
+              onClick={() => {
+                setActiveRole('expert');
+                setView('expert_dashboard');
+              }}
+              className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-bold"
+            >
+              <Award className="w-4 h-4 text-emerald-500 animate-pulse" />
+              <span>Dashboard</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => setView('become_expert')}
+              className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-semibold"
+            >
+              <Award className="w-4 h-4 text-emerald-500" />
+              <span>Become a Local Expert</span>
+            </button>
+          )}
         </nav>
 
         {/* Action Button & Mobile Menu Toggle */}
@@ -498,19 +511,32 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
 
           {!user ? (
-            <button
-              onClick={() => {
-                if (isClerkActive) {
-                  triggerClerkSignIn();
-                } else {
-                  setAuthModalOpen(true);
-                }
-              }}
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all cursor-pointer shadow-xs hover:shadow-md"
-            >
-              <LogIn className="w-3.5 h-3.5" />
-              <span>Sign In</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleMockLogin({
+                  uid: 'mock_buyer_amit',
+                  displayName: 'Amit Kumar',
+                  email: 'amit.buyer@beforeregret.com',
+                  photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100'
+                })}
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200/60 rounded-xl transition-all cursor-pointer shadow-3xs"
+              >
+                <span>Demo Bypass</span>
+              </button>
+              <button
+                onClick={() => {
+                  if (isClerkActive) {
+                    triggerClerkSignIn();
+                  } else {
+                    setAuthModalOpen(true);
+                  }
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all cursor-pointer shadow-xs hover:shadow-md"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </button>
+            </div>
           ) : (
             <div className="relative">
               <button
@@ -585,16 +611,30 @@ export const Navbar: React.FC<NavbarProps> = ({
                       >
                         Explore Societies
                       </button>
-                      <button
-                        onClick={() => {
-                          setView('become_expert');
-                          setDropdownOpen(false);
-                        }}
-                        className="w-full text-left px-2.5 py-2 text-xs text-slate-600 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-1.5"
-                      >
-                        <Award className="w-3.5 h-3.5 text-emerald-500" />
-                        <span>Become a Local Expert</span>
-                      </button>
+                      {expertProfile ? (
+                        <button
+                          onClick={() => {
+                            setActiveRole('expert');
+                            setView('expert_dashboard');
+                            setDropdownOpen(false);
+                          }}
+                          className="w-full text-left px-2.5 py-2 text-xs text-blue-600 font-bold hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-1.5"
+                        >
+                          <Award className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+                          <span>Dashboard</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setView('become_expert');
+                            setDropdownOpen(false);
+                          }}
+                          className="w-full text-left px-2.5 py-2 text-xs text-slate-600 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-1.5"
+                        >
+                          <Award className="w-3.5 h-3.5 text-emerald-500" />
+                          <span>Become a Local Expert</span>
+                        </button>
+                      )}
                     </div>
 
                     <div className="border-t border-slate-50 mt-1 pt-1 px-2">
@@ -669,20 +709,38 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>The Regret Files</span>
           </button>
           
-          <button
-            onClick={() => {
-              setView('become_expert');
-              setMobileMenuOpen(false);
-            }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all ${
-              currentView === 'become_expert'
-                ? 'bg-emerald-50 text-emerald-700'
-                : 'text-blue-600 hover:bg-blue-50'
-            }`}
-          >
-            <Award className="w-4 h-4 text-emerald-500" />
-            <span>Become a Local Expert</span>
-          </button>
+          {expertProfile ? (
+            <button
+              onClick={() => {
+                setActiveRole('expert');
+                setView('expert_dashboard');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all ${
+                currentView === 'expert_dashboard'
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : 'text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              <Award className="w-4 h-4 text-emerald-500 animate-pulse" />
+              <span>Dashboard</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                setView('become_expert');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all ${
+                currentView === 'become_expert'
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : 'text-blue-600 hover:bg-blue-50'
+              }`}
+            >
+              <Award className="w-4 h-4 text-emerald-500" />
+              <span>Become a Local Expert</span>
+            </button>
+          )}
 
           {user && (
             <div className="pt-2 border-t border-slate-100 mt-2 space-y-1">
@@ -745,6 +803,32 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Modal Body */}
             <div className="p-6 space-y-6 max-h-[480px] overflow-y-auto">
+              {/* Quick Demo Bypass Banner */}
+              <div className="p-4 bg-amber-50/70 border border-amber-200/80 rounded-2xl space-y-3">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg">✨</span>
+                  <div>
+                    <h4 className="text-xs font-bold text-amber-950 font-display">Bypass with Demo Account</h4>
+                    <p className="text-[11px] text-amber-800/80 leading-relaxed">
+                      Instantly enter the platform as our pre-configured demo buyer account. No signup required.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleMockLogin({
+                    uid: 'mock_buyer_amit',
+                    displayName: 'Amit Kumar',
+                    email: 'amit.buyer@beforeregret.com',
+                    photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100'
+                  })}
+                  className="w-full py-2 px-4 bg-amber-500 hover:bg-amber-600 text-slate-900 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs active:scale-98"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Bypass Sign In (Amit Kumar)</span>
+                </button>
+              </div>
+
               {/* Option A: Secure Authentication */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">

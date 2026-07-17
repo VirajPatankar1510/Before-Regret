@@ -86,6 +86,18 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
           <span className="text-slate-500 font-mono font-bold bg-slate-100 px-2 py-0.5 rounded-sm">
             {expert.responseTime}
           </span>
+          {expert.isInstantChatEnabled && (
+            <>
+              <span className="text-slate-300">|</span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-800 text-[10px] font-bold font-sans shadow-2xs">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
+                Available Now — Chat within 5 minutes
+              </span>
+            </>
+          )}
         </div>
       </div>
 
@@ -175,7 +187,15 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
                       ? 'bg-emerald-50 text-emerald-800 border-emerald-100'
                       : 'bg-amber-50 text-amber-800 border-amber-100'
                   }`}>
-                    {expert.stillLivesThere !== false ? '🟢 Currently Lives Here' : '⚪ Former Resident'}
+                    {expert.stillLivesThere !== false ? (
+                      <span className="flex items-center gap-1.5">
+                        <span className="relative flex h-1.5 w-1.5 shrink-0">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                        </span>
+                        Currently Lives Here
+                      </span>
+                    ) : '⚪ Former Resident'}
                   </span>
                   <span className="bg-slate-50 text-slate-700 text-[10px] font-bold px-2 py-0.5 border border-slate-200 rounded-md">
                     ⭐ {expert.rating} Stars
@@ -346,7 +366,7 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
                 <span>
                   {selectedPlanId === 'QUICK' && '24 Hours Delivery'}
                   {selectedPlanId === 'BUNDLE' && 'Priority Messaging Support'}
-                  {selectedPlanId === 'LIVE_CHAT' && 'Scheduled 30-Min Real-time Session'}
+                  {selectedPlanId === 'LIVE_CHAT' && 'Scheduled 20-Min Real-time Session'}
                 </span>
               </div>
 

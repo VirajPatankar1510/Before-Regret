@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { TOPICS_OF_EXPERTISE, MOCK_AVATARS } from '../data';
-import { ExpertProfile, Neighborhood } from '../types';
-import { Sparkles, Check, ChevronRight, HelpCircle, Heart, ShieldCheck, RefreshCw, MapPin, Bell, Play, Volume2, ArrowRight } from 'lucide-react';
+import { ExpertProfile, Neighborhood, DayAvailability } from '../types';
+import { Sparkles, Check, ChevronRight, HelpCircle, Heart, ShieldCheck, RefreshCw, MapPin, Bell, Play, Volume2, ArrowRight, ChevronUp, ChevronDown, DollarSign, Zap, TrendingUp } from 'lucide-react';
 import { isPushSupported, requestAndSavePushToken, triggerTestPushNotification } from '../lib/notificationService';
 import { useAuth } from '../context/AuthContext';
+import { generateAvailableSlotsFromWeekly } from '../utils/slotHelper';
 
 interface OnboardingProps {
   localities: Neighborhood[];
@@ -17,6 +18,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({
   setView,
 }) => {
   const { user, loginWithMockUser, isClerkActive, triggerClerkSignIn } = useAuth();
+  const [showLanding, setShowLanding] = useState(true);
+  const [calcTextCount, setCalcTextCount] = useState(5);
+  const [calcChatCount, setCalcChatCount] = useState(2);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [bio, setBio] = useState('');
@@ -180,6 +184,144 @@ export const Onboarding: React.FC<OnboardingProps> = ({
   const [isLiveChatAvailable, setIsLiveChatAvailable] = useState(false);
   const [liveChatSlots, setLiveChatSlots] = useState<string[]>([]);
 
+  const [weeklyAvailability, setWeeklyAvailability] = useState<DayAvailability[]>([
+    { day: 'Monday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
+    { day: 'Tuesday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
+    { day: 'Wednesday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
+    { day: 'Thursday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
+    { day: 'Friday', available: true, timeWindows: [{ start: '07:00 PM', end: '10:00 PM' }] },
+    { day: 'Saturday', available: true, timeWindows: [{ start: '10:00 AM', end: '01:00 PM' }] },
+    { day: 'Sunday', available: true, timeWindows: [{ start: '04:00 PM', end: '08:00 PM' }] }
+  ]);
+  const [isInstantChatEnabled, setIsInstantChatEnabled] = useState(true);
+  const [addingDay, setAddingDay] = useState<string | null>(null);
+  const [newStart, setNewStart] = useState('19:00');
+  const [newEnd, setNewEnd] = useState('21:00');
+  const [timeError, setTimeError] = useState<{ day: string; message: string } | null>(null);
+
+  const convertToMinutes = (timeStr: string): number => {
+    // Check for 12-hour format with AM/PM (e.g. "07:00 PM")
+    const ampmMatch = timeStr.trim().match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+    if (ampmMatch) {
+      let hrs = parseInt(ampmMatch[1], 10);
+      const mins = parseInt(ampmMatch[2], 10);
+      const ampm = ampmMatch[3].toUpperCase();
+      if (ampm === 'PM' && hrs < 12) hrs += 12;
+      else if (ampm === 'AM' && hrs === 12) hrs = 0;
+      return hrs * 60 + mins;
+    }
+    // Check for 24-hour format (e.g. "19:00")
+    const parts = timeStr.trim().split(':');
+    if (parts.length >= 2) {
+      const hrs = parseInt(parts[0], 10);
+      const mins = parseInt(parts[1], 10);
+      return hrs * 60 + mins;
+    }
+    return 0;
+  };
+
+  const adjustTime = (currentVal: string, direction: 'up' | 'down'): string => {
+    const parts = currentVal.split(':');
+    if (parts.length < 2) return currentVal;
+    let hrs = parseInt(parts[0], 10);
+    let mins = parseInt(parts[1], 10);
+    
+    // Increment or decrement by 30-minute intervals
+    if (direction === 'up') {
+      mins += 30;
+      if (mins >= 60) {
+        mins = 0;
+        hrs = (hrs + 1) % 24;
+      }
+    } else {
+      mins -= 30;
+      if (mins < 0) {
+        mins = 30;
+        hrs = (hrs - 1 + 24) % 24;
+      }
+    }
+    const hStr = hrs < 10 ? '0' + hrs : hrs.toString();
+    const mStr = mins < 10 ? '0' + mins : mins.toString();
+    return `${hStr}:${mStr}`;
+  };
+
+  const formatTimeToAMPM = (time24: string): string => {
+    if (!time24) return '';
+    const parts = time24.split(':');
+    if (parts.length < 2) return time24;
+    let hrs = parseInt(parts[0], 10);
+    const mins = parseInt(parts[1], 10);
+    const ampm = hrs >= 12 ? 'PM' : 'AM';
+    hrs = hrs % 12;
+    hrs = hrs ? hrs : 12; // '0' should be '12'
+    const minsStr = mins < 10 ? '0' + mins : mins;
+    return `${hrs}:${minsStr} ${ampm}`;
+  };
+
+  const handleToggleDay = (dayName: string) => {
+    setWeeklyAvailability(prev => prev.map(item => {
+      if (item.day === dayName) {
+        return { ...item, available: !item.available };
+      }
+      return item;
+    }));
+  };
+
+  const handleRemoveTimeWindow = (dayName: string, index: number) => {
+    setWeeklyAvailability(prev => prev.map(item => {
+      if (item.day === dayName) {
+        const updated = [...item.timeWindows];
+        updated.splice(index, 1);
+        return { ...item, timeWindows: updated };
+      }
+      return item;
+    }));
+  };
+
+  const handleSaveTimeWindow = (dayName: string) => {
+    setTimeError(null);
+    const formattedStart = formatTimeToAMPM(newStart);
+    const formattedEnd = formatTimeToAMPM(newEnd);
+    if (!formattedStart || !formattedEnd) return;
+
+    const newStartMin = convertToMinutes(newStart);
+    const newEndMin = convertToMinutes(newEnd);
+
+    if (newStartMin >= newEndMin) {
+      setTimeError({ day: dayName, message: "Start time must be before end time!" });
+      alert("Error: Start time must be before end time!");
+      return;
+    }
+
+    const dayConfig = weeklyAvailability.find(item => item.day === dayName);
+    if (dayConfig) {
+      const hasOverlap = dayConfig.timeWindows.some(window => {
+        const existingStartMin = convertToMinutes(window.start);
+        const existingEndMin = convertToMinutes(window.end);
+        // Overlap if new start is before existing end AND new end is after existing start
+        return newStartMin < existingEndMin && newEndMin > existingStartMin;
+      });
+
+      if (hasOverlap) {
+        setTimeError({ day: dayName, message: "This time window overlaps with an already existing slot on this day!" });
+        alert("Error: This time window overlaps with an already existing slot on this day!");
+        return;
+      }
+    }
+
+    setWeeklyAvailability(prev => prev.map(item => {
+      if (item.day === dayName) {
+        return {
+          ...item,
+          timeWindows: [...item.timeWindows, { start: formattedStart, end: formattedEnd }]
+        };
+      }
+      return item;
+    }));
+    setAddingDay(null);
+    setTimeError(null);
+  };
+
   const generateDynamicSlots = () => {
     const slots: string[] = [];
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -300,7 +442,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       availability,
       upiId: upiId.trim() || undefined,
       isLiveChatAvailable,
-      availableSlots: isLiveChatAvailable ? liveChatSlots : [],
+      weeklyAvailability,
+      isInstantChatEnabled,
+      availableSlots: isLiveChatAvailable ? generateAvailableSlotsFromWeekly(weeklyAvailability) : [],
     };
 
     const newLocality: Neighborhood = {
@@ -323,6 +467,270 @@ export const Onboarding: React.FC<OnboardingProps> = ({
     setCreatedLocality(newLocality);
     setSubmitted(true);
   };
+
+  const estimatedWeeklyEarnings = (calcTextCount * 89) + (calcChatCount * 220);
+  const estimatedMonthlyEarnings = estimatedWeeklyEarnings * 4;
+
+  if (showLanding) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-8 sm:py-14 font-sans space-y-16">
+        {/* Hero Section */}
+        <div className="text-center max-w-3xl mx-auto space-y-6">
+          <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 rounded-full px-3.5 py-1.5 text-orange-800 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-orange-600 shrink-0" />
+            <span>Turn Your Everyday Living Facts Into Income</span>
+          </div>
+          
+          <h1 className="text-3xl sm:text-5xl font-display font-black text-slate-900 tracking-tight leading-[1.1] max-w-2xl mx-auto">
+            Share Honest Facts About Your Society. Earn Payouts.
+          </h1>
+          
+          <p className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto leading-relaxed">
+            Prospective home buyers want real, unbiased facts before renting or buying. Help them make the right choice by answering basic queries about maintenance, security, and amenities.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">
+            <button
+              onClick={() => setShowLanding(false)}
+              className="w-full sm:w-auto px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white font-bold text-sm rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+            >
+              <span>Start Earning Now</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setView('home')}
+              className="w-full sm:w-auto px-8 py-4 border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-sm rounded-2xl transition-all cursor-pointer"
+            >
+              Back to Marketplace
+            </button>
+          </div>
+        </div>
+
+        {/* Three Steps Grid */}
+        <div className="space-y-6">
+          <div className="text-center">
+            <p className="text-xl font-bold text-slate-800 mt-1">How BeforeRegret Resident Platform Works</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-3xs space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600">
+                <MapPin className="w-5 h-5" />
+              </div>
+              <h3 className="font-extrabold text-slate-800 text-base">1. Register Your Society</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Add your pincode and select your society or building name. List topics of expertise you're comfortable answering (e.g. water supply, parking issues, safety). Your actual block or flat number remains 100% hidden.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-3xs space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600">
+                <Zap className="w-5 h-5" />
+              </div>
+              <h3 className="font-extrabold text-slate-800 text-base">2. Answer Buyer Queries</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Home buyers can choose to purchase a Quick Consultation (₹89 earnings to you) or book a 20-Minute Scheduled Live Chat (₹220 earnings to you) based on the weekly convenient slot windows you configure.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-3xs space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600">
+                <DollarSign className="w-5 h-5" />
+              </div>
+              <h3 className="font-extrabold text-slate-800 text-base">3. Instant UPI Settlement</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                No draft phases or withdrawal waiting limits. Earnings are automatically wired straight to your registered UPI ID once a buyer query is answered or a scheduled live session is completed.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Pricing Structure Display */}
+        <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-10 space-y-8">
+          <div className="text-center max-w-xl mx-auto space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-orange-600 bg-orange-50 px-2.5 py-1 rounded-md">
+              Transparent Pricing Structure
+            </span>
+            <h2 className="text-2xl font-black text-slate-950 tracking-tight">How Much You Earn</h2>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              We charge a minimal standard platform commission on text queries and 0% platform commission on live chats, allowing you to maximize your local expertise payout.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 relative flex flex-col justify-between">
+              <div>
+                <span className="text-[9px] font-extrabold uppercase bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md">Text Consultation</span>
+                <h3 className="font-extrabold text-slate-800 text-base mt-2">Quick Query</h3>
+                <p className="text-xs text-slate-400 mt-1">Simple quick single question answer</p>
+                <div className="mt-4 border-t border-slate-100 pt-4 flex items-baseline gap-1.5 font-sans">
+                  <span className="text-2xl font-black text-slate-800">₹89</span>
+                  <span className="text-slate-400 text-[10px] font-bold">your share / query</span>
+                </div>
+              </div>
+              <ul className="text-[11px] text-slate-500 space-y-2 pt-4 border-t border-slate-50">
+                <li className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>Buyer pays ₹99</span>
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>Answered via text anytime within 24h</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 relative flex flex-col justify-between">
+              <div>
+                <span className="text-[9px] font-extrabold uppercase bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md">Text Consultation</span>
+                <h3 className="font-extrabold text-slate-800 text-base mt-2">Comprehensive Bundle</h3>
+                <p className="text-xs text-slate-400 mt-1">Detailed evaluation spanning up to 5 topics</p>
+                <div className="mt-4 border-t border-slate-100 pt-4 flex items-baseline gap-1.5 font-sans">
+                  <span className="text-2xl font-black text-slate-800">₹179</span>
+                  <span className="text-slate-400 text-[10px] font-bold">your share / query</span>
+                </div>
+              </div>
+              <ul className="text-[11px] text-slate-500 space-y-2 pt-4 border-t border-slate-50">
+                <li className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>Buyer pays ₹199</span>
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>Prioritized in-depth detailed response</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 relative flex flex-col justify-between">
+              <div>
+                <span className="text-[9px] font-extrabold uppercase bg-orange-100 text-orange-700 px-2.5 py-1 rounded-md mt-1 inline-block">Live Consult</span>
+                <h3 className="font-extrabold text-slate-800 text-base mt-2">20-Min Live Chat</h3>
+                <p className="text-xs text-slate-400 mt-1">Scheduled instant real-time discussion</p>
+                <div className="mt-4 border-t border-slate-100 pt-4 flex items-baseline gap-1.5 font-sans">
+                  <span className="text-2xl font-black text-orange-600">₹220</span>
+                  <span className="text-slate-400 text-[10px] font-bold">your share / session</span>
+                </div>
+              </div>
+              <ul className="text-[11px] text-slate-500 space-y-2 pt-4 border-t border-slate-50">
+                <li className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>Buyer pays ₹220 (0% platform fee)</span>
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>Conducted securely in our live chatroom</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Interactive Calculator Section */}
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-3xs grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-1 bg-blue-50 text-blue-800 border border-blue-100 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">
+              <TrendingUp className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>Earnings Calculator</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Calculate Your Potential Weekly Earnings</h2>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Slide or input the number of consultations you think you can easily handle on weekends or during your evenings to see your projected monthly passive payout.
+            </p>
+
+            <div className="space-y-5 pt-2">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
+                  <span>Text Consultations / week</span>
+                  <span className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md font-mono">{calcTextCount} queries</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="20"
+                  value={calcTextCount}
+                  onChange={(e) => setCalcTextCount(parseInt(e.target.value))}
+                  className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-orange-600"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
+                  <span>Live 20-Min Chats / week</span>
+                  <span className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md font-mono">{calcChatCount} sessions</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="10"
+                  value={calcChatCount}
+                  onChange={(e) => setCalcChatCount(parseInt(e.target.value))}
+                  className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-orange-600"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 space-y-6">
+            <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider text-center pb-2 border-b border-slate-200">
+              Projected Earnings Breakdown
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div className="bg-white border border-slate-150 rounded-xl p-3.5">
+                <span className="text-[10px] text-slate-400 font-bold uppercase">Weekly Passive</span>
+                <p className="text-2xl font-black text-slate-800 mt-1">₹{estimatedWeeklyEarnings.toLocaleString('en-IN')}</p>
+              </div>
+              <div className="bg-white border border-slate-150 rounded-xl p-3.5">
+                <span className="text-[10px] text-slate-400 font-bold uppercase">Monthly Passive</span>
+                <p className="text-2xl font-black text-orange-600 mt-1">₹{estimatedMonthlyEarnings.toLocaleString('en-IN')}</p>
+              </div>
+            </div>
+
+            <div className="text-[10px] text-slate-400 space-y-1.5 leading-relaxed bg-white/50 border border-slate-150 p-3 rounded-xl">
+              <div className="flex items-center justify-between">
+                <span>Text query payout share (₹89 x {calcTextCount}):</span>
+                <span className="font-bold text-slate-700 font-mono">₹{calcTextCount * 89}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Live chat payout share (₹220 x {calcChatCount}):</span>
+                <span className="font-bold text-slate-700 font-mono">₹{calcChatCount * 220}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom CTA Card */}
+        <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 text-center space-y-6 relative overflow-hidden shadow-md">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-600 rounded-full filter blur-3xl opacity-20 translate-x-12 -translate-y-12"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-600 rounded-full filter blur-3xl opacity-20 -translate-x-12 translate-y-12"></div>
+          
+          <div className="relative space-y-4 max-w-xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-display font-black tracking-tight leading-tight">
+              Ready to Share Factual Facts & Start Earning?
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Register your profile in less than 3 minutes.
+            </p>
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                onClick={() => setShowLanding(false)}
+                className="w-full sm:w-auto px-8 py-3.5 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md"
+              >
+                Become an Expert Now
+              </button>
+              <button
+                onClick={() => setView('home')}
+                className="w-full sm:w-auto px-8 py-3.5 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer"
+              >
+                Back to Marketplace
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12 font-sans">
@@ -393,7 +801,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({
               <div>
                 <div className="flex items-center gap-2">
                   <h4 className="font-bold text-slate-800">1. Instant Listing Activation (Zero-Onboarding Gate)</h4>
-                  <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full shrink-0">🟢 LIVE & LISTED</span>
+                  <span className="inline-flex items-center gap-1.5 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full shrink-0">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                    </span>
+                    LIVE & LISTED
+                  </span>
                 </div>
                 <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
                   We bypass manual onboarding roadblocks. Your profile is 100% active immediately. Quality and safety is governed reactively through buyer reviews and ratings. Zero friction.
@@ -414,7 +828,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h4 className="font-bold text-slate-800">2. Instant Lead Alert Channel (Web Push Notifications)</h4>
                   {pushStatus === 'enabled' ? (
-                    <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full">🟢 ENABLED</span>
+                    <span className="inline-flex items-center gap-1.5 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full">
+                      <span className="relative flex h-1.5 w-1.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                      </span>
+                      ENABLED
+                    </span>
                   ) : (
                     <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold bg-amber-100 text-amber-700 border border-amber-200 rounded-full">⚠️ ACTION REQUIRED</span>
                   )}
@@ -444,7 +864,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                       className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] uppercase tracking-wider rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
                     >
                       <Bell className="w-3 h-3" />
-                      <span>{pushStatus === 'enabling' ? 'Authorizing...' : 'Enable Instant Push Notifications'}</span>
+                      <span>{pushStatus === 'enabling' ? 'Authorizing...' : 'Enable Notifications'}</span>
                     </button>
                   ) : (
                     <button
@@ -472,22 +892,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                     ✓ Mock Lead Notification dispatched successfully! You should have heard/seen a native browser alert showing how you will get client requests instantly in real production.
                   </div>
                 )}
-              </div>
-            </div>
-
-            {/* Step 3: UPI ID routing */}
-            <div className="flex items-start gap-3.5 text-xs text-left pt-2 border-t border-slate-200/60">
-              <div className="p-1.5 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-xl mt-0.5 shrink-0">
-                <Volume2 className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-slate-800">3. Direct Payment Settlement Routing</h4>
-                  <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-full">🟢 READY</span>
-                </div>
-                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                  Your payout destination has been set to <span className="font-mono font-bold text-slate-800 bg-slate-100 px-1 py-0.2 rounded">{upiId || 'your UPI ID'}</span>. Payouts are transferred automatically upon answering a query. There are no draft answers or holding periods.
-                </p>
               </div>
             </div>
           </div>
@@ -796,14 +1200,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                 <span>4. Live Chat Availability (Optional)</span>
               </h3>
               <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                Offer real-time 30-minute consultation chats to home seekers for premium payouts. When a buyer books a slot, a secure chatroom opens automatically at that exact scheduled time.
+                Offer real-time 20-minute consultation chats to home seekers for premium payouts. When a buyer books a slot, a secure chatroom opens automatically at that exact scheduled time.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white border border-slate-200/60 rounded-xl">
               <div>
                 <span className="block text-xs font-bold text-slate-700">Enable Live Chat consultations</span>
-                <span className="text-[10px] text-slate-400">Receive ₹269 per live chat session (held securely for payout)</span>
+                <span className="text-[10px] text-slate-400">Receive ₹220 (per 20 mins session)</span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
@@ -837,80 +1241,251 @@ export const Onboarding: React.FC<OnboardingProps> = ({
             </div>
 
             {isLiveChatAvailable && (
-              <div className="space-y-4 pt-2 border-t border-slate-200/60">
+              <div className="space-y-6 pt-4 border-t border-slate-200/60">
+                {/* Weekly Recurring Availability Section */}
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider">
-                      Select Available Time Slots (30 mins each):
-                    </label>
-                    <span className={`text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full ${
-                      liveChatSlots.length === 10 ? 'bg-amber-100 text-amber-800 border border-amber-200 animate-pulse' : 'bg-orange-50 text-orange-700'
-                    }`}>
-                      {liveChatSlots.length} of 10 slots selected
-                    </span>
-                  </div>
-                  
-                  <p className="text-[10px] text-slate-400 mb-3">
-                    Click to select up to 10 slots. Both you and the buyer will receive automated reminder notifications exactly 15 minutes before your slot begins.
-                  </p>
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">
+                    Weekly Consultation Schedule (Recurring)
+                  </h4>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto p-1.5 border border-slate-200/60 rounded-xl bg-white">
-                    {AVAILABLE_SLOT_OPTIONS.map((slot) => {
-                      const isSelected = liveChatSlots.includes(slot);
-                      return (
-                        <button
-                          type="button"
-                          key={slot}
-                          onClick={() => {
-                            if (isSelected) {
-                              setLiveChatSlots(liveChatSlots.filter(s => s !== slot));
-                            } else {
-                              if (liveChatSlots.length >= 10) {
-                                alert('Maximum 10 slots allowed. Please unselect another slot before adding a new one.');
-                                return;
-                              }
-                              setLiveChatSlots([...liveChatSlots, slot]);
-                            }
-                          }}
-                          className={`px-3 py-2 text-left text-xs rounded-lg border transition-all flex items-center justify-between gap-1 cursor-pointer ${
-                            isSelected
-                              ? 'bg-orange-50 border-orange-400 text-orange-800 font-bold shadow-3xs'
-                              : 'bg-slate-50/50 hover:bg-slate-50 border-slate-100 text-slate-600'
-                          }`}
-                        >
-                          <span>{slot}</span>
-                          {isSelected && (
-                            <span className="w-4 h-4 rounded-full bg-orange-500 text-white flex items-center justify-center text-[9px] font-black">
-                              ✓
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                  <div className="border border-slate-200/80 rounded-2xl overflow-hidden bg-white shadow-xs">
+                    {/* Headers */}
+                    <div className="hidden sm:grid grid-cols-12 bg-slate-50 border-b border-slate-200/80 px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      <div className="col-span-3">Day of Week</div>
+                      <div className="col-span-2 text-center">Available</div>
+                      <div className="col-span-7">Time Windows</div>
+                    </div>
 
-                {liveChatSlots.length > 0 && (
-                  <div className="bg-orange-50/30 border border-orange-100/60 p-3.5 rounded-xl">
-                    <span className="block text-[10px] font-bold text-orange-800 uppercase tracking-wider mb-2">
-                      Selected Slots Preview:
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {liveChatSlots.map(slot => (
-                        <span key={slot} className="px-2 py-1 bg-white border border-orange-200 text-orange-800 text-[10px] font-mono font-bold rounded-md flex items-center gap-1">
-                          <span>{slot}</span>
-                          <button
-                            type="button"
-                            onClick={() => setLiveChatSlots(liveChatSlots.filter(s => s !== slot))}
-                            className="text-orange-400 hover:text-orange-600 font-black px-1"
-                          >
-                            ×
-                          </button>
-                        </span>
+                    {/* Rows */}
+                    <div className="divide-y divide-slate-150">
+                      {weeklyAvailability.map((day) => (
+                        <div key={day.day} className="flex flex-col sm:grid sm:grid-cols-12 items-start sm:items-center px-4 py-3.5 gap-2.5 sm:gap-0">
+                          {/* Day Column */}
+                          <div className="col-span-3">
+                            <span className="text-xs font-bold text-slate-800 font-display">{day.day}</span>
+                          </div>
+
+                          {/* Available Toggle Column */}
+                          <div className="col-span-2 w-full sm:w-auto flex justify-start sm:justify-center">
+                            <label className="flex items-center gap-2 cursor-pointer sm:justify-center w-full">
+                              <input
+                                type="checkbox"
+                                checked={day.available}
+                                onChange={() => handleToggleDay(day.day)}
+                                className="h-4.5 w-4.5 rounded-md border-slate-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
+                              />
+                              <span className="text-[11px] sm:hidden font-medium text-slate-500">Available</span>
+                            </label>
+                          </div>
+
+                          {/* Time Windows Column */}
+                          <div className="col-span-7 w-full space-y-2">
+                            {day.available ? (
+                              <div className="space-y-2">
+                                {/* Time Windows list */}
+                                {day.timeWindows && day.timeWindows.length > 0 ? (
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {day.timeWindows.map((window, index) => (
+                                      <div
+                                        key={index}
+                                        className="flex items-center gap-1 bg-orange-50/50 border border-orange-200/60 px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold text-orange-800"
+                                      >
+                                        <span>{window.start} – {window.end}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleRemoveTimeWindow(day.day, index)}
+                                          className="text-orange-400 hover:text-orange-700 font-bold ml-1 px-0.5 focus:outline-hidden cursor-pointer"
+                                          title="Remove time window"
+                                        >
+                                          ×
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <span className="text-[10px] text-slate-400 italic block">
+                                    No time windows. Click "+ Add Window" below to add some.
+                                  </span>
+                                )}
+
+                                {/* Inline adding interface */}
+                                {addingDay === day.day ? (
+                                  <div className="space-y-2 mt-1.5">
+                                    <div className="flex flex-wrap items-center gap-2 bg-slate-50 border border-slate-200 p-2.5 rounded-xl w-full sm:w-max shadow-3xs">
+                                      {/* Start Time Input with Custom up/down arrows */}
+                                      <div className="relative flex items-center bg-white border border-slate-200 rounded-lg px-2 py-0.5 shadow-3xs focus-within:border-orange-500">
+                                        <input
+                                          type="time"
+                                          value={newStart}
+                                          onChange={(e) => setNewStart(e.target.value)}
+                                          className="text-xs font-mono outline-hidden bg-transparent w-16"
+                                        />
+                                        <div className="flex flex-col ml-1.5 border-l border-slate-150 pl-1.5 text-slate-400">
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setTimeError(null);
+                                              setNewStart(prev => adjustTime(prev, 'up'));
+                                            }}
+                                            className="hover:text-orange-600 focus:outline-hidden cursor-pointer p-0.5"
+                                            title="Increase start time by 30 mins"
+                                          >
+                                            <ChevronUp className="w-2.5 h-2.5" />
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setTimeError(null);
+                                              setNewStart(prev => adjustTime(prev, 'down'));
+                                            }}
+                                            className="hover:text-orange-600 focus:outline-hidden cursor-pointer p-0.5"
+                                            title="Decrease start time by 30 mins"
+                                          >
+                                            <ChevronDown className="w-2.5 h-2.5" />
+                                          </button>
+                                        </div>
+                                      </div>
+
+                                      <span className="text-slate-400 text-[10px] font-semibold font-sans">to</span>
+
+                                      {/* End Time Input with Custom up/down arrows */}
+                                      <div className="relative flex items-center bg-white border border-slate-200 rounded-lg px-2 py-0.5 shadow-3xs focus-within:border-orange-500">
+                                        <input
+                                          type="time"
+                                          value={newEnd}
+                                          onChange={(e) => setNewEnd(e.target.value)}
+                                          className="text-xs font-mono outline-hidden bg-transparent w-16"
+                                        />
+                                        <div className="flex flex-col ml-1.5 border-l border-slate-150 pl-1.5 text-slate-400">
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setTimeError(null);
+                                              setNewEnd(prev => adjustTime(prev, 'up'));
+                                            }}
+                                            className="hover:text-orange-600 focus:outline-hidden cursor-pointer p-0.5"
+                                            title="Increase end time by 30 mins"
+                                          >
+                                            <ChevronUp className="w-2.5 h-2.5" />
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setTimeError(null);
+                                              setNewEnd(prev => adjustTime(prev, 'down'));
+                                            }}
+                                            className="hover:text-orange-600 focus:outline-hidden cursor-pointer p-0.5"
+                                            title="Decrease end time by 30 mins"
+                                          >
+                                            <ChevronDown className="w-2.5 h-2.5" />
+                                          </button>
+                                        </div>
+                                      </div>
+
+                                      <div className="flex items-center gap-1 ml-1">
+                                        <button
+                                          type="button"
+                                          onClick={() => handleSaveTimeWindow(day.day)}
+                                          className="bg-orange-600 hover:bg-orange-700 text-white px-2.5 py-1 rounded-md text-[10px] font-bold shadow-3xs cursor-pointer"
+                                        >
+                                          Save
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setAddingDay(null);
+                                            setTimeError(null);
+                                          }}
+                                          className="text-slate-500 hover:text-slate-700 text-[10px] font-semibold px-2 cursor-pointer"
+                                        >
+                                          Cancel
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                    {timeError && timeError.day === day.day && (
+                                      <div className="text-[10px] font-bold text-red-600 bg-red-50 border border-red-200/60 px-3 py-2 rounded-xl w-full sm:w-max max-w-sm flex items-center gap-1.5 animate-pulse shadow-3xs">
+                                        <span className="text-xs">⚠️</span>
+                                        <span>{timeError.message}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setAddingDay(day.day);
+                                      setNewStart("19:00");
+                                      setNewEnd("21:00");
+                                    }}
+                                    className="inline-flex items-center text-[10px] text-orange-600 hover:text-orange-700 font-bold border border-dashed border-orange-200 hover:border-orange-300 px-2.5 py-1 rounded-lg transition-all cursor-pointer bg-orange-50/10 hover:bg-orange-50/40"
+                                  >
+                                    + Add Time Window
+                                  </button>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-[10px] text-slate-400 italic">Not available on this day</span>
+                            )}
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>
-                )}
+                </div>
+
+                {/* Instant Chat Requests Section */}
+                <div className="p-5 bg-emerald-50/40 border border-emerald-100 rounded-2xl space-y-3">
+                  <div className="flex items-start gap-3">
+                    <span className="relative flex h-3.5 w-3.5 my-1 shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
+                    </span>
+                    <div>
+                      <h4 className="text-sm font-bold text-emerald-950 font-display">Instant Chat Requests</h4>
+                      <p className="text-[11px] text-emerald-800/80 leading-relaxed">
+                        If you're online and free, would you like to receive instant booking requests?
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsInstantChatEnabled(true)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                        isInstantChatEnabled
+                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="text-sm">{isInstantChatEnabled ? '☑' : '☐'}</span> Yes
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsInstantChatEnabled(false)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                        !isInstantChatEnabled
+                          ? 'bg-slate-600 text-white border-slate-600 shadow-sm'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="text-sm">{!isInstantChatEnabled ? '☑' : '☐'}</span> No
+                    </button>
+                  </div>
+                  
+                  {isInstantChatEnabled && (
+                    <p className="text-[10px] text-emerald-700 font-medium leading-relaxed pt-1">
+                      ✨ Enabled! Users browsing the platform will see: <span className="inline-flex items-center gap-1.5 font-bold bg-white px-2.5 py-1 rounded-full border border-emerald-200/60 text-emerald-800 shadow-3xs">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        Available Now — Chat within 5 minutes
+                      </span> on your profile.
+                    </p>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -941,8 +1516,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({
               <div className="text-slate-500 text-left">
                 <h4 className="font-bold text-slate-800">
                   {stillLivesThere 
-                    ? 'I certify that I am an actual resident of this society' 
-                    : 'I certify that I was an actual resident of this society'}
+                    ? 'I certify that I am an actual resident of this society and I would not share any confidential/misleading details for safety and security of myself and society. ' 
+                    : 'I certify that I was an actual resident of this society and I would not share any confidential/misleading details for safety and security of myself and society. '}
                 </h4>
                 <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
                   Before Regret is built on absolute trust. Providing fake profiles or malicious details will result in permanent ban and withholding of payouts.

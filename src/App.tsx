@@ -20,7 +20,7 @@ import { triggerTestPushNotification, registerServiceWorker } from './lib/notifi
 import { parseSlotTimeRange, isReminderTime, isSlotActive } from './utils/slotHelper';
 
 export default function App() {
-  const { user, activeRole, setActiveRole, setExpertProfile } = useAuth();
+  const { user, activeRole, setActiveRole, setExpertProfile, expertProfile } = useAuth();
 
   // Register background Service Worker for closed-tab notification polling
   useEffect(() => {
@@ -109,14 +109,14 @@ export default function App() {
             triggerTestPushNotification(
               q.expertId,
               'Live Chat Starts in 15 mins! ⏰',
-              `Reminder: Your 30-min live consultation slot "${q.bookedSlot}" with buyer ${q.buyerName} starts in 15 minutes!`,
+              `Reminder: Your 20-min live consultation slot "${q.bookedSlot}" with buyer ${q.buyerName} starts in 15 minutes!`,
               'expert_dashboard'
             ).catch(err => console.error('Expert slot remind failed:', err));
 
             triggerTestPushNotification(
               q.buyerId,
               'Live Chat Starts in 15 mins! ⏰',
-              `Reminder: Your 30-min live consultation slot "${q.bookedSlot}" with expert ${q.expertName} starts in 15 minutes!`,
+              `Reminder: Your 20-min live consultation slot "${q.bookedSlot}" with expert ${q.expertName} starts in 15 minutes!`,
               'buyer_dashboard'
             ).catch(err => console.error('Buyer slot remind failed:', err));
 
@@ -616,8 +616,8 @@ export default function App() {
       localityName: selectedExpert.localityName,
       queryText,
       status: 'ACCEPTED', // Pre-accepted for high-fidelity simulation
-      pricePaid: packageId === 'QUICK' ? 99 : packageId === 'BUNDLE' ? 199 : 299,
-      expertEarnings: packageId === 'QUICK' ? 89 : packageId === 'BUNDLE' ? 179 : 269,
+      pricePaid: packageId === 'QUICK' ? 99 : packageId === 'BUNDLE' ? 199 : 220,
+      expertEarnings: packageId === 'QUICK' ? 89 : packageId === 'BUNDLE' ? 179 : 220,
       createdAt: new Date().toISOString(),
       packageOption: packageId,
       bookedSlot: bookedSlot
@@ -853,10 +853,17 @@ export default function App() {
                   </div>
                   {selectedLocality.expertCount === 0 && (
                     <button
-                      onClick={() => setView('become_expert')}
+                      onClick={() => {
+                        if (expertProfile) {
+                          setActiveRole('expert');
+                          setView('expert_dashboard');
+                        } else {
+                          setView('become_expert');
+                        }
+                      }}
                       className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-sm cursor-pointer shrink-0"
                     >
-                      Be the First Expert Here!
+                      {expertProfile ? 'My Resident Dashboard' : 'Be the First Expert Here!'}
                     </button>
                   )}
                 </div>
@@ -896,10 +903,17 @@ export default function App() {
                 </p>
                 <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-3">
                   <button
-                    onClick={() => setView('become_expert')}
+                    onClick={() => {
+                      if (expertProfile) {
+                        setActiveRole('expert');
+                        setView('expert_dashboard');
+                      } else {
+                        setView('become_expert');
+                      }
+                    }}
                     className="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-sm"
                   >
-                    I Live Here - Register & Earn
+                    {expertProfile ? 'Go to My Dashboard' : 'I Live Here - Register & Earn'}
                   </button>
                   <button
                     onClick={handleClearLocalityFilter}

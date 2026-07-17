@@ -48,8 +48,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const randomExpert = experts[Math.floor(Math.random() * experts.length)];
     const packageOptions: ('QUICK' | 'BUNDLE' | 'LIVE_CHAT')[] = ['QUICK', 'BUNDLE', 'LIVE_CHAT'];
     const chosenPkg = packageOptions[Math.floor(Math.random() * packageOptions.length)];
-    const prices = { QUICK: 99, BUNDLE: 199, LIVE_CHAT: 299 };
-    const earnings = { QUICK: 89, BUNDLE: 179, LIVE_CHAT: 269 };
+    const prices = { QUICK: 99, BUNDLE: 199, LIVE_CHAT: 220 };
+    const earnings = { QUICK: 89, BUNDLE: 179, LIVE_CHAT: 220 };
 
     const newQuery: DirectQuery = {
       id: `q_${Date.now()}`,
@@ -65,7 +65,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       expertEarnings: earnings[chosenPkg],
       createdAt: new Date().toISOString(),
       packageOption: chosenPkg,
-      bookedSlot: chosenPkg === 'LIVE_CHAT' ? 'Tomorrow, 04:00 PM - 04:30 PM' : undefined
+      bookedSlot: chosenPkg === 'LIVE_CHAT' ? 'Tomorrow, 04:00 PM - 04:20 PM' : undefined
     };
 
     setQueries([newQuery, ...queries]);
@@ -314,7 +314,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
               <h4 className="font-bold text-slate-800 text-base">Amit Kumar</h4>
               <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                Pre-loaded with pending queries and scheduled 30-min live consults. Can access the **Buyer Dashboard** to track orders, message residents, or complete review feedback.
+                Pre-loaded with pending queries and scheduled 20-min live consults. Can access the **Buyer Dashboard** to track orders, message residents, or complete review feedback.
               </p>
               <button
                 onClick={() => {

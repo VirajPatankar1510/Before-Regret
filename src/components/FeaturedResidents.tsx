@@ -86,7 +86,7 @@ export const FeaturedResidents: React.FC<FeaturedResidentsProps> = ({
                     </div>
 
                     {/* Trust Signals Block */}
-                    <div className="mt-3.5 pt-3 border-t border-slate-100/60 space-y-1.5">
+                    <div className="mt-3.5 pt-3 border-t border-slate-100/60 flex flex-wrap gap-1.5">
                       {/* Live Status Badge */}
                       {expert.stillLivesThere !== false && (
                         <div className="flex items-center gap-1 text-[10px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-100/40 px-1.5 py-0.5 rounded-md w-fit">
@@ -95,6 +95,17 @@ export const FeaturedResidents: React.FC<FeaturedResidentsProps> = ({
                             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                           </span>
                           <span>Current Resident</span>
+                        </div>
+                      )}
+
+                      {/* Instant Chat Available Badge */}
+                      {expert.isInstantChatEnabled && (
+                        <div className="flex items-center gap-1.5 text-[10px] text-emerald-800 font-bold bg-emerald-100/50 border border-emerald-200 px-1.5 py-0.5 rounded-md w-fit">
+                          <span className="relative flex h-1.5 w-1.5 shrink-0">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                          </span>
+                          <span>Available Now — Chat within 5m</span>
                         </div>
                       )}
 

@@ -48,9 +48,22 @@ export interface ExpertProfile {
   languages: string[]; // e.g. ["Hindi", "English", "Marathi"]
   availability: string; // e.g. "Available Daily"
   availableSlots?: string[]; // e.g. ["Today 4:00 PM - 4:30 PM", "Tomorrow 10:00 AM - 10:30 AM"]
+  weeklyAvailability?: DayAvailability[];
+  isInstantChatEnabled?: boolean;
   upiId?: string;
   bankAccountNumber?: string;
   isLiveChatAvailable?: boolean;
+}
+
+export interface TimeWindow {
+  start: string; // e.g. "07:00 PM"
+  end: string; // e.g. "09:00 PM"
+}
+
+export interface DayAvailability {
+  day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+  available: boolean;
+  timeWindows: TimeWindow[];
 }
 
 export interface DirectQuery {
