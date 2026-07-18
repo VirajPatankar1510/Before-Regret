@@ -348,8 +348,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {expertProfile ? (
             <button
               onClick={() => {
-                setActiveRole('expert');
-                setView('expert_dashboard');
+                setView('dashboard');
               }}
               className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-bold"
             >
