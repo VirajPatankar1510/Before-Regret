@@ -9,7 +9,7 @@ interface AskQuestionProps {
   locality: Neighborhood;
   selectedPackageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT';
   onBack: () => void;
-  onSubmitQuestion: (queryText: string, packageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT', bookedSlot?: string) => void;
+  onSubmitQuestion: (queryText: string, packageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT', bookedSlot?: string, structuredQuestions?: string[]) => void;
   queries: DirectQuery[];
 }
 
@@ -48,6 +48,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
   const [step, setStep] = useState<1 | 2 | 3>(2); // Start at step 2 since they chose package in profile, but allow toggle
   const [packageId, setPackageId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>(selectedPackageId);
   const [queryText, setQueryText] = useState('');
+  const [budgetQuestions, setBudgetQuestions] = useState<string[]>(['', '', '']);
   const [selectedSlot, setSelectedSlot] = useState<string>(firstAvailableSlot);
   const [error, setError] = useState('');
   
@@ -62,18 +63,41 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
 
   const activePlan = pricingPlans.find((p) => p.id === packageId) || pricingPlans[0];
 
+  const getSubmissionValues = () => {
+    let qText = '';
+    let sqList: string[] = [];
+
+    if (packageId === 'QUICK') {
+      qText = budgetQuestions[0].trim();
+      sqList = [qText];
+    } else if (packageId === 'BUNDLE') {
+      qText = budgetQuestions.map((q, idx) => `Question ${idx + 1}: ${q.trim()}`).join('\n');
+      sqList = budgetQuestions.map(q => q.trim());
+    } else {
+      qText = queryText.trim();
+    }
+    return { qText, sqList };
+  };
+
   const handleNextToPayment = () => {
+    setError('');
     if (packageId === 'LIVE_CHAT') {
       if (queryText.trim().length < 20) {
         setError('Please describe your query in at least 20 characters so the resident can provide a complete answer.');
         return;
       }
-    } else {
-      if (!queryText.trim()) {
-        setQueryText('Pending question entry after payment.');
+    } else if (packageId === 'QUICK') {
+      if (budgetQuestions[0].trim().length < 10) {
+        setError('Please enter your specific question (minimum 10 characters) so the resident has enough detail to answer.');
+        return;
+      }
+    } else if (packageId === 'BUNDLE') {
+      const unfilledIdx = budgetQuestions.findIndex(q => q.trim().length < 10);
+      if (unfilledIdx !== -1) {
+        setError(`Please fill out Question #${unfilledIdx + 1} (minimum 10 characters) so the resident has enough detail to answer.`);
+        return;
       }
     }
-    setError('');
     setStep(3);
   };
 
@@ -148,7 +172,8 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                 setShowRazorpay(true);
                 setTimeout(() => {
                   setShowRazorpay(false);
-                  onSubmitQuestion(queryText, packageId, packageId === 'LIVE_CHAT' ? selectedSlot : undefined);
+                  const { qText, sqList } = getSubmissionValues();
+                  onSubmitQuestion(qText, packageId, packageId === 'LIVE_CHAT' ? selectedSlot : undefined, packageId === 'LIVE_CHAT' ? undefined : sqList);
                 }, 1500);
               } else {
                 setError("Payment verification failed. Please try again.");
@@ -219,7 +244,8 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
       setRazorpayStep('success');
       setTimeout(() => {
         setShowRazorpay(false);
-        onSubmitQuestion(queryText, packageId, packageId === 'LIVE_CHAT' ? selectedSlot : undefined);
+        const { qText, sqList } = getSubmissionValues();
+        onSubmitQuestion(qText, packageId, packageId === 'LIVE_CHAT' ? selectedSlot : undefined, packageId === 'LIVE_CHAT' ? undefined : sqList);
       }, 1500);
     }, 1800);
   };
@@ -390,38 +416,57 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
             </div>
           )}
 
-          {packageId !== 'LIVE_CHAT' ? (
-            <div className="bg-blue-50/60 border border-blue-100 rounded-2xl p-6 mb-6 text-left space-y-4">
-              <div className="flex items-center gap-2.5 text-blue-700">
-                <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
-                <h3 className="font-bold text-sm">Post-Payment Questionnaire Setup</h3>
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                To keep interactions neat, fast, and structured, we do not use an open-ended chat room for our budget plans.
-                Instead, immediately after completing your secure checkout:
-              </p>
-              <ul className="text-xs text-slate-600 space-y-2.5 pl-5 list-disc font-semibold">
-                {packageId === 'QUICK' ? (
-                  <li className="leading-relaxed">
-                    You will enter exactly <span className="text-blue-700">1 specific question</span> (Rs. 99 plan) in your Buyer Dashboard.
-                  </li>
-                ) : (
-                  <li className="leading-relaxed">
-                    You will enter your questions in <span className="text-blue-700">3 separate input boxes</span> (Rs. 199 plan) to get an organized consultation report.
-                  </li>
-                )}
-                <li className="leading-relaxed">
-                  The resident expert will answer each question individually.
-                </li>
-                <li className="leading-relaxed">
-                  If they need clarification, they will toggle a "Need clarification" box for you to reply.
-                </li>
-              </ul>
-              <div className="bg-white/80 rounded-xl p-3 border border-blue-100/50">
-                <p className="text-[10px] text-slate-500 font-medium">
-                  💡 No need to formulate your questions right now! Press <strong>Proceed to Checkout</strong> below to continue to the payment page.
-                </p>
-              </div>
+          {packageId === 'QUICK' ? (
+            <div className="space-y-4">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Enter your specific question for the resident:
+              </label>
+              <textarea
+                rows={4}
+                value={budgetQuestions[0]}
+                onChange={(e) => setBudgetQuestions([e.target.value, budgetQuestions[1], budgetQuestions[2]])}
+                placeholder="e.g. Is there any regular water supply disruption in Block C? What is the average TDS level?"
+                className="w-full p-4 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800 placeholder-slate-400 placeholder:text-xs font-medium font-sans"
+              />
+              {error && (
+                <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-xl border border-red-100 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span className="font-semibold">{error}</span>
+                </div>
+              )}
+            </div>
+          ) : packageId === 'BUNDLE' ? (
+            <div className="space-y-6">
+              {[0, 1, 2].map((idx) => (
+                <div key={idx} className="space-y-2">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Question #{idx + 1}:
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={budgetQuestions[idx]}
+                    onChange={(e) => {
+                      const copy = [...budgetQuestions];
+                      copy[idx] = e.target.value;
+                      setBudgetQuestions(copy);
+                    }}
+                    placeholder={
+                      idx === 0 
+                        ? "e.g. Does the society suffer from heavy-duty tanker water dependency?"
+                        : idx === 1
+                        ? "e.g. Are there any construction developments planned nearby blocking views?"
+                        : "e.g. How strict are the RWA rules regarding tenant bachelors/pets?"
+                    }
+                    className="w-full p-4 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800 placeholder-slate-400 placeholder:text-xs font-medium font-sans"
+                  />
+                </div>
+              ))}
+              {error && (
+                <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-xl border border-red-100 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span className="font-semibold">{error}</span>
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-4">
@@ -469,6 +514,26 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
           <div className="md:col-span-2 space-y-6">
             <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8">
               <h2 className="text-lg font-bold text-slate-900 mb-4">Step 3: Secure Order Summary</h2>
+
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6 text-left">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2 font-mono">My Structured Queries to Resident:</span>
+                {packageId === 'QUICK' && (
+                  <p className="text-xs text-slate-700 font-semibold italic">"{budgetQuestions[0]}"</p>
+                )}
+                {packageId === 'BUNDLE' && (
+                  <ul className="space-y-1.5 list-decimal pl-4">
+                    {budgetQuestions.filter(q => q.trim()).map((q, i) => (
+                      <li key={i} className="text-xs text-slate-700 font-semibold italic">"{q}"</li>
+                    ))}
+                  </ul>
+                )}
+                {packageId === 'LIVE_CHAT' && (
+                  <div className="space-y-1">
+                    <p className="text-xs text-slate-700 font-semibold italic">"{queryText}"</p>
+                    <p className="text-[10px] text-orange-700 font-mono font-bold mt-1.5">⏰ Live chat slot: {selectedSlot}</p>
+                  </div>
+                )}
+              </div>
               
               <div className="space-y-4">
                 <div className="flex justify-between items-center pb-4 border-b border-slate-100">
