@@ -903,7 +903,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
               type="button"
               onClick={() => {
                 // Navigate to expert dashboard
-                setView('expert_dashboard');
+                setView('dashboard');
               }}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider py-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg"
             >

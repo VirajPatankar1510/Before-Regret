@@ -78,7 +78,7 @@ export default function App() {
   }, [user]);
 
   // Navigation & Simulation Perspective State
-  const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, buyer_dashboard, expert_dashboard, messaging, become_expert, policies
+  const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, dashboard, messaging, become_expert, policies
   const [policiesTab, setPoliciesTab] = useState<'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer'>('disclaimer');
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
 
@@ -158,14 +158,14 @@ export default function App() {
               q.expertId,
               'Live Chat Starts in 15 mins! ⏰',
               `Reminder: Your 20-min live consultation slot "${q.bookedSlot}" with buyer ${q.buyerName} starts in 15 minutes!`,
-              'expert_dashboard'
+              'dashboard'
             ).catch(err => console.error('Expert slot remind failed:', err));
 
             triggerTestPushNotification(
               q.buyerId,
               'Live Chat Starts in 15 mins! ⏰',
               `Reminder: Your 20-min live consultation slot "${q.bookedSlot}" with expert ${q.expertName} starts in 15 minutes!`,
-              'buyer_dashboard'
+              'dashboard'
             ).catch(err => console.error('Buyer slot remind failed:', err));
 
             // Add to notified query list
@@ -482,10 +482,8 @@ export default function App() {
           title = "BeforeRegret Policies and Legal Compliance Center";
           description = "Review our Terms of Service, Privacy Policy, Refund policy, and Disclaimer for neighborhood research.";
         }
-      } else if (currentView === 'buyer_dashboard') {
-        title = "Home Buyer Consulting Dashboard | BeforeRegret";
-      } else if (currentView === 'expert_dashboard') {
-        title = "Resident Expert Consultant Dashboard | BeforeRegret";
+      } else if (currentView === 'dashboard') {
+        title = "My Dashboard | BeforeRegret";
       }
 
       document.title = title;
@@ -681,7 +679,7 @@ export default function App() {
     };
 
     setQueries([newQuery, ...queries]);
-    setView('buyer_dashboard');
+    setView('dashboard');
     window.scrollTo(0, 0);
 
     // Trigger instant background push notification alert to the expert
@@ -689,7 +687,7 @@ export default function App() {
       selectedExpert.id,
       'New Resident Audit Request! 📣',
       `A buyer requested water and rule details for ${selectedExpert.localityName}: "${queryText.substring(0, 50)}..."`,
-      'expert_dashboard'
+      'dashboard'
     ).catch(err => console.error('FCM dispatch failed:', err));
   };
 
@@ -709,7 +707,7 @@ export default function App() {
       return q;
     });
     setQueries(updated);
-    setView('expert_dashboard');
+    setView('dashboard');
     window.scrollTo(0, 0);
 
     // Trigger instant background push notification alert to the buyer
@@ -718,7 +716,7 @@ export default function App() {
         matchedQuery.buyerId,
         'Resident Audit Completed! 🌟',
         `Your resident report for ${matchedQuery.localityName} has been fully completed by local expert ${matchedQuery.expertName}!`,
-        'buyer_dashboard'
+        'dashboard'
       ).catch(err => console.error('FCM dispatch failed:', err));
     }
   };

@@ -319,7 +319,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <button
                 onClick={() => {
                   setActiveRole('buyer');
-                  setView('buyer_dashboard');
+                  setView('dashboard');
                   setSimulateStatusMsg('Logged in as Amit Kumar (Buyer). Redirected to Buyer Dashboard!');
                   setTimeout(() => setSimulateStatusMsg(''), 2500);
                 }}
@@ -342,7 +342,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <button
                 onClick={() => {
                   setActiveRole('expert');
-                  setView('expert_dashboard');
+                  setView('dashboard');
                   setSimulateStatusMsg('Logged in as Priya (Resident Expert). Redirected to Expert Dashboard!');
                   setTimeout(() => setSimulateStatusMsg(''), 2500);
                 }}
