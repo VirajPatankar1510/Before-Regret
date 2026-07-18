@@ -46,7 +46,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { 
     user, 
     signInWithGoogle, 
-    loginWithMockUser, 
+    signUpWithEmail,
+    signInWithEmail,
     logout, 
     expertProfile,
     isClerkActive,
@@ -56,11 +57,14 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Authentication & Testing Modal states
+  // Authentication & Credentials states
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authError, setAuthError] = useState('');
-  const [customName, setCustomName] = useState('');
-  const [customRole, setCustomRole] = useState<'buyer' | 'expert'>('buyer');
+  const [authSuccess, setAuthSuccess] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [copiedDomain, setCopiedDomain] = useState(false);
 
   const copyToClipboard = () => {
@@ -230,12 +234,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     setNotifDropdownOpen(false);
 
     // Route dynamically based on click action
-    if (notif.clickAction.includes('buyer_dashboard')) {
-      setActiveRole('buyer');
-      setView('buyer_dashboard');
-    } else if (notif.clickAction.includes('expert_dashboard')) {
-      setActiveRole('expert');
-      setView('expert_dashboard');
+    if (notif.clickAction.includes('dashboard') || notif.clickAction.includes('buyer_dashboard') || notif.clickAction.includes('expert_dashboard')) {
+      setView('dashboard');
     } else if (notif.clickAction.includes('explore')) {
       setView('explore');
     }
@@ -248,7 +248,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       const loggedInUser = await signInWithGoogle();
       if (loggedInUser) {
         setAuthModalOpen(false);
-        setView('explore');
+        setView('dashboard');
       }
     } catch (err: any) {
       console.error('Google Authentication error:', err);
@@ -256,54 +256,43 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
-  const handleMockLogin = async (presetUser: { uid: string; displayName: string; email: string; photoURL?: string }) => {
-    try {
-      const loggedInUser = await loginWithMockUser(presetUser);
-      if (loggedInUser) {
-        setAuthModalOpen(false);
-        // Set appropriate role immediately
-        if (presetUser.uid.startsWith('user_')) {
-          setActiveRole('expert');
-          setView('expert_dashboard');
-        } else {
-          setActiveRole('buyer');
-          setView('explore');
-        }
-        window.scrollTo(0, 0);
-      }
-    } catch (err) {
-      console.error('Failed mock login:', err);
-    }
-  };
-
-  const handleCustomMockLogin = async (e: React.FormEvent) => {
+  const handleEmailAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customName.trim()) return;
+    setAuthError('');
+    setAuthSuccess('');
 
-    const formattedName = customName.trim();
-    const uniqueUid = `mock_${Date.now()}`;
-    const mockUser = {
-      uid: customRole === 'expert' ? 'user_rahul' : uniqueUid, // Mapping expert role to pre-seeded Rahul for dashboard preview
-      displayName: formattedName,
-      email: `${formattedName.toLowerCase().replace(/\s+/g, '')}@example.com`,
-      photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${formattedName}`
-    };
+    if (!email.trim() || !password.trim()) {
+      setAuthError('Please fill in all fields.');
+      return;
+    }
 
     try {
-      const loggedInUser = await loginWithMockUser(mockUser);
-      if (loggedInUser) {
-        setAuthModalOpen(false);
-        if (customRole === 'expert') {
-          setActiveRole('expert');
-          setView('expert_dashboard');
-        } else {
-          setActiveRole('buyer');
-          setView('explore');
+      if (isSignUp) {
+        if (!displayName.trim()) {
+          setAuthError('Please provide a name.');
+          return;
         }
-        window.scrollTo(0, 0);
+        const newUser = await signUpWithEmail(email.trim(), password.trim(), displayName.trim());
+        if (newUser) {
+          setAuthSuccess('Account created successfully!');
+          setTimeout(() => {
+            setAuthModalOpen(false);
+            setView('dashboard');
+          }, 1000);
+        }
+      } else {
+        const loggedInUser = await signInWithEmail(email.trim(), password.trim());
+        if (loggedInUser) {
+          setAuthSuccess('Signed in successfully!');
+          setTimeout(() => {
+            setAuthModalOpen(false);
+            setView('dashboard');
+          }, 1000);
+        }
       }
-    } catch (err) {
-      console.error('Failed custom mock login:', err);
+    } catch (err: any) {
+      console.error('Authentication Error:', err);
+      setAuthError(err.message || 'Authentication failed. Please verify credentials.');
     }
   };
 
@@ -513,17 +502,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           {!user ? (
             <div className="flex items-center gap-2">
               <button
-                onClick={() => handleMockLogin({
-                  uid: 'mock_buyer_amit',
-                  displayName: 'Amit Kumar',
-                  email: 'amit.buyer@beforeregret.com',
-                  photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100'
-                })}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200/60 rounded-xl transition-all cursor-pointer shadow-3xs"
-              >
-                <span>Demo Bypass</span>
-              </button>
-              <button
                 onClick={() => {
                   if (isClerkActive) {
                     triggerClerkSignIn();
@@ -547,11 +525,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-xs font-semibold capitalize hidden sm:inline max-w-[120px] truncate">
                   {user.displayName || user.email?.split('@')[0]}
                 </span>
-                {activeRole !== 'buyer' && (
-                  <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-bold uppercase tracking-wider scale-90">
-                    {activeRole}
-                  </span>
-                )}
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
 
@@ -572,56 +545,41 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </p>
                     </div>
 
-                    <div className="px-2 py-1">
-                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2.5 py-1">
-                        Select Active View Mode
-                      </div>
+                    <div className="px-2 py-1 space-y-0.5">
                       <button
                         onClick={() => {
-                          setActiveRole('buyer');
-                          setView('buyer_dashboard');
+                          setView('dashboard');
                           setDropdownOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between text-left px-2.5 py-2 rounded-lg text-xs transition-colors ${activeRole === 'buyer' ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-slate-600 hover:bg-slate-50'}`}
+                        className="w-full text-left px-2.5 py-2 text-xs text-slate-700 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-2 font-bold"
                       >
-                        <span>Buyer Mode (Ask & Track)</span>
-                        {activeRole === 'buyer' && <Check className="w-3.5 h-3.5" />}
+                        <User className="w-4 h-4 text-blue-600" />
+                        <span>My Dashboard</span>
                       </button>
 
-                      <button
-                        onClick={() => {
-                          setActiveRole('expert');
-                          setView('expert_dashboard');
-                          setDropdownOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between text-left px-2.5 py-2 rounded-lg text-xs transition-colors ${activeRole === 'expert' ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-slate-600 hover:bg-slate-50'}`}
-                      >
-                        <span>Local Expert Mode (Answer)</span>
-                        {activeRole === 'expert' && <Check className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
-
-                    <div className="border-t border-slate-50 mt-1 pt-1 px-2">
                       <button
                         onClick={() => {
                           setView('explore');
                           setDropdownOpen(false);
                         }}
-                        className="w-full text-left px-2.5 py-2 text-xs text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+                        className="w-full text-left px-2.5 py-2 text-xs text-slate-600 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-2"
                       >
-                        Explore Societies
+                        <Search className="w-4 h-4 text-slate-400" />
+                        <span>Explore Societies</span>
                       </button>
+                    </div>
+
+                    <div className="border-t border-slate-50 mt-1 pt-1 px-2">
                       {expertProfile ? (
                         <button
                           onClick={() => {
-                            setActiveRole('expert');
-                            setView('expert_dashboard');
+                            setView('dashboard');
                             setDropdownOpen(false);
                           }}
                           className="w-full text-left px-2.5 py-2 text-xs text-blue-600 font-bold hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-1.5"
                         >
                           <Award className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
-                          <span>Dashboard</span>
+                          <span>Expert Workspace</span>
                         </button>
                       ) : (
                         <button
@@ -712,12 +670,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           {expertProfile ? (
             <button
               onClick={() => {
-                setActiveRole('expert');
-                setView('expert_dashboard');
+                setView('dashboard');
                 setMobileMenuOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all ${
-                currentView === 'expert_dashboard'
+                currentView === 'dashboard'
                   ? 'bg-emerald-50 text-emerald-700'
                   : 'text-blue-600 hover:bg-blue-50'
               }`}
@@ -744,57 +701,50 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {user && (
             <div className="pt-2 border-t border-slate-100 mt-2 space-y-1">
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-4 py-1">
-                Active Dashboards
-              </div>
               <button
                 onClick={() => {
-                  setActiveRole('buyer');
-                  setView('buyer_dashboard');
+                  setView('dashboard');
                   setMobileMenuOpen(false);
                 }}
                 className={`w-full flex items-center justify-between text-left px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
-                  activeRole === 'buyer' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50'
+                  currentView === 'dashboard' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50'
                 }`}
               >
-                <span>Buyer Dashboard</span>
-                {activeRole === 'buyer' && <Check className="w-3.5 h-3.5" />}
-              </button>
-              <button
-                onClick={() => {
-                  setActiveRole('expert');
-                  setView('expert_dashboard');
-                  setMobileMenuOpen(false);
-                }}
-                className={`w-full flex items-center justify-between text-left px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
-                  activeRole === 'expert' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <span>Local Expert Dashboard</span>
-                {activeRole === 'expert' && <Check className="w-3.5 h-3.5" />}
+                <span>My Dashboard</span>
+                <Check className="w-3.5 h-3.5 text-blue-600" />
               </button>
             </div>
           )}
         </div>
       )}
 
-      {/* Dynamic Sandbox & Real Authentication Modal */}
+      {/* Secure Authentication Modal */}
       {authModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 font-sans">
-          <div className="fixed inset-0" onClick={() => setAuthModalOpen(false)} />
+          <div className="fixed inset-0" onClick={() => {
+            setAuthModalOpen(false);
+            setAuthError('');
+            setAuthSuccess('');
+          }} />
           
-          <div className="bg-white border border-slate-100 rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden relative z-10 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white border border-slate-100 rounded-3xl shadow-2xl max-w-md w-full overflow-hidden relative z-10 animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="bg-slate-50 px-6 py-5 border-b border-slate-100 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider font-mono flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+                  <Sparkles className="w-4 h-4 text-blue-600" />
                   <span>BeforeRegret Authentication</span>
                 </h3>
-                <p className="text-xs text-slate-500 mt-1">Sign in to query residents or manage audits</p>
+                <p className="text-xs text-slate-500 mt-1">
+                  {isSignUp ? 'Create your personal account' : 'Sign in to your account'}
+                </p>
               </div>
               <button
-                onClick={() => setAuthModalOpen(false)}
+                onClick={() => {
+                  setAuthModalOpen(false);
+                  setAuthError('');
+                  setAuthSuccess('');
+                }}
                 className="p-1.5 rounded-xl hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
@@ -802,198 +752,108 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-6 max-h-[480px] overflow-y-auto">
-              {/* Quick Demo Bypass Banner */}
-              <div className="p-4 bg-amber-50/70 border border-amber-200/80 rounded-2xl space-y-3">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg">✨</span>
-                  <div>
-                    <h4 className="text-xs font-bold text-amber-950 font-display">Bypass with Demo Account</h4>
-                    <p className="text-[11px] text-amber-800/80 leading-relaxed">
-                      Instantly enter the platform as our pre-configured demo buyer account. No signup required.
-                    </p>
-                  </div>
+            <div className="p-6 space-y-5 max-h-[500px] overflow-y-auto">
+              {authError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 font-semibold leading-relaxed">
+                  ⚠️ {authError}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleMockLogin({
-                    uid: 'mock_buyer_amit',
-                    displayName: 'Amit Kumar',
-                    email: 'amit.buyer@beforeregret.com',
-                    photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100'
-                  })}
-                  className="w-full py-2 px-4 bg-amber-500 hover:bg-amber-600 text-slate-900 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs active:scale-98"
-                >
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span>Bypass Sign In (Amit Kumar)</span>
-                </button>
-              </div>
-
-              {/* Option A: Secure Authentication */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 text-xs font-bold font-mono flex items-center justify-center">A</span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
-                    {isClerkActive ? "Clerk Secure Authentication" : "Clerk Setup Pending"}
-                  </span>
+              )}
+              {authSuccess && (
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-700 font-semibold leading-relaxed">
+                  ✅ {authSuccess}
                 </div>
+              )}
 
-                {isClerkActive ? (
-                  <div className="space-y-4 pt-1">
-                    <p className="text-xs text-slate-500 leading-relaxed font-medium bg-blue-50/50 border border-blue-100/30 p-3 rounded-2xl">
-                      BeforeRegret now secures user authentication via <strong>Clerk</strong>. Click below to sign in or register securely on any browser or device.
-                    </p>
+              {isClerkActive ? (
+                <div className="space-y-4">
+                  <p className="text-xs text-slate-500 leading-relaxed font-medium bg-blue-50/50 border border-blue-100/30 p-3 rounded-2xl">
+                    BeforeRegret secures your account using <strong>Clerk</strong>. Sign in or register instantly.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerClerkSignIn();
+                      setAuthModalOpen(false);
+                    }}
+                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold tracking-tight transition-all hover:shadow-md cursor-pointer flex items-center justify-center gap-2.5 active:scale-98"
+                  >
+                    <span>Continue with Clerk</span>
+                  </button>
+                  <div className="text-center">
                     <button
                       type="button"
                       onClick={() => {
-                        triggerClerkSignIn();
+                        triggerClerkSignUp();
                         setAuthModalOpen(false);
                       }}
-                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold tracking-tight transition-all hover:shadow-md cursor-pointer flex items-center justify-center gap-2.5 active:scale-98"
+                      className="text-xs text-blue-600 hover:underline font-bold"
                     >
-                      <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
-                      <span>Continue with Clerk</span>
+                      Don't have an account? Create one with Clerk &rarr;
                     </button>
-                    <div className="text-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          triggerClerkSignUp();
-                          setAuthModalOpen(false);
-                        }}
-                        className="text-xs text-blue-600 hover:underline font-bold"
-                      >
-                        Don't have an account? Create one with Clerk &rarr;
-                      </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleEmailAuthSubmit} className="space-y-4">
+                  {isSignUp && (
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 font-mono">Your Full Name</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Vikram Malhotra"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors bg-slate-50/50"
+                      />
                     </div>
+                  )}
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 font-mono">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="you@domain.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors bg-slate-50/50"
+                    />
                   </div>
-                ) : (
-                  <div className="space-y-4 pt-1">
-                    <p className="text-xs text-slate-500 leading-relaxed font-medium bg-amber-50/50 border border-amber-100/30 p-3 rounded-2xl">
-                      Clerk authentication setup is pending. Please configure the <code>VITE_CLERK_PUBLISHABLE_KEY</code> in your environment settings.
-                    </p>
-                    <button
-                      type="button"
-                      disabled
-                      className="w-full py-3 bg-slate-100 text-slate-400 rounded-xl text-sm font-bold tracking-tight cursor-not-allowed flex items-center justify-center gap-2.5"
-                    >
-                      <span>Clerk Configuration Pending</span>
-                    </button>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 font-mono">Password</label>
+                    <input
+                      type="password"
+                      required
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors bg-slate-50/50"
+                    />
                   </div>
-                )}
-              </div>
 
-              {/* Divider */}
-              <div className="relative flex items-center justify-center">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-100" />
-                </div>
-                <span className="relative px-3 bg-white text-[10px] font-bold text-slate-400 font-mono uppercase">OR</span>
-              </div>
-
-              {/* Option B: Sandbox Presets */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold font-mono flex items-center justify-center">B</span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">1-Click Sandbox Bypass (Recommended)</span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Preset 1: Buyer */}
                   <button
-                    onClick={() => handleMockLogin({
-                      uid: 'mock_buyer_amit',
-                      displayName: 'Amit Kumar',
-                      email: 'amit.buyer@beforeregret.com',
-                      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100'
-                    })}
-                    className="p-3.5 border border-slate-100 hover:border-blue-200 bg-slate-50/30 hover:bg-blue-50/10 rounded-2xl transition-all text-left space-y-1.5 cursor-pointer flex flex-col justify-between group"
+                    type="submit"
+                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:shadow-md active:scale-98 cursor-pointer"
                   >
-                    <div>
-                      <span className="text-[9px] font-black uppercase bg-blue-100 text-blue-800 px-2 py-0.5 rounded tracking-wider font-mono">Buyer / Seeker</span>
-                      <h4 className="font-bold text-xs text-slate-900 mt-1.5 group-hover:text-blue-600">Amit Kumar</h4>
-                      <p className="text-[10px] text-slate-500 line-clamp-2 leading-snug">Looking for transparent reviews on HSR Layout & Prestige complex.</p>
-                    </div>
-                    <span className="text-[9px] font-bold text-blue-600 self-end mt-2 group-hover:underline">Login as Buyer &rarr;</span>
+                    {isSignUp ? 'Create My Account' : 'Sign In Now'} &rarr;
                   </button>
 
-                  {/* Preset 2: Expert Rahul */}
-                  <button
-                    onClick={() => handleMockLogin({
-                      uid: 'user_rahul',
-                      displayName: 'Rahul K.',
-                      email: 'rahul.expert@beforeregret.com',
-                      photoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100'
-                    })}
-                    className="p-3.5 border border-slate-100 hover:border-emerald-200 bg-slate-50/30 hover:bg-emerald-50/10 rounded-2xl transition-all text-left space-y-1.5 cursor-pointer flex flex-col justify-between group"
-                  >
-                    <div>
-                      <span className="text-[9px] font-black uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded tracking-wider font-mono">Resident Expert</span>
-                      <h4 className="font-bold text-xs text-slate-900 mt-1.5 group-hover:text-emerald-600">Rahul K.</h4>
-                      <p className="text-[10px] text-slate-500 line-clamp-2 leading-snug">Lives in Prestige Shantiniketan, Bengaluru. Has pre-seeded queries!</p>
-                    </div>
-                    <span className="text-[9px] font-bold text-emerald-600 self-end mt-2 group-hover:underline">Login as Expert &rarr;</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Divider 2 */}
-              <div className="relative flex items-center justify-center">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-100/50" />
-                </div>
-                <span className="relative px-3 bg-white text-[9px] font-bold text-slate-300 font-mono uppercase">CUSTOM SESSION</span>
-              </div>
-
-              {/* Option C: Custom Mock Account */}
-              <form onSubmit={handleCustomMockLogin} className="space-y-3.5 p-4 border border-slate-100 bg-slate-50/20 rounded-2xl">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 font-mono">Custom Profile Name</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Enter your name (e.g. Vikram Malhotra)"
-                    value={customName}
-                    onChange={(e) => setCustomName(e.target.value)}
-                    className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 font-mono">Target Role Experience</label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="text-center pt-2">
                     <button
                       type="button"
-                      onClick={() => setCustomRole('buyer')}
-                      className={`py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-                        customRole === 'buyer'
-                          ? 'bg-blue-50 text-blue-700 border-blue-200 shadow-2xs'
-                          : 'border-slate-200 text-slate-500 hover:bg-slate-50'
-                      }`}
+                      onClick={() => {
+                        setIsSignUp(!isSignUp);
+                        setAuthError('');
+                        setAuthSuccess('');
+                      }}
+                      className="text-xs text-slate-500 hover:text-blue-600 transition-colors font-medium"
                     >
-                      Home Buyer / Seeker
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCustomRole('expert')}
-                      className={`py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-                        customRole === 'expert'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-2xs'
-                          : 'border-slate-200 text-slate-500 hover:bg-slate-50'
-                      }`}
-                    >
-                      Resident Expert
+                      {isSignUp ? 'Already have an account? Sign In' : "Don't have an account yet? Register Here"}
                     </button>
                   </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:shadow-md active:scale-98 cursor-pointer"
-                >
-                  Launch Custom Test Session &rarr;
-                </button>
-              </form>
+                </form>
+              )}
             </div>
           </div>
         </div>

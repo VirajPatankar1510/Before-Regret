@@ -326,11 +326,8 @@ export default function App() {
         } else {
           setPoliciesTab('disclaimer');
         }
-      } else if (p === '/dashboard/buyer') {
-        setView('buyer_dashboard');
-        setSelectedArticleId(null);
-      } else if (p === '/dashboard/expert') {
-        setView('expert_dashboard');
+      } else if (p === '/dashboard' || p === '/dashboard/buyer' || p === '/dashboard/expert') {
+        setView('dashboard');
         setSelectedArticleId(null);
       } else if (p === '/admin') {
         setView('admin_panel');
@@ -417,10 +414,8 @@ export default function App() {
       else if (policiesTab === 'shipping') targetPath = '/shipping-policy';
       else if (policiesTab === 'contact') targetPath = '/contact-us';
       else targetPath = '/legal-disclaimer';
-    } else if (currentView === 'buyer_dashboard') {
-      targetPath = '/dashboard/buyer';
-    } else if (currentView === 'expert_dashboard') {
-      targetPath = '/dashboard/expert';
+    } else if (currentView === 'dashboard') {
+      targetPath = '/dashboard';
     } else if (currentView === 'messaging' && activeQuery) {
       targetPath = `/messaging/${activeQuery.id}`;
     } else if (currentView === 'admin_panel') {
@@ -641,7 +636,12 @@ export default function App() {
   };
 
   // Submit new inquiry wizard
-  const handleSubmitQuestion = (queryText: string, packageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT', bookedSlot?: string) => {
+  const handleSubmitQuestion = (
+    queryText: string, 
+    packageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT', 
+    bookedSlot?: string,
+    structuredQuestions?: string[]
+  ) => {
     if (!selectedExpert) return;
 
     if (!user) {
@@ -670,14 +670,17 @@ export default function App() {
       packageOption: packageId,
       bookedSlot: bookedSlot,
       structuredQuestions: packageId === 'QUICK'
-        ? [{ id: 'q1', text: '', answer: '' }]
+        ? [{ id: 'q1', text: (structuredQuestions && structuredQuestions[0]) || queryText || '', answer: '' }]
         : packageId === 'BUNDLE'
-        ? [{ id: 'q1', text: '', answer: '' }, { id: 'q2', text: '', answer: '' }, { id: 'q3', text: '', answer: '' }]
+        ? [
+            { id: 'q1', text: (structuredQuestions && structuredQuestions[0]) || '', answer: '' }, 
+            { id: 'q2', text: (structuredQuestions && structuredQuestions[1]) || '', answer: '' }, 
+            { id: 'q3', text: (structuredQuestions && structuredQuestions[2]) || '', answer: '' }
+          ]
         : undefined
     };
 
     setQueries([newQuery, ...queries]);
-    setActiveRole('buyer');
     setView('buyer_dashboard');
     window.scrollTo(0, 0);
 
@@ -781,7 +784,7 @@ export default function App() {
 
   const handleOpenChat = (query: DirectQuery) => {
     setActiveQuery(query);
-    setMessagingBackView(activeRole === 'buyer' ? 'buyer_dashboard' : 'expert_dashboard');
+    setMessagingBackView('dashboard');
     setView('messaging');
     window.scrollTo(0, 0);
   };
@@ -908,8 +911,7 @@ export default function App() {
                     <button
                       onClick={() => {
                         if (expertProfile) {
-                          setActiveRole('expert');
-                          setView('expert_dashboard');
+                          setView('dashboard');
                         } else {
                           setView('become_expert');
                         }
@@ -958,8 +960,7 @@ export default function App() {
                   <button
                     onClick={() => {
                       if (expertProfile) {
-                        setActiveRole('expert');
-                        setView('expert_dashboard');
+                        setView('dashboard');
                       } else {
                         setView('become_expert');
                       }
@@ -1051,35 +1052,17 @@ export default function App() {
           />
         )}
 
-        {/* VIEW: BUYER DASHBOARD VIEW */}
-        {currentView === 'buyer_dashboard' && (
+        {/* VIEW: UNIFIED DASHBOARD VIEW */}
+        {currentView === 'dashboard' && (
           <Dashboards
             queries={queries}
             reviews={reviews}
             experts={experts}
             savedExpertIds={savedExpertIds}
-            activeRole="buyer"
             activeQueryId={activeQuery ? activeQuery.id : null}
             setActiveQueryId={() => {}}
             onOpenChat={handleOpenChat}
             onLeaveReview={handleLeaveReview}
-            setView={setView}
-            onUpdateExpert={handleUpdateExpert}
-          />
-        )}
-
-        {/* VIEW: RESIDENT EXPERT DASHBOARD VIEW */}
-        {currentView === 'expert_dashboard' && (
-          <Dashboards
-            queries={queries}
-            reviews={reviews}
-            experts={experts}
-            savedExpertIds={savedExpertIds}
-            activeRole="expert"
-            activeQueryId={activeQuery ? activeQuery.id : null}
-            setActiveQueryId={() => {}}
-            onOpenChat={handleOpenChat}
-            onLeaveReview={() => {}}
             setView={setView}
             onUpdateExpert={handleUpdateExpert}
           />
@@ -1092,10 +1075,8 @@ export default function App() {
             onBack={() => {
               if (messagingBackView) {
                 setView(messagingBackView);
-              } else if (activeRole === 'buyer') {
-                setView('buyer_dashboard');
               } else {
-                setView('expert_dashboard');
+                setView('dashboard');
               }
             }}
             onSubmitAnswer={handleSubmitAnswer}
