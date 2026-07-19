@@ -45,11 +45,13 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
 
   const firstAvailableSlot = slotsList.find(slot => !isSlotPassed(slot) && !isSlotBooked(slot)) || slotsList[0];
 
-  const [step, setStep] = useState<1 | 2 | 3>(2); // Start at step 2 since they chose package in profile, but allow toggle
-  const [packageId, setPackageId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>(selectedPackageId);
+  const [step, setStep] = useState<2 | 3>(2); // Start at step 2 (Describe Question)
+  const [packageId, setPackageId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>('LIVE_CHAT');
   const [queryText, setQueryText] = useState('');
   const [budgetQuestions, setBudgetQuestions] = useState<string[]>(['', '', '']);
-  const [selectedSlot, setSelectedSlot] = useState<string>(firstAvailableSlot);
+  const [selectedSlot, setSelectedSlot] = useState<string>(() => {
+    return expert.isInstantChatEnabled ? 'Instant Live Chat' : firstAvailableSlot;
+  });
   const [error, setError] = useState('');
   
   // Razorpay simulation state
@@ -265,23 +267,13 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
         {/* Step Indicator Bullets */}
         <div className="flex items-center justify-center gap-2 mt-6">
           <div 
-            onClick={() => setStep(1)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all ${
-              step === 1 ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+            onClick={() => { if (step > 2) setStep(2); }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+              step === 2 ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 cursor-pointer'
             }`}
           >
             <span className="h-4 w-4 rounded-full bg-black/10 flex items-center justify-center text-[10px]">1</span>
-            <span>Choose Package</span>
-          </div>
-          <div className="w-6 h-0.5 bg-slate-200"></div>
-          <div 
-            onClick={() => { if (step > 1) setStep(2); }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-              step === 2 ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'
-            }`}
-          >
-            <span className="h-4 w-4 rounded-full bg-black/10 flex items-center justify-center text-[10px]">2</span>
-            <span>Write Question</span>
+            <span>Describe Questions</span>
           </div>
           <div className="w-6 h-0.5 bg-slate-200"></div>
           <div 
@@ -289,76 +281,18 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
               step === 3 ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'
             }`}
           >
-            <span className="h-4 w-4 rounded-full bg-black/10 flex items-center justify-center text-[10px]">3</span>
+            <span className="h-4 w-4 rounded-full bg-black/10 flex items-center justify-center text-[10px]">2</span>
             <span>Secure Checkout</span>
           </div>
         </div>
       </div>
-
-      {/* STEP 1: CHOOSE PACKAGE */}
-      {step === 1 && (
-        <div className="space-y-6">
-          <h2 className="text-lg font-bold text-slate-900 mb-2">Step 1: Choose Your Consultation Option</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {pricingPlans.map((plan) => (
-              <div
-                key={plan.id}
-                onClick={() => setPackageId(plan.id)}
-                className={`p-5 border-2 rounded-2xl cursor-pointer transition-all flex flex-col justify-between ${
-                  packageId === plan.id
-                    ? 'border-blue-600 bg-blue-50/10 shadow-xs'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
-                }`}
-              >
-                <div>
-                  <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded ${plan.badgeStyle}`}>
-                    {plan.badge}
-                  </span>
-                  <h3 className="font-bold text-slate-800 text-sm mt-3">{plan.title}</h3>
-                  <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">{plan.description}</p>
-                </div>
-                
-                <div className="mt-6 pt-4 border-t border-slate-100">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-lg font-black text-slate-900 font-mono">Rs. {plan.price}</span>
-                    <span className="text-[10px] text-slate-400 font-mono">{plan.pricePeriod}</span>
-                  </div>
-                  <button className={`w-full mt-4 text-[10px] font-bold uppercase tracking-wider py-2.5 rounded-xl text-center border transition-all ${
-                    packageId === plan.id
-                      ? 'bg-blue-600 border-blue-600 text-white'
-                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                  }`}>
-                    {packageId === plan.id ? 'Selected Option' : 'Select Option'}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex justify-between items-center pt-8 border-t border-slate-100">
-            <button
-              onClick={onBack}
-              className="px-5 py-2.5 border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-slate-50 transition-all cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => setStep(2)}
-              className="px-6 py-2.5 bg-blue-600 text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-blue-700 transition-all cursor-pointer inline-flex items-center gap-2"
-            >
-              <span>Write Question</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* STEP 2: WRITE QUESTION */}
       {step === 2 && (
         <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Step 2: Describe your questions</h2>
+              <h2 className="text-lg font-bold text-slate-900">Step 1: Describe your questions</h2>
               <p className="text-xs text-slate-500 mt-0.5">Please be specific. Your questions are protected by our satisfaction guarantee.</p>
             </div>
             <span className="bg-blue-50 border border-blue-100 text-blue-700 text-[10px] font-bold px-2.5 py-1 rounded-full font-mono">
@@ -366,21 +300,97 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
             </span>
           </div>
 
-          {packageId === 'LIVE_CHAT' && (
+          {/* 1. Selection between Instant Chat (if online) vs Scheduling */}
+          {expert.isInstantChatEnabled ? (
+            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+              <label className="block text-xs font-bold text-emerald-800 uppercase tracking-wider mb-3.5 font-sans flex items-center gap-2">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                Resident is Online Realtime:
+              </label>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setSelectedSlot('Instant Live Chat')}
+                  className={`py-3.5 px-4 text-xs font-bold rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                    selectedSlot === 'Instant Live Chat'
+                      ? 'bg-emerald-600 border-emerald-600 text-white shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-300'
+                  }`}
+                >
+                  <span>⚡ Chat Right Now</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (selectedSlot === 'Instant Live Chat') {
+                      setSelectedSlot(firstAvailableSlot);
+                    }
+                  }}
+                  className={`py-3.5 px-4 text-xs font-bold rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                    selectedSlot !== 'Instant Live Chat'
+                      ? 'bg-blue-600 border-blue-600 text-white shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300'
+                  }`}
+                >
+                  <span>🗓️ Schedule for Later</span>
+                </button>
+              </div>
+
+              {selectedSlot === 'Instant Live Chat' ? (
+                <p className="text-[11px] text-emerald-800/95 font-medium leading-normal bg-emerald-100/50 p-2.5 rounded-lg border border-emerald-100">
+                  ✅ You will be connected in real-time immediately after successful secure payment.
+                </p>
+              ) : (
+                <div className="space-y-2.5 pt-2">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Select your custom time slot:
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {slotsList.map((slot) => {
+                      const isPassed = isSlotPassed(slot);
+                      const isBooked = isSlotBooked(slot);
+                      const isDisabled = isPassed || isBooked;
+                      return (
+                        <button
+                          key={slot}
+                          type="button"
+                          disabled={isDisabled}
+                          onClick={() => !isDisabled && setSelectedSlot(slot)}
+                          className={`p-3 text-xs font-bold font-mono rounded-lg border text-left transition-all flex items-center justify-between ${
+                            isDisabled
+                              ? 'bg-slate-50 border-slate-100 text-slate-400 line-through cursor-not-allowed opacity-50'
+                              : selectedSlot === slot
+                              ? 'bg-blue-500 border-blue-500 text-white shadow-xs cursor-pointer'
+                              : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300 cursor-pointer'
+                          }`}
+                        >
+                          <span>{slot}</span>
+                          {isPassed ? (
+                            <span className="bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded text-[9px] font-sans no-underline font-normal">Passed</span>
+                          ) : isBooked ? (
+                            <span className="bg-red-100 text-red-700 px-1.5 py-0.5 rounded text-[9px] font-sans no-underline font-normal">Paid/Booked</span>
+                          ) : selectedSlot === slot ? (
+                            <span className="bg-white/20 px-1.5 py-0.5 rounded text-[9px] font-sans">Selected</span>
+                          ) : null}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Traditional Scheduling block if offline */
             <div className="mb-6 p-4 bg-orange-50/40 border border-orange-100 rounded-xl">
               <label className="block text-xs font-bold text-orange-800 uppercase tracking-wider mb-2.5 font-sans">
                 📅 Select Your Preferred 20-Minute Time Slot:
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {(expert.availableSlots && expert.availableSlots.length > 0
-                  ? expert.availableSlots
-                  : [
-                      'Today, 04:30 PM - 04:50 PM',
-                      'Today, 06:00 PM - 06:20 PM',
-                      'Tomorrow, 11:00 AM - 11:20 AM',
-                      'Tomorrow, 03:00 PM - 03:20 PM'
-                    ]
-                ).map((slot) => {
+                {slotsList.map((slot) => {
                   const isPassed = isSlotPassed(slot);
                   const isBooked = isSlotBooked(slot);
                   const isDisabled = isPassed || isBooked;
@@ -416,82 +426,29 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
             </div>
           )}
 
-          {packageId === 'QUICK' ? (
-            <div className="space-y-4">
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Enter your specific question for the resident:
-              </label>
-              <textarea
-                rows={4}
-                value={budgetQuestions[0]}
-                onChange={(e) => setBudgetQuestions([e.target.value, budgetQuestions[1], budgetQuestions[2]])}
-                placeholder="e.g. Is there any regular water supply disruption in Block C? What is the average TDS level?"
-                className="w-full p-4 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800 placeholder-slate-400 placeholder:text-xs font-medium font-sans"
-              />
-              {error && (
-                <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-xl border border-red-100 text-xs">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span className="font-semibold">{error}</span>
-                </div>
-              )}
-            </div>
-          ) : packageId === 'BUNDLE' ? (
-            <div className="space-y-6">
-              {[0, 1, 2].map((idx) => (
-                <div key={idx} className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
-                    Question #{idx + 1}:
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={budgetQuestions[idx]}
-                    onChange={(e) => {
-                      const copy = [...budgetQuestions];
-                      copy[idx] = e.target.value;
-                      setBudgetQuestions(copy);
-                    }}
-                    placeholder={
-                      idx === 0 
-                        ? "e.g. Does the society suffer from heavy-duty tanker water dependency?"
-                        : idx === 1
-                        ? "e.g. Are there any construction developments planned nearby blocking views?"
-                        : "e.g. How strict are the RWA rules regarding tenant bachelors/pets?"
-                    }
-                    className="w-full p-4 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800 placeholder-slate-400 placeholder:text-xs font-medium font-sans"
-                  />
-                </div>
-              ))}
-              {error && (
-                <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-xl border border-red-100 text-xs">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span className="font-semibold">{error}</span>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Topics or questions you want to discuss live:
-              </label>
-              <textarea
-                rows={6}
-                value={queryText}
-                onChange={(e) => setQueryText(e.target.value)}
-                placeholder="Enter the topics or questions you would like to discuss during the 20-minute live chat (e.g. water leakage, parking policies, safety at night)..."
-                className="w-full p-4 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800 placeholder-slate-400 placeholder:text-[10px] sm:placeholder:text-xs font-medium font-sans"
-              />
-              {error && (
-                <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-xl border border-red-100 text-xs">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span className="font-semibold">{error}</span>
-                </div>
-              )}
-            </div>
-          )}
+          {/* Consultation Topics Textarea */}
+          <div className="space-y-4">
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+              Topics or questions you want to discuss live:
+            </label>
+            <textarea
+              rows={6}
+              value={queryText}
+              onChange={(e) => setQueryText(e.target.value)}
+              placeholder="Enter the topics or questions you would like to discuss during the 20-minute live chat (e.g. water leakage, parking policies, safety at night)..."
+              className="w-full p-4 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800 placeholder-slate-400 placeholder:text-[10px] sm:placeholder:text-xs font-medium font-sans"
+            />
+            {error && (
+              <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-xl border border-red-100 text-xs">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span className="font-semibold">{error}</span>
+              </div>
+            )}
+          </div>
 
           <div className="mt-8 flex justify-between items-center pt-6 border-t border-slate-100">
             <button
-              onClick={() => setStep(1)}
+              onClick={() => setStep(2)}
               className="px-5 py-2.5 border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-slate-50 transition-all cursor-pointer inline-flex items-center gap-1.5"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -513,26 +470,14 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-6">
             <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8">
-              <h2 className="text-lg font-bold text-slate-900 mb-4">Step 3: Secure Order Summary</h2>
+              <h2 className="text-lg font-bold text-slate-900 mb-4">Step 2: Secure Order Summary</h2>
 
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6 text-left">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2 font-mono">My Structured Queries to Resident:</span>
-                {packageId === 'QUICK' && (
-                  <p className="text-xs text-slate-700 font-semibold italic">"{budgetQuestions[0]}"</p>
-                )}
-                {packageId === 'BUNDLE' && (
-                  <ul className="space-y-1.5 list-decimal pl-4">
-                    {budgetQuestions.filter(q => q.trim()).map((q, i) => (
-                      <li key={i} className="text-xs text-slate-700 font-semibold italic">"{q}"</li>
-                    ))}
-                  </ul>
-                )}
-                {packageId === 'LIVE_CHAT' && (
-                  <div className="space-y-1">
-                    <p className="text-xs text-slate-700 font-semibold italic">"{queryText}"</p>
-                    <p className="text-[10px] text-orange-700 font-mono font-bold mt-1.5">⏰ Live chat slot: {selectedSlot}</p>
-                  </div>
-                )}
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2 font-mono">My Scheduled Queries to Resident:</span>
+                <div className="space-y-1">
+                  <p className="text-xs text-slate-700 font-semibold italic">"{queryText || 'No custom query topics specified'}"</p>
+                  <p className="text-[10px] text-orange-700 font-mono font-bold mt-1.5">⏰ Live chat slot: {selectedSlot}</p>
+                </div>
               </div>
               
               <div className="space-y-4">

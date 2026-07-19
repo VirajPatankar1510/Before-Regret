@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { HowItWorks } from './components/HowItWorks';
-import { FeaturedResidents } from './components/FeaturedResidents';
+import { DecisionJourneySections } from './components/DecisionJourneySections';
 import { ResidentProfile } from './components/ResidentProfile';
 import { AskQuestion } from './components/AskQuestion';
 import { Dashboards } from './components/Dashboards';
@@ -662,20 +662,12 @@ export default function App() {
       localityName: selectedExpert.localityName,
       queryText,
       status: 'ACCEPTED', // Pre-accepted for high-fidelity simulation
-      pricePaid: packageId === 'QUICK' ? 99 : packageId === 'BUNDLE' ? 199 : 220,
-      expertEarnings: packageId === 'QUICK' ? 89 : packageId === 'BUNDLE' ? 179 : 220,
+      pricePaid: 299,
+      expertEarnings: 220,
       createdAt: new Date().toISOString(),
       packageOption: packageId,
       bookedSlot: bookedSlot,
-      structuredQuestions: packageId === 'QUICK'
-        ? [{ id: 'q1', text: (structuredQuestions && structuredQuestions[0]) || queryText || '', answer: '' }]
-        : packageId === 'BUNDLE'
-        ? [
-            { id: 'q1', text: (structuredQuestions && structuredQuestions[0]) || '', answer: '' }, 
-            { id: 'q2', text: (structuredQuestions && structuredQuestions[1]) || '', answer: '' }, 
-            { id: 'q3', text: (structuredQuestions && structuredQuestions[2]) || '', answer: '' }
-          ]
-        : undefined
+      structuredQuestions: undefined
     };
 
     setQueries([newQuery, ...queries]);
@@ -818,14 +810,7 @@ export default function App() {
             
             <HowItWorks />
 
-            {/* Featured Section Anchor */}
-            <div id="featured-residents-section">
-              <FeaturedResidents
-                experts={experts}
-                localities={localities}
-                onSelectExpert={handleSelectExpert}
-              />
-            </div>
+            <DecisionJourneySections setView={setView} />
 
             {/* TEASER BANNER: THE REGRET FILES EDITORIAL HUB */}
             <div className="bg-slate-50 border-y border-slate-100 py-12">
@@ -838,7 +823,7 @@ export default function App() {
                       "I Wish Someone Had Asked This One Question..."
                     </h2>
                     <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-medium">
-                      Brokers show you the grand clubhouse; we show you what lies beneath. Read real, anonymous society secrets, neighborhood icebergs, and hard lessons from home buyers who regretted their ₹1 Crore+ purchases.
+                      Read real, anonymous society secrets, neighborhood icebergs, and hard lessons from home buyers who regretted their ₹1 Crore+ purchases.
                     </p>
                     <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
                       <span className="text-[11px] font-mono text-amber-400 font-bold">• The ₹1 Crore Mistake</span>

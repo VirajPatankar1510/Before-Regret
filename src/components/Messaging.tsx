@@ -35,6 +35,16 @@ export const Messaging: React.FC<MessagingProps> = ({
   const currentUserId = user ? user.uid : '';
   const currentExpertId = expertProfile ? expertProfile.id : '';
 
+  const [expert, setExpert] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem('br_experts');
+      const list = saved ? JSON.parse(saved) : [];
+      return list.find((e: any) => e.id === query.expertId) || null;
+    } catch (err) {
+      return null;
+    }
+  });
+
   const [now, setNow] = useState(new Date());
   const [forceOpen, setForceOpen] = useState(false);
 
@@ -328,6 +338,38 @@ export const Messaging: React.FC<MessagingProps> = ({
           <p className="text-[10px] text-slate-400 mt-1 font-mono">Inquiry Ref: #{query.id.split('_')[1] || query.id}</p>
         </div>
       </div>
+
+      {/* HIGH FIDELITY TESTING CONTROLLER */}
+      {expert && (
+        <div className="mb-6 bg-slate-900 text-slate-100 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono border border-slate-800 shadow-lg">
+          <div className="flex items-center gap-2">
+            <span className={`h-2.5 w-2.5 rounded-full ${expert.isInstantChatEnabled ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
+            <span>Resident Expert (<strong>{expert.fullName}</strong>) Status Simulator:</span>
+            <span className={expert.isInstantChatEnabled ? 'text-emerald-400 font-bold font-sans text-xs' : 'text-rose-400 font-bold font-sans text-xs'}>
+              {expert.isInstantChatEnabled ? '🟢 ONLINE' : '🛑 OFFLINE'}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const updatedExpert = { ...expert, isInstantChatEnabled: !expert.isInstantChatEnabled };
+              setExpert(updatedExpert);
+              // Update in localStorage to persist across views
+              try {
+                const saved = localStorage.getItem('br_experts');
+                if (saved) {
+                  const list = JSON.parse(saved);
+                  const updatedList = list.map((e: any) => e.id === expert.id ? updatedExpert : e);
+                  localStorage.setItem('br_experts', JSON.stringify(updatedList));
+                }
+              } catch (e) {}
+            }}
+            className="bg-slate-800 hover:bg-slate-700 text-white font-bold px-3 py-2 rounded-xl border border-slate-700 transition-colors cursor-pointer text-[11px]"
+          >
+            Simulate Going {expert.isInstantChatEnabled ? 'Offline 🛑' : 'Online 🟢'}
+          </button>
+        </div>
+      )}
 
       {/* Society Metadata Header Banner */}
       <div className="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl flex items-center justify-between gap-4 mb-6">
@@ -623,7 +665,59 @@ export const Messaging: React.FC<MessagingProps> = ({
         </div>
       ) : (
         /* CHAT WINDOW INTERFACE (LIVE CHAT ONLY) */
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xs flex flex-col h-[480px] relative">
+        activeRole === 'buyer' && expert && !expert.isInstantChatEnabled && query.bookedSlot === 'Instant Live Chat' ? (
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 text-center space-y-6 shadow-xs max-w-2xl mx-auto my-4">
+            <div className="w-14 h-14 rounded-full bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center text-xl mx-auto shadow-3xs animate-bounce">
+              📴
+            </div>
+            <div className="max-w-md mx-auto space-y-2 text-center">
+              <h3 className="font-display font-black text-slate-900 text-base">
+                Looks like the user just went offline, but no worries...
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed font-sans">
+                Your payment is fully secured. You can easily schedule your live chat consultation at your convenience using {expert.fullName}'s available times below.
+              </p>
+            </div>
+
+            {expert.availableSlots && expert.availableSlots.length > 0 ? (
+              <div className="bg-slate-50 border border-slate-100 p-5 rounded-xl max-w-lg mx-auto text-left space-y-3.5">
+                <h4 className="font-bold text-slate-800 text-[10px] uppercase tracking-wider font-sans">
+                  Select an alternative convenient slot:
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {expert.availableSlots.map((slot: string) => (
+                    <button
+                      key={slot}
+                      type="button"
+                      onClick={() => {
+                        if (onUpdateQuery) {
+                          onUpdateQuery({
+                            ...query,
+                            bookedSlot: slot
+                          });
+                          const sysMsg: ChatMessageItem = {
+                            id: `msg_sys_${Date.now()}`,
+                            senderId: 'system',
+                            senderRole: 'expert',
+                            text: `🗓️ Booking rescheduled to: ${slot}`,
+                            createdAt: new Date().toISOString()
+                          };
+                          setMessages(prev => [...prev, sysMsg]);
+                        }
+                      }}
+                      className="p-3 text-xs font-bold text-slate-700 hover:text-blue-600 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-lg transition-all cursor-pointer text-left shadow-3xs font-mono"
+                    >
+                      🗓️ {slot}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic">No alternative slots currently available. Please check back shortly.</p>
+            )}
+          </div>
+        ) : (
+          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xs flex flex-col h-[480px] relative">
           
           {query.packageOption === 'LIVE_CHAT' && (
             <div className="bg-orange-50/90 border-b border-orange-100 px-4 py-3 flex items-center justify-between z-10">
@@ -801,6 +895,7 @@ export const Messaging: React.FC<MessagingProps> = ({
           )}
 
         </div>
+        )
       )}
 
       {/* SPECIAL ACTIVE EXPERT RESPONSE GIG GATEWAY PANEL (ONLY FOR LIVE CHAT COMPILING REPORT) */}
