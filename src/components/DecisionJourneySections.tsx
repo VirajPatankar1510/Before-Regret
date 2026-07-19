@@ -13,9 +13,28 @@ import {
 
 interface DecisionJourneyProps {
   setView: (view: string) => void;
+  onScrollToSearch?: () => void;
 }
 
-export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setView }) => {
+export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setView, onScrollToSearch }) => {
+
+  const handleScrollClick = () => {
+    if (onScrollToSearch) {
+      onScrollToSearch();
+    } else {
+      const searchBox = document.getElementById('hero-search');
+      const searchInput = document.getElementById('hero-search-input');
+      if (searchBox) {
+        searchBox.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+      if (searchInput) {
+        searchInput.focus();
+      }
+    }
+  };
 
   return (
     <div className="bg-white text-slate-950 font-sans antialiased">
@@ -217,6 +236,62 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
             </div>
           </div>
 
+          {/* CTA 1: READY TO ASK YOUR OWN QUESTIONS */}
+          <div className="max-w-3xl mx-auto pt-12 border-t border-slate-200/60 flex justify-center">
+            <div className="w-full max-w-[700px] bg-slate-50/50 border border-slate-200/80 rounded-3xl p-8 sm:p-12 text-center space-y-8 shadow-xs">
+              <div className="space-y-3">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600 bg-blue-50 border border-blue-100/60 px-3 py-1 rounded-full font-mono">
+                  Personal Consultation
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight pt-1">
+                  Ready To Ask Your Own Questions?
+                </h3>
+                <p className="text-sm text-slate-600 font-medium leading-relaxed max-w-xl mx-auto">
+                  Connect directly with someone who lives in the building or society you are considering. No brokers, no sales pitches—just honest answers to your specific questions.
+                </p>
+              </div>
+
+              {/* Pricing highlight box */}
+              <div className="bg-white border border-slate-200/60 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-lg mx-auto shadow-xs">
+                <div className="text-center sm:text-left">
+                  <div className="text-[9px] font-bold text-blue-600 uppercase tracking-widest font-mono">Single Package</div>
+                  <h4 className="font-bold text-slate-900 text-base">20-Minute Resident Chat</h4>
+                  <p className="text-[11px] text-slate-500 font-medium">Direct connection with an active resident</p>
+                </div>
+                <div className="text-center sm:text-right shrink-0 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
+                  <div className="text-2xl font-black text-slate-950">₹299</div>
+                  <div className="text-[9px] text-slate-400 font-bold font-mono">ONE-TIME CHARGE</div>
+                </div>
+              </div>
+
+              {/* Key benefits */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4 max-w-md mx-auto text-left border-t border-slate-200/60 pt-6">
+                {[
+                  "Real Residents",
+                  "Direct, private chat",
+                  "Real-time answers to your questions",
+                  "Rescheduled or fully refunded if offline"
+                ].map((benefit, i) => (
+                  <div key={i} className="flex items-center gap-2.5">
+                    <div className="p-0.5 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 shrink-0">
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    </div>
+                    <span className="text-xs text-slate-600 font-semibold">{benefit}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={handleScrollClick}
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm sm:text-base rounded-xl transition-all shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 w-full sm:w-auto cursor-pointer"
+                >
+                  Find a Resident <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* PART 3: REVIEWS CONFLATION & ARITHMETIC SOBERITY */}
           <div className="pt-8 border-t border-slate-200/60 max-w-3xl space-y-6">
             <span className="text-[10px] font-bold uppercase tracking-widest text-cyan-600 bg-cyan-50 border border-cyan-100/60 px-3 py-1 rounded-full font-mono">
@@ -335,6 +410,68 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA 2: READY TO MAKE A SMARTER PROPERTY DECISION */}
+          <div className="max-w-4xl mx-auto pt-16 border-t border-slate-200/60">
+            <div className="bg-slate-950 text-white rounded-3xl p-10 sm:p-14 text-center space-y-8 shadow-xl relative overflow-hidden border border-slate-900">
+              {/* Abstract decorative accent */}
+              <div className="absolute top-0 right-0 -mt-12 -mr-12 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none"></div>
+
+              <div className="space-y-3 relative z-10">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full font-mono">
+                  Final Decision Check
+                </span>
+                <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+                  Ready To Make A Smarter Property Decision?
+                </h3>
+                <p className="text-sm sm:text-base text-slate-400 font-medium leading-relaxed max-w-2xl mx-auto pt-1">
+                  Don't rely solely on property listings or brochure promises. Speak with someone who understands daily life in the building before you sign.
+                </p>
+              </div>
+
+              {/* Pricing Highlight Box */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-lg mx-auto shadow-xs text-white relative z-10">
+                <div className="text-center sm:text-left">
+                  <div className="text-[9px] font-bold text-amber-400 uppercase tracking-widest font-mono">Clear Pricing</div>
+                  <h4 className="font-bold text-white text-base">Resident Chat</h4>
+                  <p className="text-[11px] text-slate-400 font-medium">Direct live connection with an active resident</p>
+                </div>
+                <div className="text-center sm:text-right shrink-0 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
+                  <div className="text-xl font-black text-amber-400 font-mono">20 Min • ₹299</div>
+                  <div className="text-[9px] text-slate-500 font-bold font-mono">ONE-TIME FEE</div>
+                </div>
+              </div>
+
+              {/* Benefits list (horizontal list) */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-y-4 gap-x-8 text-slate-300 text-xs sm:text-sm font-semibold max-w-xl mx-auto border-t border-slate-800/80 pt-6 relative z-10">
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Local Resident Experts</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>100% Private & Secure</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Fast, Convenient Response</span>
+                </div>
+              </div>
+
+              <div className="pt-4 space-y-3 relative z-10">
+                <button
+                  onClick={handleScrollClick}
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 font-black text-sm sm:text-base rounded-xl transition-all shadow-md shadow-amber-500/10 hover:shadow-lg hover:shadow-amber-500/20 w-full sm:w-auto cursor-pointer"
+                >
+                  Search Your Building →
+                </button>
+                <p className="text-[11px] text-slate-500 font-semibold leading-normal">
+                  No membership fees. Only pay when you connect with a resident.
+                </p>
               </div>
             </div>
           </div>

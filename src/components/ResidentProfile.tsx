@@ -137,7 +137,7 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
                     <span>Registered Pincode & Landmark Details</span>
                   </h3>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    Verified address mapping and landmarks for {locality.name}
+                    Address mapping and landmarks for {locality.name}
                   </p>
                 </div>
                 <div className="px-3 py-1 bg-slate-100 text-slate-850 rounded-full font-mono font-bold text-[11px] tracking-wide self-start sm:self-auto flex items-center gap-1 border">
