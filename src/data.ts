@@ -2,36 +2,6 @@ import { Neighborhood, ExpertProfile, Review, PricingPlan } from "./types";
 
 export const pricingPlans: PricingPlan[] = [
   {
-    id: 'QUICK',
-    badge: 'Basic Clarity',
-    badgeStyle: 'bg-blue-50 text-blue-700 font-semibold',
-    title: 'Quick Question',
-    description: 'Ask one specific question and get a swift, precise answer about standard society rules or amenities.',
-    price: 99,
-    pricePeriod: '/ question',
-    features: [
-      'Ask 1 specific question',
-      'Local resident response within 24 hours',
-      'Secure payment protection (48h)',
-      '100% refund if not answered'
-    ],
-    cta: 'Select Basic'
-  },
-  {
-    id: 'BUNDLE',
-    badge: 'Detailed Consultation',
-    badgeStyle: 'bg-emerald-50 text-emerald-700 font-semibold',
-    title: 'Three Questions',
-    description: 'Get a detailed custom report covering your requested society topics, like water tanks and maid charges.',
-    price: 199,
-    pricePeriod: '/ 3 questions',
-    features: [
-      'Ask up to 3 detailed questions',
-      'Contact protection (no spam/broker calls)'
-    ],
-    cta: 'Select Standard'
-  },
-  {
     id: 'LIVE_CHAT',
     badge: '20-Min Live Consultation',
     badgeStyle: 'bg-orange-50 text-orange-700 font-semibold',

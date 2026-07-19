@@ -51,7 +51,15 @@ export const Dashboards: React.FC<DashboardsProps> = ({
   const { user, expertProfile, setExpertProfile } = useAuth();
   
   // Single, unified active tab state
-  const [activeTab, setActiveTab] = useState<string>('my_questions');
+  const [activeTab, setActiveTab] = useState<string>(expertProfile ? 'client_requests' : 'my_questions');
+
+  useEffect(() => {
+    if (expertProfile) {
+      setActiveTab('client_requests');
+    } else {
+      setActiveTab('my_questions');
+    }
+  }, [expertProfile]);
   
   // Wallet / payout states
   const [withdrawalAmount, setWithdrawalAmount] = useState('1000');
@@ -325,57 +333,9 @@ export const Dashboards: React.FC<DashboardsProps> = ({
         
         {/* Left Hand Sidebar Navigation */}
         <div className="lg:col-span-1 space-y-1 bg-slate-50 p-3 rounded-2xl border border-slate-200/50 h-fit">
-          <div className="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
-            Seeker Workspace
-          </div>
-          
-          <button
-            onClick={() => setActiveTab('my_questions')}
-            className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all cursor-pointer ${
-              activeTab === 'my_questions'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'hover:bg-slate-200/50 text-slate-600'
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" />
-              <span>My Inquiries</span>
-            </span>
-            {activeMyQuestions.length > 0 && (
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${activeTab === 'my_questions' ? 'bg-white/25 text-white' : 'bg-blue-100 text-blue-800'}`}>
-                {activeMyQuestions.length}
-              </span>
-            )}
-          </button>
-
-          <button
-            onClick={() => setActiveTab('saved_residents')}
-            className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer ${
-              activeTab === 'saved_residents'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'hover:bg-slate-200/50 text-slate-600'
-            }`}
-          >
-            <Bookmark className="w-4 h-4" />
-            <span>Saved Locals</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('receipts')}
-            className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer ${
-              activeTab === 'receipts'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'hover:bg-slate-200/50 text-slate-600'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            <span>Billing Receipts</span>
-          </button>
-
-          {/* Expert Tabs - render only if the user is a registered expert */}
           {expertProfile ? (
             <>
-              <div className="pt-4 pb-2 border-t border-slate-200/60 mt-3 px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
+              <div className="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
                 Expert Console
               </div>
 
@@ -436,6 +396,53 @@ export const Dashboards: React.FC<DashboardsProps> = ({
             </>
           ) : (
             <>
+              <div className="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
+                Seeker Workspace
+              </div>
+              
+              <button
+                onClick={() => setActiveTab('my_questions')}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all cursor-pointer ${
+                  activeTab === 'my_questions'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'hover:bg-slate-200/50 text-slate-600'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  <span>My Inquiries</span>
+                </span>
+                {activeMyQuestions.length > 0 && (
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${activeTab === 'my_questions' ? 'bg-white/25 text-white' : 'bg-blue-100 text-blue-800'}`}>
+                    {activeMyQuestions.length}
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={() => setActiveTab('saved_residents')}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer ${
+                  activeTab === 'saved_residents'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'hover:bg-slate-200/50 text-slate-600'
+                }`}
+              >
+                <Bookmark className="w-4 h-4" />
+                <span>Saved Locals</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('receipts')}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer ${
+                  activeTab === 'receipts'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'hover:bg-slate-200/50 text-slate-600'
+                }`}
+              >
+                <FileText className="w-4 h-4" />
+                <span>Billing Receipts</span>
+              </button>
+
               <div className="pt-4 pb-2 border-t border-slate-200/60 mt-3 px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
                 Become a Local Expert
               </div>
@@ -885,30 +892,6 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                         PAYOUTS: {expertProfile?.payoutsEnabled ? 'ACTIVE' : 'INACTIVE'}
                       </span>
                     </div>
-                  </div>
-
-                  {/* Sandbox Bypass Simulation controls */}
-                  <div className="space-y-1.5 p-3 bg-white border border-slate-200 rounded-xl">
-                    <span className="text-[9px] font-black text-amber-800 block font-mono">🛠️ SANDBOX COMPLIANCE SIMULATOR</span>
-                    <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      <button
-                        type="button"
-                        onClick={() => handleSimulateVerification(true, true, true)}
-                        className="px-2 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded text-[9px] font-bold transition-all"
-                      >
-                        Bypass KYC & Verify Bank Account
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSimulateVerification(false, false, false)}
-                        className="px-2 py-1 bg-rose-500 hover:bg-rose-600 text-white rounded text-[9px] font-bold transition-all"
-                      >
-                        Reset Status
-                      </button>
-                    </div>
-                    {simulationSuccess && (
-                      <p className="text-[9px] text-emerald-600 font-bold mt-1">{simulationSuccess}</p>
-                    )}
                   </div>
                 </div>
 

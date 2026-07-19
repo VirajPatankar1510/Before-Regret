@@ -400,11 +400,11 @@ async function startServer() {
   let razorpayInstance: any = null;
 
   function getRazorpayInstance() {
-    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
     if (!keyId || !keySecret) {
-      throw new Error("Razorpay credentials (RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET) are missing in environment variables.");
+      throw new Error("Razorpay credentials (RAZORPAY_KEY_ID/VITE_RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET) are missing in environment variables.");
     }
 
     if (!razorpayInstance) {

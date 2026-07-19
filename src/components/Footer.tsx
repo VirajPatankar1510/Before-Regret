@@ -69,14 +69,6 @@ export const Footer: React.FC<FooterProps> = ({ setView, onNavigateToPolicy }) =
                 Contact Us (Support)
               </a>
             </li>
-            <li className="pt-2">
-              <button
-                onClick={() => { setView('admin_panel'); window.scrollTo(0, 0); }}
-                className="hover:text-white text-slate-500 font-mono text-[10px] transition-colors cursor-pointer flex items-center gap-1"
-              >
-                🔒 Admin Control
-              </button>
-            </li>
           </ul>
         </div>
 

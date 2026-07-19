@@ -27,14 +27,14 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
   onToggleSaveExpert,
   currentUserUid,
 }) => {
-  const [selectedPlanId, setSelectedPlanId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>('QUICK');
+  const [selectedPlanId, setSelectedPlanId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>('LIVE_CHAT');
   const isSaved = savedExperts.includes(expert.id);
   const isOwnListing = currentUserUid && currentUserUid === expert.userId;
 
   // Filter reviews matching current expert
   const expertReviews = reviews.filter((rev) => rev.expertId === expert.id);
 
-  const activePlan = pricingPlans.find((p) => p.id === selectedPlanId) || pricingPlans[0];
+  const activePlan = pricingPlans[0]; // Only LIVE_CHAT remains in pricingPlans
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12 font-sans">
@@ -301,81 +301,49 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
 
         </div>
 
-        {/* Right Column: Sticky Tabbed Fiverr-style Pricing Box */}
+        {/* Right Column: Sticky Single-Package Chat Box */}
         <div className="lg:col-span-1 sticky top-24 z-30">
           
           <div className="bg-white border-2 border-slate-200 rounded-2xl overflow-hidden shadow-sm">
             
-            {/* 3 Fiverr-Style Tabs */}
-            <div className="grid grid-cols-3 border-b border-slate-200 text-center text-[10px] sm:text-xs font-bold font-sans bg-slate-50">
-              <button
-                onClick={() => {
-                  setSelectedPlanId('QUICK');
-                  onSelectPackage('QUICK');
-                }}
-                className={`py-3.5 border-r border-slate-200 cursor-pointer transition-colors ${
-                  selectedPlanId === 'QUICK'
-                    ? 'bg-white text-blue-600 border-b-2 border-b-blue-600 font-bold'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                Basic
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedPlanId('BUNDLE');
-                  onSelectPackage('BUNDLE');
-                }}
-                className={`py-3.5 border-r border-slate-200 cursor-pointer transition-colors ${
-                  selectedPlanId === 'BUNDLE'
-                    ? 'bg-white text-blue-600 border-b-2 border-b-blue-600 font-bold'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                Standard
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedPlanId('LIVE_CHAT');
-                  onSelectPackage('LIVE_CHAT');
-                }}
-                className={`py-3.5 cursor-pointer transition-colors ${
-                  selectedPlanId === 'LIVE_CHAT'
-                    ? 'bg-white text-blue-600 border-b-2 border-b-blue-600 font-bold'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                Live Chat
-              </button>
+            {/* Header banner indicating Live Chat only */}
+            <div className="bg-slate-50 border-b border-slate-200 px-5 py-4 text-center">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-100 text-orange-700 text-[10px] font-bold uppercase tracking-wider font-mono">
+                Exclusive Package Option
+              </span>
+              <h4 className="font-extrabold text-slate-900 text-sm tracking-tight mt-2">
+                Live Chat Consultation
+              </h4>
             </div>
 
-            {/* Tab Details Render */}
+            {/* Package Details Render */}
             <div className="p-6">
               <div className="flex items-baseline justify-between gap-2 mb-3">
-                <h4 className="font-bold text-slate-800 text-sm tracking-tight">
-                  {activePlan.title}
+                <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono">
+                  What you get:
                 </h4>
                 <span className="text-xl font-black text-slate-900 font-mono">
-                  Rs. {activePlan.price}
+                  Rs. 299
                 </span>
               </div>
               <p className="text-xs text-slate-500 leading-relaxed mb-4">
-                {activePlan.description}
+                Book a direct real-time 20-minute chat consultation with the resident at a scheduled convenient slot.
               </p>
 
               {/* SLA Time details */}
               <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-5 font-mono">
-                <Clock className="w-4 h-4 text-emerald-500" />
-                <span>
-                  {selectedPlanId === 'QUICK' && '24 Hours Delivery'}
-                  {selectedPlanId === 'BUNDLE' && 'Priority Messaging Support'}
-                  {selectedPlanId === 'LIVE_CHAT' && 'Scheduled 20-Min Real-time Session'}
-                </span>
+                <Clock className="w-4 h-4 text-orange-500" />
+                <span>20-Minute Real-time Consultation</span>
               </div>
 
               {/* Features List Checklist */}
               <div className="space-y-2.5 mb-6">
-                {activePlan.features.map((feature, idx) => (
+                {[
+                  '20-minute real-time chat with the resident',
+                  'Select from available convenient time slots',
+                  'Instant slot booking confirmation',
+                  'Secure payment protection (48h)'
+                ].map((feature, idx) => (
                   <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-600">
                     <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 font-bold" />
                     <span>{feature}</span>
@@ -397,13 +365,56 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
                   </p>
                 </div>
               ) : (
-                <button
-                  onClick={onStartInquiry}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs hover:shadow-md"
-                >
-                  <span>Continue (Rs. {activePlan.price})</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                <div className="space-y-2.5">
+                  {expert.isInstantChatEnabled ? (
+                    <>
+                      <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl mb-3 text-left">
+                        <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 font-sans mb-1">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                          </span>
+                          Resident is online now!
+                        </span>
+                        <p className="text-[10.5px] text-slate-600 font-medium leading-normal">
+                          They are currently active and ready to chat. Choose "Chat Right Now" to connect instantly!
+                        </p>
+                      </div>
+                      
+                      <button
+                        onClick={() => {
+                          onSelectPackage('LIVE_CHAT');
+                          onStartInquiry();
+                        }}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs hover:shadow-md"
+                      >
+                        <span>Chat Right Now ⚡</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          onSelectPackage('LIVE_CHAT');
+                          onStartInquiry();
+                        }}
+                        className="w-full bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs uppercase tracking-wider py-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        <span>🗓️ Schedule for Later</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        onSelectPackage('LIVE_CHAT');
+                        onStartInquiry();
+                      }}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs hover:shadow-md"
+                    >
+                      <span>Book Live Chat (Rs. 299) 🗓️</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               )}
 
               <p className="text-[10px] text-slate-400 text-center mt-3 font-mono">
