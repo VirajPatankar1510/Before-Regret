@@ -39,24 +39,28 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
   return (
     <div className="bg-white text-slate-950 font-sans antialiased">
       
-      {/* MASTER UNIFIED JOURNEY SECTION */}
-      <section className="py-20 bg-slate-50/50 border-b border-slate-100">
-        <div className="max-w-5xl mx-auto px-6 space-y-24">
-          
+      {/* SEPARATED INTRO SECTION */}
+      <section className="py-16 bg-white border-b border-slate-100">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              <span className="text-slate-500 font-semibold block">The property visit shows you the apartment.</span>
+              <span className="text-blue-600 block mt-1">The resident tells you what living there is actually like.</span>
+            </h2>
+            <p className="text-sm text-slate-500 font-semibold leading-relaxed mt-4">
+              Before you pay a deposit or sign an agreement, speak with someone who already lives in the same building or society. Ask about water, parking, noise, internet reliability, neighbours, maintenance, safety, and everything else a 15-minute property visit cannot reveal.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION FOR PROPERTY LISTINGS VS RESIDENTS */}
+      <section className="py-20 bg-[#f1f5f6] border-2 border-[#bbbbbb] rounded-[3px]">
+        <div className="max-w-5xl mx-auto px-6">
           {/* PART 1: THE TRITICAL ASYMMETRY (Listing vs. Living) */}
           <div className="space-y-12">
             <div className="text-center max-w-2xl mx-auto">
-              <div className="inline-block bg-blue-50/50 border border-blue-100/50 px-6 py-4 rounded-2xl shadow-3xs">
-                <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 tracking-tight leading-snug">
-                  <span className="text-slate-600 font-medium">The property visit shows you the apartment.</span>
-                  <br />
-                  <span className="text-blue-600 font-extrabold bg-blue-100/30 px-1.5 py-0.5 rounded-md inline-block mt-1">The resident tells you what living there is actually like.</span>
-                </h2>
-              </div>
-              <p className="text-sm text-slate-500 font-semibold leading-relaxed mt-4">
-                Before you pay a deposit or sign an agreement, speak with someone who already lives in the same building or society. Ask about water, parking, noise, internet reliability, neighbours, maintenance, safety, and everything else a 15-minute property visit cannot reveal.
-              </p>
-              <p className="text-xs sm:text-sm text-slate-600 font-semibold leading-relaxed mt-4 border-t border-slate-200/60 pt-4">
+              <p className="text-xs sm:text-sm text-slate-600 font-semibold leading-relaxed mt-4">
                 Property listings are designed to help you discover homes. Residents help you understand what daily life is actually like after you move in. Both are useful—but they answer very different questions.
               </p>
             </div>
@@ -117,7 +121,13 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
+      {/* MASTER UNIFIED JOURNEY SECTION */}
+      <section className="py-20 bg-slate-50/50 border-b border-slate-100">
+        <div className="max-w-5xl mx-auto px-6 space-y-24">
+          
           {/* PART 2: THE COST OF REGRET */}
           <div className="pt-8 border-t border-slate-200/60 max-w-3xl">
             <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-50 border border-amber-100/60 px-3 py-1 rounded-full font-mono">
@@ -240,21 +250,14 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
           <div className="max-w-3xl mx-auto pt-12 border-t border-slate-200/60 flex justify-center">
             <div className="w-full max-w-[700px] bg-slate-50/50 border border-slate-200/80 rounded-3xl p-8 sm:p-12 text-center space-y-8 shadow-xs">
               <div className="space-y-3">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600 bg-blue-50 border border-blue-100/60 px-3 py-1 rounded-full font-mono">
-                  Personal Consultation
-                </span>
                 <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight pt-1">
                   Ready To Ask Your Own Questions?
                 </h3>
-                <p className="text-sm text-slate-600 font-medium leading-relaxed max-w-xl mx-auto">
-                  Connect directly with someone who lives in the building or society you are considering. No brokers, no sales pitches—just honest answers to your specific questions.
-                </p>
               </div>
 
               {/* Pricing highlight box */}
               <div className="bg-white border border-slate-200/60 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-lg mx-auto shadow-xs">
                 <div className="text-center sm:text-left">
-                  <div className="text-[9px] font-bold text-blue-600 uppercase tracking-widest font-mono">Single Package</div>
                   <h4 className="font-bold text-slate-900 text-base">20-Minute Resident Chat</h4>
                   <p className="text-[11px] text-slate-500 font-medium">Direct connection with an active resident</p>
                 </div>
@@ -416,40 +419,32 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
 
           {/* CTA 2: READY TO MAKE A SMARTER PROPERTY DECISION */}
           <div className="max-w-4xl mx-auto pt-16 border-t border-slate-200/60">
-            <div className="bg-slate-950 text-white rounded-3xl p-10 sm:p-14 text-center space-y-8 shadow-xl relative overflow-hidden border border-slate-900">
-              {/* Abstract decorative accent */}
-              <div className="absolute top-0 right-0 -mt-12 -mr-12 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
-              <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none"></div>
-
+            <div className="bg-slate-50 text-slate-900 rounded-3xl p-10 sm:p-14 text-center space-y-8 shadow-xs border border-slate-200/80 relative overflow-hidden">
               <div className="space-y-3 relative z-10">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full font-mono">
-                  Final Decision Check
-                </span>
-                <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+                <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">
                   Ready To Make A Smarter Property Decision?
                 </h3>
-                <p className="text-sm sm:text-base text-slate-400 font-medium leading-relaxed max-w-2xl mx-auto pt-1">
+                <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed max-w-2xl mx-auto pt-1">
                   Don't rely solely on property listings or brochure promises. Speak with someone who understands daily life in the building before you sign.
                 </p>
               </div>
 
               {/* Pricing Highlight Box */}
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-lg mx-auto shadow-xs text-white relative z-10">
+              <div className="bg-white border border-slate-200/60 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-lg mx-auto shadow-xs text-slate-900 relative z-10">
                 <div className="text-center sm:text-left">
-                  <div className="text-[9px] font-bold text-amber-400 uppercase tracking-widest font-mono">Clear Pricing</div>
-                  <h4 className="font-bold text-white text-base">Resident Chat</h4>
-                  <p className="text-[11px] text-slate-400 font-medium">Direct live connection with an active resident</p>
+                  <h4 className="font-bold text-slate-900 text-base">Resident Chat</h4>
+                  <p className="text-[11px] text-slate-500 font-medium">Direct live connection with an active resident</p>
                 </div>
-                <div className="text-center sm:text-right shrink-0 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
-                  <div className="text-xl font-black text-amber-400 font-mono">20 Min • ₹299</div>
-                  <div className="text-[9px] text-slate-500 font-bold font-mono">ONE-TIME FEE</div>
+                <div className="text-center sm:text-right shrink-0 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
+                  <div className="text-xl font-black text-slate-950 font-mono">20 Min • ₹299</div>
+                  <div className="text-[9px] text-slate-400 font-bold font-mono">ONE-TIME FEE</div>
                 </div>
               </div>
 
               {/* Benefits list (horizontal list) */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-y-4 gap-x-8 text-slate-300 text-xs sm:text-sm font-semibold max-w-xl mx-auto border-t border-slate-800/80 pt-6 relative z-10">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-y-4 gap-x-8 text-slate-600 text-xs sm:text-sm font-semibold max-w-xl mx-auto border-t border-slate-200/60 pt-6 relative z-10">
                 <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <Check className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>Local Resident Experts</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -465,7 +460,7 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
               <div className="pt-4 space-y-3 relative z-10">
                 <button
                   onClick={handleScrollClick}
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 font-black text-sm sm:text-base rounded-xl transition-all shadow-md shadow-amber-500/10 hover:shadow-lg hover:shadow-amber-500/20 w-full sm:w-auto cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-slate-950 hover:bg-slate-900 active:bg-black text-white font-black text-sm sm:text-base rounded-xl transition-all shadow-md shadow-slate-950/10 hover:shadow-lg hover:shadow-slate-950/20 w-full sm:w-auto cursor-pointer"
                 >
                   Search Your Building →
                 </button>

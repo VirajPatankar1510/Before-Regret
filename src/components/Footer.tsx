@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, HelpCircle } from 'lucide-react';
+import { ShieldCheck, HelpCircle, BookOpen } from 'lucide-react';
 import { Logo } from './Logo';
 
 interface FooterProps {
@@ -20,7 +20,7 @@ export const Footer: React.FC<FooterProps> = ({ setView, onNavigateToPolicy }) =
 
   return (
     <footer className="bg-slate-900 text-slate-400 py-12 sm:py-16 border-t border-slate-800 font-sans mt-auto">
-      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
         
         {/* Brand Description Column */}
         <div className="space-y-4">
@@ -35,7 +35,28 @@ export const Footer: React.FC<FooterProps> = ({ setView, onNavigateToPolicy }) =
           </p>
         </div>
 
-        {/* Links Column 2 */}
+        {/* Publications & Insights Column */}
+        <div>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4 font-mono">Publications</h4>
+          <ul className="space-y-2 text-xs">
+            <li>
+              <a 
+                href="/regret-files" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  setView('regret_files');
+                  window.scrollTo(0, 0);
+                }} 
+                className="hover:text-amber-400 text-amber-500 font-bold transition-colors inline-flex items-center gap-1.5"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>The Regret Files</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* Links Column 3 */}
         <div>
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4 font-mono">Legal & Policies</h4>
           <ul className="grid grid-cols-2 md:grid-cols-1 gap-2 text-xs">

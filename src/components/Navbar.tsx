@@ -338,13 +338,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Search className="w-4 h-4" />
             <span>Search</span>
           </button>
-          <button
-            onClick={() => { setView('regret_files'); window.scrollTo(0, 0); }}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${currentView === 'regret_files' ? 'bg-amber-500 text-slate-900' : 'bg-amber-500/10 text-amber-700 hover:bg-amber-500/20'}`}
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>The Regret Files</span>
-          </button>
           {expertProfile ? (
             <button
               onClick={() => {
@@ -648,22 +641,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <MapPin className="w-4 h-4 text-slate-400" />
             <span>Explore Societies</span>
-          </button>
-          
-          <button
-            onClick={() => {
-              setView('regret_files');
-              window.scrollTo(0, 0);
-              setMobileMenuOpen(false);
-            }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-left transition-all ${
-              currentView === 'regret_files'
-                ? 'bg-amber-500 text-slate-900 shadow-xs'
-                : 'bg-amber-500/10 text-amber-800 hover:bg-amber-500/20'
-            }`}
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>The Regret Files</span>
           </button>
           
           {expertProfile ? (
