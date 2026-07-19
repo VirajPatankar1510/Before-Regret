@@ -27,9 +27,13 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
           {/* PART 1: THE TRITICAL ASYMMETRY (Listing vs. Living) */}
           <div className="space-y-12">
             <div className="text-center max-w-2xl mx-auto">
-              <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 tracking-tight leading-snug">
-                The property visit shows you the apartment.<br />The resident tells you what living there is actually like.
-              </h2>
+              <div className="inline-block bg-blue-50/50 border border-blue-100/50 px-6 py-4 rounded-2xl shadow-3xs">
+                <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 tracking-tight leading-snug">
+                  <span className="text-slate-600 font-medium">The property visit shows you the apartment.</span>
+                  <br />
+                  <span className="text-blue-600 font-extrabold bg-blue-100/30 px-1.5 py-0.5 rounded-md inline-block mt-1">The resident tells you what living there is actually like.</span>
+                </h2>
+              </div>
               <p className="text-sm text-slate-500 font-semibold leading-relaxed mt-4">
                 Before you pay a deposit or sign an agreement, speak with someone who already lives in the same building or society. Ask about water, parking, noise, internet reliability, neighbours, maintenance, safety, and everything else a 15-minute property visit cannot reveal.
               </p>
