@@ -27,7 +27,7 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
           {/* PART 1: THE TRITICAL ASYMMETRY (Listing vs. Living) */}
           <div className="space-y-12">
             <div className="text-center max-w-2xl mx-auto">
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-snug">
+              <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 tracking-tight leading-snug">
                 The property visit shows you the apartment.<br />The resident tells you what living there is actually like.
               </h2>
               <p className="text-sm text-slate-500 font-semibold leading-relaxed mt-4">
