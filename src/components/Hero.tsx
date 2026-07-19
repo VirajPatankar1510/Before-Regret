@@ -51,6 +51,16 @@ export const Hero: React.FC<HeroProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Qualification flow state for empty search results
+  const [userRoleChoice, setUserRoleChoice] = useState<'none' | 'yes' | 'no' | 'notified'>('none');
+  const [notifiedEmail, setNotifiedEmail] = useState('');
+
+  // Reset qualification flow when searchQuery changes
+  useEffect(() => {
+    setUserRoleChoice('none');
+    setNotifiedEmail('');
+  }, [searchQuery]);
+
   // Combine static and registered suggestions locally
   const combinedSuggestions = React.useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
@@ -135,13 +145,13 @@ export const Hero: React.FC<HeroProps> = ({
 
       <div className="relative z-10 max-w-3xl mx-auto px-4 text-center flex flex-col items-center">
         {/* Combined Static Headline */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-extrabold tracking-tight text-white leading-tight">
-          The Best Advice Lives Next Door.
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-extrabold tracking-tight text-white leading-tight">
+          Smart property buyers don't stop at the property visit.
         </h1>
 
         {/* Combined Static Subheading */}
         <p className="mt-4 text-slate-300 text-base sm:text-lg md:text-xl font-sans font-medium max-w-xl mx-auto leading-relaxed">
-          <span className="text-amber-300 font-semibold underline decoration-amber-400/30 decoration-2 underline-offset-4">Talk to people who already live there</span> before <span className="text-white font-bold underline decoration-red-500 decoration-[3px] underline-offset-4">renting or buying your next home.</span>
+          <span className="text-amber-300 font-semibold underline decoration-amber-400/30 decoration-2 underline-offset-4">Chat with Real Residents</span> Before You <span className="text-white font-bold underline decoration-red-500 decoration-[3px] underline-offset-4">Rent or Buy your next Property.</span>
         </p>
 
         {/* Minimalist Search Container */}
@@ -179,7 +189,7 @@ export const Hero: React.FC<HeroProps> = ({
 
           {/* Autocomplete suggestions */}
           {showSuggestions && searchQuery.trim() !== '' && (
-            <div className="absolute top-full left-0 right-0 mt-1.5 bg-slate-900/95 backdrop-blur-md border border-slate-850 rounded-xl shadow-2xl overflow-hidden max-h-80 overflow-y-auto text-left z-50">
+            <div className={`absolute top-full left-0 right-0 mt-1.5 bg-slate-900/95 backdrop-blur-md border border-slate-800 rounded-2xl shadow-2xl overflow-hidden text-left z-50 ${combinedSuggestions.length > 0 ? 'max-h-80 overflow-y-auto' : ''}`}>
               {combinedSuggestions.length > 0 ? (
                 <div>
                   <div className="px-3 py-1.5 bg-slate-950/80 border-b border-slate-850 text-[9px] font-bold text-slate-400 font-mono tracking-wider uppercase flex items-center justify-between">
@@ -218,23 +228,147 @@ export const Hero: React.FC<HeroProps> = ({
                   ))}
                 </div>
               ) : (
-                <div className="p-6 text-center space-y-4 bg-slate-900">
-                  <div className="space-y-1">
-                    <p className="text-xs font-bold text-slate-300">No matching areas or societies found.</p>
-                    <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
-                      We're expanding rapidly. Be the first to represent your neighborhood or society and help homeseekers in your area!
-                    </p>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onBecomeExpertClick();
-                    }}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer font-bold shadow-md shadow-amber-400/5"
-                  >
-                    <span>{expertProfile ? 'Go to Resident Dashboard' : 'Become a Local Expert & Earn'}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
+                /* USER QUALIFICATION FLOW FOR MISSING SOCIETY */
+                <div className="p-0.5">
+                  {userRoleChoice === 'none' && (
+                    <div className="p-4 sm:p-5 text-center space-y-4 bg-slate-900 rounded-2xl">
+                      <div className="space-y-0.5">
+                        <h3 className="text-[10px] font-black text-slate-400 font-mono uppercase tracking-wider">
+                          We couldn't find this society yet.
+                        </h3>
+                      </div>
+
+                      {/* Highlighted Card as the absolute visual focus */}
+                      <div className="bg-slate-950/60 border border-slate-800/80 p-4 sm:p-5 rounded-xl shadow-inner max-w-sm mx-auto space-y-3.5">
+                        <h4 className="text-xs sm:text-sm font-extrabold text-white font-sans tracking-tight">
+                          Do you already live in this society?
+                        </h4>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setUserRoleChoice('yes');
+                            }}
+                            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] uppercase tracking-wider py-2 px-3 rounded-lg transition-all cursor-pointer shadow-xs"
+                          >
+                            Yes, I Live Here
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setUserRoleChoice('no');
+                            }}
+                            className="w-full bg-transparent border border-slate-750 hover:bg-slate-800/60 hover:border-slate-600 text-slate-200 font-bold text-[10px] uppercase tracking-wider py-2 px-3 rounded-lg transition-all cursor-pointer"
+                          >
+                            No, I'm Looking to Rent or Buy
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {userRoleChoice === 'yes' && (
+                    <div className="p-4 sm:p-5 text-center space-y-3.5 bg-slate-900 rounded-2xl max-w-sm mx-auto">
+                      <div className="space-y-1">
+                        <h3 className="text-sm font-extrabold text-white tracking-tight">
+                          Be the First Local Expert Here
+                        </h3>
+                        <p className="text-[10px] text-slate-400 leading-normal max-w-xs mx-auto font-medium">
+                          Start earning by helping future buyers and renters make better property decisions by answering questions about everyday life in your area/society.
+                        </p>
+                      </div>
+
+                      <div className="pt-1">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onBecomeExpertClick();
+                          }}
+                          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer shadow-md shadow-amber-400/10 hover:scale-[1.01] active:scale-[0.99]"
+                        >
+                          <span>Become A Local Expert</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      {/* Subtle reassurance row */}
+                      <div className="pt-3 border-t border-slate-800/50 flex flex-col sm:flex-row justify-center items-center gap-1.5 sm:gap-3 text-[8px] text-slate-400 font-bold font-mono">
+                        <div className="flex items-center gap-1">
+                          <span className="text-emerald-400">✓</span> Set availability
+                        </div>
+                        <span className="hidden sm:inline text-slate-750">•</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-emerald-400">✓</span> No commitment
+                        </div>
+                        <span className="hidden sm:inline text-slate-750">•</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-emerald-400">✓</span> Earn per booking
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {userRoleChoice === 'no' && (
+                    <div className="p-4 sm:p-5 text-center space-y-3.5 bg-slate-900 rounded-2xl max-w-sm mx-auto">
+                      <div className="space-y-1">
+                        <h3 className="text-sm font-extrabold text-white tracking-tight">
+                          We'll Notify You When Someone Joins
+                        </h3>
+                        <p className="text-[10px] text-slate-400 leading-normal max-w-xs mx-auto font-medium">
+                          As soon as a resident from this society joins BeforeRegret, you'll be able to book a private 20-minute chat.
+                        </p>
+                      </div>
+
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          if (notifiedEmail.trim()) {
+                            setUserRoleChoice('notified');
+                          }
+                        }}
+                        className="max-w-xs mx-auto pt-1"
+                      >
+                        <div className="flex flex-col sm:flex-row gap-1.5">
+                          <input
+                            type="email"
+                            required
+                            placeholder="Enter your email address"
+                            value={notifiedEmail}
+                            onChange={(e) => setNotifiedEmail(e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex-1 px-3 py-2 bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg text-[11px] text-white placeholder-slate-500 outline-none font-medium font-sans"
+                          />
+                          <button
+                            type="submit"
+                            onClick={(e) => e.stopPropagation()}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] uppercase tracking-wider rounded-lg transition-all cursor-pointer shadow-xs shrink-0"
+                          >
+                            Notify Me
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  )}
+
+                  {userRoleChoice === 'notified' && (
+                    <div className="p-4 sm:p-5 text-center space-y-3 bg-slate-900 rounded-2xl max-w-xs mx-auto">
+                      <div className="w-8 h-8 rounded-full bg-emerald-950/60 border border-emerald-900/30 text-emerald-400 flex items-center justify-center text-sm mx-auto shadow-sm">
+                        ✓
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-xs font-extrabold text-white tracking-tight">
+                          You're on the list!
+                        </h4>
+                        <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
+                          We've saved your request for <span className="text-blue-400 font-bold font-mono">"{searchQuery}"</span>. We will email you at <span className="text-white font-bold font-mono">{notifiedEmail}</span> as soon as a verified resident registers.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
