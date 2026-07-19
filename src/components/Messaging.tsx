@@ -409,7 +409,7 @@ export const Messaging: React.FC<MessagingProps> = ({
               <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-6">
                 <div>
                   <h3 className="font-bold text-slate-900 text-sm sm:text-base">Draft Your Questions</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Please specify exactly what you need verified in {query.localityName}. Minimum 10 characters per box.</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Please specify exactly what you need answered in {query.localityName}. Minimum 10 characters per box.</p>
                 </div>
 
                 <div className="space-y-4">
@@ -552,7 +552,7 @@ export const Messaging: React.FC<MessagingProps> = ({
                       <div className="bg-emerald-50/30 border border-emerald-100 rounded-xl p-4 space-y-2 text-xs">
                         <div className="flex items-center gap-1.5 text-emerald-800 font-black uppercase tracking-wider text-[9px]">
                           <Check className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>Verified Resident Expert Answer:</span>
+                          <span>Resident Expert Answer:</span>
                         </div>
                         <p className="text-slate-700 leading-relaxed font-semibold whitespace-pre-line bg-white/60 p-3 rounded-lg border border-emerald-50">
                           {q.answer}
@@ -611,7 +611,7 @@ export const Messaging: React.FC<MessagingProps> = ({
 
                           <div className="space-y-1.5">
                             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
-                              Your verified response to Question #{idx + 1}:
+                              Your response to Question #{idx + 1}:
                             </label>
                             <textarea
                               rows={4}

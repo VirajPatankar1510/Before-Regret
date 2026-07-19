@@ -883,7 +883,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                     <span className="text-[9px] font-black uppercase text-slate-400 block font-mono">KYC / Payout API State</span>
                     <div className="flex flex-wrap items-center gap-3">
                       <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded ${expertProfile?.kycCompleted ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
-                        KYC: {expertProfile?.kycCompleted ? 'VERIFIED' : 'PENDING'}
+                        KYC: {expertProfile?.kycCompleted ? 'COMPLETED' : 'PENDING'}
                       </span>
                       <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded ${expertProfile?.bankVerified ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
                         BANK: {expertProfile?.bankVerified ? 'LINKED' : 'NOT LINKED'}

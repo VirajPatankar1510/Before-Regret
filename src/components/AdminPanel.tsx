@@ -291,7 +291,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
               <h4 className="font-bold text-slate-800 text-base">Unauthenticated Visitor</h4>
               <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                Acts as a fresh guest visiting the page. Can browse apartments, look at verified resident bios, read reviews, and select consultation pricing packages.
+                Acts as a fresh guest visiting the page. Can browse apartments, look at resident bios, read reviews, and select consultation pricing packages.
               </p>
               <button
                 onClick={() => {
@@ -335,7 +335,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <span className="text-[10px] font-mono font-bold uppercase bg-blue-50 text-blue-700 px-2 py-0.5 rounded">Pre-seeded Expert</span>
                 {activeRole === 'expert' && <span className="text-xs text-blue-600 font-bold flex items-center gap-0.5"><Check className="w-3.5 h-3.5" /> Active Session</span>}
               </div>
-              <h4 className="font-bold text-slate-800 text-base">Priya (Verified Local)</h4>
+              <h4 className="font-bold text-slate-800 text-base">Priya (Local Resident)</h4>
               <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                 Assigned to Amit\'s queries for Bimbisar Nagar. Can access the **Expert Dashboard** to reply to messages, reply to queries, submit answers, and request payouts.
               </p>
@@ -495,7 +495,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <div className="bg-slate-900 rounded-xl p-4 font-mono text-[10px] text-slate-300 space-y-1 select-none">
               <p className="text-slate-500">[{new Date().toLocaleTimeString()}] System booted successfully.</p>
               <p className="text-slate-500">[{new Date().toLocaleTimeString()}] Configured developer password protection: "BR1510"</p>
-              <p className="text-emerald-400">[{new Date().toLocaleTimeString()}] Pre-loaded verified expert catalog: {experts.length} active experts</p>
+              <p className="text-emerald-400">[{new Date().toLocaleTimeString()}] Pre-loaded resident expert catalog: {experts.length} active experts</p>
               <p className="text-blue-400">[{new Date().toLocaleTimeString()}] Active role: "{activeRoleName()}"</p>
               <p className="text-amber-400">[{new Date().toLocaleTimeString()}] Memory order database: {queries.length} listings</p>
             </div>

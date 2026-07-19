@@ -9,6 +9,8 @@ interface HeroProps {
   onSelectLocality: (locality: Neighborhood) => void;
   onBecomeExpertClick: () => void;
   onSearchFocusRef: React.MutableRefObject<HTMLInputElement | null>;
+  highlightSearch?: boolean;
+  onHighlightDone?: () => void;
 }
 
 interface Regret {
@@ -44,6 +46,8 @@ export const Hero: React.FC<HeroProps> = ({
   onSelectLocality,
   onBecomeExpertClick,
   onSearchFocusRef,
+  highlightSearch = false,
+  onHighlightDone,
 }) => {
   const { expertProfile } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
@@ -155,13 +159,19 @@ export const Hero: React.FC<HeroProps> = ({
         </p>
 
         {/* Minimalist Search Container */}
-        <div ref={containerRef} className="mt-8 w-full max-w-xl relative z-40">
-          <div className="bg-white border border-slate-200/80 focus-within:border-blue-500 rounded-xl flex items-center p-1 shadow-xs focus-within:shadow-sm transition-all">
+        <div ref={containerRef} id="hero-search" className="mt-8 w-full max-w-xl relative z-40">
+          <div 
+            className={`bg-white border border-slate-200/80 focus-within:border-blue-500 rounded-xl flex items-center p-1 shadow-xs focus-within:shadow-sm transition-all ${highlightSearch ? 'animate-searchGlow' : ''}`}
+            onAnimationEnd={() => {
+              if (onHighlightDone) onHighlightDone();
+            }}
+          >
             <div className="pl-2.5 text-slate-400">
                <Search className="w-4 h-4" />
             </div>
             <input
               ref={onSearchFocusRef}
+              id="hero-search-input"
               type="text"
               placeholder="Search locality, neighborhood, society or city..."
               value={searchQuery}
@@ -364,7 +374,7 @@ export const Hero: React.FC<HeroProps> = ({
                           You're on the list!
                         </h4>
                         <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
-                          We've saved your request for <span className="text-blue-400 font-bold font-mono">"{searchQuery}"</span>. We will email you at <span className="text-white font-bold font-mono">{notifiedEmail}</span> as soon as a verified resident registers.
+                          We've saved your request for <span className="text-blue-400 font-bold font-mono">"{searchQuery}"</span>. We will email you at <span className="text-white font-bold font-mono">{notifiedEmail}</span> as soon as a resident registers.
                         </p>
                       </div>
                     </div>

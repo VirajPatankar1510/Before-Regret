@@ -81,6 +81,30 @@ export default function App() {
   const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, dashboard, messaging, become_expert, policies
   const [policiesTab, setPoliciesTab] = useState<'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer'>('disclaimer');
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
+  const [highlightSearch, setHighlightSearch] = useState(false);
+
+  const handleScrollToSearch = () => {
+    setView('home'); // Ensure we are on home view
+    
+    // Defer execution slightly to make sure the view is fully home and the DOM is updated
+    setTimeout(() => {
+      const searchBox = document.getElementById('hero-search');
+      const searchInput = document.getElementById('hero-search-input');
+      
+      if (searchBox) {
+        searchBox.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+      
+      if (searchInput) {
+        searchInput.focus();
+      }
+      
+      setHighlightSearch(true);
+    }, 50);
+  };
 
   // Helper to open a specific policy tab
   const handleNavigateToPolicy = (tab: 'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer') => {
@@ -434,7 +458,7 @@ export default function App() {
   // Update page title & meta elements dynamically for premium SEO crawlability
   useEffect(() => {
     try {
-      let title = "BeforeRegret | Verified Resident Insider Consultations for Gated Societies";
+      let title = "BeforeRegret | Resident Insider Consultations for Gated Societies";
       let description = "Read real, anonymous gated society confessions, water issues, power cut histories, and contact long-term residents directly before renting or buying a home in India.";
 
       if (currentView === 'explore') {
@@ -457,12 +481,12 @@ export default function App() {
         title = `Consult ${selectedExpert.fullName} - ${selectedExpert.localityName} Resident Expert`;
         description = `Ask ${selectedExpert.fullName} about water hardness, power back-up, committee rules, and maid charges in ${selectedExpert.localityName} before you decide.`;
       } else if (currentView === 'become_expert') {
-        title = "Earn as a Verified Local Resident Expert | BeforeRegret Onboarding";
+        title = "Earn as a Local Resident Expert | BeforeRegret Onboarding";
         description = "Help prospective buyers and tenants make informed decisions about your society. Share honest reviews and earn per consultation.";
       } else if (currentView === 'policies') {
         if (policiesTab === 'disclaimer') {
           title = "Comprehensive Legal Disclaimer & Waiver of Liability | BeforeRegret";
-          description = "Review the BeforeRegret legal disclaimer and liability waiver covering unverified crowdsourced resident feedback and Indian property laws.";
+          description = "Review the BeforeRegret legal disclaimer and liability waiver covering crowdsourced resident feedback and Indian property laws.";
         } else if (policiesTab === 'terms') {
           title = "Terms of Service & Platform Guidelines | BeforeRegret";
           description = "Read our standard user agreement, code of conduct, intermediary safe harbor conditions, and binding arbitration details.";
@@ -565,7 +589,7 @@ export default function App() {
             "@type": "Person",
             "name": selectedExpert.fullName,
             "description": selectedExpert.bio,
-            "jobTitle": "Verified Gated Society Resident Expert",
+            "jobTitle": "Gated Society Resident Expert",
             "knowsAbout": selectedExpert.expertiseTags,
             "address": {
               "@type": "PostalAddress",
@@ -806,11 +830,13 @@ export default function App() {
               onSelectLocality={handleSelectLocality}
               onBecomeExpertClick={() => setView('become_expert')}
               onSearchFocusRef={searchInputRef}
+              highlightSearch={highlightSearch}
+              onHighlightDone={() => setHighlightSearch(false)}
             />
             
             <HowItWorks />
 
-            <DecisionJourneySections setView={setView} />
+            <DecisionJourneySections setView={setView} onScrollToSearch={handleScrollToSearch} />
 
             {/* TEASER BANNER: THE REGRET FILES EDITORIAL HUB */}
             <div className="bg-slate-50 border-y border-slate-100 py-12">
@@ -858,7 +884,7 @@ export default function App() {
                   Residential Apartments Directory
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-2xl font-medium">
-                  Browse Indian housing societies, apartment complexes, or sectors below. Click any layout to filter and consult verified long-term residents living there.
+                  Browse Indian housing societies, apartment complexes, or sectors below. Click any layout to filter and consult active long-term residents living there.
                 </p>
               </div>
               {selectedLocality && (
@@ -908,7 +934,7 @@ export default function App() {
                 <div className="w-full lg:w-96 p-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 shadow-3xs flex flex-col justify-between shrink-0">
                   <div>
                     <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[9px] font-mono font-bold uppercase bg-blue-50 text-blue-700 border border-blue-100 mb-2">
-                      📍 Verified Pincode Mapping
+                      📍 Pincode Mapping
                     </span>
                     <h4 className="text-xs font-bold text-slate-800 flex items-center justify-between">
                       <span>Pincode Map Range</span>
@@ -926,7 +952,7 @@ export default function App() {
                     )}
                   </div>
                   <div className="text-[10px] text-slate-400 italic pt-2 border-t border-slate-100 mt-2">
-                    Verified address coordinates mapping complete.
+                    Address coordinates mapping complete.
                   </div>
                 </div>
               </div>

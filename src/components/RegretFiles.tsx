@@ -347,7 +347,7 @@ export const RegretFiles: React.FC<RegretFilesProps> = ({
           <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
             Real estate portals hide negative factors to keep brokers happy. 
             We publish unvarnished, anonymous confessions and cautionary tales 
-            directly from verified residents. Read before you buy.
+            directly from local residents. Read before you buy.
           </p>
         </div>
       </div>
@@ -605,7 +605,7 @@ export const RegretFiles: React.FC<RegretFilesProps> = ({
                 Uncover the Real Truth of Gated Societies.
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                Don't rely on brochures or sales pitches. Talk directly to verified residents of any society in India to check water quality, sound insulation, and maintenance realities before you rent or buy.
+                Don't rely on brochures or sales pitches. Talk directly to resident experts of any society in India to check water quality, sound insulation, and maintenance realities before you rent or buy.
               </p>
             </div>
 
@@ -618,7 +618,7 @@ export const RegretFiles: React.FC<RegretFilesProps> = ({
             </button>
 
             <div className="pt-4 border-t border-slate-800/80 text-[10px] text-slate-500 font-mono text-center relative z-10 flex items-center justify-center gap-4">
-              <span>✓ 100% Verified Residents</span>
+              <span>✓ Active Gated Society Residents</span>
               <span>•</span>
               <span>✓ Anonymous & Direct</span>
             </div>
