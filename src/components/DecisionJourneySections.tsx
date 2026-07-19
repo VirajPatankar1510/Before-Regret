@@ -40,14 +40,17 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
     <div className="bg-white text-slate-950 font-sans antialiased">
       
       {/* SEPARATED INTRO SECTION */}
-      <section className="py-16 bg-white border-b border-slate-100">
+      <section className="py-16 bg-amber-50/40 border-b border-amber-200/40">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto">
             <h2 className="text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">
-              <span className="text-slate-500 font-semibold block">The property visit shows you the apartment.</span>
+              <span className="text-slate-500 font-semibold block" style={{ fontSize: '15px' }}>The property visit shows you the apartment.</span>
               <span className="text-blue-600 block mt-1">The resident tells you what living there is actually like.</span>
             </h2>
-            <p className="text-sm text-slate-500 font-semibold leading-relaxed mt-4">
+            <p 
+              className="text-slate-500 mt-4"
+              style={{ textAlign: 'left', fontSize: '13px', lineHeight: '20.75px', fontFamily: 'Verdana, sans-serif', fontWeight: 'normal' }}
+            >
               Before you pay a deposit or sign an agreement, speak with someone who already lives in the same building or society. Ask about water, parking, noise, internet reliability, neighbours, maintenance, safety, and everything else a 15-minute property visit cannot reveal.
             </p>
           </div>
@@ -55,13 +58,25 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
       </section>
 
       {/* SECTION FOR PROPERTY LISTINGS VS RESIDENTS */}
-      <section className="py-20 bg-[#f1f5f6] border-2 border-[#bbbbbb] rounded-[3px]">
+      <section 
+        className="bg-[#f1f5f6] border-2 border-[#bbbbbb] rounded-[3px]"
+        style={{ paddingTop: '20px', paddingBottom: '20px' }}
+      >
         <div className="max-w-5xl mx-auto px-6">
           {/* PART 1: THE TRITICAL ASYMMETRY (Listing vs. Living) */}
           <div className="space-y-12">
             <div className="text-center max-w-2xl mx-auto">
-              <p className="text-xs sm:text-sm text-slate-600 font-semibold leading-relaxed mt-4">
-                Property listings are designed to help you discover homes. Residents help you understand what daily life is actually like after you move in. Both are useful—but they answer very different questions.
+              <p 
+                className="text-slate-600 mt-4"
+                style={{ fontWeight: 'bold', fontFamily: 'Inter, sans-serif', fontSize: '16px', textAlign: 'center', fontStyle: 'normal', lineHeight: '19.5px' }}
+              >
+                Property listings are designed to help you discover homes.
+              </p>
+              <p 
+                className="text-slate-600 mt-2"
+                style={{ fontWeight: 'normal', fontFamily: 'Inter, sans-serif', fontSize: '14px', textAlign: 'left', fontStyle: 'normal', lineHeight: '19.5px' }}
+              >
+                Residents help you understand what daily life is actually like after you move in. Both are useful—but they answer very different questions.
               </p>
             </div>
 
@@ -129,11 +144,20 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
         <div className="max-w-5xl mx-auto px-6 space-y-24">
           
           {/* PART 2: THE COST OF REGRET */}
-          <div className="pt-8 border-t border-slate-200/60 max-w-3xl">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-50 border border-amber-100/60 px-3 py-1 rounded-full font-mono">
+          <div 
+            className="p-8 sm:p-10 bg-blue-50/40 border border-blue-100 rounded-3xl max-w-3xl shadow-sm"
+            style={{ paddingLeft: '12px', paddingRight: '1px' }}
+          >
+            <span 
+              className="text-[10px] font-bold uppercase tracking-widest border border-amber-100/60 px-3 py-1 rounded-full font-mono"
+              style={{ backgroundColor: '#ffff68', color: '#000000' }}
+            >
               One Wrong Property Decision Can Stay With You For Years.
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight mt-6">
+            <h2 
+              className="font-black text-slate-900 tracking-tight leading-tight mt-6"
+              style={{ fontSize: '18px', width: '290px' }}
+            >
               Real estate has no return policy. <br />Once you sign, you are locked in.
             </h2>
             <div className="text-sm text-slate-600 font-semibold leading-relaxed space-y-4 mt-6">
@@ -321,7 +345,7 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
               </p>
             </div>
 
-            <div className="border-t border-slate-200/60 pt-6 space-y-3">
+            <div className="bg-amber-50/40 border border-amber-200/60 rounded-2xl p-6 shadow-xs space-y-3">
               <h3 className="font-bold text-slate-900 text-lg">Before You Spend Lakhs, Spend 20 Minutes.</h3>
               <div className="text-sm text-slate-600 font-medium space-y-3">
                 <p>
@@ -340,14 +364,11 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
           {/* PART 4: WHAT RESIDENTS CAN AND CAN'T HELP YOU WITH */}
           <div className="space-y-12 pt-8 border-t border-slate-200/60">
             <div className="space-y-4 max-w-3xl">
-              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+              <h2 className="font-black text-slate-900 tracking-tight leading-tight" style={{ fontSize: '20px' }}>
                 What Residents Can — And Can't — Help You With
               </h2>
               <p className="text-sm sm:text-base text-slate-600 font-semibold leading-relaxed">
                 Residents share firsthand experience from living in the building or society. Their insights come from everyday life—not property listings, brochures, or a one-time site visit.
-              </p>
-              <p className="text-xs sm:text-sm text-slate-500 font-semibold leading-relaxed">
-                This section should clearly explain the scope of a resident consultation and build trust by setting realistic expectations.
               </p>
             </div>
 
@@ -355,7 +376,6 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
               {/* CAN section */}
               <div className="space-y-6">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg sm:text-xl">✅</span>
                   <h3 className="text-lg sm:text-xl font-bold text-slate-900">What Residents CAN Help You Understand</h3>
                 </div>
                 
@@ -390,7 +410,6 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
               {/* CANNOT section */}
               <div className="space-y-6 pt-6 border-t border-slate-200/60">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg sm:text-xl">❌</span>
                   <h3 className="text-lg sm:text-xl font-bold text-slate-900">What Residents CANNOT Help You With</h3>
                 </div>
 
@@ -421,7 +440,7 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
           <div className="max-w-4xl mx-auto pt-16 border-t border-slate-200/60">
             <div className="bg-slate-50 text-slate-900 rounded-3xl p-10 sm:p-14 text-center space-y-8 shadow-xs border border-slate-200/80 relative overflow-hidden">
               <div className="space-y-3 relative z-10">
-                <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">
+                <h3 className="font-extrabold tracking-tight text-slate-900 leading-tight" style={{ fontSize: '25px' }}>
                   Ready To Make A Smarter Property Decision?
                 </h3>
                 <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed max-w-2xl mx-auto pt-1">
