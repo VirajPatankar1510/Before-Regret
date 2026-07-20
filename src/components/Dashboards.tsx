@@ -180,7 +180,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
 
       const data = await response.json();
       if (response.ok && data.success) {
-        setPayoutSetupSuccess('Payout setup updated successfully! Razorpay Route linked account configured.');
+        setPayoutSetupSuccess('Payout setup updated successfully! Route linked account configured.');
         setExpertProfile(data.expert);
         if (onUpdateExpert) {
           onUpdateExpert(data.expert);
@@ -241,7 +241,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
         alert('Booking marked complete and payout successfully dispatched!');
         window.location.reload();
       } else {
-        alert(`Payout Failed: ${data.error || 'Check your Razorpay Route linked account verification status.'}`);
+        alert(`Payout Failed: ${data.error || 'Check your Route linked account verification status.'}`);
         window.location.reload();
       }
     } catch (err: any) {
@@ -613,7 +613,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                         <div className="space-y-1 text-left">
                           <span className="text-[10px] font-mono font-black text-slate-400 uppercase">INV-BR-{q.id.toUpperCase()}</span>
                           <h4 className="font-bold text-slate-900 text-sm">Consultation - {q.localityName}</h4>
-                          <p className="text-[10px] text-slate-400 font-semibold">Date: {new Date(q.createdAt).toLocaleDateString()} • Method: Razorpay UPI Secure</p>
+                          <p className="text-[10px] text-slate-400 font-semibold">Date: {new Date(q.createdAt).toLocaleDateString()} • Method: UPI Secure</p>
                         </div>
                         <div className="flex items-center gap-4 justify-between sm:justify-end">
                           <div className="text-right">
@@ -731,7 +731,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                       <div className="flex flex-wrap justify-between items-center gap-4 pt-2 border-t border-slate-100">
                         <div className="space-y-0.5">
                           <span className="text-xs text-slate-400 block font-medium">Earnings on Completion: <strong className="font-mono text-emerald-600">Rs. {q.expertEarnings}</strong></span>
-                          <span className="text-[10px] text-slate-400">Escrow Protected Fund (Razorpay Route Hold)</span>
+                          <span className="text-[10px] text-slate-400">Escrow Protected Fund (Route Hold)</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <button
@@ -874,8 +874,8 @@ export const Dashboards: React.FC<DashboardsProps> = ({
               {/* Razorpay Route Linked Banking Accounts */}
               <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-6">
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900 font-mono uppercase tracking-wider">Razorpay Route Linked Account Setup</h3>
-                  <p className="text-xs text-slate-400 mt-1">Configure your official commercial payout route using unified Razorpay credentials for gated society advisory work.</p>
+                  <h3 className="font-bold text-sm text-slate-900 font-mono uppercase tracking-wider">Route Linked Account Setup</h3>
+                  <p className="text-xs text-slate-400 mt-1">Configure your official commercial payout route using unified credentials for gated society advisory work.</p>
                 </div>
 
                 <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl flex flex-wrap gap-4 items-center justify-between">

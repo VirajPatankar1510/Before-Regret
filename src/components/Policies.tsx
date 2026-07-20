@@ -43,7 +43,7 @@ export const Policies: React.FC<PoliciesProps> = ({ initialTab = 'terms', onBack
         </h1>
         <p className="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
           Official guidelines, payment policies, terms of service, and comprehensive liability disclosures for 
-          <strong> Before Regret</strong>, an unregistered brand operated by <strong>Atmostellar</strong>.
+          <strong> Before Regret</strong> operated by <strong>Atmostellar</strong>.
         </p>
       </div>
 
@@ -161,7 +161,7 @@ export const Policies: React.FC<PoliciesProps> = ({ initialTab = 'terms', onBack
                   Payments made through BeforeRegret are processed using secure third-party payment providers.
                 </p>
                 <p className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 leading-relaxed">
-                  Payments made through BeforeRegret are securely processed via secured third-party payment gateways (e.g., Razorpay). The Company acts strictly as a facilitating marketplace engine. Funds are split programmatically between the platform and the Local Expert only upon successful delivery of the service. Automated reversals or cancellations due to non-response by a Local Expert within the designated platform window are subject to standard banking and gateway settlement timelines. We hold no liability for minor gateway processing latencies.
+                  Payments made through BeforeRegret are securely processed via secured third-party payment gateways. The Company acts strictly as a facilitating marketplace engine. Funds are split programmatically between the platform and the Local Expert only upon successful delivery of the service. Automated reversals or cancellations due to non-response by a Local Expert within the designated platform window are subject to standard banking and gateway settlement timelines. We hold no liability for minor gateway processing latencies.
                 </p>
                 <p>
                   Refunds, cancellations and payment disputes are governed by our Refund & Cancellation Policy.
@@ -297,12 +297,12 @@ export const Policies: React.FC<PoliciesProps> = ({ initialTab = 'terms', onBack
 
               <div className="prose prose-slate max-w-none text-xs sm:text-sm text-slate-600 leading-relaxed space-y-4">
                 <p>
-                  At <strong>Atmostellar</strong> (owner of the unregistered brand <strong>Before Regret</strong>), we value your privacy. This policy documents how we collect, store, and utilize user information for seamless platform delivery.
+                  At <strong>Atmostellar</strong> (owner of <strong>Before Regret</strong>), we value your privacy. This policy documents how we collect, store, and utilize user information for seamless platform delivery.
                 </p>
 
                 <h3 className="font-bold text-slate-900 mt-4 text-sm uppercase">1. Information We Collect</h3>
                 <p>
-                  We collect names, email addresses, phone numbers, self-declared locality details (for resident verification), and custom questions submitted through our forms. All financial transactions are directly processed via secure, PCI-DSS compliant servers of our payment gateway, Razorpay. We do not store or see your credit card or bank credentials on our servers.
+                  We collect names, email addresses, phone numbers, self-declared locality details (for resident verification), and custom questions submitted through our forms. All financial transactions are directly processed via secure, PCI-DSS compliant servers of our payment gateway. We do not store or see your credit card or bank credentials on our servers.
                 </p>
 
                 <h3 className="font-bold text-slate-900 mt-4 text-sm uppercase">2. Use of Information</h3>
@@ -339,7 +339,7 @@ export const Policies: React.FC<PoliciesProps> = ({ initialTab = 'terms', onBack
 
               <div className="prose prose-slate max-w-none text-xs sm:text-sm text-slate-600 leading-relaxed space-y-4">
                 <div className="p-4 bg-indigo-50/50 border border-indigo-200/50 rounded-2xl text-indigo-900 text-xs font-semibold leading-relaxed">
-                  <strong>Razorpay Compliant Refund Policy:</strong> At Atmostellar, we maintain an absolute consumer-first refund program. Seekers are guaranteed full financial security for their consultancy bookings.
+                  <strong>Refund Policy:</strong> At Atmostellar, we maintain an absolute consumer-first refund program. Seekers are guaranteed full financial security for their consultancy bookings.
                 </div>
 
                 <h3 className="font-bold text-slate-900 mt-4 text-sm uppercase">1. Auto-Refund for Inactivity</h3>
@@ -389,7 +389,7 @@ export const Policies: React.FC<PoliciesProps> = ({ initialTab = 'terms', onBack
 
                 <h3 className="font-bold text-slate-900 mt-4 text-sm uppercase">1. How Services are Delivered</h3>
                 <p>
-                  Upon successful payment via the Razorpay gateway, your direct consult query is published instantly onto the designated Local Expert's dashboard. All interactions, answers, and documents are shared securely inside our web-based chat room or private dashboard view.
+                  Upon successful payment, your direct consult query is published instantly onto the designated Local Expert's dashboard. All interactions, answers, and documents are shared securely inside our web-based chat room or private dashboard view.
                 </p>
 
                 <h3 className="font-bold text-slate-900 mt-4 text-sm uppercase">2. Timelines</h3>
@@ -436,7 +436,7 @@ export const Policies: React.FC<PoliciesProps> = ({ initialTab = 'terms', onBack
                       </div>
                       <div>
                         <div className="font-bold text-slate-800">Brand Designation</div>
-                        <div className="text-slate-500 mt-0.5">Before Regret (Unregistered Brand)</div>
+                        <div className="text-slate-500 mt-0.5">Before Regret</div>
                       </div>
                     </div>
 
@@ -459,9 +459,9 @@ export const Policies: React.FC<PoliciesProps> = ({ initialTab = 'terms', onBack
                       <div>
                         <div className="font-bold text-slate-800">Registered Mailing Address</div>
                         <div className="text-slate-500 mt-0.5 leading-relaxed">
-                          Atmostellar Headquarters,<br />
+                          Atmostellar,<br />
                           Mumbai, Maharashtra,<br />
-                          PIN 400063, India.
+                          PIN 401203, India.
                         </div>
                       </div>
                     </div>
@@ -471,13 +471,13 @@ export const Policies: React.FC<PoliciesProps> = ({ initialTab = 'terms', onBack
                 <div className="p-6 bg-slate-50 border border-slate-100 rounded-3xl space-y-4">
                   <h3 className="font-bold text-slate-900 text-sm">Need Help with a Paid Booking?</h3>
                   <p className="text-[11px] text-slate-500 leading-relaxed">
-                    If you are writing regarding an active transaction, please ensure your email includes the following details so we can trace your billing on Razorpay:
+                    If you are writing regarding an active transaction, please ensure your email includes the following details so we can trace your billing:
                   </p>
                   <ul className="space-y-1 text-[11px] text-slate-600 font-medium">
                     <li>• Seeker Name & Email Address</li>
                     <li>• Date of transaction</li>
                     <li>• Booking ID or Seeker/Expert Name</li>
-                    <li>• Razorpay Payment ID (e.g., pay_xxxxx)</li>
+                    <li>• Payment ID (e.g., pay_xxxxx)</li>
                   </ul>
                   <div className="pt-2 text-[10px] text-amber-600 font-medium bg-amber-50 rounded-xl p-3 border border-amber-100/50 leading-relaxed">
                     Please do not share your bank credentials, PIN numbers, or card CVVs in your email communications. Atmostellar will never ask for password variables.
