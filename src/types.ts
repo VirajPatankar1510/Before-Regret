@@ -55,9 +55,9 @@ export interface ExpertProfile {
   bankAccountNumber?: string;
   isLiveChatAvailable?: boolean;
 
-  // Razorpay Route Marketplace fields
-  razorpay_account_id?: string | null;
-  razorpay_account_status?: string | null;
+  // Secure Route Marketplace fields
+  payout_account_id?: string | null;
+  payout_account_status?: string | null;
   kyc_completed?: boolean;
   bank_verified?: boolean;
   payouts_enabled?: boolean;
@@ -105,8 +105,8 @@ export interface DirectQuery {
   createdAt: string;
   answeredAt?: string;
   answerText?: string;
-  razorpayOrderId?: string;
-  razorpayPaymentId?: string;
+  orderId?: string;
+  paymentId?: string;
   payoutTransferId?: string;
   payoutErrorMessage?: string;
   payoutTimestamp?: string;

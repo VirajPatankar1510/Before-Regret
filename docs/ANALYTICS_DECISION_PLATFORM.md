@@ -154,7 +154,7 @@ Every step of the marketplace funnel is tracked to isolate and resolve drop-off 
 ```
 
 ### Funnel Drop-off Auditing
-- **Checkout to Payment Drop-offs:** Automatically flags instances where a user clicks "Ask Question" but does not complete the Razorpay transaction. This triggers an automated abandonment SMS or WhatsApp reminder 30 minutes later.
+- **Checkout to Payment Drop-offs:** Automatically flags instances where a user clicks "Ask Question" but does not complete the Secure Payment Gateway transaction. This triggers an automated abandonment SMS or WhatsApp reminder 30 minutes later.
 - **Expert Acceptance to Delivery:** Monitors how quickly accepted questions are delivered. If drop-offs occur during drafting, the system suggests answer templates to help experts complete their responses.
 
 ---
@@ -199,7 +199,7 @@ Where:
 
 The financial operating system provides clear, audit-compliant records of all cash flows, commissions, and tax allocations.
 
-- **Platform Margin Tracking:** Logs platform net revenues after gateway fees (2% Razorpay fee), platform commissions (20%), and expert payouts (80%).
+- **Platform Margin Tracking:** Logs platform net revenues after gateway fees (2% Secure Payment Gateway fee), platform commissions (20%), and expert payouts (80%).
 - **GST Allocation Audit Logs:** Tracks GST collections (18% GST charged on our platform commission slice) to simplify quarterly financial filings.
 - **Reserve & Escrow Balances:** Tracks funds currently held in escrow (queries that are answered but are within the 48-hour buyer review window) to maintain platform financial stability.
 

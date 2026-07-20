@@ -11,7 +11,7 @@
 The buyer's journey is engineered to guide users from initial discovery to successful relocation with absolute clarity, using secure, escrow-protected milestones.
 
 ```
- [Landing / Search] ➔ [View Expert Cards] ➔ [Select Package] ➔ [Razorpay Payment]
+ [Landing / Search] ➔ [View Expert Cards] ➔ [Select Package] ➔ [Secure Payment Gateway Payment]
                                                                         │
                                                                         ▼
  [Approved / Reviewed] <── [Answer Delivered] <── [Expert Responds] <── [Escrow Hold]
@@ -30,7 +30,7 @@ The buyer's journey is engineered to guide users from initial discovery to succe
 
 #### 3. Checkout & Secure Payment
 - **Action:** The buyer clicks "Ask Question" on their chosen expert's profile, drafts their query, selects a packaging tier, and initiates checkout.
-- **System Response:** The system opens a PCI-compliant Razorpay payment interface. Upon card/UPI validation, the system holds the payment in a secure, interest-free escrow account and notifies the expert via WhatsApp, SMS, and email.
+- **System Response:** The system opens a PCI-compliant Secure Payment Gateway payment interface. Upon card/UPI validation, the system holds the payment in a secure, interest-free escrow account and notifies the expert via WhatsApp, SMS, and email.
 
 #### 4. Response & Escrow Settlement
 - **Action:** The expert accepts the query, types a detailed response, attaches verified local photos, and submits the answer.
@@ -68,7 +68,7 @@ The resident expert's journey is designed to make registration simple, verify id
 
 #### 4. Wallet Management & Withdrawals
 - **Action:** Once an answer is approved, cleared earnings are deposited into the expert's secure wallet. The expert requests a withdrawal to their registered UPI ID or bank routing account.
-- **System Response:** The payment system checks that the withdrawal target name matches the expert's verified PAN details, processes the transfer via Razorpay Payouts, and sends a transaction summary PDF via email.
+- **System Response:** The payment system checks that the withdrawal target name matches the expert's verified PAN details, processes the transfer via Secure Payment Gateway Payouts, and sends a transaction summary PDF via email.
 
 ---
 
@@ -112,7 +112,7 @@ Every financial interaction is designed to ensure complete transaction integrity
                   [Initiate Transaction Checkout]
                                  │
                                  ▼
-                     [Razorpay Payment API]
+                     [Secure Payment Gateway Payment API]
                                  │
          ┌───────────────────────┴───────────────────────┐
          ▼                                               ▼
@@ -125,9 +125,9 @@ Every financial interaction is designed to ensure complete transaction integrity
 ### Financial Workflows & Resilience Matrix
 
 #### 1. Standard Payment Success
-- **Expected Behavior:** The buyer completes the Razorpay checkout. Razorpay's servers dispatch a signed, cryptographically verified webhook event. The backend validates the signature, creates a pending escrow transaction record, moves the query status to `Assigned`, and updates the buyer's payment status to `Paid`.
+- **Expected Behavior:** The buyer completes the Secure Payment Gateway checkout. Secure Payment Gateway's servers dispatch a signed, cryptographically verified webhook event. The backend validates the signature, creates a pending escrow transaction record, moves the query status to `Assigned`, and updates the buyer's payment status to `Paid`.
 
-#### 2. Razorpay Gateway Failure
+#### 2. Secure Payment Gateway Gateway Failure
 - **Expected Behavior:** The user's credit card or bank rejects the charge.
 - **Recovery Path:** The payment modal captures the exact error code (e.g., `BAD_SIGNATURE`, `INSUFFICIENT_FUNDS`), displays a helpful error message to the user, and re-opens the checkout screen with alternative payment methods. The question draft remains safely saved in the user's session.
 
@@ -137,7 +137,7 @@ Every financial interaction is designed to ensure complete transaction integrity
 
 #### 4. Payment Confirmed but Order Creation Fails
 - **Expected Behavior:** A payment is charged successfully by the gateway, but a database timeout prevents the platform from creating the corresponding query order.
-- **Recovery Path:** The system runs an automated reconciliation job every 10 minutes. This job matches completed Razorpay transactions against our database orders. Any unmatched successful payments are flagged, creating the query order automatically and notifying the operations team.
+- **Recovery Path:** The system runs an automated reconciliation job every 10 minutes. This job matches completed Secure Payment Gateway transactions against our database orders. Any unmatched successful payments are flagged, creating the query order automatically and notifying the operations team.
 
 ---
 
@@ -264,7 +264,7 @@ This matrix defines exact system behaviors and recovery procedures for rare, une
 | **EXC-02** | **Expert requests a temporary holiday break** | Toggles expert status to `Inactive`. | Hides the expert's profile from search results, pauses new question assignments, but keeps active chat boards open for completing outstanding answers. | Ops Lead |
 | **EXC-03** | **Expert account is suspended with active orders pending** | Suspends the expert's wallet and terminates active sessions. | Automatically cancels pending questions, issues full refunds to buyers, and displays a supportive notification: *“We apologize, but this expert is currently unavailable. Your payment has been fully refunded.”* | Trust Lead |
 | **EXC-04** | **Buyer deletes account with active escrow balances pending** | Blocks the deactivation request and flags a dashboard error. | Informs the user that account deletion is paused until active questions are completed and pending escrow balances are released. | UX Architect |
-| **EXC-05** | **Webhook delivery delay from Razorpay** | Holds transaction status as `pending_payment` for up to 30 minutes. | A background job checks with Razorpay's API to confirm payment status, updating the order and notifying the expert once validated. | SRE Lead |
+| **EXC-05** | **Webhook delivery delay from Secure Payment Gateway** | Holds transaction status as `pending_payment` for up to 30 minutes. | A background job checks with Secure Payment Gateway's API to confirm payment status, updating the order and notifying the expert once validated. | SRE Lead |
 
 ---
 
@@ -390,7 +390,7 @@ Each key platform feature is defined by clear, measurable success and failure bo
 The final pre-flight operational checks that must be approved before deploying BeforeRegret live:
 
 - **Directory Indexes:** Ensure that all programmatic SEO templates, state directories, and society landing pages are fully configured and indexable by search engine crawlers.
-- **Escrow Integrity:** Verify that Razorpay webhook signature handshakes are authenticated successfully and log records write cleanly to financial ledgers.
+- **Escrow Integrity:** Verify that Secure Payment Gateway webhook signature handshakes are authenticated successfully and log records write cleanly to financial ledgers.
 - **KYC Pipeline Security:** Confirm that private file storage buckets are fully secured, and OCR redaction scripts run successfully on uploaded documents.
 - **Operations & Support:** Verify that L2 moderation panels are active, and support teams are trained on dispute guidelines and turnaround SLAs.
 - **System Backups:** Verify that hourly automated database snapshots are active, encrypted, and restore successfully to a staging database cluster.

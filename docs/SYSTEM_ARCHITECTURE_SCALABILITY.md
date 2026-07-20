@@ -54,7 +54,7 @@ To achieve extreme reliability and low operational costs at launch while securin
 
 #### 1. Frontend Client
 - A lightweight, responsive web experience using React and Tailwind CSS.
-- Handles search, geolocation capturing, client-side caching, localized landing page rendering, and Razorpay payment UI elements.
+- Handles search, geolocation capturing, client-side caching, localized landing page rendering, and Secure Payment Gateway payment UI elements.
 
 #### 2. CDN & Edge Layer (Cloudflare)
 - Terminates TLS, runs the Web Application Firewall (WAF), performs DDoS protection, and caches programmatic SEO pages and static media assets at the edge.
@@ -401,7 +401,7 @@ We ensure full system visibility by implementing continuous monitoring and alert
 - **Real-Time System Dashboards:** We monitor system health through continuous status panels:
   - **Compute Health:** Track CPU use, memory footprint, and network latency.
   - **Database Metrics:** Monitor active connection pool sizes and slow transaction queries.
-  - **Operational Metrics:** Track Razorpay payment success rates, message delivery velocity, and background worker queues.
+  - **Operational Metrics:** Track Secure Payment Gateway payment success rates, message delivery velocity, and background worker queues.
 - **Incident Escalation Pipelines:** Major system errors trigger high-priority alerts to on-call engineering teams via automated integration tools (such as PagerDuty or Slack).
 
 ---
@@ -495,5 +495,5 @@ Our technical architecture is category-agnostic, enabling BeforeRegret to scale 
 ```
 
 - **Database Abstraction:** Core transactional tables treat localized concepts as generic elements. A "Society Name" in our neighborhood vertical is modeled as a polymorphic `TargetEntity` in the database, allowing it to seamlessly represent a "Car VIN" in our used cars category or a "Company Name" in our jobs vertical.
-- **Reusable Core Micro-Services:** Payments (Razorpay), Escrow Accounting, KYC Ingestion, Messaging, and Identity Management are designed as reusable, horizontal service modules, eliminating duplicate code and accelerating multi-vertical launches.
+- **Reusable Core Micro-Services:** Payments (Secure Payment Gateway), Escrow Accounting, KYC Ingestion, Messaging, and Identity Management are designed as reusable, horizontal service modules, eliminating duplicate code and accelerating multi-vertical launches.
 - **Standardized Performance Reporting:** Core performance indicators (such as Autocomplete Latency, Checkout Speed, and API Response Times) are measured consistently across all verticals, providing founders with a unified view of platform health.

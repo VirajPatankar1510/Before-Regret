@@ -103,9 +103,9 @@ We apply strong encryption standards and data protection protocols to ensure tha
 
 Because BeforeRegret processes financial transactions across thousands of micro-payments daily, payment flows are heavily secured against fraud and technical glitches.
 
-### Razorpay Security Implementations
-- **Strict Webhook Authentication:** The platform validates incoming payment webhook notifications using cryptographic signatures. This ensures that payment confirmations originate exclusively from verified Razorpay servers, preventing fraudulent account updates.
-- **Direct-Token Tokenization:** BeforeRegret does not store, process, or transmit raw credit card credentials, UPI codes, or net banking passwords. Payment flows are handled via Razorpay’s PCI-DSS compliant iframe solutions.
+### Secure Payment Gateway Security Implementations
+- **Strict Webhook Authentication:** The platform validates incoming payment webhook notifications using cryptographic signatures. This ensures that payment confirmations originate exclusively from verified Secure Payment Gateway servers, preventing fraudulent account updates.
+- **Direct-Token Tokenization:** BeforeRegret does not store, process, or transmit raw credit card credentials, UPI codes, or net banking passwords. Payment flows are handled via Secure Payment Gateway’s PCI-DSS compliant iframe solutions.
 - **Multi-layered Escrow Safekeeping:** Funds are held in isolated, interest-free escrow accounts. Released balances are processed dynamically only when:
   1. The buyer explicitly clicks "Approve Answer."
   2. The 48-hour auto-approval window closes without open disputes.

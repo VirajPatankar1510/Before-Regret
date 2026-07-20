@@ -317,7 +317,7 @@ Provides an easy, secure login process that minimizes onboarding friction for bo
 A central help center designed to resolve customer issues quickly, manage disputes, and maintain platform trust.
 
 - **Dynamic Help Base:** A searchable directory of guides, common billing FAQs, and user guidelines.
-- **Integrated Ticket Submission:** A simple contact form allowing users to submit support tickets, with automated category routing (e.g., *“Razorpay payment stuck”* is routed directly to finance queues).
+- **Integrated Ticket Submission:** A simple contact form allowing users to submit support tickets, with automated category routing (e.g., *“Secure Payment Gateway payment stuck”* is routed directly to finance queues).
 - **Dispute Escalation Form:** Allows buyers to pause escrow payouts and file a formal dispute, requiring them to submit details on how the expert's answer failed to meet agreed quality standards.
 
 ---
@@ -376,7 +376,7 @@ Our feature set is prioritized into core operational launch layers, advanced exp
 
 ### Core Launch Features (Phase 1)
 - **Fuzzy Location Search:** typo-tolerant searches across cities, pincodes, and societies using database trigram lookups.
-- **Escrow Accounting Engine:** Integrates with Razorpay to accept payments, hold funds in escrow, and automate payouts once queries are approved.
+- **Escrow Accounting Engine:** Integrates with Secure Payment Gateway to accept payments, hold funds in escrow, and automate payouts once queries are approved.
 - **Asynchronous Q&A Boards:** Simple messaging boards allowing buyers to ask questions, and matched experts to deliver answers and attachments.
 - **Aadhaar Identity OCR Checks:** Seamless identity validation using automated OCR on Aadhaar uploads.
 

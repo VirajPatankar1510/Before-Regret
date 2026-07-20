@@ -18,7 +18,9 @@ import {
   ArrowLeft,
   ChevronRight,
   ShieldCheck,
-  Building
+  Building,
+  Activity,
+  RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ResidentAvatar } from './ResidentAvatar';
@@ -180,7 +182,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
 
       const data = await response.json();
       if (response.ok && data.success) {
-        setPayoutSetupSuccess('Payout setup updated successfully! Route linked account configured.');
+        setPayoutSetupSuccess('Payout setup updated successfully! Secure banking account configured.');
         setExpertProfile(data.expert);
         if (onUpdateExpert) {
           onUpdateExpert(data.expert);
@@ -241,7 +243,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
         alert('Booking marked complete and payout successfully dispatched!');
         window.location.reload();
       } else {
-        alert(`Payout Failed: ${data.error || 'Check your Route linked account verification status.'}`);
+        alert(`Payout Failed: ${data.error || 'Check your secure banking account verification status.'}`);
         window.location.reload();
       }
     } catch (err: any) {
@@ -459,6 +461,22 @@ export const Dashboards: React.FC<DashboardsProps> = ({
               </button>
             </>
           )}
+
+          {/* Universal Admin Console Button */}
+          <div className="pt-4 pb-2 border-t border-slate-200/60 mt-3 px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
+            Platform Operator
+          </div>
+          <button
+            onClick={() => setActiveTab('admin_console')}
+            className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer ${
+              activeTab === 'admin_console'
+                ? 'bg-purple-600 text-white shadow-xs'
+                : 'hover:bg-slate-200/50 text-slate-600'
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4 text-purple-500" />
+            <span>Admin Control Panel</span>
+          </button>
         </div>
 
         {/* Right Hand Workspace Viewport */}
@@ -871,10 +889,10 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                 </form>
               </div>
 
-              {/* Razorpay Route Linked Banking Accounts */}
+              {/* Secure Banking Accounts */}
               <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-6">
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900 font-mono uppercase tracking-wider">Route Linked Account Setup</h3>
+                  <h3 className="font-bold text-sm text-slate-900 font-mono uppercase tracking-wider">Banking Account Setup</h3>
                   <p className="text-xs text-slate-400 mt-1">Configure your official commercial payout route using unified credentials for gated society advisory work.</p>
                 </div>
 
@@ -955,7 +973,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                     disabled={submittingPayout}
                     className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer transition-all"
                   >
-                    {submittingPayout ? 'Configuring Route Linked Accounts...' : 'Save Routing Payout Details'}
+                    {submittingPayout ? 'Configuring Banking Accounts...' : 'Save Routing Payout Details'}
                   </button>
                 </form>
               </div>
@@ -1042,9 +1060,688 @@ export const Dashboards: React.FC<DashboardsProps> = ({
             </div>
           )}
 
+          {/* TAB 9: PLATFORM ADMIN CONTROL PANEL */}
+          {activeTab === 'admin_console' && (
+            <AdminPanel queries={queries} experts={experts} onUpdateExpert={onUpdateExpert} />
+          )}
+
         </div>
 
       </div>
+    </div>
+  );
+};
+
+// --- HIGH-FIDELITY INTERACTIVE PLATFORM ADMIN PANEL COMPONENT ---
+interface AdminPanelProps {
+  queries: DirectQuery[];
+  experts: ExpertProfile[];
+  onUpdateExpert?: (expert: ExpertProfile) => void;
+}
+
+const AdminPanel: React.FC<AdminPanelProps> = ({ queries, experts, onUpdateExpert }) => {
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [webhookEvents, setWebhookEvents] = useState<any[]>([]);
+  const [loadingLogs, setLoadingLogs] = useState(false);
+  const [activeAdminTab, setActiveAdminTab] = useState<'bookings' | 'simulations' | 'settings' | 'audit_logs' | 'webhooks'>('bookings');
+  
+  // Platform Business Settings State
+  const [platformSettings, setPlatformSettings] = useState({
+    bookingPrice: 299,
+    platformFee: 79,
+    residentShare: 220,
+    currency: "INR"
+  });
+  const [savingSettings, setSavingSettings] = useState(false);
+
+  // Simulated Webhook State
+  const [selectedBookingIdForWebhook, setSelectedBookingIdForWebhook] = useState('');
+  const [simulatingWebhook, setSimulatingWebhook] = useState(false);
+  const [webhookMessage, setWebhookMessage] = useState('');
+
+  // Selected Expert for state simulation
+  const [selectedExpertId, setSelectedExpertId] = useState(experts[0]?.id || '');
+  const [simulatingExpertState, setSimulatingExpertState] = useState(false);
+  const [expertStateSuccess, setExpertStateSuccess] = useState('');
+
+  const fetchLogs = async () => {
+    setLoadingLogs(true);
+    try {
+      const [auditRes, webhookRes, settingsRes] = await Promise.all([
+        fetch('/api/admin/audit-logs'),
+        fetch('/api/admin/webhook-events'),
+        fetch('/api/admin/settings')
+      ]);
+      if (auditRes.ok) {
+        const data = await auditRes.json();
+        setAuditLogs(data);
+      }
+      if (webhookRes.ok) {
+        const data = await webhookRes.json();
+        setWebhookEvents(data);
+      }
+      if (settingsRes.ok) {
+        const data = await settingsRes.json();
+        if (data) {
+          setPlatformSettings(data);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load logs:", err);
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
+
+  const handleUpdateSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(platformSettings)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert("Platform business settings updated successfully in database!");
+        setPlatformSettings(data.settings);
+      } else {
+        alert(`Error updating settings: ${data.error || 'Unknown error'}`);
+      }
+    } catch (err: any) {
+      alert(`Network error: ${err.message}`);
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLogs();
+  }, []);
+
+  // Execute an admin API action
+  const handleAdminAction = async (endpoint: string, payload: any, confirmMsg?: string) => {
+    if (confirmMsg && !window.confirm(confirmMsg)) return;
+
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert("Operation completed successfully!");
+        window.location.reload();
+      } else {
+        alert(`Operation Failed: ${data.error || 'Server error'}`);
+      }
+    } catch (err: any) {
+      alert(`Network error: ${err.message}`);
+    }
+  };
+
+  // Simulate Webhook Payment Delivery
+  const handleSimulateWebhookPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedBookingIdForWebhook) {
+      alert("Please select a booking to simulate a payment for!");
+      return;
+    }
+    setSimulatingWebhook(true);
+    setWebhookMessage('');
+
+    try {
+      const payload = {
+        event: "payment.captured",
+        payload: {
+          payment: {
+            entity: {
+              id: `pay_${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+              amount: 29900,
+              currency: "INR",
+              status: "captured",
+              notes: {
+                bookingId: selectedBookingIdForWebhook
+              }
+            }
+          }
+        }
+      };
+
+      const res = await fetch('/api/webhooks/payment', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-payment-signature': 'simulated_secure_signature_hash'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (res.ok && data.status === "processed") {
+        setWebhookMessage("✓ Webhook delivered & payment captured. Booking CONFIRMED in escrow!");
+        fetchLogs();
+        setTimeout(() => {
+          alert("Webhook successfully processed! Reloading to update states...");
+          window.location.reload();
+        }, 1500);
+      } else {
+        setWebhookMessage(`✗ Webhook Failed: ${data.error || 'Unknown error'}`);
+      }
+    } catch (err: any) {
+      setWebhookMessage(`✗ Network Error: ${err.message}`);
+    } finally {
+      setSimulatingWebhook(false);
+    }
+  };
+
+  // Update expert verification states instantly
+  const handleSimulateExpertState = async (e: React.FormEvent, kyc: boolean, bank: boolean, payout: boolean) => {
+    e.preventDefault();
+    if (!selectedExpertId) return;
+    setSimulatingExpertState(true);
+    setExpertStateSuccess('');
+
+    try {
+      const response = await fetch('/api/experts/simulate-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          expertId: selectedExpertId,
+          kyc_completed: kyc,
+          bank_verified: bank,
+          payouts_enabled: payout
+        })
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setExpertStateSuccess('Expert verification state simulated on server!');
+        if (onUpdateExpert) {
+          onUpdateExpert(data.expert);
+        }
+        setTimeout(() => {
+          setExpertStateSuccess('');
+          window.location.reload();
+        }, 1200);
+      }
+    } catch (err: any) {
+      alert(`Simulation error: ${err.message}`);
+    } finally {
+      setSimulatingExpertState(false);
+    }
+  };
+
+  return (
+    <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+        <div>
+          <span className="bg-purple-100 text-purple-800 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md border border-purple-200">
+            🛡️ Platform Operations Console
+          </span>
+          <h2 className="text-lg font-black text-slate-900 mt-2 font-display">BeforeRegret Escrow & Settlement Engine</h2>
+          <p className="text-xs text-slate-400 mt-0.5">Manage trust-escrows, split commission releases, instant refunds, and inspect raw system logs.</p>
+        </div>
+        <button 
+          onClick={fetchLogs} 
+          disabled={loadingLogs}
+          className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${loadingLogs ? 'animate-spin' : ''}`} />
+          <span>Sync Logs</span>
+        </button>
+      </div>
+
+      {/* Admin Panel Tabs */}
+      <div className="flex border-b border-slate-200 gap-1.5 overflow-x-auto pb-px">
+        <button
+          onClick={() => setActiveAdminTab('bookings')}
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeAdminTab === 'bookings'
+              ? 'border-purple-600 text-purple-700'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          💰 Bookings & Escrows ({queries.length})
+        </button>
+        <button
+          onClick={() => setActiveAdminTab('simulations')}
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeAdminTab === 'simulations'
+              ? 'border-purple-600 text-purple-700'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          🧪 Testing Simulations
+        </button>
+        <button
+          onClick={() => setActiveAdminTab('settings')}
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeAdminTab === 'settings'
+              ? 'border-purple-600 text-purple-700'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          ⚙️ Business Settings
+        </button>
+        <button
+          onClick={() => setActiveAdminTab('audit_logs')}
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeAdminTab === 'audit_logs'
+              ? 'border-purple-600 text-purple-700'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          📜 Audit Trails ({auditLogs.length})
+        </button>
+        <button
+          onClick={() => setActiveAdminTab('webhooks')}
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeAdminTab === 'webhooks'
+              ? 'border-purple-600 text-purple-700'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          🔌 Webhook Event Logs ({webhookEvents.length})
+        </button>
+      </div>
+
+      {/* ADMIN TAB 1: BOOKINGS & ESCROWS */}
+      {activeAdminTab === 'bookings' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <span className="text-[10px] font-bold text-slate-400 uppercase font-mono">Commission Rule</span>
+              <p className="text-xs text-slate-800 mt-1 font-semibold">₹{platformSettings.bookingPrice} Total Booking Fee</p>
+              <p className="text-[10px] text-slate-500 mt-0.5">Platform Share: ₹{platformSettings.platformFee} • Resident Share: ₹{platformSettings.residentShare}</p>
+            </div>
+            <div className="p-4 bg-purple-50/50 rounded-2xl border border-purple-100/30">
+              <span className="text-[10px] font-bold text-purple-700 uppercase font-mono">Total Escrows Active</span>
+              <p className="text-xs text-purple-900 mt-1 font-semibold">
+                {queries.filter(q => q.status === 'ACCEPTED').length} Bookings Pending Completion
+              </p>
+              <p className="text-[10px] text-purple-600 mt-0.5">Funds safely held in independent secure escrow bank accounts.</p>
+            </div>
+            <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/30">
+              <span className="text-[10px] font-bold text-emerald-700 uppercase font-mono">Total Settled Disbursements</span>
+              <p className="text-xs text-emerald-900 mt-1 font-semibold">
+                {queries.filter(q => q.status === 'ANSWERED').length} Dispatched Payouts
+              </p>
+              <p className="text-[10px] text-emerald-600 mt-0.5">Successfully routed automatically via linked accounts.</p>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 font-mono text-[10px] uppercase">
+                  <th className="p-3 font-bold">Booking / Seeker</th>
+                  <th className="p-3 font-bold">Resident Expert</th>
+                  <th className="p-3 font-bold">Amount</th>
+                  <th className="p-3 font-bold">Escrow States</th>
+                  <th className="p-3 font-bold text-right">Operations & Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {queries.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="p-6 text-center text-slate-400">No bookings available in database. Submit an inquiry first!</td>
+                  </tr>
+                ) : (
+                  queries.map((q) => {
+                    const expert = experts.find(e => e.id === q.expertId);
+                    const bookingStatus = q.status;
+                    
+                    // Determine payout state
+                    let payoutStatus = "Held";
+                    if (bookingStatus === "ANSWERED") payoutStatus = "Settled (Dispatched)";
+                    else if (bookingStatus === "REFUNDED") payoutStatus = "Returned to Seeker";
+                    else if (bookingStatus === "PAYOUT_FAILED") payoutStatus = "Blocked / Verification Failed";
+
+                    return (
+                      <tr key={q.id} className="hover:bg-slate-50/50">
+                        <td className="p-3 space-y-1">
+                          <p className="font-bold text-slate-900">{q.localityName}</p>
+                          <p className="text-[10px] text-slate-400 font-mono">{q.id}</p>
+                          <p className="text-[10px] text-slate-500">Buyer: {q.buyerName}</p>
+                        </td>
+                        <td className="p-3 space-y-1">
+                          <p className="font-semibold text-slate-800">{q.expertName}</p>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            <span className={`text-[9px] px-1 rounded ${expert?.kycCompleted ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                              KYC: {expert?.kycCompleted ? 'Y' : 'N'}
+                            </span>
+                            <span className={`text-[9px] px-1 rounded ${expert?.bankVerified ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                              Bank: {expert?.bankVerified ? 'Y' : 'N'}
+                            </span>
+                            <span className={`text-[9px] px-1 rounded ${expert?.payoutsEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                              Payout: {expert?.payoutsEnabled ? 'Y' : 'N'}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <p className="font-mono font-bold text-slate-900">₹{q.pricePaid || platformSettings.bookingPrice}</p>
+                          <p className="text-[10px] text-slate-400">Split: ₹{q.expertEarnings || platformSettings.residentShare} / ₹{(q.pricePaid || platformSettings.bookingPrice) - (q.expertEarnings || platformSettings.residentShare)}</p>
+                        </td>
+                        <td className="p-3 space-y-1.5">
+                          <div>
+                            <span className="text-[9px] text-slate-400 block font-mono">Booking Status:</span>
+                            <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                              bookingStatus === 'ANSWERED' ? 'bg-emerald-100 text-emerald-800' : 
+                              bookingStatus === 'REFUNDED' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'
+                            }`}>{bookingStatus}</span>
+                          </div>
+                          <div>
+                            <span className="text-[9px] text-slate-400 block font-mono">Payout Status:</span>
+                            <span className="text-[10px] font-mono font-bold text-slate-700">{payoutStatus}</span>
+                          </div>
+                        </td>
+                        <td className="p-3 text-right space-y-2">
+                          <div className="flex flex-col items-end gap-1.5">
+                            {bookingStatus !== 'ANSWERED' && bookingStatus !== 'REFUNDED' && (
+                              <>
+                                <button
+                                  onClick={() => handleAdminAction('/api/bookings/complete', { queryId: q.id }, "Are you sure you want to mark this consultation as completed and release payouts?")}
+                                  className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold uppercase cursor-pointer"
+                                >
+                                  Mark Chat Complete
+                                </button>
+                                <button
+                                  onClick={() => handleAdminAction('/api/admin/refund/approve', { bookingId: q.id }, `Are you sure you want to approve this refund? This will return all ₹${q.pricePaid || platformSettings.bookingPrice} to the Seeker.`)}
+                                  className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold uppercase cursor-pointer"
+                                >
+                                  Approve Refund
+                                </button>
+                                <button
+                                  onClick={() => handleAdminAction('/api/admin/chat/no-show', { bookingId: q.id, type: 'resident' }, "Report Resident expert as no show? This blocks payouts.")}
+                                  className="px-2.5 py-1 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold uppercase cursor-pointer"
+                                >
+                                  Resident No Show
+                                </button>
+                              </>
+                            )}
+                            {bookingStatus === 'PAYOUT_FAILED' && (
+                              <button
+                                onClick={() => handleAdminAction('/api/admin/payout/retry', { bookingId: q.id }, "Retry dispatching payout to this resident expert?")}
+                                className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold uppercase cursor-pointer"
+                              >
+                                Retry Gated Payout
+                              </button>
+                            )}
+                            {bookingStatus === 'ANSWERED' && (
+                              <span className="text-[10px] text-emerald-600 font-bold block">✓ Fully Disbursed</span>
+                            )}
+                            {bookingStatus === 'REFUNDED' && (
+                              <span className="text-[10px] text-red-600 font-bold block">✓ Refund Processed</span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN TAB 2: SIMULATIONS */}
+      {activeAdminTab === 'simulations' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+          
+          {/* SIMULATE WEBHOOK */}
+          <div className="space-y-4">
+            <h3 className="font-bold text-xs text-purple-800 font-mono uppercase tracking-wider flex items-center gap-1.5">
+              <span>🔌 Simulate Secure Webhook Payment</span>
+            </h3>
+            <p className="text-xs text-slate-400">Simulate asynchronous background payment confirmation from the independent secure payment gateway. Never trust frontend callbacks.</p>
+
+            <form onSubmit={handleSimulateWebhookPayment} className="space-y-4">
+              <div className="space-y-1.5 text-left">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Select Booking to Pay (₹{platformSettings.bookingPrice})</label>
+                <select
+                  value={selectedBookingIdForWebhook}
+                  onChange={(e) => setSelectedBookingIdForWebhook(e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:border-purple-600 focus:outline-hidden text-slate-700 font-mono"
+                >
+                  <option value="">-- Choose Booking --</option>
+                  {queries.map(q => (
+                    <option key={q.id} value={q.id}>
+                      {q.localityName} - {q.buyerName} (Status: {q.status})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {webhookMessage && (
+                <p className={`text-xs p-3 rounded-xl border font-mono ${
+                  webhookMessage.startsWith('✓') ? 'bg-emerald-50 text-emerald-800 border-emerald-100' : 'bg-red-50 text-red-800 border-red-100'
+                }`}>{webhookMessage}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={simulatingWebhook || !selectedBookingIdForWebhook}
+                className="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                {simulatingWebhook ? 'Delivering Webhook...' : 'Deliver Secure Payment Webhook'}
+              </button>
+            </form>
+          </div>
+
+          {/* SIMULATE EXPERT STATE */}
+          <div className="space-y-4 md:pl-8 pt-6 md:pt-0">
+            <h3 className="font-bold text-xs text-purple-800 font-mono uppercase tracking-wider">
+              🧪 Simulate Expert Verification Gates
+            </h3>
+            <p className="text-xs text-slate-400">Toggle whether this resident expert has completed KYC checks, verified banking, and is active for payouts prior to releasing settlements.</p>
+
+            <div className="space-y-4">
+              <div className="space-y-1.5 text-left">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Select Resident Expert</label>
+                <select
+                  value={selectedExpertId}
+                  onChange={(e) => setSelectedExpertId(e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:border-purple-600 focus:outline-hidden text-slate-700"
+                >
+                  {experts.map(e => (
+                    <option key={e.id} value={e.id}>
+                      {e.fullName} - {e.localityName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {expertStateSuccess && (
+                <p className="text-xs p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-100 font-medium">{expertStateSuccess}</p>
+              )}
+
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={(e) => handleSimulateExpertState(e, true, true, true)}
+                  disabled={simulatingExpertState}
+                  className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg cursor-pointer"
+                >
+                  Fully Verify (All True)
+                </button>
+                <button
+                  onClick={(e) => handleSimulateExpertState(e, false, true, true)}
+                  disabled={simulatingExpertState}
+                  className="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-slate-900 text-[10px] font-bold uppercase tracking-wider rounded-lg cursor-pointer"
+                >
+                  KYC Pending
+                </button>
+                <button
+                  onClick={(e) => handleSimulateExpertState(e, false, false, false)}
+                  disabled={simulatingExpertState}
+                  className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg cursor-pointer"
+                >
+                  Block All (False)
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ADMIN TAB: BUSINESS SETTINGS */}
+      {activeAdminTab === 'settings' && (
+        <div className="space-y-6">
+          <div>
+            <h3 className="font-bold text-xs text-purple-800 font-mono uppercase tracking-wider">⚙️ Centralized Business Config System (PlatformSettings Database Table)</h3>
+            <p className="text-xs text-slate-400 mt-1">
+              Configure real-time business parameters. Changes are stored persistently in the database and read on-the-fly by the escrow engine.
+            </p>
+          </div>
+
+          <form onSubmit={handleUpdateSettings} className="space-y-5 max-w-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5 text-left">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Booking Price (Paid by Seeker)</label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-2.5 text-slate-400 text-xs font-mono">₹</span>
+                  <input
+                    type="number"
+                    value={platformSettings.bookingPrice}
+                    onChange={(e) => setPlatformSettings({ ...platformSettings, bookingPrice: Number(e.target.value) })}
+                    className="w-full pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:border-purple-600 focus:outline-hidden text-slate-700 font-mono"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5 text-left">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Currency</label>
+                <input
+                  type="text"
+                  value={platformSettings.currency}
+                  onChange={(e) => setPlatformSettings({ ...platformSettings, currency: e.target.value })}
+                  className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-purple-600 focus:outline-hidden text-slate-700 font-mono"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5 text-left">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Platform Commission Fee</label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-2.5 text-slate-400 text-xs font-mono">₹</span>
+                  <input
+                    type="number"
+                    value={platformSettings.platformFee}
+                    onChange={(e) => setPlatformSettings({ ...platformSettings, platformFee: Number(e.target.value) })}
+                    className="w-full pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:border-purple-600 focus:outline-hidden text-slate-700 font-mono"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5 text-left">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Resident Share (Payout Amount)</label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-2.5 text-slate-400 text-xs font-mono">₹</span>
+                  <input
+                    type="number"
+                    value={platformSettings.residentShare}
+                    onChange={(e) => setPlatformSettings({ ...platformSettings, residentShare: Number(e.target.value) })}
+                    className="w-full pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:border-purple-600 focus:outline-hidden text-slate-700 font-mono"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {platformSettings.bookingPrice !== (platformSettings.platformFee + platformSettings.residentShare) && (
+              <p className="text-[10px] text-amber-600 font-semibold bg-amber-50 p-2.5 rounded-lg border border-amber-100">
+                ⚠️ Warning: Sum of Platform Fee (₹{platformSettings.platformFee}) and Resident Share (₹{platformSettings.residentShare}) is ₹{platformSettings.platformFee + platformSettings.residentShare}, which does not match Booking Price (₹{platformSettings.bookingPrice}).
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={savingSettings}
+              className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
+            >
+              {savingSettings ? 'Saving Settings...' : 'Save Settings to DB'}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* ADMIN TAB 3: AUDIT TRAILS */}
+      {activeAdminTab === 'audit_logs' && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="font-bold text-xs text-purple-800 font-mono uppercase tracking-wider">📜 Independent System Audit Trail</h3>
+            <span className="text-[10px] font-mono font-bold bg-slate-100 px-2 py-0.5 rounded text-slate-500">{auditLogs.length} events logged</span>
+          </div>
+          <div className="max-h-72 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100">
+            {auditLogs.length === 0 ? (
+              <p className="p-6 text-center text-xs text-slate-400">No audits generated yet.</p>
+            ) : (
+              auditLogs.slice().reverse().map((log) => (
+                <div key={log.id} className="p-3.5 text-xs flex flex-col sm:flex-row sm:items-start justify-between gap-2 hover:bg-slate-50 font-mono">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-slate-900 text-white text-[9px] px-1.5 py-0.5 rounded font-bold font-mono">
+                        {log.action}
+                      </span>
+                      <span className="text-slate-400 text-[9px]">{new Date(log.timestamp).toLocaleString()}</span>
+                    </div>
+                    <pre className="text-[10px] text-slate-600 max-w-lg overflow-x-auto whitespace-pre-wrap leading-relaxed mt-1.5">
+                      {JSON.stringify(log.details, null, 2)}
+                    </pre>
+                  </div>
+                  <span className="text-[9px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded h-fit">{log.id}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN TAB 4: WEBHOOKS LOG */}
+      {activeAdminTab === 'webhooks' && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="font-bold text-xs text-purple-800 font-mono uppercase tracking-wider">🔌 Processed Webhook Event Payload History</h3>
+            <span className="text-[10px] font-mono font-bold bg-slate-100 px-2 py-0.5 rounded text-slate-500">{webhookEvents.length} payloads captured</span>
+          </div>
+          <p className="text-xs text-slate-400">Verifying raw signatures and payload integrity in real time protects from double-spend and callback manipulation attacks.</p>
+          <div className="max-h-72 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100">
+            {webhookEvents.length === 0 ? (
+              <p className="p-6 text-center text-xs text-slate-400">No webhooks recorded yet.</p>
+            ) : (
+              webhookEvents.slice().reverse().map((ev) => (
+                <div key={ev.eventId} className="p-3.5 text-xs flex flex-col gap-2 hover:bg-slate-50 font-mono">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-purple-900 text-purple-100 text-[9px] px-1.5 py-0.5 rounded font-bold uppercase">
+                        {ev.eventType}
+                      </span>
+                      <span className="text-slate-400 text-[9px]">{new Date(ev.processedAt).toLocaleString()}</span>
+                    </div>
+                    <span className="text-[9px] text-slate-400 font-bold">Event ID: {ev.eventId}</span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider block font-mono">Signature:</span>
+                    <p className="text-[10px] text-slate-600 truncate font-mono bg-slate-50 p-1 rounded border border-slate-100">{ev.signature || 'NONE'}</p>
+                  </div>
+                  <div>
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider block font-mono">Raw Payload:</span>
+                    <pre className="text-[10px] text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-150 overflow-x-auto whitespace-pre leading-relaxed mt-1.5">
+                      {JSON.stringify(ev.payload, null, 2)}
+                    </pre>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

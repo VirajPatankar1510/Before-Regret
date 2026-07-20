@@ -56,7 +56,7 @@ To act as the global validation layer. The "Check Before You Regret" standard fo
 | User Type | Core Responsibility | Capabilities | Restrictions |
 | :--- | :--- | :--- | :--- |
 | **Visitor** | Anonymous browser exploring local pages. | Search, read public sanitized questions, view expert cards, view city/area catalogs, view landing pages. | Cannot contact experts, view full-length private answers, or request withdrawals. |
-| **Buyer** | High-intent customer seeking truth. | Ask direct questions, choose expert, customize query parameters, make payments via Razorpay, review/dispute answers, write ratings/reviews. | Cannot register as an expert on the same account (must toggle/upgrade), cannot withdraw funds. |
+| **Buyer** | High-intent customer seeking truth. | Ask direct questions, choose expert, customize query parameters, make payments via Secure Payment Gateway, review/dispute answers, write ratings/reviews. | Cannot register as an expert on the same account (must toggle/upgrade), cannot withdraw funds. |
 | **Local Expert** | Verified local resident delivering insights. | Define coverage areas (pincodes/societies), set pricing, accept/reject questions, submit answers, manage wallet, request withdrawals, complete KYC. | Cannot answer questions outside designated coverage areas, cannot self-review, cannot access other experts' wallets. |
 | **Moderator** | Human editor protecting platform safety. | Review flagged content, inspect reported messages, check buyer disputes, approve or reject basic KYC requests. | Cannot access raw database secrets, initiate payment refunds directly without admin approval, or view admin logs. |
 | **Administrator** | Overall system owner and business operator. | Full marketplace overview, trigger manual payouts, alter system parameters, edit fee margins, perform deep database operations, review audit logs. | Access is locked under strict multi-factor authentication and tracked in immutable audit tables. |
@@ -70,7 +70,7 @@ To act as the global validation layer. The "Check Before You Regret" standard fo
 1. **Discovery:** Lands on an organic programmatic page via Google Search (e.g., *“Water problems in Prestige Shantiniketan Whitefield”*).
 2. **Evaluation:** Reads the public summary card. Notices three active Local Experts living in Prestige Shantiniketan with a 4.9 average rating.
 3. **Configuration:** Clicks "Ask Resident". Enters their specific concerns: *“Is the block B water pipeline still leaking? How noisy is the nearby railway track on higher floors at night?”*
-4. **Checkout:** Selects response detail level (Detailed vs Concise), views transparent pricing Breakdown (e.g., ₹299), and pays seamlessly through Razorpay.
+4. **Checkout:** Selects response detail level (Detailed vs Concise), views transparent pricing Breakdown (e.g., ₹299), and pays seamlessly through Secure Payment Gateway.
 5. **Waiting State:** Receives SMS/Email notification that Expert Rohan has accepted the question.
 6. **Delivery & Escrow:** Rohan submits the response within 12 hours. Buyer reads the highly specific, hyper-local answer.
 7. **Confirmation & Review:** Buyer approves the answer, leaves a 5-star rating, and writes a review. The 48-hour release countdown begins.
@@ -219,7 +219,7 @@ Our data follows a strict parent-child relationship to maximize user search flow
 ## 8. MARKETPLACE ARCHITECTURE & SYSTEMS WORKFLOW
 
 ```
- [Buyer: Enter Query] ──> [Razorpay Checkout] ──> [Escrow State: Locked]
+ [Buyer: Enter Query] ──> [Secure Payment Gateway Checkout] ──> [Escrow State: Locked]
                                                            │
                                                            ▼
  [Expert: Payout Bank/UPI] <── [escrow release] <── [Expert Answers]
@@ -227,7 +227,7 @@ Our data follows a strict parent-child relationship to maximize user search flow
 
 ### A. The End-to-End Marketplace Lifecycle
 1. **Initiation:** Buyer visits an Expert profile, types their query, and chooses a package (Basic: 3 questions, Premium: 5 questions + Follow-up).
-2. **Payment Processing:** Razorpay modal triggers. Funds are collected by the BeforeRegret current account.
+2. **Payment Processing:** Secure Payment Gateway modal triggers. Funds are collected by the BeforeRegret current account.
 3. **Escrow Allocation:** System updates the `DirectQuery` status to `PAID`. The amount is logged under `WalletTransaction` as `CREDIT_PENDING` for the expert.
 4. **SLA Notification Loop:** System triggers WhatsApp, SMS, and Email alert to the expert. The 48-hour response clock starts.
 5. **Acceptance Phase:** Expert logs in, clicks "Accept". If they fail to accept within 24 hours, the system triggers reminders. If they reject or let it expire (48 hours), the transaction auto-refunds the buyer.
@@ -248,7 +248,7 @@ Our data follows a strict parent-child relationship to maximize user search flow
   - GST on Platform Commission (18% of Commission): **₹18**
   - Platform Commission (20% of Transaction value): **₹100**
   - Expert Earnings (80% of Transaction value): **₹400**
-  - Razorpay Gateway Fee (Approx 2%): **₹10** (absorbed by platform)
+  - Secure Payment Gateway Gateway Fee (Approx 2%): **₹10** (absorbed by platform)
 
 ---
 
@@ -325,9 +325,9 @@ Our data follows a strict parent-child relationship to maximize user search flow
 ## 10. SYSTEM STATE MACHINE: THE QUESTION LIFECYCLE
 
 ```
- [PENDING_PAYMENT] ──(Razorpay Success)──> [PAID] ──(Expert Accepts)──> [ACCEPTED]
+ [PENDING_PAYMENT] ──(Secure Payment Gateway Success)──> [PAID] ──(Expert Accepts)──> [ACCEPTED]
         │                                    │                              │
-        ├──(Razorpay Fail/Cancel)            ├──(Reject/Timeout)            ├──(48h SLA Breach)
+        ├──(Secure Payment Gateway Fail/Cancel)            ├──(Reject/Timeout)            ├──(48h SLA Breach)
         │                                    │                              │
         ▼                                    ▼                              ▼
     [CANCELLED]                         [REFUNDED]                     [REFUNDED]
@@ -336,7 +336,7 @@ Our data follows a strict parent-child relationship to maximize user search flow
 ```
 
 ### Transition Logic:
-- **`PENDING_PAYMENT` ➔ `PAID`:** Triggered strictly on Razorpay `payment.captured` Webhook.
+- **`PENDING_PAYMENT` ➔ `PAID`:** Triggered strictly on Secure Payment Gateway `payment.captured` Webhook.
 - **`PAID` ➔ `REFUNDED`:** Triggered if Expert rejects or if 48 hours pass without acceptance. Automated script schedules instant refund.
 - **`ACCEPTED` ➔ `ANSWERED`:** Expert enters content in their input field and clicks "Publish".
 - **`ANSWERED` ➔ `COMPLETED`:** Buyer clicks "Approve" OR 48 hours lapse with no open dispute flags. Trigger: Moving funds from `held_balance` to `available_balance`.
@@ -415,7 +415,7 @@ Every page dynamically injects rich structured JSON-LD data:
 
 ## 14. TRUST, MODERATION & FRAUD PREVENTION
 
-1. **Collusion Protection:** Experts are forbidden from reviewing themselves. Buyers can only review an expert after a completed Razorpay transaction.
+1. **Collusion Protection:** Experts are forbidden from reviewing themselves. Buyers can only review an expert after a completed Secure Payment Gateway transaction.
 2. **Chat Safety Filter:** Automated regex algorithms filter phone numbers, emails, and external payment links in private conversations to prevent transaction disintermediation.
 3. **Geo-Location Check:** Experts can prove residence by clicking a "Verify GPS Location" button inside their dashboard while sitting inside the targeted apartment complex/locality. This awards a "Certified Geolocation" trust badge.
 
