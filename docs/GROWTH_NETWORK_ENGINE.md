@@ -56,7 +56,7 @@ Marketplaces succeed when they build sustainable, organic flywheels rather than 
 *   **Intervention:** Allow them to save the neighborhood or society to their wishlist. Trigger a soft email capture: *“Follow Whitefield Sector 2 for new resident updates.”*
 
 #### 3. Buyer (First-Time Customer)
-*   **Trigger:** Completes their first Razorpay transaction.
+*   **Trigger:** Completes their first Secure Payment Gateway transaction.
 *   **UX Goal:** Deliver high-quality answers quickly to lock in trust.
 *   **Intervention:** Progress tracker and escrow safety guarantees are prominently displayed.
 

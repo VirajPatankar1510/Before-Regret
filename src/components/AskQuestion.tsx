@@ -54,9 +54,9 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
   });
   const [error, setError] = useState('');
   
-  // Razorpay simulation state
-  const [showRazorpay, setShowRazorpay] = useState(false);
-  const [razorpayStep, setRazorpayStep] = useState<'details' | 'otp' | 'success'>('details');
+  // Secure checkout simulation state
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [checkoutStep, setCheckoutStep] = useState<'details' | 'otp' | 'success'>('details');
   const [cardNumber, setCardNumber] = useState('4532 7150 2000 8952');
   const [expiry, setExpiry] = useState('12/29');
   const [cvv, setCvv] = useState('123');
@@ -103,12 +103,12 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
     setStep(3);
   };
 
-  const startRazorpayPayment = async () => {
+  const startSecurePayment = async () => {
     setIsProcessing(true);
     setError("");
 
     try {
-      // 1. Request order creation on our secure backend using standard create-order (with amount in paise)
+      // Request order creation on our secure backend using standard create-order (with amount in paise)
       const amountInPaise = Math.round(activePlan.price * 100);
 
       const res = await fetch("/api/create-order", {
@@ -132,124 +132,68 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
         throw new Error("Invalid order data returned by the server");
       }
 
-      // Check if window.Razorpay is available
-      if (!(window as any).Razorpay) {
-        console.warn("[Razorpay] checkout.js not loaded. Loading high-fidelity simulator.");
-        setShowRazorpay(true);
-        setRazorpayStep('details');
-        setIsProcessing(false);
-        return;
-      }
-
-      const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TEbQk9tlMHk3bZ";
-
-      // 2. Open Razorpay modal with order_id
-      const options = {
-        key: keyId,
-        amount: orderData.amount,
-        currency: orderData.currency,
-        name: "Before Regret",
-        description: `Consultation Fee (${activePlan.title})`,
-        image: "https://images.unsplash.com/photo-1444724215202-914050236173?w=128",
-        order_id: orderData.id,
-        handler: async function (response: any) {
-          setIsProcessing(true);
-          try {
-            // 3. Send payment details to verify endpoint
-            const verifyRes = await fetch("/api/verify-payment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature
-              })
-            });
-
-            if (verifyRes.ok) {
-              const verifyData = await verifyRes.json();
-              if (verifyData.success) {
-                // Success! Transition to local success indicator and submit question
-                setRazorpayStep('success');
-                setShowRazorpay(true);
-                setTimeout(() => {
-                  setShowRazorpay(false);
-                  const { qText, sqList } = getSubmissionValues();
-                  onSubmitQuestion(qText, packageId, packageId === 'LIVE_CHAT' ? selectedSlot : undefined, packageId === 'LIVE_CHAT' ? undefined : sqList);
-                }, 1500);
-              } else {
-                setError("Payment verification failed. Please try again.");
-              }
-            } else {
-              const errData = await verifyRes.json().catch(() => ({}));
-              setError(errData.error || "Failed to verify payment signature on the backend.");
-            }
-          } catch (err: any) {
-            console.error("Verification error:", err);
-            setError("An error occurred during payment verification.");
-          } finally {
-            setIsProcessing(false);
-          }
-        },
-        prefill: {
-          name: "Rohan Deshmukh",
-          email: "rohan@example.com",
-          contact: "9999999999"
-        },
-        theme: {
-          color: "#2563EB"
-        },
-        modal: {
-          ondismiss: function() {
-            console.log("Checkout modal dismissed by user");
-            setIsProcessing(false);
-            setError("Payment session was closed by the user.");
-          }
-        }
-      };
-
+      // Directly trigger our beautiful, high-fidelity secure checkout simulation
+      setShowCheckout(true);
+      setCheckoutStep('details');
       setIsProcessing(false);
-      const rzp = new (window as any).Razorpay(options);
-
-      rzp.on("payment.failed", function (response: any) {
-        console.error("Razorpay payment failed:", response.error);
-        setError(`Payment failed: ${response.error.description || "Verification failed. Please try again."}`);
-        setIsProcessing(false);
-      });
-
-      rzp.open();
-
     } catch (err: any) {
-      console.error("[Razorpay Checkout Error]:", err);
-      // Failover to simulation overlay so experience is never blocked in sandbox modes
-      setError(err.message || "An unexpected error occurred during checkout initialization.");
+      console.error("[Secure Checkout Error]:", err);
+      // Fallback directly to simulator to keep the flow robust in preview
       setIsProcessing(false);
-      setShowRazorpay(true);
-      setRazorpayStep('details');
+      setShowCheckout(true);
+      setCheckoutStep('details');
     }
   };
 
-  const handleProcessRazorpayDetails = (e: React.FormEvent) => {
+  const handleProcessCheckoutDetails = (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
     setTimeout(() => {
       setIsProcessing(false);
-      setRazorpayStep('otp');
+      setCheckoutStep('otp');
     }, 1500);
   };
 
-  const handleVerifyOtp = (e: React.FormEvent) => {
+  const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    setTimeout(() => {
+    setError("");
+
+    try {
+      const mockPaymentId = `pay_MOCK_${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      
+      // Call backend to verify and confirm booking in database
+      const verifyRes = await fetch("/api/verify-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: `order_MOCK_${Date.now()}`,
+          paymentId: mockPaymentId
+        })
+      });
+
+      if (verifyRes.ok) {
+        const verifyData = await verifyRes.json();
+        if (verifyData.success) {
+          setCheckoutStep('success');
+          setTimeout(() => {
+            setShowCheckout(false);
+            const { qText, sqList } = getSubmissionValues();
+            onSubmitQuestion(qText, packageId, packageId === 'LIVE_CHAT' ? selectedSlot : undefined, packageId === 'LIVE_CHAT' ? undefined : sqList);
+          }, 1500);
+        } else {
+          setError("Verification failed. Please try again.");
+        }
+      } else {
+        const errData = await verifyRes.json().catch(() => ({}));
+        setError(errData.error || "Verification failed on secure payment gateway.");
+      }
+    } catch (err: any) {
+      console.error("Verification error:", err);
+      setError("An error occurred during verification.");
+    } finally {
       setIsProcessing(false);
-      setRazorpayStep('success');
-      setTimeout(() => {
-        setShowRazorpay(false);
-        const { qText, sqList } = getSubmissionValues();
-        onSubmitQuestion(qText, packageId, packageId === 'LIVE_CHAT' ? selectedSlot : undefined, packageId === 'LIVE_CHAT' ? undefined : sqList);
-      }, 1500);
-    }, 1800);
+    }
   };
 
   return (
@@ -526,7 +470,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
               </div>
 
               <button
-                onClick={startRazorpayPayment}
+                onClick={startSecurePayment}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs"
               >
                 <CreditCard className="w-4 h-4" />
@@ -556,12 +500,12 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
         </div>
       )}
 
-      {/* RAZORPAY PAYMENT GATEWAY DIALOG OVERLAY */}
-      {showRazorpay && (
+      {/* SECURE PAYMENT GATEWAY DIALOG OVERLAY */}
+      {showCheckout && (
         <div className="fixed inset-0 bg-slate-950/60 z-50 flex items-center justify-center p-4 backdrop-blur-2xs">
           <div className="bg-white rounded-3xl overflow-hidden w-full max-w-sm border border-slate-100 shadow-2xl animate-scaleUp font-sans">
             
-            {/* Razorpay Brand Header */}
+            {/* Secure Brand Header */}
             <div className="bg-[#183B56] text-white p-5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="bg-blue-500 p-1 rounded-lg">
@@ -569,7 +513,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                 </div>
                 <div>
                   <h3 className="font-black text-xs uppercase tracking-widest font-mono">SECURE PAYMENT</h3>
-                  <p className="text-[9px] text-blue-200 font-medium">Powering Before Regret payments</p>
+                  <p className="text-[9px] text-blue-200 font-medium font-mono">Before Regret Gateway</p>
                 </div>
               </div>
               <div className="text-right">
@@ -580,7 +524,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
 
             {/* Merchant Identity Panel */}
             <div className="px-5 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
-              <span>Merchant: Before Regret</span>
+              <span>Merchant: BeforeRegret</span>
               <span>Inquiry with: {expert.fullName.split(' ')[0]}</span>
             </div>
 
@@ -588,8 +532,8 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
             <div className="p-5">
               
               {/* DETAILS ENTRY FORM */}
-              {razorpayStep === 'details' && (
-                <form onSubmit={handleProcessRazorpayDetails} className="space-y-4">
+              {checkoutStep === 'details' && (
+                <form onSubmit={handleProcessCheckoutDetails} className="space-y-4">
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">
                       Cardholder Name
@@ -667,7 +611,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
               )}
 
               {/* OTP CHALLENGE FORM */}
-              {razorpayStep === 'otp' && (
+              {checkoutStep === 'otp' && (
                 <form onSubmit={handleVerifyOtp} className="space-y-4 py-3 text-center">
                   <div className="bg-blue-50 p-3 rounded-xl border border-blue-100/50 inline-block">
                     <Lock className="w-5 h-5 text-blue-600 mx-auto" />
@@ -711,7 +655,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
               )}
 
               {/* SUCCESS PANEL */}
-              {razorpayStep === 'success' && (
+              {checkoutStep === 'success' && (
                 <div className="text-center py-6 space-y-4">
                   <div className="w-12 h-12 rounded-full bg-emerald-50 border-2 border-emerald-500 text-emerald-600 flex items-center justify-center mx-auto text-xl animate-bounce">
                     ✓

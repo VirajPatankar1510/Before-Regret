@@ -130,7 +130,7 @@ Experts must also be protected from malicious, abusive, or unreasonable buyers. 
 Our platform incorporates real-time analytics to safeguard marketplace financial flows from manipulation:
 
 ### Fraud Category Protections
-- **Collusion & Self-Dealing Detection:** Tracks IP address matches, device fingerprint profiles, and Razorpay payment card signatures between buyers and experts. If an expert attempts to buy their own advice from a fake buyer profile to inflate ratings, both accounts are permanently banned, and funds are seized.
+- **Collusion & Self-Dealing Detection:** Tracks IP address matches, device fingerprint profiles, and Secure Payment Gateway payment card signatures between buyers and experts. If an expert attempts to buy their own advice from a fake buyer profile to inflate ratings, both accounts are permanently banned, and funds are seized.
 - **Disintermediation / Off-Platform Leakage Prevention:** High-performance regex keyword matching scans active chats for strings resembling phone numbers, WhatsApp links, UPI handles (e.g., `@upi`, `@paytm`), or emails.
   - **First Offense:** System blocks transmission of the message and displays a soft modal warning: *“To remain protected by our 48-Hour Escrow Satisfaction Guarantee, all communication and payments must stay inside the platform.”*
   - **Second Offense:** Immediate temporary suspension of messaging capabilities.

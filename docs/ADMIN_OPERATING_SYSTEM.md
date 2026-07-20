@@ -58,7 +58,7 @@ The primary entrance of the AOS features a real-time, highly visual operational 
  |-----------------------------------------------------------------------------------|
  |  Real-Time Operational Alerts Queue:                                              |
  |  [ALERT] - 3 Disputes Opened in HSR Sector 2 (Possible Local Water Contamination) |
- |  [ALERT] - Razorpay Webhook SLA Latency spike detected (Mumbai Edge)              |
+ |  [ALERT] - Secure Payment Gateway Webhook SLA Latency spike detected (Mumbai Edge)              |
  +-----------------------------------------------------------------------------------+
 ```
 
@@ -101,7 +101,7 @@ Every visitor, buyer, and expert profile is mapped to a unified, centralized **U
 ### Profile View Components
 - **The Central Timeline View:** A chronological, scrollable feed of all interactions—including logins, queries posted, answers written, payments made, support tickets opened, and feedback submitted.
 - **Buyer Health Metric (BHM):** Evaluates buyer behavior. High chargeback rates, abusive chats, or excessive dispute frequencies deduct points. Accounts dropping below 50 BHM are flagged for restriction.
-- **Internal Operator Notes Log:** Allows support agents to leave internal annotations (e.g., *“Customer had issues with Razorpay UPI, prefers direct card checkout”*) visible only to admins.
+- **Internal Operator Notes Log:** Allows support agents to leave internal annotations (e.g., *“Customer had issues with Secure Payment Gateway UPI, prefers direct card checkout”*) visible only to admins.
 - **Multi-Account Linker (Fuzzy Identity Match):** Checks matching IP addresses, browser fingerprints, and mobile numbers. If an expert attempts to open a separate "Buyer Profile" to rate themselves, the system links the profiles and flags them for collusion review.
 
 ---
@@ -158,21 +158,21 @@ The Finance console is built for absolute transactional accountability. It acts 
 
 ```
  +-----------------------------------------------------------------------------------+
- |  FINANCE CONSOLE: [ RAZORPAY SETTLEMENTS ]   [ GST COMPLIANCE ]   [ MANUAL VERIFY]|
+ |  FINANCE CONSOLE: [ SECURE_PAYMENT_GATEWAY SETTLEMENTS ]   [ GST COMPLIANCE ]   [ MANUAL VERIFY]|
  |-----------------------------------------------------------------------------------|
  |  Ledger Entry Example:                                                            |
  |  Transaction ID: TX-84920193                                                      |
  |  Total Paid: ₹500.00                                                              |
- |  - Razorpay Gateway Fee (2%): ₹10.00                                              |
+ |  - Secure Payment Gateway Gateway Fee (2%): ₹10.00                                              |
  |  - Platform Commission (20%): ₹100.00 (GST Collected @18%: ₹18.00)                 |
  |  - Expert Earnings Allocation (80%): ₹390.00                                      |
  +-----------------------------------------------------------------------------------+
 ```
 
 ### Financial System Modules
-- **Dynamic Ledger Reconciliation:** Cross-references the active database transaction database table against Razorpay's daily webhook reports. Any discrepancy triggers a high-priority system alert.
+- **Dynamic Ledger Reconciliation:** Cross-references the active database transaction database table against Secure Payment Gateway's daily webhook reports. Any discrepancy triggers a high-priority system alert.
 - **GST Invoice Generator:** Generates automated, tax-compliant B2C GST invoices for buyers (charging 18% GST on the platform commission portion of the fee) and B2B payout slips for experts.
-- **Automated Payout Scheduler:** Integrates with Razorpay Route or direct bank APIs to execute payouts daily at 6 AM, batch-releasing all expert balances that have successfully transitioned from `Held` to `Available` status.
+- **Automated Payout Scheduler:** Integrates with Secure Payment Gateway Route or direct bank APIs to execute payouts daily at 6 AM, batch-releasing all expert balances that have successfully transitioned from `Held` to `Available` status.
 - **Negative Balance Ledger:** In cases where a payout is processed, but a buyer successfully files a credit card dispute/chargeback later, the expert’s wallet balance is adjusted downwards. If the balance goes negative, future earnings auto-reconcile to clear the debt.
 
 ---
@@ -264,7 +264,7 @@ Neighbor Reviews features an in-app ticketing dashboard to manage questions, com
  |  SUPPORT CONSOLE: [ Active Tickets: 14 ]   [ Avg Resolve Time: 12m ]  [ CSAT: 96%]|
  |-----------------------------------------------------------------------------------|
  |  Open Ticket #1948 - Amit Kumar                                                   |
- |  Issue: "Razorpay payment says successful but order is still pending payment."   |
+ |  Issue: "Secure Payment Gateway payment says successful but order is still pending payment."   |
  |  [Check Payment API]  ➔  [Manual Match & Force Paid]  ➔  [Apply Saved Macro]      |
  +-----------------------------------------------------------------------------------+
 ```

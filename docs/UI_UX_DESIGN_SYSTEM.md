@@ -163,14 +163,14 @@ We minimize checkout friction by decoupling payments from the profile onboarding
 
 ### Scenario A: Asking a Question
 ```
- Search Locality ──> Pick Expert ──> Type Question ──> Select Package ──> Pay (Razorpay)
+ Search Locality ──> Pick Expert ──> Type Question ──> Select Package ──> Pay (Secure Payment Gateway)
                                                                                │
                                                                                ▼
                                                                      [Success Redirect]
 ```
 1. **The Input Field Screen:** Simple fullscreen text-area with an auto-updating character counter (Max 500 characters). Prompts with helpful questions: *“What about water shortages, security, or night noise?”*
 2. **Dynamic Pricing Selection:** Clean side-by-side package selectors (Basic: ₹99, Detailed: ₹199).
-3. **Razorpay Modal:** Triggers on top of the screen; does not redirect away from the context.
+3. **Secure Payment Gateway Modal:** Triggers on top of the screen; does not redirect away from the context.
 4. **Successful Payment Redirection:** Reassuring success screen with a progress tracker: *“We have notified Rohan. Rohan has until Tuesday, 3 PM to respond.”*
 
 ---
