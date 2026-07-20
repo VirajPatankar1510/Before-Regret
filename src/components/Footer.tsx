@@ -4,11 +4,11 @@ import { Logo } from './Logo';
 
 interface FooterProps {
   setView: (view: string) => void;
-  onNavigateToPolicy?: (tab: 'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer') => void;
+  onNavigateToPolicy?: (tab: 'terms' | 'privacy' | 'refunds' | 'contact' | 'disclaimer') => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ setView, onNavigateToPolicy }) => {
-  const handlePolicyClick = (e: React.MouseEvent, tab: 'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer') => {
+  const handlePolicyClick = (e: React.MouseEvent, tab: 'terms' | 'privacy' | 'refunds' | 'contact' | 'disclaimer') => {
     e.preventDefault();
     if (onNavigateToPolicy) {
       onNavigateToPolicy(tab);
@@ -78,11 +78,6 @@ export const Footer: React.FC<FooterProps> = ({ setView, onNavigateToPolicy }) =
             <li>
               <a href="/refund-policy" onClick={(e) => handlePolicyClick(e, 'refunds')} className="hover:text-white transition-colors">
                 Refund & Cancellation
-              </a>
-            </li>
-            <li>
-              <a href="/shipping-policy" onClick={(e) => handlePolicyClick(e, 'shipping')} className="hover:text-white transition-colors">
-                Service Fulfillment
               </a>
             </li>
             <li>
