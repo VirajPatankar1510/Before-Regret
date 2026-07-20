@@ -518,7 +518,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
             <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 text-center">
               <p className="text-xs text-slate-400 font-bold uppercase tracking-wider font-mono">Payment Gateway</p>
               <h3 className="font-bold text-slate-800 mt-2 text-sm">Instant Checkout</h3>
-              <p className="text-xs text-slate-500 mt-1">Pay via Razorpay UPI, Cards, Netbanking</p>
+              <p className="text-xs text-slate-500 mt-1">Pay via UPI, Cards, Netbanking</p>
               
               <div className="my-6 border-t border-b border-slate-100 py-4">
                 <span className="text-[10px] text-slate-400 block uppercase font-mono">Amount due</span>
@@ -530,7 +530,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs"
               >
                 <CreditCard className="w-4 h-4" />
-                <span>Pay via Razorpay</span>
+                <span>Pay Securely</span>
               </button>
 
               {error && (
@@ -568,7 +568,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                   <RefreshCw className="w-4 h-4 text-white animate-spin-slow" />
                 </div>
                 <div>
-                  <h3 className="font-black text-xs uppercase tracking-widest font-mono">Razorpay SECURE</h3>
+                  <h3 className="font-black text-xs uppercase tracking-widest font-mono">SECURE PAYMENT</h3>
                   <p className="text-[9px] text-blue-200 font-medium">Powering Before Regret payments</p>
                 </div>
               </div>
@@ -718,7 +718,7 @@ export const AskQuestion: React.FC<AskQuestionProps> = ({
                   </div>
                   <h4 className="font-black text-emerald-600 text-base">Payment Successful!</h4>
                   <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
-                    Transaction authorized and settled safely via Razorpay secure engine. Redirecting you...
+                    Transaction authorized and settled safely via secure engine. Redirecting you...
                   </p>
                 </div>
               )}
