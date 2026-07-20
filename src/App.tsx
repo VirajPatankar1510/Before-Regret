@@ -10,7 +10,11 @@ import { Messaging } from './components/Messaging';
 import { Onboarding } from './components/Onboarding';
 import { Footer } from './components/Footer';
 import { AdminPanel } from './components/AdminPanel';
-import { Policies } from './components/Policies';
+import { LegalDisclaimer } from './components/LegalDisclaimer';
+import { TermsConditions } from './components/TermsConditions';
+import { PrivacyPolicy } from './components/PrivacyPolicy';
+import { RefundPolicy } from './components/RefundPolicy';
+import { ContactUs } from './components/ContactUs';
 import { RegretFiles, ARTICLES } from './components/RegretFiles';
 import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from './data';
 import { Neighborhood, ExpertProfile, DirectQuery, Review } from './types';
@@ -78,8 +82,7 @@ export default function App() {
   }, [user]);
 
   // Navigation & Simulation Perspective State
-  const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, dashboard, messaging, become_expert, policies
-  const [policiesTab, setPoliciesTab] = useState<'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer'>('disclaimer');
+  const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, dashboard, messaging, become_expert, legal_disclaimer, terms_conditions, privacy_policy, refund_policy, contact_us
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
   const [highlightSearch, setHighlightSearch] = useState(false);
 
@@ -106,10 +109,13 @@ export default function App() {
     }, 50);
   };
 
-  // Helper to open a specific policy tab
-  const handleNavigateToPolicy = (tab: 'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer') => {
-    setPoliciesTab(tab);
-    setView('policies');
+  // Helper to open a specific standalone policy page
+  const handleNavigateToPolicy = (tab: 'terms' | 'privacy' | 'refunds' | 'contact' | 'disclaimer') => {
+    if (tab === 'disclaimer') setView('legal_disclaimer');
+    else if (tab === 'terms') setView('terms_conditions');
+    else if (tab === 'privacy') setView('privacy_policy');
+    else if (tab === 'refunds') setView('refund_policy');
+    else if (tab === 'contact') setView('contact_us');
     window.scrollTo(0, 0);
   };
 
@@ -317,39 +323,31 @@ export default function App() {
         setView('become_expert');
         setSelectedArticleId(null);
       } else if (p === '/disclaimer' || p === '/legal-disclaimer') {
-        setView('policies');
+        setView('legal_disclaimer');
         setSelectedArticleId(null);
-        setPoliciesTab('disclaimer');
       } else if (p === '/terms' || p === '/terms-and-conditions') {
-        setView('policies');
+        setView('terms_conditions');
         setSelectedArticleId(null);
-        setPoliciesTab('terms');
       } else if (p === '/privacy' || p === '/privacy-policy') {
-        setView('policies');
+        setView('privacy_policy');
         setSelectedArticleId(null);
-        setPoliciesTab('privacy');
       } else if (p === '/refunds' || p === '/refund-policy') {
-        setView('policies');
+        setView('refund_policy');
         setSelectedArticleId(null);
-        setPoliciesTab('refunds');
-      } else if (p === '/shipping' || p === '/shipping-policy') {
-        setView('policies');
-        setSelectedArticleId(null);
-        setPoliciesTab('shipping');
       } else if (p === '/contact' || p === '/contact-us') {
-        setView('policies');
+        setView('contact_us');
         setSelectedArticleId(null);
-        setPoliciesTab('contact');
       } else if (p === '/policies' || p.startsWith('/policies/')) {
-        setView('policies');
-        setSelectedArticleId(null);
+        // Fallback or legacy paths map cleanly
         const parts = p.split('/');
-        if (parts[2]) {
-          const tab = parts[2] as 'terms' | 'privacy' | 'refunds' | 'shipping' | 'contact' | 'disclaimer';
-          setPoliciesTab(tab);
-        } else {
-          setPoliciesTab('disclaimer');
-        }
+        const tab = parts[2] as 'terms' | 'privacy' | 'refunds' | 'contact' | 'disclaimer';
+        if (tab === 'disclaimer') setView('legal_disclaimer');
+        else if (tab === 'terms') setView('terms_conditions');
+        else if (tab === 'privacy') setView('privacy_policy');
+        else if (tab === 'refunds') setView('refund_policy');
+        else if (tab === 'contact') setView('contact_us');
+        else setView('legal_disclaimer');
+        setSelectedArticleId(null);
       } else if (p === '/dashboard' || p === '/dashboard/buyer' || p === '/dashboard/expert') {
         setView('dashboard');
         setSelectedArticleId(null);
@@ -430,14 +428,16 @@ export default function App() {
       targetPath = `/expert/${selectedExpert.id}/ask`;
     } else if (currentView === 'become_expert') {
       targetPath = '/become-expert';
-    } else if (currentView === 'policies') {
-      if (policiesTab === 'disclaimer') targetPath = '/legal-disclaimer';
-      else if (policiesTab === 'terms') targetPath = '/terms-and-conditions';
-      else if (policiesTab === 'privacy') targetPath = '/privacy-policy';
-      else if (policiesTab === 'refunds') targetPath = '/refund-policy';
-      else if (policiesTab === 'shipping') targetPath = '/shipping-policy';
-      else if (policiesTab === 'contact') targetPath = '/contact-us';
-      else targetPath = '/legal-disclaimer';
+    } else if (currentView === 'legal_disclaimer') {
+      targetPath = '/legal-disclaimer';
+    } else if (currentView === 'terms_conditions') {
+      targetPath = '/terms-and-conditions';
+    } else if (currentView === 'privacy_policy') {
+      targetPath = '/privacy-policy';
+    } else if (currentView === 'refund_policy') {
+      targetPath = '/refund-policy';
+    } else if (currentView === 'contact_us') {
+      targetPath = '/contact-us';
     } else if (currentView === 'dashboard') {
       targetPath = '/dashboard';
     } else if (currentView === 'messaging' && activeQuery) {
@@ -453,7 +453,7 @@ export default function App() {
         console.warn("Could not update browser history path via pushState:", err);
       }
     }
-  }, [currentView, selectedArticleId, selectedExpert?.id, activeQuery?.id, policiesTab]);
+  }, [currentView, selectedArticleId, selectedExpert?.id, activeQuery?.id]);
 
   // Update page title & meta elements dynamically for premium SEO crawlability
   useEffect(() => {
@@ -483,29 +483,21 @@ export default function App() {
       } else if (currentView === 'become_expert') {
         title = "Earn as a Local Resident Expert | BeforeRegret Onboarding";
         description = "Help prospective buyers and tenants make informed decisions about your society. Share honest reviews and earn per consultation.";
-      } else if (currentView === 'policies') {
-        if (policiesTab === 'disclaimer') {
-          title = "Comprehensive Legal Disclaimer & Waiver of Liability | BeforeRegret";
-          description = "Review the BeforeRegret legal disclaimer and liability waiver covering crowdsourced resident feedback and Indian property laws.";
-        } else if (policiesTab === 'terms') {
-          title = "Terms of Service & Platform Guidelines | BeforeRegret";
-          description = "Read our standard user agreement, code of conduct, intermediary safe harbor conditions, and binding arbitration details.";
-        } else if (policiesTab === 'privacy') {
-          title = "Privacy Policy & Resident Anonymity Statement | BeforeRegret";
-          description = "We protect our local experts and seeker identities with end-to-end masked databases. Read our comprehensive data privacy standard.";
-        } else if (policiesTab === 'refunds') {
-          title = "Refund and Cancellation Policy | BeforeRegret";
-          description = "Learn about our 100% moneyback guarantee on peer consultation bookings if the resident expert fails to connect within 48 hours.";
-        } else if (policiesTab === 'shipping') {
-          title = "Service Fulfillment Policy | BeforeRegret";
-          description = "Understand peer-to-peer delivery structures, electronic chats, and service timeline completions for gated society consulting.";
-        } else if (policiesTab === 'contact') {
-          title = "Official Contact & Support desk | BeforeRegret";
-          description = "Get in touch with Atmostellar regarding billing, corporate partnership, grievance redressal, or RWA complaints.";
-        } else {
-          title = "BeforeRegret Policies and Legal Compliance Center";
-          description = "Review our Terms of Service, Privacy Policy, Refund policy, and Disclaimer for neighborhood research.";
-        }
+      } else if (currentView === 'legal_disclaimer') {
+        title = "Comprehensive Legal Disclaimer & Waiver of Liability | BeforeRegret";
+        description = "Review the BeforeRegret legal disclaimer and liability waiver covering crowdsourced resident feedback and Indian property laws.";
+      } else if (currentView === 'terms_conditions') {
+        title = "Terms of Service & Platform Guidelines | BeforeRegret";
+        description = "Read our standard user agreement, code of conduct, intermediary safe harbor conditions, and binding arbitration details.";
+      } else if (currentView === 'privacy_policy') {
+        title = "Privacy Policy & Resident Anonymity Statement | BeforeRegret";
+        description = "We protect our local experts and seeker identities with end-to-end masked databases. Read our comprehensive data privacy standard.";
+      } else if (currentView === 'refund_policy') {
+        title = "Refund and Cancellation Policy | BeforeRegret";
+        description = "Learn about our 100% moneyback guarantee on peer consultation bookings if the resident expert fails to connect within 48 hours.";
+      } else if (currentView === 'contact_us') {
+        title = "Official Contact & Support desk | BeforeRegret";
+        description = "Get in touch with Atmostellar regarding billing, corporate partnership, grievance redressal, or RWA complaints.";
       } else if (currentView === 'dashboard') {
         title = "My Dashboard | BeforeRegret";
       }
@@ -1091,12 +1083,21 @@ export default function App() {
           />
         )}
 
-        {/* VIEW: POLICIES COMPLIANCE CENTER */}
-        {currentView === 'policies' && (
-          <Policies
-            initialTab={policiesTab}
-            onBackToHome={() => setView('home')}
-          />
+        {/* VIEW: STANDALONE POLICY PAGES */}
+        {currentView === 'legal_disclaimer' && (
+          <LegalDisclaimer onBackToHome={() => setView('home')} />
+        )}
+        {currentView === 'terms_conditions' && (
+          <TermsConditions onBackToHome={() => setView('home')} />
+        )}
+        {currentView === 'privacy_policy' && (
+          <PrivacyPolicy onBackToHome={() => setView('home')} />
+        )}
+        {currentView === 'refund_policy' && (
+          <RefundPolicy onBackToHome={() => setView('home')} />
+        )}
+        {currentView === 'contact_us' && (
+          <ContactUs onBackToHome={() => setView('home')} />
         )}
 
         {/* VIEW: REGRET FILES EDITORIALS */}
