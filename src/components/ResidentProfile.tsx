@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import { ExpertProfile, Review, Neighborhood } from '../types';
-import { pricingPlans } from '../data';
-import { ChevronLeft, Clock, ShieldCheck, Check, ArrowRight, MessageSquare, Heart, Award, Star, ThumbsUp, MapPin } from 'lucide-react';
+import { 
+  ChevronLeft, 
+  Heart, 
+  Lock,
+  Check, 
+  X
+} from 'lucide-react';
 import { ResidentAvatar } from './ResidentAvatar';
+import { useAuth } from '../context/AuthContext';
 
 interface ResidentProfileProps {
   expert: ExpertProfile;
@@ -14,6 +20,10 @@ interface ResidentProfileProps {
   savedExperts: string[];
   onToggleSaveExpert: (expertId: string) => void;
   currentUserUid?: string;
+  allExperts?: ExpertProfile[];
+  onSelectExpert?: (expert: ExpertProfile) => void;
+  onSubmitQuestion?: (queryText: string, packageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT', bookedSlot?: string) => void;
+  queries?: any[];
 }
 
 export const ResidentProfile: React.FC<ResidentProfileProps> = ({
@@ -26,407 +36,663 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
   savedExperts,
   onToggleSaveExpert,
   currentUserUid,
+  allExperts = [],
+  onSelectExpert,
+  onSubmitQuestion,
+  queries = [],
 }) => {
-  const [selectedPlanId, setSelectedPlanId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>('LIVE_CHAT');
   const isSaved = savedExperts.includes(expert.id);
   const isOwnListing = currentUserUid && currentUserUid === expert.userId;
 
   // Filter reviews matching current expert
   const expertReviews = reviews.filter((rev) => rev.expertId === expert.id);
 
-  const activePlan = pricingPlans[0]; // Only LIVE_CHAT remains in pricingPlans
+  // Auth context for seamless 1-click test sign-in
+  const { user, loginWithMockUser, isClerkActive, triggerClerkSignIn } = useAuth();
+
+  // Booking Flow Steps States
+  const [bookingStep, setBookingStep] = useState<'datetime' | 'review' | 'payment' | 'confirmed'>('datetime');
+  const [selectedDateKey, setSelectedDateKey] = useState<'Today' | 'Tomorrow' | 'Day After'>('Today');
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
+  const [queryText, setQueryText] = useState<string>('');
+  
+  // Payment States
+  const [cardNumber, setCardNumber] = useState('4532 7150 2000 8952');
+  const [expiry, setExpiry] = useState('12/29');
+  const [cvv, setCvv] = useState('123');
+  const [otp, setOtp] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentSubStep, setPaymentSubStep] = useState<'details' | 'otp'>('details');
+
+  // Mobile drawer state
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+
+  // Weekday name calculation
+  const getWeekdayName = (offset: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + offset);
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  };
+
+  const dates = [
+    { key: 'Today' as const, label: 'Today' },
+    { key: 'Tomorrow' as const, label: 'Tomorrow' },
+    { key: 'Day After' as const, label: getWeekdayName(2) }
+  ];
+
+  // Slot helper
+  const getSlotsForDate = (dateKey: 'Today' | 'Tomorrow' | 'Day After') => {
+    if (expert.availableSlots && expert.availableSlots.length > 0) {
+      return expert.availableSlots
+        .filter(s => {
+          if (dateKey === 'Today') return s.startsWith('Today');
+          if (dateKey === 'Tomorrow') return s.startsWith('Tomorrow');
+          return !s.startsWith('Today') && !s.startsWith('Tomorrow');
+        })
+        .map(s => s.replace(/^(Today|Tomorrow),\s*/, '').trim());
+    }
+    
+    if (dateKey === 'Today') {
+      return ['04:30 PM - 05:00 PM', '06:00 PM - 06:30 PM', '07:30 PM - 08:00 PM'];
+    } else if (dateKey === 'Tomorrow') {
+      return ['11:00 AM - 11:30 AM', '03:00 PM - 03:30 PM', '05:30 PM - 06:00 PM'];
+    } else {
+      return ['10:00 AM - 10:30 AM', '02:00 PM - 02:30 PM', '04:00 PM - 04:30 PM'];
+    }
+  };
+
+  const getFullSlotString = (dateKey: 'Today' | 'Tomorrow' | 'Day After', time: string) => {
+    if (dateKey === 'Today') return `Today, ${time}`;
+    if (dateKey === 'Tomorrow') return `Tomorrow, ${time}`;
+    return `${getWeekdayName(2)}, ${time}`;
+  };
+
+  const isSlotBooked = (fullSlotString: string) => {
+    return queries.some(q => q.expertId === expert.id && q.packageOption === 'LIVE_CHAT' && q.bookedSlot === fullSlotString);
+  };
+
+  const currentFullSlotString = selectedTimeSlot ? getFullSlotString(selectedDateKey, selectedTimeSlot) : '';
+
+  // Auth helper
+  const handleFrictionlessSignIn = async () => {
+    setIsProcessing(true);
+    try {
+      if (isClerkActive) {
+        triggerClerkSignIn();
+      } else {
+        await loginWithMockUser({
+          uid: 'user_mock_buyer',
+          displayName: 'Amit Kumar',
+          email: 'amit@example.com'
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Payment triggers
+  const handleInitiatePayment = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      setPaymentSubStep('otp');
+    }, 1200);
+  };
+
+  const handleVerifyOtp = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      setBookingStep('confirmed');
+    }, 1200);
+  };
+
+  const handleFinalizeBooking = () => {
+    if (onSubmitQuestion && selectedTimeSlot) {
+      onSubmitQuestion(queryText, 'LIVE_CHAT', currentFullSlotString);
+      setIsMobileDrawerOpen(false);
+    }
+  };
+
+  const handleScrollToBooking = () => {
+    if (window.innerWidth < 768) {
+      setIsMobileDrawerOpen(true);
+    } else {
+      const el = document.getElementById('booking-panel');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  };
+
+
+  const renderBookingWizard = () => {
+    return (
+      <div className="bg-slate-950 border border-slate-900 shadow-2xl rounded-xl p-6 space-y-6 relative overflow-hidden ring-1 ring-white/10 transition-all duration-300 hover:shadow-3xl hover:scale-[1.01] text-white">
+        {/* Elegant top highlight indicator */}
+        <div className="absolute top-0 left-0 right-0 h-[3px] bg-amber-500" />
+        {/* Header step progress */}
+        <div className="space-y-1.5 pb-2 border-b border-slate-900">
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+              {bookingStep === 'datetime' && 'Step 1: Date & Time'}
+              {bookingStep === 'review' && 'Step 2: Review Booking'}
+              {bookingStep === 'payment' && 'Step 3: Secure Payment'}
+              {bookingStep === 'confirmed' && 'Step 4: Booking Confirmed'}
+            </span>
+            <div className="flex gap-1">
+              <span className={`h-1 w-3 rounded-full ${bookingStep === 'datetime' ? 'bg-white' : 'bg-slate-800'}`} />
+              <span className={`h-1 w-3 rounded-full ${bookingStep === 'review' ? 'bg-white' : 'bg-slate-800'}`} />
+              <span className={`h-1 w-3 rounded-full ${bookingStep === 'payment' ? 'bg-white' : 'bg-slate-800'}`} />
+              <span className={`h-1 w-3 rounded-full ${bookingStep === 'confirmed' ? 'bg-white' : 'bg-slate-800'}`} />
+            </div>
+          </div>
+        </div>
+
+        {/* STEP 1: DATE & TIME */}
+        {bookingStep === 'datetime' && (
+          <div className="space-y-5">
+            <div>
+              <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5 font-mono">
+                Select Date
+              </span>
+              <div className="grid grid-cols-3 gap-2">
+                {dates.map((d) => (
+                  <button
+                    key={d.key}
+                    onClick={() => {
+                      setSelectedDateKey(d.key);
+                      setSelectedTimeSlot('');
+                    }}
+                    className={`py-2 text-xs font-medium rounded-md border transition-all cursor-pointer ${
+                      selectedDateKey === d.key
+                        ? 'border-white bg-white text-slate-950 font-semibold'
+                        : 'border-slate-850 text-slate-300 hover:border-amber-500 hover:ring-1 hover:ring-amber-500 hover:text-white bg-slate-900/60'
+                    }`}
+                  >
+                    {d.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5 font-mono">
+                Select Time Slot (20 Mins)
+              </span>
+              <div className="grid grid-cols-1 gap-1.5 max-h-44 overflow-y-auto pr-1">
+                {getSlotsForDate(selectedDateKey).map((time) => {
+                  const fullStr = getFullSlotString(selectedDateKey, time);
+                  const booked = isSlotBooked(fullStr);
+                  return (
+                    <button
+                      key={time}
+                      disabled={booked}
+                      onClick={() => setSelectedTimeSlot(time)}
+                      className={`w-full py-2 px-3 rounded-md border text-left text-xs transition-all flex items-center justify-between ${
+                        booked
+                          ? 'border-slate-950 bg-slate-950/40 text-slate-600 cursor-not-allowed'
+                          : selectedTimeSlot === time
+                          ? 'border-white bg-white text-slate-950 font-semibold'
+                          : 'border-slate-850 text-slate-300 hover:border-amber-500 hover:ring-1 hover:ring-amber-500 hover:text-white bg-slate-900/60 cursor-pointer'
+                      }`}
+                    >
+                      <span className="font-mono">{time}</span>
+                      <span className="text-[10px] font-medium uppercase font-mono">
+                        {booked ? 'Booked' : selectedTimeSlot === time ? 'Selected' : 'Available'}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <button
+              onClick={() => setBookingStep('review')}
+              disabled={!selectedTimeSlot || isOwnListing}
+              className="w-full bg-white hover:bg-slate-100 disabled:bg-slate-900 disabled:text-slate-500 disabled:border disabled:border-slate-850 text-slate-950 font-semibold text-xs uppercase tracking-wider py-3 rounded-md transition-colors cursor-pointer"
+            >
+              {isOwnListing ? 'Your active listing' : 'Review Booking'}
+            </button>
+          </div>
+        )}
+
+        {/* STEP 2: REVIEW */}
+        {bookingStep === 'review' && (
+          <div className="space-y-4">
+            <div className="bg-slate-900/60 border border-slate-800/80 rounded-lg p-3.5 space-y-3 text-xs">
+              <div className="flex justify-between items-center pb-2 border-b border-slate-800/40">
+                <span className="text-slate-400 font-medium">Scheduled Time</span>
+                <span className="font-mono font-semibold text-amber-400">{currentFullSlotString}</span>
+              </div>
+              <div className="flex justify-between items-center pb-2 border-b border-slate-800/40">
+                <span className="text-slate-400 font-medium">Duration</span>
+                <span className="font-semibold text-slate-200">20-minute Private Chat</span>
+              </div>
+              <div className="flex justify-between items-center pt-0.5">
+                <span className="font-semibold text-slate-300">Rate</span>
+                <div className="text-right">
+                  <span className="font-mono font-bold text-base text-white">₹299</span>
+                  <span className="text-[9px] text-slate-500 block">All-inclusive fee</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider font-mono">
+                What do you want to verify or ask?
+              </span>
+              <textarea
+                value={queryText}
+                onChange={(e) => setQueryText(e.target.value)}
+                placeholder="E.g., What are the typical water schedules? Are there hidden parking or move-in charges?"
+                className="w-full text-xs p-3 border border-slate-850 rounded-md focus:outline-none focus:border-slate-500 bg-slate-900 text-white placeholder-slate-500 resize-none overflow-hidden"
+                rows={3}
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              />
+              <div className="flex justify-between text-[10px] text-slate-500">
+                <span>Please share specific details</span>
+                <span>
+                  {queryText.trim().length}/20 chars min
+                </span>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setBookingStep('datetime')}
+                className="w-1/3 border border-slate-800 hover:bg-slate-900 text-slate-300 font-medium text-xs uppercase tracking-wider py-2.5 rounded-md transition-colors cursor-pointer text-center"
+              >
+                Back
+              </button>
+              
+              {!user ? (
+                <button
+                  onClick={handleFrictionlessSignIn}
+                  disabled={isProcessing}
+                  className="flex-1 bg-white hover:bg-slate-100 text-slate-950 font-semibold text-xs uppercase tracking-wider py-2.5 rounded-md transition-colors cursor-pointer"
+                >
+                  {isProcessing ? 'Signing in...' : 'Sign In'}
+                </button>
+              ) : (
+                <button
+                  onClick={() => setBookingStep('payment')}
+                  disabled={queryText.trim().length < 20}
+                  className="flex-1 bg-white hover:bg-slate-100 disabled:bg-slate-900 disabled:text-slate-500 disabled:border disabled:border-slate-850 text-slate-950 font-semibold text-xs uppercase tracking-wider py-2.5 rounded-md transition-colors cursor-pointer"
+                >
+                  Proceed to Payment
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3: SECURE PAYMENT */}
+        {bookingStep === 'payment' && (
+          <div className="space-y-4">
+            <div className="flex justify-between text-xs font-medium pb-2 border-b border-slate-900">
+              <span className="text-slate-400">Amount Due</span>
+              <span className="font-mono text-white">₹299</span>
+            </div>
+
+            {paymentSubStep === 'details' ? (
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <span className="block text-[9px] font-semibold text-slate-500 uppercase tracking-wider font-mono">
+                    Card Number
+                  </span>
+                  <input
+                    type="text"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(e.target.value)}
+                    className="w-full text-xs p-2.5 border border-slate-850 rounded-md bg-slate-900 text-white font-mono focus:outline-none focus:border-slate-600"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <span className="block text-[9px] font-semibold text-slate-500 uppercase tracking-wider font-mono">
+                      Expiry Date
+                    </span>
+                    <input
+                      type="text"
+                      value={expiry}
+                      onChange={(e) => setExpiry(e.target.value)}
+                      placeholder="MM/YY"
+                      className="w-full text-xs p-2.5 border border-slate-850 rounded-md bg-slate-900 text-white font-mono focus:outline-none focus:border-slate-600"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="block text-[9px] font-semibold text-slate-500 uppercase tracking-wider font-mono">
+                      CVV
+                    </span>
+                    <input
+                      type="password"
+                      value={cvv}
+                      onChange={(e) => setCvv(e.target.value)}
+                      maxLength={3}
+                      className="w-full text-xs p-2.5 border border-slate-850 rounded-md bg-slate-900 text-white font-mono focus:outline-none focus:border-slate-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-1">
+                  <button
+                    onClick={() => setBookingStep('review')}
+                    className="w-1/3 border border-slate-800 hover:bg-slate-900 text-slate-300 font-medium text-xs uppercase tracking-wider py-2.5 rounded-md transition-colors cursor-pointer text-center"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={handleInitiatePayment}
+                    disabled={isProcessing}
+                    className="flex-1 bg-white hover:bg-slate-100 text-slate-950 font-semibold text-xs uppercase tracking-wider py-2.5 rounded-md transition-colors cursor-pointer"
+                  >
+                    {isProcessing ? 'Processing...' : 'Pay ₹299'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-md text-[11px] text-slate-300 leading-normal">
+                  Secure SMS OTP has been sent. Enter code <strong className="font-semibold text-white">123456</strong> below to complete verification.
+                </div>
+
+                <div className="space-y-1">
+                  <span className="block text-[9px] font-semibold text-slate-500 uppercase tracking-wider font-mono">
+                    Enter OTP
+                  </span>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    placeholder="123456"
+                    className="w-full text-sm text-center tracking-widest p-2.5 border border-slate-850 rounded-md bg-slate-900 text-white font-mono font-semibold focus:outline-none focus:border-slate-600"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setPaymentSubStep('details')}
+                    className="w-1/3 border border-slate-800 hover:bg-slate-900 text-slate-300 font-medium text-xs uppercase tracking-wider py-2.5 rounded-md transition-colors cursor-pointer text-center"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={handleVerifyOtp}
+                    disabled={isProcessing || otp.trim().length < 4}
+                    className="flex-1 bg-white hover:bg-slate-100 text-slate-950 font-semibold text-xs uppercase tracking-wider py-2.5 rounded-md transition-colors cursor-pointer"
+                  >
+                    {isProcessing ? 'Verifying...' : 'Confirm'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="text-[9px] text-slate-500 text-center flex items-center justify-center gap-1 font-mono">
+              <Lock className="w-3 h-3 text-slate-650" />
+              <span>SSL Secure Encrypted Platform Connection</span>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: CONFIRMED */}
+        {bookingStep === 'confirmed' && (
+          <div className="text-center py-4 space-y-4">
+            <div className="h-8 w-8 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center mx-auto">
+              <Check className="w-4 h-4 font-bold" />
+            </div>
+            
+            <div className="space-y-1">
+              <span className="block text-sm font-semibold text-white">Booking Confirmed</span>
+              <p className="text-xs text-slate-450 leading-normal max-w-xs mx-auto">
+                Consultation scheduled with {expert.fullName} for <span className="font-semibold text-slate-200 font-mono">{currentFullSlotString}</span>.
+              </p>
+            </div>
+
+            <button
+              onClick={handleFinalizeBooking}
+              className="w-full bg-white hover:bg-slate-100 text-slate-950 font-semibold text-xs uppercase tracking-wider py-2.5 rounded-md transition-colors cursor-pointer text-center"
+            >
+              Go to Dashboard
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12 font-sans">
+    <div className="max-w-4xl mx-auto px-6 py-8 sm:py-12 font-sans text-slate-800 bg-white">
       
-      {/* Back button and Save action */}
-      <div className="flex items-center justify-between mb-6">
+      {/* Mini top bar */}
+      <div className="flex items-center justify-between mb-10">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 uppercase tracking-widest transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-slate-400 hover:text-slate-800 uppercase tracking-widest transition-colors cursor-pointer"
         >
-          <ChevronLeft className="w-4 h-4 text-blue-600" />
-          <span>Back to Home</span>
+          <ChevronLeft className="w-3.5 h-3.5" />
+          <span>Locality</span>
         </button>
 
         <button
           onClick={() => onToggleSaveExpert(expert.id)}
-          className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] font-semibold uppercase tracking-wider transition-all cursor-pointer ${
             isSaved
-              ? 'bg-red-50 border-red-200 text-red-600'
-              : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+              ? 'bg-slate-900 border-slate-900 text-white'
+              : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
           }`}
         >
-          <Heart className={`w-4 h-4 ${isSaved ? 'fill-red-500 text-red-500' : ''}`} />
-          <span>{isSaved ? 'Saved Expert' : 'Save Resident'}</span>
+          <Heart className={`w-3 h-3 ${isSaved ? 'fill-current' : ''}`} />
+          <span>{isSaved ? 'Saved' : 'Save'}</span>
         </button>
       </div>
 
-      {/* Fiverr Gig Title Header */}
-      <div className="mb-8 border-b border-slate-100 pb-6">
-        <h1 className="text-xl sm:text-3xl font-display font-black tracking-tight text-slate-900 leading-tight">
-          {expert.listingHeadline || `I will consult you on ${locality.name}'s water hours, maid rates, and actual society guidelines`}
-        </h1>
-        <div className="flex flex-wrap items-center gap-3 mt-4 text-xs text-slate-500 font-medium">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-black text-blue-700 font-mono">
-              {expert.fullName.split(' ')[0].charAt(0)}
-            </div>
-            <span className="font-bold text-slate-800">{expert.fullName.split(' ')[0]}</span>
-          </div>
-          <span className="text-slate-300">|</span>
-          <span className="text-emerald-600 font-bold">
-            Local Resident
-          </span>
-          <span className="text-slate-300">|</span>
-          <div className="flex items-center gap-1 font-bold text-amber-500 font-mono">
-            ⭐ {expert.rating} <span className="text-slate-400 font-normal">({expert.questionsAnsweredCount} answers)</span>
-          </div>
-          <span className="text-slate-300">|</span>
-          <span className="text-slate-500 font-mono font-bold bg-slate-100 px-2 py-0.5 rounded-sm">
-            {expert.responseTime}
-          </span>
-          {expert.isInstantChatEnabled && (
-            <>
-              <span className="text-slate-300">|</span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-800 text-[10px] font-bold font-sans shadow-2xs">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                </span>
-                Available Now — Chat within 5 minutes
-              </span>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Main Two-Column Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      {/* Main content split panel */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
         
-        {/* Left Column: Gig/Profile details */}
-        <div className="lg:col-span-2 space-y-8">
+        {/* Left column content */}
+        <div className="md:col-span-2 space-y-12">
           
-          {/* Combined Resident Locality, Pincode & Landmark Details Card */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm overflow-hidden">
-            {/* Locality Header Banner */}
-            <div className="bg-gradient-to-tr from-slate-900 via-slate-800 to-blue-950 p-6 sm:p-8 text-white relative overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.15),transparent_50%)]"></div>
-              
-              <div className="relative z-10">
-                <span className="bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 border border-blue-500 rounded uppercase tracking-widest font-mono">
-                  Resident Locality
-                </span>
-                <h2 className="text-2xl font-display font-black tracking-tight mt-3">
-                  {locality.name}
-                </h2>
-                <p className="text-xs text-slate-300 mt-1">
-                  {locality.apartmentName || 'Apartment Complex'} • {locality.city}, {locality.state} - {locality.pincode}
+          {/* ABOVE THE FOLD SECTION (Strict boundary limit) */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <ResidentAvatar name={expert.fullName} className="w-16 h-16 rounded-full border border-slate-100 shrink-0" />
+              <div>
+                <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">{expert.fullName}</h1>
+                <p className="text-sm font-semibold text-slate-500">
+                  Resident of {locality.name}, {expert.city}
                 </p>
               </div>
             </div>
 
-            {/* Address & Landmark Details inside same container */}
-            <div className="p-6 sm:p-8 space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-                <div>
-                  <h3 className="font-display font-black text-slate-900 text-base flex items-center gap-2">
-                    <span className="p-1.5 bg-blue-50 text-blue-600 rounded-lg shrink-0">
-                      <MapPin className="w-4 h-4" />
-                    </span>
-                    <span>Registered Pincode & Landmark Details</span>
-                  </h3>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    Address mapping and landmarks for {locality.name}
-                  </p>
-                </div>
-                <div className="px-3 py-1 bg-slate-100 text-slate-850 rounded-full font-mono font-bold text-[11px] tracking-wide self-start sm:self-auto flex items-center gap-1 border">
-                  <span>PIN:</span>
-                  <span className="text-blue-600">{locality.pincode || "Not Set"}</span>
-                </div>
-              </div>
+            {/* Hook Headline */}
+            <h2 className="text-lg font-medium text-slate-600 leading-relaxed italic max-w-xl">
+              "{expert.listingHeadline || 'Learn what daily life is actually like before you move.'}"
+            </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-1">
-                  <h4 className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-mono">Building Name (General)</h4>
-                  <p className="text-xs font-bold text-slate-800 leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-100">
-                    {locality.detailedAddress || `${locality.name}, ${locality.city}, ${locality.state}`}
-                  </p>
-                </div>
+            {/* Quick clean info row */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 font-medium">
+              {expert.yearsLivingThere > 0 && (
+                <>
+                  <span>{expert.yearsLivingThere} {expert.yearsLivingThere === 1 ? 'year' : 'years'} resident</span>
+                  <span className="text-slate-200 select-none">•</span>
+                </>
+              )}
+              <span>Speaks {expert.languages.join(', ')}</span>
+            </div>
 
-                <div className="space-y-1">
-                  <h4 className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-mono">Key Landmark & Area Guide</h4>
-                  <p className="text-xs font-bold text-blue-800 leading-relaxed bg-blue-50/30 p-3 rounded-xl border border-blue-100/30">
-                    📍 {locality.landmarks || "No specific landmarks registered yet. Ask the resident expert directly."}
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-4 bg-amber-50/40 rounded-2xl border border-amber-100/40 text-[11px] text-amber-800 leading-relaxed flex items-start gap-3">
-                <span className="text-sm shrink-0 mt-0.5">🛡️</span>
-                <p>
-                  <b>Privacy & Safety Mandate:</b> To guarantee complete safety, our experts never disclose exact flat, floor, or house numbers. They provide general building names and neighborhood transit cues so you can consult with absolute peace of mind.
-                </p>
-              </div>
+            {/* Primary above-the-fold CTA trigger */}
+            <div className="pt-2">
+              <button
+                onClick={handleScrollToBooking}
+                disabled={isOwnListing}
+                className="bg-slate-900 hover:bg-slate-800 disabled:bg-slate-100 disabled:text-slate-400 text-white font-medium text-xs uppercase tracking-wider py-3 px-6 rounded-md transition-colors cursor-pointer"
+              >
+                {isOwnListing ? 'Your Active Listing' : 'Book Resident Chat • ₹299'}
+              </button>
             </div>
           </div>
 
-          {/* About the Expert Profile Card */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8">
-            <h3 className="font-display font-black text-slate-900 text-lg mb-6">
-              About The Resident Expert
+          {/* ABOUT SECTION */}
+          <div className="space-y-3 pt-4">
+            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+              A Little About Me
             </h3>
-
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 pb-6 border-b border-slate-100 mb-6">
-              <ResidentAvatar name={expert.fullName} className="w-16 h-16 shadow-2xs border border-slate-200" />
-              <div className="text-center sm:text-left flex-1">
-                <h4 className="font-bold text-slate-900 text-base">{expert.fullName.split(' ')[0]}</h4>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  {expert.stillLivesThere !== false ? 'Residing in' : 'Resided in'} {locality.name} • {expert.stillLivesThere !== false ? 'since' : 'for'} {expert.yearsLivingThere === 0 ? 'less than a year' : expert.yearsLivingThere >= 50 ? '50+ years' : `${expert.yearsLivingThere} years`}
-                </p>
-                <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-3">
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
-                    expert.stillLivesThere !== false
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-100'
-                      : 'bg-amber-50 text-amber-800 border-amber-100'
-                  }`}>
-                    {expert.stillLivesThere !== false ? (
-                      <span className="flex items-center gap-1.5">
-                        <span className="relative flex h-1.5 w-1.5 shrink-0">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                        </span>
-                        Currently Lives Here
-                      </span>
-                    ) : '⚪ Former Resident'}
-                  </span>
-                  <span className="bg-slate-50 text-slate-700 text-[10px] font-bold px-2 py-0.5 border border-slate-200 rounded-md">
-                    ⭐ {expert.rating} Stars
-                  </span>
-                  <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 border border-blue-100/50 rounded-md">
-                    {expert.experienceLevel}
-                  </span>
-                  <span className="bg-emerald-50 text-emerald-800 text-[10px] font-bold px-2 py-0.5 border border-emerald-100 rounded-md">
-                    {expert.responseRate}% Response Speed
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Structured attributes */}
-            <div className="grid grid-cols-2 gap-4 text-xs text-slate-600 mb-6 pb-6 border-b border-slate-100">
-              <div>
-                <span className="text-slate-400 block mb-0.5">Languages Spoken</span>
-                <strong className="text-slate-800">{expert.languages.join(', ')}</strong>
-              </div>
-              <div>
-                <span className="text-slate-400 block mb-0.5">Availability hours</span>
-                <strong className="text-slate-800 font-mono">{expert.availability}</strong>
-              </div>
-              <div>
-                <span className="text-slate-400 block mb-0.5">Total repeat buyers</span>
-                <strong className="text-slate-800 font-mono">{expert.repeatBuyersCount} buyers</strong>
-              </div>
-              <div>
-                <span className="text-slate-400 block mb-0.5">Knowledge Areas</span>
-                <strong className="text-slate-800">Bylaws, Water crisis, Maid logistics</strong>
-              </div>
-            </div>
-
-            {/* Bio text */}
-            <p className="text-sm text-slate-600 leading-relaxed mb-6 font-medium">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line font-sans">
               {expert.bio}
             </p>
+          </div>
 
-            {/* Topics they know best */}
-            <div>
-              <h4 className="font-bold text-xs text-slate-400 uppercase tracking-wider mb-3">
-                Topics I Know Best
-              </h4>
-              <div className="flex flex-wrap gap-2">
+          {/* TOPICS SECTION */}
+          {expert.expertiseTags && expert.expertiseTags.length > 0 && (
+            <div className="space-y-3 pt-4">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+                Ask Me About
+              </h3>
+              <div className="flex flex-wrap gap-1.5">
                 {expert.expertiseTags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="bg-slate-100 border border-slate-200/60 text-slate-700 text-xs px-3 py-1 rounded-full font-sans transition-colors"
+                  <span 
+                    key={tag} 
+                    className="px-2.5 py-1 bg-slate-50 border border-slate-150 text-[11px] text-slate-600 rounded-md font-medium"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
             </div>
+          )}
+
+          {/* HOW BOOKING WORKS SECTION */}
+          <div className="space-y-4 p-6 bg-slate-50/50 border border-slate-100 rounded-xl transition-all duration-300 hover:bg-slate-50">
+            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+              How the Consultation Works
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs pt-1">
+              {[
+                { num: '1', title: 'Select Slot', desc: 'Pick a date and 20-minute time slot.' },
+                { num: '2', title: 'Describe', desc: 'Share your specific verification questions.' },
+                { num: '3', title: 'Payment', desc: 'Complete Payment' },
+                { num: '4', title: 'Live Chat', desc: 'Speak directly with the resident.' }
+              ].map((step) => (
+                <div key={step.num} className="space-y-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold font-mono text-slate-450">[{step.num}]</span>
+                    <span className="font-semibold text-slate-800">{step.title}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-normal">{step.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Past Resident Answers Feedback (Reviews) */}
-          <div className="space-y-6">
-            <h3 className="font-display font-black text-slate-900 text-lg">
-              Consulting Reviews from Buyers
+          {/* WHAT I CAN'T HELP WITH SECTION */}
+          <div className="space-y-3 pt-4">
+            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+              What I Can't Help With
             </h3>
+            <ul className="space-y-1.5 text-xs text-slate-500 leading-relaxed">
+              <li className="flex items-start gap-1.5">
+                <span className="text-slate-300 select-none">•</span>
+                <span>Property valuation</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-slate-300 select-none">•</span>
+                <span>Legal advice</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-slate-300 select-none">•</span>
+                <span>Loans</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-slate-300 select-none">•</span>
+                <span>Taxes</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-slate-300 select-none">•</span>
+                <span>Investment advice</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-slate-300 select-none">•</span>
+                <span>Builder disputes</span>
+              </li>
+            </ul>
+            <p className="text-[11px] font-semibold text-slate-400 font-sans pt-1">
+              "I only share my personal experience of living here."
+            </p>
+          </div>
 
-            {expertReviews.length > 0 ? (
+          {/* AUTHENTIC RESIDENT FEEDBACK */}
+          {expertReviews.length > 0 && (
+            <div className="space-y-4 pt-4 border-t border-slate-100">
+              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+                Resident Feedback
+              </h3>
               <div className="space-y-4">
                 {expertReviews.map((rev) => (
-                  <div
-                    key={rev.id}
-                    className="p-5 bg-white border border-slate-200 rounded-2xl hover:border-slate-300 transition-all shadow-3xs"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-700 font-mono">
-                          {rev.buyerName.charAt(0)}
-                        </div>
-                        <span className="text-xs font-bold text-slate-800">{rev.buyerName}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-amber-500 font-mono text-xs font-black">
-                        ⭐ {rev.rating}
-                      </div>
+                  <div key={rev.id} className="text-xs space-y-1">
+                    <div className="flex justify-between font-semibold">
+                      <span className="text-slate-800">{rev.buyerName}</span>
+                      <span className="text-slate-400 font-mono">⭐ {rev.rating}</span>
                     </div>
-                    
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed italic">
-                      "{rev.comment}"
-                    </p>
-
-                    <div className="flex items-center gap-1 text-[10px] text-emerald-600 font-semibold font-mono mt-3.5 pt-2.5 border-t border-slate-50">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                      <span>Protected Purchase Transaction</span>
-                    </div>
+                    <p className="text-slate-500 leading-relaxed italic">"{rev.comment}"</p>
                   </div>
                 ))}
               </div>
-            ) : (
-              <p className="text-xs text-slate-400 italic bg-slate-50 p-6 rounded-2xl text-center border border-dashed border-slate-200">
-                No customer consult reviews posted for {expert.fullName.split(' ')[0]} yet. Be the first to ask!
-              </p>
-            )}
-          </div>
+            </div>
+          )}
 
         </div>
 
-        {/* Right Column: Sticky Single-Package Chat Box */}
-        <div className="lg:col-span-1 sticky top-24 z-30">
-          
-          <div className="bg-white border-2 border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-            
-            {/* Header banner indicating Live Chat only */}
-            <div className="bg-slate-50 border-b border-slate-200 px-5 py-4 text-center">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-100 text-orange-700 text-[10px] font-bold uppercase tracking-wider font-mono">
-                Exclusive Package Option
-              </span>
-              <h4 className="font-extrabold text-slate-900 text-sm tracking-tight mt-2">
-                Live Chat Consultation
-              </h4>
+        {/* Right sticky sidebar column */}
+        <div id="booking-panel" className="hidden md:block md:col-span-1 sticky top-24 z-30">
+          <div className="space-y-4">
+            <div className="flex justify-between items-baseline px-1 text-xs text-slate-400">
+              <span>Chat with a Resident:</span>
+              <span className="text-sm font-bold text-slate-900 font-mono">₹299</span>
             </div>
-
-            {/* Package Details Render */}
-            <div className="p-6">
-              <div className="flex items-baseline justify-between gap-2 mb-3">
-                <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono">
-                  What you get:
-                </h4>
-                <span className="text-xl font-black text-slate-900 font-mono">
-                  Rs. 299
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 leading-relaxed mb-4">
-                Book a direct real-time 20-minute chat consultation with the resident at a scheduled convenient slot.
-              </p>
-
-              {/* SLA Time details */}
-              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-5 font-mono">
-                <Clock className="w-4 h-4 text-orange-500" />
-                <span>20-Minute Real-time Consultation</span>
-              </div>
-
-              {/* Features List Checklist */}
-              <div className="space-y-2.5 mb-6">
-                {[
-                  '20-minute real-time chat with the resident',
-                  'Select from available convenient time slots',
-                  'Instant slot booking confirmation',
-                  'Secure payment protection (48h)'
-                ].map((feature, idx) => (
-                  <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-600">
-                    <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5 font-bold" />
-                    <span>{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Order Button */}
-              {isOwnListing ? (
-                <div className="space-y-3">
-                  <button
-                    disabled
-                    className="w-full bg-slate-100 border border-slate-200 text-slate-400 font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <span>Cannot Ask Own Listing</span>
-                  </button>
-                  <p className="text-[10px] text-amber-600 font-medium leading-relaxed bg-amber-50 border border-amber-100 p-3 rounded-xl text-left">
-                    ⚠️ You are registered as the owner of this resident expert profile. The system restricts users from initiating paid consultations or posting questions on their own active listing.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2.5">
-                  {expert.isInstantChatEnabled ? (
-                    <>
-                      <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl mb-3 text-left">
-                        <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 font-sans mb-1">
-                          <span className="relative flex h-1.5 w-1.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                          </span>
-                          Resident is online now!
-                        </span>
-                        <p className="text-[10.5px] text-slate-600 font-medium leading-normal">
-                          They are currently active and ready to chat. Choose "Chat Right Now" to connect instantly!
-                        </p>
-                      </div>
-                      
-                      <button
-                        onClick={() => {
-                          onSelectPackage('LIVE_CHAT');
-                          onStartInquiry();
-                        }}
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs hover:shadow-md"
-                      >
-                        <span>Chat Right Now ⚡</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          onSelectPackage('LIVE_CHAT');
-                          onStartInquiry();
-                        }}
-                        className="w-full bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs uppercase tracking-wider py-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2"
-                      >
-                        <span>🗓️ Schedule for Later</span>
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        onSelectPackage('LIVE_CHAT');
-                        onStartInquiry();
-                      }}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs hover:shadow-md"
-                    >
-                      <span>Book Live Chat (Rs. 299) 🗓️</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              )}
-
-              <p className="text-[10px] text-slate-400 text-center mt-3 font-mono">
-                Payment Protected • 100% Satisfaction Guarantee
-              </p>
-            </div>
-
+            {renderBookingWizard()}
           </div>
-
         </div>
 
       </div>
+
+      {/* Mobile sticky bottom bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-3 z-40 flex items-center justify-between">
+        <div>
+          <span className="text-[10px] text-slate-400 font-mono block">Consultation Rate</span>
+          <span className="text-sm font-bold text-slate-900 font-mono">₹299</span>
+        </div>
+        <button
+          onClick={() => setIsMobileDrawerOpen(true)}
+          disabled={isOwnListing}
+          className="bg-slate-900 hover:bg-slate-800 disabled:bg-slate-100 disabled:text-slate-400 text-white font-medium text-xs uppercase tracking-wider px-5 py-2.5 rounded-md transition-colors"
+        >
+          {isOwnListing ? 'Your listing' : 'Book Chat'}
+        </button>
+      </div>
+
+      {/* Mobile booking drawer modal */}
+      {isMobileDrawerOpen && (
+        <div className="md:hidden fixed inset-0 z-50 bg-slate-900/30 flex flex-col justify-end">
+          <div className="bg-white rounded-t-2xl max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl border-t border-slate-100">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">Book Consultation</span>
+              <button 
+                onClick={() => setIsMobileDrawerOpen(false)}
+                className="p-1 rounded-md hover:bg-slate-50 text-slate-400 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            {renderBookingWizard()}
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -77,14 +77,15 @@ async function runSitemapGenerator() {
 
   // 5. Resident Expert Pages
   for (const expert of expertProfiles) {
+    const residentId = expert.replace(/^exp_/, 'res_');
     urlTags.push(`  <url>
-    <loc>${origin}/expert/${expert}</loc>
+    <loc>${origin}/resident/${residentId}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>`);
     // Include their direct booking page as well
     urlTags.push(`  <url>
-    <loc>${origin}/expert/${expert}/ask</loc>
+    <loc>${origin}/resident/${residentId}/ask</loc>
     <changefreq>weekly</changefreq>
     <priority>0.70</priority>
   </url>`);

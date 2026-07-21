@@ -446,7 +446,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
               </button>
 
               <div className="pt-4 pb-2 border-t border-slate-200/60 mt-3 px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
-                Become a Local Expert
+                Become a Resident Guide
               </div>
               <button
                 onClick={() => setActiveTab('become_expert_tab')}
@@ -1055,7 +1055,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                 onClick={() => setView && setView('become_expert')}
                 className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-xs"
               >
-                Become a Local Expert &rarr;
+                Become a Resident Guide &rarr;
               </button>
             </div>
           )}

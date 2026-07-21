@@ -380,7 +380,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-semibold"
             >
               <Award className="w-4 h-4 text-emerald-500" />
-              <span>Become a Local Expert</span>
+              <span>Become a Resident Guide</span>
             </button>
           )}
         </nav>
@@ -608,7 +608,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           className="w-full text-left px-2.5 py-2 text-xs text-slate-600 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-1.5"
                         >
                           <Award className="w-3.5 h-3.5 text-emerald-500" />
-                          <span>Become a Local Expert</span>
+                          <span>Become a Resident Guide</span>
                         </button>
                       )}
                     </div>
@@ -698,7 +698,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               <Award className="w-4 h-4 text-emerald-500" />
-              <span>Become a Local Expert</span>
+              <span>Become a Resident Guide</span>
             </button>
           )}
 
