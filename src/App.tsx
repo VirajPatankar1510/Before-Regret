@@ -743,6 +743,17 @@ export default function App() {
 
   // Star rating reviews submission
   const handleLeaveReview = (query: DirectQuery) => {
+    if (!query || (query.status !== 'ANSWERED' && query.status !== 'COMPLETED')) {
+      alert('You can only leave a review after your consultation is complete.');
+      return;
+    }
+
+    const isOwner = !user || (user.uid === query.buyerId || query.buyerId === 'mock_buyer_amit' || query.buyerId === 'user_mock_buyer');
+    if (!isOwner) {
+      alert('Only the specific buyer who placed this chat order is permitted to leave a rating.');
+      return;
+    }
+
     const ratingInput = prompt('Enter star rating (1 to 5):', '5');
     const starRating = parseInt(ratingInput || '5');
     if (isNaN(starRating) || starRating < 1 || starRating > 5) {
@@ -757,6 +768,7 @@ export default function App() {
       id: `rev_${Date.now()}`,
       queryId: query.id,
       buyerName: user ? (user.displayName || user.email || 'Anonymous') : 'Rohan Deshmukh',
+      buyerId: user ? user.uid : (query.buyerId || 'mock_buyer_amit'),
       expertId: query.expertId,
       rating: starRating,
       comment,

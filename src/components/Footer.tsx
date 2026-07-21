@@ -85,6 +85,19 @@ export const Footer: React.FC<FooterProps> = ({ setView, onNavigateToPolicy }) =
                 Contact Us (Support)
               </a>
             </li>
+            <li>
+              <a 
+                href="/admin" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  setView('admin_panel');
+                  window.scrollTo(0, 0);
+                }} 
+                className="hover:text-slate-300 transition-colors text-slate-600 font-mono text-[10px]"
+              >
+                Admin Panel
+              </a>
+            </li>
           </ul>
         </div>
 

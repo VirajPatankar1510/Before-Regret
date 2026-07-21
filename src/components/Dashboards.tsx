@@ -127,7 +127,7 @@ export const Dashboards: React.FC<DashboardsProps> = ({
     expertId: currentExpertId || 'exp_temp',
     availableBalance: expertProfile?.balance !== undefined ? expertProfile.balance : 2400,
     heldBalance: clientQuestions.filter(q => q.status === 'ACCEPTED').length * 179,
-    totalWithdrawn: 14500,
+    totalWithdrawn: (expertProfile?.balance === 0 || expertProfile?.questionsAnsweredCount === 0) ? 0 : 14500,
     upiId: upiId || 'yourname@okhdfcbank'
   };
 
@@ -461,22 +461,6 @@ export const Dashboards: React.FC<DashboardsProps> = ({
               </button>
             </>
           )}
-
-          {/* Universal Admin Console Button */}
-          <div className="pt-4 pb-2 border-t border-slate-200/60 mt-3 px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
-            Platform Operator
-          </div>
-          <button
-            onClick={() => setActiveTab('admin_console')}
-            className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer ${
-              activeTab === 'admin_console'
-                ? 'bg-purple-600 text-white shadow-xs'
-                : 'hover:bg-slate-200/50 text-slate-600'
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4 text-purple-500" />
-            <span>Admin Control Panel</span>
-          </button>
         </div>
 
         {/* Right Hand Workspace Viewport */}

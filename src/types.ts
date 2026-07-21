@@ -74,6 +74,7 @@ export interface ExpertProfile {
   address?: string | null;
   dob?: string | null;
   businessType?: string | null;
+  balance?: number;
 }
 
 export interface TimeWindow {
@@ -128,6 +129,7 @@ export interface Review {
   id: string;
   queryId: string;
   buyerName: string;
+  buyerId?: string;
   expertId: string;
   rating: number; // 1 to 5
   comment: string;
