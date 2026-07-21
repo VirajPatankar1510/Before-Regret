@@ -39,6 +39,15 @@ export const Onboarding: React.FC<OnboardingProps> = ({
   const [createdExpert, setCreatedExpert] = useState<ExpertProfile | null>(null);
   const [createdLocality, setCreatedLocality] = useState<Neighborhood | null>(null);
 
+  // Limit of max 2 areas/societies per user
+  const [hasSecondaryNeighborhood, setHasSecondaryNeighborhood] = useState(false);
+  const [secondaryNeighborhood, setSecondaryNeighborhood] = useState('');
+  const [secondaryCity, setSecondaryCity] = useState('');
+  const [secondaryPincode, setSecondaryPincode] = useState('');
+  const [secondaryLandmarks, setSecondaryLandmarks] = useState('');
+  const [secondaryDetailedAddress, setSecondaryDetailedAddress] = useState('');
+  const [showSecondarySuggestions, setShowSecondarySuggestions] = useState(false);
+
   useEffect(() => {
     if (firstName) {
       setUpiId(`${firstName.toLowerCase().replace(/[^a-z0-9]/g, '')}@okhdfcbank`);
@@ -126,11 +135,98 @@ export const Onboarding: React.FC<OnboardingProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
+        setShowSecondarySuggestions(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const cleaned = secondaryPincode.trim();
+    if (cleaned.length === 6 && /^\d+$/.test(cleaned)) {
+      const PINCODE_FALLBACKS: Record<string, string> = {
+        '400063': 'Goregaon East',
+        '400001': 'Colaba',
+        '560102': 'HSR Layout',
+        '560001': 'Kanteerava',
+        '560048': 'Whitefield',
+        '560066': 'Whitefield',
+        '110001': 'Connaught Place',
+        '122001': 'Gurugram Sector 14',
+        '122002': 'DLF Phase 1',
+        '122009': 'DLF Phase 5',
+        '122011': 'DLF Phase 5',
+        '122018': 'Gurugram Sector 32',
+        '400607': 'Kolshet Road, Thane',
+        '400601': 'Thane West',
+        '401203': 'Nallasopara West',
+      };
+
+      if (PINCODE_FALLBACKS[cleaned]) {
+        setSecondaryCity(PINCODE_FALLBACKS[cleaned]);
+        return;
+      }
+
+      fetch(`https://api.postalpincode.in/pincode/${cleaned}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data[0] && data[0].Status === 'Success') {
+            const postOffices = data[0].PostOffice;
+            if (postOffices && postOffices.length > 0) {
+              const officeName = postOffices[0].Name;
+              if (officeName) {
+                setSecondaryCity(officeName);
+              }
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Error auto-detecting secondary area:', err);
+        });
+    }
+  }, [secondaryPincode]);
+
+  const combinedSecondaryLocalities = React.useMemo(() => {
+    const query = secondaryNeighborhood.toLowerCase().trim();
+    if (!query) return [];
+
+    const localMatches = localities.filter((loc) => {
+      return (
+        loc.name.toLowerCase().includes(query) ||
+        loc.city.toLowerCase().includes(query) ||
+        loc.pincode.includes(query) ||
+        (loc.society && loc.society.toLowerCase().includes(query)) ||
+        (loc.apartmentName && loc.apartmentName.toLowerCase().includes(query))
+      );
+    });
+
+    const list = [...localMatches];
+
+    if (query.length >= 2) {
+      const exactMatchExists = list.some(
+        (loc) => loc.name.toLowerCase() === query
+      );
+      if (!exactMatchExists) {
+        list.push({
+          id: `custom_onboarding_sec_${Date.now()}`,
+          name: secondaryNeighborhood.trim(),
+          city: secondaryCity.trim() || city.trim() || 'Your City',
+          state: 'India',
+          pincode: secondaryPincode.trim() || pincode.trim() || '',
+          society: secondaryNeighborhood.trim(),
+          apartmentName: `${secondaryNeighborhood.trim()}, ${secondaryCity.trim() || city.trim() || 'Residential Area'}`,
+          builder: 'Independent / Custom Layout',
+          expertCount: 0,
+          averageRating: 5.0,
+          landmarks: secondaryLandmarks.trim(),
+          detailedAddress: secondaryDetailedAddress.trim()
+        });
+      }
+    }
+
+    return list;
+  }, [localities, secondaryNeighborhood, secondaryCity, city, secondaryPincode, pincode, secondaryLandmarks, secondaryDetailedAddress]);
 
   // Filter static local list based on user search query
   const combinedLocalities = React.useMemo(() => {
@@ -402,6 +498,16 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       return;
     }
 
+    if (hasSecondaryNeighborhood && !secondaryNeighborhood.trim()) {
+      alert('Please fill out the secondary society/layout name, or remove it.');
+      return;
+    }
+
+    if (hasSecondaryNeighborhood && secondaryNeighborhood.trim().toLowerCase() === neighborhood.trim().toLowerCase()) {
+      alert('Your primary and secondary areas/societies cannot be the same.');
+      return;
+    }
+
     const fullName = `${firstName.trim()} ${lastName.trim()}`;
 
     // Prohibited Real Estate Broker & Landlord check
@@ -412,7 +518,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       'agent', 'property agent', 'agency'
     ];
 
-    const checkText = `${fullName} ${bio} ${neighborhood} ${landmarks} ${detailedAddress}`.toLowerCase();
+    const checkText = `${fullName} ${bio} ${neighborhood} ${landmarks} ${detailedAddress} ${secondaryNeighborhood} ${secondaryLandmarks} ${secondaryDetailedAddress}`.toLowerCase();
     const foundProhibited = prohibitedKeywords.find(keyword => checkText.includes(keyword));
 
     if (foundProhibited) {
@@ -421,8 +527,16 @@ export const Onboarding: React.FC<OnboardingProps> = ({
     }
 
     const localityId = `loc_${neighborhood.toLowerCase().replace(/\s+/g, '_')}`;
+    const secondaryLocalityId = hasSecondaryNeighborhood && secondaryNeighborhood.trim()
+      ? `loc_${secondaryNeighborhood.toLowerCase().replace(/\s+/g, '_')}`
+      : undefined;
 
-    const newExpert: ExpertProfile = {
+    const areasList = [neighborhood.trim()];
+    if (hasSecondaryNeighborhood && secondaryNeighborhood.trim()) {
+      areasList.push(secondaryNeighborhood.trim());
+    }
+
+    const newExpert: ExpertProfile & { secondaryLocalityId?: string; secondaryLocalityName?: string } = {
       id: `exp_${Date.now()}`,
       userId: user ? user.uid : `user_expert_${Date.now()}`,
       fullName,
@@ -441,7 +555,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       pricingPerQuery: 99,
       active: true,
       expertiseTags: selectedTopics,
-      areasCovered: [neighborhood],
+      areasCovered: areasList,
       yearsLivingThere: parseInt(yearsLiving),
       stillLivesThere,
       ownerOrTenant,
@@ -459,6 +573,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       weeklyAvailability,
       isInstantChatEnabled,
       availableSlots: isLiveChatAvailable ? generateAvailableSlotsFromWeekly(weeklyAvailability) : [],
+      ...(secondaryLocalityId ? {
+        secondaryLocalityId,
+        secondaryLocalityName: secondaryNeighborhood.trim()
+      } : {})
     };
 
     const newLocality: Neighborhood = {
@@ -476,7 +594,25 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       detailedAddress: detailedAddress.trim()
     };
 
-    onAddExpert(newExpert, newLocality);
+    let secondaryLocality: Neighborhood | undefined = undefined;
+    if (hasSecondaryNeighborhood && secondaryNeighborhood.trim()) {
+      secondaryLocality = {
+        id: secondaryLocalityId!,
+        name: secondaryNeighborhood.trim(),
+        city: secondaryCity.trim() || city.trim() || 'Your City',
+        state: 'India',
+        pincode: secondaryPincode.trim() || pincode.trim() || '',
+        society: secondaryNeighborhood.trim(),
+        apartmentName: `${secondaryNeighborhood.trim()}, ${secondaryCity.trim() || city.trim() || 'Residential Area'}`,
+        builder: 'Independent / Custom Layout',
+        expertCount: 1,
+        averageRating: 5.0,
+        landmarks: secondaryLandmarks.trim(),
+        detailedAddress: secondaryDetailedAddress.trim()
+      };
+    }
+
+    onAddExpert(newExpert, newLocality, secondaryLocality);
     setCreatedExpert(newExpert);
     setCreatedLocality(newLocality);
     setSubmitted(true);
@@ -588,44 +724,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({
           </div>
         </div>
 
-        {/* SECTION 4: What Can You Help With? */}
-        <div className="space-y-8 max-w-3xl mx-auto">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
-              What Can You Help With?
-            </h2>
-            <p className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto font-light leading-relaxed">
-              Choose the topics you're comfortable answering during onboarding.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-2 pt-2">
-            {TOPICS_OF_EXPERTISE.map((topic) => {
-              const active = selectedTopics.includes(topic);
-              return (
-                <button
-                  type="button"
-                  key={topic}
-                  onClick={() => {
-                    if (active) {
-                      setSelectedTopics(selectedTopics.filter((t) => t !== topic));
-                    } else {
-                      setSelectedTopics([...selectedTopics, topic]);
-                    }
-                  }}
-                  className={`px-4 py-2 text-xs rounded-full border transition-all cursor-pointer ${
-                    active
-                      ? 'bg-slate-900 border-slate-900 text-white font-medium shadow-xs'
-                      : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
-                  }`}
-                >
-                  {topic}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
         {/* SECTION 5: Your Privacy Comes First */}
         <div className="space-y-12">
           <div className="text-center">
@@ -666,14 +764,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({
         </div>
 
         {/* SECTION 6: Earn For Sharing Your Experience */}
-        <div className="space-y-12 max-w-3xl mx-auto">
+        <div className="space-y-12 max-w-3xl mx-auto bg-amber-50/30 border border-amber-100/60 p-8 sm:p-12 rounded-3xl shadow-3xs">
           <div className="text-center">
             <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
               Earn For Sharing Your Experience
             </h2>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex flex-col items-center gap-8 justify-center">
             {/* Plan - Resident Chat */}
             <div className="w-full max-w-sm bg-white border border-slate-100 rounded-2xl p-8 space-y-6 flex flex-col justify-between relative overflow-hidden shadow-xs">
               <div className="space-y-4">
@@ -699,18 +797,18 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* CTA: Start Earning */}
-        <div className="text-center py-4">
-          <button
-            onClick={() => setShowLanding(false)}
-            className="px-8 py-4 bg-slate-900 hover:bg-slate-850 text-white font-medium text-sm rounded-xl shadow-xs transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] inline-flex items-center gap-2"
-          >
-            <span>Start Earning</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+            {/* CTA: Start Earning */}
+            <div className="text-center">
+              <button
+                onClick={() => setShowLanding(false)}
+                className="px-8 py-4 bg-slate-900 hover:bg-slate-850 text-white font-medium text-sm rounded-xl shadow-xs transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] inline-flex items-center gap-2"
+              >
+                <span>Start Earning</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* SECTION 7: Frequently Asked Questions */}
@@ -1138,6 +1236,152 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                   className="w-full px-3.5 py-2.5 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px] sm:placeholder:text-xs"
                 />
                 <p className="text-[10px] text-slate-400 mt-1 font-medium">This will be the main header/title displayed on your profile page to prospective buyers. Make it descriptive and trustworthy.</p>
+              </div>
+
+              {/* Secondary Society (Optional) */}
+              <div className="sm:col-span-2 pt-4 border-t border-dashed border-slate-200" id="secondary-society-section">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
+                  <div>
+                    <h4 className="font-bold text-slate-800 text-xs sm:text-sm">
+                      Do you want to cover a secondary area/society? (Optional)
+                    </h4>
+                    <p className="text-[10px] text-slate-400">
+                      Under our community guidelines, you can list/create at most 2 areas or societies per account to ensure listing quality.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    id="toggle-secondary-btn"
+                    onClick={() => setHasSecondaryNeighborhood(!hasSecondaryNeighborhood)}
+                    className={`px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg transition-all cursor-pointer inline-flex items-center gap-1 shrink-0 ${
+                      hasSecondaryNeighborhood
+                        ? 'bg-red-50 text-red-600 border border-red-100 hover:bg-red-100'
+                        : 'bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100'
+                    }`}
+                  >
+                    {hasSecondaryNeighborhood ? 'Remove Secondary Area' : '+ Add Secondary Area'}
+                  </button>
+                </div>
+
+                {hasSecondaryNeighborhood && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 mt-4 animate-fadeIn" id="secondary-society-fields">
+                    <div className="relative">
+                      <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">
+                        Secondary Society or Layout Name (required)
+                      </label>
+                      <input
+                        type="text"
+                        id="secondary-neighborhood-input"
+                        required={hasSecondaryNeighborhood}
+                        placeholder="e.g. Prestige Lake Ridge"
+                        value={secondaryNeighborhood}
+                        onChange={(e) => {
+                          setSecondaryNeighborhood(e.target.value);
+                          setShowSecondarySuggestions(true);
+                        }}
+                        onFocus={() => setShowSecondarySuggestions(true)}
+                        className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
+                      />
+                      {showSecondarySuggestions && combinedSecondaryLocalities.length > 0 && (
+                        <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto z-50" id="secondary-suggestions-container">
+                          {combinedSecondaryLocalities.map((loc) => (
+                            <div
+                              key={loc.id}
+                              onClick={() => {
+                                setSecondaryNeighborhood(loc.name);
+                                setSecondaryCity(loc.city);
+                                setSecondaryPincode(loc.pincode);
+                                setSecondaryLandmarks(loc.landmarks || '');
+                                setSecondaryDetailedAddress(loc.detailedAddress || '');
+                                setShowSecondarySuggestions(false);
+                              }}
+                              className="px-3 py-2 hover:bg-slate-50 cursor-pointer text-left border-b border-slate-100 last:border-b-0 flex items-center justify-between gap-2 text-xs text-slate-800"
+                            >
+                              <div>
+                                <p className="font-bold text-slate-800 text-xs">
+                                  {loc.name} {loc.society && loc.society !== loc.name ? `(${loc.society})` : ''}
+                                </p>
+                                <p className="text-[10px] text-slate-500">
+                                  {loc.apartmentName || 'Residential Area'}, {loc.city}, {loc.state} - {loc.pincode}
+                                </p>
+                              </div>
+                              {loc.expertCount > 0 ? (
+                                <span className="shrink-0 text-[8px] font-mono font-bold px-1.5 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full">
+                                  {loc.expertCount} Resident Guides
+                                </span>
+                              ) : (
+                                <span className="shrink-0 text-[8px] font-mono font-bold px-1.5 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-full flex items-center gap-0.5">
+                                  <MapPin className="w-2 h-2 text-blue-500" />
+                                  <span>Select Layout</span>
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">
+                        Secondary Society Pincode (required)
+                      </label>
+                      <input
+                        type="text"
+                        id="secondary-pincode-input"
+                        required={hasSecondaryNeighborhood}
+                        maxLength={6}
+                        placeholder="e.g. 560102"
+                        value={secondaryPincode}
+                        onChange={(e) => setSecondaryPincode(e.target.value.replace(/\D/g, ''))}
+                        className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px] font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">
+                        Secondary Area (Auto-detected or entered)
+                      </label>
+                      <input
+                        type="text"
+                        id="secondary-city-input"
+                        required={hasSecondaryNeighborhood}
+                        placeholder="e.g. Whitefield"
+                        value={secondaryCity}
+                        onChange={(e) => setSecondaryCity(e.target.value)}
+                        className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">
+                        Secondary Building Name (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        id="secondary-detailed-address-input"
+                        placeholder="e.g. Tower B, Block 4"
+                        value={secondaryDetailedAddress}
+                        onChange={(e) => setSecondaryDetailedAddress(e.target.value)}
+                        className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">
+                        Secondary Landmark & Navigation Guide (required)
+                      </label>
+                      <input
+                        type="text"
+                        id="secondary-landmarks-input"
+                        required={hasSecondaryNeighborhood}
+                        placeholder="e.g. Near main gate, opposite the community park"
+                        value={secondaryLandmarks}
+                        onChange={(e) => setSecondaryLandmarks(e.target.value)}
+                        className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

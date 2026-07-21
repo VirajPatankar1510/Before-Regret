@@ -341,6 +341,23 @@ async function startServer() {
     }
   });
 
+  app.post("/api/experts/update", (req, res) => {
+    try {
+      const dbData = getDb();
+      const expert = req.body;
+      const index = dbData.experts.findIndex(e => e.id === expert.id || (expert.userId && e.userId === expert.userId));
+      if (index > -1) {
+        dbData.experts[index] = { ...dbData.experts[index], ...expert };
+      } else {
+        dbData.experts.push(expert);
+      }
+      saveDb(dbData);
+      res.json({ success: true, expert: dbData.experts[index > -1 ? index : dbData.experts.length - 1] });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to update expert." });
+    }
+  });
+
   // Data: Reviews (Get & Post)
   app.get("/api/reviews", (req, res) => {
     try {

@@ -788,26 +788,43 @@ export default function App() {
     alert('Thank you! Your rating has been published successfully.');
   };
 
-  const handleAddExpertFromOnboarding = (newExpert: ExpertProfile, newLocality?: Neighborhood) => {
+  const handleAddExpertFromOnboarding = (
+    newExpert: ExpertProfile,
+    newLocality?: Neighborhood,
+    secondaryLocality?: Neighborhood
+  ) => {
     setExperts([newExpert, ...experts]);
-    if (newLocality) {
-      const exists = localities.some(loc => loc.id === newLocality.id || loc.name.toLowerCase() === newLocality.name.toLowerCase());
+    let updatedLocalities = [...localities];
+
+    const addOrUpdateLocality = (locObj: Neighborhood) => {
+      const exists = updatedLocalities.some(
+        loc => loc.id === locObj.id || loc.name.toLowerCase() === locObj.name.toLowerCase()
+      );
       if (!exists) {
-        setLocalities([...localities, newLocality]);
+        updatedLocalities = [...updatedLocalities, locObj];
       } else {
-        setLocalities(localities.map(loc => {
-          if (loc.id === newLocality.id || loc.name.toLowerCase() === newLocality.name.toLowerCase()) {
+        updatedLocalities = updatedLocalities.map(loc => {
+          if (loc.id === locObj.id || loc.name.toLowerCase() === locObj.name.toLowerCase()) {
             return {
               ...loc,
               expertCount: (loc.expertCount || 0) + 1,
-              landmarks: loc.landmarks || newLocality.landmarks,
-              detailedAddress: loc.detailedAddress || newLocality.detailedAddress
+              landmarks: loc.landmarks || locObj.landmarks,
+              detailedAddress: loc.detailedAddress || locObj.detailedAddress
             };
           }
           return loc;
-        }));
+        });
       }
+    };
+
+    if (newLocality) {
+      addOrUpdateLocality(newLocality);
     }
+    if (secondaryLocality) {
+      addOrUpdateLocality(secondaryLocality);
+    }
+
+    setLocalities(updatedLocalities);
     setActiveRole('expert');
     setExpertProfile(newExpert);
   };
@@ -1069,6 +1086,13 @@ export default function App() {
             queries={queries}
             reviews={reviews}
             experts={experts}
+            localities={localities}
+            onAddLocality={(newLoc) => {
+              const exists = localities.some(loc => loc.id === newLoc.id || loc.name.toLowerCase() === newLoc.name.toLowerCase());
+              if (!exists) {
+                setLocalities([...localities, newLoc]);
+              }
+            }}
             savedExpertIds={savedExpertIds}
             activeQueryId={activeQuery ? activeQuery.id : null}
             setActiveQueryId={() => {}}

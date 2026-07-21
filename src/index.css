@@ -55,5 +55,20 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   height: 0 !important;
 }
 
+/* Custom Style Changes for Selected Element */
+div#root:nth-of-type(1) > div:nth-of-type(1) > main:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) {
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  padding-top: 20px !important;
+  padding-bottom: 20px !important;
+  width: 314px !important;
+  border-color: #000000 !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-radius: 1px !important;
+  background-color: #fffff2 !important;
+}
+
+
 
 

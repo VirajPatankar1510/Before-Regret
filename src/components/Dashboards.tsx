@@ -20,10 +20,12 @@ import {
   ShieldCheck,
   Building,
   Activity,
-  RefreshCw
+  RefreshCw,
+  MapPin
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ResidentAvatar } from './ResidentAvatar';
+import { Neighborhood } from '../types';
 
 interface DashboardsProps {
   queries: DirectQuery[];
@@ -36,6 +38,8 @@ interface DashboardsProps {
   onLeaveReview: (query: DirectQuery) => void;
   setView?: (view: string) => void;
   onUpdateExpert?: (expert: ExpertProfile) => void;
+  localities?: Neighborhood[];
+  onAddLocality?: (locality: Neighborhood) => void;
 }
 
 export const Dashboards: React.FC<DashboardsProps> = ({
@@ -49,6 +53,8 @@ export const Dashboards: React.FC<DashboardsProps> = ({
   onLeaveReview,
   setView,
   onUpdateExpert,
+  localities = [],
+  onAddLocality,
 }) => {
   const { user, expertProfile, setExpertProfile } = useAuth();
   
@@ -73,6 +79,112 @@ export const Dashboards: React.FC<DashboardsProps> = ({
   const [settingsName, setSettingsName] = useState(expertProfile?.fullName || '');
   const [settingsBio, setSettingsBio] = useState(expertProfile?.bio || '');
   const [settingsSuccess, setSettingsSuccess] = useState(false);
+
+  // Manage listed societies (Max 2)
+  const [newSocietyName, setNewSocietyName] = useState('');
+  const [newSocietyCity, setNewSocietyCity] = useState('');
+  const [newSocietyPincode, setNewSocietyPincode] = useState('');
+  const [newSocietyLandmarks, setNewSocietyLandmarks] = useState('');
+  const [newSocietyDetailedAddress, setNewSocietyDetailedAddress] = useState('');
+  const [showNewSocietySuggestions, setShowNewSocietySuggestions] = useState(false);
+  const [isAddingSociety, setIsAddingSociety] = useState(false);
+  const newSocietyRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (newSocietyRef.current && !newSocietyRef.current.contains(event.target as Node)) {
+        setShowNewSocietySuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const cleaned = newSocietyPincode.trim();
+    if (cleaned.length === 6 && /^\d+$/.test(cleaned)) {
+      const PINCODE_FALLBACKS: Record<string, string> = {
+        '400063': 'Goregaon East',
+        '400001': 'Colaba',
+        '560102': 'HSR Layout',
+        '560001': 'Kanteerava',
+        '560048': 'Whitefield',
+        '560066': 'Whitefield',
+        '110001': 'Connaught Place',
+        '122001': 'Gurugram Sector 14',
+        '122002': 'DLF Phase 1',
+        '122009': 'DLF Phase 5',
+        '122011': 'DLF Phase 5',
+        '122018': 'Gurugram Sector 32',
+        '400607': 'Kolshet Road, Thane',
+        '400601': 'Thane West',
+        '401203': 'Nallasopara West',
+      };
+
+      if (PINCODE_FALLBACKS[cleaned]) {
+        setNewSocietyCity(PINCODE_FALLBACKS[cleaned]);
+        return;
+      }
+
+      fetch(`https://api.postalpincode.in/pincode/${cleaned}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data[0] && data[0].Status === 'Success') {
+            const postOffices = data[0].PostOffice;
+            if (postOffices && postOffices.length > 0) {
+              const officeName = postOffices[0].Name;
+              if (officeName) {
+                setNewSocietyCity(officeName);
+              }
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Error auto-detecting dashboard area:', err);
+        });
+    }
+  }, [newSocietyPincode]);
+
+  const combinedNewSocietyLocalities = React.useMemo(() => {
+    const query = newSocietyName.toLowerCase().trim();
+    if (!query) return [];
+
+    const localMatches = (localities || []).filter((loc) => {
+      return (
+        loc.name.toLowerCase().includes(query) ||
+        loc.city.toLowerCase().includes(query) ||
+        loc.pincode.includes(query) ||
+        (loc.society && loc.society.toLowerCase().includes(query)) ||
+        (loc.apartmentName && loc.apartmentName.toLowerCase().includes(query))
+      );
+    });
+
+    const list = [...localMatches];
+
+    if (query.length >= 2) {
+      const exactMatchExists = list.some(
+        (loc) => loc.name.toLowerCase() === query
+      );
+      if (!exactMatchExists) {
+        list.push({
+          id: `custom_dashboard_${Date.now()}`,
+          name: newSocietyName.trim(),
+          city: newSocietyCity.trim() || 'Your City',
+          state: 'India',
+          pincode: newSocietyPincode.trim() || '',
+          society: newSocietyName.trim(),
+          apartmentName: `${newSocietyName.trim()}, ${newSocietyCity.trim() || 'Residential Area'}`,
+          builder: 'Independent / Custom Layout',
+          expertCount: 0,
+          averageRating: 5.0,
+          landmarks: newSocietyLandmarks.trim(),
+          detailedAddress: newSocietyDetailedAddress.trim()
+        });
+      }
+    }
+
+    return list;
+  }, [localities, newSocietyName, newSocietyCity, newSocietyPincode, newSocietyLandmarks, newSocietyDetailedAddress]);
 
   // Bank & Personal Payout Details
   const [bankAccNumber, setBankAccNumber] = useState(expertProfile?.bankAccountNumber || '');
@@ -1018,6 +1130,302 @@ export const Dashboards: React.FC<DashboardsProps> = ({
                   Save Listing Settings
                 </button>
               </form>
+
+              {/* Societies / Areas Covered Management */}
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-6" id="listed-societies-manager">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono mb-1">
+                    Manage Covered Societies & Areas
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-medium">
+                    To maintain data trust and avoid commercial brokers, community guidelines limit each resident expert to listing or creating **at most 2 areas or societies**.
+                  </p>
+                </div>
+
+                {/* Display list of current areas */}
+                <div className="space-y-3" id="current-societies-list">
+                  {(expertProfile?.areasCovered || (expertProfile?.localityName ? [expertProfile.localityName] : [])).map((area, idx) => (
+                    <div
+                      key={area + idx}
+                      className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-150 rounded-xl"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-mono text-[10px] font-bold border border-emerald-100">
+                          {idx + 1}
+                        </span>
+                        <div>
+                          <p className="text-xs font-bold text-slate-800">{area}</p>
+                          <p className="text-[9px] font-mono text-slate-400">
+                            {idx === 0 ? 'Primary Area / Onboarded Society' : 'Secondary Covered Area'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentAreas = expertProfile?.areasCovered || (expertProfile?.localityName ? [expertProfile.localityName] : []);
+                          if (currentAreas.length <= 1) {
+                            alert('You must cover at least 1 area or society. To change this area, add a secondary one first and then remove this one.');
+                            return;
+                          }
+                          if (window.confirm(`Are you sure you want to stop covering and remove "${area}"?`)) {
+                            const updatedAreas = currentAreas.filter(a => a !== area);
+                            let updatedLocalityId = expertProfile?.localityId;
+                            let updatedLocalityName = expertProfile?.localityName;
+                            if (expertProfile?.localityName === area) {
+                              const remainingArea = updatedAreas[0];
+                              updatedLocalityName = remainingArea;
+                              updatedLocalityId = `loc_${remainingArea.toLowerCase().replace(/\s+/g, '_')}`;
+                            }
+
+                            const updatedExpert = {
+                              ...expertProfile!,
+                              localityId: updatedLocalityId,
+                              localityName: updatedLocalityName,
+                              areasCovered: updatedAreas
+                            };
+
+                            fetch('/api/experts/update', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify(updatedExpert)
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                              if (data.success) {
+                                setExpertProfile(data.expert);
+                                if (onUpdateExpert) onUpdateExpert(data.expert);
+                                alert(`Successfully removed area: ${area}`);
+                              }
+                            })
+                            .catch(err => console.error("Remove area error:", err));
+                          }
+                        }}
+                        disabled={(expertProfile?.areasCovered || (expertProfile?.localityName ? [expertProfile.localityName] : [])).length <= 1}
+                        className={`px-2.5 py-1 text-[10px] font-bold rounded-lg uppercase cursor-pointer ${
+                          (expertProfile?.areasCovered || (expertProfile?.localityName ? [expertProfile.localityName] : [])).length <= 1
+                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                            : 'bg-red-50 text-red-600 border border-red-100 hover:bg-red-100'
+                        }`}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Adding new society (Only show if less than 2) */}
+                {(expertProfile?.areasCovered || (expertProfile?.localityName ? [expertProfile.localityName] : [])).length < 2 ? (
+                  <div className="pt-2 border-t border-dashed border-slate-100">
+                    {!isAddingSociety ? (
+                      <button
+                        type="button"
+                        id="show-add-society-btn"
+                        onClick={() => setIsAddingSociety(true)}
+                        className="w-full py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 border-dashed rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <span>+ Add / Create a Secondary Society or Area</span>
+                      </button>
+                    ) : (
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          if (!expertProfile) return;
+
+                          const currentAreas = expertProfile.areasCovered || (expertProfile.localityName ? [expertProfile.localityName] : []);
+                          if (currentAreas.length >= 2) {
+                            alert('Community Guidelines: You can list/create at most 2 areas or societies per account.');
+                            return;
+                          }
+
+                          if (!newSocietyName.trim() || !newSocietyPincode.trim() || !newSocietyLandmarks.trim()) {
+                            alert('Please fill out all required fields to list a new area/society.');
+                            return;
+                          }
+
+                          if (currentAreas.some(a => a.toLowerCase() === newSocietyName.trim().toLowerCase())) {
+                            alert('You have already listed this area/society.');
+                            return;
+                          }
+
+                          const localityId = `loc_${newSocietyName.toLowerCase().replace(/\s+/g, '_')}`;
+                          const newLocalityObj = {
+                            id: localityId,
+                            name: newSocietyName.trim(),
+                            city: newSocietyCity.trim() || 'Your City',
+                            state: 'India',
+                            pincode: newSocietyPincode.trim(),
+                            society: newSocietyName.trim(),
+                            apartmentName: `${newSocietyName.trim()}, ${newSocietyCity.trim() || 'Residential Area'}`,
+                            builder: 'Independent / Custom Layout',
+                            expertCount: 1,
+                            averageRating: 5.0,
+                            landmarks: newSocietyLandmarks.trim(),
+                            detailedAddress: newSocietyDetailedAddress.trim()
+                          };
+
+                          const updatedAreas = [...currentAreas, newSocietyName.trim()];
+                          const updatedExpert = {
+                            ...expertProfile,
+                            areasCovered: updatedAreas
+                          };
+
+                          fetch('/api/experts/update', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(updatedExpert)
+                          })
+                          .then(res => res.json())
+                          .then(data => {
+                            if (data.success) {
+                              setExpertProfile(data.expert);
+                              if (onUpdateExpert) onUpdateExpert(data.expert);
+                              if (onAddLocality) onAddLocality(newLocalityObj);
+                              
+                              // Reset form
+                              setNewSocietyName('');
+                              setNewSocietyCity('');
+                              setNewSocietyPincode('');
+                              setNewSocietyLandmarks('');
+                              setNewSocietyDetailedAddress('');
+                              setIsAddingSociety(false);
+                              alert(`Successfully listed secondary area: ${newLocalityObj.name}`);
+                            }
+                          })
+                          .catch(err => console.error("Add secondary area error:", err));
+                        }}
+                        className="bg-slate-50/50 p-4 border border-slate-150 rounded-2xl space-y-4 text-left relative"
+                        id="add-secondary-society-form"
+                        ref={newSocietyRef}
+                      >
+                        <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono">
+                          Add Secondary Society / Area
+                        </h4>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="relative">
+                            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1">
+                              Society / Layout Name (required)
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="e.g. Prestige Shantiniketan"
+                              value={newSocietyName}
+                              onChange={(e) => {
+                                setNewSocietyName(e.target.value);
+                                setShowNewSocietySuggestions(true);
+                              }}
+                              onFocus={() => setShowNewSocietySuggestions(true)}
+                              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 bg-white"
+                            />
+                            {showNewSocietySuggestions && combinedNewSocietyLocalities.length > 0 && (
+                              <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-40 overflow-y-auto z-50">
+                                {combinedNewSocietyLocalities.map((loc) => (
+                                  <div
+                                    key={loc.id}
+                                    onClick={() => {
+                                      setNewSocietyName(loc.name);
+                                      setNewSocietyCity(loc.city);
+                                      setNewSocietyPincode(loc.pincode);
+                                      setNewSocietyLandmarks(loc.landmarks || '');
+                                      setNewSocietyDetailedAddress(loc.detailedAddress || '');
+                                      setShowNewSocietySuggestions(false);
+                                    }}
+                                    className="px-3 py-2 hover:bg-slate-50 cursor-pointer text-left border-b border-slate-100 last:border-b-0 text-xs text-slate-800"
+                                  >
+                                    <p className="font-bold text-slate-800 text-xs">{loc.name}</p>
+                                    <p className="text-[10px] text-slate-500">
+                                      {loc.city}, {loc.pincode}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1">
+                              Society Pincode (required)
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              maxLength={6}
+                              placeholder="e.g. 560048"
+                              value={newSocietyPincode}
+                              onChange={(e) => setNewSocietyPincode(e.target.value.replace(/\D/g, ''))}
+                              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 bg-white font-mono"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1">
+                              Area / Suburb (Auto-detected or entered)
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="e.g. Whitefield"
+                              value={newSocietyCity}
+                              onChange={(e) => setNewSocietyCity(e.target.value)}
+                              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 bg-white"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1">
+                              Building Name / Tower (Optional)
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Tower C"
+                              value={newSocietyDetailedAddress}
+                              onChange={(e) => setNewSocietyDetailedAddress(e.target.value)}
+                              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 bg-white"
+                            />
+                          </div>
+
+                          <div className="sm:col-span-2">
+                            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-1">
+                              Landmark & Navigation Guide (required)
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="e.g. Near forum value mall gate 1"
+                              value={newSocietyLandmarks}
+                              onChange={(e) => setNewSocietyLandmarks(e.target.value)}
+                              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 bg-white"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex justify-end gap-2.5 pt-2">
+                          <button
+                            type="button"
+                            onClick={() => setIsAddingSociety(false)}
+                            className="px-4 py-2 text-slate-500 border border-slate-200 rounded-xl hover:bg-slate-100 text-xs font-bold uppercase transition-colors cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase transition-colors cursor-pointer"
+                          >
+                            Add Area
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+                ) : (
+                  <div className="p-4 bg-amber-50 border border-amber-150 rounded-xl text-amber-800 text-[11px] font-medium text-left">
+                    🔒 You have reached the maximum allowed limit of **2 societies/areas** on your profile. Please remove an existing society first if you wish to cover a different community.
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
