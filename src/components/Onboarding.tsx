@@ -12,6 +12,122 @@ interface OnboardingProps {
   setView: (view: string) => void;
 }
 
+interface Custom20MinSlot {
+  id: string;
+  startTime: string; // e.g. "09:00"
+  days: {
+    Monday: boolean;
+    Tuesday: boolean;
+    Wednesday: boolean;
+    Thursday: boolean;
+    Friday: boolean;
+    Saturday: boolean;
+    Sunday: boolean;
+  };
+}
+
+function convertToMinutes(timeStr: string): number {
+  // Check for 12-hour format with AM/PM (e.g. "07:00 PM")
+  const ampmMatch = timeStr.trim().match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+  if (ampmMatch) {
+    let hrs = parseInt(ampmMatch[1], 10);
+    const mins = parseInt(ampmMatch[2], 10);
+    const ampm = ampmMatch[3].toUpperCase();
+    if (ampm === 'PM' && hrs < 12) hrs += 12;
+    else if (ampm === 'AM' && hrs === 12) hrs = 0;
+    return hrs * 60 + mins;
+  }
+  // Check for 24-hour format (e.g. "19:00")
+  const parts = timeStr.trim().split(':');
+  if (parts.length >= 2) {
+    const hrs = parseInt(parts[0], 10);
+    const mins = parseInt(parts[1], 10);
+    return hrs * 60 + mins;
+  }
+  return 0;
+}
+
+function getEndTimeAndAMPM(startTime24: string): { start12: string; end12: string; end24: string } {
+  if (!startTime24) return { start12: '09:00 AM', end12: '09:20 AM', end24: '09:20' };
+  const parts = startTime24.split(':');
+  let hrs = parseInt(parts[0], 10) || 0;
+  let mins = parseInt(parts[1], 10) || 0;
+  
+  // Start AM/PM
+  const startAMPM = hrs >= 12 ? 'PM' : 'AM';
+  let startHrs12 = hrs % 12;
+  if (startHrs12 === 0) startHrs12 = 12;
+  const startMinsStr = mins < 10 ? '0' + mins : mins;
+  const start12 = `${startHrs12 < 10 ? '0' + startHrs12 : startHrs12}:${startMinsStr} ${startAMPM}`;
+  
+  // End time
+  let endMins = mins + 20;
+  let endHrs = hrs;
+  if (endMins >= 60) {
+    endMins -= 60;
+    endHrs += 1;
+    if (endHrs >= 24) {
+      endHrs = 0;
+    }
+  }
+  
+  const endAMPM = endHrs >= 12 ? 'PM' : 'AM';
+  let endHrs12 = endHrs % 12;
+  if (endHrs12 === 0) endHrs12 = 12;
+  const endMinsStr = endMins < 10 ? '0' + endMins : endMins;
+  const end12 = `${endHrs12 < 10 ? '0' + endHrs12 : endHrs12}:${endMinsStr} ${endAMPM}`;
+  
+  const pad = (n: number) => n < 10 ? '0' + n : n;
+  const end24 = `${pad(endHrs)}:${pad(endMins)}`;
+  
+  return { start12, end12, end24 };
+}
+
+function findSlotOverlap(slots: Custom20MinSlot[]): string | null {
+  for (let i = 0; i < slots.length; i++) {
+    for (let j = i + 1; j < slots.length; j++) {
+      const s1 = slots[i];
+      const s2 = slots[j];
+      
+      // Check if they share any active repeating days
+      const sharedDays = (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const).filter(
+        day => s1.days[day] && s2.days[day]
+      );
+      
+      if (sharedDays.length > 0) {
+        const start1 = convertToMinutes(s1.startTime);
+        const end1 = start1 + 20;
+        
+        const start2 = convertToMinutes(s2.startTime);
+        const end2 = start2 + 20;
+        
+        if (start1 < end2 && start2 < end1) {
+          const daysStr = sharedDays.map(d => d.substring(0, 3)).join(', ');
+          const { start12: st1_12, end12: end1_12 } = getEndTimeAndAMPM(s1.startTime);
+          const { start12: st2_12, end12: end2_12 } = getEndTimeAndAMPM(s2.startTime);
+          return `Overlap detected on [${daysStr}]:\n` + 
+                 `Slot A (${st1_12} – ${end1_12}) overlaps with Slot B (${st2_12} – ${end2_12}).\n` + 
+                 `Please choose a non-overlapping time or uncheck conflicting days.`;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function formatTimeToAMPM(time24: string): string {
+  if (!time24) return '';
+  const parts = time24.split(':');
+  if (parts.length < 2) return time24;
+  let hrs = parseInt(parts[0], 10);
+  const mins = parseInt(parts[1], 10);
+  const ampm = hrs >= 12 ? 'PM' : 'AM';
+  hrs = hrs % 12;
+  hrs = hrs ? hrs : 12; // '0' should be '12'
+  const minsStr = mins < 10 ? '0' + mins : mins;
+  return `${hrs}:${minsStr} ${ampm}`;
+}
+
 export const Onboarding: React.FC<OnboardingProps> = ({
   localities,
   onAddExpert,
@@ -184,150 +300,152 @@ export const Onboarding: React.FC<OnboardingProps> = ({
   const [hasVehicle, setHasVehicle] = useState(false);
   const [languages, setLanguages] = useState<string[]>(['English', 'Hindi']);
   const [selectedAvatar, setSelectedAvatar] = useState(MOCK_AVATARS[0]);
-  const [selectedTopics, setSelectedTopics] = useState<string[]>(['Schools', 'Safety']);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [availability, setAvailability] = useState('Weekends & Evenings');
   const [submitted, setSubmitted] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [isLiveChatAvailable, setIsLiveChatAvailable] = useState(false);
+  const [isLiveChatAvailable, setIsLiveChatAvailable] = useState(true);
   const [liveChatSlots, setLiveChatSlots] = useState<string[]>([]);
 
-  const [weeklyAvailability, setWeeklyAvailability] = useState<DayAvailability[]>([
-    { day: 'Monday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
-    { day: 'Tuesday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
-    { day: 'Wednesday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
-    { day: 'Thursday', available: true, timeWindows: [{ start: '07:00 PM', end: '09:00 PM' }] },
-    { day: 'Friday', available: true, timeWindows: [{ start: '07:00 PM', end: '10:00 PM' }] },
-    { day: 'Saturday', available: true, timeWindows: [{ start: '10:00 AM', end: '01:00 PM' }] },
-    { day: 'Sunday', available: true, timeWindows: [{ start: '04:00 PM', end: '08:00 PM' }] }
+  const [customSlots, setCustomSlots] = useState<Custom20MinSlot[]>([
+    {
+      id: 'slot_1',
+      startTime: '09:00',
+      days: {
+        Monday: true,
+        Tuesday: true,
+        Wednesday: true,
+        Thursday: true,
+        Friday: true,
+        Saturday: true,
+        Sunday: true,
+      }
+    }
   ]);
-  const [isInstantChatEnabled, setIsInstantChatEnabled] = useState(true);
-  const [addingDay, setAddingDay] = useState<string | null>(null);
-  const [newStart, setNewStart] = useState('19:00');
-  const [newEnd, setNewEnd] = useState('21:00');
-  const [timeError, setTimeError] = useState<{ day: string; message: string } | null>(null);
 
-  const convertToMinutes = (timeStr: string): number => {
-    // Check for 12-hour format with AM/PM (e.g. "07:00 PM")
-    const ampmMatch = timeStr.trim().match(/^(\d+):(\d+)\s*(AM|PM)$/i);
-    if (ampmMatch) {
-      let hrs = parseInt(ampmMatch[1], 10);
-      const mins = parseInt(ampmMatch[2], 10);
-      const ampm = ampmMatch[3].toUpperCase();
-      if (ampm === 'PM' && hrs < 12) hrs += 12;
-      else if (ampm === 'AM' && hrs === 12) hrs = 0;
-      return hrs * 60 + mins;
+  const addCustomSlot = () => {
+    if (customSlots.length >= 10) {
+      alert("You can select up to 10 slots of 20 minutes.");
+      return;
     }
-    // Check for 24-hour format (e.g. "19:00")
-    const parts = timeStr.trim().split(':');
-    if (parts.length >= 2) {
-      const hrs = parseInt(parts[0], 10);
-      const mins = parseInt(parts[1], 10);
-      return hrs * 60 + mins;
-    }
-    return 0;
-  };
-
-  const adjustTime = (currentVal: string, direction: 'up' | 'down'): string => {
-    const parts = currentVal.split(':');
-    if (parts.length < 2) return currentVal;
-    let hrs = parseInt(parts[0], 10);
-    let mins = parseInt(parts[1], 10);
     
-    // Increment or decrement by 30-minute intervals
-    if (direction === 'up') {
-      mins += 30;
-      if (mins >= 60) {
-        mins = 0;
-        hrs = (hrs + 1) % 24;
-      }
-    } else {
-      mins -= 30;
-      if (mins < 0) {
-        mins = 30;
-        hrs = (hrs - 1 + 24) % 24;
-      }
+    let defaultStart = '10:00';
+    if (customSlots.length > 0) {
+      const lastSlot = customSlots[customSlots.length - 1];
+      const { end24 } = getEndTimeAndAMPM(lastSlot.startTime);
+      defaultStart = end24;
     }
-    const hStr = hrs < 10 ? '0' + hrs : hrs.toString();
-    const mStr = mins < 10 ? '0' + mins : mins.toString();
-    return `${hStr}:${mStr}`;
-  };
 
-  const formatTimeToAMPM = (time24: string): string => {
-    if (!time24) return '';
-    const parts = time24.split(':');
-    if (parts.length < 2) return time24;
-    let hrs = parseInt(parts[0], 10);
-    const mins = parseInt(parts[1], 10);
-    const ampm = hrs >= 12 ? 'PM' : 'AM';
-    hrs = hrs % 12;
-    hrs = hrs ? hrs : 12; // '0' should be '12'
-    const minsStr = mins < 10 ? '0' + mins : mins;
-    return `${hrs}:${minsStr} ${ampm}`;
-  };
-
-  const handleToggleDay = (dayName: string) => {
-    setWeeklyAvailability(prev => prev.map(item => {
-      if (item.day === dayName) {
-        return { ...item, available: !item.available };
+    let currentStart = defaultStart;
+    let foundValid = false;
+    for (let attempts = 0; attempts < 72; attempts++) {
+      const candidateSlot: Custom20MinSlot = {
+        id: 'candidate',
+        startTime: currentStart,
+        days: {
+          Monday: true, Tuesday: true, Wednesday: true, Thursday: true, Friday: true, Saturday: true, Sunday: true
+        }
+      };
+      const testSlots = [...customSlots, candidateSlot];
+      if (!findSlotOverlap(testSlots)) {
+        foundValid = true;
+        break;
       }
-      return item;
-    }));
-  };
-
-  const handleRemoveTimeWindow = (dayName: string, index: number) => {
-    setWeeklyAvailability(prev => prev.map(item => {
-      if (item.day === dayName) {
-        const updated = [...item.timeWindows];
-        updated.splice(index, 1);
-        return { ...item, timeWindows: updated };
+      const parts = currentStart.split(':');
+      let h = parseInt(parts[0], 10);
+      let m = parseInt(parts[1], 10) + 20;
+      if (m >= 60) {
+        m -= 60;
+        h = (h + 1) % 24;
       }
-      return item;
-    }));
-  };
+      const pad = (n: number) => n < 10 ? '0' + n : n;
+      currentStart = `${pad(h)}:${pad(m)}`;
+    }
 
-  const handleSaveTimeWindow = (dayName: string) => {
-    setTimeError(null);
-    const formattedStart = formatTimeToAMPM(newStart);
-    const formattedEnd = formatTimeToAMPM(newEnd);
-    if (!formattedStart || !formattedEnd) return;
-
-    const newStartMin = convertToMinutes(newStart);
-    const newEndMin = convertToMinutes(newEnd);
-
-    if (newStartMin >= newEndMin) {
-      setTimeError({ day: dayName, message: "Start time must be before end time!" });
-      alert("Error: Start time must be before end time!");
+    if (!foundValid) {
+      alert("Could not find a non-overlapping 20-minute time window. Please adjust existing slots first.");
       return;
     }
 
-    const dayConfig = weeklyAvailability.find(item => item.day === dayName);
-    if (dayConfig) {
-      const hasOverlap = dayConfig.timeWindows.some(window => {
-        const existingStartMin = convertToMinutes(window.start);
-        const existingEndMin = convertToMinutes(window.end);
-        // Overlap if new start is before existing end AND new end is after existing start
-        return newStartMin < existingEndMin && newEndMin > existingStartMin;
-      });
-
-      if (hasOverlap) {
-        setTimeError({ day: dayName, message: "This time window overlaps with an already existing slot on this day!" });
-        alert("Error: This time window overlaps with an already existing slot on this day!");
-        return;
+    const newSlot: Custom20MinSlot = {
+      id: `slot_${Date.now()}`,
+      startTime: currentStart,
+      days: {
+        Monday: true,
+        Tuesday: true,
+        Wednesday: true,
+        Thursday: true,
+        Friday: true,
+        Saturday: true,
+        Sunday: true,
       }
-    }
+    };
+    setCustomSlots([...customSlots, newSlot]);
+  };
 
-    setWeeklyAvailability(prev => prev.map(item => {
-      if (item.day === dayName) {
+  const removeCustomSlot = (id: string) => {
+    setCustomSlots(prev => prev.filter(s => s.id !== id));
+  };
+
+  const updateSlotStartTime = (id: string, time24: string) => {
+    const updatedSlots = customSlots.map(s => {
+      if (s.id === id) {
+        return { ...s, startTime: time24 };
+      }
+      return s;
+    });
+    setCustomSlots(updatedSlots);
+  };
+
+  const toggleSlotDay = (id: string, dayKey: keyof Custom20MinSlot['days']) => {
+    const updatedSlots = customSlots.map(s => {
+      if (s.id === id) {
         return {
-          ...item,
-          timeWindows: [...item.timeWindows, { start: formattedStart, end: formattedEnd }]
+          ...s,
+          days: {
+            ...s.days,
+            [dayKey]: !s.days[dayKey]
+          }
         };
       }
-      return item;
-    }));
-    setAddingDay(null);
-    setTimeError(null);
+      return s;
+    });
+    setCustomSlots(updatedSlots);
   };
+
+  const [weeklyAvailability, setWeeklyAvailability] = useState<DayAvailability[]>([
+    { day: 'Monday', available: true, timeWindows: [{ start: '09:00 AM', end: '09:20 AM' }] },
+    { day: 'Tuesday', available: true, timeWindows: [{ start: '09:00 AM', end: '09:20 AM' }] },
+    { day: 'Wednesday', available: true, timeWindows: [{ start: '09:00 AM', end: '09:20 AM' }] },
+    { day: 'Thursday', available: true, timeWindows: [{ start: '09:00 AM', end: '09:20 AM' }] },
+    { day: 'Friday', available: true, timeWindows: [{ start: '09:00 AM', end: '09:20 AM' }] },
+    { day: 'Saturday', available: true, timeWindows: [{ start: '09:00 AM', end: '09:20 AM' }] },
+    { day: 'Sunday', available: true, timeWindows: [{ start: '09:00 AM', end: '09:20 AM' }] }
+  ]);
+
+  useEffect(() => {
+    const updatedWeekly = (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const).map((dayName) => {
+      const activeSlots = customSlots.filter(s => s.days[dayName]);
+      const windows = activeSlots.map(s => {
+        const { start12, end12 } = getEndTimeAndAMPM(s.startTime);
+        return { start: start12, end: end12 };
+      });
+      // Sort windows by start time for consistent display
+      windows.sort((a, b) => {
+        const minA = convertToMinutes(a.start);
+        const minB = convertToMinutes(b.start);
+        return minA - minB;
+      });
+      return {
+        day: dayName,
+        available: windows.length > 0,
+        timeWindows: windows
+      };
+    });
+    setWeeklyAvailability(updatedWeekly);
+  }, [customSlots]);
+
+  const slotOverlapError = findSlotOverlap(customSlots);
 
   const generateDynamicSlots = () => {
     const slots: string[] = [];
@@ -407,6 +525,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       return;
     }
 
+    if (slotOverlapError) {
+      alert(`Cannot submit due to scheduling conflict:\n\n${slotOverlapError}`);
+      return;
+    }
+
     const fullName = `${firstName.trim()} ${lastName.trim()}`;
 
     // Prohibited Real Estate Broker & Landlord check
@@ -429,12 +552,31 @@ export const Onboarding: React.FC<OnboardingProps> = ({
 
     const areasList = [neighborhood.trim()];
 
+    // Generate randomized headline based on templates and sequence selection of topics
+    const cleanSociety = neighborhood.trim() || 'this neighborhood';
+    const cleanYears = yearsLiving.trim() || '5';
+    
+    // Extract top 3 chosen topics or use elegant defaults
+    const t1 = selectedTopics[0] || 'amenities';
+    const t2 = selectedTopics[1] || 'maintenance';
+    const t3 = selectedTopics[2] || 'living experience';
+
+    const templates = [
+      `Ask me about ${t1}, ${t2}, ${t3} and everyday life in ${cleanSociety}.`,
+      `Lived in ${cleanSociety} for ${cleanYears} years. Happy to share honest insights about ${t1}, ${t2} and ${t3}.`,
+      `Thinking about moving to ${cleanSociety}? Ask me about ${t1}, ${t2} and ${t3}.`,
+      `I'll share my experience living in ${cleanSociety}, including ${t1}, ${t2} and ${t3}.`
+    ];
+
+    const randomIndex = Math.floor(Math.random() * templates.length);
+    const generatedHeadline = templates[randomIndex];
+
     const newExpert: ExpertProfile = {
       id: `exp_${Date.now()}`,
       userId: user ? user.uid : `user_expert_${Date.now()}`,
       fullName,
       bio,
-      listingHeadline: listingHeadline.trim() || undefined,
+      listingHeadline: generatedHeadline,
       localityId,
       localityName: `${neighborhood}`,
       city,
@@ -464,7 +606,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       upiId: upiId.trim() || undefined,
       isLiveChatAvailable,
       weeklyAvailability,
-      isInstantChatEnabled,
+      isInstantChatEnabled: false,
       availableSlots: isLiveChatAvailable ? generateAvailableSlotsFromWeekly(weeklyAvailability) : []
     };
 
@@ -1041,7 +1183,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                           setPincode(loc.pincode);
                           setLandmarks(loc.landmarks || '');
                           setDetailedAddress(loc.detailedAddress || '');
-                          setListingHeadline(`I will consult you on ${loc.name}'s water hours, maid rates, and actual society guidelines`);
                           setShowSuggestions(false);
                         }}
                         className="px-3 py-2 hover:bg-slate-50 cursor-pointer text-left border-b border-slate-100 last:border-b-0 flex items-center justify-between gap-2"
@@ -1092,21 +1233,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                   onChange={(e) => setLandmarks(e.target.value)}
                   className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px]"
                 />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-slate-500 font-bold uppercase tracking-wider mb-1">
-                  Main Listing Headline / Hook (required)
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. I will consult you on Prestige Shantiniketan's water supply, power history, and security"
-                  value={listingHeadline}
-                  onChange={(e) => setListingHeadline(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 placeholder:text-[10px] sm:placeholder:text-xs"
-                />
-                <p className="text-[10px] text-slate-400 mt-1 font-medium">This will be the main header/title displayed on your profile page to prospective buyers. Make it descriptive and trustworthy.</p>
               </div>
 
             </div>
@@ -1200,148 +1326,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({
               </div>
             </div>
 
-            {/* Owner or Tenant */}
-            <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <div className="text-left">
-                <h4 className="font-bold text-slate-800 text-xs">Residency Type</h4>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setOwnerOrTenant('Owner')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    ownerOrTenant === 'Owner'
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  Owner
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOwnerOrTenant('Tenant')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    ownerOrTenant === 'Tenant'
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  Tenant
-                </button>
-              </div>
-            </div>
-
-            {/* Family Type */}
-            <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <div className="text-left">
-                <h4 className="font-bold text-slate-800 text-xs">Household Type</h4>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <select
-                  value={familyType}
-                  onChange={(e) => setFamilyType(e.target.value as any)}
-                  className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg outline-hidden focus:border-blue-600 bg-white font-bold text-slate-700"
-                >
-                  <option value="Living with Family">Living with Family</option>
-                  <option value="Couple">Couple</option>
-                  <option value="Single / Bachelor">Single / Bachelor</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Work From Home */}
-            <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <div className="text-left">
-                <h4 className="font-bold text-slate-800 text-xs">Do you work from home?</h4>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setWorkFromHome(true)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    workFromHome
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  Yes, WFH
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setWorkFromHome(false)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    !workFromHome
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  No, Office Commute
-                </button>
-              </div>
-            </div>
-
-            {/* Pets */}
-            <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <div className="text-left">
-                <h4 className="font-bold text-slate-800 text-xs">Do you own pets?</h4>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setHasPets(true)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    hasPets
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  Yes
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setHasPets(false)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    !hasPets
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  No
-                </button>
-              </div>
-            </div>
-
-            {/* Vehicle */}
-            <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <div className="text-left">
-                <h4 className="font-bold text-slate-800 text-xs">Do you own a vehicle (car/bike)?</h4>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setHasVehicle(true)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    hasVehicle
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  Yes
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setHasVehicle(false)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    !hasVehicle
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  No
-                </button>
-              </div>
-            </div>
-
             {/* Languages Multi-select */}
             <div className="mb-6">
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">Languages Spoken (select all that apply):</label>
@@ -1366,24 +1350,35 @@ export const Onboarding: React.FC<OnboardingProps> = ({
               </div>
             </div>
 
-            {/* Knowledge Topics Multi-select */}
+            {/* Knowledge Topics Multi-select with Sequence Indicator */}
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5 font-sans">Select Topics You Know Best:</label>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 font-sans">
+                Select Topics You Know Best (in order of expertise):
+              </label>
+              <p className="text-[10px] text-slate-400 mb-3 font-medium">
+                Please click the topics in sequence. Your 1st, 2nd, and 3rd choices will be used to automatically generate your personalized profile headline!
+              </p>
               <div className="flex flex-wrap gap-2">
                 {TOPICS_OF_EXPERTISE.map((topic) => {
-                  const active = selectedTopics.includes(topic);
+                  const seqIndex = selectedTopics.indexOf(topic);
+                  const active = seqIndex !== -1;
                   return (
                     <button
                       type="button"
                       key={topic}
                       onClick={() => handleTopicToggle(topic)}
-                      className={`px-3 py-1.5 text-xs rounded-full border transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 text-xs rounded-full border transition-all cursor-pointer flex items-center gap-1.5 ${
                         active 
-                          ? 'bg-emerald-600 border-emerald-600 text-white font-bold' 
+                          ? 'bg-emerald-600 border-emerald-600 text-white font-bold shadow-3xs' 
                           : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
                       }`}
                     >
-                      {topic}
+                      <span>{topic}</span>
+                      {active && (
+                        <span className="bg-emerald-700 text-white font-mono rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-black shrink-0">
+                          {seqIndex + 1}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
@@ -1392,300 +1387,116 @@ export const Onboarding: React.FC<OnboardingProps> = ({
           </div>
 
           {/* Section 4: Live Chat Availability */}
-          <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-5">
+          <div className="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-6">
             <div>
               <h3 className="font-display font-black text-slate-900 text-base flex items-center gap-2">
-                <span className="p-1.5 bg-orange-100 text-orange-600 rounded-lg text-[10px] font-mono tracking-wider font-bold uppercase">⚡ NEW</span>
-                <span>4. Live Chat Availability (Optional)</span>
+                <span className="p-1.5 bg-orange-100 text-orange-600 rounded-lg text-[10px] font-mono tracking-wider font-bold uppercase">⚡ REQUIRED</span>
+                <span>4. Live Chat Availability</span>
               </h3>
               <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                Offer real-time 20-minute consultation chats to home seekers for premium payouts. When a buyer books a slot, a secure chatroom opens automatically at that exact scheduled time.
+                Schedule up to 10 consultation slots throughout the day.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white border border-slate-200/60 rounded-xl">
-              <div>
-                <span className="block text-xs font-bold text-slate-700">Enable Live Chat consultations</span>
-                <span className="text-[10px] text-slate-400">Receive ₹220 (per 20 mins session)</span>
+            {slotOverlapError && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-xs font-semibold leading-relaxed flex items-start gap-2.5 shadow-3xs">
+                <span className="text-sm">⚠️</span>
+                <div className="space-y-1 text-left">
+                  <span className="block font-bold uppercase tracking-wider text-[10px] text-red-800">Time Slot Overlap / Scheduling Conflict</span>
+                  <p className="whitespace-pre-line font-medium text-[11px]">{slotOverlapError}</p>
+                </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsLiveChatAvailable(true);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    isLiveChatAvailable
-                      ? 'bg-orange-600 text-white shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  Yes, Enable
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsLiveChatAvailable(false);
-                    setLiveChatSlots([]);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    !isLiveChatAvailable
-                      ? 'bg-slate-600 text-white shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  No, Skip
-                </button>
-              </div>
+            )}
+
+            {/* List of Custom 20-Minute Slots */}
+            <div className="space-y-4">
+              {customSlots.map((slot, index) => {
+                const { start12, end12, end24 } = getEndTimeAndAMPM(slot.startTime);
+                return (
+                  <div 
+                    key={slot.id} 
+                    className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 space-y-3 relative shadow-3xs hover:border-slate-300 transition-all text-left"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-bold text-slate-400 font-mono bg-slate-50 px-2 py-0.5 rounded-md">
+                          Slot #{index + 1}
+                        </span>
+                        <div className="text-sm font-bold text-slate-800 font-mono">
+                          {slot.startTime} – {end24}
+                          <span className="text-xs font-normal text-slate-400 font-sans ml-2">
+                            ({start12} – {end12})
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-400 font-medium">Start Time:</span>
+                        <input
+                          type="time"
+                          value={slot.startTime}
+                          onChange={(e) => updateSlotStartTime(slot.id, e.target.value)}
+                          className="px-2.5 py-1 border border-slate-200 rounded-lg text-xs font-mono font-bold text-slate-800 outline-hidden focus:border-orange-500 focus:ring-1 focus:ring-orange-500 bg-white"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Repeat on Days Checkboxes */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="space-y-1.5">
+                        <span className="block text-xs font-bold text-slate-600">Repeat On:</span>
+                        <div className="flex flex-wrap gap-x-3.5 gap-y-2">
+                          {(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const).map((dayName) => {
+                            const shortLabel = dayName.substring(0, 3);
+                            const isChecked = slot.days[dayName];
+                            return (
+                              <label 
+                                key={dayName} 
+                                className="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-700 select-none hover:text-slate-900"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={() => toggleSlotDay(slot.id, dayName)}
+                                  className="h-4 w-4 rounded-md border-slate-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
+                                />
+                                <span>{shortLabel}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="pt-2 sm:pt-0 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => removeCustomSlot(slot.id)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 text-xs font-bold flex items-center gap-1 cursor-pointer transition-all border border-red-100 hover:border-red-200 px-3 py-1.5 rounded-xl"
+                        >
+                          <span>🗑</span> Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {customSlots.length === 0 && (
+                <div className="text-center py-8 bg-white border border-dashed border-slate-200 rounded-2xl">
+                  <span className="text-slate-400 text-xs font-medium">No 20-minute slots added yet. Click "+ Add 20-Min Slot" below to create one.</span>
+                </div>
+              )}
             </div>
 
-            {isLiveChatAvailable && (
-              <div className="space-y-6 pt-4 border-t border-slate-200/60">
-                {/* Weekly Recurring Availability Section */}
-                <div>
-                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">
-                    Weekly Consultation Schedule (Recurring)
-                  </h4>
-
-                  <div className="border border-slate-200/80 rounded-2xl overflow-hidden bg-white shadow-xs">
-                    {/* Headers */}
-                    <div className="hidden sm:grid grid-cols-12 bg-slate-50 border-b border-slate-200/80 px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                      <div className="col-span-3">Day of Week</div>
-                      <div className="col-span-2 text-center">Available</div>
-                      <div className="col-span-7">Time Windows</div>
-                    </div>
-
-                    {/* Rows */}
-                    <div className="divide-y divide-slate-150">
-                      {weeklyAvailability.map((day) => (
-                        <div key={day.day} className="flex flex-col sm:grid sm:grid-cols-12 items-start sm:items-center px-4 py-3.5 gap-2.5 sm:gap-0">
-                          {/* Day Column */}
-                          <div className="col-span-3">
-                            <span className="text-xs font-bold text-slate-800 font-display">{day.day}</span>
-                          </div>
-
-                          {/* Available Toggle Column */}
-                          <div className="col-span-2 w-full sm:w-auto flex justify-start sm:justify-center">
-                            <label className="flex items-center gap-2 cursor-pointer sm:justify-center w-full">
-                              <input
-                                type="checkbox"
-                                checked={day.available}
-                                onChange={() => handleToggleDay(day.day)}
-                                className="h-4.5 w-4.5 rounded-md border-slate-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
-                              />
-                              <span className="text-[11px] sm:hidden font-medium text-slate-500">Available</span>
-                            </label>
-                          </div>
-
-                          {/* Time Windows Column */}
-                          <div className="col-span-7 w-full space-y-2">
-                            {day.available ? (
-                              <div className="space-y-2">
-                                {/* Time Windows list */}
-                                {day.timeWindows && day.timeWindows.length > 0 ? (
-                                  <div className="flex flex-wrap gap-1.5">
-                                    {day.timeWindows.map((window, index) => (
-                                      <div
-                                        key={index}
-                                        className="flex items-center gap-1 bg-orange-50/50 border border-orange-200/60 px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold text-orange-800"
-                                      >
-                                        <span>{window.start} – {window.end}</span>
-                                        <button
-                                          type="button"
-                                          onClick={() => handleRemoveTimeWindow(day.day, index)}
-                                          className="text-orange-400 hover:text-orange-700 font-bold ml-1 px-0.5 focus:outline-hidden cursor-pointer"
-                                          title="Remove time window"
-                                        >
-                                          ×
-                                        </button>
-                                      </div>
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <span className="text-[10px] text-slate-400 italic block">
-                                    No time windows. Click "+ Add Window" below to add some.
-                                  </span>
-                                )}
-
-                                {/* Inline adding interface */}
-                                {addingDay === day.day ? (
-                                  <div className="space-y-2 mt-1.5">
-                                    <div className="flex flex-wrap items-center gap-2 bg-slate-50 border border-slate-200 p-2.5 rounded-xl w-full sm:w-max shadow-3xs">
-                                      {/* Start Time Input with Custom up/down arrows */}
-                                      <div className="relative flex items-center bg-white border border-slate-200 rounded-lg px-2 py-0.5 shadow-3xs focus-within:border-orange-500">
-                                        <input
-                                          type="time"
-                                          value={newStart}
-                                          onChange={(e) => setNewStart(e.target.value)}
-                                          className="text-xs font-mono outline-hidden bg-transparent w-16"
-                                        />
-                                        <div className="flex flex-col ml-1.5 border-l border-slate-150 pl-1.5 text-slate-400">
-                                          <button
-                                            type="button"
-                                            onClick={() => {
-                                              setTimeError(null);
-                                              setNewStart(prev => adjustTime(prev, 'up'));
-                                            }}
-                                            className="hover:text-orange-600 focus:outline-hidden cursor-pointer p-0.5"
-                                            title="Increase start time by 30 mins"
-                                          >
-                                            <ChevronUp className="w-2.5 h-2.5" />
-                                          </button>
-                                          <button
-                                            type="button"
-                                            onClick={() => {
-                                              setTimeError(null);
-                                              setNewStart(prev => adjustTime(prev, 'down'));
-                                            }}
-                                            className="hover:text-orange-600 focus:outline-hidden cursor-pointer p-0.5"
-                                            title="Decrease start time by 30 mins"
-                                          >
-                                            <ChevronDown className="w-2.5 h-2.5" />
-                                          </button>
-                                        </div>
-                                      </div>
-
-                                      <span className="text-slate-400 text-[10px] font-semibold font-sans">to</span>
-
-                                      {/* End Time Input with Custom up/down arrows */}
-                                      <div className="relative flex items-center bg-white border border-slate-200 rounded-lg px-2 py-0.5 shadow-3xs focus-within:border-orange-500">
-                                        <input
-                                          type="time"
-                                          value={newEnd}
-                                          onChange={(e) => setNewEnd(e.target.value)}
-                                          className="text-xs font-mono outline-hidden bg-transparent w-16"
-                                        />
-                                        <div className="flex flex-col ml-1.5 border-l border-slate-150 pl-1.5 text-slate-400">
-                                          <button
-                                            type="button"
-                                            onClick={() => {
-                                              setTimeError(null);
-                                              setNewEnd(prev => adjustTime(prev, 'up'));
-                                            }}
-                                            className="hover:text-orange-600 focus:outline-hidden cursor-pointer p-0.5"
-                                            title="Increase end time by 30 mins"
-                                          >
-                                            <ChevronUp className="w-2.5 h-2.5" />
-                                          </button>
-                                          <button
-                                            type="button"
-                                            onClick={() => {
-                                              setTimeError(null);
-                                              setNewEnd(prev => adjustTime(prev, 'down'));
-                                            }}
-                                            className="hover:text-orange-600 focus:outline-hidden cursor-pointer p-0.5"
-                                            title="Decrease end time by 30 mins"
-                                          >
-                                            <ChevronDown className="w-2.5 h-2.5" />
-                                          </button>
-                                        </div>
-                                      </div>
-
-                                      <div className="flex items-center gap-1 ml-1">
-                                        <button
-                                          type="button"
-                                          onClick={() => handleSaveTimeWindow(day.day)}
-                                          className="bg-orange-600 hover:bg-orange-700 text-white px-2.5 py-1 rounded-md text-[10px] font-bold shadow-3xs cursor-pointer"
-                                        >
-                                          Save
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            setAddingDay(null);
-                                            setTimeError(null);
-                                          }}
-                                          className="text-slate-500 hover:text-slate-700 text-[10px] font-semibold px-2 cursor-pointer"
-                                        >
-                                          Cancel
-                                        </button>
-                                      </div>
-                                    </div>
-
-                                    {timeError && timeError.day === day.day && (
-                                      <div className="text-[10px] font-bold text-red-600 bg-red-50 border border-red-200/60 px-3 py-2 rounded-xl w-full sm:w-max max-w-sm flex items-center gap-1.5 animate-pulse shadow-3xs">
-                                        <span className="text-xs">⚠️</span>
-                                        <span>{timeError.message}</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setAddingDay(day.day);
-                                      setNewStart("19:00");
-                                      setNewEnd("21:00");
-                                    }}
-                                    className="inline-flex items-center text-[10px] text-orange-600 hover:text-orange-700 font-bold border border-dashed border-orange-200 hover:border-orange-300 px-2.5 py-1 rounded-lg transition-all cursor-pointer bg-orange-50/10 hover:bg-orange-50/40"
-                                  >
-                                    + Add Time Window
-                                  </button>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="text-[10px] text-slate-400 italic">Not available on this day</span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Instant Chat Requests Section */}
-                <div className="p-5 bg-emerald-50/40 border border-emerald-100 rounded-2xl space-y-3">
-                  <div className="flex items-start gap-3">
-                    <span className="relative flex h-3.5 w-3.5 my-1 shrink-0">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
-                    </span>
-                    <div>
-                      <h4 className="text-sm font-bold text-emerald-950 font-display">Instant Chat Requests</h4>
-                      <p className="text-[11px] text-emerald-800/80 leading-relaxed">
-                        If you're online and free, would you like to receive instant booking requests?
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => setIsInstantChatEnabled(true)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-                        isInstantChatEnabled
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                      }`}
-                    >
-                      <span className="text-sm">{isInstantChatEnabled ? '☑' : '☐'}</span> Yes
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsInstantChatEnabled(false)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
-                        !isInstantChatEnabled
-                          ? 'bg-slate-600 text-white border-slate-600 shadow-sm'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                      }`}
-                    >
-                      <span className="text-sm">{!isInstantChatEnabled ? '☑' : '☐'}</span> No
-                    </button>
-                  </div>
-                  
-                  {isInstantChatEnabled && (
-                    <p className="text-[10px] text-emerald-700 font-medium leading-relaxed pt-1">
-                      ✨ Enabled! Users browsing the platform will see: <span className="inline-flex items-center gap-1.5 font-bold bg-white px-2.5 py-1 rounded-full border border-emerald-200/60 text-emerald-800 shadow-3xs">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </span>
-                        Available Now — Chat within 5 minutes
-                      </span> on your profile.
-                    </p>
-                  )}
-                </div>
-              </div>
+            {/* Add Slot Button (Disabled if >= 10 slots) */}
+            {customSlots.length < 10 && (
+              <button
+                type="button"
+                onClick={addCustomSlot}
+                className="w-full inline-flex items-center justify-center gap-2 text-xs text-orange-600 hover:text-orange-700 font-bold border border-dashed border-orange-200 hover:border-orange-300 py-3 rounded-2xl transition-all cursor-pointer bg-orange-50/10 hover:bg-orange-50/40"
+              >
+                + Add 20-Min Slot ({customSlots.length}/10)
+              </button>
             )}
           </div>
 
