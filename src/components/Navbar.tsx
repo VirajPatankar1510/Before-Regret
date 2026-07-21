@@ -50,6 +50,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     signInWithEmail,
     logout, 
     expertProfile,
+    userExperts,
     isClerkActive,
     triggerClerkSignIn,
     triggerClerkSignUp
@@ -365,23 +366,35 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>Search</span>
           </button>
           {expertProfile ? (
-            <button
-              onClick={() => {
-                setView('dashboard');
-              }}
-              className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-bold"
-            >
-              <Award className="w-4 h-4 text-emerald-500 animate-pulse" />
-              <span>Dashboard</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setView('dashboard');
+                }}
+                className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-bold"
+              >
+                <Award className="w-4 h-4 text-emerald-500 animate-pulse" />
+                <span>Dashboard</span>
+              </button>
+              {userExperts.length < 2 && (
+                <button
+                  onClick={() => setView('become_expert')}
+                  className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-semibold ml-2 pl-2 border-l border-slate-200"
+                >
+                  <span>List Another Society</span>
+                </button>
+              )}
+            </div>
           ) : (
-            <button
-              onClick={() => setView('become_expert')}
-              className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-semibold"
-            >
-              <Award className="w-4 h-4 text-emerald-500" />
-              <span>Become a Resident Guide</span>
-            </button>
+            userExperts.length < 2 && (
+              <button
+                onClick={() => setView('become_expert')}
+                className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer font-semibold"
+              >
+                <Award className="w-4 h-4 text-emerald-500" />
+                <span>Become a Resident Guide</span>
+              </button>
+            )
           )}
         </nav>
 
@@ -588,7 +601,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </div>
 
                     <div className="border-t border-slate-50 mt-1 pt-1 px-2">
-                      {expertProfile ? (
+                      {expertProfile && (
                         <button
                           onClick={() => {
                             setView('dashboard');
@@ -599,7 +612,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <Award className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
                           <span>Expert Workspace</span>
                         </button>
-                      ) : (
+                      )}
+                      {userExperts.length < 2 && (
                         <button
                           onClick={() => {
                             setView('become_expert');
@@ -608,7 +622,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           className="w-full text-left px-2.5 py-2 text-xs text-slate-600 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-1.5"
                         >
                           <Award className="w-3.5 h-3.5 text-emerald-500" />
-                          <span>Become a Resident Guide</span>
+                          <span>{expertProfile ? 'List Another Society' : 'Become a Resident Guide'}</span>
                         </button>
                       )}
                     </div>
@@ -670,7 +684,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>Explore Societies</span>
           </button>
           
-          {expertProfile ? (
+          {expertProfile && (
             <button
               onClick={() => {
                 setView('dashboard');
@@ -685,7 +699,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Award className="w-4 h-4 text-emerald-500 animate-pulse" />
               <span>Dashboard</span>
             </button>
-          ) : (
+          )}
+
+          {userExperts.length < 2 && (
             <button
               onClick={() => {
                 setView('become_expert');
@@ -698,7 +714,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               <Award className="w-4 h-4 text-emerald-500" />
-              <span>Become a Resident Guide</span>
+              <span>{expertProfile ? 'List Another Society' : 'Become a Resident Guide'}</span>
             </button>
           )}
 

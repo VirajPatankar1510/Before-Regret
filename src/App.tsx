@@ -1126,11 +1126,37 @@ export default function App() {
 
         {/* VIEW: BECOME A LOCAL EXPERT FORM VIEW */}
         {currentView === 'become_expert' && (
-          <Onboarding
-            localities={localities}
-            onAddExpert={handleAddExpertFromOnboarding}
-            setView={setView}
-          />
+          (() => {
+            const currentUserExperts = user ? experts.filter(e => e.userId === user.uid) : [];
+            if (currentUserExperts.length >= 2) {
+              return (
+                <div className="max-w-xl mx-auto my-12 p-8 bg-white border border-slate-200 rounded-3xl shadow-xs text-center space-y-6">
+                  <div className="inline-flex p-3 bg-red-50 text-red-600 rounded-2xl">
+                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-xl font-bold text-slate-950">Listing Limit Reached</h2>
+                  <p className="text-sm text-slate-500 leading-relaxed">
+                    To maintain the highest tier of authentic local trust, resident guides are limited to listing at most <strong>2 societies/areas</strong>. You have already submitted {currentUserExperts.length} listings.
+                  </p>
+                  <button
+                    onClick={() => setView('dashboard')}
+                    className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer"
+                  >
+                    Go to Dashboard
+                  </button>
+                </div>
+              );
+            }
+            return (
+              <Onboarding
+                localities={localities}
+                onAddExpert={handleAddExpertFromOnboarding}
+                setView={setView}
+              />
+            );
+          })()
         )}
 
         {/* VIEW: ADMIN PANEL VIEW */}
