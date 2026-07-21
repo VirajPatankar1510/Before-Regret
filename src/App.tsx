@@ -226,6 +226,9 @@ export default function App() {
   // Track if initial server-side load has completed to avoid overwriting database
   const [hasLoadedFromServer, setHasLoadedFromServer] = useState(false);
 
+  // Track if we are currently performing an explicit write to avoid background poll race conditions
+  const isSyncingRef = useRef(false);
+
   // Load and poll from server database for real-time synchronization
   useEffect(() => {
     let isMounted = true;
@@ -239,6 +242,9 @@ export default function App() {
         ]);
         
         if (!isMounted) return;
+
+        // Skip updating local state from poll response if we are in the middle of a local write transaction
+        if (isSyncingRef.current) return;
 
         if (locRes.ok) {
           const lData = await locRes.json();
@@ -300,44 +306,76 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('br_localities', JSON.stringify(localities));
     if (hasLoadedFromServer) {
+      isSyncingRef.current = true;
       fetch('/api/data/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ localities })
-      }).catch(err => console.error("Locality server sync error:", err));
+      })
+      .then(() => {
+        setTimeout(() => { isSyncingRef.current = false; }, 800);
+      })
+      .catch(err => {
+        console.error("Locality server sync error:", err);
+        isSyncingRef.current = false;
+      });
     }
   }, [localities, hasLoadedFromServer]);
 
   useEffect(() => {
     localStorage.setItem('br_experts', JSON.stringify(experts));
     if (hasLoadedFromServer) {
+      isSyncingRef.current = true;
       fetch('/api/data/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ experts })
-      }).catch(err => console.error("Experts server sync error:", err));
+      })
+      .then(() => {
+        setTimeout(() => { isSyncingRef.current = false; }, 800);
+      })
+      .catch(err => {
+        console.error("Experts server sync error:", err);
+        isSyncingRef.current = false;
+      });
     }
   }, [experts, hasLoadedFromServer]);
 
   useEffect(() => {
     localStorage.setItem('br_reviews', JSON.stringify(reviews));
     if (hasLoadedFromServer) {
+      isSyncingRef.current = true;
       fetch('/api/data/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reviews })
-      }).catch(err => console.error("Reviews server sync error:", err));
+      })
+      .then(() => {
+        setTimeout(() => { isSyncingRef.current = false; }, 800);
+      })
+      .catch(err => {
+        console.error("Reviews server sync error:", err);
+        isSyncingRef.current = false;
+      });
     }
   }, [reviews, hasLoadedFromServer]);
 
   useEffect(() => {
     localStorage.setItem('br_queries', JSON.stringify(queries));
     if (hasLoadedFromServer) {
+      isSyncingRef.current = true;
       fetch('/api/data/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ queries })
-      }).catch(err => console.error("Queries server sync error:", err));
+      })
+      .then(() => {
+        setTimeout(() => { isSyncingRef.current = false; }, 800);
+      })
+      .catch(err => {
+        console.error("Queries server sync error:", err);
+        isSyncingRef.current = false;
+      });
     }
   }, [queries, hasLoadedFromServer]);
 
@@ -668,7 +706,16 @@ export default function App() {
     });
 
     setSelectedLocality(locality);
-    const matchedExperts = experts.filter((e) => e.localityId === locality.id);
+    
+    // Find all matching experts, taking grouping into account
+    const matchedExperts = experts.filter((e) => {
+      if ((locality as any).isGrouped && (locality as any).groupedIds) {
+        return (locality as any).groupedIds.includes(e.localityId) || 
+               (locality as any).groupedNames.some((name: string) => e.localityName.toLowerCase().includes(name.toLowerCase()));
+      }
+      return e.localityId === locality.id || e.localityName.toLowerCase().includes(locality.name.toLowerCase());
+    });
+
     if (matchedExperts.length > 1) {
       setView('society_residents');
       window.scrollTo(0, 0);
@@ -828,6 +875,7 @@ export default function App() {
     newLocality?: Neighborhood,
     secondaryLocality?: Neighborhood
   ) => {
+    isSyncingRef.current = true;
     setExperts([newExpert, ...experts]);
     let updatedLocalities = [...localities];
 
@@ -895,6 +943,7 @@ export default function App() {
           <div>
             <Hero
               localities={localities}
+              experts={experts}
               onSelectLocality={handleSelectLocality}
               onBecomeExpertClick={() => setView('become_expert')}
               onSearchFocusRef={searchInputRef}

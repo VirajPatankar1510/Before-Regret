@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, MapPin, Sparkles, Building, ArrowRight } from 'lucide-react';
-import { Neighborhood } from '../types';
+import { Neighborhood, ExpertProfile } from '../types';
 import heroBg from '../assets/images/regenerated_image_1784228757923.png';
 import { useAuth } from '../context/AuthContext';
 
 interface HeroProps {
   localities: Neighborhood[];
+  experts: ExpertProfile[];
   onSelectLocality: (locality: Neighborhood) => void;
   onBecomeExpertClick: () => void;
   onSearchFocusRef: React.MutableRefObject<HTMLInputElement | null>;
@@ -43,6 +44,7 @@ const REGRETS: Regret[] = [
 
 export const Hero: React.FC<HeroProps> = ({
   localities,
+  experts,
   onSelectLocality,
   onBecomeExpertClick,
   onSearchFocusRef,
@@ -65,12 +67,13 @@ export const Hero: React.FC<HeroProps> = ({
     setNotifiedEmail('');
   }, [searchQuery]);
 
-  // Combine static and registered suggestions locally
+  // Combine static and registered suggestions locally with smart area grouping
   const combinedSuggestions = React.useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
     if (!query) return [];
     
-    return localities.filter((loc) => {
+    // Find all matching localities
+    const matched = localities.filter((loc) => {
       return (
         loc.name.toLowerCase().includes(query) ||
         loc.city.toLowerCase().includes(query) ||
@@ -80,7 +83,40 @@ export const Hero: React.FC<HeroProps> = ({
         (loc.landmarks && loc.landmarks.toLowerCase().includes(query))
       );
     });
-  }, [localities, searchQuery]);
+
+    // Group matching localities by their primary area or neighborhood name (case-insensitive)
+    const groups: { [key: string]: Neighborhood[] } = {};
+    matched.forEach((loc) => {
+      const normalizedKey = loc.name.toLowerCase().trim();
+      if (!groups[normalizedKey]) {
+        groups[normalizedKey] = [];
+      }
+      groups[normalizedKey].push(loc);
+    });
+
+    // Map each group to a merged suggestion representation
+    return Object.keys(groups).map((key) => {
+      const groupItems = groups[key];
+      const base = groupItems[0];
+      
+      // Calculate total expert count across all items in this group dynamically
+      const totalExperts = groupItems.reduce((sum, item) => {
+        const actualCount = experts.filter((e) => 
+          e.localityId === item.id || 
+          e.localityName.toLowerCase().trim() === item.name.toLowerCase().trim()
+        ).length;
+        return sum + Math.max(item.expertCount || 0, actualCount);
+      }, 0);
+
+      return {
+        ...base,
+        isGrouped: groupItems.length > 1,
+        expertCount: totalExperts,
+        groupedIds: groupItems.map((item) => item.id),
+        groupedNames: groupItems.map((item) => item.name)
+      };
+    });
+  }, [localities, experts, searchQuery]);
 
   // Close suggestions on click outside
   useEffect(() => {
@@ -216,11 +252,22 @@ export const Hero: React.FC<HeroProps> = ({
                           <Building className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <p className="font-bold text-slate-100 text-xs">
-                            {loc.name} {loc.society && loc.society !== loc.name ? `(${loc.society})` : ''}
+                          <p className="font-bold text-slate-100 text-xs flex items-center gap-1.5 flex-wrap">
+                            <span>{loc.name}</span>
+                            {loc.society && loc.society !== loc.name && !loc.isGrouped && (
+                              <span className="text-[10px] text-slate-400">({loc.society})</span>
+                            )}
+                            {loc.isGrouped && (
+                              <span className="text-[8px] font-mono font-bold uppercase bg-blue-950/80 text-blue-300 border border-blue-900/50 px-1.5 py-0.2 rounded shrink-0">
+                                Grouped Area
+                              </span>
+                            )}
                           </p>
                           <p className="text-[10px] text-slate-400 font-medium">
-                            {loc.apartmentName || 'Residential Area'}, {loc.city}, {loc.state} - {loc.pincode}
+                            {loc.isGrouped 
+                              ? `Multiple societies / locations, ${loc.city}`
+                              : `${loc.apartmentName || 'Residential Area'}, ${loc.city}, ${loc.state} - ${loc.pincode}`
+                            }
                           </p>
                         </div>
                       </div>

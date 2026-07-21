@@ -19,7 +19,13 @@ export const SocietyResidents: React.FC<SocietyResidentsProps> = ({
   onSelectExpert,
 }) => {
   // Filter experts belonging to this locality
-  const matchedExperts = experts.filter((e) => e.localityId === locality.id);
+  const matchedExperts = experts.filter((e) => {
+    if ((locality as any).isGrouped && (locality as any).groupedIds) {
+      return (locality as any).groupedIds.includes(e.localityId) ||
+             (locality as any).groupedNames.some((name: string) => e.localityName.toLowerCase().includes(name.toLowerCase()));
+    }
+    return e.localityId === locality.id || e.localityName.toLowerCase().includes(locality.name.toLowerCase());
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 font-sans">
