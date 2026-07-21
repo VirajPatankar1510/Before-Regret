@@ -16,6 +16,7 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { RefundPolicy } from './components/RefundPolicy';
 import { ContactUs } from './components/ContactUs';
 import { RegretFiles, ARTICLES } from './components/RegretFiles';
+import { SocietyResidents } from './components/SocietyResidents';
 import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from './data';
 import { Neighborhood, ExpertProfile, DirectQuery, Review } from './types';
 import { Building, MapPin, Search, Sparkles, Filter, Award, ChevronRight } from 'lucide-react';
@@ -383,9 +384,11 @@ export default function App() {
         const loc = localities.find(l => l.id === locId);
         if (loc) {
           setSelectedLocality(loc);
-          const matchedExpert = experts.find((e) => e.localityId === loc.id);
-          if (matchedExpert) {
-            setSelectedExpert(matchedExpert);
+          const matchedExperts = experts.filter((e) => e.localityId === loc.id);
+          if (matchedExperts.length > 1) {
+            setView('society_residents');
+          } else if (matchedExperts.length === 1) {
+            setSelectedExpert(matchedExperts[0]);
             setView('profile');
           } else {
             setView('explore');
@@ -422,6 +425,8 @@ export default function App() {
       targetPath = '/';
     } else if (currentView === 'explore') {
       targetPath = '/explore';
+    } else if (currentView === 'society_residents' && selectedLocality) {
+      targetPath = `/locality/${selectedLocality.id}`;
     } else if (currentView === 'regret_files') {
       targetPath = selectedArticleId ? `/stories/${selectedArticleId}` : '/stories';
     } else if (currentView === 'profile' && selectedExpert) {
@@ -628,9 +633,12 @@ export default function App() {
     });
 
     setSelectedLocality(locality);
-    const matchedExpert = experts.find((e) => e.localityId === locality.id);
-    if (matchedExpert) {
-      handleSelectExpert(matchedExpert);
+    const matchedExperts = experts.filter((e) => e.localityId === locality.id);
+    if (matchedExperts.length > 1) {
+      setView('society_residents');
+      window.scrollTo(0, 0);
+    } else if (matchedExperts.length === 1) {
+      handleSelectExpert(matchedExperts[0]);
     } else {
       setView('explore');
       window.scrollTo(0, 0);
@@ -834,6 +842,17 @@ export default function App() {
 
             <DecisionJourneySections setView={setView} onScrollToSearch={handleScrollToSearch} />
           </div>
+        )}
+
+        {/* VIEW: SOCIETY RESIDENTS COLLECTION VIEW */}
+        {currentView === 'society_residents' && selectedLocality && (
+          <SocietyResidents
+            locality={selectedLocality}
+            experts={experts}
+            reviews={reviews}
+            onBack={() => setView('home')}
+            onSelectExpert={handleSelectExpert}
+          />
         )}
 
         {/* VIEW: EXPLORE VIEW (All Societies Directory layout) */}
