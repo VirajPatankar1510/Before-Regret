@@ -164,15 +164,7 @@ export const ContactUs: React.FC<ContactUsProps> = ({ onBackToHome }) => {
                 </p>
 
                 <div className="space-y-3.5">
-                  <div className="flex items-start gap-3 text-xs">
-                    <div className="p-1.5 bg-slate-100 rounded-lg text-slate-500 mt-0.5">
-                      <Shield className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-800">Brand Designation</div>
-                      <div className="text-slate-500 mt-0.5">Before Regret</div>
-                    </div>
-                  </div>
+
 
                   <div className="flex items-start gap-3 text-xs">
                     <div className="p-1.5 bg-slate-100 rounded-lg text-slate-500 mt-0.5">

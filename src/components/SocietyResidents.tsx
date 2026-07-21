@@ -74,6 +74,10 @@ export const SocietyResidents: React.FC<SocietyResidentsProps> = ({
             // Calculate expert reviews and average rating
             const expertReviews = reviews.filter((r) => r.expertId === expert.id);
             const totalConsultations = expert.questionsAnsweredCount || expertReviews.length || 0;
+            const hasReviews = expertReviews.length > 0;
+            const avgRating = hasReviews 
+              ? (expertReviews.reduce((sum, r) => sum + r.rating, 0) / expertReviews.length).toFixed(1)
+              : null;
 
             return (
               <div
@@ -110,10 +114,16 @@ export const SocietyResidents: React.FC<SocietyResidentsProps> = ({
 
                   {/* Rating summary */}
                   <div className="mt-4 flex items-center gap-2 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl w-fit">
-                    <div className="flex items-center gap-0.5 text-amber-500">
-                      <Star className="w-3.5 h-3.5 fill-amber-500" />
-                      <span className="text-xs font-bold text-slate-800">{expert.rating.toFixed(1)}</span>
-                    </div>
+                    {avgRating ? (
+                      <div className="flex items-center gap-0.5 text-amber-500">
+                        <Star className="w-3.5 h-3.5 fill-amber-500" />
+                        <span className="text-xs font-bold text-slate-800">{avgRating}</span>
+                      </div>
+                    ) : (
+                      <span className="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-md font-mono">
+                        NEW RESIDENT
+                      </span>
+                    )}
                     <span className="text-slate-300">|</span>
                     <span className="text-[11px] text-slate-500 font-medium">
                       {totalConsultations} {totalConsultations === 1 ? 'consultation' : 'consultations'}
