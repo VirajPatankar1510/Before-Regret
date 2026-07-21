@@ -177,11 +177,17 @@ export const Onboarding: React.FC<OnboardingProps> = ({
   }, [localities, neighborhood, city, pincode, landmarks, detailedAddress]);
   const [yearsLiving, setYearsLiving] = useState('5');
   const [stillLivesThere, setStillLivesThere] = useState(true);
+  const [ownerOrTenant, setOwnerOrTenant] = useState<'Owner' | 'Tenant'>('Owner');
+  const [familyType, setFamilyType] = useState<'Single / Bachelor' | 'Couple' | 'Living with Family'>('Living with Family');
+  const [workFromHome, setWorkFromHome] = useState(false);
+  const [hasPets, setHasPets] = useState(false);
+  const [hasVehicle, setHasVehicle] = useState(false);
   const [languages, setLanguages] = useState<string[]>(['English', 'Hindi']);
   const [selectedAvatar, setSelectedAvatar] = useState(MOCK_AVATARS[0]);
   const [selectedTopics, setSelectedTopics] = useState<string[]>(['Schools', 'Safety']);
   const [availability, setAvailability] = useState('Weekends & Evenings');
   const [submitted, setSubmitted] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [isLiveChatAvailable, setIsLiveChatAvailable] = useState(false);
   const [liveChatSlots, setLiveChatSlots] = useState<string[]>([]);
 
@@ -437,6 +443,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       areasCovered: [neighborhood],
       yearsLivingThere: parseInt(yearsLiving),
       stillLivesThere,
+      ownerOrTenant,
+      workFromHome,
+      familyType,
+      hasPets,
+      hasVehicle,
       repeatBuyersCount: 0,
       experienceLevel: 'New Local',
       trustScore: 90,
@@ -470,181 +481,240 @@ export const Onboarding: React.FC<OnboardingProps> = ({
     setSubmitted(true);
   };
 
-  const estimatedWeeklyEarnings = (calcTextCount * 89) + (calcChatCount * 220);
+  const estimatedWeeklyEarnings = (calcTextCount * 110) + (calcChatCount * 220);
   const estimatedMonthlyEarnings = estimatedWeeklyEarnings * 4;
 
   if (showLanding) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-8 sm:py-14 font-sans space-y-16">
-        {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-100 rounded-full px-3.5 py-1.5 text-orange-800 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-orange-600 shrink-0" />
-            <span>Turn Your Everyday Living Facts Into Income</span>
-          </div>
-          
-          <h1 className="text-3xl sm:text-5xl font-display font-black text-slate-900 tracking-tight leading-[1.1] max-w-2xl mx-auto">
-            Share Honest Facts About Your Society. Earn Payouts.
+      <div className="max-w-4xl mx-auto px-6 py-12 sm:py-24 font-sans text-slate-800 space-y-24 sm:space-y-36">
+        
+        {/* SECTION 1: Hero */}
+        <div className="text-center max-w-3xl mx-auto space-y-8 pt-6 sm:pt-12">
+          <h1 className="text-4xl sm:text-6xl font-light text-slate-900 tracking-tight leading-[1.15]">
+            Share Your Local Experience.<br />
+            <span className="font-semibold text-slate-900">Help Others Make Better Property Decisions.</span>
           </h1>
           
-          <p className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto leading-relaxed">
-            Prospective home buyers want real, unbiased facts before renting or buying. Help them make the right choice by answering basic queries about maintenance, security, and amenities.
+          <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed font-light">
+            People planning to rent or buy in your building can book a private Resident Chat to learn what everyday life is really like.
+            <br />
+            Share your personal experience, help future buyers and renters, and earn for your time.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">
+          <div className="space-y-4 pt-4">
             <button
               onClick={() => setShowLanding(false)}
-              className="w-full sm:w-auto px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white font-bold text-sm rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+              className="px-8 py-4 bg-slate-900 hover:bg-slate-850 text-white font-medium text-sm rounded-xl shadow-xs transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
             >
-              <span>Start Earning Now</span>
-              <ArrowRight className="w-4 h-4" />
+              Create Your Resident Profile
             </button>
-            <button
-              onClick={() => setView('home')}
-              className="w-full sm:w-auto px-8 py-4 border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-sm rounded-2xl transition-all cursor-pointer"
-            >
-              Back to Marketplace
-            </button>
+            
+            <div className="flex items-center justify-center gap-4 text-xs text-slate-400 font-medium">
+              <span>✓ Takes less than 5 minutes</span>
+              <span className="text-slate-300">•</span>
+              <span>✓ Your flat number is never shared</span>
+            </div>
           </div>
         </div>
 
-        {/* Three Steps Grid */}
-        <div className="space-y-6">
+        {/* SECTION 2: Why Buyers Want To Talk To Real Residents */}
+        <div className="space-y-8 max-w-3xl mx-auto">
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
+              Why Buyers Want To Talk To Real Residents
+            </h2>
+            <p className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto font-light leading-relaxed">
+              Property listings can show photos. Only residents can share what living there is actually like.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-2.5 pt-2">
+            {[
+              "Water Supply", "Parking", "Noise", "Internet", "Traffic", 
+              "Maintenance", "Society Rules", "Neighbours", "Safety", 
+              "Power Cuts", "Construction", "Commute", "Amenities", 
+              "Pets", "Deliveries", "Visitor Parking", "Lift Reliability", 
+              "Society Management", "Cleanliness"
+            ].map((topic) => (
+              <span 
+                key={topic}
+                className="px-4 py-2 bg-slate-50 border border-slate-100 text-slate-600 rounded-full text-xs font-medium"
+              >
+                {topic}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* SECTION 3: How It Works */}
+        <div className="space-y-12">
           <div className="text-center">
-            <p className="text-xl font-bold text-slate-800 mt-1">How BeforeRegret Resident Platform Works</p>
+            <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
+              How It Works
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-3xs space-y-4">
-              <div className="w-10 h-10 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600">
-                <MapPin className="w-5 h-5" />
-              </div>
-              <h3 className="font-extrabold text-slate-800 text-base">1. Register Your Society</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Add your pincode and select your society or building name. List topics of expertise you're comfortable answering (e.g. water supply, parking issues, safety). Your actual block or flat number remains 100% hidden.
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
+            {/* Card 1 */}
+            <div className="space-y-3">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest font-mono block">Step 01</span>
+              <h3 className="text-lg font-semibold text-slate-900">Create Your Resident Profile</h3>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-light">
+                Select your building, write a short introduction, choose what you know best and set your availability.
+              </p>
+              <p className="text-xs text-slate-400 italic pt-1">
+                Your flat number always stays private.
               </p>
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-3xs space-y-4">
-              <div className="w-10 h-10 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600">
-                <Zap className="w-5 h-5" />
-              </div>
-              <h3 className="font-extrabold text-slate-800 text-base">2. Answer Buyer Queries</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Home buyers can choose to purchase a Quick Consultation (₹89 earnings to you) or book a 20-Minute Scheduled Live Chat (₹220 earnings to you) based on the weekly convenient slot windows you configure.
+            {/* Card 2 */}
+            <div className="space-y-3">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest font-mono block">Step 02</span>
+              <h3 className="text-lg font-semibold text-slate-900">Receive Booking Requests</h3>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-light">
+                Buyers browse resident profiles and book either a Quick Question or a Resident Chat based on your availability.
               </p>
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-3xs space-y-4">
-              <div className="w-10 h-10 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600">
-                <DollarSign className="w-5 h-5" />
-              </div>
-              <h3 className="font-extrabold text-slate-800 text-base">3. Instant UPI Settlement</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                No draft phases or withdrawal waiting limits. Earnings are automatically wired straight to your registered UPI ID once a buyer query is answered or a scheduled live session is completed.
+            {/* Card 3 */}
+            <div className="space-y-3">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest font-mono block">Step 03</span>
+              <h3 className="text-lg font-semibold text-slate-900">Complete The Conversation</h3>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-light">
+                Answer honestly based on your personal experience. Once the booking is completed successfully, your earnings are processed automatically.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Pricing Structure Display */}
-        <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-10 space-y-8">
-          <div className="text-center max-w-xl mx-auto space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-orange-600 bg-orange-50 px-2.5 py-1 rounded-md">
-              Transparent Pricing Structure
-            </span>
-            <h2 className="text-2xl font-black text-slate-950 tracking-tight">How Much You Earn</h2>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              We charge a minimal standard platform commission on text queries and 0% platform commission on live chats, allowing you to maximize your local expertise payout.
+        {/* SECTION 4: What Can You Help With? */}
+        <div className="space-y-8 max-w-3xl mx-auto">
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
+              What Can You Help With?
+            </h2>
+            <p className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto font-light leading-relaxed">
+              Choose the topics you're comfortable answering during onboarding.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 relative flex flex-col justify-between">
-              <div>
-                <span className="text-[9px] font-extrabold uppercase bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md">Text Consultation</span>
-                <h3 className="font-extrabold text-slate-800 text-base mt-2">Quick Query</h3>
-                <p className="text-xs text-slate-400 mt-1">Simple quick single question answer</p>
-                <div className="mt-4 border-t border-slate-100 pt-4 flex items-baseline gap-1.5 font-sans">
-                  <span className="text-2xl font-black text-slate-800">₹89</span>
-                  <span className="text-slate-400 text-[10px] font-bold">your share / query</span>
-                </div>
-              </div>
-              <ul className="text-[11px] text-slate-500 space-y-2 pt-4 border-t border-slate-50">
-                <li className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span>Buyer pays ₹99</span>
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span>Answered via text anytime within 24h</span>
-                </li>
-              </ul>
+          <div className="flex flex-wrap justify-center gap-2 pt-2">
+            {TOPICS_OF_EXPERTISE.map((topic) => {
+              const active = selectedTopics.includes(topic);
+              return (
+                <button
+                  type="button"
+                  key={topic}
+                  onClick={() => {
+                    if (active) {
+                      setSelectedTopics(selectedTopics.filter((t) => t !== topic));
+                    } else {
+                      setSelectedTopics([...selectedTopics, topic]);
+                    }
+                  }}
+                  className={`px-4 py-2 text-xs rounded-full border transition-all cursor-pointer ${
+                    active
+                      ? 'bg-slate-900 border-slate-900 text-white font-medium shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+                  }`}
+                >
+                  {topic}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* SECTION 5: Your Privacy Comes First */}
+        <div className="space-y-12">
+          <div className="text-center">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
+              Your Privacy Comes First
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-6 space-y-3">
+              <h3 className="text-base font-semibold text-slate-900">Flat Number Hidden</h3>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-light">
+                Your exact apartment or flat number is never shown publicly.
+              </p>
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 relative flex flex-col justify-between">
-              <div>
-                <span className="text-[9px] font-extrabold uppercase bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md">Text Consultation</span>
-                <h3 className="font-extrabold text-slate-800 text-base mt-2">Comprehensive Bundle</h3>
-                <p className="text-xs text-slate-400 mt-1">Detailed evaluation spanning up to 5 topics</p>
-                <div className="mt-4 border-t border-slate-100 pt-4 flex items-baseline gap-1.5 font-sans">
-                  <span className="text-2xl font-black text-slate-800">₹179</span>
-                  <span className="text-slate-400 text-[10px] font-bold">your share / query</span>
-                </div>
-              </div>
-              <ul className="text-[11px] text-slate-500 space-y-2 pt-4 border-t border-slate-50">
-                <li className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span>Buyer pays ₹199</span>
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span>Prioritized in-depth detailed response</span>
-                </li>
-              </ul>
+            <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-6 space-y-3">
+              <h3 className="text-base font-semibold text-slate-900">Private Conversations</h3>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-light">
+                Chats happen securely inside BeforeRegret.
+              </p>
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 relative flex flex-col justify-between">
-              <div>
-                <span className="text-[9px] font-extrabold uppercase bg-orange-100 text-orange-700 px-2.5 py-1 rounded-md mt-1 inline-block">Live Consult</span>
-                <h3 className="font-extrabold text-slate-800 text-base mt-2">20-Min Live Chat</h3>
-                <p className="text-xs text-slate-400 mt-1">Scheduled instant real-time discussion</p>
-                <div className="mt-4 border-t border-slate-100 pt-4 flex items-baseline gap-1.5 font-sans">
-                  <span className="text-2xl font-black text-orange-600">₹220</span>
-                  <span className="text-slate-400 text-[10px] font-bold">your share / session</span>
-                </div>
-              </div>
-              <ul className="text-[11px] text-slate-500 space-y-2 pt-4 border-t border-slate-50">
-                <li className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span>Buyer pays ₹220 (0% platform fee)</span>
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span>Conducted securely in our live chatroom</span>
-                </li>
-              </ul>
+            <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-6 space-y-3">
+              <h3 className="text-base font-semibold text-slate-900 font-sans">You're In Control</h3>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-light">
+                Accept only the bookings you want.
+              </p>
+            </div>
+
+            <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-6 space-y-3">
+              <h3 className="text-base font-semibold text-slate-900">Choose Your Schedule</h3>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-light">
+                Set your own availability and update it anytime.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Interactive Calculator Section */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-3xs grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-1 bg-blue-50 text-blue-800 border border-blue-100 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">
-              <TrendingUp className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-              <span>Earnings Calculator</span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Calculate Your Potential Weekly Earnings</h2>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Slide or input the number of consultations you think you can easily handle on weekends or during your evenings to see your projected monthly passive payout.
-            </p>
+        {/* SECTION 6: Earn For Sharing Your Experience */}
+        <div className="space-y-12 max-w-3xl mx-auto">
+          <div className="text-center">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
+              Earn For Sharing Your Experience
+            </h2>
+          </div>
 
-            <div className="space-y-5 pt-2">
+          <div className="flex justify-center">
+            {/* Plan - Resident Chat */}
+            <div className="w-full max-w-sm bg-white border border-slate-100 rounded-2xl p-8 space-y-6 flex flex-col justify-between relative overflow-hidden shadow-xs">
+              <div className="space-y-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900">Resident Chat</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">20 Minutes</p>
+                  </div>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-light">
+                  Private messaging session. Direct real-time text discussion scheduled in convenient slots.
+                </p>
+              </div>
+
+              <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
+                <div>
+                  <span className="text-xs text-slate-400 block font-light">Buyer Pays</span>
+                  <span className="text-lg font-medium text-slate-600">₹299</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs text-slate-400 block font-light">You Earn</span>
+                  <span className="text-2xl font-semibold text-slate-900">₹220</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 7: Estimate Your Monthly Earnings */}
+        <div className="bg-slate-50/50 border border-slate-100 rounded-3xl p-8 sm:p-12 space-y-10 max-w-4xl mx-auto">
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
+              Estimate Your Monthly Earnings
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-16 items-center">
+            <div className="space-y-6">
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                  <span>Text Consultations / week</span>
-                  <span className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md font-mono">{calcTextCount} queries</span>
+                <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
+                  <span>Quick Questions per week</span>
+                  <span className="font-mono bg-white border border-slate-100 px-2 py-0.5 rounded-md text-slate-700">{calcTextCount} queries</span>
                 </div>
                 <input
                   type="range"
@@ -652,14 +722,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                   max="20"
                   value={calcTextCount}
                   onChange={(e) => setCalcTextCount(parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-orange-600"
+                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
                 />
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                  <span>Live 20-Min Chats / week</span>
-                  <span className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md font-mono">{calcChatCount} sessions</span>
+                <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
+                  <span>Resident Chats per week</span>
+                  <span className="font-mono bg-white border border-slate-100 px-2 py-0.5 rounded-md text-slate-700">{calcChatCount} chats</span>
                 </div>
                 <input
                   type="range"
@@ -667,69 +737,110 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                   max="10"
                   value={calcChatCount}
                   onChange={(e) => setCalcChatCount(parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-orange-600"
+                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
                 />
               </div>
             </div>
-          </div>
 
-          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 space-y-6">
-            <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider text-center pb-2 border-b border-slate-200">
-              Projected Earnings Breakdown
-            </h3>
-
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="bg-white border border-slate-150 rounded-xl p-3.5">
-                <span className="text-[10px] text-slate-400 font-bold uppercase">Weekly Passive</span>
-                <p className="text-2xl font-black text-slate-800 mt-1">₹{estimatedWeeklyEarnings.toLocaleString('en-IN')}</p>
+            <div className="bg-white border border-slate-100/80 rounded-2xl p-6 sm:p-8 grid grid-cols-2 gap-6 text-center">
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono block">Weekly Earnings</span>
+                <p className="text-2xl sm:text-3xl font-semibold text-slate-900">₹{estimatedWeeklyEarnings.toLocaleString('en-IN')}</p>
               </div>
-              <div className="bg-white border border-slate-150 rounded-xl p-3.5">
-                <span className="text-[10px] text-slate-400 font-bold uppercase">Monthly Passive</span>
-                <p className="text-2xl font-black text-orange-600 mt-1">₹{estimatedMonthlyEarnings.toLocaleString('en-IN')}</p>
-              </div>
-            </div>
-
-            <div className="text-[10px] text-slate-400 space-y-1.5 leading-relaxed bg-white/50 border border-slate-150 p-3 rounded-xl">
-              <div className="flex items-center justify-between">
-                <span>Text query payout share (₹89 x {calcTextCount}):</span>
-                <span className="font-bold text-slate-700 font-mono">₹{calcTextCount * 89}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Live chat payout share (₹220 x {calcChatCount}):</span>
-                <span className="font-bold text-slate-700 font-mono">₹{calcChatCount * 220}</span>
+              <div className="space-y-1 border-l border-slate-100">
+                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono block">Monthly Earnings</span>
+                <p className="text-2xl sm:text-3xl font-semibold text-slate-900">₹{estimatedMonthlyEarnings.toLocaleString('en-IN')}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom CTA Card */}
-        <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 text-center space-y-6 relative overflow-hidden shadow-md">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-600 rounded-full filter blur-3xl opacity-20 translate-x-12 -translate-y-12"></div>
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-600 rounded-full filter blur-3xl opacity-20 -translate-x-12 translate-y-12"></div>
-          
-          <div className="relative space-y-4 max-w-xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-display font-black tracking-tight leading-tight">
-              Ready to Share Factual Facts & Start Earning?
+        {/* SECTION 8: Frequently Asked Questions */}
+        <div className="space-y-8 max-w-3xl mx-auto">
+          <div className="text-center">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
+              Frequently Asked Questions
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Register your profile in less than 3 minutes.
-            </p>
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button
-                onClick={() => setShowLanding(false)}
-                className="w-full sm:w-auto px-8 py-3.5 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md"
-              >
-                Become an Expert Now
-              </button>
-              <button
-                onClick={() => setView('home')}
-                className="w-full sm:w-auto px-8 py-3.5 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer"
-              >
-                Back to Marketplace
-              </button>
-            </div>
+          </div>
+
+          <div className="divide-y divide-slate-100 border-t border-b border-slate-100">
+            {[
+              {
+                q: "Who can become a resident?",
+                a: "Anyone who currently lives in the society or has lived there recently and has first-hand experience of daily living conditions."
+              },
+              {
+                q: "Do I need to own the property?",
+                a: "No, both homeowners and tenants can register to share their experiences."
+              },
+              {
+                q: "Can tenants join?",
+                a: "Absolutely. Tenants offer incredibly valuable insights about renting, landlord relations, and society rules."
+              },
+              {
+                q: "Can I reject booking requests?",
+                a: "Yes, you are in full control. You can accept or decline any request based on your comfort and schedule."
+              },
+              {
+                q: "How do I receive payments?",
+                a: "Payments are processed automatically and sent directly to your registered payment channel once a session or question is successfully completed."
+              },
+              {
+                q: "How is my privacy protected?",
+                a: "We never share your flat number, block number, or full identity. All communication is held securely within our platform."
+              },
+              {
+                q: "Can I stop anytime?",
+                a: "Yes, you can pause or delete your profile whenever you wish with a single click."
+              }
+            ].map((faq, index) => {
+              const isOpen = openFaq === index;
+              return (
+                <div key={index} className="py-4">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : index)}
+                    className="w-full flex items-center justify-between text-left font-medium text-slate-900 hover:text-slate-950 transition-colors py-2"
+                  >
+                    <span className="text-sm sm:text-base font-medium">{faq.q}</span>
+                    {isOpen ? (
+                      <ChevronUp className="w-4 h-4 text-slate-400 shrink-0 ml-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-4" />
+                    )}
+                  </button>
+                  {isOpen && (
+                    <div className="mt-2 text-slate-500 text-xs sm:text-sm leading-relaxed font-light pb-2">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
+
+        {/* FINAL CTA */}
+        <div className="text-center space-y-8 pt-12 sm:pt-20 border-t border-slate-50">
+          <div className="space-y-3">
+            <h2 className="text-3xl sm:text-5xl font-light text-slate-900 tracking-tight">
+              Ready to Help Future Buyers & Renters?
+            </h2>
+            <p className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto font-light leading-relaxed">
+              Create your Resident Profile in just a few minutes and start sharing your local experience.
+            </p>
+          </div>
+
+          <div>
+            <button
+              onClick={() => setShowLanding(false)}
+              className="px-8 py-4 bg-slate-900 hover:bg-slate-850 text-white font-medium text-sm rounded-xl shadow-xs transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+            >
+              Create Your Resident Profile
+            </button>
+          </div>
+        </div>
+
       </div>
     );
   }
@@ -750,7 +861,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       {!user ? (
         <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-sm mx-auto shadow-sm text-center space-y-4">
           <p className="text-xs text-slate-500 leading-relaxed">
-            Please sign in to register as a local resident expert.
+            Please sign in to register as a resident guide.
           </p>
           <button
             type="button"
@@ -786,13 +897,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({
             </div>
             <h2 className="font-black text-slate-900 text-xl tracking-tight">Resident Profile Registered & Live!</h2>
             <p className="text-xs text-slate-500 max-w-md mx-auto">
-              Your expert listing for <span className="font-bold text-slate-800">{neighborhood}</span> is now active. Buyers can find and query you instantly. Let's verify your production channels.
+              Your resident guide listing for <span className="font-bold text-slate-800">{neighborhood}</span> is now active. Buyers can find and query you instantly. Let's verify your production channels.
             </p>
           </div>
 
           <div className="bg-slate-50 rounded-2xl border border-slate-200/60 p-5 space-y-5">
             <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider text-left pb-2 border-b border-slate-200">
-              Expert Launch Checkup & Verification
+              Resident Guide Launch Checkup & Verification
             </h3>
 
             {/* Step 1: Verification Status */}
@@ -907,7 +1018,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
               }}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider py-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg"
             >
-              <span>Enter Resident Expert Dashboard</span>
+              <span>Enter Resident Guide Dashboard</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -1018,7 +1129,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                         </div>
                         {loc.expertCount > 0 ? (
                           <span className="shrink-0 text-[8px] font-mono font-bold px-1.5 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full">
-                            {loc.expertCount} Experts
+                            {loc.expertCount} Resident Guides
                           </span>
                         ) : (
                           <span className="shrink-0 text-[8px] font-mono font-bold px-1.5 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-full flex items-center gap-0.5">
@@ -1157,6 +1268,148 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                   }`}
                 >
                   No, Moved Out
+                </button>
+              </div>
+            </div>
+
+            {/* Owner or Tenant */}
+            <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div className="text-left">
+                <h4 className="font-bold text-slate-800 text-xs">Residency Type</h4>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setOwnerOrTenant('Owner')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    ownerOrTenant === 'Owner'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  Owner
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOwnerOrTenant('Tenant')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    ownerOrTenant === 'Tenant'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  Tenant
+                </button>
+              </div>
+            </div>
+
+            {/* Family Type */}
+            <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div className="text-left">
+                <h4 className="font-bold text-slate-800 text-xs">Household Type</h4>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <select
+                  value={familyType}
+                  onChange={(e) => setFamilyType(e.target.value as any)}
+                  className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg outline-hidden focus:border-blue-600 bg-white font-bold text-slate-700"
+                >
+                  <option value="Living with Family">Living with Family</option>
+                  <option value="Couple">Couple</option>
+                  <option value="Single / Bachelor">Single / Bachelor</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Work From Home */}
+            <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div className="text-left">
+                <h4 className="font-bold text-slate-800 text-xs">Do you work from home?</h4>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setWorkFromHome(true)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    workFromHome
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  Yes, WFH
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setWorkFromHome(false)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    !workFromHome
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  No, Office Commute
+                </button>
+              </div>
+            </div>
+
+            {/* Pets */}
+            <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div className="text-left">
+                <h4 className="font-bold text-slate-800 text-xs">Do you own pets?</h4>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setHasPets(true)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    hasPets
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHasPets(false)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    !hasPets
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  No
+                </button>
+              </div>
+            </div>
+
+            {/* Vehicle */}
+            <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div className="text-left">
+                <h4 className="font-bold text-slate-800 text-xs">Do you own a vehicle (car/bike)?</h4>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setHasVehicle(true)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    hasVehicle
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHasVehicle(false)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    !hasVehicle
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  No
                 </button>
               </div>
             </div>

@@ -10,7 +10,7 @@ export const HowItWorks: React.FC = () => {
     {
       id: 'step-2',
       title: '2. Choose a resident',
-      description: 'Browse local experts who actually reside there and check their stats.',
+      description: 'Browse resident guides who actually reside there and check their stats.',
     },
     {
       id: 'step-3',

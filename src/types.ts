@@ -55,6 +55,13 @@ export interface ExpertProfile {
   bankAccountNumber?: string;
   isLiveChatAvailable?: boolean;
 
+  // Additional Profile Details
+  ownerOrTenant?: 'Owner' | 'Tenant';
+  workFromHome?: boolean;
+  familyType?: 'Single / Bachelor' | 'Living with Family' | 'Couple';
+  hasPets?: boolean;
+  hasVehicle?: boolean;
+
   // Secure Route Marketplace fields
   payout_account_id?: string | null;
   payout_account_status?: string | null;

@@ -149,7 +149,7 @@ export const Hero: React.FC<HeroProps> = ({
 
       <div className="relative z-10 max-w-3xl mx-auto px-4 text-center flex flex-col items-center">
         {/* Combined Static Headline */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-extrabold tracking-tight text-white leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-['Arial'] font-extrabold tracking-tight text-white leading-tight">
           Smart property buyers don't stop at the property visit.
         </h1>
 
@@ -226,7 +226,7 @@ export const Hero: React.FC<HeroProps> = ({
                       </div>
                       {loc.expertCount > 0 ? (
                         <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 border border-emerald-900/30 rounded-full font-bold shrink-0">
-                          {loc.expertCount} {loc.expertCount === 1 ? 'Expert' : 'Experts'}
+                          {loc.expertCount} {loc.expertCount === 1 ? 'Resident Guide' : 'Resident Guides'}
                         </span>
                       ) : (
                         <span className="text-[8px] font-mono text-blue-400 bg-blue-950/40 px-2 py-0.5 border border-blue-900/30 rounded-full font-bold flex items-center gap-1 shrink-0">
@@ -284,7 +284,7 @@ export const Hero: React.FC<HeroProps> = ({
                     <div className="p-4 sm:p-5 text-center space-y-3.5 bg-slate-900 rounded-2xl max-w-sm mx-auto">
                       <div className="space-y-1">
                         <h3 className="text-sm font-extrabold text-white tracking-tight">
-                          Be the First Local Expert Here
+                          Be the First Resident Guide Here
                         </h3>
                         <p className="text-[10px] text-slate-400 leading-normal max-w-xs mx-auto font-medium">
                           Start earning by helping future buyers and renters make better property decisions by answering questions about everyday life in your area/society.
@@ -300,7 +300,7 @@ export const Hero: React.FC<HeroProps> = ({
                           }}
                           className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all cursor-pointer shadow-md shadow-amber-400/10 hover:scale-[1.01] active:scale-[0.99]"
                         >
-                          <span>Become A Local Expert</span>
+                          <span>Become A Resident Guide</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>

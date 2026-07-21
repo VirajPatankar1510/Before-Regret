@@ -319,7 +319,7 @@ export default function App() {
       } else if (p === '/explore' || p === '/societies') {
         setView('explore');
         setSelectedArticleId(null);
-      } else if (p === '/become-expert') {
+      } else if (p === '/become-resident') {
         setView('become_expert');
         setSelectedArticleId(null);
       } else if (p === '/disclaimer' || p === '/legal-disclaimer') {
@@ -362,11 +362,13 @@ export default function App() {
         const storyId = parts[2];
         setView('regret_files');
         setSelectedArticleId(storyId);
-      } else if (p.startsWith('/expert/')) {
+      } else if (p.startsWith('/resident/')) {
         const parts = p.split('/');
-        const expertId = parts[2];
+        const residentId = parts[2];
         const isAsk = parts[3] === 'ask';
-        const expert = experts.find(e => e.id === expertId);
+        // map res_ to exp_ internally to match database IDs if needed
+        const cleanId = residentId.replace(/^res_/, 'exp_');
+        const expert = experts.find(e => e.id === residentId || e.id === cleanId);
         if (expert) {
           const loc = localities.find(l => l.id === expert.localityId) || localities[0];
           setSelectedExpert(expert);
@@ -423,11 +425,13 @@ export default function App() {
     } else if (currentView === 'regret_files') {
       targetPath = selectedArticleId ? `/stories/${selectedArticleId}` : '/stories';
     } else if (currentView === 'profile' && selectedExpert) {
-      targetPath = `/expert/${selectedExpert.id}`;
+      const displayId = selectedExpert.id.replace(/^exp_/, 'res_');
+      targetPath = `/resident/${displayId}`;
     } else if (currentView === 'ask_question' && selectedExpert) {
-      targetPath = `/expert/${selectedExpert.id}/ask`;
+      const displayId = selectedExpert.id.replace(/^exp_/, 'res_');
+      targetPath = `/resident/${displayId}/ask`;
     } else if (currentView === 'become_expert') {
-      targetPath = '/become-expert';
+      targetPath = '/become-resident';
     } else if (currentView === 'legal_disclaimer') {
       targetPath = '/legal-disclaimer';
     } else if (currentView === 'terms_conditions') {
@@ -1003,6 +1007,16 @@ export default function App() {
             savedExperts={savedExpertIds}
             onToggleSaveExpert={handleToggleSaveExpert}
             currentUserUid={user?.uid}
+            allExperts={experts}
+            onSelectExpert={(exp) => {
+              setSelectedExpert(exp);
+              const loc = localities.find(l => l.id === exp.localityId) || localities[0];
+              setSelectedLocality(loc);
+              setView('profile');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onSubmitQuestion={handleSubmitQuestion}
+            queries={queries}
           />
         )}
 
