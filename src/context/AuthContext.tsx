@@ -16,6 +16,8 @@ interface AuthContextType {
   setActiveRole: (role: 'guest' | 'buyer' | 'expert') => void;
   expertProfile: ExpertProfile | null;
   setExpertProfile: (profile: ExpertProfile | null) => void;
+  userExperts: ExpertProfile[];
+  setUserExperts: (profiles: ExpertProfile[]) => void;
   signUpWithEmail: (email: string, pass: string, name: string) => Promise<User | null>;
   signInWithEmail: (email: string, pass: string) => Promise<User | null>;
   signInWithGoogle: () => Promise<User | null>;
@@ -75,6 +77,7 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [loading, setLoading] = useState<boolean>(true);
   const [activeRole, setActiveRole] = useState<'guest' | 'buyer' | 'expert'>('guest');
   const [expertProfile, setExpertProfile] = useState<ExpertProfile | null>(null);
+  const [userExperts, setUserExperts] = useState<ExpertProfile[]>([]);
 
   const clerkPublishableKey = getClerkPublishableKey();
   const isClerkActive = !!clerkPublishableKey;
@@ -102,9 +105,15 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const res = await fetch('/api/experts');
       if (res.ok) {
         const allExperts = await res.json();
-        const matched = allExperts.find((e: any) => e.userId === uid);
-        if (matched) {
-          setExpertProfile(matched);
+        const matched = allExperts.filter((e: any) => e.userId === uid);
+        setUserExperts(matched);
+        if (matched.length > 0) {
+          setExpertProfile((prev) => {
+            if (prev && matched.some((e: any) => e.id === prev.id)) {
+              return matched.find((e: any) => e.id === prev.id) || matched[0];
+            }
+            return matched[0];
+          });
           setActiveRole('expert');
           return;
         }
@@ -113,9 +122,15 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       // Fallback local storage lookup
       const expertsRaw = localStorage.getItem('br_experts');
       const allExpertsLocal = expertsRaw ? JSON.parse(expertsRaw) : [];
-      const matchedLocal = allExpertsLocal.find((e: any) => e.userId === uid);
-      if (matchedLocal) {
-        setExpertProfile(matchedLocal);
+      const matchedLocal = allExpertsLocal.filter((e: any) => e.userId === uid);
+      setUserExperts(matchedLocal);
+      if (matchedLocal.length > 0) {
+        setExpertProfile((prev) => {
+          if (prev && matchedLocal.some((e: any) => e.id === prev.id)) {
+            return matchedLocal.find((e: any) => e.id === prev.id) || matchedLocal[0];
+          }
+          return matchedLocal[0];
+        });
         setActiveRole('expert');
       } else {
         setExpertProfile(null);
@@ -124,6 +139,7 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     } catch (err) {
       console.error('Error fetching expert profile:', err);
       setExpertProfile(null);
+      setUserExperts([]);
       setActiveRole('buyer');
     }
   };
@@ -322,6 +338,8 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setActiveRole,
       expertProfile,
       setExpertProfile,
+      userExperts,
+      setUserExperts,
       signUpWithEmail,
       signInWithEmail,
       signInWithGoogle,

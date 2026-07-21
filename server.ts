@@ -328,7 +328,7 @@ async function startServer() {
     try {
       const dbData = getDb();
       const expert = req.body;
-      const index = dbData.experts.findIndex(e => e.id === expert.id || (expert.userId && e.userId === expert.userId));
+      const index = dbData.experts.findIndex(e => e.id === expert.id);
       if (index > -1) {
         dbData.experts[index] = { ...dbData.experts[index], ...expert };
       } else {
@@ -345,7 +345,7 @@ async function startServer() {
     try {
       const dbData = getDb();
       const expert = req.body;
-      const index = dbData.experts.findIndex(e => e.id === expert.id || (expert.userId && e.userId === expert.userId));
+      const index = dbData.experts.findIndex(e => e.id === expert.id);
       if (index > -1) {
         dbData.experts[index] = { ...dbData.experts[index], ...expert };
       } else {
