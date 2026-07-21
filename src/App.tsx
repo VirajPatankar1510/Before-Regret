@@ -226,9 +226,10 @@ export default function App() {
   // Track if initial server-side load has completed to avoid overwriting database
   const [hasLoadedFromServer, setHasLoadedFromServer] = useState(false);
 
-  // Load from server database on mount
+  // Load and poll from server database for real-time synchronization
   useEffect(() => {
-    const loadServerData = async () => {
+    let isMounted = true;
+    const loadAndPollServerData = async () => {
       try {
         const [locRes, expRes, revRes, qRes] = await Promise.all([
           fetch('/api/localities'),
@@ -236,29 +237,63 @@ export default function App() {
           fetch('/api/reviews'),
           fetch('/api/queries')
         ]);
+        
+        if (!isMounted) return;
+
         if (locRes.ok) {
           const lData = await locRes.json();
-          setLocalities(lData);
+          setLocalities((prev) => {
+            if (JSON.stringify(prev) !== JSON.stringify(lData)) {
+              return lData;
+            }
+            return prev;
+          });
         }
         if (expRes.ok) {
           const eData = await expRes.json();
-          setExperts(eData);
+          setExperts((prev) => {
+            if (JSON.stringify(prev) !== JSON.stringify(eData)) {
+              return eData;
+            }
+            return prev;
+          });
         }
         if (revRes.ok) {
           const rData = await revRes.json();
-          setReviews(rData);
+          setReviews((prev) => {
+            if (JSON.stringify(prev) !== JSON.stringify(rData)) {
+              return rData;
+            }
+            return prev;
+          });
         }
         if (qRes.ok) {
           const qData = await qRes.json();
-          setQueries(normalizeQueries(qData));
+          const normalized = normalizeQueries(qData);
+          setQueries((prev) => {
+            if (JSON.stringify(prev) !== JSON.stringify(normalized)) {
+              return normalized;
+            }
+            return prev;
+          });
         }
         setHasLoadedFromServer(true);
       } catch (err) {
-        console.error("Failed to fetch server database, using local offline storage fallback:", err);
+        console.error("Failed to fetch or sync server database:", err);
         setHasLoadedFromServer(true);
       }
     };
-    loadServerData();
+
+    // Run first fetch immediately
+    loadAndPollServerData();
+
+    // Set up 4-second poll interval for real-time UI updates
+    const interval = setInterval(loadAndPollServerData, 4000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   // Sync state collections to local storage and server
