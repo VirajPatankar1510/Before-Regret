@@ -701,61 +701,18 @@ export const Onboarding: React.FC<OnboardingProps> = ({
           </div>
         </div>
 
-        {/* SECTION 7: Estimate Your Monthly Earnings */}
-        <div className="bg-slate-50/50 border border-slate-100 rounded-3xl p-8 sm:p-12 space-y-10 max-w-4xl mx-auto">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
-              Estimate Your Monthly Earnings
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-16 items-center">
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
-                  <span>Quick Questions per week</span>
-                  <span className="font-mono bg-white border border-slate-100 px-2 py-0.5 rounded-md text-slate-700">{calcTextCount} queries</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="20"
-                  value={calcTextCount}
-                  onChange={(e) => setCalcTextCount(parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
-                  <span>Resident Chats per week</span>
-                  <span className="font-mono bg-white border border-slate-100 px-2 py-0.5 rounded-md text-slate-700">{calcChatCount} chats</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="10"
-                  value={calcChatCount}
-                  onChange={(e) => setCalcChatCount(parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
-                />
-              </div>
-            </div>
-
-            <div className="bg-white border border-slate-100/80 rounded-2xl p-6 sm:p-8 grid grid-cols-2 gap-6 text-center">
-              <div className="space-y-1">
-                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono block">Weekly Earnings</span>
-                <p className="text-2xl sm:text-3xl font-semibold text-slate-900">₹{estimatedWeeklyEarnings.toLocaleString('en-IN')}</p>
-              </div>
-              <div className="space-y-1 border-l border-slate-100">
-                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono block">Monthly Earnings</span>
-                <p className="text-2xl sm:text-3xl font-semibold text-slate-900">₹{estimatedMonthlyEarnings.toLocaleString('en-IN')}</p>
-              </div>
-            </div>
-          </div>
+        {/* CTA: Start Earning */}
+        <div className="text-center py-4">
+          <button
+            onClick={() => setShowLanding(false)}
+            className="px-8 py-4 bg-slate-900 hover:bg-slate-850 text-white font-medium text-sm rounded-xl shadow-xs transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] inline-flex items-center gap-2"
+          >
+            <span>Start Earning</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
 
-        {/* SECTION 8: Frequently Asked Questions */}
+        {/* SECTION 7: Frequently Asked Questions */}
         <div className="space-y-8 max-w-3xl mx-auto">
           <div className="text-center">
             <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">

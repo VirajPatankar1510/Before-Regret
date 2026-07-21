@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  Scale, 
+  Car, 
   Check, 
   X, 
   AlertTriangle, 
@@ -40,11 +40,11 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
     <div className="bg-white text-slate-950 font-sans antialiased">
       
       {/* SEPARATED INTRO SECTION */}
-      <section className="py-20 bg-gradient-to-b from-amber-50/20 to-orange-50/10 border-b border-orange-100/40">
+      <section className="py-5 bg-gradient-to-b from-amber-50/20 to-orange-50/10 border-b border-orange-100/40">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto">
             <h2 className="text-xl sm:text-2xl md:text-3xl tracking-tight leading-tight">
-              <span className="text-slate-400 font-light text-xs sm:text-sm uppercase tracking-wider block font-sans">The property visit shows you the apartment.</span>
+              <span className="text-black font-normal text-xs sm:text-sm uppercase tracking-wider block font-sans">The property visit shows you the apartment.</span>
               <span className="text-blue-600 font-semibold block mt-2">The resident tells you what living there is actually like.</span>
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed mt-6 max-w-2xl mx-auto text-center sm:text-left font-sans">
@@ -55,7 +55,7 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
       </section>
 
       {/* SECTION FOR PROPERTY LISTINGS VS RESIDENTS */}
-      <section className="py-16 bg-slate-50/60 border border-slate-100/80 rounded-3xl mx-4 my-8 shadow-[0_1px_3px_rgba(0,0,0,0.01)]">
+      <section className="py-5 bg-slate-50/60 border border-slate-100/80 rounded-3xl mx-4 my-8 shadow-[0_1px_3px_rgba(0,0,0,0.01)]">
         <div className="max-w-5xl mx-auto px-6">
           {/* PART 1: THE TRITICAL ASYMMETRY (Listing vs. Living) */}
           <div className="space-y-12">
@@ -108,7 +108,7 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
               {/* Gap Card 3 */}
               <div className="bg-white border border-slate-100/90 rounded-2xl p-7 shadow-2xs hover:shadow-md hover:border-slate-200/60 transition-all duration-300 space-y-4">
                 <div className="p-2.5 bg-indigo-50/60 text-indigo-600 w-fit rounded-xl border border-indigo-100/40">
-                  <Scale className="w-5 h-5" />
+                  <Car className="w-5 h-5" />
                 </div>
                 <h3 className="font-semibold text-lg text-slate-900">Parking</h3>
                 <div className="space-y-3 pt-1">
@@ -128,7 +128,7 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
       </section>
 
       {/* MASTER UNIFIED JOURNEY SECTION */}
-      <section className="py-24 bg-gradient-to-b from-white to-slate-50/50 border-b border-slate-100">
+      <section className="py-5 bg-gradient-to-b from-white to-slate-50/50 border-b border-slate-100">
         <div className="max-w-5xl mx-auto px-6 space-y-24">
           
           {/* PART 2: THE COST OF REGRET */}
@@ -418,7 +418,7 @@ export const DecisionJourneySections: React.FC<DecisionJourneyProps> = ({ setVie
           </div>
 
           {/* CTA 2: READY TO MAKE A SMARTER PROPERTY DECISION */}
-          <div className="max-w-4xl mx-auto pt-16 border-t border-slate-200/60">
+          <div className="max-w-4xl mx-auto pt-0 border-t border-slate-200/60">
             <div className="bg-slate-50 text-slate-900 rounded-3xl p-10 sm:p-14 text-center space-y-8 shadow-xs border border-slate-200/80 relative overflow-hidden">
               <div className="space-y-3 relative z-10">
                 <h3 className="font-bold tracking-tight text-slate-900 leading-tight text-2xl sm:text-3xl">
