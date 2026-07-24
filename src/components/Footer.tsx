@@ -1,113 +1,105 @@
 import React from 'react';
-import { ShieldCheck, HelpCircle, BookOpen } from 'lucide-react';
+import { ViewState } from '../types';
+import { ShieldCheck } from 'lucide-react';
 import { Logo } from './Logo';
 
 interface FooterProps {
-  setView: (view: string) => void;
-  onNavigateToPolicy?: (tab: 'terms' | 'privacy' | 'refunds' | 'contact' | 'disclaimer') => void;
+  setView: (view: ViewState) => void;
+  onOpenSearch: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ setView, onNavigateToPolicy }) => {
-  const handlePolicyClick = (e: React.MouseEvent, tab: 'terms' | 'privacy' | 'refunds' | 'contact' | 'disclaimer') => {
-    e.preventDefault();
-    if (onNavigateToPolicy) {
-      onNavigateToPolicy(tab);
-    } else {
-      setView('policies');
-    }
-    window.scrollTo(0, 0);
-  };
-
+export const Footer: React.FC<FooterProps> = ({ setView, onOpenSearch }) => {
   return (
-    <footer className="bg-slate-900 text-slate-400 py-12 sm:py-16 border-t border-slate-800 font-sans mt-auto">
-      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="bg-slate-900 text-white border-t border-slate-800 py-12 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto space-y-8">
         
-        {/* Brand Description Column */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => { setView('home'); window.scrollTo(0, 0); }}>
-            <Logo size={36} />
-            <span className="font-logo font-black text-xl tracking-tight text-white">
-              Before<span className="text-blue-500">Regret</span>
-            </span>
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-slate-800">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Logo className="w-7 h-7 shrink-0" color="#3B82F6" />
+              <span className="font-bold text-lg tracking-tight text-white">
+                Before Regret
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 max-w-md font-normal leading-relaxed">
+              The premium knowledge marketplace for residential societies. Know what real residents wish they knew before buying or renting.
+            </p>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed max-w-xs font-medium">
-            A premium resident marketplace for home buyers, renters, and migrating professionals in India to check facts before committing to a home.
-          </p>
+
+          <div className="flex flex-wrap items-center gap-[#18px] text-xs font-medium text-slate-300">
+            <a 
+              href="/" 
+              onClick={(e) => { e.preventDefault(); setView('HOME'); }} 
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Home
+            </a>
+            <button onClick={onOpenSearch} className="hover:text-white transition-colors cursor-pointer">
+              Search Societies
+            </button>
+            <a 
+              href="/library" 
+              onClick={(e) => { e.preventDefault(); setView('LIBRARY'); }} 
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              My Library
+            </a>
+            <a 
+              href="/contributor" 
+              onClick={(e) => { e.preventDefault(); setView('CONTRIBUTOR_FLOW'); }} 
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Become a Contributor
+            </a>
+            <a 
+              href="/terms-and-conditions" 
+              onClick={(e) => { e.preventDefault(); setView('TERMS'); }} 
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Terms
+            </a>
+            <a 
+              href="/privacy-policy" 
+              onClick={(e) => { e.preventDefault(); setView('PRIVACY'); }} 
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Privacy
+            </a>
+            <a 
+              href="/refund-policy" 
+              onClick={(e) => { e.preventDefault(); setView('REFUND'); }} 
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Refund Policy
+            </a>
+            <a 
+              href="/legal-disclaimer" 
+              onClick={(e) => { e.preventDefault(); setView('DISCLAIMER'); }} 
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Disclaimer
+            </a>
+            <a 
+              href="/contact-us" 
+              onClick={(e) => { e.preventDefault(); setView('CONTACT'); }} 
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Contact Us
+            </a>
+          </div>
         </div>
 
-        {/* Publications & Insights Column */}
-        <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4 font-mono">Publications</h4>
-          <ul className="space-y-2 text-xs">
-            <li>
-              <a 
-                href="/regret-files" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setView('regret_files');
-                  window.scrollTo(0, 0);
-                }} 
-                className="hover:text-amber-400 text-amber-500 font-bold transition-colors inline-flex items-center gap-1.5"
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>The Regret Files</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        {/* Links Column 3 */}
-        <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4 font-mono">Legal & Policies</h4>
-          <ul className="grid grid-cols-2 md:grid-cols-1 gap-2 text-xs">
-            <li>
-              <a href="/legal-disclaimer" onClick={(e) => handlePolicyClick(e, 'disclaimer')} className="hover:text-white transition-colors text-amber-500 font-semibold">
-                ⚠ Legal Disclaimer
-              </a>
-            </li>
-            <li>
-              <a href="/terms-and-conditions" onClick={(e) => handlePolicyClick(e, 'terms')} className="hover:text-white transition-colors">
-                Terms & Conditions
-              </a>
-            </li>
-            <li>
-              <a href="/privacy-policy" onClick={(e) => handlePolicyClick(e, 'privacy')} className="hover:text-white transition-colors">
-                Privacy Policy
-              </a>
-            </li>
-            <li>
-              <a href="/refund-policy" onClick={(e) => handlePolicyClick(e, 'refunds')} className="hover:text-white transition-colors">
-                Refund & Cancellation
-              </a>
-            </li>
-            <li>
-              <a href="/contact-us" onClick={(e) => handlePolicyClick(e, 'contact')} className="hover:text-white transition-colors font-medium text-blue-400">
-                Contact Us (Support)
-              </a>
-            </li>
-            <li>
-              <a 
-                href="/admin" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  setView('admin_panel');
-                  window.scrollTo(0, 0);
-                }} 
-                className="hover:text-slate-300 transition-colors text-slate-600 font-mono text-[10px]"
-              >
-                Admin Panel
-              </a>
-            </li>
-          </ul>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-sans text-slate-500">
+          <div className="flex items-center gap-1.5 text-slate-400">
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <span>BeforeRegret shares resident experiences to help buyers make informed decisions. BeforeRegret is not against any builder, broker, housing society, or residential project.</span>
+          </div>
+          <div>
+            © {new Date().getFullYear()} Before Regret Inc. All rights reserved.
+          </div>
         </div>
 
       </div>
-
-      {/* Footer copyright and legally protective disclaimer */}
-      <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-slate-800 space-y-4 text-center text-[10px] text-slate-500 font-mono">
-        <p>© {new Date().getFullYear()} Before Regret. Operated by Atmostellar. All Rights Reserved. Built in India.</p>
-      </div>
-
     </footer>
   );
 };

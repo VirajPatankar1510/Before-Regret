@@ -1,170 +1,233 @@
+export type ViewState = 
+  | 'HOME' 
+  | 'SOCIETY' 
+  | 'RESIDENT_PROFILE' 
+  | 'CONTRIBUTOR_FLOW' 
+  | 'LIBRARY'
+  | 'TERMS'
+  | 'PRIVACY'
+  | 'REFUND'
+  | 'DISCLAIMER'
+  | 'CONTACT'
+  | 'ADMIN';
+
+export interface StructuredQA {
+  questionId: string;
+  question: string;
+  answer: string;
+  badge?: string;
+  options?: string[];
+}
+
+export interface TopicKnowledge {
+  id: string; // e.g. 'parking', 'water', 'internet', 'noise', 'security', 'electricity', 'maintenance', 'amenities', 'committee', 'hidden-costs', 'wish-i-knew'
+  title: string;
+  category: string;
+  iconName: string;
+  readingTime: string; // e.g. "2 min read"
+  lastUpdated: string; // e.g. "12 Days Ago"
+  freshnessStatus: 'Current' | 'Needs Review' | 'Stale';
+  summary: string;
+  singlePrice: number; // 129
+  structuredQA: StructuredQA[];
+}
+
+export interface ResidentKnowledgeProfile {
+  id: string;
+  societyId: string;
+  societyName: string;
+  city: string;
+  locality: string;
+  livingSince: string; // e.g. "2019"
+  yearsLiving: number; // e.g. 6
+  helpedBuyersCount: number; // e.g. 186
+  rating: number; // e.g. 4.9
+  verifiedResident: boolean;
+  residentType: 'Owner' | 'Tenant';
+  topicsAnsweredCount: number; // e.g. 11
+  lastUpdated: string; // e.g. "12 Days Ago"
+  freshnessStatus: 'Current' | 'Updated Recently' | 'Stale';
+  unlockSinglePrice: number; // 129
+  unlockAllPrice: number; // 399
+  topics: TopicKnowledge[];
+}
+
+export interface Society {
+  id: string; // UUID primary key
+  name: string; // Display Name (e.g. "Lodha Splendor")
+  normalizedName?: string; // e.g. "LODHA SPLENDOR"
+  city: string; // e.g. "Thane, Mumbai MMR"
+  locality: string; // Locality/Area
+  state?: string; // e.g. "Maharashtra"
+  pincode?: string;
+  landmark?: string; // Nearest Landmark
+  builder?: string;
+  verificationStatus?: 'Verified' | 'Pending' | 'Archived';
+  aliases?: string[]; // Synonym search strings
+  createdAt?: string;
+  updatedAt?: string;
+  history?: Array<{ timestamp: string; action: string; details: string }>;
+  residentProfilesCount: number;
+  totalTopicsAvailable: number;
+  lastUpdated: string;
+  featured?: boolean;
+  image?: string;
+  description?: string;
+  profiles: ResidentKnowledgeProfile[];
+}
+
+export interface UnlockedPurchase {
+  id: string;
+  type: 'SINGLE_TOPIC' | 'FULL_PROFILE';
+  societyId: string;
+  societyName: string;
+  profileId: string;
+  topicId?: string;
+  unlockedAt: string;
+  pricePaid: number;
+}
+
+export interface ContributorQuestion {
+  id: string;
+  topicId: string;
+  topicTitle: string;
+  questionText: string;
+  options: string[];
+}
+
+export interface ContributorDraft {
+  firstName: string;
+  lastName: string;
+  publicDisplayName: string;
+  societyId: string;
+  societyName: string;
+  locality: string;
+  city: string;
+  state?: string;
+  pincode?: string;
+  landmark?: string;
+  yearsLiving: number;
+  residentType: 'Owner' | 'Tenant';
+  selectedTopicIds: string[];
+  answers: Record<string, string>; // questionId -> chosen option
+  generatedSummaries: Record<string, string>; // topicId -> generated text
+  declaredTruthful: boolean;
+}
+
+// Legacy compatibility types
 export interface Neighborhood {
   id: string;
   name: string;
   city: string;
-  state: string;
+  state?: string;
   pincode: string;
   society?: string;
-  builder?: string;
   apartmentName?: string;
-  expertCount: number;
-  averageRating: number;
-  waterTankerDependency?: number;
-  parkingDisputes?: number;
-  powerCutHistory?: number;
-  bachelorPetRules?: number;
-  monsoonFlooding?: number;
-  noiseIndex?: number;
+  builder?: string;
+  expertCount?: number;
+  averageRating?: number;
   landmarks?: string;
   detailedAddress?: string;
-}
-
-export interface ExpertProfile {
-  id: string;
-  userId: string;
-  fullName: string;
-  firstName?: string;
-  lastName?: string;
-  bio: string;
-  listingHeadline?: string;
-  localityId: string;
-  localityName: string;
-  city: string;
-  avatarUrl: string; // clean modern illustrated avatar (URL or preset key)
-  isCustomAvatar?: boolean;
-  memberSince: string;
-  questionsAnsweredCount: number;
-  responseRate: number; // e.g. 98
-  responseTime: string; // e.g. "Within 35 minutes"
-  rating: number;
-  pricingPerQuery: number; // e.g. 299 (in INR)
-  active?: boolean;
-  expertiseTags: string[];
-  areasCovered: string[]; // e.g. ["Baner", "Balewadi", "Aundh"]
-  yearsLivingThere: number; // e.g. 8
-  stillLivesThere: boolean;
-  repeatBuyersCount: number; // e.g. 78
-  experienceLevel: 'New Local' | 'Established Local' | 'Trusted Local' | 'Neighborhood Specialist' | 'Community Favorite';
-  trustScore: number; // e.g. 94
-  languages: string[]; // e.g. ["Hindi", "English", "Marathi"]
-  availability: string; // e.g. "Available Daily"
-  availableSlots?: string[]; // e.g. ["Today 4:00 PM - 4:30 PM", "Tomorrow 10:00 AM - 10:30 AM"]
-  weeklyAvailability?: DayAvailability[];
-  isInstantChatEnabled?: boolean;
-  upiId?: string;
-  bankAccountNumber?: string;
-  isLiveChatAvailable?: boolean;
-
-  // Additional Profile Details
-  ownerOrTenant?: 'Owner' | 'Tenant';
-  workFromHome?: boolean;
-  familyType?: 'Single / Bachelor' | 'Living with Family' | 'Couple';
-  hasPets?: boolean;
-  hasVehicle?: boolean;
-
-  // Secure Route Marketplace fields
-  payout_account_id?: string | null;
-  payout_account_status?: string | null;
-  kyc_completed?: boolean;
-  bank_verified?: boolean;
-  payouts_enabled?: boolean;
-  onboarding_completed?: boolean;
-  pan?: string | null;
-  ifsc?: string | null;
-  address?: string | null;
-  dob?: string | null;
-  businessType?: string | null;
-  balance?: number;
-}
-
-export interface TimeWindow {
-  start: string; // e.g. "07:00 PM"
-  end: string; // e.g. "09:00 PM"
+  waterTankerDependency?: string | number;
+  parkingDisputes?: string | number | boolean;
+  powerCutHistory?: string | number | boolean;
+  bachelorPetRules?: string | number | boolean;
+  monsoonFlooding?: string | number | boolean;
+  noiseIndex?: string | number;
+  [key: string]: any;
 }
 
 export interface DayAvailability {
   day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
   available: boolean;
-  timeWindows: TimeWindow[];
+  timeWindows: { start: string; end: string }[];
 }
 
-export interface StructuredQuestion {
+export interface ExpertProfile {
   id: string;
-  text: string;
-  clarificationRequested?: boolean;
-  clarificationQuestion?: string;
-  clarificationAnswer?: string;
-  answer?: string;
+  userId?: string;
+  fullName: string;
+  bio: string;
+  listingHeadline?: string;
+  localityId: string;
+  localityName: string;
+  city: string;
+  avatarUrl?: string;
+  memberSince?: string;
+  questionsAnsweredCount?: number;
+  responseRate?: number;
+  responseTime?: string;
+  rating?: number;
+  balance?: number;
+  pricingPerQuery?: number;
+  active?: boolean;
+  expertiseTags?: string[];
+  areasCovered?: string[];
+  yearsLivingThere: number;
+  stillLivesThere?: boolean;
+  ownerOrTenant?: 'Owner' | 'Tenant';
+  workFromHome?: boolean;
+  familyType?: string;
+  hasPets?: boolean;
+  hasVehicle?: boolean;
+  repeatBuyersCount?: number;
+  experienceLevel?: string;
+  trustScore?: number;
+  languages: string[];
+  availability?: string;
+  upiId?: string;
+  isLiveChatAvailable?: boolean;
+  weeklyAvailability?: DayAvailability[];
+  isInstantChatEnabled?: boolean;
+  availableSlots?: string[];
 }
 
 export interface DirectQuery {
   id: string;
-  buyerId: string;
-  buyerName: string;
   expertId: string;
-  expertName: string;
-  localityId: string;
-  localityName: string;
-  queryText: string;
-  responseStyle?: 'DETAILED' | 'CONCISE';
-  status: 'PENDING' | 'ACCEPTED' | 'ANSWERED' | 'REFUNDED' | 'DISPUTED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED' | 'PAYOUT_PENDING' | 'PAYOUT_COMPLETED' | 'PAYOUT_FAILED';
-  pricePaid: number;
-  expertEarnings: number;
-  createdAt: string;
-  answeredAt?: string;
-  answerText?: string;
-  orderId?: string;
-  paymentId?: string;
-  payoutTransferId?: string;
-  payoutErrorMessage?: string;
-  payoutTimestamp?: string;
-  holdingPeriodExpiresAt?: string;
+  expertName?: string;
+  localityId?: string;
+  localityName?: string;
+  buyerId?: string;
+  buyerName?: string;
+  pricePaid?: number;
+  expertEarnings?: number;
   packageOption?: string;
-  isDisputed?: boolean;
   bookedSlot?: string;
-  structuredQuestions?: StructuredQuestion[];
+  queryText?: string;
+  status?: string;
+  createdAt?: string;
 }
 
 export interface Review {
   id: string;
-  queryId: string;
-  buyerName: string;
-  buyerId?: string;
   expertId: string;
-  rating: number; // 1 to 5
+  buyerName: string;
+  rating: number;
   comment: string;
-  createdAt: string;
+  queryId?: string;
+  createdAt?: string;
 }
 
 export interface Wallet {
-  expertId: string;
-  availableBalance: number;
-  heldBalance: number; // in 48-hour pending hold
-  totalWithdrawn: number;
-  transactions?: WalletTransaction[];
+  balance?: number;
+  availableBalance?: number;
+  heldBalance?: number;
+  totalWithdrawn?: number;
+  expertId?: string;
   upiId?: string;
-  bankAccountNumber?: string;
-  ifscCode?: string;
-}
-
-export interface WalletTransaction {
-  id: string;
-  amount: number;
-  type: 'CREDIT_PENDING' | 'CREDIT_AVAILABLE' | 'DEBIT_WITHDRAWAL';
-  status: 'PENDING' | 'COMPLETED' | 'FAILED';
-  description: string;
-  createdAt: string;
+  transactions?: any[];
 }
 
 export interface PricingPlan {
-  id: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT';
-  badge: string;
-  badgeStyle: string;
+  id: string;
   title: string;
-  description: string;
   price: number;
-  pricePeriod: string;
-  features: string[];
-  cta: string;
+  badge?: string;
+  badgeStyle?: string;
+  description?: string;
+  pricePeriod?: string;
+  features?: string[];
+  cta?: string;
 }
 

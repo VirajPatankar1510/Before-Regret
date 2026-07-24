@@ -25,8 +25,8 @@ interface AuthContextType {
   logout: () => Promise<void>;
   refreshExpertProfile: (uid: string) => Promise<void>;
   isClerkActive: boolean;
-  triggerClerkSignIn: () => void;
-  triggerClerkSignUp: () => void;
+  triggerClerkSignIn: (redirectUrl?: string) => void;
+  triggerClerkSignUp: (redirectUrl?: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -180,31 +180,71 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
       }
     } else {
-      // Mock Auth Fallback Mode - No Session Persistence to demonstrate Loophole 5 (State Reset on Refresh)
-      // We explicitly do not restore user from localStorage on refresh, resetting to guest!
+      // Mock Auth Fallback Mode - Restore session from localStorage
+      const storedUser = localStorage.getItem('br_current_user');
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          if (parsed && parsed.uid) {
+            setUser(parsed);
+            refreshExpertProfile(parsed.uid);
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
       setLoading(false);
     }
   }, [isClerkActive, isClerkLoaded, isClerkSignedIn, clerkUser]);
 
-  const triggerClerkSignIn = () => {
+  const triggerClerkSignIn = (redirectUrl?: string) => {
     if (clerkInstance) {
-      clerkInstance.openSignIn();
+      const targetUrl = redirectUrl || (typeof window !== 'undefined' ? window.location.href : '/');
+      clerkInstance.openSignIn({
+        forceRedirectUrl: targetUrl,
+        fallbackRedirectUrl: targetUrl,
+        signUpForceRedirectUrl: targetUrl,
+        signInForceRedirectUrl: targetUrl,
+        afterSignInUrl: targetUrl,
+        redirectUrl: targetUrl,
+      });
     } else {
       console.warn("Clerk instance is not initialized or Clerk key is missing.");
     }
   };
 
-  const triggerClerkSignUp = () => {
+  const triggerClerkSignUp = (redirectUrl?: string) => {
     if (clerkInstance) {
-      clerkInstance.openSignUp();
+      const targetUrl = redirectUrl || (typeof window !== 'undefined' ? window.location.href : '/');
+      clerkInstance.openSignUp({
+        forceRedirectUrl: targetUrl,
+        fallbackRedirectUrl: targetUrl,
+        signUpForceRedirectUrl: targetUrl,
+        signUpFallbackRedirectUrl: targetUrl,
+        signInForceRedirectUrl: targetUrl,
+        afterSignUpUrl: targetUrl,
+        redirectUrl: targetUrl,
+      });
     } else {
       console.warn("Clerk instance is not initialized or Clerk key is missing.");
     }
+  };
+
+  const getTargetRedirectUrl = () => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const isContributor = path.startsWith('/contributor') || path.startsWith('/become-expert') || path.startsWith('/contributor-registration');
+      if (isContributor) {
+        return `${window.location.origin}/contributor-registration`;
+      }
+      return window.location.href;
+    }
+    return '/';
   };
 
   const signUpWithEmail = async (email: string, pass: string, name: string) => {
     if (isClerkActive) {
-      triggerClerkSignUp();
+      triggerClerkSignUp(getTargetRedirectUrl());
       return null;
     }
 
@@ -237,7 +277,7 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const signInWithEmail = async (email: string, pass: string) => {
     if (isClerkActive) {
-      triggerClerkSignIn();
+      triggerClerkSignIn(getTargetRedirectUrl());
       return null;
     }
 
@@ -268,7 +308,7 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const signInWithGoogle = async () => {
     if (isClerkActive) {
-      triggerClerkSignIn();
+      triggerClerkSignIn(getTargetRedirectUrl());
       return null;
     }
 

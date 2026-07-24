@@ -2,40 +2,53 @@ import React from 'react';
 
 interface LogoProps {
   className?: string;
-  size?: number;
+  color?: string;
 }
 
-export const Logo: React.FC<LogoProps> = ({ className = '', size = 32 }) => {
+export const Logo: React.FC<LogoProps> = ({ className = "w-8 h-8", color = "#2563EB" }) => {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 120 120"
-      className={`rounded-lg overflow-hidden select-none ${className}`}
+    <svg 
+      viewBox="0 0 512 512" 
+      className={className} 
+      fill="none" 
       xmlns="http://www.w3.org/2000/svg"
     >
-      <defs>
-        {/* Symmetrical/beautiful radial-like or linear gradient matching the uploaded logo */}
-        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#f48163" />    {/* Soft warm coral */}
-          <stop offset="45%" stopColor="#fbd351" />   {/* Bright glowing yellow-gold */}
-          <stop offset="100%" stopColor="#da9845" />  {/* Warm golden amber */}
-        </linearGradient>
-      </defs>
+      <path
+        fill={color}
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="
+          M 88 40
+          H 320
+          C 390 40 430 80 430 135
+          C 430 190 390 230 330 238
+          C 400 248 435 292 435 365
+          C 435 435 390 472 325 472
+          H 88
+          V 40
+          Z
 
-      {/* Gradient Background */}
-      <rect width="120" height="120" fill="url(#logoGradient)" />
+          M 188 122
+          H 295
+          C 325 122 340 135 340 162
+          C 340 190 325 202 295 202
+          H 188
+          V 122
+          Z
 
-      {/* Symmetrical Pillars (BTS-style logo) */}
-      <g fill="#ffffff">
-        {/* Left Pillar: outer edge (left) is long, slants down-right to a shorter inner edge (right) */}
-        {/* Points: (44, 24) [top-left], (55, 30) [top-right], (55, 96) [bottom-right], (44, 96) [bottom-left] */}
-        <polygon points="44,24 55,30 55,96 44,96" />
-
-        {/* Right Pillar: inner edge (left) is short, slants up-right to a longer outer edge (right) */}
-        {/* Points: (65, 30) [top-left], (76, 24) [top-right], (76, 96) [bottom-right], (65, 96) [bottom-left] */}
-        <polygon points="65,30 76,24 76,96 65,96" />
-      </g>
+          M 175 472
+          V 360
+          L 256 295
+          L 337 360
+          V 472
+          H 278
+          V 402
+          H 232
+          V 472
+          H 175
+          Z
+        "
+      />
     </svg>
   );
 };
