@@ -200,7 +200,7 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const triggerClerkSignIn = (redirectUrl?: string) => {
     if (clerkInstance) {
-      const targetUrl = redirectUrl || (typeof window !== 'undefined' ? window.location.href : '/');
+      const targetUrl = redirectUrl || getTargetRedirectUrl();
       clerkInstance.openSignIn({
         forceRedirectUrl: targetUrl,
         fallbackRedirectUrl: targetUrl,
@@ -216,7 +216,7 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const triggerClerkSignUp = (redirectUrl?: string) => {
     if (clerkInstance) {
-      const targetUrl = redirectUrl || (typeof window !== 'undefined' ? window.location.href : '/');
+      const targetUrl = redirectUrl || getTargetRedirectUrl();
       clerkInstance.openSignUp({
         forceRedirectUrl: targetUrl,
         fallbackRedirectUrl: targetUrl,

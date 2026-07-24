@@ -185,10 +185,18 @@ export function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Auto-transition to WIZARD mode (form) when user is authenticated during CONTRIBUTOR_FLOW
+  // Auto-transition to WIZARD mode (form) and URL when user is authenticated during CONTRIBUTOR_FLOW or on contributor routes
   useEffect(() => {
-    if (user && viewState === 'CONTRIBUTOR_FLOW' && contributorMode === 'LANDING') {
-      setContributorMode('WIZARD');
+    const currentPath = window.location.pathname;
+    const isContributorPath = currentPath.startsWith('/contributor') || currentPath === '/become-expert' || currentPath === '/contributor-registration';
+
+    if (user && (viewState === 'CONTRIBUTOR_FLOW' || isContributorPath)) {
+      if (viewState !== 'CONTRIBUTOR_FLOW') {
+        setViewState('CONTRIBUTOR_FLOW');
+      }
+      if (contributorMode !== 'WIZARD') {
+        setContributorMode('WIZARD');
+      }
     }
   }, [user, viewState, contributorMode]);
 
