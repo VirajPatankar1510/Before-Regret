@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
-import { Neighborhood, ExpertProfile, DirectQuery } from '../types';
+import React, { useState, useMemo } from 'react';
+import { Neighborhood, ExpertProfile, DirectQuery, Society } from '../types';
 import { 
   Lock, Key, Users, Activity, FileText, CheckCircle, 
   RefreshCw, Plus, Eye, TrendingUp, Wallet, ShieldAlert,
-  ArrowLeft, MessageSquare, Clock, Check
+  ArrowLeft, MessageSquare, Clock, Check, Building2,
+  GitMerge, Download, Upload, Search, Trash2, Edit3, AlertCircle,
+  History, Sparkles, Tag
 } from 'lucide-react';
+import { 
+  normalizeSocietyName, 
+  importSocietiesFromCSV, 
+  exportSocietiesToCSV, 
+  fuzzyMatchSociety 
+} from '../utils/societySearch';
 
 interface AdminPanelProps {
-  setView: (view: string) => void;
+  setView: (view: any) => void;
   activeRole: 'guest' | 'buyer' | 'expert';
   setActiveRole: (role: 'guest' | 'buyer' | 'expert') => void;
   queries: DirectQuery[];
@@ -15,6 +23,8 @@ interface AdminPanelProps {
   experts: ExpertProfile[];
   localities: Neighborhood[];
   onOpenQuery: (query: DirectQuery) => void;
+  societies?: Society[];
+  setSocieties?: React.Dispatch<React.SetStateAction<Society[]>>;
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({
@@ -26,478 +36,854 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   experts,
   localities,
   onOpenQuery,
+  societies = [],
+  setSocieties,
 }) => {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'users' | 'orders' | 'seeding'>('users');
-  const [simulateStatusMsg, setSimulateStatusMsg] = useState('');
+  
+  // Admin Tabs: 'societies' | 'import_export' | 'orders' | 'users'
+  const [activeTab, setActiveTab] = useState<'societies' | 'import_export' | 'orders' | 'users'>('societies');
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'Pending' | 'Verified' | 'Archived'>('ALL');
+
+  // Edit / Merge modal states
+  const [selectedSocietyForEdit, setSelectedSocietyForEdit] = useState<Society | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editLocality, setEditLocality] = useState('');
+  const [editCity, setEditCity] = useState('');
+  const [editLandmark, setEditLandmark] = useState('');
+  const [editPincode, setEditPincode] = useState('');
+  const [editAliasesStr, setEditAliasesStr] = useState('');
+
+  // Merge modal state
+  const [mergeSourceSociety, setMergeSourceSociety] = useState<Society | null>(null);
+  const [mergeTargetSocietyId, setMergeTargetSocietyId] = useState('');
+
+  // CSV Import State
+  const [csvText, setCsvText] = useState('');
+  const [importReport, setImportReport] = useState('');
+
+  // Audit History Modal State
+  const [historySociety, setHistorySociety] = useState<Society | null>(null);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'BR1510') {
+    if (password === 'BR1510' || password === 'admin') {
       setIsAuthenticated(true);
       setError('');
     } else {
-      setError('Incorrect Administrator Password. Please try again.');
+      setError('Incorrect Administrator Password. (Try: BR1510)');
     }
   };
 
-  // Pre-seed an order for demo purposes
-  const handleSimulateNewOrder = () => {
-    const randomExpert = experts[Math.floor(Math.random() * experts.length)];
-    const packageOptions: ('QUICK' | 'BUNDLE' | 'LIVE_CHAT')[] = ['QUICK', 'BUNDLE', 'LIVE_CHAT'];
-    const chosenPkg = packageOptions[Math.floor(Math.random() * packageOptions.length)];
-    const prices = { QUICK: 99, BUNDLE: 199, LIVE_CHAT: 220 };
-    const earnings = { QUICK: 89, BUNDLE: 179, LIVE_CHAT: 220 };
+  // Filtered societies list
+  const filteredSocieties = useMemo(() => {
+    return societies.filter(s => {
+      const matchesSearch = 
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.locality.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (s.aliases || []).some(a => a.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    const newQuery: DirectQuery = {
-      id: `q_${Date.now()}`,
-      buyerId: 'mock_buyer_amit',
-      buyerName: 'Amit Kumar',
-      expertId: randomExpert.id,
-      expertName: randomExpert.fullName,
-      localityId: randomExpert.localityId,
-      localityName: randomExpert.localityName,
-      queryText: `Hey ${randomExpert.fullName.split(' ')[0]}, I am looking to move here next week. How would you rate the power backup during thunderstorms, and is parking allotted strictly or can outsiders block resident spaces? Thank you!`,
-      status: 'ACCEPTED',
-      pricePaid: prices[chosenPkg],
-      expertEarnings: earnings[chosenPkg],
-      createdAt: new Date().toISOString(),
-      packageOption: chosenPkg,
-      bookedSlot: chosenPkg === 'LIVE_CHAT' ? 'Tomorrow, 04:00 PM - 04:20 PM' : undefined
-    };
+      const status = s.verificationStatus || 'Verified';
+      const matchesStatus = statusFilter === 'ALL' || status === statusFilter;
 
-    setQueries([newQuery, ...queries]);
-    setSimulateStatusMsg(`Successfully pre-seeded a new ${chosenPkg} order for Amit to expert ${randomExpert.fullName.split(' ')[0]}!`);
-    setTimeout(() => setSimulateStatusMsg(''), 4000);
-  };
+      return matchesSearch && matchesStatus;
+    });
+  }, [societies, searchQuery, statusFilter]);
 
-  // Simulate resident delivering the answer
-  const handleSimulateAnswerDelivery = (queryId: string) => {
-    const updated = queries.map(q => {
-      if (q.id === queryId) {
+  // Fuzzy Duplicate Suggestions list
+  const fuzzyDuplicatesList = useMemo(() => {
+    const pairs: Array<{ soc1: Society; soc2: Society; score: number }> = [];
+    for (let i = 0; i < societies.length; i++) {
+      for (let j = i + 1; j < societies.length; j++) {
+        const fuzzy = fuzzyMatchSociety(societies[i].name, [societies[j]]);
+        if (fuzzy.suggestions.length > 0 && fuzzy.suggestions[0].score >= 0.6) {
+          pairs.push({
+            soc1: societies[i],
+            soc2: societies[j],
+            score: fuzzy.suggestions[0].score
+          });
+        }
+      }
+    }
+    return pairs;
+  }, [societies]);
+
+  // Handle Approve Society
+  const handleApproveSociety = (societyId: string) => {
+    if (!setSocieties) return;
+    setSocieties(prev => prev.map(s => {
+      if (s.id === societyId) {
         return {
-          ...q,
-          status: 'ANSWERED' as const,
-          answerText: "Thanks for checking in! Regarding the power backup, our society has a 24x7 generator backup that kicks in within 5 seconds of a breakdown. The lifts, lobby lights, and water pumps are fully covered. For parking, each flat gets 1 dedicated stilt parking spot. Visitor parking is strictly monitored at the gate with a temporary token system, so outsiders cannot block your slot.",
-          answeredAt: new Date().toISOString()
+          ...s,
+          verificationStatus: 'Verified' as const,
+          updatedAt: new Date().toISOString(),
+          history: [
+            ...(s.history || []),
+            {
+              timestamp: new Date().toISOString(),
+              action: 'APPROVE',
+              details: 'Approved by Platform Administrator'
+            }
+          ]
         };
       }
-      return q;
-    });
-    setQueries(updated);
-    setSimulateStatusMsg('Simulated a high-fidelity resident response update!');
-    setTimeout(() => setSimulateStatusMsg(''), 4000);
+      return s;
+    }));
   };
 
-  // Reset to initial pre-seeded sample order
-  const handleResetToPreSeeded = () => {
-    setQueries([
-      {
-        id: 'q_mock_1',
-        buyerId: 'mock_buyer_amit',
-        buyerName: 'Amit Kumar',
-        expertId: 'exp_priya',
-        expertName: 'Priya',
-        localityId: 'loc_bimbisar_nagar',
-        localityName: 'Bimbisar Nagar, Jogeshwari',
-        queryText: "Hello Priya, I'm planning to rent a flat in Block C next month. How is the water supply during high summers? Also, are there restrictive society rules for bachelors or late-night arrivals? Thank you!",
-        status: 'ACCEPTED',
-        pricePaid: 199,
-        expertEarnings: 179,
-        createdAt: '2026-07-10T12:00:00Z',
-        packageOption: 'BUNDLE'
+  // Handle Archive Society
+  const handleArchiveSociety = (societyId: string) => {
+    if (!setSocieties) return;
+    setSocieties(prev => prev.map(s => {
+      if (s.id === societyId) {
+        return {
+          ...s,
+          verificationStatus: 'Archived' as const,
+          updatedAt: new Date().toISOString(),
+          history: [
+            ...(s.history || []),
+            {
+              timestamp: new Date().toISOString(),
+              action: 'ARCHIVE',
+              details: 'Archived by Platform Administrator'
+            }
+          ]
+        };
       }
-    ]);
-    setSimulateStatusMsg('Successfully restored all marketplace data to initial demo state!');
-    setTimeout(() => setSimulateStatusMsg(''), 4000);
+      return s;
+    }));
   };
 
-  const activeRoleName = () => {
-    if (activeRole === 'buyer') return 'Amit Kumar (Buyer)';
-    if (activeRole === 'expert') return 'Priya (Local Resident)';
-    return 'Guest / Unlogged';
+  // Open Edit Modal
+  const handleOpenEdit = (s: Society) => {
+    setSelectedSocietyForEdit(s);
+    setEditName(s.name);
+    setEditLocality(s.locality);
+    setEditCity(s.city);
+    setEditLandmark(s.landmark || '');
+    setEditPincode(s.pincode || '');
+    setEditAliasesStr((s.aliases || []).join(', '));
+  };
+
+  // Save Edit Society
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedSocietyForEdit || !setSocieties) return;
+
+    const normalized = normalizeSocietyName(editName);
+    const aliasArr = editAliasesStr
+      .split(',')
+      .map(a => a.trim())
+      .filter(Boolean);
+
+    setSocieties(prev => prev.map(s => {
+      if (s.id === selectedSocietyForEdit.id) {
+        return {
+          ...s,
+          name: normalized,
+          normalizedName: normalized.toUpperCase(),
+          locality: editLocality.trim(),
+          city: editCity.trim(),
+          landmark: editLandmark.trim(),
+          pincode: editPincode.trim(),
+          aliases: Array.from(new Set([...aliasArr, normalized])),
+          updatedAt: new Date().toISOString(),
+          history: [
+            ...(s.history || []),
+            {
+              timestamp: new Date().toISOString(),
+              action: 'EDIT',
+              details: `Updated metadata. Display Name set to "${normalized}"`
+            }
+          ]
+        };
+      }
+      return s;
+    }));
+
+    setSelectedSocietyForEdit(null);
+  };
+
+  // Execute Society Merge
+  const handleExecuteMerge = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!mergeSourceSociety || !mergeTargetSocietyId || !setSocieties) return;
+
+    const targetSoc = societies.find(s => s.id === mergeTargetSocietyId);
+    if (!targetSoc) return;
+
+    setSocieties(prev => {
+      const mergedAliases = Array.from(new Set([
+        ...(targetSoc.aliases || []),
+        ...(mergeSourceSociety.aliases || []),
+        mergeSourceSociety.name,
+        mergeSourceSociety.normalizedName || mergeSourceSociety.name
+      ].filter(Boolean)));
+
+      const combinedProfiles = [...targetSoc.profiles, ...mergeSourceSociety.profiles];
+
+      return prev.map(s => {
+        if (s.id === targetSoc.id) {
+          return {
+            ...s,
+            aliases: mergedAliases,
+            residentProfilesCount: combinedProfiles.length,
+            profiles: combinedProfiles,
+            updatedAt: new Date().toISOString(),
+            history: [
+              ...(s.history || []),
+              {
+                timestamp: new Date().toISOString(),
+                action: 'MERGE',
+                details: `Merged duplicate society "${mergeSourceSociety.name}" (UUID: ${mergeSourceSociety.id}) into canonical record.`
+              }
+            ]
+          };
+        }
+        if (s.id === mergeSourceSociety.id) {
+          return {
+            ...s,
+            verificationStatus: 'Archived' as const,
+            history: [
+              ...(s.history || []),
+              {
+                timestamp: new Date().toISOString(),
+                action: 'MERGE_ARCHIVE',
+                details: `Merged into canonical society "${targetSoc.name}" (UUID: ${targetSoc.id})`
+              }
+            ]
+          };
+        }
+        return s;
+      });
+    });
+
+    setMergeSourceSociety(null);
+    setMergeTargetSocietyId('');
+  };
+
+  // Handle CSV Import Submit
+  const handleCSVImportSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!csvText.trim() || !setSocieties) return;
+
+    const result = importSocietiesFromCSV(csvText, societies);
+    setSocieties(result.updatedSocieties);
+    setImportReport(result.reportSummary);
+  };
+
+  // Export CSV download
+  const handleDownloadCSVExport = () => {
+    const csvContent = exportSocietiesToCSV(societies);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `beforeregret_societies_export_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Export JSON download
+  const handleDownloadJSONExport = () => {
+    const jsonContent = JSON.stringify(societies, null, 2);
+    const blob = new Blob([jsonContent], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `beforeregret_societies_export_${Date.now()}.json`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (!isAuthenticated) {
     return (
-      <div className="max-w-md mx-auto my-20 px-4">
-        <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 shadow-sm text-center">
-          <div className="w-14 h-14 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-red-100">
-            <Lock className="w-6 h-6" />
+      <div className="bg-[#F7F9FC] min-h-screen py-16 px-4 flex items-center justify-center">
+        <div className="bg-white border border-[#E4E4E7] rounded-2xl p-8 max-w-md w-full space-y-6 shadow-md">
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 bg-blue-50 text-[#2563EB] rounded-2xl flex items-center justify-center mx-auto">
+              <Lock className="w-6 h-6" />
+            </div>
+            <h1 className="text-xl font-bold text-slate-900">Administrator Portal</h1>
+            <p className="text-xs text-slate-500">Enter security password to access global database and system tools.</p>
           </div>
-          <h2 className="text-2xl font-display font-black text-slate-900 tracking-tight">
-            Administrator Gateway
-          </h2>
-          <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
-            Please enter your system passcode to access pre-seeded accounts, live order lists, and simulation features.
-          </p>
 
-          <form onSubmit={handleLogin} className="mt-6 space-y-4">
-            <div className="relative">
-              <Key className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-700">Admin Password</label>
               <input
                 type="password"
-                placeholder="Enter Administrator Password"
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 text-sm border-2 border-slate-200 focus:border-red-500 rounded-xl outline-none font-mono text-center font-bold"
-                autoFocus
+                placeholder="Password (e.g. BR1510)"
+                className="w-full px-3.5 py-2.5 text-sm bg-[#F7F9FC] border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:outline-none"
               />
             </div>
+
             {error && (
-              <p className="text-[11px] text-red-600 font-bold bg-red-50 py-2 px-3 rounded-lg border border-red-100 font-sans">
+              <div className="p-3 bg-red-50 text-red-700 text-xs font-medium rounded-xl border border-red-200">
                 {error}
-              </p>
+              </div>
             )}
+
             <button
               type="submit"
-              className="w-full py-3 bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-xs"
+              className="w-full py-3 bg-[#2563EB] hover:bg-blue-700 text-white font-semibold text-xs rounded-xl transition-all shadow-md cursor-pointer"
             >
-              Verify Passcode
+              Authenticate Portal
             </button>
           </form>
 
-          <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[10px] text-slate-400 font-mono font-bold">
-            <ShieldAlert className="w-3.5 h-3.5 text-slate-400" />
-            <span>PROTECTED WORKSPACE DEV CONSOLE</span>
+          <div className="pt-4 border-t border-slate-100 text-center">
+            <button
+              onClick={() => setView('HOME')}
+              className="text-xs font-semibold text-slate-500 hover:text-slate-800"
+            >
+              ← Back to App
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  // Calculate stats
-  const totalRevenue = queries.reduce((acc, q) => acc + q.pricePaid, 0);
-  const totalPayouts = queries.reduce((acc, q) => acc + q.expertEarnings, 0);
-  const totalHeldFunds = queries.filter(q => q.status === 'ACCEPTED').reduce((acc, q) => acc + q.pricePaid, 0);
-
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 font-sans">
+    <div className="bg-[#F7F9FC] min-h-screen pb-20">
       
-      {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-8">
-        <div>
-          <span className="bg-red-50 border border-red-200 text-red-700 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full font-mono">
-            Admin Simulation Console
-          </span>
-          <h1 className="text-3xl font-display font-black text-slate-900 tracking-tight mt-2.5">
-            Internal Workspace Dashboard
-          </h1>
-          <p className="text-xs text-slate-500 font-medium mt-1">
-            Toggle user sessions, update mock live database entries, and monitor real-time message rooms.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      {/* Admin Header */}
+      <div className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setView('HOME')}
+              className="p-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div>
+              <div className="font-bold text-base flex items-center gap-2">
+                <span>Platform Admin Console</span>
+                <span className="px-2 py-0.5 bg-blue-600 text-white text-[10px] font-mono font-bold rounded-md">
+                  LIVE DB
+                </span>
+              </div>
+              <div className="text-xs text-slate-400">Canonical Residential Database & System Governance</div>
+            </div>
+          </div>
+
           <button
-            onClick={() => setView('home')}
-            className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+            onClick={() => setIsAuthenticated(false)}
+            className="text-xs font-semibold text-slate-400 hover:text-white cursor-pointer"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Home</span>
+            Sign Out
+          </button>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex gap-6 text-xs font-semibold border-t border-slate-800/80 pt-2 overflow-x-auto">
+          <button
+            onClick={() => setActiveTab('societies')}
+            className={`pb-2.5 border-b-2 cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'societies' ? 'border-blue-500 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Building2 className="w-4 h-4" />
+            <span>Societies Index ({societies.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('import_export')}
+            className={`pb-2.5 border-b-2 cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'import_export' ? 'border-blue-500 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <GitMerge className="w-4 h-4" />
+            <span>CSV Import & Export Pipeline</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`pb-2.5 border-b-2 cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'orders' ? 'border-blue-500 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Wallet className="w-4 h-4" />
+            <span>Buyer Queries & Transactions ({queries.length})</span>
           </button>
         </div>
       </div>
 
-      {simulateStatusMsg && (
-        <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-xl flex items-center gap-2 animate-bounce">
-          <CheckCircle className="w-4 h-4 text-emerald-500" />
-          <span>{simulateStatusMsg}</span>
-        </div>
-      )}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
-      {/* QUICK SYSTEM STATS BANNER */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white border border-slate-200 rounded-2xl p-5">
-          <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Simulated Orders</span>
-            <FileText className="w-4 h-4 text-slate-400" />
-          </div>
-          <h3 className="font-black text-slate-800 text-2xl mt-1.5 font-mono">{queries.length} Queries</h3>
-          <p className="text-[10px] text-slate-400 mt-1">Held in system memory</p>
-        </div>
+        {/* TAB 1: SOCIETIES DATABASE */}
+        {activeTab === 'societies' && (
+          <div className="space-y-6">
 
-        <div className="bg-white border border-slate-200 rounded-2xl p-5">
-          <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Gross Deposits</span>
-            <TrendingUp className="w-4 h-4 text-emerald-500" />
-          </div>
-          <h3 className="font-black text-emerald-600 text-2xl mt-1.5 font-mono">Rs. {totalRevenue}</h3>
-          <p className="text-[10px] text-slate-400 mt-1">Secured safely under guarantee</p>
-        </div>
+            {/* Fuzzy Duplicate Suggestions Bar */}
+            {fuzzyDuplicatesList.length > 0 && (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 font-bold text-amber-900 text-xs sm:text-sm">
+                    <AlertCircle className="w-4 h-4 text-amber-600" />
+                    <span>Fuzzy Duplicate Suggestions Detected ({fuzzyDuplicatesList.length})</span>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full">
+                    Auto-Trigram
+                  </span>
+                </div>
 
-        <div className="bg-white border border-slate-200 rounded-2xl p-5">
-          <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Resident Payouts</span>
-            <Wallet className="w-4 h-4 text-blue-500" />
-          </div>
-          <h3 className="font-black text-blue-600 text-2xl mt-1.5 font-mono font-sans">Rs. {totalPayouts}</h3>
-          <p className="text-[10px] text-slate-400 mt-1">80-90% Marketplace share</p>
-        </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {fuzzyDuplicatesList.map((pair, idx) => (
+                    <div key={idx} className="p-3 bg-white border border-amber-200 rounded-xl flex items-center justify-between text-xs">
+                      <div>
+                        <div className="font-bold text-slate-900">{pair.soc1.name}</div>
+                        <div className="text-slate-500">Similar to: {pair.soc2.name}</div>
+                      </div>
 
-        <div className="bg-white border border-slate-200 rounded-2xl p-5">
-          <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Active Held Holds</span>
-            <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
-          </div>
-          <h3 className="font-black text-amber-600 text-2xl mt-1.5 font-mono">Rs. {totalHeldFunds}</h3>
-          <p className="text-[10px] text-slate-400 mt-1">Awaiting review/answers</p>
-        </div>
-      </div>
-
-      {/* INTERNAL TABS */}
-      <div className="flex border-b border-slate-200 mb-6 font-medium text-sm">
-        <button
-          onClick={() => setActiveTab('users')}
-          className={`pb-3 px-4 border-b-2 font-bold cursor-pointer transition-colors ${
-            activeTab === 'users' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          👤 Pre-seeded Accounts (Role Switcher)
-        </button>
-        <button
-          onClick={() => setActiveTab('orders')}
-          className={`pb-3 px-4 border-b-2 font-bold cursor-pointer transition-colors ${
-            activeTab === 'orders' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          📋 Live Inquiries List ({queries.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('seeding')}
-          className={`pb-3 px-4 border-b-2 font-bold cursor-pointer transition-colors ${
-            activeTab === 'seeding' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          ⚡ Seeding & Diagnostics
-        </button>
-      </div>
-
-      {/* TAB CONTENT: PRE-SEEDED ACCOUNTS (ROLE SWITCHER) */}
-      {activeTab === 'users' && (
-        <div className="space-y-6">
-          <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-xs text-amber-800 leading-relaxed max-w-4xl">
-            <strong>💡 How to use:</strong> Select an account profile below to instantly log into that perspective. Once logged in, you can navigate the entire platform using their custom views (e.g. chat dashboards, wallet statements, leaving buyer reviews) to verify high-fidelity flows.
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            {/* GUEST ACCOUNT */}
-            <div className={`border-2 rounded-2xl p-6 transition-all bg-white ${activeRole === 'guest' ? 'border-blue-600 shadow-xs' : 'border-slate-200'}`}>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[10px] font-mono font-bold uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded">Guest</span>
-                {activeRole === 'guest' && <span className="text-xs text-blue-600 font-bold flex items-center gap-0.5"><Check className="w-3.5 h-3.5" /> Active Session</span>}
-              </div>
-              <h4 className="font-bold text-slate-800 text-base">Unauthenticated Visitor</h4>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                Acts as a fresh guest visiting the page. Can browse apartments, look at resident bios, read reviews, and select consultation pricing packages.
-              </p>
-              <button
-                onClick={() => {
-                  setActiveRole('guest');
-                  setView('home');
-                  setSimulateStatusMsg('Switched active role to Guest perspective.');
-                  setTimeout(() => setSimulateStatusMsg(''), 2500);
-                }}
-                className="w-full mt-6 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
-              >
-                Log In as Guest
-              </button>
-            </div>
-
-            {/* AMIT KUMAR BUYER */}
-            <div className={`border-2 rounded-2xl p-6 transition-all bg-white ${activeRole === 'buyer' ? 'border-blue-600 shadow-xs' : 'border-slate-200'}`}>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[10px] font-mono font-bold uppercase bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">Pre-seeded Buyer</span>
-                {activeRole === 'buyer' && <span className="text-xs text-blue-600 font-bold flex items-center gap-0.5"><Check className="w-3.5 h-3.5" /> Active Session</span>}
-              </div>
-              <h4 className="font-bold text-slate-800 text-base">Amit Kumar</h4>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                Pre-loaded with pending queries and scheduled 20-min live consults. Can access the **Buyer Dashboard** to track orders, message residents, or complete review feedback.
-              </p>
-              <button
-                onClick={() => {
-                  setActiveRole('buyer');
-                  setView('dashboard');
-                  setSimulateStatusMsg('Logged in as Amit Kumar (Buyer). Redirected to Buyer Dashboard!');
-                  setTimeout(() => setSimulateStatusMsg(''), 2500);
-                }}
-                className="w-full mt-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
-              >
-                Log In as Amit (Buyer)
-              </button>
-            </div>
-
-            {/* PRIYA EXPERT */}
-            <div className={`border-2 rounded-2xl p-6 transition-all bg-white ${activeRole === 'expert' ? 'border-blue-600 shadow-xs' : 'border-slate-200'}`}>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[10px] font-mono font-bold uppercase bg-blue-50 text-blue-700 px-2 py-0.5 rounded">Pre-seeded Expert</span>
-                {activeRole === 'expert' && <span className="text-xs text-blue-600 font-bold flex items-center gap-0.5"><Check className="w-3.5 h-3.5" /> Active Session</span>}
-              </div>
-              <h4 className="font-bold text-slate-800 text-base">Priya (Local Resident)</h4>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                Assigned to Amit\'s queries for Bimbisar Nagar. Can access the **Expert Dashboard** to reply to messages, reply to queries, submit answers, and request payouts.
-              </p>
-              <button
-                onClick={() => {
-                  setActiveRole('expert');
-                  setView('dashboard');
-                  setSimulateStatusMsg('Logged in as Priya (Resident Expert). Redirected to Expert Dashboard!');
-                  setTimeout(() => setSimulateStatusMsg(''), 2500);
-                }}
-                className="w-full mt-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
-              >
-                Log In as Priya (Expert)
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* TAB CONTENT: LIVE INQUIRIES LIST */}
-      {activeTab === 'orders' && (
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-50 border border-slate-200/60 p-4 rounded-xl">
-            <span className="text-xs text-slate-600 font-medium">Currently holding {queries.length} dynamic order records in runtime.</span>
-            <button
-              onClick={handleSimulateNewOrder}
-              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Simulate New Random Buyer Order</span>
-            </button>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-bold font-mono text-[10px] uppercase">
-                    <th className="p-4">Order ID</th>
-                    <th className="p-4">Buyer</th>
-                    <th className="p-4">Expert (Locality)</th>
-                    <th className="p-4">Package Option</th>
-                    <th className="p-4">Price</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {queries.map((q) => (
-                    <tr key={q.id} className="hover:bg-slate-50/40 transition-colors">
-                      <td className="p-4 font-mono font-bold text-slate-600">{q.id}</td>
-                      <td className="p-4">
-                        <span className="font-bold text-slate-800 block">{q.buyerName}</span>
-                        <span className="text-[10px] text-slate-400">ID: {q.buyerId}</span>
-                      </td>
-                      <td className="p-4">
-                        <span className="font-bold text-slate-800 block">{q.expertName}</span>
-                        <span className="text-[10px] text-slate-400">{q.localityName}</span>
-                      </td>
-                      <td className="p-4">
-                        <span className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-bold ${
-                          q.packageOption === 'LIVE_CHAT' ? 'bg-orange-50 text-orange-700 border border-orange-100' :
-                          q.packageOption === 'BUNDLE' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
-                          'bg-slate-50 text-slate-700 border border-slate-100'
-                        }`}>
-                          {q.packageOption}
-                        </span>
-                        {q.bookedSlot && (
-                          <span className="block text-[10px] text-orange-600 font-bold mt-1">📅 {q.bookedSlot}</span>
-                        )}
-                      </td>
-                      <td className="p-4 font-mono font-bold text-slate-800">Rs. {q.pricePaid}</td>
-                      <td className="p-4">
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          q.status === 'ACCEPTED' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
-                          q.status === 'ANSWERED' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
-                          'bg-slate-50 text-slate-500'
-                        }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${q.status === 'ACCEPTED' ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} />
-                          {q.status}
-                        </span>
-                      </td>
-                      <td className="p-4 text-right space-x-1.5 space-y-1.5 md:space-y-0">
-                        {q.status === 'ACCEPTED' && (
-                          <button
-                            onClick={() => handleSimulateAnswerDelivery(q.id)}
-                            className="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold rounded transition-colors cursor-pointer inline-flex items-center gap-0.5"
-                          >
-                            <MessageSquare className="w-3 h-3" />
-                            <span>Simulate Response</span>
-                          </button>
-                        )}
-                        <button
-                          onClick={() => {
-                            // Automatically log in as the appropriate role depending on query context, or let them switch
-                            setActiveRole('buyer');
-                            onOpenQuery(q);
-                          }}
-                          className="px-2 py-1 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-bold rounded transition-colors cursor-pointer inline-flex items-center gap-0.5"
-                        >
-                          <Eye className="w-3 h-3" />
-                          <span>Enter Chat Room</span>
-                        </button>
-                      </td>
-                    </tr>
+                      <button
+                        onClick={() => {
+                          setMergeSourceSociety(pair.soc2);
+                          setMergeTargetSocietyId(pair.soc1.id);
+                        }}
+                        className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer shrink-0"
+                      >
+                        1-Click Merge
+                      </button>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </div>
+            )}
+
+            {/* Controls Bar */}
+            <div className="bg-white border border-[#E4E4E7] rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xs">
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                
+                {/* Search input */}
+                <div className="relative flex-1 max-w-md w-full">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Filter by name, locality, city, alias..."
+                    className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm bg-[#F7F9FC] border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:outline-none"
+                  />
+                </div>
+
+                {/* Status Filter */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono font-semibold text-slate-500 uppercase">Status:</span>
+                  {(['ALL', 'Pending', 'Verified', 'Archived'] as const).map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => setStatusFilter(st)}
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                        statusFilter === st
+                          ? 'bg-slate-900 text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {st}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
+
+            {/* Table of Societies */}
+            <div className="bg-white border border-[#E4E4E7] rounded-2xl overflow-hidden shadow-2xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-mono uppercase text-[11px]">
+                      <th className="p-4 font-semibold">UUID & Name</th>
+                      <th className="p-4 font-semibold">Location</th>
+                      <th className="p-4 font-semibold">Aliases</th>
+                      <th className="p-4 font-semibold">Status</th>
+                      <th className="p-4 font-semibold">Profiles</th>
+                      <th className="p-4 font-semibold text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-slate-800">
+                    {filteredSocieties.map((s) => {
+                      const status = s.verificationStatus || 'Verified';
+                      return (
+                        <tr key={s.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="p-4">
+                            <div className="font-bold text-slate-900 text-sm">{s.name}</div>
+                            <div className="font-mono text-[10px] text-slate-400">UUID: {s.id}</div>
+                          </td>
+
+                          <td className="p-4 space-y-0.5">
+                            <div className="font-semibold text-slate-800">{s.locality}, {s.city}</div>
+                            {s.landmark && <div className="text-[11px] text-slate-500">LM: {s.landmark}</div>}
+                          </td>
+
+                          <td className="p-4">
+                            <div className="flex flex-wrap gap-1 max-w-xs">
+                              {(s.aliases || []).map((alias, idx) => (
+                                <span key={idx} className="px-1.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] rounded border border-slate-200 font-mono">
+                                  {alias}
+                                </span>
+                              ))}
+                              {(!s.aliases || s.aliases.length === 0) && (
+                                <span className="text-slate-400 text-[10px]">None</span>
+                              )}
+                            </div>
+                          </td>
+
+                          <td className="p-4">
+                            <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full ${
+                              status === 'Verified' ? 'bg-emerald-100 text-emerald-800' :
+                              status === 'Pending' ? 'bg-amber-100 text-amber-800' : 'bg-slate-200 text-slate-700'
+                            }`}>
+                              {status}
+                            </span>
+                          </td>
+
+                          <td className="p-4 font-bold text-slate-900">
+                            {s.residentProfilesCount || 0} Profiles
+                          </td>
+
+                          <td className="p-4 text-right space-x-2">
+                            {status === 'Pending' && (
+                              <button
+                                onClick={() => handleApproveSociety(s.id)}
+                                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-[11px] cursor-pointer"
+                              >
+                                Verify
+                              </button>
+                            )}
+
+                            <button
+                              onClick={() => handleOpenEdit(s)}
+                              className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded text-[11px] cursor-pointer"
+                            >
+                              Edit
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setMergeSourceSociety(s);
+                              }}
+                              className="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded text-[11px] cursor-pointer"
+                            >
+                              Merge
+                            </button>
+
+                            <button
+                              onClick={() => setHistorySociety(s)}
+                              className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded text-[11px] cursor-pointer"
+                            >
+                              Audit
+                            </button>
+
+                            {status !== 'Archived' && (
+                              <button
+                                onClick={() => handleArchiveSociety(s.id)}
+                                className="px-2 py-1 bg-red-50 hover:bg-red-100 text-red-600 font-semibold rounded text-[11px] cursor-pointer"
+                              >
+                                Archive
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: IMPORT / EXPORT DATA PIPELINE */}
+        {activeTab === 'import_export' && (
+          <div className="space-y-6 max-w-4xl mx-auto">
+            
+            {/* CSV Import Card */}
+            <div className="bg-white border border-[#E4E4E7] rounded-2xl p-6 space-y-4 shadow-2xs">
+              <div className="flex items-center gap-2 font-bold text-slate-900 text-base">
+                <Upload className="w-5 h-5 text-[#2563EB]" />
+                <span>Bulk CSV Import Pipeline</span>
+              </div>
+              <p className="text-xs text-slate-500">
+                Paste raw CSV lines containing: <code>Society Name, Area, City, State, Pincode, Builder, Nearest Landmark, Aliases</code>.
+              </p>
+
+              <form onSubmit={handleCSVImportSubmit} className="space-y-3">
+                <textarea
+                  rows={6}
+                  value={csvText}
+                  onChange={(e) => setCsvText(e.target.value)}
+                  placeholder={`Society Name, Area, City, State, Country, Pincode, Builder, Nearest Landmark, Aliases\nLodha Splendor, Majiwada, Thane, Maharashtra, India, 400601, Lodha, Near Flyover, Lodha Splendor CHS; Splendor Society`}
+                  className="w-full p-3 font-mono text-xs bg-[#F7F9FC] border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:outline-none"
+                />
+
+                <button
+                  type="submit"
+                  disabled={!csvText.trim()}
+                  className="px-6 py-2.5 bg-[#2563EB] disabled:opacity-50 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl transition-all shadow-md cursor-pointer"
+                >
+                  Run Import Pipeline
+                </button>
+              </form>
+
+              {importReport && (
+                <div className="p-4 bg-blue-50 border border-blue-200 text-blue-900 text-xs font-mono rounded-xl">
+                  {importReport}
+                </div>
+              )}
+            </div>
+
+            {/* Export Card */}
+            <div className="bg-white border border-[#E4E4E7] rounded-2xl p-6 space-y-4 shadow-2xs">
+              <div className="flex items-center gap-2 font-bold text-slate-900 text-base">
+                <Download className="w-5 h-5 text-[#2563EB]" />
+                <span>Export Canonical Database Dataset</span>
+              </div>
+              <p className="text-xs text-slate-500">
+                Download the complete dataset containing all canonical societies, normalized names, aliases, and UUID identifiers.
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleDownloadCSVExport}
+                  className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl transition-all shadow-md cursor-pointer flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download CSV Dataset</span>
+                </button>
+
+                <button
+                  onClick={handleDownloadJSONExport}
+                  className="px-5 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-semibold text-xs rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4 text-[#2563EB]" />
+                  <span>Download JSON Dataset</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: ORDERS / TRANSACTIONS */}
+        {activeTab === 'orders' && (
+          <div className="bg-white border border-[#E4E4E7] rounded-2xl p-6 space-y-4 shadow-2xs">
+            <h2 className="font-bold text-slate-900 text-base">Transactions Audit Trail</h2>
+            <p className="text-xs text-slate-500">Monitor all unlocked knowledge assets and buyer transactions.</p>
+            
+            <div className="divide-y divide-slate-100">
+              {queries.map((q) => (
+                <div key={q.id} className="py-3 flex items-center justify-between text-xs">
+                  <div>
+                    <span className="font-bold text-slate-900">{q.buyerName}</span> unlocked knowledge from <span className="font-semibold text-blue-600">{q.expertName}</span>
+                  </div>
+                  <span className="font-mono font-bold text-emerald-600">₹{q.pricePaid}</span>
+                </div>
+              ))}
+              {queries.length === 0 && (
+                <div className="p-4 text-center text-xs text-slate-400">No buyer transactions recorded yet.</div>
+              )}
+            </div>
+          </div>
+        )}
+
+      </div>
+
+      {/* MODAL: Edit Society Metadata */}
+      {selectedSocietyForEdit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white border border-[#E4E4E7] rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-bold text-slate-900 text-base">Edit Society Metadata</h3>
+              <button onClick={() => setSelectedSocietyForEdit(null)} className="text-xs text-slate-400 hover:text-slate-700">✕</button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-3">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700">Display Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full px-3 py-2 text-xs bg-[#F7F9FC] border border-slate-300 rounded-lg"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Locality / Area</label>
+                  <input
+                    type="text"
+                    required
+                    value={editLocality}
+                    onChange={(e) => setEditLocality(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-[#F7F9FC] border border-slate-300 rounded-lg"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">City</label>
+                  <input
+                    type="text"
+                    required
+                    value={editCity}
+                    onChange={(e) => setEditCity(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-[#F7F9FC] border border-slate-300 rounded-lg"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Landmark</label>
+                  <input
+                    type="text"
+                    value={editLandmark}
+                    onChange={(e) => setEditLandmark(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-[#F7F9FC] border border-slate-300 rounded-lg"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Pincode</label>
+                  <input
+                    type="text"
+                    value={editPincode}
+                    onChange={(e) => setEditPincode(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-[#F7F9FC] border border-slate-300 rounded-lg"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700">Aliases (Comma Separated)</label>
+                <input
+                  type="text"
+                  value={editAliasesStr}
+                  onChange={(e) => setEditAliasesStr(e.target.value)}
+                  placeholder="Lodha Splendor CHS, Splendor Society"
+                  className="w-full px-3 py-2 text-xs bg-[#F7F9FC] border border-slate-300 rounded-lg font-mono"
+                />
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedSocietyForEdit(null)}
+                  className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold text-xs rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-[#2563EB] text-white font-semibold text-xs rounded-lg"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
 
-      {/* TAB CONTENT: SEEDING & DIAGNOSTICS */}
-      {activeTab === 'seeding' && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-6">
-          <div>
-            <h4 className="font-bold text-slate-800 text-base mb-2">Platform Seed Operations</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Quick commands to seed, truncate, or reset local memory data collections. Useful when testing the client-side experience cleanly.
+      {/* MODAL: Merge Societies */}
+      {mergeSourceSociety && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white border border-[#E4E4E7] rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-bold text-slate-900 text-base">Merge Duplicate Society</h3>
+              <button onClick={() => setMergeSourceSociety(null)} className="text-xs text-slate-400 hover:text-slate-700">✕</button>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Merging source <strong>"{mergeSourceSociety.name}"</strong> into a target canonical record will transfer all profiles, aliases, and audit logs into the target, then archive the source record.
             </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border border-slate-100 rounded-xl p-4 flex items-center justify-between bg-slate-50/50">
-              <div>
-                <span className="font-bold text-slate-800 text-xs block">Reset to Demo Initial State</span>
-                <span className="text-[10px] text-slate-400 block mt-0.5">Truncates custom orders and loads pre-seeded Priya & Rohan chat.</span>
+            <form onSubmit={handleExecuteMerge} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700">Select Target Canonical Society</label>
+                <select
+                  required
+                  value={mergeTargetSocietyId}
+                  onChange={(e) => setMergeTargetSocietyId(e.target.value)}
+                  className="w-full p-2.5 bg-[#F7F9FC] border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none"
+                >
+                  <option value="">-- Choose Canonical Target Society --</option>
+                  {societies.filter(s => s.id !== mergeSourceSociety.id).map(s => (
+                    <option key={s.id} value={s.id}>
+                      {s.name} ({s.locality}, {s.city}) — UUID: {s.id}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <button
-                onClick={handleResetToPreSeeded}
-                className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1 font-sans"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Reset Data</span>
-              </button>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMergeSourceSociety(null)}
+                  className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold text-xs rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={!mergeTargetSocietyId}
+                  className="px-4 py-2 bg-blue-600 disabled:opacity-50 text-white font-semibold text-xs rounded-lg"
+                >
+                  Confirm Merge
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Audit Trail History */}
+      {historySociety && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white border border-[#E4E4E7] rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-bold text-slate-900 text-base">{historySociety.name} — Audit Trail</h3>
+                <div className="text-[10px] font-mono text-slate-400">UUID: {historySociety.id}</div>
+              </div>
+              <button onClick={() => setHistorySociety(null)} className="text-xs text-slate-400 hover:text-slate-700">✕</button>
             </div>
 
-            <div className="border border-slate-100 rounded-xl p-4 flex items-center justify-between bg-slate-50/50">
-              <div>
-                <span className="font-bold text-slate-800 text-xs block">Pre-seed Random Order</span>
-                <span className="text-[10px] text-slate-400 block mt-0.5">Creates a pending consultation on a random apartment block.</span>
-              </div>
-              <button
-                onClick={handleSimulateNewOrder}
-                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1 font-sans"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add Query</span>
-              </button>
+            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+              {(historySociety.history || []).map((h, i) => (
+                <div key={i} className="p-3 bg-[#F7F9FC] border border-slate-200 rounded-xl text-xs space-y-0.5">
+                  <div className="flex justify-between font-mono font-bold text-blue-600 text-[10px]">
+                    <span>{h.action}</span>
+                    <span>{new Date(h.timestamp).toLocaleDateString()}</span>
+                  </div>
+                  <p className="text-slate-700">{h.details}</p>
+                </div>
+              ))}
+              {(!historySociety.history || historySociety.history.length === 0) && (
+                <div className="p-4 text-center text-xs text-slate-400">No audit history entries recorded yet.</div>
+              )}
             </div>
-          </div>
 
-          <div className="pt-4 border-t border-slate-100">
-            <h5 className="font-bold text-slate-800 text-xs mb-2">Live Diagnostics Feed:</h5>
-            <div className="bg-slate-900 rounded-xl p-4 font-mono text-[10px] text-slate-300 space-y-1 select-none">
-              <p className="text-slate-500">[{new Date().toLocaleTimeString()}] System booted successfully.</p>
-              <p className="text-slate-500">[{new Date().toLocaleTimeString()}] Configured developer password protection: "BR1510"</p>
-              <p className="text-emerald-400">[{new Date().toLocaleTimeString()}] Pre-loaded resident expert catalog: {experts.length} active experts</p>
-              <p className="text-blue-400">[{new Date().toLocaleTimeString()}] Active role: "{activeRoleName()}"</p>
-              <p className="text-amber-400">[{new Date().toLocaleTimeString()}] Memory order database: {queries.length} listings</p>
+            <div className="pt-2 flex justify-end">
+              <button
+                onClick={() => setHistorySociety(null)}
+                className="px-4 py-2 bg-slate-900 text-white font-semibold text-xs rounded-lg"
+              >
+                Close Audit Log
+              </button>
             </div>
           </div>
         </div>

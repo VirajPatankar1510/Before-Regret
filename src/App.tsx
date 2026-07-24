@@ -1,1298 +1,624 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { ViewState, Society, ResidentKnowledgeProfile, TopicKnowledge, UnlockedPurchase } from './types';
+import { INITIAL_SOCIETIES } from './data/societies';
+import { INITIAL_EXPERTS, INITIAL_LOCALITIES } from './data';
+
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { HowItWorks } from './components/HowItWorks';
-import { DecisionJourneySections } from './components/DecisionJourneySections';
-import { ResidentProfile } from './components/ResidentProfile';
-import { AskQuestion } from './components/AskQuestion';
-import { Dashboards } from './components/Dashboards';
-import { Messaging } from './components/Messaging';
-import { Onboarding } from './components/Onboarding';
-import { Footer } from './components/Footer';
-import { AdminPanel } from './components/AdminPanel';
-import { LegalDisclaimer } from './components/LegalDisclaimer';
+import { WhyBeforeRegret } from './components/WhyBeforeRegret';
+import { SocietyView } from './components/SocietyView';
+import { ResidentProfileView } from './components/ResidentProfileView';
+import { TopicDetailModal } from './components/TopicDetailModal';
+import { ContributorWizard } from './components/ContributorWizard';
+import { ContributorLanding } from './components/ContributorLanding';
+import { UnlockModal } from './components/UnlockModal';
+import { KnowledgeLibrary } from './components/KnowledgeLibrary';
 import { TermsConditions } from './components/TermsConditions';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { RefundPolicy } from './components/RefundPolicy';
+import { LegalDisclaimer } from './components/LegalDisclaimer';
 import { ContactUs } from './components/ContactUs';
-import { RegretFiles, ARTICLES } from './components/RegretFiles';
-import { SocietyResidents } from './components/SocietyResidents';
-import { INITIAL_LOCALITIES, INITIAL_EXPERTS, INITIAL_REVIEWS } from './data';
-import { Neighborhood, ExpertProfile, DirectQuery, Review } from './types';
-import { Building, MapPin, Search, Sparkles, Filter, Award, ChevronRight } from 'lucide-react';
+import { AdminPanel } from './components/AdminPanel';
+import { Footer } from './components/Footer';
 import { useAuth } from './context/AuthContext';
-import { triggerTestPushNotification, registerServiceWorker } from './lib/notificationService';
-import { parseSlotTimeRange, isReminderTime, isSlotActive } from './utils/slotHelper';
 
-const normalizeQueries = (qs: DirectQuery[]): DirectQuery[] => {
-  return qs.map(q => {
-    if (q.packageOption === 'QUICK' && (!q.structuredQuestions || q.structuredQuestions.length === 0)) {
-      return {
-        ...q,
-        structuredQuestions: [
-          { id: 'q1', text: q.queryText && q.queryText !== 'Pending question entry after payment.' ? q.queryText : '', answer: q.answerText || '' }
-        ]
-      };
+import { Search, X, MapPin, ArrowRight } from 'lucide-react';
+
+export function App() {
+  const { user } = useAuth();
+  const [viewState, setViewState] = useState<ViewState>('HOME');
+  const [contributorMode, setContributorMode] = useState<'LANDING' | 'WIZARD'>('LANDING');
+  const [societies, setSocieties] = useState<Society[]>(INITIAL_SOCIETIES);
+
+  const [selectedSociety, setSelectedSociety] = useState<Society | null>(null);
+  const [selectedResidentProfile, setSelectedResidentProfile] = useState<ResidentKnowledgeProfile | null>(null);
+  
+  // Topic Detail Reader Modal
+  const [activeTopicModal, setActiveTopicModal] = useState<TopicKnowledge | null>(null);
+
+  // Unlock Checkout Modal
+  const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false);
+  const [unlockTargetProfile, setUnlockTargetProfile] = useState<ResidentKnowledgeProfile | null>(null);
+  const [unlockTargetTopic, setUnlockTargetTopic] = useState<TopicKnowledge | null>(null);
+
+  // Search Overlay Modal
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [globalSearchQuery, setGlobalSearchQuery] = useState('');
+
+  // Unlocked purchases state: profileId -> set of topicIds unlocked (or 'ALL' keyword)
+  const [unlockedPurchases, setUnlockedPurchases] = useState<UnlockedPurchase[]>([
+    {
+      id: 'purch-initial-1',
+      type: 'SINGLE_TOPIC',
+      societyId: 'lodha-amara',
+      societyName: 'Lodha Amara',
+      profileId: 'res-lodha-101',
+      topicId: 'parking',
+      unlockedAt: 'Today',
+      pricePaid: 129
     }
-    if (q.packageOption === 'BUNDLE' && (!q.structuredQuestions || q.structuredQuestions.length === 0)) {
-      if (q.id === 'q_mock_1') {
-        return {
-          ...q,
-          structuredQuestions: [
-            {
-              id: "q1",
-              text: "How is the water supply in Bimbisar Nagar during high summers?",
-              answer: "In Block C, water supply is limited to 2 hours in the morning (6 AM to 8 AM) during high summer (April-June). However, the society compensates with tanker water, which is managed well but adds around ₹500 extra to maintenance costs."
-            },
-            {
-              id: "q2",
-              text: "Are there restrictive society rules for bachelors?",
-              clarificationRequested: true,
-              clarificationQuestion: "Are you planning to share the flat with friends, or live alone? Also, do you own a vehicle?",
-              clarificationAnswer: "I'm sharing with 1 friend. We have 1 hatchback car."
-            },
-            {
-              id: "q3",
-              text: "Are late-night arrivals allowed easily for tenants?",
-              answer: ""
-            }
-          ]
-        };
-      }
-      return {
-        ...q,
-        structuredQuestions: [
-          { id: 'q1', text: q.queryText && q.queryText !== 'Pending question entry after payment.' ? q.queryText : '', answer: '' },
-          { id: 'q2', text: '', answer: '' },
-          { id: 'q3', text: '', answer: '' }
-        ]
-      };
+  ]);
+
+  // Helper to map state to URL path
+  const getUrlForState = (
+    view: ViewState,
+    soc: Society | null,
+    prof: ResidentKnowledgeProfile | null,
+    mode: 'LANDING' | 'WIZARD'
+  ): string => {
+    switch (view) {
+      case 'HOME':
+        return '/';
+      case 'SOCIETY':
+        return soc ? `/society/${soc.id}` : '/';
+      case 'RESIDENT_PROFILE':
+        return prof ? `/society/${prof.societyId}/resident/${prof.id}` : (soc ? `/society/${soc.id}` : '/');
+      case 'LIBRARY':
+        return '/library';
+      case 'CONTRIBUTOR_FLOW':
+        return mode === 'WIZARD' ? '/contributor-registration' : '/contributor';
+      case 'TERMS':
+        return '/terms-and-conditions';
+      case 'PRIVACY':
+        return '/privacy-policy';
+      case 'REFUND':
+        return '/refund-policy';
+      case 'DISCLAIMER':
+        return '/legal-disclaimer';
+      case 'CONTACT':
+        return '/contact-us';
+      case 'ADMIN':
+        return '/admin';
+      default:
+        return '/';
     }
-    return q;
-  });
-};
-
-export default function App() {
-  const { user, activeRole, setActiveRole, setExpertProfile, expertProfile } = useAuth();
-
-  // Register background Service Worker for closed-tab notification polling
-  useEffect(() => {
-    if (user && user.uid) {
-      registerServiceWorker(user.uid).catch((err) => console.error("SW Register error:", err));
-    }
-  }, [user]);
-
-  // Navigation & Simulation Perspective State
-  const [currentView, setView] = useState<string>('home'); // home, explore, profile, ask, dashboard, messaging, become_expert, legal_disclaimer, terms_conditions, privacy_policy, refund_policy, contact_us
-  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
-  const [highlightSearch, setHighlightSearch] = useState(false);
-
-  const handleScrollToSearch = () => {
-    setView('home'); // Ensure we are on home view
-    
-    // Defer execution slightly to make sure the view is fully home and the DOM is updated
-    setTimeout(() => {
-      const searchBox = document.getElementById('hero-search');
-      const searchInput = document.getElementById('hero-search-input');
-      
-      if (searchBox) {
-        searchBox.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-      }
-      
-      if (searchInput) {
-        searchInput.focus();
-      }
-      
-      setHighlightSearch(true);
-    }, 50);
   };
 
-  // Helper to open a specific standalone policy page
-  const handleNavigateToPolicy = (tab: 'terms' | 'privacy' | 'refunds' | 'contact' | 'disclaimer') => {
-    if (tab === 'disclaimer') setView('legal_disclaimer');
-    else if (tab === 'terms') setView('terms_conditions');
-    else if (tab === 'privacy') setView('privacy_policy');
-    else if (tab === 'refunds') setView('refund_policy');
-    else if (tab === 'contact') setView('contact_us');
-    window.scrollTo(0, 0);
-  };
+  // Helper to parse URL path to application state
+  const parsePathToState = useCallback((pathname: string) => {
+    const rawPath = pathname.split('?')[0].split('#')[0];
+    const cleanPath = rawPath.replace(/\/$/, '') || '/';
 
-  // Core Database Collections State
-  const [localities, setLocalities] = useState<Neighborhood[]>(() => {
-    const saved = localStorage.getItem('br_localities');
-    return saved ? JSON.parse(saved) : INITIAL_LOCALITIES;
-  });
-  const [experts, setExperts] = useState<ExpertProfile[]>(() => {
-    const saved = localStorage.getItem('br_experts');
-    return saved ? JSON.parse(saved) : INITIAL_EXPERTS;
-  });
-  const [reviews, setReviews] = useState<Review[]>(() => {
-    const saved = localStorage.getItem('br_reviews');
-    return saved ? JSON.parse(saved) : INITIAL_REVIEWS;
-  });
-  const [queries, setQueries] = useState<DirectQuery[]>(() => {
-    const saved = localStorage.getItem('br_queries');
-    if (saved) return normalizeQueries(JSON.parse(saved));
-    return normalizeQueries([
-      {
-        id: 'q_mock_1',
-        buyerId: 'mock_buyer_amit',
-        buyerName: 'Amit Kumar',
-        expertId: 'exp_priya',
-        expertName: 'Priya',
-        localityId: 'loc_bimbisar_nagar',
-        localityName: 'Bimbisar Nagar, Jogeshwari',
-        queryText: "Hello Priya, I'm planning to rent a flat in Block C next month. How is the water supply during high summers? Also, are there restrictive society rules for bachelors or late-night arrivals? Thank you!",
-        status: 'ACCEPTED',
-        pricePaid: 199,
-        expertEarnings: 179,
-        createdAt: '2026-07-10T12:00:00Z',
-        packageOption: 'BUNDLE'
+    if (cleanPath === '/' || cleanPath === '') {
+      return { view: 'HOME' as ViewState };
+    }
+    if (cleanPath === '/library') {
+      return { view: 'LIBRARY' as ViewState };
+    }
+    if (cleanPath === '/contributor-registration' || cleanPath.startsWith('/contributor-registration')) {
+      return { view: 'CONTRIBUTOR_FLOW' as ViewState, contributorMode: 'WIZARD' as const };
+    }
+    if (cleanPath === '/contributor' || cleanPath.startsWith('/contributor') || cleanPath === '/become-expert') {
+      return { view: 'CONTRIBUTOR_FLOW' as ViewState, contributorMode: 'LANDING' as const };
+    }
+    if (cleanPath === '/terms-and-conditions' || cleanPath === '/terms') {
+      return { view: 'TERMS' as ViewState };
+    }
+    if (cleanPath === '/privacy-policy' || cleanPath === '/privacy') {
+      return { view: 'PRIVACY' as ViewState };
+    }
+    if (cleanPath === '/refund-policy' || cleanPath === '/refund') {
+      return { view: 'REFUND' as ViewState };
+    }
+    if (cleanPath === '/legal-disclaimer' || cleanPath === '/disclaimer') {
+      return { view: 'DISCLAIMER' as ViewState };
+    }
+    if (cleanPath === '/contact-us' || cleanPath === '/contact') {
+      return { view: 'CONTACT' as ViewState };
+    }
+    if (cleanPath === '/admin') {
+      return { view: 'ADMIN' as ViewState };
+    }
+
+    // Match resident profile: /society/:socId/resident/:profId OR /resident/:profId
+    const residentMatch = cleanPath.match(/(?:\/society\/([^/]+))?\/resident\/([^/]+)$/);
+    if (residentMatch) {
+      const profId = residentMatch[2];
+      for (const soc of societies) {
+        const foundProf = soc.profiles.find(p => p.id === profId);
+        if (foundProf) {
+          return { view: 'RESIDENT_PROFILE' as ViewState, society: soc, profile: foundProf };
+        }
       }
-    ]);
-  });
+    }
 
-  // Selected entities for detailed views
-  const [selectedExpert, setSelectedExpert] = useState<ExpertProfile | null>(null);
-  const [selectedLocality, setSelectedLocality] = useState<Neighborhood | null>(null);
-  const [selectedPackageId, setSelectedPackageId] = useState<'QUICK' | 'BUNDLE' | 'LIVE_CHAT'>('QUICK');
-  const [activeQuery, setActiveQuery] = useState<DirectQuery | null>(null);
-  const [messagingBackView, setMessagingBackView] = useState<string>('');
-
-  // User list saves
-  const [savedExpertIds, setSavedExpertIds] = useState<string[]>(['exp_priya']);
-
-  // Live Chat scheduling, reminder & bypass states
-  const [notifiedQueries, setNotifiedQueries] = useState<string[]>([]);
-  const [bypassOpenQueries, setBypassOpenQueries] = useState<string[]>([]);
-  const [activeReminders, setActiveReminders] = useState<{ id: string; message: string; submessage: string; query: DirectQuery }[]>([]);
-
-  // Search input focus ref
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
-
-  // Automatically scroll to top on any view transition
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [currentView]);
-
-  // Poll for upcoming Live Chat sessions (15-min reminder trigger)
-  useEffect(() => {
-    const checkLiveChatSchedules = () => {
-      queries.forEach((q) => {
-        if (q.packageOption === 'LIVE_CHAT' && q.status === 'ACCEPTED' && q.bookedSlot) {
-          if (isReminderTime(q.bookedSlot) && !notifiedQueries.includes(q.id)) {
-            // Trigger push notifications
-            triggerTestPushNotification(
-              q.expertId,
-              'Live Chat Starts in 15 mins! ⏰',
-              `Reminder: Your 20-min live consultation slot "${q.bookedSlot}" with buyer ${q.buyerName} starts in 15 minutes!`,
-              'dashboard'
-            ).catch(err => console.error('Expert slot remind failed:', err));
-
-            triggerTestPushNotification(
-              q.buyerId,
-              'Live Chat Starts in 15 mins! ⏰',
-              `Reminder: Your 20-min live consultation slot "${q.bookedSlot}" with expert ${q.expertName} starts in 15 minutes!`,
-              'dashboard'
-            ).catch(err => console.error('Buyer slot remind failed:', err));
-
-            // Add to notified query list
-            setNotifiedQueries((prev) => [...prev, q.id]);
-
-            // Add a beautiful floating toast reminder in-app
-            setActiveReminders((prev) => [
-              ...prev,
-              {
-                id: `remind_${q.id}_${Date.now()}`,
-                message: `🔔 Live Chat Reminder (15 Mins Before Slot)`,
-                submessage: `Your live consultation session for ${q.localityName} is scheduled to start soon! Slot: ${q.bookedSlot}. Notification sent to both Expert (${q.expertName}) and Buyer (${q.buyerName}).`,
-                query: q,
-              },
-            ]);
-          }
-        }
-      });
-    };
-
-    // Run immediately and then poll every 10 seconds
-    checkLiveChatSchedules();
-    const interval = setInterval(checkLiveChatSchedules, 10000);
-    return () => clearInterval(interval);
-  }, [queries, notifiedQueries]);
-
-  // Track if initial server-side load has completed to avoid overwriting database
-  const [hasLoadedFromServer, setHasLoadedFromServer] = useState(false);
-
-  // Track if we are currently performing an explicit write to avoid background poll race conditions
-  const isSyncingRef = useRef(false);
-
-  // Load and poll from server database for real-time synchronization
-  useEffect(() => {
-    let isMounted = true;
-    const loadAndPollServerData = async () => {
-      try {
-        const [locRes, expRes, revRes, qRes] = await Promise.all([
-          fetch('/api/localities'),
-          fetch('/api/experts'),
-          fetch('/api/reviews'),
-          fetch('/api/queries')
-        ]);
-        
-        if (!isMounted) return;
-
-        // Skip updating local state from poll response if we are in the middle of a local write transaction
-        if (isSyncingRef.current) return;
-
-        if (locRes.ok) {
-          const lData = await locRes.json();
-          setLocalities((prev) => {
-            if (JSON.stringify(prev) !== JSON.stringify(lData)) {
-              return lData;
-            }
-            return prev;
-          });
-        }
-        if (expRes.ok) {
-          const eData = await expRes.json();
-          setExperts((prev) => {
-            if (JSON.stringify(prev) !== JSON.stringify(eData)) {
-              return eData;
-            }
-            return prev;
-          });
-        }
-        if (revRes.ok) {
-          const rData = await revRes.json();
-          setReviews((prev) => {
-            if (JSON.stringify(prev) !== JSON.stringify(rData)) {
-              return rData;
-            }
-            return prev;
-          });
-        }
-        if (qRes.ok) {
-          const qData = await qRes.json();
-          const normalized = normalizeQueries(qData);
-          setQueries((prev) => {
-            if (JSON.stringify(prev) !== JSON.stringify(normalized)) {
-              return normalized;
-            }
-            return prev;
-          });
-        }
-        setHasLoadedFromServer(true);
-      } catch (err) {
-        console.error("Failed to fetch or sync server database:", err);
-        setHasLoadedFromServer(true);
+    // Match society: /society/:socId OR /locality/:socId OR /explore/:socId
+    const societyMatch = cleanPath.match(/^\/(?:society|locality|explore|city)\/([^/]+)$/);
+    if (societyMatch) {
+      const socId = societyMatch[1];
+      const foundSoc = societies.find(s => 
+        s.id === socId || 
+        s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') === socId ||
+        s.city.toLowerCase() === socId.toLowerCase()
+      );
+      if (foundSoc) {
+        return { view: 'SOCIETY' as ViewState, society: foundSoc };
       }
-    };
-
-    // Run first fetch immediately
-    loadAndPollServerData();
-
-    // Set up 4-second poll interval for real-time UI updates
-    const interval = setInterval(loadAndPollServerData, 4000);
-
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, []);
-
-  // Sync state collections to local storage and server
-  useEffect(() => {
-    localStorage.setItem('br_localities', JSON.stringify(localities));
-    if (hasLoadedFromServer) {
-      isSyncingRef.current = true;
-      fetch('/api/data/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ localities })
-      })
-      .then(() => {
-        setTimeout(() => { isSyncingRef.current = false; }, 800);
-      })
-      .catch(err => {
-        console.error("Locality server sync error:", err);
-        isSyncingRef.current = false;
-      });
     }
-  }, [localities, hasLoadedFromServer]);
 
-  useEffect(() => {
-    localStorage.setItem('br_experts', JSON.stringify(experts));
-    if (hasLoadedFromServer) {
-      isSyncingRef.current = true;
-      fetch('/api/data/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ experts })
-      })
-      .then(() => {
-        setTimeout(() => { isSyncingRef.current = false; }, 800);
-      })
-      .catch(err => {
-        console.error("Experts server sync error:", err);
-        isSyncingRef.current = false;
-      });
-    }
-  }, [experts, hasLoadedFromServer]);
+    return { view: 'HOME' as ViewState };
+  }, [societies]);
 
+  const parsePathToStateRef = useRef(parsePathToState);
   useEffect(() => {
-    localStorage.setItem('br_reviews', JSON.stringify(reviews));
-    if (hasLoadedFromServer) {
-      isSyncingRef.current = true;
-      fetch('/api/data/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reviews })
-      })
-      .then(() => {
-        setTimeout(() => { isSyncingRef.current = false; }, 800);
-      })
-      .catch(err => {
-        console.error("Reviews server sync error:", err);
-        isSyncingRef.current = false;
-      });
-    }
-  }, [reviews, hasLoadedFromServer]);
+    parsePathToStateRef.current = parsePathToState;
+  }, [parsePathToState]);
 
+  // Initial routing on mount and popstate handling
   useEffect(() => {
-    localStorage.setItem('br_queries', JSON.stringify(queries));
-    if (hasLoadedFromServer) {
-      isSyncingRef.current = true;
-      fetch('/api/data/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ queries })
-      })
-      .then(() => {
-        setTimeout(() => { isSyncingRef.current = false; }, 800);
-      })
-      .catch(err => {
-        console.error("Queries server sync error:", err);
-        isSyncingRef.current = false;
-      });
-    }
-  }, [queries, hasLoadedFromServer]);
+    const route = parsePathToStateRef.current(window.location.pathname);
+    setViewState(route.view);
+    if (route.society) setSelectedSociety(route.society);
+    if (route.profile) setSelectedResidentProfile(route.profile);
+    if (route.contributorMode) setContributorMode(route.contributorMode);
 
-  // Handle popstate (browser back/forward or direct landing on URL)
-  useEffect(() => {
     const handlePopState = () => {
-      const path = window.location.pathname;
-      const p = path.replace(/\/$/, '') || '/';
-
-      if (p === '/') {
-        setView('home');
-        setSelectedArticleId(null);
-        setSelectedExpert(null);
-        setSelectedLocality(null);
-      } else if (p === '/explore' || p === '/societies') {
-        setView('explore');
-        setSelectedArticleId(null);
-      } else if (p === '/become-resident') {
-        setView('become_expert');
-        setSelectedArticleId(null);
-      } else if (p === '/disclaimer' || p === '/legal-disclaimer') {
-        setView('legal_disclaimer');
-        setSelectedArticleId(null);
-      } else if (p === '/terms' || p === '/terms-and-conditions') {
-        setView('terms_conditions');
-        setSelectedArticleId(null);
-      } else if (p === '/privacy' || p === '/privacy-policy') {
-        setView('privacy_policy');
-        setSelectedArticleId(null);
-      } else if (p === '/refunds' || p === '/refund-policy') {
-        setView('refund_policy');
-        setSelectedArticleId(null);
-      } else if (p === '/contact' || p === '/contact-us') {
-        setView('contact_us');
-        setSelectedArticleId(null);
-      } else if (p === '/policies' || p.startsWith('/policies/')) {
-        // Fallback or legacy paths map cleanly
-        const parts = p.split('/');
-        const tab = parts[2] as 'terms' | 'privacy' | 'refunds' | 'contact' | 'disclaimer';
-        if (tab === 'disclaimer') setView('legal_disclaimer');
-        else if (tab === 'terms') setView('terms_conditions');
-        else if (tab === 'privacy') setView('privacy_policy');
-        else if (tab === 'refunds') setView('refund_policy');
-        else if (tab === 'contact') setView('contact_us');
-        else setView('legal_disclaimer');
-        setSelectedArticleId(null);
-      } else if (p === '/dashboard' || p === '/dashboard/buyer' || p === '/dashboard/expert') {
-        setView('dashboard');
-        setSelectedArticleId(null);
-      } else if (p === '/admin') {
-        setView('admin_panel');
-        setSelectedArticleId(null);
-      } else if (p === '/stories' || p === '/regret-files') {
-        setView('regret_files');
-        setSelectedArticleId(null);
-      } else if (p.startsWith('/stories/') || p.startsWith('/regret-files/')) {
-        const parts = p.split('/');
-        const storyId = parts[2];
-        setView('regret_files');
-        setSelectedArticleId(storyId);
-      } else if (p.startsWith('/resident/')) {
-        const parts = p.split('/');
-        const residentId = parts[2];
-        const isAsk = parts[3] === 'ask';
-        // map res_ to exp_ internally to match database IDs if needed
-        const cleanId = residentId.replace(/^res_/, 'exp_');
-        const expert = experts.find(e => e.id === residentId || e.id === cleanId);
-        if (expert) {
-          const loc = localities.find(l => l.id === expert.localityId) || localities[0];
-          setSelectedExpert(expert);
-          setSelectedLocality(loc);
-          setView(isAsk ? 'ask_question' : 'profile');
-        } else {
-          setView('home');
-        }
-      } else if (p.startsWith('/locality/')) {
-        const parts = p.split('/');
-        const locId = parts[2];
-        const loc = localities.find(l => l.id === locId);
-        if (loc) {
-          setSelectedLocality(loc);
-          const matchedExperts = experts.filter((e) => e.localityId === loc.id);
-          if (matchedExperts.length > 1) {
-            setView('society_residents');
-          } else if (matchedExperts.length === 1) {
-            setSelectedExpert(matchedExperts[0]);
-            setView('profile');
-          } else {
-            setView('explore');
-          }
-        } else {
-          setView('explore');
-        }
-      } else if (p.startsWith('/city/')) {
-        const parts = p.split('/');
-        const cityName = parts[2];
-        setView('explore');
-        const foundLoc = localities.find(l => l.city.toLowerCase() === cityName.toLowerCase());
-        if (foundLoc) {
-          setSelectedLocality(foundLoc);
-        } else {
-          setSelectedLocality(null);
-        }
-      }
+      const r = parsePathToStateRef.current(window.location.pathname);
+      setViewState(r.view);
+      if (r.society) setSelectedSociety(r.society);
+      if (r.profile) setSelectedResidentProfile(r.profile);
+      if (r.contributorMode) setContributorMode(r.contributorMode);
     };
-
-    // Run initial sync on mount
-    handlePopState();
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [localities, experts]);
+  }, []);
 
-  // Synchronize browser URL history whenever view, story, expert or query changes
+  // Auto-transition to WIZARD mode (form) when user is authenticated during CONTRIBUTOR_FLOW
   useEffect(() => {
-    const currentPath = window.location.pathname;
-    let targetPath = '/';
-
-    if (currentView === 'home') {
-      targetPath = '/';
-    } else if (currentView === 'explore') {
-      targetPath = '/explore';
-    } else if (currentView === 'society_residents' && selectedLocality) {
-      targetPath = `/locality/${selectedLocality.id}`;
-    } else if (currentView === 'regret_files') {
-      targetPath = selectedArticleId ? `/stories/${selectedArticleId}` : '/stories';
-    } else if (currentView === 'profile' && selectedExpert) {
-      const displayId = selectedExpert.id.replace(/^exp_/, 'res_');
-      targetPath = `/resident/${displayId}`;
-    } else if (currentView === 'ask_question' && selectedExpert) {
-      const displayId = selectedExpert.id.replace(/^exp_/, 'res_');
-      targetPath = `/resident/${displayId}/ask`;
-    } else if (currentView === 'become_expert') {
-      targetPath = '/become-resident';
-    } else if (currentView === 'legal_disclaimer') {
-      targetPath = '/legal-disclaimer';
-    } else if (currentView === 'terms_conditions') {
-      targetPath = '/terms-and-conditions';
-    } else if (currentView === 'privacy_policy') {
-      targetPath = '/privacy-policy';
-    } else if (currentView === 'refund_policy') {
-      targetPath = '/refund-policy';
-    } else if (currentView === 'contact_us') {
-      targetPath = '/contact-us';
-    } else if (currentView === 'dashboard') {
-      targetPath = '/dashboard';
-    } else if (currentView === 'messaging' && activeQuery) {
-      targetPath = `/messaging/${activeQuery.id}`;
-    } else if (currentView === 'admin_panel') {
-      targetPath = '/admin';
+    if (user && viewState === 'CONTRIBUTOR_FLOW' && contributorMode === 'LANDING') {
+      setContributorMode('WIZARD');
     }
+  }, [user, viewState, contributorMode]);
 
-    if (currentPath !== targetPath) {
-      try {
-        window.history.pushState(null, '', targetPath);
-      } catch (err) {
-        console.warn("Could not update browser history path via pushState:", err);
-      }
-    }
-  }, [currentView, selectedArticleId, selectedExpert?.id, activeQuery?.id]);
-
-  // Update page title & meta elements dynamically for premium SEO crawlability
+  // Synchronize URL and SEO metadata whenever state changes
   useEffect(() => {
-    try {
-      let title = "BeforeRegret | Resident Insider Consultations for Gated Societies";
-      let description = "Read real, anonymous gated society confessions, water issues, power cut histories, and contact long-term residents directly before renting or buying a home in India.";
-
-      if (currentView === 'explore') {
-        title = "Explore Gated Societies in India | BeforeRegret Residential Directory";
-        description = "Browse premium apartments and housing societies in Bangalore, Mumbai, Gurugram, Thane. Filter water dependencies and rules.";
-      } else if (currentView === 'regret_files') {
-        if (selectedArticleId) {
-          const art = ARTICLES.find(a => a.id === selectedArticleId);
-          if (art) {
-            title = `${art.title} | BeforeRegret Stories`;
-            description = art.excerpt;
-          } else {
-            title = "Gated Society Cautionary Tales & Confessions | The Regret Files";
-          }
-        } else {
-          title = "The Regret Files Editorial | Real Gated Society Cautionary Tales";
-          description = "Read unvarnished confessions and hard lessons from home buyers who regretted their ₹1 Crore+ purchases before checking utilities and resident reviews.";
-        }
-      } else if (currentView === 'profile' && selectedExpert) {
-        title = `Consult ${selectedExpert.fullName} - ${selectedExpert.localityName} Resident Expert`;
-        description = `Ask ${selectedExpert.fullName} about water hardness, power back-up, committee rules, and maid charges in ${selectedExpert.localityName} before you decide.`;
-      } else if (currentView === 'become_expert') {
-        title = "Earn as a Local Resident Expert | BeforeRegret Onboarding";
-        description = "Help prospective buyers and tenants make informed decisions about your society. Share honest reviews and earn per consultation.";
-      } else if (currentView === 'legal_disclaimer') {
-        title = "Comprehensive Legal Disclaimer & Waiver of Liability | BeforeRegret";
-        description = "Review the BeforeRegret legal disclaimer and liability waiver covering crowdsourced resident feedback and Indian property laws.";
-      } else if (currentView === 'terms_conditions') {
-        title = "Terms of Service & Platform Guidelines | BeforeRegret";
-        description = "Read our standard user agreement, code of conduct, intermediary safe harbor conditions, and binding arbitration details.";
-      } else if (currentView === 'privacy_policy') {
-        title = "Privacy Policy & Resident Anonymity Statement | BeforeRegret";
-        description = "We protect our local experts and seeker identities with end-to-end masked databases. Read our comprehensive data privacy standard.";
-      } else if (currentView === 'refund_policy') {
-        title = "Refund and Cancellation Policy | BeforeRegret";
-        description = "Learn about our 100% moneyback guarantee on peer consultation bookings if the resident expert fails to connect within 48 hours.";
-      } else if (currentView === 'contact_us') {
-        title = "Official Contact & Support desk | BeforeRegret";
-        description = "Get in touch with Atmostellar regarding billing, corporate partnership, grievance redressal, or RWA complaints.";
-      } else if (currentView === 'dashboard') {
-        title = "My Dashboard | BeforeRegret";
-      }
-
-      document.title = title;
-
-      // Update meta description safely without querySelector attribute selectors
-      const metaElements = Array.from(document.getElementsByTagName('meta'));
-      let metaDesc = metaElements.find(m => m.getAttribute('name') === 'description');
-      if (!metaDesc) {
-        metaDesc = document.createElement('meta');
-        metaDesc.setAttribute('name', 'description');
-        document.head.appendChild(metaDesc);
-      }
-      metaDesc.setAttribute('content', description);
-
-      // Update OpenGraph meta tags safely (colons in selectors can throw in some iframe/webview sandboxes)
-      let ogTitle = metaElements.find(m => m.getAttribute('property') === 'og:title');
-      if (!ogTitle) {
-        ogTitle = document.createElement('meta');
-        ogTitle.setAttribute('property', 'og:title');
-        document.head.appendChild(ogTitle);
-      }
-      ogTitle.setAttribute('content', title);
-
-      let ogDesc = metaElements.find(m => m.getAttribute('property') === 'og:description');
-      if (!ogDesc) {
-        ogDesc = document.createElement('meta');
-        ogDesc.setAttribute('property', 'og:description');
-        document.head.appendChild(ogDesc);
-      }
-      ogDesc.setAttribute('content', description);
-
-      // 1. Dynamic Canonical Link injection safely
-      const currentPath = window.location.pathname;
-      const linkElements = Array.from(document.getElementsByTagName('link'));
-      let canonical = linkElements.find(l => l.getAttribute('rel') === 'canonical');
-      if (!canonical) {
-        canonical = document.createElement('link');
-        canonical.setAttribute('rel', 'canonical');
-        document.head.appendChild(canonical);
-      }
-      canonical.setAttribute('href', `https://beforeregret.com${currentPath}`);
-
-      // 2. Structured Schema JSON-LD Data Injection (for visual rich results in Google Search)
-      let schemaScript = document.getElementById('jsonld-schema');
-      if (schemaScript) {
-        schemaScript.remove();
-      }
-
-      let schemaData: any = null;
-
-      if (currentView === 'regret_files' && selectedArticleId) {
-        const art = ARTICLES.find(a => a.id === selectedArticleId);
-        if (art) {
-          schemaData = {
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            "headline": art.title,
-            "description": art.excerpt,
-            "datePublished": "2026-07-14T12:00:00Z",
-            "author": {
-              "@type": "Person",
-              "name": art.author.name
-            },
-            "publisher": {
-              "@type": "Organization",
-              "name": "BeforeRegret",
-              "logo": {
-                "@type": "ImageObject",
-                "url": "https://beforeregret.com/favicon.svg"
-              }
-            }
-          };
-        }
-      } else if (currentView === 'profile' && selectedExpert) {
-        schemaData = {
-          "@context": "https://schema.org",
-          "@type": "ProfilePage",
-          "mainEntity": {
-            "@type": "Person",
-            "name": selectedExpert.fullName,
-            "description": selectedExpert.bio,
-            "jobTitle": "Gated Society Resident Expert",
-            "knowsAbout": selectedExpert.expertiseTags,
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": selectedExpert.localityName,
-              "addressRegion": selectedExpert.city,
-              "addressCountry": "IN"
-            }
-          }
-        };
-      }
-
-      if (schemaData) {
-        const script = document.createElement('script');
-        script.id = 'jsonld-schema';
-        script.type = 'application/ld+json';
-        script.innerHTML = JSON.stringify(schemaData);
-        document.head.appendChild(script);
-      }
-    } catch (err) {
-      console.warn("Dynamic SEO and meta tag update failed safely:", err);
+    const targetUrl = getUrlForState(viewState, selectedSociety, selectedResidentProfile, contributorMode);
+    if (window.location.pathname !== targetUrl) {
+      window.history.pushState({}, '', targetUrl);
     }
-  }, [currentView, selectedArticleId, selectedExpert]);
 
-  // Navigation handlers
-  const handleSelectExpert = (expert: ExpertProfile) => {
-    const loc = localities.find((l) => l.id === expert.localityId) || localities[0];
-    setSelectedExpert(expert);
-    setSelectedLocality(loc);
-    setView('profile');
-    window.scrollTo(0, 0);
+    // Dynamic SEO Title & Meta Tags for pSEO Indexability
+    let title = "Before Regret — Real Unfiltered Residential Insights";
+    let description = "Discover what residents wish they knew before buying or renting. Get real insights on water supply, maintenance, committee rules, and parking.";
+
+    if (viewState === 'SOCIETY' && selectedSociety) {
+      title = `${selectedSociety.name}, ${selectedSociety.locality}, ${selectedSociety.city} — Resident Insights | Before Regret`;
+      description = `Verified resident knowledge, water supply, parking, and maintenance reviews for ${selectedSociety.name} in ${selectedSociety.locality}, ${selectedSociety.city}.`;
+    } else if (viewState === 'RESIDENT_PROFILE' && selectedResidentProfile) {
+      title = `${selectedResidentProfile.residentType} Resident in ${selectedResidentProfile.societyName} (${selectedResidentProfile.yearsLiving} Yrs) | Before Regret`;
+      description = `Read verified insights from a ${selectedResidentProfile.yearsLiving}-year ${selectedResidentProfile.residentType.toLowerCase()} resident in ${selectedResidentProfile.societyName}, ${selectedResidentProfile.city}.`;
+    } else if (viewState === 'LIBRARY') {
+      title = "My Knowledge Library | Before Regret";
+      description = "Access your unlocked residential knowledge profiles and society insights.";
+    } else if (viewState === 'CONTRIBUTOR_FLOW') {
+      title = "Become a Resident Contributor | Before Regret";
+      description = "Share your living experience with home buyers and tenants. Help buyers make informed decisions and earn money.";
+    } else if (viewState === 'TERMS') {
+      title = "Terms & Conditions | Before Regret";
+      description = "Terms and conditions for using Before Regret residential knowledge platform.";
+    } else if (viewState === 'PRIVACY') {
+      title = "Privacy Policy | Before Regret";
+      description = "Privacy policy and data protection principles of Before Regret.";
+    } else if (viewState === 'REFUND') {
+      title = "Refund Policy | Before Regret";
+      description = "100% money back guarantee and buyer protection refund policy.";
+    } else if (viewState === 'DISCLAIMER') {
+      title = "Legal Disclaimer | Before Regret";
+      description = "Neutrality policy and legal disclaimer for resident reviews.";
+    } else if (viewState === 'CONTACT') {
+      title = "Contact Us | Before Regret";
+      description = "Get in touch with Before Regret support team.";
+    } else if (viewState === 'ADMIN') {
+      title = "Platform Admin | Before Regret";
+    }
+
+    document.title = title;
+
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', description);
+
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.setAttribute('href', window.location.origin + targetUrl);
+  }, [viewState, selectedSociety, selectedResidentProfile, contributorMode]);
+
+  const scrollToHeroSearch = () => {
+    if (viewState !== 'HOME') {
+      setViewState('HOME');
+    }
+    setTimeout(() => {
+      const searchContainer = document.getElementById('hero-search-container') || document.getElementById('hero-search-input');
+      if (searchContainer) {
+        searchContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      const input = document.getElementById('hero-search-input') as HTMLInputElement | null;
+      if (input) {
+        input.focus();
+      }
+      window.dispatchEvent(new CustomEvent('trigger-hero-search-glow'));
+    }, 100);
   };
 
-  const handleSelectLocality = (locality: Neighborhood) => {
-    setLocalities((prev) => {
-      const exists = prev.some((l) => l.id === locality.id);
-      if (!exists) {
-        return [locality, ...prev];
-      }
-      return prev;
-    });
-
-    setSelectedLocality(locality);
-    
-    // Find all matching experts, taking grouping into account
-    const matchedExperts = experts.filter((e) => {
-      if ((locality as any).isGrouped && (locality as any).groupedIds) {
-        return (locality as any).groupedIds.includes(e.localityId) || 
-               (locality as any).groupedNames.some((name: string) => e.localityName.toLowerCase().includes(name.toLowerCase()));
-      }
-      return e.localityId === locality.id || e.localityName.toLowerCase().includes(locality.name.toLowerCase());
-    });
-
-    if (matchedExperts.length > 1) {
-      setView('society_residents');
-      window.scrollTo(0, 0);
-    } else if (matchedExperts.length === 1) {
-      handleSelectExpert(matchedExperts[0]);
-    } else {
-      setView('explore');
-      window.scrollTo(0, 0);
-    }
-  };
-
-  const handleClearLocalityFilter = () => {
-    setSelectedLocality(null);
-  };
-
-  const handleToggleSaveExpert = (expertId: string) => {
-    if (savedExpertIds.includes(expertId)) {
-      setSavedExpertIds(savedExpertIds.filter((id) => id !== expertId));
-    } else {
-      setSavedExpertIds([...savedExpertIds, expertId]);
-    }
-  };
-
-  const handleUpdateExpert = (updated: ExpertProfile) => {
-    setExperts((prev) => prev.map((e) => e.id === updated.id ? updated : e));
-  };
-
-  // Submit new inquiry wizard
-  const handleSubmitQuestion = (
-    queryText: string, 
-    packageId: 'QUICK' | 'BUNDLE' | 'LIVE_CHAT', 
-    bookedSlot?: string,
-    structuredQuestions?: string[]
-  ) => {
-    if (!selectedExpert) return;
-
-    if (!user) {
-      alert("Error: You must be signed in to submit a question.");
-      return;
-    }
-
-    if (user && selectedExpert && user.uid === selectedExpert.userId) {
-      alert("Error: You cannot submit questions or consult on your own listing.");
-      return;
-    }
-
-    const newQuery: DirectQuery = {
-      id: `q_${Date.now()}`,
-      buyerId: user.uid,
-      buyerName: user.displayName || user.email || 'Anonymous',
-      expertId: selectedExpert.id,
-      expertName: selectedExpert.fullName,
-      localityId: selectedExpert.localityId,
-      localityName: selectedExpert.localityName,
-      queryText,
-      status: 'ACCEPTED', // Pre-accepted for high-fidelity simulation
-      pricePaid: 299,
-      expertEarnings: 220,
-      createdAt: new Date().toISOString(),
-      packageOption: packageId,
-      bookedSlot: bookedSlot,
-      structuredQuestions: undefined
-    };
-
-    setQueries([newQuery, ...queries]);
-    setView('dashboard');
-    window.scrollTo(0, 0);
-
-    // Trigger instant background push notification alert to the expert
-    triggerTestPushNotification(
-      selectedExpert.id,
-      'New Resident Audit Request! 📣',
-      `A buyer requested water and rule details for ${selectedExpert.localityName}: "${queryText.substring(0, 50)}..."`,
-      'dashboard'
-    ).catch(err => console.error('FCM dispatch failed:', err));
-  };
-
-  // Submit expert's final answer
-  const handleSubmitAnswer = (queryId: string, answerText: string) => {
-    const matchedQuery = queries.find((q) => q.id === queryId);
-
-    const updated = queries.map((q) => {
-      if (q.id === queryId) {
-        return {
-          ...q,
-          status: 'ANSWERED' as const,
-          answerText,
-          answeredAt: new Date().toISOString()
-        };
-      }
-      return q;
-    });
-    setQueries(updated);
-    setView('dashboard');
-    window.scrollTo(0, 0);
-
-    // Trigger instant background push notification alert to the buyer
-    if (matchedQuery) {
-      triggerTestPushNotification(
-        matchedQuery.buyerId,
-        'Resident Audit Completed! 🌟',
-        `Your resident report for ${matchedQuery.localityName} has been fully completed by local expert ${matchedQuery.expertName}!`,
-        'dashboard'
-      ).catch(err => console.error('FCM dispatch failed:', err));
-    }
-  };
-
-  // Star rating reviews submission
-  const handleLeaveReview = (query: DirectQuery) => {
-    if (!query || (query.status !== 'ANSWERED' && query.status !== 'COMPLETED')) {
-      alert('You can only leave a review after your consultation is complete.');
-      return;
-    }
-
-    const isOwner = !user || (user.uid === query.buyerId || query.buyerId === 'mock_buyer_amit' || query.buyerId === 'user_mock_buyer');
-    if (!isOwner) {
-      alert('Only the specific buyer who placed this chat order is permitted to leave a rating.');
-      return;
-    }
-
-    const ratingInput = prompt('Enter star rating (1 to 5):', '5');
-    const starRating = parseInt(ratingInput || '5');
-    if (isNaN(starRating) || starRating < 1 || starRating > 5) {
-      alert('Invalid rating stars.');
-      return;
-    }
-
-    const comment = prompt('Enter your feedback comment:', 'Amazing, direct insight into Bimbisar Nagar society water limitations! Highly recommend!');
-    if (!comment) return;
-
-    const newReview: Review = {
-      id: `rev_${Date.now()}`,
-      queryId: query.id,
-      buyerName: user ? (user.displayName || user.email || 'Anonymous') : 'Rohan Deshmukh',
-      buyerId: user ? user.uid : (query.buyerId || 'mock_buyer_amit'),
-      expertId: query.expertId,
-      rating: starRating,
-      comment,
-      createdAt: new Date().toISOString()
-    };
-
-    setReviews([newReview, ...reviews]);
-
-    // Set the query status as fully cleared
-    const updated = queries.map((q) => {
-      if (q.id === query.id) {
-        return { ...q, status: 'ANSWERED' as const };
-      }
-      return q;
-    });
-    setQueries(updated);
-    alert('Thank you! Your rating has been published successfully.');
-  };
-
-  const handleAddExpertFromOnboarding = (
-    newExpert: ExpertProfile,
-    newLocality?: Neighborhood,
-    secondaryLocality?: Neighborhood
-  ) => {
-    isSyncingRef.current = true;
-    setExperts([newExpert, ...experts]);
-    let updatedLocalities = [...localities];
-
-    const addOrUpdateLocality = (locObj: Neighborhood) => {
-      const exists = updatedLocalities.some(
-        loc => loc.id === locObj.id || loc.name.toLowerCase() === locObj.name.toLowerCase()
-      );
-      if (!exists) {
-        updatedLocalities = [...updatedLocalities, locObj];
-      } else {
-        updatedLocalities = updatedLocalities.map(loc => {
-          if (loc.id === locObj.id || loc.name.toLowerCase() === locObj.name.toLowerCase()) {
-            return {
-              ...loc,
-              expertCount: (loc.expertCount || 0) + 1,
-              landmarks: loc.landmarks || locObj.landmarks,
-              detailedAddress: loc.detailedAddress || locObj.detailedAddress
-            };
-          }
-          return loc;
-        });
+  // Keyboard shortcut ⌘K listener for search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        scrollToHeroSearch();
       }
     };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [viewState]);
 
-    if (newLocality) {
-      addOrUpdateLocality(newLocality);
-    }
-    if (secondaryLocality) {
-      addOrUpdateLocality(secondaryLocality);
-    }
-
-    setLocalities(updatedLocalities);
-    setActiveRole('expert');
-    setExpertProfile(newExpert);
+  const isProfileFullyUnlocked = (profileId: string) => {
+    return unlockedPurchases.some(p => p.profileId === profileId && p.type === 'FULL_PROFILE');
   };
 
-  const handleOpenChat = (query: DirectQuery) => {
-    setActiveQuery(query);
-    setMessagingBackView('dashboard');
-    setView('messaging');
-    window.scrollTo(0, 0);
+  const isTopicUnlocked = (profileId: string, topicId: string) => {
+    if (isProfileFullyUnlocked(profileId)) return true;
+    return unlockedPurchases.some(p => p.profileId === profileId && p.topicId === topicId);
   };
+
+  const handleOpenUnlockSingleTopic = (profile: ResidentKnowledgeProfile, topic: TopicKnowledge) => {
+    setUnlockTargetProfile(profile);
+    setUnlockTargetTopic(topic);
+    setIsUnlockModalOpen(true);
+  };
+
+  const handleOpenUnlockFullProfile = (profile: ResidentKnowledgeProfile) => {
+    setUnlockTargetProfile(profile);
+    setUnlockTargetTopic(null);
+    setIsUnlockModalOpen(true);
+  };
+
+  const handleUnlockTopicPromptFromSociety = (profile: ResidentKnowledgeProfile) => {
+    const firstLockedTopic = profile.topics.find(t => !isTopicUnlocked(profile.id, t.id)) || profile.topics[0];
+    handleOpenUnlockSingleTopic(profile, firstLockedTopic);
+  };
+
+  const handleConfirmPayment = (profileId: string, topicId?: string, pricePaid: number = 129) => {
+    if (!unlockTargetProfile) return;
+
+    const newPurchase: UnlockedPurchase = {
+      id: `purch-${Date.now()}`,
+      type: topicId ? 'SINGLE_TOPIC' : 'FULL_PROFILE',
+      societyId: unlockTargetProfile.societyId,
+      societyName: unlockTargetProfile.societyName,
+      profileId: profileId,
+      topicId: topicId,
+      unlockedAt: 'Just now',
+      pricePaid: pricePaid
+    };
+
+    setUnlockedPurchases(prev => [newPurchase, ...prev]);
+  };
+
+  const handleSelectSocietyAndNavigate = (society: Society) => {
+    setSelectedSociety(society);
+    setViewState('SOCIETY');
+    setIsSearchOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSelectResidentProfileAndNavigate = (profile: ResidentKnowledgeProfile) => {
+    setSelectedResidentProfile(profile);
+    setViewState('RESIDENT_PROFILE');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSearchFromHero = (query: string) => {
+    setGlobalSearchQuery(query);
+    setIsSearchOpen(true);
+  };
+
+  const handlePublishComplete = () => {
+    setViewState('HOME');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const searchFilteredSocieties = societies.filter(s =>
+    s.name.toLowerCase().includes(globalSearchQuery.toLowerCase()) ||
+    s.city.toLowerCase().includes(globalSearchQuery.toLowerCase()) ||
+    s.locality.toLowerCase().includes(globalSearchQuery.toLowerCase())
+  );
 
   return (
-    <div className="min-h-screen bg-white text-slate-800 flex flex-col selection:bg-blue-500 selection:text-white antialiased font-sans">
+    <div className="bg-[#F7F9FC] text-slate-900 font-sans min-h-screen flex flex-col selection:bg-blue-100 selection:text-blue-900">
       
-      {/* Navigation bar with dynamic simulation persona toggle */}
+      {/* Sticky Header Navbar */}
       <Navbar
-        currentView={currentView}
-        setView={setView}
-        activeRole={activeRole}
-        setActiveRole={setActiveRole}
-        onSearchFocus={() => {
-          if (searchInputRef.current) {
-            searchInputRef.current.focus();
+        currentView={viewState}
+        setView={(view) => {
+          setViewState(view);
+          if (view === 'CONTRIBUTOR_FLOW') {
+            const hasUser = user || localStorage.getItem('br_current_user');
+            setContributorMode(hasUser ? 'WIZARD' : 'LANDING');
           }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
+        unlockedCount={unlockedPurchases.length}
+        onOpenSearch={scrollToHeroSearch}
       />
 
-      {/* CORE VIEWPORT ROUTER */}
+      {/* Main View Switcher */}
       <main className="flex-1">
         
-        {/* VIEW: HOME VIEW (Default Hero, How It Works, and Featured list) */}
-        {currentView === 'home' && (
-          <div>
+        {/* VIEW 1: HOMEPAGE */}
+        {viewState === 'HOME' && (
+          <>
             <Hero
-              localities={localities}
-              experts={experts}
-              onSelectLocality={handleSelectLocality}
-              onBecomeExpertClick={() => setView('become_expert')}
-              onSearchFocusRef={searchInputRef}
-              highlightSearch={highlightSearch}
-              onHighlightDone={() => setHighlightSearch(false)}
+              onSearch={handleSearchFromHero}
+              onSelectSociety={handleSelectSocietyAndNavigate}
+              societies={societies}
+              onBecomeContributor={() => {
+                setViewState('CONTRIBUTOR_FLOW');
+                setContributorMode(user ? 'WIZARD' : 'LANDING');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
-            
+
             <HowItWorks />
 
-            <DecisionJourneySections setView={setView} onScrollToSearch={handleScrollToSearch} />
-          </div>
+            <WhyBeforeRegret
+              onSearchClick={scrollToHeroSearch}
+              onBecomeContributor={() => {
+                setViewState('CONTRIBUTOR_FLOW');
+                setContributorMode(user ? 'WIZARD' : 'LANDING');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          </>
         )}
 
-        {/* VIEW: SOCIETY RESIDENTS COLLECTION VIEW */}
-        {currentView === 'society_residents' && selectedLocality && (
-          <SocietyResidents
-            locality={selectedLocality}
-            experts={experts}
-            reviews={reviews}
-            onBack={() => setView('home')}
-            onSelectExpert={handleSelectExpert}
-          />
-        )}
-
-        {/* VIEW: EXPLORE VIEW (All Societies Directory layout) */}
-        {currentView === 'explore' && (
-          <div className="max-w-7xl mx-auto px-4 py-12">
-            <div className="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <h1 className="text-2xl sm:text-4xl font-display font-black text-slate-900 tracking-tight mt-3">
-                  Residential Apartments Directory
-                </h1>
-                <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-2xl font-medium">
-                  Browse Indian housing societies, apartment complexes, or sectors below. Click any layout to filter and consult active long-term residents living there.
-                </p>
-              </div>
-              {selectedLocality && (
-                <button
-                  onClick={handleClearLocalityFilter}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all self-center sm:self-auto cursor-pointer"
-                >
-                  Show All Societies
-                </button>
-              )}
-            </div>
-
-            {selectedLocality && (
-              <div className="mb-8 flex flex-col gap-6 lg:flex-row">
-                <div className="flex-1 p-5 bg-blue-50 border border-blue-100 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-blue-600 text-white rounded-xl shrink-0">
-                      <MapPin className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-sm">Showing map search result for:</h3>
-                      <p className="text-xs text-slate-600 font-medium mt-0.5">
-                        {selectedLocality.name}, {selectedLocality.city} {selectedLocality.pincode ? `- ${selectedLocality.pincode}` : ''}
-                      </p>
-                      {selectedLocality.apartmentName && (
-                        <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                          {selectedLocality.apartmentName}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  {selectedLocality.expertCount === 0 && (
-                    <button
-                      onClick={() => {
-                        if (expertProfile) {
-                          setView('dashboard');
-                        } else {
-                          setView('become_expert');
-                        }
-                      }}
-                      className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-sm cursor-pointer shrink-0"
-                    >
-                      {expertProfile ? 'My Resident Dashboard' : 'Be the First Expert Here!'}
-                    </button>
-                  )}
-                </div>
-                <div className="w-full lg:w-96 p-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 shadow-3xs flex flex-col justify-between shrink-0">
-                  <div>
-                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[9px] font-mono font-bold uppercase bg-blue-50 text-blue-700 border border-blue-100 mb-2">
-                      📍 Pincode Mapping
-                    </span>
-                    <h4 className="text-xs font-bold text-slate-800 flex items-center justify-between">
-                      <span>Pincode Map Range</span>
-                      <span className="font-mono text-blue-600 font-black">{selectedLocality.pincode || "Not Set"}</span>
-                    </h4>
-                    {selectedLocality.landmarks && (
-                      <p className="text-[11px] text-slate-600 mt-2 font-medium bg-white border border-slate-100 p-2 rounded-lg">
-                        <b>Landmark:</b> {selectedLocality.landmarks}
-                      </p>
-                    )}
-                    {selectedLocality.detailedAddress && (
-                      <p className="text-[10px] text-slate-400 mt-1.5 leading-tight font-mono">
-                        {selectedLocality.detailedAddress}
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-[10px] text-slate-400 italic pt-2 border-t border-slate-100 mt-2">
-                    Address coordinates mapping complete.
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {selectedLocality && selectedLocality.expertCount === 0 && (
-              <div className="mb-8 p-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl text-center max-w-2xl mx-auto">
-                <Building className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                <h3 className="font-display font-black text-slate-800 text-lg">No Resident Experts Registered Yet</h3>
-                <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-                  We successfully located <strong className="text-slate-700 font-bold">"{selectedLocality.name}"</strong> on the real-time live map, but no residents living there have signed up to give insider consultations yet.
-                </p>
-                <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-3">
-                  <button
-                    onClick={() => {
-                      if (expertProfile) {
-                        setView('dashboard');
-                      } else {
-                        setView('become_expert');
-                      }
-                    }}
-                    className="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-sm"
-                  >
-                    {expertProfile ? 'Go to My Dashboard' : 'I Live Here - Register & Earn'}
-                  </button>
-                  <button
-                    onClick={handleClearLocalityFilter}
-                    className="w-full sm:w-auto px-5 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer"
-                  >
-                    Browse Other Societies
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(selectedLocality ? localities.filter(l => l.id === selectedLocality.id) : localities).map((loc) => (
-                <div
-                  key={loc.id}
-                  onClick={() => handleSelectLocality(loc)}
-                  className="bg-white border-2 border-slate-100 rounded-2xl p-6 hover:border-blue-600 cursor-pointer transition-all hover:shadow-md flex flex-col justify-between group"
-                >
-                  <div>
-                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 inline-block text-slate-500 mb-4 group-hover:text-blue-600 transition-colors">
-                      <Building className="w-6 h-6" />
-                    </div>
-                    <h3 className="font-bold text-slate-800 text-base">{loc.name}</h3>
-                    <p className="text-xs text-slate-400 mt-1">{loc.society || 'Residential Layout'} • {loc.city}</p>
-                    
-                    <p className="text-xs text-slate-500 font-medium leading-relaxed mt-3 pt-3 border-t border-slate-50">
-                      Builder Developer: <strong className="text-slate-700 font-bold">{loc.builder || 'Local Association'}</strong>
-                    </p>
-                  </div>
-
-                  <div className="mt-6 flex items-center justify-between text-xs font-mono font-bold pt-3 border-t border-slate-50/50">
-                    <span className={`px-2.5 py-1 border rounded-full ${
-                      loc.expertCount > 0 
-                        ? 'text-emerald-600 bg-emerald-50 border-emerald-100' 
-                        : 'text-blue-600 bg-blue-50 border-blue-100'
-                    }`}>
-                      {loc.expertCount} {loc.expertCount === 1 ? 'Expert Listed' : 'Experts Listed'}
-                    </span>
-                    <span className="text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                      {loc.expertCount > 0 ? 'View Experts' : 'Join as Expert'} <ChevronRight className="w-4 h-4" />
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* VIEW: DETAILED PROFILE VIEW */}
-        {currentView === 'profile' && selectedExpert && (
-          <ResidentProfile
-            expert={selectedExpert}
-            locality={localities.find((l) => l.id === selectedExpert.localityId) || localities[0]}
-            reviews={reviews}
-            onBack={() => setView('home')}
-            onSelectPackage={setSelectedPackageId}
-            onStartInquiry={() => {
-              if (!user) {
-                alert("Please Sign In: To submit an inquiry, you must first create or sign in to your BeforeRegret account.");
-                return;
-              }
-              if (user && user.uid === selectedExpert.userId) {
-                return;
-              }
-              setView('ask_question');
-            }}
-            savedExperts={savedExpertIds}
-            onToggleSaveExpert={handleToggleSaveExpert}
-            currentUserUid={user?.uid}
-            allExperts={experts}
-            onSelectExpert={(exp) => {
-              setSelectedExpert(exp);
-              const loc = localities.find(l => l.id === exp.localityId) || localities[0];
-              setSelectedLocality(loc);
-              setView('profile');
+        {/* VIEW 2: SOCIETY PAGE */}
+        {viewState === 'SOCIETY' && selectedSociety && (
+          <SocietyView
+            society={selectedSociety}
+            onBack={() => {
+              setViewState('HOME');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onSubmitQuestion={handleSubmitQuestion}
-            queries={queries}
+            onSelectResidentProfile={handleSelectResidentProfileAndNavigate}
+            onUnlockProfile={handleOpenUnlockFullProfile}
+            onUnlockTopicPrompt={handleUnlockTopicPromptFromSociety}
+            isProfileFullyUnlocked={isProfileFullyUnlocked}
           />
         )}
 
-        {/* VIEW: ASK QUESTION STEP-BY-STEP PAGE */}
-        {currentView === 'ask_question' && selectedExpert && (
-          <AskQuestion
-            expert={selectedExpert}
-            locality={localities.find((l) => l.id === selectedExpert.localityId) || localities[0]}
-            selectedPackageId={selectedPackageId}
-            onBack={() => setView('profile')}
-            onSubmitQuestion={handleSubmitQuestion}
-            queries={queries}
-          />
-        )}
-
-        {/* VIEW: UNIFIED DASHBOARD VIEW */}
-        {currentView === 'dashboard' && (
-          <Dashboards
-            queries={queries}
-            reviews={reviews}
-            experts={experts}
-            localities={localities}
-            onAddLocality={(newLoc) => {
-              const exists = localities.some(loc => loc.id === newLoc.id || loc.name.toLowerCase() === newLoc.name.toLowerCase());
-              if (!exists) {
-                setLocalities([...localities, newLoc]);
-              }
-            }}
-            savedExpertIds={savedExpertIds}
-            activeQueryId={activeQuery ? activeQuery.id : null}
-            setActiveQueryId={() => {}}
-            onOpenChat={handleOpenChat}
-            onLeaveReview={handleLeaveReview}
-            setView={setView}
-            onUpdateExpert={handleUpdateExpert}
-          />
-        )}
-
-        {/* VIEW: SECURE MESSAGING CHATROOM VIEW */}
-        {currentView === 'messaging' && activeQuery && (
-          <Messaging
-            query={activeQuery}
+        {/* VIEW 3: RESIDENT KNOWLEDGE PROFILE PAGE */}
+        {viewState === 'RESIDENT_PROFILE' && selectedResidentProfile && (
+          <ResidentProfileView
+            profile={selectedResidentProfile}
             onBack={() => {
-              if (messagingBackView) {
-                setView(messagingBackView);
+              if (selectedSociety) {
+                setViewState('SOCIETY');
               } else {
-                setView('dashboard');
+                setViewState('HOME');
               }
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onSubmitAnswer={handleSubmitAnswer}
-            onUpdateQuery={(updatedQuery) => {
-              setQueries(prev => prev.map(q => q.id === updatedQuery.id ? updatedQuery : q));
-              setActiveQuery(updatedQuery);
-            }}
-            activeRole={activeRole === 'guest' ? 'buyer' : activeRole} // Default fallback to buyer
-            backText={messagingBackView === 'admin_panel' ? 'Back to Admin' : 'Exit Messaging'}
+            onUnlockTopic={handleOpenUnlockSingleTopic}
+            onUnlockAll={handleOpenUnlockFullProfile}
+            onOpenTopicModal={(topic) => setActiveTopicModal(topic)}
+            isTopicUnlocked={(profId, topId) => isTopicUnlocked(profId, topId)}
+            isFullyUnlocked={isProfileFullyUnlocked(selectedResidentProfile.id)}
           />
         )}
 
-        {/* VIEW: BECOME A LOCAL EXPERT FORM VIEW */}
-        {currentView === 'become_expert' && (
-          (() => {
-            const currentUserExperts = user ? experts.filter(e => e.userId === user.uid) : [];
-            if (currentUserExperts.length >= 2) {
-              return (
-                <div className="max-w-xl mx-auto my-12 p-8 bg-white border border-slate-200 rounded-3xl shadow-xs text-center space-y-6">
-                  <div className="inline-flex p-3 bg-red-50 text-red-600 rounded-2xl">
-                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                  </div>
-                  <h2 className="text-xl font-bold text-slate-950">Listing Limit Reached</h2>
-                  <p className="text-sm text-slate-500 leading-relaxed">
-                    To maintain the highest tier of authentic local trust, resident guides are limited to listing at most <strong>2 societies/areas</strong>. You have already submitted {currentUserExperts.length} listings.
-                  </p>
-                  <button
-                    onClick={() => setView('dashboard')}
-                    className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer"
-                  >
-                    Go to Dashboard
-                  </button>
-                </div>
-              );
-            }
-            return (
-              <Onboarding
-                localities={localities}
-                onAddExpert={handleAddExpertFromOnboarding}
-                setView={setView}
-              />
-            );
-          })()
+        {/* VIEW 4: CONTRIBUTOR LANDING & WIZARD FLOW */}
+        {viewState === 'CONTRIBUTOR_FLOW' && (
+          contributorMode === 'LANDING' ? (
+            <ContributorLanding
+              onStartAnswering={() => {
+                setContributorMode('WIZARD');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onBackToHome={() => {
+                setViewState('HOME');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          ) : (
+            <ContributorWizard
+              societies={societies}
+              onBack={() => {
+                setContributorMode('LANDING');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onBackToLanding={() => {
+                setContributorMode('LANDING');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onPublishComplete={handlePublishComplete}
+              onAddNewSociety={(newSoc) => setSocieties(prev => [newSoc, ...prev.filter(s => s.id !== newSoc.id)])}
+            />
+          )
         )}
 
-        {/* VIEW: ADMIN PANEL VIEW */}
-        {currentView === 'admin_panel' && (
+        {/* VIEW 5: UNLOCKED KNOWLEDGE LIBRARY */}
+        {viewState === 'LIBRARY' && (
+          <KnowledgeLibrary
+            purchases={unlockedPurchases}
+            societies={societies}
+            onBack={() => {
+              setViewState('HOME');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onSelectSociety={handleSelectSocietyAndNavigate}
+          />
+        )}
+
+        {/* VIEW 6: TERMS */}
+        {viewState === 'TERMS' && (
+          <TermsConditions onBackToHome={() => setViewState('HOME')} />
+        )}
+
+        {/* VIEW 7: PRIVACY */}
+        {viewState === 'PRIVACY' && (
+          <PrivacyPolicy onBackToHome={() => setViewState('HOME')} />
+        )}
+
+        {/* VIEW 8: REFUND */}
+        {viewState === 'REFUND' && (
+          <RefundPolicy onBackToHome={() => setViewState('HOME')} />
+        )}
+
+        {/* VIEW 9: DISCLAIMER */}
+        {viewState === 'DISCLAIMER' && (
+          <LegalDisclaimer onBackToHome={() => setViewState('HOME')} />
+        )}
+
+        {/* VIEW 10: CONTACT */}
+        {viewState === 'CONTACT' && (
+          <ContactUs onBackToHome={() => setViewState('HOME')} />
+        )}
+
+        {/* VIEW 11: ADMIN */}
+        {viewState === 'ADMIN' && (
           <AdminPanel
-            setView={setView}
-            activeRole={activeRole}
-            setActiveRole={setActiveRole}
-            queries={queries}
-            setQueries={setQueries}
-            experts={experts}
-            localities={localities}
-            onOpenQuery={(q) => {
-              setActiveQuery(q);
-              setMessagingBackView('admin_panel');
-              setView('messaging');
-              window.scrollTo(0, 0);
-            }}
-          />
-        )}
-
-        {/* VIEW: STANDALONE POLICY PAGES */}
-        {currentView === 'legal_disclaimer' && (
-          <LegalDisclaimer onBackToHome={() => setView('home')} />
-        )}
-        {currentView === 'terms_conditions' && (
-          <TermsConditions onBackToHome={() => setView('home')} />
-        )}
-        {currentView === 'privacy_policy' && (
-          <PrivacyPolicy onBackToHome={() => setView('home')} />
-        )}
-        {currentView === 'refund_policy' && (
-          <RefundPolicy onBackToHome={() => setView('home')} />
-        )}
-        {currentView === 'contact_us' && (
-          <ContactUs onBackToHome={() => setView('home')} />
-        )}
-
-        {/* VIEW: REGRET FILES EDITORIALS */}
-        {currentView === 'regret_files' && (
-          <RegretFiles 
-            onBackToHome={() => { setView('explore'); window.scrollTo(0, 0); }} 
-            selectedArticleId={selectedArticleId}
-            onSelectArticle={(id) => setSelectedArticleId(id)}
+            setView={setViewState}
+            activeRole="guest"
+            setActiveRole={() => {}}
+            queries={[]}
+            setQueries={() => {}}
+            experts={INITIAL_EXPERTS}
+            localities={INITIAL_LOCALITIES}
+            onOpenQuery={() => {}}
+            societies={societies}
+            setSocieties={setSocieties}
           />
         )}
 
       </main>
 
-      {/* Footer block */}
-      <Footer setView={setView} onNavigateToPolicy={handleNavigateToPolicy} />
+      {/* Global Footer */}
+      <Footer
+        setView={(view) => {
+          setViewState(view);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenSearch={scrollToHeroSearch}
+      />
+
+      {/* Topic Detail Reader Modal */}
+      <TopicDetailModal
+        topic={activeTopicModal}
+        onClose={() => setActiveTopicModal(null)}
+        societyName={selectedResidentProfile?.societyName || selectedSociety?.name || 'Society'}
+      />
+
+      {/* Unlock Checkout Modal */}
+      <UnlockModal
+        isOpen={isUnlockModalOpen}
+        onClose={() => setIsUnlockModalOpen(false)}
+        profile={unlockTargetProfile}
+        selectedTopic={unlockTargetTopic}
+        onConfirmPayment={handleConfirmPayment}
+      />
+
+      {/* Global Search Overlay Modal */}
+      {isSearchOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-slate-900/60 backdrop-blur-xs"
+          onClick={() => setIsSearchOpen(false)}
+        >
+          <div 
+            className="bg-white border border-[#E4E4E7] rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-[#E4E4E7] flex items-center gap-3">
+              <Search className="w-5 h-5 text-slate-400" />
+              <input
+                type="text"
+                value={globalSearchQuery}
+                onChange={(e) => setGlobalSearchQuery(e.target.value)}
+                placeholder="Search by society name, locality or city..."
+                autoFocus
+                className="w-full text-base bg-transparent focus:outline-none text-slate-900 placeholder:text-slate-400 font-sans"
+              />
+              <button
+                onClick={() => setIsSearchOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="max-h-96 overflow-y-auto p-2">
+              {searchFilteredSocieties.length > 0 ? (
+                searchFilteredSocieties.map((society) => (
+                  <div
+                    key={society.id}
+                    onClick={() => handleSelectSocietyAndNavigate(society)}
+                    className="p-4 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors flex items-center justify-between border-b border-slate-100 last:border-0"
+                  >
+                    <div className="space-y-0.5">
+                      <div className="font-bold text-slate-900 text-sm sm:text-base">
+                        {society.name}
+                      </div>
+                      <div className="text-xs text-slate-500 flex items-center gap-1.5 font-medium">
+                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                        <span>{society.locality}, {society.city}</span>
+                      </div>
+                    </div>
+
+                    <div className="text-right flex items-center gap-2">
+                      <span className="text-xs font-semibold text-[#2563EB] bg-blue-50 px-2.5 py-1 rounded-full">
+                        {society.residentProfilesCount} Resident Profiles
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-slate-400" />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="p-8 text-center text-sm text-slate-500">
+                  No societies found matching "{globalSearchQuery}".
+                </div>
+              )}
+            </div>
+            
+            <div className="p-3 bg-slate-50 border-t border-slate-100 text-[11px] font-sans text-slate-400 flex justify-between items-center">
+              <span>Press <kbd className="bg-slate-200 px-1 rounded text-slate-700">ESC</kbd> to close</span>
+              <span>Before Regret Residential Search</span>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
 }
+
+export default App;

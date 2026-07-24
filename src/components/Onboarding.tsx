@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { TOPICS_OF_EXPERTISE, MOCK_AVATARS } from '../data';
 import { ExpertProfile, Neighborhood, DayAvailability } from '../types';
-import { Sparkles, Check, ChevronRight, HelpCircle, Heart, ShieldCheck, RefreshCw, MapPin, Bell, Play, Volume2, ArrowRight, ChevronUp, ChevronDown, DollarSign, Zap, TrendingUp } from 'lucide-react';
+import { Sparkles, Check, ChevronRight, HelpCircle, Heart, ShieldCheck, RefreshCw, MapPin, Bell, Play, Volume2, ArrowRight, ArrowLeft, ChevronUp, ChevronDown, DollarSign, Zap, TrendingUp } from 'lucide-react';
 import { isPushSupported, requestAndSavePushToken, triggerTestPushNotification } from '../lib/notificationService';
 import { useAuth } from '../context/AuthContext';
 import { generateAvailableSlotsFromWeekly } from '../utils/slotHelper';
@@ -128,6 +128,33 @@ function formatTimeToAMPM(time24: string): string {
   return `${hrs}:${minsStr} ${ampm}`;
 }
 
+const BIO_TEMPLATES = [
+  "I've lived in {Society} for {Years} years and know that choosing a home involves much more than what you see during a property visit. I'm happy to share my personal experience to help you make a more informed decision.",
+  "Moving to a new neighbourhood is a big decision. Having lived in {Society} for {Years} years, I'd be glad to answer questions based on my own day-to-day experience.",
+  "Finding the right home shouldn't involve guesswork. I've lived in {Society} for {Years} years and hope my experience can help make your decision a little easier.",
+  "When I was looking for a home, I wished I could simply talk to someone who already lived there. That's exactly why I've joined BeforeRegret.",
+  "I believe local knowledge is most valuable when it's shared honestly. Having lived in {Society} for {Years} years, I'm happy to pass along what I've learned.",
+  "Living somewhere every day gives you a completely different perspective than visiting for an hour. I've lived in {Society} for {Years} years and I'm happy to share mine.",
+  "Every resident notices different things about where they live. I'm happy to share what I've personally experienced during my time in {Society}.",
+  "Every home search comes with unanswered questions. If my experience living in {Society} helps you feel more confident about your decision, then I'm glad to help."
+];
+
+function formatSocietyAndYears(template: string, societyName: string, years: string): string {
+  const soc = societyName.trim() || '[Society]';
+  let yearsStr = `${years} years`;
+  if (years === '0') {
+    yearsStr = 'less than 1 year';
+  } else if (years === '1') {
+    yearsStr = '1 year';
+  } else if (years === '50') {
+    yearsStr = '50+ years';
+  }
+  return template
+    .replace(/{Society}/g, soc)
+    .replace(/{Years}\s+years/g, yearsStr)
+    .replace(/{Years}/g, years === '50' ? '50+' : (years === '0' ? 'less than 1' : years));
+}
+
 export const Onboarding: React.FC<OnboardingProps> = ({
   localities,
   onAddExpert,
@@ -139,6 +166,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({
   const [calcChatCount, setCalcChatCount] = useState(2);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [bioTemplateIndex, setBioTemplateIndex] = useState(() => Math.floor(Math.random() * BIO_TEMPLATES.length));
+  const [hasRegenerated, setHasRegenerated] = useState(false);
+  const [yearsLiving, setYearsLiving] = useState('5');
   const [bio, setBio] = useState('');
   const [city, setCity] = useState('');
   const [pincode, setPincode] = useState('');
@@ -160,6 +190,35 @@ export const Onboarding: React.FC<OnboardingProps> = ({
       setUpiId(`${firstName.toLowerCase().replace(/[^a-z0-9]/g, '')}@okhdfcbank`);
     }
   }, [firstName]);
+
+  useEffect(() => {
+    if (!neighborhood.trim()) {
+      setBio('');
+      setHasRegenerated(false);
+    } else {
+      const template = BIO_TEMPLATES[bioTemplateIndex];
+      setBio(formatSocietyAndYears(template, neighborhood, yearsLiving));
+    }
+  }, [neighborhood, yearsLiving, bioTemplateIndex]);
+
+  const regenerateBio = () => {
+    setHasRegenerated(true);
+    setBioTemplateIndex((prevIndex) => {
+      if (BIO_TEMPLATES.length <= 1) return prevIndex;
+      let nextIndex = prevIndex;
+      while (nextIndex === prevIndex) {
+        nextIndex = Math.floor(Math.random() * BIO_TEMPLATES.length);
+      }
+      return nextIndex;
+    });
+  };
+
+  const previousBio = () => {
+    setBioTemplateIndex((prevIndex) => {
+      if (BIO_TEMPLATES.length <= 1) return prevIndex;
+      return (prevIndex - 1 + BIO_TEMPLATES.length) % BIO_TEMPLATES.length;
+    });
+  };
 
   useEffect(() => {
     const cleaned = pincode.trim();
@@ -291,8 +350,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({
 
     return list;
   }, [localities, neighborhood, city, pincode, landmarks, detailedAddress]);
-  const [yearsLiving, setYearsLiving] = useState('5');
   const [stillLivesThere, setStillLivesThere] = useState(true);
+  const [certifyResident, setCertifyResident] = useState(false);
+  const [certifyNotBroker, setCertifyNotBroker] = useState(false);
   const [ownerOrTenant, setOwnerOrTenant] = useState<'Owner' | 'Tenant'>('Owner');
   const [familyType, setFamilyType] = useState<'Single / Bachelor' | 'Couple' | 'Living with Family'>('Living with Family');
   const [workFromHome, setWorkFromHome] = useState(false);
@@ -1506,23 +1566,51 @@ export const Onboarding: React.FC<OnboardingProps> = ({
               5. Short Introduction Bio
             </h3>
             
-            <div className="space-y-2">
-              <textarea
-                rows={4}
-                required
-                placeholder="Explain what details you can share for prospective buyers (e.g. water tanker bills frequency, local maid rates, parking space guidelines, basement dampness, late-night safety, etc.). Provide specific honest insights."
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                className="w-full p-4 text-xs sm:text-sm border border-slate-200 focus:border-blue-600 rounded-xl outline-hidden leading-relaxed text-slate-800 placeholder:text-[10px] sm:placeholder:text-xs"
-              />
-              <span className="block text-[10px] text-slate-400 font-medium">Please compile a brief description of at least 30 characters.</span>
+            <div className="space-y-3 bg-slate-50 border border-slate-200/60 p-5 rounded-2xl">
+              <div className="relative">
+                <textarea
+                  rows={4}
+                  required
+                  readOnly
+                  placeholder="Bio will be auto-generated..."
+                  value={bio}
+                  className="w-full p-4 text-xs sm:text-sm border border-slate-200/80 bg-slate-100 text-slate-500 rounded-xl outline-hidden leading-relaxed shadow-3xs cursor-not-allowed resize-none"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-1 border-t border-slate-200/50">
+                {hasRegenerated && bio && (
+                  <button
+                    type="button"
+                    onClick={previousBio}
+                    title="Previous template style"
+                    className="inline-flex items-center justify-center p-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-lg shadow-3xs hover:shadow-2xs active:scale-98 transition-all cursor-pointer shrink-0 animate-fade-in"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={regenerateBio}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-800 text-[11px] font-bold rounded-lg shadow-3xs hover:shadow-2xs active:scale-98 transition-all cursor-pointer shrink-0"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Regenerate Bio</span>
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Verification terms */}
           <div className="space-y-3">
             <div className="bg-slate-50 rounded-2xl p-5 flex items-start gap-3.5 border border-slate-200/60 text-xs">
-              <input type="checkbox" required className="mt-1 h-4 w-4 text-blue-600 border-slate-200 rounded-md shrink-0 cursor-pointer" />
+              <input 
+                type="checkbox" 
+                required 
+                checked={certifyResident}
+                onChange={(e) => setCertifyResident(e.target.checked)}
+                className="mt-1 h-4 w-4 text-blue-600 border-slate-200 rounded-md shrink-0 cursor-pointer" 
+              />
               <div className="text-slate-500 text-left">
                 <h4 className="font-bold text-slate-800">
                   {stillLivesThere 
@@ -1536,7 +1624,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({
             </div>
 
             <div className="bg-slate-50 rounded-2xl p-5 flex items-start gap-3.5 border border-slate-200/60 text-xs">
-              <input type="checkbox" required className="mt-1 h-4 w-4 text-blue-600 border-slate-200 rounded-md shrink-0 cursor-pointer" />
+              <input 
+                type="checkbox" 
+                required 
+                checked={certifyNotBroker}
+                onChange={(e) => setCertifyNotBroker(e.target.checked)}
+                className="mt-1 h-4 w-4 text-blue-600 border-slate-200 rounded-md shrink-0 cursor-pointer" 
+              />
               <div className="text-slate-500 text-left">
                 <h4 className="font-bold text-slate-800">I certify that I am NOT a landlord, builder, or real estate broker</h4>
                 <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
@@ -1548,7 +1642,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider py-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 shadow-xs hover:shadow-md"
+            disabled={!certifyResident || !certifyNotBroker}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider py-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 shadow-xs hover:shadow-md disabled:hover:shadow-none"
           >
             <span>Register & List My Profile</span>
             <ChevronRight className="w-4 h-4" />
