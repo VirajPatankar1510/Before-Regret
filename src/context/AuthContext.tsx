@@ -42,33 +42,34 @@ export const getEnv = (key: string): string => {
 // Helper to check if Clerk Publishable Key is present and configured
 export const getClerkPublishableKey = (): string => {
   const rawKey = getEnv('VITE_CLERK_PUBLISHABLE_KEY');
+  let extractedKey = '';
 
-  // Automatic domain detection to handle static deployments like Vercel elegantly
+  if (rawKey && rawKey !== 'YOUR_CLERK_PUBLISHABLE_KEY' && rawKey.trim() !== '' && !rawKey.startsWith('YOUR_')) {
+    const match = rawKey.match(/pk_(test|live)_[a-zA-Z0-9$]+/);
+    extractedKey = match ? match[0] : rawKey;
+  }
+
+  // Fallback domain detection for preview & production hosting
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     const isProductionDomain = hostname === 'beforeregret.com' || hostname.endsWith('.beforeregret.com');
 
     if (isProductionDomain) {
-      // For production domain, return the live production key directly if no override is provided
-      if (!rawKey || rawKey === 'YOUR_CLERK_PUBLISHABLE_KEY' || rawKey.trim() === '' || rawKey.startsWith('YOUR_')) {
-        return 'pk_live_Y2xlcmsuYmVmb3JlcmVncmV0LmNvbSQ';
+      if (extractedKey && extractedKey.startsWith('pk_live_')) {
+        return extractedKey;
       }
+      return 'pk_live_Y2xlcmsuYmVmb3JlcmVncmV0LmNvbSQ';
     } else {
-      // For development or preview environment, automatically use the development test key.
-      // This prevents live key CORS domain mismatch crashes during development and testing.
-      if (!rawKey || rawKey.startsWith('pk_live_') || rawKey === 'YOUR_CLERK_PUBLISHABLE_KEY' || rawKey.trim() === '') {
-        return 'pk_test_YW11c2luZy1nYXplbGxlLTQ4LmNsZXJrLmFjY291bnRzLmRldiQ';
+      // In non-production preview/dev domains, production live keys will crash with origin error.
+      // Always enforce test key in preview/dev mode.
+      if (extractedKey && extractedKey.startsWith('pk_test_')) {
+        return extractedKey;
       }
+      return 'pk_test_YW11c2luZy1nYXplbGxlLTQ4LmNsZXJrLmFjY291bnRzLmRldiQ';
     }
   }
 
-  if (!rawKey || rawKey === 'YOUR_CLERK_PUBLISHABLE_KEY' || rawKey.trim() === '' || rawKey.startsWith('YOUR_')) {
-    return '';
-  }
-
-  // Robust extraction of pk_test_... or pk_live_... to handle accidental multi-variable paste errors gracefully
-  const match = rawKey.match(/pk_(test|live)_[a-zA-Z0-9$]+/);
-  return match ? match[0] : rawKey;
+  return extractedKey || 'pk_test_YW11c2luZy1nYXplbGxlLTQ4LmNsZXJrLmFjY291bnRzLmRldiQ';
 };
 
 // Internal provider implementing auth logic and Clerk hook synchronization
