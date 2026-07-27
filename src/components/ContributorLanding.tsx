@@ -131,32 +131,28 @@ export const ContributorLanding: React.FC<ContributorLandingProps> = ({
 
   const faqs = [
     {
-      q: "Do I need to answer every question?",
-      a: "No. You only answer the questions you personally know."
+      q: "Do I need to write paragraphs or reviews?",
+      a: "No typing required at all! You simply select pre-defined options (multiple choice, yes/no, ratings). No text boxes."
     },
     {
-      q: "Can I skip topics?",
-      a: "Yes. Simply skip any topic you haven't personally experienced."
+      q: "How many topics do I answer?",
+      a: "Every resident answers EXACTLY 5 topics out of ~40 available topics. You pick the 5 areas you know best."
+    },
+    {
+      q: "Why only 5 topics per resident?",
+      a: "To prevent repetitive information! Each resident contributes knowledge in 5 distinct topics, expanding the total wisdom available about the society."
     },
     {
       q: "How long does it take?",
-      a: "It usually takes around 15–20 minutes to complete."
-    },
-    {
-      q: "Can I update my answers later?",
-      a: "Yes, absolutely. You can log in and update your answers anytime if things change in your society."
+      a: "It takes under 3 to 5 minutes because you just tap choices on your phone or computer."
     },
     {
       q: "How do I get paid?",
-      a: "Whenever a buyer or renter unlocks your society profile, you earn ₹205 credited directly to your UPI or bank account."
-    },
-    {
-      q: "Can I answer for more than one society?",
-      a: "Yes! If you have previously lived in another apartment or housing society, you can share your experience for that society too."
+      a: "Whenever a home buyer or renter unlocks your society answers, you earn ₹205 credited directly to your UPI or bank account."
     },
     {
       q: "Is my personal identity shared with buyers?",
-      a: "No. Your contact details remain private and confidential. Home buyers only read your answers about the society."
+      a: "No. Your contact details remain private. Home buyers only read your structured living answers for the society."
     }
   ];
 

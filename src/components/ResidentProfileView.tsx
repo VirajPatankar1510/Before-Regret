@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ResidentKnowledgeProfile, TopicKnowledge } from '../types';
-import { ArrowLeft, ShieldCheck, Star, Users, Clock, Lock, Unlock, CheckCircle2, FileText, Sparkles, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Star, Users, Clock, Lock, Unlock, CheckCircle2, FileText, Sparkles, AlertTriangle, ArrowRight } from 'lucide-react';
+import { AiReportModal } from './AiReportModal';
 
 interface ResidentProfileViewProps {
   profile: ResidentKnowledgeProfile;
@@ -21,6 +22,18 @@ export const ResidentProfileView: React.FC<ResidentProfileViewProps> = ({
   isTopicUnlocked,
   isFullyUnlocked,
 }) => {
+  const [showAiReport, setShowAiReport] = useState<boolean>(false);
+
+  // Map profile topics into structured QA format for Gemini AI Engine
+  const topicsData = profile.topics.map(t => ({
+    topicId: t.id,
+    topicTitle: t.title,
+    qaList: [
+      { question: `${t.title} Overview & Details`, answer: t.summary },
+      ...(t.insights || []).map(ins => ({ question: ins.title, answer: ins.detail }))
+    ]
+  }));
+
   return (
     <div className="bg-[#F7F9FC] min-h-screen pb-24">
       
@@ -59,16 +72,26 @@ export const ResidentProfileView: React.FC<ResidentProfileViewProps> = ({
               </p>
             </div>
 
-            {!isFullyUnlocked && (
+            <div className="flex flex-wrap items-center gap-2">
               <button
-                onClick={() => onUnlockAll(profile)}
-                className="px-6 py-3 bg-[#2563EB] hover:bg-blue-700 active:scale-[0.98] text-white font-semibold text-xs sm:text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer shrink-0"
+                onClick={() => setShowAiReport(true)}
+                className="px-4 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer shrink-0 border border-slate-700"
               >
-                <Unlock className="w-4 h-4 text-white" />
-                <span>Unlock Everything</span>
-                <span className="bg-white/20 px-2 py-0.5 rounded text-white text-xs">₹399</span>
+                <Sparkles className="w-4 h-4 text-blue-400" />
+                <span>AI Resident Report (₹399)</span>
               </button>
-            )}
+
+              {!isFullyUnlocked && (
+                <button
+                  onClick={() => onUnlockAll(profile)}
+                  className="px-6 py-3 bg-[#2563EB] hover:bg-blue-700 active:scale-[0.98] text-white font-semibold text-xs sm:text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer shrink-0"
+                >
+                  <Unlock className="w-4 h-4 text-white" />
+                  <span>Unlock Everything</span>
+                  <span className="bg-white/20 px-2 py-0.5 rounded text-white text-xs">₹399</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Three Key Metrics */}
@@ -110,7 +133,7 @@ export const ResidentProfileView: React.FC<ResidentProfileViewProps> = ({
               Topic Breakdown ({profile.topics.length} Topics)
             </h2>
             <p className="text-xs text-slate-500 font-medium">
-              Unlock individual topics for ₹129 or unlock all for ₹399.
+              Unlock individual topics for ₹99 or unlock all for ₹399.
             </p>
           </div>
           <span className="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200 font-semibold">
@@ -230,6 +253,18 @@ export const ResidentProfileView: React.FC<ResidentProfileViewProps> = ({
         )}
 
       </section>
+
+      {/* AI Due Diligence Report Modal */}
+      <AiReportModal
+        isOpen={showAiReport}
+        onClose={() => setShowAiReport(false)}
+        societyName={profile.societyName}
+        locality={profile.locality}
+        city={profile.city}
+        residentType={profile.residentType}
+        yearsLiving={profile.yearsLiving}
+        topicsData={topicsData}
+      />
 
     </div>
   );

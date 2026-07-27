@@ -200,6 +200,11 @@ export function App() {
     }
   }, [user, viewState, contributorMode]);
 
+  // Automatically scroll to the top / main intended section on every view or selection change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [viewState, selectedSociety?.id, selectedResidentProfile?.id, contributorMode]);
+
   // Synchronize URL and SEO metadata whenever state changes
   useEffect(() => {
     const targetUrl = getUrlForState(viewState, selectedSociety, selectedResidentProfile, contributorMode);

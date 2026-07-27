@@ -23,7 +23,7 @@ export const UnlockModal: React.FC<UnlockModalProps> = ({
   if (!isOpen || !profile) return null;
 
   const isSingleTopic = !!selectedTopic;
-  const price = isSingleTopic ? 129 : 399;
+  const price = isSingleTopic ? 99 : 399;
   const title = isSingleTopic ? `Unlock "${selectedTopic.title}"` : `Unlock Full Society Intelligence`;
 
   const handlePay = () => {

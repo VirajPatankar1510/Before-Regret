@@ -5,7 +5,7 @@ import {
   RefreshCw, Plus, Eye, TrendingUp, Wallet, ShieldAlert,
   ArrowLeft, MessageSquare, Clock, Check, Building2,
   GitMerge, Download, Upload, Search, Trash2, Edit3, AlertCircle,
-  History, Sparkles, Tag
+  History, Sparkles, Tag, FileSpreadsheet, Database
 } from 'lucide-react';
 import { 
   normalizeSocietyName, 
@@ -13,6 +13,16 @@ import {
   exportSocietiesToCSV, 
   fuzzyMatchSociety 
 } from '../utils/societySearch';
+import { MasterEngineWorkbook } from '../types/residentEngineTypes';
+import {
+  loadMasterEngineWorkbookFromStorage,
+  saveMasterEngineWorkbookToStorage,
+  resetMasterEngineWorkbookStorage,
+  parseWorkbookArrayBuffer
+} from '../engine/residentEngineCore';
+import { validateWorkbook } from '../engine/residentEngineValidator';
+import { downloadMasterEngineWorkbookFile } from '../engine/excelTemplateGenerator';
+import { WorkbookDiagnosticModal } from './WorkbookDiagnosticModal';
 
 interface AdminPanelProps {
   setView: (view: any) => void;
@@ -68,6 +78,53 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   // Audit History Modal State
   const [historySociety, setHistorySociety] = useState<Society | null>(null);
+
+  // Data-Driven Master Engine Workbook State in Admin Panel
+  const [masterWorkbook, setMasterWorkbook] = useState<MasterEngineWorkbook>(() => loadMasterEngineWorkbookFromStorage());
+  const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
+  const [isAdminRefreshing, setIsAdminRefreshing] = useState(false);
+
+  const validationReport = useMemo(() => validateWorkbook(masterWorkbook), [masterWorkbook]);
+
+  const handleAdminRefreshWorkbook = () => {
+    setIsAdminRefreshing(true);
+    try {
+      const fresh = loadMasterEngineWorkbookFromStorage();
+      setMasterWorkbook(fresh);
+    } catch (err: any) {
+      alert('Error refreshing workbook: ' + err.message);
+    } finally {
+      setTimeout(() => setIsAdminRefreshing(false), 500);
+    }
+  };
+
+  const handleAdminExcelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const buffer = evt.target?.result as ArrayBuffer;
+      if (buffer) {
+        try {
+          const parsed = parseWorkbookArrayBuffer(buffer);
+          const report = validateWorkbook(parsed);
+          setMasterWorkbook(parsed);
+          saveMasterEngineWorkbookToStorage(parsed);
+
+          if (!report.isValid) {
+            setShowDiagnosticModal(true);
+          } else {
+            alert('Master Engine Workbook successfully updated across all 11 sheets!');
+          }
+        } catch (err: any) {
+          alert('Error parsing uploaded workbook: ' + err.message);
+        }
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    e.target.value = '';
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -610,6 +667,90 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         {activeTab === 'import_export' && (
           <div className="space-y-6 max-w-4xl mx-auto">
             
+            {/* 100% Data-Driven Master Engine Questionnaire Pipeline Card */}
+            <div className="bg-emerald-950 text-emerald-100 border border-emerald-800 rounded-2xl p-6 space-y-4 shadow-md">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-emerald-800 text-emerald-200 rounded-xl">
+                    <FileSpreadsheet className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-white text-base">
+                      100% Data-Driven Resident Intelligence Master Engine
+                    </h3>
+                    <p className="text-xs text-emerald-300/80">
+                      Manage all 11 Excel Sheets: Settings, Topics, Questions, Options, Logic, Follow-ups, Scenarios, Editorial Templates, Labels, Translations, and Versions.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowDiagnosticModal(true)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                      validationReport.totalErrors > 0
+                        ? 'bg-rose-600 hover:bg-rose-500 text-white border-rose-500 animate-pulse'
+                        : 'bg-emerald-800 hover:bg-emerald-700 text-emerald-100 border-emerald-700'
+                    }`}
+                  >
+                    <ShieldAlert className="w-4 h-4" />
+                    <span>Diagnostic Logs ({validationReport.totalErrors} Errors)</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => downloadMasterEngineWorkbookFile(masterWorkbook)}
+                  className="px-4 py-3 bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer border border-emerald-700 shadow-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download Master Workbook .XLSX (11 Sheets)</span>
+                </button>
+
+                <div className="flex flex-col gap-2">
+                  <label className="px-4 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm">
+                    <Upload className="w-4 h-4" />
+                    <span>Upload & Update Master Workbook Real-Time</span>
+                    <input
+                      type="file"
+                      accept=".xlsx, .xls"
+                      className="hidden"
+                      onChange={handleAdminExcelUpload}
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={handleAdminRefreshWorkbook}
+                    disabled={isAdminRefreshing}
+                    className="px-4 py-2 bg-emerald-900/90 hover:bg-emerald-800 text-emerald-200 hover:text-white border border-emerald-500/50 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+                    title="Refresh and sync master workbook in realtime"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 text-emerald-300 ${isAdminRefreshing ? 'animate-spin text-white' : ''}`} />
+                    <span>{isAdminRefreshing ? 'Updating Form...' : 'Refresh Workbook in Realtime'}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-emerald-800/80 text-[11px] text-emerald-300">
+                <span>Active Workbook: <b>{masterWorkbook.topics.length} Topics</b> | <b>{masterWorkbook.questions.length} Questions</b> | <b>{masterWorkbook.editorialTemplates.length} Narrative Templates</b></span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fresh = resetMasterEngineWorkbookStorage();
+                    setMasterWorkbook(fresh);
+                    alert('Engine reset to original built-in master workbook.');
+                  }}
+                  className="text-emerald-400 hover:text-white underline cursor-pointer"
+                >
+                  Reset Engine to Built-in Defaults
+                </button>
+              </div>
+            </div>
+
             {/* CSV Import Card */}
             <div className="bg-white border border-[#E4E4E7] rounded-2xl p-6 space-y-4 shadow-2xs">
               <div className="flex items-center gap-2 font-bold text-slate-900 text-base">
@@ -888,6 +1029,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         </div>
       )}
+
+      {/* MASTER WORKBOOK DIAGNOSTIC MODAL */}
+      <WorkbookDiagnosticModal
+        isOpen={showDiagnosticModal}
+        onClose={() => setShowDiagnosticModal(false)}
+        workbook={masterWorkbook}
+        validationReport={validationReport}
+        onUploadNewWorkbook={handleAdminExcelUpload}
+        onResetToDefault={() => {
+          const fresh = resetMasterEngineWorkbookStorage();
+          setMasterWorkbook(fresh);
+        }}
+        onRefreshWorkbook={handleAdminRefreshWorkbook}
+      />
 
     </div>
   );
