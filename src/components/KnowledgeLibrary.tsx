@@ -40,7 +40,7 @@ export const KnowledgeLibrary: React.FC<KnowledgeLibraryProps> = ({
         <div className="max-w-5xl mx-auto space-y-2">
           <div className="flex items-center gap-2 text-xs font-semibold text-[#2563EB] font-mono uppercase tracking-wider">
             <BookOpen className="w-4 h-4" />
-            <span>Your Due Diligence Vault</span>
+            <span>Your Resident Intelligence Vault</span>
           </div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
             Unlocked Society Knowledge

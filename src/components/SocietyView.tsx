@@ -209,8 +209,8 @@ export const SocietyView: React.FC<SocietyViewProps> = ({
                         className="py-3 px-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
                       >
                         <Lock className="w-3.5 h-3.5 text-slate-500" />
-                        <span>Unlock One Topic</span>
-                        <span className="text-[#2563EB] font-bold">₹129</span>
+                        <span>Unlock Decision Bundle</span>
+                        <span className="text-[#2563EB] font-bold">₹99</span>
                       </button>
 
                       <button

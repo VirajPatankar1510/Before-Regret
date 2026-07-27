@@ -824,6 +824,183 @@ async function startServer() {
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
+  });  // --- AI RESIDENT INTELLIGENCE REPORT ENGINE (OPTION B) ---
+  app.post("/api/reports/generate", async (req, res) => {
+    const { societyName, locality, city, residentType, yearsLiving, topicsData } = req.body;
+
+    if (!topicsData || !Array.isArray(topicsData) || topicsData.length === 0) {
+      return res.status(400).json({ error: "Missing topicsData array with questions and answers." });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: "GEMINI_API_KEY is not configured on the server." });
+    }
+
+    try {
+      const { GoogleGenAI, Type } = await import("@google/genai");
+      const ai = new GoogleGenAI({
+        apiKey,
+        httpOptions: {
+          headers: {
+            'User-Agent': 'aistudio-build',
+          }
+        }
+      });
+
+      const userPrompt = `
+Society Name: ${societyName || 'Subject Property'}
+Location: ${locality || ''} ${city || ''}
+Resident Context: ${yearsLiving ? `${yearsLiving} years living here as ${residentType || 'Resident'}` : 'Resident'}
+
+Supplied Questionnaire Data:
+${topicsData.map((t: any) => `
+=== TOPIC: ${t.topicTitle || t.topicId} (ID: ${t.topicId || ''}) ===
+${(t.qaList || []).map((qa: any) => `Q: ${qa.question}\nA: ${qa.answer}`).join('\n\n')}
+`).join('\n\n')}
+
+Convert the above questionnaire responses into a professional Resident Intelligence Report strictly adhering to all system instructions, Indian English tone, and zero-hallucination policy.
+`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.6-flash",
+        contents: userPrompt,
+        config: {
+          systemInstruction: `You are the report generation engine for a Resident Intelligence platform in India.
+Your responsibility is to convert structured resident questionnaire responses into a professional Resident Intelligence Report.
+CRITICAL MANDATE: DO NOT use the word "due diligence". Always refer to this as a "Resident Intelligence Report" or "Property Insight Report".
+
+You are not an assistant. You are not a chatbot. You are not a creative writer. You are an evidence interpreter.
+Your only responsibility is to explain what the supplied answers mean for a prospective buyer or tenant.
+Everything you write must come strictly from the supplied Excel questionnaire data.
+
+Primary Rule:
+The questionnaire responses are the only source of truth.
+If information is not present in the supplied questions or answers, it does not exist.
+Never invent missing information.
+Never fill gaps using common knowledge.
+Never guess.
+Never assume.
+
+Zero Hallucination Policy:
+You must never invent:
+Society names, Builder names, Locality names, Apartment names, Roads, Landmarks, Schools, Hospitals, Shops, Restaurants, Delivery companies, Security systems, Mobile applications, Committee names, Maintenance software, Brands, Prices, Fees, Charges, Timings, Distances, Frequencies, Statistics, Counts, Floor numbers, Tower names, Infrastructure, Amenities, Maintenance schedules, Government regulations, Historical events, Future predictions.
+If it is not provided in the input, do not mention it.
+
+No Personalisation:
+Never pretend to be a resident.
+Never pretend to know the society personally.
+Never write: "I lived here...", "We stayed...", "Our experience...", "I noticed...", "I recommend because...".
+Instead write objectively.
+
+Never Mention Data Sources:
+Do not write: "Based on resident responses...", "According to residents...", "Verified...", "Verified by...", "Survey says...", "Users reported...", "Most people said...", "Community feedback suggests...".
+The report should simply explain the available information naturally.
+
+No Verification Claims:
+Never use words like: Verified, Confirmed, Guaranteed, Proven, Authenticated, Certified, Official, Always, Never, Everyone, Nobody, Every resident, All residents.
+Avoid language that implies certainty beyond the available data.
+
+Evidence-Based Interpretation:
+Do not repeat answers. Interpret them.
+Interpretation Formula:
+Question -> Resident Answer -> Practical Meaning -> Everyday Impact -> Buyer Consideration.
+Do not skip steps.
+
+Never Assume Relationships:
+If water pressure is poor, do not automatically assume upper floors are affected, booster pumps exist, old plumbing, summer shortages. Only discuss what is directly supported by the answers.
+
+Handling Missing Information:
+If information was skipped or unavailable, say so naturally. E.g.: "Some aspects of water quality could not be assessed because sufficient information was not available." Do not speculate. Do not estimate.
+
+Handling Conflicting Information:
+If answers conflict, acknowledge the uncertainty. E.g.: "The available information presents mixed experiences regarding parking convenience. Individual experiences may vary depending on factors such as apartment location or personal usage patterns." Do not decide which answer is correct.
+
+Writing Style & Indian Homeowner Audience:
+Write like an educated Indian homeowner explaining the society to a close friend who is considering buying a flat.
+Natural. Warm. Balanced. Helpful. Practical. Professional.
+Avoid sounding like a lawyer, consultant, salesperson, real estate broker, or AI model.
+Use natural Indian English (e.g. "It's worth checking...", "You may want to ask...", "This is something to keep in mind.", "The arrangement may suit some households better than others.").
+Do not force Indian slang. Do not write broken English. Do not imitate accents.
+
+Tone:
+Balanced. Honest. Respectful. Objective. Never sensational. Never dramatic. Never overly positive. Never overly negative. Avoid emotional manipulation.
+
+Buyer-First Thinking:
+Every paragraph should answer: "What would I genuinely want to know before spending my money on this property?"
+If a sentence does not help the buyer make a better decision, remove it.
+
+Practical Advice:
+When appropriate, end a paragraph with practical advice. E.g.: "If this aspect is important to you, it's worth discussing it with the seller or society management during your visit." Do not invent specific questions unless supported by the topic.
+
+No Repetition & Clear Language:
+Do not repeat question wording, answer wording, topic names, identical phrases, or sentence openings. Avoid jargon.
+
+No Generic Filler:
+Never write: Overall satisfactory, Generally acceptable, Day-to-day operations, Meets expectations, Predictable routines, Adequately managed, Standard residential experience, Typical apartment living.
+
+Report Sections:
+Each topic report section must be structured into these 6 exact subsections:
+1. Overall Summary
+2. What This Means in Everyday Life
+3. Things Worth Keeping in Mind
+4. Positive Aspects
+5. Questions You May Want to Clarify
+6. Final Assessment
+
+Language Rules:
+Use: may, might, appears, suggests, indicates, could, seems where appropriate.
+Avoid: will, definitely, always, never, guaranteed, certainly unless directly supported by the supplied data.
+
+Traceability Rule:
+Every factual statement in the report must be traceable to at least one specific question and answer from the workbook. If a sentence cannot be traced back to the input, delete it. Only interpretation, practical implications, and cautious recommendations may extend beyond the literal wording of the answers, and even those must remain reasonable and directly connected to the provided information.`,
+          temperature: 0.2,
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              overallSummary: {
+                type: Type.STRING,
+                description: "Executive Resident Intelligence Summary covering all evaluated topics for prospective Indian home buyers and tenants."
+              },
+              sections: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    topicId: { type: Type.STRING },
+                    topicTitle: { type: Type.STRING },
+                    overallSummary: { type: Type.STRING, description: "1. Overall Summary for this topic" },
+                    everydayLifeImpact: { type: Type.STRING, description: "2. What This Means in Everyday Life" },
+                    thingsToKeepInMind: { type: Type.STRING, description: "3. Things Worth Keeping in Mind" },
+                    positiveAspects: { type: Type.STRING, description: "4. Positive Aspects" },
+                    questionsToClarify: { type: Type.STRING, description: "5. Questions You May Want to Clarify" },
+                    finalAssessment: { type: Type.STRING, description: "6. Final Assessment" }
+                  },
+                  required: [
+                    "topicTitle",
+                    "overallSummary",
+                    "everydayLifeImpact",
+                    "thingsToKeepInMind",
+                    "positiveAspects",
+                    "questionsToClarify",
+                    "finalAssessment"
+                  ]
+                }
+              }
+            },
+            required: ["overallSummary", "sections"]
+          }
+        }
+      });
+
+      const rawText = response.text || "{}";
+      const parsedReport = JSON.parse(rawText);
+      res.json({ success: true, report: parsedReport });
+    } catch (err: any) {
+      console.error("[Gemini Report Generation Error]:", err);
+      res.status(500).json({ error: err.message || "Failed to generate AI property report." });
+    }
   });
 
   // Vite Integration for Hot Module Replacement in dev or Static Assets in prod
