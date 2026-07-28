@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, ArrowRight, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Society } from '../types';
+import heroBgImage from '../assets/images/regenerated_image_1784228757923.png';
 
 interface HeroProps {
   onSearch: (query: string) => void;
@@ -100,11 +101,18 @@ export const Hero: React.FC<HeroProps> = ({
     <section className="relative pt-10 pb-20 sm:pt-16 sm:pb-28 overflow-hidden bg-slate-50">
       
       {/* User's Exact Uploaded Background Image */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
         <img
-          src="/hero-bg.png"
+          src={heroBgImage}
           alt="Modern Luxury Apartment Towers Plaza"
-          className="w-full h-full object-cover object-center opacity-65 sm:opacity-60"
+          className="w-full h-full object-cover object-top sm:object-center opacity-65 sm:opacity-60 transition-opacity duration-300"
+          onError={(e) => {
+            // Fallback to /hero-bg.png if asset bundle fails
+            const target = e.currentTarget;
+            if (target.src !== window.location.origin + '/hero-bg.png') {
+              target.src = '/hero-bg.png';
+            }
+          }}
         />
         {/* Soft Legibility Gradient Mask for Text Contrast */}
         <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/55 to-slate-50/90" />
