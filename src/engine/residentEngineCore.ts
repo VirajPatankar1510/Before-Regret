@@ -17,7 +17,7 @@ import {
   ExcelTranslation,
   ExcelVersionHistory
 } from '../types/residentEngineTypes';
-import { CONTRIBUTOR_TOPICS, STRUCTURED_QUESTIONS_DATABASE } from '../data/contributorTopicsData';
+import { CONTRIBUTOR_TOPICS, STRUCTURED_QUESTIONS_DATABASE, getMainQuestionForTopic } from '../data/contributorTopicsData';
 import { getTopicEditorialTemplates } from './topicEditorialTemplates';
 
 const WORKBOOK_STORAGE_KEY = 'resident_intelligence_master_engine_workbook_v3';
@@ -30,7 +30,7 @@ export const DEFAULT_ENGINE_SETTINGS: EngineSettings = {
   maxTemplateVariations: 10,
   defaultSkipText: 'N/A',
   defaultLanguage: 'en-IN',
-  version: '3.3.0-QUESTION-BANK-SCHEMA',
+  version: '3.4.0-UPDATED-EXCEL-MASTER-SCHEMA',
   enableConditionalLogic: true,
   enableFollowUpQuestions: true,
   allowCustomNote: true,
@@ -102,6 +102,7 @@ export function buildDefaultMasterEngineWorkbook(): MasterEngineWorkbook {
   const topics: ExcelTopic[] = CONTRIBUTOR_TOPICS.map((t, idx) => ({
     topicId: t.id,
     topicName: t.title,
+    mainQuestion: t.mainQuestion || getMainQuestionForTopic(t.id),
     description: t.description,
     icon: t.iconName,
     displayOrder: idx + 1,
@@ -197,10 +198,12 @@ export function buildDefaultMasterEngineWorkbook(): MasterEngineWorkbook {
         topicId,
         questionSetId,
         questionGroupId,
+        mainQuestionText: q.mainQuestionText || (CONTRIBUTOR_TOPICS.find(t => t.id === topicId)?.mainQuestion || getMainQuestionForTopic(topicId)),
         questionText: q.questionText,
         questionDescription: isRating ? 'Compulsory overall rating question' : 'Selectable question bank item',
         questionType: (q.type as any) || (q as any).inputType || 'single-choice',
         optionsPipeSeparated: rawOpts.join(' | '),
+        answers: q.answers,
         importance: importanceLevel,
         displayOrder: qIdx + 1,
         required: isRating,
@@ -373,6 +376,7 @@ export function parseWorkbookArrayBuffer(arrayBuffer: ArrayBuffer): MasterEngine
       master.topics = rows.map((r, idx) => ({
         topicId: String(r.Topic_ID || r.topicId || `TOP_${idx + 1}`).trim(),
         topicName: String(r.Topic_Name || r.topicName || 'Untitled Topic').trim(),
+        mainQuestion: String(r.Main_Question || r.Main_Question_Text || r.MainQuestion || r.Topic_Main_Question || '').trim() || undefined,
         description: String(r.Description || '').trim(),
         icon: String(r.Icon || 'HelpCircle').trim(),
         displayOrder: Number(r.Display_Order || idx + 1),
@@ -429,14 +433,24 @@ export function parseWorkbookArrayBuffer(arrayBuffer: ArrayBuffer): MasterEngine
 
       master.questions = rows.map((r, idx) => {
         const qId = String(r.Question_ID || `Q_${idx + 1}`).trim();
+        const mainQText = String(r.Main_Question || r.Main_Question_Text || r.MainQuestion || r.Topic_Main_Question || '').trim();
         
         let optList: string[] = [];
+        let ansList: string[] = [];
 
-        // 1. Fetch from individual option columns Option_1, Option_2, ... Option_15
+        // 1. Fetch from individual option columns Option_1, Option_2, ... Option_15 and Answer_1, Answer_2, ...
         for (let i = 1; i <= 15; i++) {
           const val = r[`Option_${i}`] ?? r[`Option ${i}`] ?? r[`Option_${String.fromCharCode(64 + i)}`] ?? r[`Option ${String.fromCharCode(64 + i)}` ];
+          const ansVal = r[`Answer_${i}`] ?? r[`Answer ${i}`] ?? r[`Answer_${String.fromCharCode(64 + i)}`] ?? r[`Answer ${String.fromCharCode(64 + i)}` ];
+          
           if (val !== undefined && val !== null && String(val).trim() !== '') {
-            optList.push(String(val).trim());
+            const cleanOpt = String(val).trim();
+            optList.push(cleanOpt);
+            if (ansVal !== undefined && ansVal !== null && String(ansVal).trim() !== '') {
+              ansList.push(String(ansVal).trim());
+            } else {
+              ansList.push(`Regarding ${cleanOpt}: mapped narrative from resident experience.`);
+            }
           }
         }
 
@@ -444,6 +458,7 @@ export function parseWorkbookArrayBuffer(arrayBuffer: ArrayBuffer): MasterEngine
         const pipeOpts = String(r.Options_Pipe_Separated || r.Options || '').trim();
         if (optList.length === 0 && pipeOpts) {
           optList = pipeOpts.split('|').map(s => s.trim()).filter(Boolean);
+          ansList = optList.map(o => `Regarding ${o}: mapped narrative from resident experience.`);
         }
 
         if (optList.length > 0) {
@@ -474,10 +489,12 @@ export function parseWorkbookArrayBuffer(arrayBuffer: ArrayBuffer): MasterEngine
           topicId: String(r.Topic_ID || '').trim(),
           questionSetId: String(r.Question_Set_ID || '').trim(),
           questionGroupId: String(r.Question_Group_ID || '').trim(),
-          questionText: String(r.Question_Text || 'Question Text').trim(),
+          mainQuestionText: mainQText || undefined,
+          questionText: String(r.Question_Text || mainQText || 'Question Text').trim(),
           questionDescription: String(r.Question_Description || '').trim(),
           questionType: (r.Question_Type || 'single-choice') as any,
-          optionsPipeSeparated: pipeOpts,
+          optionsPipeSeparated: pipeOpts || optList.join(' | '),
+          answers: ansList,
           importance: (r.Importance || 'Medium') as any,
           displayOrder: Number(r.Display_Order || idx + 1),
           required: String(r.Is_Compulsory_Rating).toLowerCase() === 'yes' || String(r.Is_Compulsory_Rating).toLowerCase() === 'true' || String(r.Required).toLowerCase() === 'true' || String(r.Required).toLowerCase() === 'yes' || String(r.Question_Type) === 'rating',

@@ -34,6 +34,7 @@ export interface ExcelProfileQuestion {
 export interface ExcelTopic {
   topicId: string;
   topicName: string;
+  mainQuestion?: string;
   description: string;
   icon: string;
   displayOrder: number;
@@ -70,10 +71,12 @@ export interface ExcelQuestion {
   topicId: string; // References Topics.topicId
   questionSetId?: string; // Optional legacy reference
   questionGroupId?: string; // Optional legacy reference
+  mainQuestionText?: string; // Overarching main question for this topic/question
   questionText: string;
   questionDescription?: string;
   questionType: 'single-choice' | 'multiple-choice' | 'text' | 'rating' | 'frequency' | 'dropdown';
   optionsPipeSeparated?: string; // e.g. "24x7 Municipal Water | Fixed Slot Supply | Tanker Dependent | Severe Scarcity"
+  answers?: string[]; // Mapped option answers corresponding to option_1, option_2, etc.
   importance: 'Critical' | 'High' | 'Medium' | 'Low';
   displayOrder: number;
   required: boolean;

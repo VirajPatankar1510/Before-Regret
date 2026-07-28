@@ -390,17 +390,19 @@ export const WhyBeforeRegret: React.FC<WhyBeforeRegretProps> = ({
         
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center space-y-8 relative z-10">
           
-          <div className="space-y-3">
+          <div className="space-y-4">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
               Know what residents know before you decide.
             </h2>
             <p className="text-base sm:text-lg text-slate-300 max-w-xl mx-auto leading-relaxed">
-              Search any residential society to unlock direct facts from people who live there right now.
+              Search any residential society to unlock direct answers from people who live there right now.
             </p>
+            <div className="pt-1">
+              <span className="inline-block bg-blue-500/20 border border-blue-400/40 text-blue-300 font-bold text-sm sm:text-base px-4 py-1.5 rounded-full shadow-sm">
+                Unlock your answer now for Rs 129 only.
+              </span>
+            </div>
           </div>
-
-          {/* Interactive Price Reveal Feature */}
-          <PriceGuessReveal />
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
@@ -552,7 +554,7 @@ export const WhyBeforeRegret: React.FC<WhyBeforeRegretProps> = ({
           <div className="space-y-4">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight">
               <span className="text-blue-400 bg-blue-950/60 border border-blue-800/60 px-3 py-1 rounded-xl inline-block mb-2 sm:mb-0">
-                ₹399 is a very small price
+                ₹129 is a very small price
               </span>{" "}
               before making such a big decision.
             </h2>

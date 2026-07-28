@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import { TopicDefinition, StructuredSubQuestion } from '../data/contributorTopicsData';
+import { TopicDefinition, StructuredSubQuestion, getMainQuestionForTopic } from '../data/contributorTopicsData';
 
 export interface AnswerTemplateDefinition {
   topicId: string;
@@ -128,6 +128,33 @@ export const DEFAULT_CONTRIBUTION_COLUMNS: ContributionColumnSchema[] = [
   }
 ];
 
+// Helper to generate default answer narrative if not explicitly set
+export function generateDefaultOptionAnswerNarrative(questionText: string, optionText: string, optionIndex: number): string {
+  if (!optionText || !optionText.trim()) return '';
+
+  const cleanQ = questionText.trim().replace(/\?$/, '');
+
+  if (optionText.toLowerCase().includes('star')) {
+    if (optionText.includes('1 Star')) return `Rating 1/5: ${cleanQ} is unsatisfactory and a persistent concern.`;
+    if (optionText.includes('2 Star')) return `Rating 2/5: ${cleanQ} is below average with noticeable issues.`;
+    if (optionText.includes('3 Star')) return `Rating 3/5: ${cleanQ} is moderate and acceptable under normal conditions.`;
+    if (optionText.includes('4 Star')) return `Rating 4/5: ${cleanQ} is good and reliably maintained.`;
+    if (optionText.includes('5 Star')) return `Rating 5/5: ${cleanQ} is excellent and consistently high quality.`;
+  }
+
+  if (optionText.toLowerCase() === 'yes') {
+    return `Yes - ${cleanQ} is experienced regularly by residents.`;
+  }
+  if (optionText.toLowerCase() === 'no') {
+    return `No - ${cleanQ} is not an issue in this society.`;
+  }
+  if (optionText.toLowerCase() === 'sometimes' || optionText.toLowerCase() === 'occasionally') {
+    return `Sometimes - ${cleanQ} occurs occasionally during peak times or weather changes.`;
+  }
+
+  return `Regarding ${cleanQ.toLowerCase()}: "${optionText.trim()}".`;
+}
+
 // Helper to generate downloadable XLSX binary workbook
 export function generateMasterExcelWorkbook(
   topics: TopicDefinition[],
@@ -139,9 +166,11 @@ export function generateMasterExcelWorkbook(
   const topicsRows = topics.map(t => {
     const qList = questionsMap[t.id] || [];
     const ratingCount = qList.filter(q => q.type === 'rating' || q.inputType === 'rating').length;
+    const mainQ = t.mainQuestion || getMainQuestionForTopic(t.id);
     return {
       Topic_ID: t.id,
       Title: t.title,
+      Main_Question: mainQ,
       Category: t.category,
       Icon_Name: t.iconName,
       Description: t.description,
@@ -156,6 +185,8 @@ export function generateMasterExcelWorkbook(
   const questionsRows: any[] = [];
   Object.entries(questionsMap).forEach(([topicId, questions]) => {
     const topicTitle = topics.find(t => t.id === topicId)?.title || topicId;
+    const topicMainQ = topics.find(t => t.id === topicId)?.mainQuestion || getMainQuestionForTopic(topicId);
+
     questions.forEach((q, idx) => {
       const isRating = q.type === 'rating' || q.inputType === 'rating';
       const opts = q.options && q.options.length > 0
@@ -164,9 +195,12 @@ export function generateMasterExcelWorkbook(
           ? ['1 Star - Poor', '2 Stars - Below Average', '3 Stars - Average', '4 Stars - Good', '5 Stars - Excellent']
           : ['Yes', 'No', 'Sometimes'];
 
+      const mainQuestionText = q.mainQuestionText || topicMainQ;
+
       const rowObj: any = {
         Topic_ID: topicId,
         Topic_Title: topicTitle,
+        Main_Question: mainQuestionText,
         Question_ID: q.id,
         Question_Order: idx + 1,
         Is_Compulsory_Rating: isRating ? 'YES' : 'NO',
@@ -176,9 +210,12 @@ export function generateMasterExcelWorkbook(
         Help_Text: q.helpText || ''
       };
 
-      // Store options in individual option columns Option_1, Option_2, ... Option_8
+      // Store options and corresponding answers side-by-side: Option_1, Answer_1, Option_2, Answer_2 ... Option_8, Answer_8
       for (let i = 0; i < 8; i++) {
-        rowObj[`Option_${i + 1}`] = opts[i] || '';
+        const optText = opts[i] || '';
+        const ansText = (q.answers && q.answers[i]) ? q.answers[i] : generateDefaultOptionAnswerNarrative(q.questionText, optText, i);
+        rowObj[`Option_${i + 1}`] = optText;
+        rowObj[`Answer_${i + 1}`] = optText ? ansText : '';
       }
 
       // Also include Options_Pipe_Separated for reference
@@ -195,9 +232,11 @@ export function generateMasterExcelWorkbook(
 
   // Add macro topic opening formats first
   topics.forEach(t => {
+    const mainQ = t.mainQuestion || getMainQuestionForTopic(t.id);
     answerTemplateRows.push({
       Topic_ID: t.id,
       Topic_Title: t.title,
+      Main_Question: mainQ,
       Question_ID: 'ALL_QUESTIONS_MACRO',
       Question_Text: `[MACRO OPENING TEMPLATE FOR ${t.title.toUpperCase()}]`,
       Option_Choice: 'N/A (Topic Opening Header)',
@@ -209,6 +248,8 @@ export function generateMasterExcelWorkbook(
   // Add detailed option templates for each question in topic question bank
   Object.entries(questionsMap).forEach(([topicId, questions]) => {
     const topicTitle = topics.find(t => t.id === topicId)?.title || topicId;
+    const topicMainQ = topics.find(t => t.id === topicId)?.mainQuestion || getMainQuestionForTopic(topicId);
+
     questions.forEach((q) => {
       const isRating = q.type === 'rating' || q.inputType === 'rating';
       const opts = q.options && q.options.length > 0
@@ -217,12 +258,17 @@ export function generateMasterExcelWorkbook(
           ? ['1 Star - Poor', '2 Stars - Below Average', '3 Stars - Average', '4 Stars - Good', '5 Stars - Excellent']
           : ['Yes', 'No', 'Sometimes'];
 
-      opts.forEach(opt => {
-        const snippet = `Regarding ${q.questionText.toLowerCase().replace(/\?$/, '')}, the reality is: "${opt}".`;
+      const mainQuestionText = q.mainQuestionText || topicMainQ;
+
+      opts.forEach((opt, optIdx) => {
+        const snippet = (q.answers && q.answers[optIdx])
+          ? q.answers[optIdx]
+          : generateDefaultOptionAnswerNarrative(q.questionText, opt, optIdx);
 
         answerTemplateRows.push({
           Topic_ID: topicId,
           Topic_Title: topicTitle,
+          Main_Question: mainQuestionText,
           Question_ID: q.id,
           Question_Text: q.questionText,
           Option_Choice: opt,
@@ -288,6 +334,7 @@ export function parseUploadedExcelFile(
       parsedTopics = json.map((row, index) => ({
         id: String(row.Topic_ID || row.id || `topic_${index + 1}`).trim(),
         title: String(row.Title || row.title || 'Untitled Topic').trim(),
+        mainQuestion: String(row.Main_Question || row.Main_Question_Text || row.MainQuestion || row.Topic_Main_Question || '').trim() || undefined,
         category: String(row.Category || row.category || 'General').trim(),
         iconName: String(row.Icon_Name || row.iconName || 'Info').trim(),
         description: String(row.Description || row.description || '').trim(),
@@ -306,16 +353,27 @@ export function parseUploadedExcelFile(
       json.forEach((row, index) => {
         const topicId = String(row.Topic_ID || row.topicId || 'general').trim();
         const qId = String(row.Question_ID || row.id || `q_${index + 1}`).trim();
-        const qText = String(row.Question_Text || row.questionText || row.Question || '').trim();
+        const mainQText = String(row.Main_Question || row.Main_Question_Text || row.MainQuestion || row.Topic_Main_Question || '').trim();
+        const qText = String(row.Question_Text || row.questionText || row.Question || mainQText || '').trim();
         const qType = String(row.Question_Type || row.type || 'single-choice').trim() as any;
         
         let opts: string[] = [];
+        let ansList: string[] = [];
 
-        // 1. Check for individual option columns (Option_1, Option_2, ..., Option_15 or Option 1, Option 2, ...)
+        // 1. Check for individual option columns (Option_1, Option_2, ..., Option_15) & Answer columns (Answer_1, Answer_2, ...)
         for (let i = 1; i <= 15; i++) {
-          const val = row[`Option_${i}`] ?? row[`Option ${i}`] ?? row[`Option_${String.fromCharCode(64 + i)}`] ?? row[`Option ${String.fromCharCode(64 + i)}` ];
-          if (val !== undefined && val !== null && String(val).trim() !== '') {
-            opts.push(String(val).trim());
+          const optVal = row[`Option_${i}`] ?? row[`Option ${i}`] ?? row[`Option_${String.fromCharCode(64 + i)}`] ?? row[`Option ${String.fromCharCode(64 + i)}` ];
+          const ansVal = row[`Answer_${i}`] ?? row[`Answer ${i}`] ?? row[`Answer_${String.fromCharCode(64 + i)}`] ?? row[`Answer ${String.fromCharCode(64 + i)}` ];
+          
+          if (optVal !== undefined && optVal !== null && String(optVal).trim() !== '') {
+            const cleanOpt = String(optVal).trim();
+            opts.push(cleanOpt);
+            
+            if (ansVal !== undefined && ansVal !== null && String(ansVal).trim() !== '') {
+              ansList.push(String(ansVal).trim());
+            } else {
+              ansList.push(generateDefaultOptionAnswerNarrative(qText, cleanOpt, i - 1));
+            }
           }
         }
 
@@ -328,20 +386,30 @@ export function parseUploadedExcelFile(
           } else if (row.Options) {
             opts = String(row.Options).split(',').map(s => s.trim()).filter(Boolean);
           }
+          ansList = opts.map((optStr, optIdx) => generateDefaultOptionAnswerNarrative(qText, optStr, optIdx));
         }
 
         if (!opts.length) {
           opts = qType === 'rating' ? ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'] : ['Yes', 'No', 'Sometimes'];
+          ansList = opts.map((optStr, optIdx) => generateDefaultOptionAnswerNarrative(qText, optStr, optIdx));
         }
 
         const subQ: StructuredSubQuestion = {
           id: qId,
           topicId: topicId,
-          questionText: qText || 'Default Question Text',
+          mainQuestionText: mainQText || undefined,
+          questionText: qText || mainQText || 'Default Question Text',
           type: qType,
           options: opts,
+          answers: ansList,
           helpText: row.Help_Text ? String(row.Help_Text) : undefined
         };
+
+        // If topic mainQuestion is missing, attach from mainQText
+        const topicInList = parsedTopics.find(t => t.id === topicId);
+        if (topicInList && !topicInList.mainQuestion && mainQText) {
+          topicInList.mainQuestion = mainQText;
+        }
 
         if (!parsedQuestionsMap[topicId]) {
           parsedQuestionsMap[topicId] = [];

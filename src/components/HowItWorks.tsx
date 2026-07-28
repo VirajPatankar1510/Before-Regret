@@ -1,68 +1,75 @@
 import React from 'react';
-import { ChevronDown } from 'lucide-react';
-import { motion } from 'motion/react';
+import { Search, HelpCircle, KeyRound } from 'lucide-react';
 
 export const HowItWorks: React.FC = () => {
+  const steps = [
+    {
+      num: '01',
+      icon: Search,
+      title: 'Search',
+      desc: 'Find the society by name, locality, or city.',
+    },
+    {
+      num: '02',
+      icon: HelpCircle,
+      title: 'Browse',
+      desc: 'Choose the questions you need answered.',
+    },
+    {
+      num: '03',
+      icon: KeyRound,
+      title: 'Unlock',
+      desc: 'Unlock resident\'s answer for Rs. 129.',
+    },
+  ];
+
   return (
-    <section className="py-4 sm:py-5 bg-[#F7F9FC] border-b border-[#E4E4E7]">
+    <section className="py-6 sm:py-8 bg-slate-50/80 border-y border-slate-200/60">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-3 sm:mb-4">
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+        
+        {/* Compact Header */}
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <h2 className="text-[11px] uppercase tracking-widest font-bold text-slate-400">
             How It Works
           </h2>
+          <span className="text-[11px] text-slate-400 font-medium">3 Simple Steps</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3">
-          <div className="bg-white border border-[#E4E4E7] rounded-lg p-3 sm:p-3.5 text-center sm:text-left">
-            <h3 className="text-xs sm:text-sm font-bold text-slate-900 mb-0.5 tracking-tight">
-              Search
-            </h3>
-            <p className="text-xs text-slate-600 leading-snug">
-              Find the society by name, locality, or city.
-            </p>
-          </div>
-
-          <div className="bg-white border border-[#E4E4E7] rounded-lg p-3 sm:p-3.5 text-center sm:text-left">
-            <h3 className="text-xs sm:text-sm font-bold text-slate-900 mb-0.5 tracking-tight">
-              Browse
-            </h3>
-            <p className="text-xs text-slate-600 leading-snug">
-              Explore resident profiles and available topic breakdowns.
-            </p>
-          </div>
-
-          <div className="bg-white border border-[#E4E4E7] rounded-lg p-3 sm:p-3.5 text-center sm:text-left flex flex-col justify-between">
-            <div>
-              <h3 className="text-xs sm:text-sm font-bold text-slate-900 mb-0.5 tracking-tight">
-                Unlock
-              </h3>
-              <p className="text-xs text-slate-600 leading-snug">
-                Unlock this resident's experience for Rs.{' '}
-                <span className="select-none blur-[4px] bg-slate-200/80 text-slate-800 px-1 py-0.5 rounded font-mono font-bold inline-block">
-                  9,999
-                </span>
-              </p>
-            </div>
-
-            <div className="mt-2 pt-1 border-t border-slate-100 flex items-center justify-center sm:justify-start gap-1 text-[11px] font-medium text-slate-500 select-none">
-              <motion.span
-                animate={{ opacity: [0.5, 0.9, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        {/* Compact 3-Step Horizontal Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+          {steps.map((step) => {
+            const Icon = step.icon;
+            return (
+              <div 
+                key={step.num}
+                className="bg-white border border-slate-200/80 rounded-xl p-3.5 sm:p-4 flex items-start gap-3 shadow-2xs hover:border-slate-300 transition-all"
               >
-                Scroll Down to reveal price
-              </motion.span>
-              <motion.div
-                animate={{ y: [0, 3, 0] }}
-                transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-              </motion.div>
-            </div>
-          </div>
+                <div className="shrink-0 w-8 h-8 rounded-lg bg-blue-50 text-[#2563EB] flex items-center justify-center font-bold text-xs">
+                  <Icon className="w-4 h-4 stroke-[2.2]" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="text-[10px] font-mono font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded">
+                      {step.num}
+                    </span>
+                    <h3 className="text-sm font-bold text-slate-900 tracking-tight">
+                      {step.title}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-snug">
+                    {step.desc}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
+
       </div>
     </section>
   );
 };
+
+
 
 

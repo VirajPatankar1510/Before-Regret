@@ -37,6 +37,7 @@ import { WorkbookDiagnosticModal } from './WorkbookDiagnosticModal';
 import { AiReportModal } from './AiReportModal';
 import { 
   MAIN_QUESTIONS_CATALOG, 
+  getMainQuestionsCatalog,
   MainQuestionItem, 
   FollowUpQuestionConfig, 
   BackgroundQuestionConfig,
@@ -360,15 +361,20 @@ export const ContributorWizard: React.FC<ContributorWizardProps> = ({
     handleSelectSociety(newSociety);
   };
 
+  // Dynamic Questions Catalog from Excel or Master Workbook
+  const activeMainQuestionsCatalog = useMemo(() => {
+    return getMainQuestionsCatalog();
+  }, [masterWorkbook]);
+
   // Categories list for Main Questions
   const categoriesList = useMemo(() => {
-    const cats = Array.from(new Set(MAIN_QUESTIONS_CATALOG.map(mq => mq.category)));
+    const cats = Array.from(new Set(activeMainQuestionsCatalog.map(mq => mq.category)));
     return ['ALL', ...cats];
-  }, []);
+  }, [activeMainQuestionsCatalog]);
 
   // Filtered Main Questions Catalog
   const filteredMainQuestions = useMemo(() => {
-    return MAIN_QUESTIONS_CATALOG.filter(mq => {
+    return activeMainQuestionsCatalog.filter(mq => {
       const matchesCat = selectedCategory === 'ALL' || mq.category === selectedCategory;
       const matchesSearch = !questionSearchQuery.trim() ||
         mq.title.toLowerCase().includes(questionSearchQuery.toLowerCase()) ||
@@ -376,7 +382,7 @@ export const ContributorWizard: React.FC<ContributorWizardProps> = ({
         mq.category.toLowerCase().includes(questionSearchQuery.toLowerCase());
       return matchesCat && matchesSearch;
     });
-  }, [selectedCategory, questionSearchQuery]);
+  }, [activeMainQuestionsCatalog, selectedCategory, questionSearchQuery]);
 
   // Select 1 Main Question and initialize 5-question selection step
   const handleSelectMainQuestion = (mq: MainQuestionItem) => {
