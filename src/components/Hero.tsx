@@ -50,45 +50,39 @@ export const Hero: React.FC<HeroProps> = ({
   const questionItems = [
     {
       id: 1,
-      tag: "PARKING ISSUE",
-      question: "Is visitor parking available after 8 PM?",
-      highlight: "visitor parking",
-      highlightClass: "bg-blue-100 text-[#2563EB] border border-blue-200/90 px-2 py-0.5 rounded-lg font-extrabold shadow-2xs",
+      prefix: "Are there any",
+      highlight: "hidden maintenance costs?",
+      highlightClass: "bg-pink-100 text-pink-900 border border-pink-200/90 px-3 py-1 rounded-full font-bold shadow-2xs",
     },
     {
       id: 2,
-      tag: "WATER SUPPLY",
-      question: "Is there water shortage during summer?",
-      highlight: "water shortage",
-      highlightClass: "bg-amber-100 text-amber-900 border border-amber-200/90 px-2 py-0.5 rounded-lg font-extrabold shadow-2xs",
+      prefix: "Is there enough",
+      highlight: "visitor parking after 8 PM?",
+      highlightClass: "bg-blue-100 text-blue-900 border border-blue-200/90 px-3 py-1 rounded-full font-bold shadow-2xs",
     },
     {
       id: 3,
-      tag: "HIDDEN COSTS",
-      question: "Are there any hidden maintenance costs?",
-      highlight: "hidden maintenance costs",
-      highlightClass: "bg-rose-100 text-rose-800 border border-rose-200/90 px-2 py-0.5 rounded-lg font-extrabold shadow-2xs",
+      prefix: "How severe is the",
+      highlight: "summer water shortage?",
+      highlightClass: "bg-amber-100 text-amber-900 border border-amber-200/90 px-3 py-1 rounded-full font-bold shadow-2xs",
     },
     {
       id: 4,
-      tag: "AMENITIES",
-      question: "Are the amenities actually maintained and in working condition?",
-      highlight: "amenities",
-      highlightClass: "bg-emerald-100 text-emerald-900 border border-emerald-200/90 px-2 py-0.5 rounded-lg font-extrabold shadow-2xs",
+      prefix: "Are the amenities actually",
+      highlight: "well-maintained and functional?",
+      highlightClass: "bg-emerald-100 text-emerald-900 border border-emerald-200/90 px-3 py-1 rounded-full font-bold shadow-2xs",
     },
     {
       id: 5,
-      tag: "SOCIETY RULES",
-      question: "Is the society committee helpful and cooperative?",
-      highlight: "society committee",
-      highlightClass: "bg-indigo-100 text-indigo-900 border border-indigo-200/90 px-2 py-0.5 rounded-lg font-extrabold shadow-2xs",
+      prefix: "Is the area prone to",
+      highlight: "monsoon waterlogging?",
+      highlightClass: "bg-cyan-100 text-cyan-900 border border-cyan-200/90 px-3 py-1 rounded-full font-bold shadow-2xs",
     },
     {
       id: 6,
-      tag: "MONSOON FLOODING",
-      question: "Does the area experience flooding during monsoon?",
-      highlight: "flooding",
-      highlightClass: "bg-cyan-100 text-cyan-900 border border-cyan-200/90 px-2 py-0.5 rounded-lg font-extrabold shadow-2xs",
+      prefix: "Are there strict or unfair",
+      highlight: "society committee rules?",
+      highlightClass: "bg-indigo-100 text-indigo-900 border border-indigo-200/90 px-3 py-1 rounded-full font-bold shadow-2xs",
     },
   ];
 
@@ -96,56 +90,56 @@ export const Hero: React.FC<HeroProps> = ({
     if (isHovered) return;
     const timer = setInterval(() => {
       setCurrentQuestionIndex((prev) => (prev + 1) % questionItems.length);
-    }, 5000);
+    }, 4500);
     return () => clearInterval(timer);
   }, [isHovered, questionItems.length]);
 
   const currentItem = questionItems[currentQuestionIndex];
 
-  const renderQuestionWithHighlight = (item: typeof questionItems[0]) => {
-    const parts = item.question.split(item.highlight);
-    if (parts.length === 2) {
-      return (
-        <span className="inline leading-relaxed">
-          {parts[0]}
-          <motion.span
-            key={`highlight-${item.id}`}
-            initial={{ scale: 0.75, opacity: 0, rotate: -2 }}
-            animate={{ scale: [0.75, 1.12, 1], opacity: 1, rotate: 0 }}
-            transition={{ delay: 0.12, duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
-            className={`inline-block mx-1 transform -translate-y-0.5 ${item.highlightClass}`}
-          >
-            {item.highlight}
-          </motion.span>
-          {parts[1]}
-        </span>
-      );
-    }
-    return item.question;
-  };
-
   return (
-    <section className="relative pt-8 pb-10 sm:pt-10 sm:pb-12 md:pt-14 md:pb-16 px-3.5 sm:px-6 overflow-hidden bg-white border-b border-[#E4E4E7]">
-      <div className="relative z-10 max-w-4xl mx-auto text-center space-y-4 sm:space-y-5">
+    <section className="relative pt-10 pb-20 sm:pt-16 sm:pb-28 overflow-hidden bg-slate-50">
+      
+      {/* User's Exact Uploaded Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/hero-bg.png"
+          alt="Modern Luxury Apartment Towers Plaza"
+          className="w-full h-full object-cover object-center opacity-65 sm:opacity-60"
+        />
+        {/* Soft Legibility Gradient Mask for Text Contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/55 to-slate-50/90" />
+      </div>
+
+      <div className="relative z-10 max-w-4xl mx-auto text-center space-y-6 sm:space-y-7 px-4">
         
-        {/* 1. Large Headline */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15] max-w-3xl mx-auto px-2">
+        {/* 1. Main Headline */}
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-slate-900 tracking-tight leading-[1.12] max-w-3xl mx-auto">
           Before You Pay the Token Amount...
         </h1>
 
-        {/* 2. Subheading */}
-        <div className="text-base sm:text-lg md:text-xl font-semibold text-slate-800 max-w-2xl mx-auto tracking-tight space-y-2 px-2">
-          <p className="text-slate-700">Remember, <span className="italic underline decoration-red-500 decoration-2 underline-offset-4 font-bold text-slate-900">Buying</span> or <span className="italic underline decoration-red-500 decoration-2 underline-offset-4 font-bold text-slate-900">Renting</span> a wrong flat can cost you lakhs.</p>
+        {/* 2. Subheadline with Underlined Buying / Renting */}
+        <div className="text-base sm:text-xl md:text-2xl font-semibold text-slate-800 max-w-2xl mx-auto tracking-tight">
+          <p>
+            Remember,{' '}
+            <span className="font-extrabold italic underline decoration-[#EF4444] decoration-[2.5px] underline-offset-4 text-slate-900">
+              Buying
+            </span>{' '}
+            or{' '}
+            <span className="font-extrabold italic underline decoration-[#EF4444] decoration-[2.5px] underline-offset-4 text-slate-900">
+              Renting
+            </span>{' '}
+            a wrong flat can cost you lakhs.
+          </p>
         </div>
 
-        {/* 3. Supporting Paragraphs */}
-        <div className="text-slate-600 max-w-xl mx-auto font-normal leading-relaxed px-2 flex flex-col items-center justify-center gap-1">
-          <p className="text-center text-[14px]">Know what residents know before you decide.</p>
-          <p className="text-center font-medium text-slate-700 text-[14px]">Get real answers from real residents.</p>
+        {/* 3. Supporting Taglines */}
+        <div className="text-slate-600 text-sm sm:text-base font-normal leading-relaxed space-y-0.5">
+          <p className="text-slate-600 font-medium">Know what residents know before you decide.</p>
+          <p className="text-slate-900 font-bold">Get real answers from real residents.</p>
         </div>
 
-        {/* 4. Minimal & Elegant Search Bar Container */}
-        <div id="hero-search-container" className="relative max-w-xl mx-auto pt-0.5 px-1">
+        {/* 4. Glassmorphic Elevated Floating Search Bar */}
+        <div id="hero-search-container" className="relative max-w-2xl mx-auto pt-2">
           <AnimatePresence>
             {isGlowing && (
               <motion.div
@@ -156,15 +150,17 @@ export const Hero: React.FC<HeroProps> = ({
                 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 2.5, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute -inset-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600 opacity-80 blur-md pointer-events-none z-0"
+                className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600 opacity-80 blur-md pointer-events-none z-0"
               />
             )}
           </AnimatePresence>
 
-          <form onSubmit={handleSearchSubmit} className="relative z-10 flex items-center">
-            <div className="relative w-full">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10">
-                <Search className="h-4 w-4 text-slate-400" />
+          <form onSubmit={handleSearchSubmit} className="relative z-10">
+            <div className={`relative bg-white/90 backdrop-blur-md border rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-2xl shadow-blue-900/10 transition-all flex items-center ${
+              isGlowing ? 'border-[#2563EB] ring-4 ring-blue-500/30' : 'border-slate-200/90 hover:border-slate-300 hover:shadow-blue-900/15'
+            }`}>
+              <div className="pl-3.5 pr-2 text-slate-400">
+                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
               </div>
               <input
                 id="hero-search-input"
@@ -176,25 +172,21 @@ export const Hero: React.FC<HeroProps> = ({
                 }}
                 onFocus={() => setShowDropdown(true)}
                 placeholder="Search any society..."
-                className={`block w-full pl-10 pr-24 sm:pr-28 py-2.5 sm:py-3 text-xs sm:text-sm text-slate-900 bg-white border rounded-xl shadow-xs transition-all placeholder:text-slate-400 placeholder:text-xs font-sans ${
-                  isGlowing
-                    ? 'border-[#2563EB] ring-4 ring-blue-500/40 shadow-lg shadow-blue-500/20'
-                    : 'border-slate-200/90 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/80 focus:border-transparent'
-                }`}
+                className="w-full text-sm sm:text-base text-slate-900 bg-transparent focus:outline-none placeholder:text-slate-400 font-sans font-medium"
               />
               <button
                 type="submit"
-                className="absolute right-1 top-1 bottom-1 px-3.5 sm:px-4 bg-[#2563EB] hover:bg-blue-700 active:scale-[0.98] text-white font-medium text-xs rounded-lg transition-all shadow-2xs flex items-center gap-1 cursor-pointer z-10"
+                className="shrink-0 bg-[#2563EB] hover:bg-blue-700 active:scale-[0.98] text-white font-semibold text-sm sm:text-base px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl transition-all shadow-md shadow-blue-600/25 flex items-center gap-2 cursor-pointer"
               >
                 <span>Search</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
           </form>
 
           {/* Autocomplete Dropdown */}
           {showDropdown && searchTerm.trim().length > 0 && (
-            <div className="absolute z-30 left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden text-left max-h-72 overflow-y-auto">
+            <div className="absolute z-30 left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden text-left max-h-72 overflow-y-auto">
               {filteredSocieties.length > 0 ? (
                 filteredSocieties.map((society) => (
                   <div
@@ -204,25 +196,25 @@ export const Hero: React.FC<HeroProps> = ({
                       setShowDropdown(false);
                       setSearchTerm('');
                     }}
-                    className="p-3 sm:p-4 hover:bg-slate-50 cursor-pointer border-b border-slate-100 last:border-0 transition-colors flex items-center justify-between"
+                    className="p-3.5 sm:p-4 hover:bg-slate-50 cursor-pointer border-b border-slate-100 last:border-0 transition-colors flex items-center justify-between"
                   >
                     <div>
-                      <div className="font-semibold text-slate-900 text-xs sm:text-sm">
+                      <div className="font-bold text-slate-900 text-sm sm:text-base">
                         {society.name}
                       </div>
-                      <div className="text-[11px] text-slate-500 font-medium">
+                      <div className="text-xs text-slate-500 font-medium">
                         {society.locality}, {society.city}
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="inline-block px-2 py-0.5 bg-blue-50 text-[#2563EB] text-[10px] sm:text-[11px] font-semibold rounded-full font-sans">
-                        {society.residentProfilesCount} Profiles
+                      <span className="inline-block px-2.5 py-1 bg-blue-50 text-[#2563EB] text-xs font-semibold rounded-full font-sans">
+                        {society.residentProfilesCount} Resident Profiles
                       </span>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="p-3.5 text-center text-xs text-slate-500">
+                <div className="p-4 text-center text-sm text-slate-500">
                   No matching societies found. Try searching for "Lodha Amara" or "Powai".
                 </div>
               )}
@@ -230,50 +222,54 @@ export const Hero: React.FC<HeroProps> = ({
           )}
         </div>
 
-      </div>
+        {/* 5. Things Most Buyers Find Out Too Late Badge & Dynamic Question */}
+        <div className="pt-4 sm:pt-6 space-y-3">
+          {/* Yellow Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FEF08A] text-slate-900 text-xs sm:text-sm font-extrabold uppercase tracking-wide shadow-2xs border border-yellow-300">
+            <Sparkles className="w-4 h-4 text-slate-800" />
+            <span>THINGS MOST BUYERS FIND OUT TOO LATE</span>
+          </div>
 
-      {/* 5. TikTok Style Fancy Dynamic Question */}
-      <div className="mt-6 sm:mt-8 max-w-xl mx-auto space-y-2 px-1">
-        {/* Section Heading with Yellow Highlighter Stroke */}
-        <div className="text-center">
-          <h3 className="text-xs sm:text-sm font-bold tracking-wide uppercase inline-block">
-            <span className="relative inline-block px-2.5 py-1 text-slate-950">
-              <span className="absolute inset-0 bg-[#f7ff8c] -rotate-1 -skew-x-3 rounded-sm shadow-2xs z-0 transform scale-x-[1.04] scale-y-[0.92]" />
-              <span className="relative z-10 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
-                <span>Things Most Buyers Find Out Too Late</span>
-              </span>
-            </span>
-          </h3>
-        </div>
-
-        {/* Dynamic Zoom & Pop Motion Container without Card BG/Border */}
-        <div
-          className="relative"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <div className="relative overflow-visible min-h-[50px] sm:min-h-[46px] flex items-center justify-center px-1">
+          {/* Dynamic Question Display */}
+          <div
+            className="min-h-[50px] flex items-center justify-center"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
             <AnimatePresence mode="wait">
               <motion.div
-                key={currentQuestionIndex}
-                initial={{ opacity: 0, scale: 0.82, y: 24, rotate: -2, filter: 'blur(8px)' }}
-                animate={{ opacity: 1, scale: 1, y: 0, rotate: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, scale: 1.15, y: -20, rotate: 2, filter: 'blur(8px)' }}
-                transition={{ type: 'spring', stiffness: 360, damping: 24 }}
-                className="w-full text-center select-none py-2 px-2"
+                key={currentItem.id}
+                initial={{ opacity: 0, y: 12, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -12, scale: 0.95 }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+                className="text-base sm:text-lg md:text-xl font-bold text-slate-900 flex items-center justify-center gap-2 flex-wrap"
               >
-                {/* Question Text with Zoom Pop Highlight */}
-                <p className="text-xs sm:text-sm md:text-base font-bold text-slate-900 leading-relaxed tracking-tight text-center">
-                  {renderQuestionWithHighlight(currentItem)}
-                </p>
+                <span>{currentItem.prefix}</span>
+                <span className={currentItem.highlightClass}>
+                  {currentItem.highlight}
+                </span>
               </motion.div>
             </AnimatePresence>
           </div>
         </div>
+
       </div>
+
+      {/* Curved Bottom Arch Transition to Next Section */}
+      <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-none pointer-events-none">
+        <svg
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
+          className="relative block w-full h-10 sm:h-16 text-[#F7F9FC] fill-current"
+        >
+          <path d="M0,0 C150,90 350,-40 600,40 C850,120 1050,10 1200,50 L1200,120 L0,120 Z" />
+        </svg>
+      </div>
+
     </section>
   );
 };
+
 
 

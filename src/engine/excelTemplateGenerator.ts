@@ -1,5 +1,7 @@
 import * as XLSX from 'xlsx';
 import { MasterEngineWorkbook } from '../types/residentEngineTypes';
+import { getMainQuestionForTopic } from '../data/contributorTopicsData';
+import { generateDefaultOptionAnswerNarrative } from '../utils/excelEngine';
 
 export function generateDataDrivenMasterExcelWorkbook(workbookData: MasterEngineWorkbook): Uint8Array {
   const wb = XLSX.utils.book_new();
@@ -29,18 +31,22 @@ export function generateDataDrivenMasterExcelWorkbook(workbookData: MasterEngine
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(profileRows), 'Profile_Questions');
 
   // 3. Topics Sheet
-  const topicsRows = (workbookData.topics || []).map(t => ({
-    Topic_ID: t.topicId,
-    Topic_Name: t.topicName,
-    Category: t.category,
-    Description: t.description,
-    Icon: t.icon,
-    Display_Order: t.displayOrder,
-    Status: t.status
-  }));
+  const topicsRows = (workbookData.topics || []).map(t => {
+    const mainQ = t.mainQuestion || getMainQuestionForTopic(t.topicId);
+    return {
+      Topic_ID: t.topicId,
+      Topic_Name: t.topicName,
+      Main_Question: mainQ,
+      Category: t.category,
+      Description: t.description,
+      Icon: t.icon,
+      Display_Order: t.displayOrder,
+      Status: t.status
+    };
+  });
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(topicsRows), 'Topics');
 
-  // 4. Questions Sheet (Clean & Direct with Individual Option Columns)
+  // 4. Questions Sheet (Clean & Direct with Main Question and Option_N / Answer_N Columns)
   const questionsRows = (workbookData.questions || []).map(q => {
     let optsList: string[] = [];
     if (q.optionsPipeSeparated) {
@@ -57,9 +63,13 @@ export function generateDataDrivenMasterExcelWorkbook(workbookData: MasterEngine
       optsList = ['1 Star - Poor', '2 Stars - Below Average', '3 Stars - Average', '4 Stars - Good', '5 Stars - Excellent'];
     }
 
+    const topicMainQ = (workbookData.topics || []).find(t => t.topicId === q.topicId)?.mainQuestion || getMainQuestionForTopic(q.topicId);
+    const mainQuestionText = q.mainQuestionText || topicMainQ;
+
     const rowObj: any = {
       Question_ID: q.questionId,
       Topic_ID: q.topicId,
+      Main_Question: mainQuestionText,
       Question_Text: q.questionText,
       Help_Text: q.helpText || '',
       Question_Type: q.questionType,
@@ -70,9 +80,12 @@ export function generateDataDrivenMasterExcelWorkbook(workbookData: MasterEngine
       Status: q.status
     };
 
-    // Add individual option columns Option_1 to Option_8
+    // Add Option_1, Answer_1, Option_2, Answer_2, ... Option_8, Answer_8
     for (let i = 0; i < 8; i++) {
-      rowObj[`Option_${i + 1}`] = optsList[i] || '';
+      const optText = optsList[i] || '';
+      const ansText = (q.answers && q.answers[i]) ? q.answers[i] : generateDefaultOptionAnswerNarrative(q.questionText, optText, i);
+      rowObj[`Option_${i + 1}`] = optText;
+      rowObj[`Answer_${i + 1}`] = optText ? ansText : '';
     }
 
     rowObj['Options_Pipe_Separated'] = optsList.join(' | ');
