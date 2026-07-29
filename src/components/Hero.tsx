@@ -98,14 +98,14 @@ export const Hero: React.FC<HeroProps> = ({
   const currentItem = questionItems[currentQuestionIndex];
 
   return (
-    <section className="relative pt-10 pb-20 sm:pt-16 sm:pb-28 overflow-hidden bg-slate-50">
+    <section className="relative pt-5 pb-5 sm:pt-5 sm:pb-5 flex flex-col justify-center overflow-hidden bg-slate-50">
       
-      {/* User's Exact Uploaded Background Image */}
+      {/* Background Image Container */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
         <img
           src={heroBgImage}
           alt="Modern Luxury Apartment Towers Plaza"
-          className="w-full h-full object-cover object-top sm:object-center opacity-65 sm:opacity-60 transition-opacity duration-300"
+          className="w-full h-full object-cover object-[center_35%] opacity-70 sm:opacity-65 transition-opacity duration-300 scale-105"
           onError={(e) => {
             // Fallback to /hero-bg.png if asset bundle fails
             const target = e.currentTarget;
@@ -114,8 +114,8 @@ export const Hero: React.FC<HeroProps> = ({
             }
           }}
         />
-        {/* Soft Legibility Gradient Mask for Text Contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/55 to-slate-50/90" />
+        {/* Balanced High-Key Gradient Mask for Crisp Image Visibility & Text Contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/85 via-white/55 to-slate-50/95" />
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto text-center space-y-6 sm:space-y-7 px-4">
@@ -140,14 +140,16 @@ export const Hero: React.FC<HeroProps> = ({
           </p>
         </div>
 
-        {/* 3. Supporting Taglines */}
-        <div className="text-slate-600 text-sm sm:text-base font-normal leading-relaxed space-y-0.5">
-          <p className="text-slate-600 font-medium">Know what residents know before you decide.</p>
-          <p className="text-slate-900 font-bold">Get real answers from real residents.</p>
+        {/* Supporting Line above Search Bar */}
+        <div className="pt-2 pb-1">
+          <p className="text-sm sm:text-base md:text-lg font-extrabold tracking-tight text-slate-900 inline-flex flex-wrap items-center justify-center gap-1.5 bg-blue-50/90 border border-blue-200/90 px-4 py-1.5 rounded-full shadow-2xs">
+            <span>Know What Residents Know</span>
+            <span className="text-blue-600 font-black">Before Making A Decision.</span>
+          </p>
         </div>
 
         {/* 4. Glassmorphic Elevated Floating Search Bar */}
-        <div id="hero-search-container" className="relative max-w-2xl mx-auto pt-2">
+        <div id="hero-search-container" className="relative max-w-xl mx-auto pt-1">
           <AnimatePresence>
             {isGlowing && (
               <motion.div
@@ -164,11 +166,11 @@ export const Hero: React.FC<HeroProps> = ({
           </AnimatePresence>
 
           <form onSubmit={handleSearchSubmit} className="relative z-10">
-            <div className={`relative bg-white/90 backdrop-blur-md border rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 shadow-2xl shadow-blue-900/10 transition-all flex items-center ${
-              isGlowing ? 'border-[#2563EB] ring-4 ring-blue-500/30' : 'border-slate-200/90 hover:border-slate-300 hover:shadow-blue-900/15'
+            <div className={`relative bg-white/95 backdrop-blur-md border rounded-xl sm:rounded-2xl p-1.5 sm:p-2 shadow-lg shadow-slate-900/5 transition-all flex items-center ${
+              isGlowing ? 'border-[#2563EB] ring-4 ring-blue-500/30' : 'border-slate-200/90 hover:border-slate-300 hover:shadow-slate-900/10'
             }`}>
-              <div className="pl-3.5 pr-2 text-slate-400">
-                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+              <div className="pl-3 pr-2 text-slate-400">
+                <Search className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
               </div>
               <input
                 id="hero-search-input"
@@ -180,14 +182,14 @@ export const Hero: React.FC<HeroProps> = ({
                 }}
                 onFocus={() => setShowDropdown(true)}
                 placeholder="Search any society..."
-                className="w-full text-sm sm:text-base text-slate-900 bg-transparent focus:outline-none placeholder:text-slate-400 font-sans font-medium"
+                className="w-full text-xs sm:text-sm text-slate-900 bg-transparent focus:outline-none placeholder:text-slate-400 placeholder:text-xs sm:placeholder:text-sm font-sans font-normal"
               />
               <button
                 type="submit"
-                className="shrink-0 bg-[#2563EB] hover:bg-blue-700 active:scale-[0.98] text-white font-semibold text-sm sm:text-base px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl transition-all shadow-md shadow-blue-600/25 flex items-center gap-2 cursor-pointer"
+                className="shrink-0 bg-[#2563EB] hover:bg-blue-700 active:scale-[0.98] text-white font-medium text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all shadow-sm shadow-blue-600/25 flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Search</span>
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
           </form>

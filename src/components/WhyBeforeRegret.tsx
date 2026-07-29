@@ -391,16 +391,37 @@ export const WhyBeforeRegret: React.FC<WhyBeforeRegretProps> = ({
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center space-y-8 relative z-10">
           
           <div className="space-y-4">
+            <span className="text-blue-400 font-extrabold uppercase tracking-wider text-xs sm:text-sm block">Before Regret</span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
-              Know what residents know before you decide.
+              Read Answers Of People Who Actually Live There.
             </h2>
             <p className="text-base sm:text-lg text-slate-300 max-w-xl mx-auto leading-relaxed">
               Search any residential society to unlock direct answers from people who live there right now.
             </p>
-            <div className="pt-1">
-              <span className="inline-block bg-blue-500/20 border border-blue-400/40 text-blue-300 font-bold text-sm sm:text-base px-4 py-1.5 rounded-full shadow-sm">
-                Unlock your answer now for Rs 129 only.
+            <div className="pt-2 flex flex-col items-center justify-center space-y-1.5">
+              <span className="text-white text-[15px] leading-[17px] font-medium tracking-tight">
+                Unlock your answer now for
               </span>
+              <div className="relative inline-flex items-center justify-center pt-0.5">
+                {/* Subtle Animated Aura Glow */}
+                <motion.div
+                  animate={{
+                    scale: [0.96, 1.08, 0.96],
+                    opacity: [0.4, 0.8, 0.4],
+                  }}
+                  transition={{
+                    duration: 2.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute -inset-1 rounded-full bg-gradient-to-r from-[#44ade8] via-blue-400 to-[#44ade8] blur-md pointer-events-none"
+                />
+                
+                {/* Highlighted Badge */}
+                <span className="relative z-10 inline-block bg-white text-slate-950 font-extrabold text-sm sm:text-base px-5 py-1.5 rounded-full border-2 border-[#44ade8] shadow-lg shadow-blue-500/20">
+                  Rs. 129 only
+                </span>
+              </div>
             </div>
           </div>
 
