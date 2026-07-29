@@ -24,17 +24,9 @@ export const HowItWorks: React.FC = () => {
   ];
 
   return (
-    <section className="py-6 sm:py-8 bg-slate-50/80 border-y border-slate-200/60">
+    <section className="py-6 sm:py-8 bg-slate-50/80">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         
-        {/* Compact Header */}
-        <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <h2 className="text-[11px] uppercase tracking-widest font-bold text-slate-400">
-            How It Works
-          </h2>
-          <span className="text-[11px] text-slate-400 font-medium">3 Simple Steps</span>
-        </div>
-
         {/* Compact 3-Step Horizontal Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           {steps.map((step) => {
