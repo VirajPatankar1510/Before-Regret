@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, MapPin, Building2, Loader2, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import L from 'leaflet';
+import { 
+  Building2, Loader2, AlertCircle, MapPin, 
+  Layers, Navigation, CheckCircle2, ArrowRight, Search 
+} from 'lucide-react';
 import { PropertySearchResult } from '../types';
 
 interface AddressSearchBoxProps {
@@ -8,8 +12,8 @@ interface AddressSearchBoxProps {
 
 const SAMPLE_PROPERTIES: PropertySearchResult[] = [
   {
-    placeId: 'sample_austin',
-    formattedAddress: '1204 Oakridge Dr, Austin, TX 78701',
+    placeId: 'sample_austin_society',
+    formattedAddress: 'Oakridge Residential Society, 1204 Oakridge Dr, Austin, TX 78701',
     streetNumber: '1204',
     streetName: 'Oakridge Dr',
     city: 'Austin',
@@ -19,12 +23,12 @@ const SAMPLE_PROPERTIES: PropertySearchResult[] = [
     country: 'United States',
     lat: 30.2672,
     lon: -97.7431,
-    propertyType: 'Single Family Home',
-    displayName: '1204 Oakridge Dr, Austin, TX 78701'
+    propertyType: 'Residential Society / Complex',
+    displayName: 'Oakridge Residential Society, 1204 Oakridge Dr, Austin, TX 78701'
   },
   {
-    placeId: 'sample_sf',
-    formattedAddress: '450 Sutter St, San Francisco, CA 94108',
+    placeId: 'sample_sf_condo',
+    formattedAddress: 'Sutter Street Condo Complex, 450 Sutter St, San Francisco, CA 94108',
     streetNumber: '450',
     streetName: 'Sutter St',
     city: 'San Francisco',
@@ -34,12 +38,12 @@ const SAMPLE_PROPERTIES: PropertySearchResult[] = [
     country: 'United States',
     lat: 37.7897,
     lon: -122.4080,
-    propertyType: 'Condo / Townhouse',
-    displayName: '450 Sutter St, San Francisco, CA 94108'
+    propertyType: 'Condo / Townhouse Complex',
+    displayName: 'Sutter Street Condo Complex, 450 Sutter St, San Francisco, CA 94108'
   },
   {
-    placeId: 'sample_miami',
-    formattedAddress: '1100 Ocean Dr, Miami Beach, FL 33139',
+    placeId: 'sample_miami_enclave',
+    formattedAddress: 'Ocean Palms Residential Enclave, 1100 Ocean Dr, Miami Beach, FL 33139',
     streetNumber: '1100',
     streetName: 'Ocean Dr',
     city: 'Miami Beach',
@@ -49,12 +53,12 @@ const SAMPLE_PROPERTIES: PropertySearchResult[] = [
     country: 'United States',
     lat: 25.7820,
     lon: -80.1303,
-    propertyType: 'Condo / Townhouse',
-    displayName: '1100 Ocean Dr, Miami Beach, FL 33139'
+    propertyType: 'Residential Society / Complex',
+    displayName: 'Ocean Palms Residential Enclave, 1100 Ocean Dr, Miami Beach, FL 33139'
   },
   {
-    placeId: 'sample_springfield',
-    formattedAddress: '742 Evergreen Terrace, Springfield, OR 97477',
+    placeId: 'sample_springfield_heights',
+    formattedAddress: 'Evergreen Heights Society, 742 Evergreen Terrace, Springfield, OR 97477',
     streetNumber: '742',
     streetName: 'Evergreen Terrace',
     city: 'Springfield',
@@ -64,283 +68,649 @@ const SAMPLE_PROPERTIES: PropertySearchResult[] = [
     country: 'United States',
     lat: 44.0462,
     lon: -123.0220,
-    propertyType: 'Single Family Home',
-    displayName: '742 Evergreen Terrace, Springfield, OR 97477'
+    propertyType: 'Residential Society / Complex',
+    displayName: 'Evergreen Heights Society, 742 Evergreen Terrace, Springfield, OR 97477'
   }
 ];
 
-export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty }) => {
-  const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<PropertySearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+// Helper to check non-residential public/commercial/government places
+const checkNonResidential = (
+  displayName: string,
+  itemClass?: string,
+  itemType?: string,
+  tags?: Record<string, string>
+): { isNonResidential: boolean; category: string } => {
+  const lower = (displayName || '').toLowerCase();
 
-  // Debounce search with OpenStreetMap Nominatim
+  // Strict check ONLY for obvious public government/civic/institutional places
+  const publicFacilityPatterns = [
+    { regex: /\b(police station|law enforcement|sheriff office)\b/i, cat: 'Police / Law Enforcement' },
+    { regex: /\b(fire station|fire department)\b/i, cat: 'Fire Station' },
+    { regex: /\b(city hall|town hall|courthouse|county court)\b/i, cat: 'Government / Civic' },
+    { regex: /\b(post office|usps)\b/i, cat: 'Postal Service' },
+    { regex: /\b(jail|prison|detention center)\b/i, cat: 'Correctional Facility' },
+    { regex: /\b(elementary school|middle school|high school|public school)\b/i, cat: 'School' },
+    { regex: /\b(hospital|medical center)\b/i, cat: 'Hospital / Medical' },
+  ];
+
+  for (const p of publicFacilityPatterns) {
+    if (p.regex.test(lower)) {
+      return { isNonResidential: true, category: p.cat };
+    }
+  }
+
+  if (tags) {
+    const amenity = (tags.amenity || '').toLowerCase();
+    const government = (tags.government || '').toLowerCase();
+    if (government) return { isNonResidential: true, category: `Government (${government})` };
+    if (['police', 'fire_station', 'courthouse', 'post_office', 'prison', 'hospital'].includes(amenity)) {
+      return { isNonResidential: true, category: amenity };
+    }
+  }
+
+  return { isNonResidential: false, category: '' };
+};
+
+export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty }) => {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markerInstanceRef = useRef<L.Marker | null>(null);
+  const buildingLayerGroupRef = useRef<L.LayerGroup | null>(null);
+
+  const streetTileLayerRef = useRef<L.TileLayer | null>(null);
+  const satelliteTileLayerRef = useRef<L.TileLayer | null>(null);
+  const satelliteLabelsLayerRef = useRef<L.TileLayer | null>(null);
+
+  const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
+  const [isLoadingBuildings, setIsLoadingBuildings] = useState(false);
+  const [detectedBuildingCount, setDetectedBuildingCount] = useState(0);
+  const [isSatelliteView, setIsSatelliteView] = useState(false);
+  const [selectedPinResult, setSelectedPinResult] = useState<PropertySearchResult | null>(null);
+  const [nonResNotice, setNonResNotice] = useState<{ isFacility: boolean; name: string; category: string } | null>(null);
+
+  const [mapSearchQuery, setMapSearchQuery] = useState('');
+  const [isSearchingMap, setIsSearchingMap] = useState(false);
+  const [mapSearchError, setMapSearchError] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Debounced auto-suggestions as user types in search
   useEffect(() => {
-    if (query.trim().length < 3) {
+    if (!mapSearchQuery.trim() || mapSearchQuery.trim().length < 3) {
       setSuggestions([]);
-      setIsLoading(false);
+      setShowSuggestions(false);
       return;
     }
 
     const timer = setTimeout(async () => {
-      setIsLoading(true);
       try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=us&q=${encodeURIComponent(query)}&limit=6`
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(mapSearchQuery.trim())}&addressdetails=1&limit=5`
         );
-        if (response.ok) {
-          const data = await response.json();
-          const mappedResults: PropertySearchResult[] = data.map((item: any, idx: number) => {
-            const addr = item.address || {};
-            const city = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || 'Austin';
-            const state = addr.state_code ? addr.state_code.toUpperCase() : (addr.state || 'TX');
-            const zip = addr.postcode || '78701';
-            const county = addr.county || '';
-            const street = [addr.house_number, addr.road].filter(Boolean).join(' ');
-
-            let pType: PropertySearchResult['propertyType'] = 'Single Family Home';
-            if (item.type === 'condominium' || item.type === 'apartments' || query.toLowerCase().includes('condo') || query.toLowerCase().includes('apt')) {
-              pType = 'Condo / Townhouse';
-            } else if (item.type === 'building' || item.type === 'commercial') {
-              pType = 'Apartment Complex';
-            }
-
-            return {
-              placeId: `osm_${item.place_id || idx}`,
-              formattedAddress: item.display_name,
-              streetNumber: addr.house_number,
-              streetName: addr.road,
-              city,
-              state,
-              zipCode: zip,
-              county,
-              country: 'United States',
-              lat: parseFloat(item.lat),
-              lon: parseFloat(item.lon),
-              propertyType: pType,
-              displayName: street ? `${street}, ${city}, ${state} ${zip}` : item.display_name
-            };
-          });
-
-          setSuggestions(mappedResults);
-          setIsOpen(true);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            setSuggestions(data);
+            setShowSuggestions(true);
+          } else {
+            setSuggestions([]);
+          }
         }
       } catch (err) {
-        console.error('Nominatim address search error:', err);
-      } finally {
-        setIsLoading(false);
+        console.warn('Suggestions fetch error:', err);
       }
     }, 350);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [mapSearchQuery]);
 
-  // Click outside listener
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const selectLocation = (lat: number, lon: number, name?: string, item?: any) => {
+    setShowSuggestions(false);
+    if (name) setMapSearchQuery(name);
+    if (mapInstanceRef.current && !isNaN(lat) && !isNaN(lon)) {
+      mapInstanceRef.current.flyTo([lat, lon], 18, { duration: 1.2 });
+      updateMarkerPosition(lat, lon);
+      
+      if (item && item.address) {
+        const addr = item.address || {};
+        const city = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.hamlet || addr.county || '';
+        const state = addr.state_code ? addr.state_code.toUpperCase() : (addr.state || '');
+        const zip = addr.postcode || '';
+        const county = addr.county || '';
+        const houseNumber = addr.house_number || '';
+        const road = addr.road || addr.street || addr.pedestrian || addr.footway || '';
 
-  const [publicFacilityNotice, setPublicFacilityNotice] = useState<{ isFacility: boolean; name: string; category: string } | null>(null);
+        const nonResCheck = checkNonResidential(item.display_name, item.class, item.type, item.extratags);
+        if (nonResCheck.isNonResidential) {
+          setNonResNotice({
+            isFacility: true,
+            name: item.display_name,
+            category: nonResCheck.category
+          });
+        }
 
-  // Helper function to check if query or result is a public/government facility
-  const checkPublicFacility = (displayName: string, itemType?: string): { isFacility: boolean; category: string } => {
-    const lower = displayName.toLowerCase();
-    const facilityKeywords = [
-      { key: 'school', cat: 'Educational Institution / School' },
-      { key: 'high school', cat: 'Educational Institution / School' },
-      { key: 'elementary', cat: 'Educational Institution / School' },
-      { key: 'university', cat: 'University / College' },
-      { key: 'college', cat: 'University / College' },
-      { key: 'park', cat: 'Public Park / Recreation Facility' },
-      { key: 'courthouse', cat: 'Government / Judicial Facility' },
-      { key: 'court', cat: 'Government / Judicial Facility' },
-      { key: 'city hall', cat: 'Municipal / Government Facility' },
-      { key: 'post office', cat: 'U.S. Postal Service Facility' },
-      { key: 'hospital', cat: 'Medical / Healthcare Facility' },
-      { key: 'military', cat: 'Military / Defense Facility' },
-      { key: 'base', cat: 'Military / Defense Facility' },
-      { key: 'museum', cat: 'Public Cultural / Museum' },
-      { key: 'police', cat: 'Public Safety / Law Enforcement' },
-      { key: 'fire station', cat: 'Public Safety / Fire Station' },
-      { key: 'library', cat: 'Public Library' }
-    ];
+        let pType: PropertySearchResult['propertyType'] = 'Residential Society / Complex';
+        const itemTypeLower = (item.type || '').toLowerCase();
+        const displayNameLower = (item.display_name || '').toLowerCase();
 
-    for (const f of facilityKeywords) {
-      if (lower.includes(f.key)) {
-        return { isFacility: true, category: f.cat };
+        if (itemTypeLower === 'condominium' || displayNameLower.includes('condo') || displayNameLower.includes('townhouse')) {
+          pType = 'Condo / Townhouse Complex';
+        } else if (itemTypeLower === 'apartments' || displayNameLower.includes('apartment') || displayNameLower.includes('complex') || displayNameLower.includes('tower')) {
+          pType = 'Apartment / Condo Complex';
+        } else if (displayNameLower.includes('society') || displayNameLower.includes('residence') || displayNameLower.includes('enclave') || displayNameLower.includes('heights') || displayNameLower.includes('villas')) {
+          pType = 'Residential Society / Complex';
+        } else {
+          pType = 'Single Family Residential';
+        }
+
+        const cleanDisplayName = item.display_name.replace(/,\s*United States$/i, '');
+
+        setSelectedPinResult({
+          placeId: `map_pin_${item.place_id || Math.random().toString(36).substring(7)}`,
+          formattedAddress: cleanDisplayName,
+          streetNumber: houseNumber,
+          streetName: road,
+          city,
+          state,
+          zipCode: zip,
+          county,
+          country: 'United States',
+          lat,
+          lon,
+          propertyType: pType,
+          displayName: cleanDisplayName
+        });
+      } else {
+        fetchAddressFromCoords(lat, lon);
       }
     }
-    return { isFacility: false, category: '' };
   };
 
-  const handleSelect = (prop: PropertySearchResult) => {
-    const facilityCheck = checkPublicFacility(prop.displayName || prop.formattedAddress);
-    if (facilityCheck.isFacility) {
-      setPublicFacilityNotice({
-        isFacility: true,
-        name: prop.displayName || prop.formattedAddress,
-        category: facilityCheck.category
-      });
-      setIsOpen(false);
+  const handleMapSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!mapSearchQuery.trim()) return;
+
+    setShowSuggestions(false);
+    setIsSearchingMap(true);
+    setMapSearchError(null);
+
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(mapSearchQuery.trim())}&addressdetails=1&limit=5`
+      );
+      if (res.ok) {
+        const results = await res.json();
+        if (results && results.length > 0) {
+          const first = results[0];
+          const lat = parseFloat(first.lat);
+          const lon = parseFloat(first.lon);
+          selectLocation(lat, lon, first.display_name, first);
+        } else {
+          setMapSearchError('Location not found. Please try entering a city, address, or society name.');
+        }
+      }
+    } catch (err) {
+      console.error('Map search error:', err);
+      setMapSearchError('Failed to search location.');
+    } finally {
+      setIsSearchingMap(false);
+    }
+  };
+
+  // Custom pin icon
+  const createPinIcon = () => {
+    return L.divIcon({
+      className: 'custom-leaflet-marker',
+      html: `
+        <div class="relative flex flex-col items-center justify-end" style="width:36px; height:44px; cursor:grab;">
+          <div class="w-9 h-9 bg-blue-600 border-2 border-white text-white rounded-full flex items-center justify-center shadow-2xl ring-4 ring-blue-500/30">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-blue-600 -mt-[1px]"></div>
+        </div>
+      `,
+      iconSize: [36, 44],
+      iconAnchor: [18, 44],
+    });
+  };
+
+  // Reverse geocode
+  const fetchAddressFromCoords = async (lat: number, lon: number) => {
+    setIsReverseGeocoding(true);
+    setNonResNotice(null);
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1&zoom=18`
+      );
+      if (response.ok) {
+        const item = await response.json();
+        const addr = item.address || {};
+        const city = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.hamlet || addr.county || '';
+        const state = addr.state_code ? addr.state_code.toUpperCase() : (addr.state || '');
+        const zip = addr.postcode || '';
+        const county = addr.county || '';
+        const houseNumber = addr.house_number || '';
+        const road = addr.road || addr.street || addr.pedestrian || addr.footway || '';
+        const street = [houseNumber, road].filter(Boolean).join(' ');
+
+        const nonResCheck = checkNonResidential(item.display_name, item.class, item.type, item.extratags);
+        if (nonResCheck.isNonResidential) {
+          setNonResNotice({
+            isFacility: true,
+            name: item.display_name,
+            category: nonResCheck.category
+          });
+        }
+
+        let pType: PropertySearchResult['propertyType'] = 'Residential Society / Complex';
+        const itemTypeLower = (item.type || '').toLowerCase();
+        const displayNameLower = (item.display_name || '').toLowerCase();
+
+        if (itemTypeLower === 'condominium' || displayNameLower.includes('condo') || displayNameLower.includes('townhouse')) {
+          pType = 'Condo / Townhouse Complex';
+        } else if (itemTypeLower === 'apartments' || displayNameLower.includes('apartment') || displayNameLower.includes('complex') || displayNameLower.includes('tower')) {
+          pType = 'Apartment / Condo Complex';
+        } else if (displayNameLower.includes('society') || displayNameLower.includes('residence') || displayNameLower.includes('enclave') || displayNameLower.includes('heights') || displayNameLower.includes('villas')) {
+          pType = 'Residential Society / Complex';
+        } else {
+          pType = 'Single Family Residential';
+        }
+
+        let cleanDisplayName = item.display_name;
+        if (street && city && state) {
+          cleanDisplayName = zip ? `${street}, ${city}, ${state} ${zip}` : `${street}, ${city}, ${state}`;
+        } else {
+          cleanDisplayName = item.display_name.replace(/,\s*United States$/i, '');
+        }
+
+        setSelectedPinResult({
+          placeId: `map_pin_${item.place_id || Math.random().toString(36).substring(7)}`,
+          formattedAddress: cleanDisplayName,
+          streetNumber: houseNumber,
+          streetName: road,
+          city,
+          state,
+          zipCode: zip,
+          county,
+          country: 'United States',
+          lat,
+          lon,
+          propertyType: pType,
+          displayName: cleanDisplayName
+        });
+      }
+    } catch (err) {
+      console.error('Map pin reverse geocoding error:', err);
+    } finally {
+      setIsReverseGeocoding(false);
+    }
+  };
+
+  // Fetch nearby residential buildings
+  const fetchNearbyBuildings = async (map: L.Map) => {
+    if (map.getZoom() < 14) {
+      if (buildingLayerGroupRef.current) buildingLayerGroupRef.current.clearLayers();
+      setDetectedBuildingCount(0);
       return;
     }
 
-    setPublicFacilityNotice(null);
-    setQuery(prop.displayName || prop.formattedAddress);
-    setIsOpen(false);
-    onSelectProperty(prop);
+    setIsLoadingBuildings(true);
+    const bounds = map.getBounds();
+    const s = bounds.getSouth();
+    const w = bounds.getWest();
+    const n = bounds.getNorth();
+    const e = bounds.getEast();
+
+    // Strict Overpass query ONLY for residential buildings & societies
+    const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json][timeout:12];(` +
+      `way["building"="apartments"]["name"](${s},${w},${n},${e});` +
+      `way["building"="residential"]["name"](${s},${w},${n},${e});` +
+      `way["building"="condominium"]["name"](${s},${w},${n},${e});` +
+      `way["building"="townhouse"]["name"](${s},${w},${n},${e});` +
+      `way["landuse"="residential"]["name"](${s},${w},${n},${e});` +
+      `way["place"="housing_estate"]["name"](${s},${w},${n},${e});` +
+      `relation["building"="apartments"]["name"](${s},${w},${n},${e});` +
+      `relation["building"="residential"]["name"](${s},${w},${n},${e});` +
+      `relation["place"="housing_estate"]["name"](${s},${w},${n},${e});` +
+      `node["place"="housing_estate"]["name"](${s},${w},${n},${e});` +
+      `);out center 35;`;
+
+    try {
+      const res = await fetch(overpassUrl);
+      if (res.ok) {
+        const data = await res.json();
+        if (!buildingLayerGroupRef.current) {
+          buildingLayerGroupRef.current = L.layerGroup().addTo(map);
+        } else {
+          buildingLayerGroupRef.current.clearLayers();
+        }
+
+        let count = 0;
+        const elements = data.elements || [];
+
+        elements.forEach((el: any) => {
+          const name = el.tags?.name || el.tags?.['building:name'] || el.tags?.description;
+          if (!name) return;
+
+          const nonRes = checkNonResidential(
+            name,
+            el.tags?.amenity || el.tags?.shop || el.tags?.office,
+            el.tags?.building,
+            el.tags
+          );
+          if (nonRes.isNonResidential) return;
+
+          const lat = el.lat || el.center?.lat;
+          const lon = el.lon || el.center?.lon;
+
+          if (lat && lon) {
+            count++;
+            const buildingIcon = L.divIcon({
+              className: 'custom-building-label-marker',
+              html: `
+                <div class="group relative flex items-center gap-1.5 bg-slate-900/90 hover:bg-blue-600 border border-blue-400/50 text-white px-2.5 py-1 rounded-xl shadow-xl cursor-pointer transition-all transform hover:scale-105 active:scale-95">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-400 group-hover:text-white shrink-0"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+                  <span class="text-[11px] font-bold tracking-tight whitespace-nowrap max-w-[160px] truncate">${name}</span>
+                </div>
+              `,
+              iconAnchor: [40, 15]
+            });
+
+            const bMarker = L.marker([lat, lon], { icon: buildingIcon });
+            bMarker.on('click', (e) => {
+              L.DomEvent.stopPropagation(e);
+              if (mapInstanceRef.current) {
+                mapInstanceRef.current.setView([lat, lon], 17);
+              }
+              updateMarkerPosition(lat, lon);
+              fetchAddressFromCoords(lat, lon);
+            });
+
+            buildingLayerGroupRef.current?.addLayer(bMarker);
+          }
+        });
+
+        setDetectedBuildingCount(count);
+      }
+    } catch (err) {
+      console.warn('Overpass building fetch error:', err);
+    } finally {
+      setIsLoadingBuildings(false);
+    }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
+  const updateMarkerPosition = (lat: number, lon: number) => {
+    if (!mapInstanceRef.current) return;
 
-    if (suggestions.length > 0) {
-      handleSelect(suggestions[0]);
+    if (!markerInstanceRef.current) {
+      markerInstanceRef.current = L.marker([lat, lon], {
+        icon: createPinIcon(),
+        draggable: true
+      }).addTo(mapInstanceRef.current);
+
+      markerInstanceRef.current.setZIndexOffset(1000);
+
+      markerInstanceRef.current.on('dragend', (e) => {
+        const marker = e.target;
+        const position = marker.getLatLng();
+        fetchAddressFromCoords(position.lat, position.lng);
+      });
     } else {
-      // Create fallback property result from entered string
-      const parts = query.split(',').map(s => s.trim());
-      const customProp: PropertySearchResult = {
-        placeId: `custom_${Date.now()}`,
-        formattedAddress: query,
-        city: parts[1] || 'Austin',
-        state: parts[2]?.slice(0, 2) || 'TX',
-        zipCode: '78701',
-        county: 'Travis County',
-        country: 'United States',
-        lat: 30.2672,
-        lon: -97.7431,
-        propertyType: query.toLowerCase().includes('condo') ? 'Condo / Townhouse' : 'Single Family Home',
-        displayName: query
-      };
-      handleSelect(customProp);
+      markerInstanceRef.current.setLatLng([lat, lon]);
+      markerInstanceRef.current.setZIndexOffset(1000);
+    }
+  };
+
+  // Init Map directly inline
+  useEffect(() => {
+    if (!mapContainerRef.current || mapInstanceRef.current) return;
+
+    const initialLat = SAMPLE_PROPERTIES[0].lat;
+    const initialLon = SAMPLE_PROPERTIES[0].lon;
+
+    const map = L.map(mapContainerRef.current, {
+      center: [initialLat, initialLon],
+      zoom: 16,
+      zoomControl: false
+    });
+
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    streetTileLayerRef.current = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19
+    });
+
+    satelliteTileLayerRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri',
+      maxZoom: 19
+    });
+
+    satelliteLabelsLayerRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19
+    });
+
+    // Default to Street Map View
+    streetTileLayerRef.current.addTo(map);
+
+    map.on('click', (e: L.LeafletMouseEvent) => {
+      const { lat, lng } = e.latlng;
+      updateMarkerPosition(lat, lng);
+      fetchAddressFromCoords(lat, lng);
+    });
+
+    map.on('moveend', () => {
+      fetchNearbyBuildings(map);
+    });
+
+    mapInstanceRef.current = map;
+    updateMarkerPosition(initialLat, initialLon);
+    fetchAddressFromCoords(initialLat, initialLon);
+    fetchNearbyBuildings(map);
+
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
+
+  // Toggle tile layer
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+    const map = mapInstanceRef.current;
+
+    if (isSatelliteView) {
+      if (streetTileLayerRef.current) map.removeLayer(streetTileLayerRef.current);
+      if (satelliteTileLayerRef.current) satelliteTileLayerRef.current.addTo(map);
+      if (satelliteLabelsLayerRef.current) satelliteLabelsLayerRef.current.addTo(map);
+    } else {
+      if (satelliteTileLayerRef.current) map.removeLayer(satelliteTileLayerRef.current);
+      if (satelliteLabelsLayerRef.current) map.removeLayer(satelliteLabelsLayerRef.current);
+      if (streetTileLayerRef.current) streetTileLayerRef.current.addTo(map);
+    }
+  }, [isSatelliteView]);
+
+  const handleSelectSample = (prop: PropertySearchResult) => {
+    if (mapInstanceRef.current && prop.lat && prop.lon) {
+      mapInstanceRef.current.setView([prop.lat, prop.lon], 17);
+      updateMarkerPosition(prop.lat, prop.lon);
+      fetchAddressFromCoords(prop.lat, prop.lon);
     }
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-4" ref={dropdownRef}>
+    <div className="w-full max-w-4xl mx-auto space-y-4 text-left">
       
-      {/* Public / Government Facility Notification Banner */}
-      {publicFacilityNotice && (
-        <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 shadow-lg space-y-3 relative text-left">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2 text-amber-900 font-extrabold text-sm">
-              <Building2 className="w-5 h-5 text-amber-700 shrink-0" />
-              <span>Public or Government Facility Detected</span>
+      {/* Map Control Bar (Search + View Controls) */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3 backdrop-blur-md shadow-lg relative z-30">
+        <form onSubmit={handleMapSearch} className="flex-1 min-w-[260px] flex items-center gap-2 relative">
+          <div className="relative flex-1 flex items-center bg-slate-950 border border-slate-700 focus-within:border-blue-500 rounded-xl px-3 py-2 transition-all">
+            <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
+            <input
+              type="text"
+              value={mapSearchQuery}
+              onChange={(e) => {
+                setMapSearchQuery(e.target.value);
+                if (mapSearchError) setMapSearchError(null);
+              }}
+              onFocus={() => {
+                if (suggestions.length > 0) setShowSuggestions(true);
+              }}
+              placeholder="Search city, street address, or society name..."
+              className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-transparent focus:outline-none"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isSearchingMap}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50"
+          >
+            {isSearchingMap ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>Search Map</span>}
+          </button>
+
+          {/* Search Auto-suggestions Dropdown */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden max-h-64 overflow-y-auto divide-y divide-slate-800">
+              {suggestions.map((item, idx) => (
+                <button
+                  key={item.place_id || idx}
+                  type="button"
+                  onClick={() => selectLocation(parseFloat(item.lat), parseFloat(item.lon), item.display_name, item)}
+                  className="w-full text-left px-3.5 py-2.5 hover:bg-blue-600/20 transition-colors flex items-start gap-2.5 text-xs text-slate-200 cursor-pointer"
+                >
+                  <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                  <span className="truncate leading-relaxed font-medium">{item.display_name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </form>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsSatelliteView(!isSatelliteView)}
+            className={`px-3 py-2 border rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              isSatelliteView
+                ? 'bg-blue-600/90 text-white border-blue-400/50 shadow-md shadow-blue-500/20'
+                : 'bg-slate-800 text-slate-300 hover:text-white border-slate-700'
+            }`}
+            title="Toggle between Satellite view and Street map"
+          >
+            <Layers className="w-3.5 h-3.5 text-blue-400" />
+            <span>{isSatelliteView ? 'Satellite View' : 'Street Map'}</span>
+          </button>
+        </div>
+      </div>
+
+      {mapSearchError && (
+        <div className="bg-red-950/80 border border-red-500/30 rounded-xl p-3 text-xs text-red-300 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+          <span>{mapSearchError}</span>
+        </div>
+      )}
+
+      {/* Map View Container */}
+      <div className="relative w-full h-[450px] sm:h-[500px] bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+        
+        {/* Leaflet Canvas */}
+        <div ref={mapContainerRef} className="w-full h-full z-0" />
+
+        {/* Building Status Badge */}
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-200 shadow-xl backdrop-blur-md">
+          <Building2 className="w-4 h-4 text-blue-400 shrink-0" />
+          {isLoadingBuildings ? (
+            <span className="flex items-center gap-1.5 text-blue-300">
+              <Loader2 className="w-3 h-3 animate-spin text-blue-400" />
+              <span>Scanning residential names...</span>
+            </span>
+          ) : detectedBuildingCount > 0 ? (
+            <span className="text-slate-200 font-semibold">
+              <strong className="text-blue-400">{detectedBuildingCount}</strong> Building Labels
+            </span>
+          ) : (
+            <span className="text-slate-400 text-[11px]">
+              Zoom in for building labels
+            </span>
+          )}
+        </div>
+
+        {/* Non-Residential Notice Banner */}
+        {nonResNotice && (
+          <div className="absolute top-4 left-4 right-4 z-20 bg-amber-950/90 border border-amber-500/40 rounded-2xl p-4 text-xs font-medium text-amber-200 shadow-2xl backdrop-blur-md animate-fade-in flex items-start justify-between gap-3">
+            <div className="flex items-start gap-2.5">
+              <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <div className="font-bold text-amber-300 text-sm flex items-center gap-2">
+                  <span>Non-Residential Place Detected</span>
+                  <span className="text-[10px] bg-amber-500/20 border border-amber-400/40 px-2 py-0.5 rounded-full font-mono text-amber-200">
+                    {nonResNotice.category}
+                  </span>
+                </div>
+                <p className="text-amber-100/90 text-xs leading-relaxed">
+                  <strong className="text-white">{nonResNotice.name}</strong> is a non-residential/public facility. Please click on a residential building, apartment complex, or society.
+                </p>
+              </div>
             </div>
             <button
-              onClick={() => setPublicFacilityNotice(null)}
-              className="text-amber-800 hover:text-amber-950 font-bold text-xs underline cursor-pointer"
+              type="button"
+              onClick={() => setNonResNotice(null)}
+              className="text-amber-400 hover:text-white font-bold cursor-pointer"
             >
               Dismiss
             </button>
           </div>
-          <div className="text-xs text-amber-950 font-medium space-y-1.5 leading-relaxed">
-            <p>
-              <strong className="font-bold">{publicFacilityNotice.name}</strong> is classified as a <strong className="font-bold">{publicFacilityNotice.category}</strong>.
-            </p>
-            <p className="text-amber-900">
-              BeforeRegret is specifically designed for residential property buyers (single-family homes, condos, townhouses, and residential land). Residential public record research and home buyer insights do not apply to public or government facilities.
-            </p>
-          </div>
-          <div className="pt-1 text-xs text-slate-700 font-bold">
-            Please enter a residential home address, condo building, or off-market property.
-          </div>
-        </div>
-      )}
+        )}
 
-      {/* Main Search Input Form */}
-      <form onSubmit={handleFormSubmit} className="relative">
-        <div className="relative flex items-center bg-white border-2 border-slate-300 hover:border-slate-400 focus-within:border-blue-600 rounded-2xl shadow-xl transition-all p-2">
-          
-          <div className="pl-3 pr-2 text-slate-400 flex items-center justify-center">
-            {isLoading ? (
-              <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
-            ) : (
-              <Search className="w-6 h-6 text-slate-500" />
+        {/* Bottom Property Selection Panel */}
+        <div className="absolute bottom-2.5 sm:bottom-4 left-2.5 sm:left-4 right-2.5 sm:right-4 z-20 bg-slate-900/95 border border-slate-700/90 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-white shadow-2xl backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 max-h-[50%] sm:max-h-none overflow-y-auto">
+          <div className="min-w-0 flex-1 space-y-0.5 sm:space-y-1">
+            <div className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+              {isReverseGeocoding ? (
+                <span className="flex items-center gap-1.5 text-blue-300">
+                  <Loader2 className="w-3 h-3 animate-spin text-blue-400 shrink-0" />
+                  <span>Identifying Building Address...</span>
+                </span>
+              ) : selectedPinResult ? (
+                <span className="flex items-center gap-1 text-emerald-400 font-bold">
+                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                  <span>Property Selected</span>
+                </span>
+              ) : (
+                <span>Click Any Building on Map</span>
+              )}
+            </div>
+
+            <div className="text-xs sm:text-base font-bold text-white truncate leading-tight sm:leading-normal">
+              {selectedPinResult ? selectedPinResult.displayName : 'Click on a residential building or drag the pin on the map'}
+            </div>
+            
+            {selectedPinResult && (
+              <div className="text-[11px] sm:text-xs text-slate-400 truncate">
+                {[selectedPinResult.city, selectedPinResult.state, selectedPinResult.county].filter(Boolean).join(', ')}
+              </div>
             )}
           </div>
 
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setIsOpen(true);
-            }}
-            onFocus={() => setIsOpen(true)}
-            placeholder="Enter US address, condo building, or community..."
-            className="w-full py-3.5 px-2 text-base sm:text-lg text-slate-900 placeholder:text-slate-400 font-sans font-medium focus:outline-none bg-transparent"
-          />
-
-          <button
-            type="submit"
-            className="px-6 py-3.5 bg-slate-900 hover:bg-blue-600 text-white font-bold text-sm sm:text-base rounded-xl transition-all shadow-md flex items-center gap-2 shrink-0 cursor-pointer"
-          >
-            <span>Research Property</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Autocomplete Dropdown List */}
-        {isOpen && (suggestions.length > 0 || isLoading) && (
-          <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 overflow-hidden divide-y divide-slate-100 max-h-96 overflow-y-auto">
-            {suggestions.map((prop) => (
-              <button
-                key={prop.placeId}
-                type="button"
-                onClick={() => handleSelect(prop)}
-                className="w-full text-left p-4 hover:bg-blue-50/70 transition-colors flex items-start gap-3 cursor-pointer group"
-              >
-                <div className="p-2 rounded-lg bg-slate-100 text-slate-600 group-hover:bg-blue-100 group-hover:text-blue-700 shrink-0 mt-0.5">
-                  <MapPin className="w-4 h-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-bold text-slate-900 truncate">
-                    {prop.displayName}
-                  </div>
-                  <div className="text-xs text-slate-500 truncate mt-0.5 flex items-center gap-2">
-                    <span className="font-semibold text-slate-700">{prop.propertyType}</span>
-                    <span>•</span>
-                    <span>{prop.county ? `${prop.county}, ` : ''}{prop.state}</span>
-                  </div>
-                </div>
-                <span className="text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                  Select →
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-      </form>
-
-      {/* Sample Searches */}
-      <div className="pt-2">
-        <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-          <span>Try a Sample US Address:</span>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {SAMPLE_PROPERTIES.map((prop) => (
+          {selectedPinResult && (
             <button
-              key={prop.placeId}
               type="button"
-              onClick={() => handleSelect(prop)}
-              className="px-3.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 hover:border-slate-300 rounded-full text-xs font-medium text-slate-700 transition-all cursor-pointer shadow-2xs flex items-center gap-1.5"
+              onClick={() => onSelectProperty(selectedPinResult)}
+              className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer shrink-0 tracking-tight"
             >
-              <MapPin className="w-3 h-3 text-slate-400" />
-              <span>{prop.displayName}</span>
+              <span>Generate Intelligence Report</span>
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
             </button>
-          ))}
+          )}
         </div>
+
       </div>
 
     </div>

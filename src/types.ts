@@ -18,7 +18,7 @@ export interface PropertySearchResult {
   country: string;
   lat: number;
   lon: number;
-  propertyType: 'Single Family Home' | 'Condo / Townhouse' | 'Apartment Complex' | 'Commercial / Mixed' | 'Residential Land';
+  propertyType: 'Single Family Home' | 'Condo / Townhouse' | 'Apartment Complex' | 'Commercial / Mixed' | 'Residential Land' | 'Residential Society / Complex' | 'Condo / Townhouse Complex' | 'Apartment / Condo Complex' | 'Single Family Residential';
   displayName: string;
   isPublicFacility?: boolean;
   facilityCategory?: string;
@@ -59,6 +59,16 @@ export interface ThreeColumnFinding {
 }
 
 // Clean 3-Part Finding Structure
+export interface MapLayerOverlay {
+  layerName: string;
+  layerSource: string;
+  lat?: number;
+  lon?: number;
+  boundaryType?: 'flood' | 'noise' | 'facility' | 'zoning' | 'seismic';
+  radiusMiles?: number;
+  detailsText?: string;
+}
+
 export interface ThreePartFinding {
   id: string;
   title: string;
@@ -67,6 +77,38 @@ export interface ThreePartFinding {
   whyItMatters: string;        // 2. Why it matters (distinct objective importance)
   suggestedNextStep: string;   // 3. Suggested next step (neutral action with professional or seller)
   category?: string;
+  baselineComparison?: string; // Factual comparison to typical neighborhood/metro average
+  mapOverlay?: MapLayerOverlay; // Spatial map overlay visualization
+  dataFreshness?: string;      // Data freshness indicator notation
+}
+
+export interface ExecutiveSnapshotItem {
+  id: string;
+  category: string;
+  statusLabel: string;
+  badgeColor?: 'emerald' | 'amber' | 'blue' | 'slate';
+  source: string;
+  lastUpdated?: string;
+}
+
+export interface InsuranceConsiderationItem {
+  id: string;
+  findingTopic: string;
+  publicFact: string;
+  insuranceFactor: string; // Factual statement hedged with "may affect", "commonly requires", "varies by carrier"
+  guidanceNote: string;   // Always directs to confirm with a licensed insurance agent
+  source: string;
+  dataFreshness?: string;
+}
+
+export interface DirectSourceLink {
+  id: string;
+  title: string;
+  agency: string;
+  category: string;
+  directUrl: string;
+  lastUpdatedPeriod: string;
+  description: string;
 }
 
 export interface PropertyRecordItem {
@@ -107,8 +149,69 @@ export interface SourceReference {
   description: string;
 }
 
+export interface PermitLifespanItem {
+  id: string;
+  system: string;
+  standardLifespanYears: string;
+  permitStatus: string;
+  eraExpectation: string;
+  confidence: ConfidenceLevel;
+}
+
+export interface DisclosureLeverItem {
+  id: string;
+  findingTitle: string;
+  publicFact: string;
+  requestedDocument: string;
+  recommendedDisclosureLine: string;
+}
+
+export interface VendorPartner {
+  name: string;
+  phone?: string;
+  rating: number;
+  reviewsCount?: number;
+  tradeCategory: string;
+}
+
+export interface LeadWidget {
+  id: string;
+  findingId: string;
+  tradeCategory: string;
+  title: string;
+  identifiedGap: string;
+  zipCode: string;
+  propertyEra: string;
+  vendors: VendorPartner[];
+  consentStatement: string;
+  status?: 'ACTIVE' | 'SUBMITTED' | 'UNMASKED';
+}
+
+export interface MaskedLeadAsset {
+  leadId: string;
+  zipCode: string;
+  propertyEra: string;
+  identifiedGap: string;
+  tradeCategory: string;
+  timeline: string;
+  smsVerificationStatus: 'OTP Verified' | 'Pending';
+  unlockFee: number; // e.g. 35 ($35)
+  maskedName: string; // "J*** D***"
+  maskedPhone: string; // "(512) ***-4829"
+  maskedAddress: string; // "78701 Area, Austin TX"
+  unmaskedDetails?: {
+    fullName: string;
+    phone: string;
+    address: string;
+    email: string;
+    notes?: string;
+  };
+}
+
 export interface PropertyReport {
   id: string;
+  isNonResidential?: boolean;
+  rejectionReason?: string;
   generatedAt: string;
   readingTimeMinutes: number;
   reportVersion: string;
@@ -139,9 +242,13 @@ export interface PropertyReport {
     totalSourcesCount: number;
   };
 
+  // Executive Snapshot Dashboard
+  executiveSnapshot?: ExecutiveSnapshotItem[];
+
   // Section 1: Executive Overview
   atAGlance: {
     cards: AtAGlanceStatusCard[];
+    dataFreshness?: string;
     mostImportantToVerify: {
       title: string;
       description: string;
@@ -152,16 +259,26 @@ export interface PropertyReport {
 
   // Section 2: Neighborhood & Local Environment
   environmentalTopics: ThreePartFinding[];
+  environmentalDataFreshness?: string;
 
   // Section 3: Property Records & Building Analysis
   propertyRecordsSplit: PropertyRecordsSplit;
+  recordsDataFreshness?: string;
+  permitLifespanMatrix?: PermitLifespanItem[];
 
-  // Section 4: Walkthrough & Seller Guidance
+  // Section 4: Insurance Considerations
+  insuranceConsiderations?: InsuranceConsiderationItem[];
+  insuranceDataFreshness?: string;
+
+  // Section 5: Walkthrough & Seller Guidance
   sellerQuestions: SellerQuestionCard[];
   visitChecklist: VisitChecklistItem[];
+  disclosureLevers?: DisclosureLeverItem[];
 
-  // Section 5: Verified Sources & Report Summary
+  // Section 6: Source Appendix with Direct Links & Verified References
+  leadWidgets?: LeadWidget[];
   sourceReferences: SourceReference[];
+  directSourceLinks?: DirectSourceLink[];
 }
 
 // Compatibility stubs for clean build resolution
