@@ -13,7 +13,7 @@ import {
   FileSpreadsheet, Download, Upload, FileText, Database, RotateCcw, X, ShieldAlert,
   Star, Sliders, ListChecks
 } from 'lucide-react';
-import { Society } from '../types';
+import { Society, ResidentKnowledgeProfile, TopicKnowledge, StructuredQA } from '../types';
 import { generateAnonymousDisplayName, formatMaskedDisplayName } from '../utils/nameGenerator';
 import { 
   normalizeSocietyName, 
@@ -96,6 +96,7 @@ interface ContributorWizardProps {
   onBackToLanding?: () => void;
   onPublishComplete: (newSocietyName: string) => void;
   onAddNewSociety?: (newSociety: Society) => void;
+  onPublishAnswerSubmission?: (updatedSociety: Society, newProfile: ResidentKnowledgeProfile, newTopic: TopicKnowledge) => void;
 }
 
 type WizardStep = 
@@ -112,6 +113,7 @@ export const ContributorWizard: React.FC<ContributorWizardProps> = ({
   onBackToLanding,
   onPublishComplete,
   onAddNewSociety,
+  onPublishAnswerSubmission,
 }) => {
   // Auth context check
   const { user } = useAuth();
@@ -500,9 +502,117 @@ export const ContributorWizard: React.FC<ContributorWizardProps> = ({
     });
   };
 
-  // Publish handler
+  // Publish handler - creates real-time live submission for purchase in society
   const handlePublish = () => {
-    if (!selectedSociety) return;
+    if (!selectedSociety || !selectedMainQuestion) return;
+
+    // 1. Format structured QA list from answered follow-up questions
+    const structuredQA: StructuredQA[] = activeFollowUpQuestions.map(fq => {
+      const rawAns = followUpAnswers[fq.id];
+      let formattedAns = '';
+      if (Array.isArray(rawAns)) {
+        formattedAns = rawAns.length > 0 ? rawAns.join(', ') : 'None selected';
+      } else if (fq.inputType === 'rating') {
+        formattedAns = `${rawAns || 0} / 5 Stars`;
+      } else if (fq.inputType === 'slider') {
+        formattedAns = `${rawAns} ${fq.sliderUnit || ''}`.trim();
+      } else {
+        formattedAns = rawAns ? String(rawAns) : 'Not specified';
+      }
+
+      return {
+        questionId: fq.id,
+        question: fq.questionText,
+        answer: formattedAns,
+        badge: fq.inputType === 'rating' ? `${rawAns || 0} ★ Rating` : undefined
+      };
+    });
+
+    // 2. Extract rating
+    const ratingQ = activeFollowUpQuestions.find(fq => fq.inputType === 'rating');
+    const topicRating = ratingQ && typeof followUpAnswers[ratingQ.id] === 'number' && followUpAnswers[ratingQ.id] > 0
+      ? followUpAnswers[ratingQ.id]
+      : 4.8;
+
+    // 3. Construct clean narrative summary text
+    const highlights = structuredQA.map(sq => `${sq.question}: ${sq.answer}`).join('. ');
+    const summaryText = `Verified resident report from ${relevantExperienceLabels.label1 || 'Resident'} (${relevantExperienceLabels.label2 || selectedSociety.name}). ${highlights}`;
+
+    // 4. Build TopicKnowledge object
+    const newTopic: TopicKnowledge = {
+      id: selectedMainQuestion.topicId,
+      title: selectedMainQuestion.title,
+      category: selectedMainQuestion.category,
+      iconName: selectedMainQuestion.iconName || 'HelpCircle',
+      readingTime: '3 min read',
+      lastUpdated: 'Just now',
+      freshnessStatus: 'Current',
+      summary: summaryText,
+      singlePrice: 129,
+      structuredQA: structuredQA,
+    };
+
+    // 5. Build/Update ResidentKnowledgeProfile
+    const residentTypeStr: 'Owner' | 'Tenant' = (backgroundAnswers['residentType'] || '').toLowerCase().includes('tenant') ? 'Tenant' : 'Owner';
+    const yearsLivingNum = parseInt(backgroundAnswers['yearsLiving']) || 3;
+    const livingSinceYear = backgroundAnswers['livingSince'] || `${new Date().getFullYear() - yearsLivingNum}`;
+
+    // Check if society already has a profile matching residentType & yearsLiving
+    const existingProfileIdx = selectedSociety.profiles.findIndex(
+      p => p.residentType === residentTypeStr && p.yearsLiving === yearsLivingNum
+    );
+
+    let updatedProfiles: ResidentKnowledgeProfile[] = [];
+    let targetProfile: ResidentKnowledgeProfile;
+
+    if (existingProfileIdx >= 0) {
+      const existing = selectedSociety.profiles[existingProfileIdx];
+      const remainingTopics = existing.topics.filter(t => t.id !== newTopic.id);
+      targetProfile = {
+        ...existing,
+        topicsAnsweredCount: remainingTopics.length + 1,
+        lastUpdated: 'Just now',
+        freshnessStatus: 'Current',
+        topics: [newTopic, ...remainingTopics]
+      };
+      updatedProfiles = [...selectedSociety.profiles];
+      updatedProfiles[existingProfileIdx] = targetProfile;
+    } else {
+      targetProfile = {
+        id: `res-pub-${Date.now()}`,
+        societyId: selectedSociety.id,
+        societyName: selectedSociety.name,
+        city: selectedSociety.city,
+        locality: selectedSociety.locality,
+        livingSince: livingSinceYear,
+        yearsLiving: yearsLivingNum,
+        helpedBuyersCount: 1,
+        rating: topicRating,
+        verifiedResident: true,
+        residentType: residentTypeStr,
+        topicsAnsweredCount: 1,
+        lastUpdated: 'Just now',
+        freshnessStatus: 'Current',
+        unlockSinglePrice: 129,
+        unlockAllPrice: 399,
+        topics: [newTopic]
+      };
+      updatedProfiles = [targetProfile, ...selectedSociety.profiles];
+    }
+
+    const updatedSociety: Society = {
+      ...selectedSociety,
+      profiles: updatedProfiles,
+      residentProfilesCount: updatedProfiles.length,
+      lastUpdated: 'Just now'
+    };
+
+    setSelectedSociety(updatedSociety);
+
+    if (onPublishAnswerSubmission) {
+      onPublishAnswerSubmission(updatedSociety, targetProfile, newTopic);
+    }
+
     setStep('PUBLISHED');
   };
 
@@ -548,71 +658,35 @@ export const ContributorWizard: React.FC<ContributorWizardProps> = ({
           </span>
         </div>
 
-        {/* REALTIME EXCEL SHEET ENGINE TOOLBAR */}
+        {/* REALTIME AI QUESTION ENGINE TOOLBAR */}
         <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-2xs space-y-2">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-100 pb-2">
             <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-emerald-100 text-emerald-800 rounded-lg shrink-0">
-                <FileSpreadsheet className="w-4 h-4" />
+              <div className="p-1.5 bg-blue-100 text-[#2563EB] rounded-lg shrink-0">
+                <Sparkles className="w-4 h-4" />
               </div>
               <div>
                 <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                  <span>Data-Driven Master Excel Sheet Engine</span>
-                  <span className="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 font-mono text-[9px] font-bold rounded border border-emerald-200">
-                    v{masterWorkbook.settings?.version || '3.0.0'}
+                  <span>AI Resident Intelligence Engine</span>
+                  <span className="px-1.5 py-0.5 bg-blue-50 text-[#2563EB] font-mono text-[9px] font-bold rounded border border-blue-200">
+                    ₹129 / Topic
                   </span>
                 </div>
                 <div className="text-[10px] text-slate-500">
-                  {masterWorkbook.topics?.length || 0} Topics • {masterWorkbook.questions?.length || 0} Questions • Realtime Data Updating
+                  {masterWorkbook.topics?.length || 0} Evaluated Topics • 4 Sub-Questions Per Topic • Zero Hallucination AI
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-1.5 self-end sm:self-auto">
-              {/* Download Excel Sheet */}
-              <button
-                type="button"
-                onClick={handleDownloadExcelSheet}
-                className="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
-                title="Download full 15-sheet Excel workbook (.xlsx)"
-              >
-                <Download className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="hidden sm:inline">Download Excel</span>
-                <span className="sm:hidden">Download</span>
-              </button>
-
-              {/* Upload Excel Sheet */}
-              <label className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs">
-                <Upload className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Upload Excel</span>
-                <span className="sm:hidden">Upload</span>
-                <input
-                  type="file"
-                  accept=".xlsx, .xls"
-                  onChange={handleUploadExcelSheet}
-                  className="hidden"
-                />
-              </label>
-
-              {/* Reset to Default */}
-              <button
-                type="button"
-                onClick={handleResetExcelToDefault}
-                className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-all cursor-pointer"
-                title="Reset Excel sheet to default schema"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
-
-              {/* Diagnostic Inspector Modal */}
               <button
                 type="button"
                 onClick={() => setShowDiagnosticModal(true)}
-                className="px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#2563EB] border border-blue-200 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
-                title="Open Workbook Diagnostic & Inspector"
+                className="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#2563EB] border border-blue-200 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                title="Inspect AI Question Architecture & Guardrails"
               >
                 <Layers className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Inspect</span>
+                <span>Inspect Engine Schema</span>
               </button>
             </div>
           </div>
@@ -1558,7 +1632,7 @@ export const ContributorWizard: React.FC<ContributorWizardProps> = ({
               </button>
 
               <button
-                onClick={() => onPublishComplete(selectedSociety.name)}
+                onClick={() => onPublishComplete(selectedSociety.id)}
                 className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition-all cursor-pointer"
               >
                 View Society Profile

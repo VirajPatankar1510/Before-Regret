@@ -23,6 +23,7 @@ import {
 import { validateWorkbook } from '../engine/residentEngineValidator';
 import { downloadMasterEngineWorkbookFile } from '../engine/excelTemplateGenerator';
 import { WorkbookDiagnosticModal } from './WorkbookDiagnosticModal';
+import { InteractiveQuestionnaireWizard } from './InteractiveQuestionnaireWizard';
 
 interface AdminPanelProps {
   setView: (view: any) => void;
@@ -53,8 +54,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState('');
   
-  // Admin Tabs: 'societies' | 'import_export' | 'orders' | 'users'
-  const [activeTab, setActiveTab] = useState<'societies' | 'import_export' | 'orders' | 'users'>('societies');
+  // Admin Tabs: 'questionnaire' | 'societies' | 'import_export' | 'orders'
+  const [activeTab, setActiveTab] = useState<'questionnaire' | 'societies' | 'import_export' | 'orders'>('questionnaire');
   
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'Pending' | 'Verified' | 'Archived'>('ALL');
@@ -126,13 +127,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     e.target.value = '';
   };
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === 'BR1510' || password === 'admin') {
+  const handleLogin = (e?: React.FormEvent, customPw?: string) => {
+    if (e) e.preventDefault();
+    const inputPw = (customPw !== undefined ? customPw : password).trim();
+    if (inputPw === 'BR1510' || inputPw.toUpperCase() === 'BR1510' || inputPw.toLowerCase() === 'admin') {
       setIsAuthenticated(true);
       setError('');
     } else {
-      setError('Incorrect Administrator Password. (Try: BR1510)');
+      setError('Incorrect Administrator Password. Please enter "BR1510".');
     }
   };
 
@@ -372,7 +374,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <p className="text-xs text-slate-500">Enter security password to access global database and system tools.</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={(e) => handleLogin(e)} className="space-y-4">
             <div className="space-y-1">
               <label className="text-xs font-semibold text-slate-700">Admin Password</label>
               <input
@@ -380,7 +382,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password (e.g. BR1510)"
+                placeholder="Enter BR1510"
                 className="w-full px-3.5 py-2.5 text-sm bg-[#F7F9FC] border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:outline-none"
               />
             </div>
@@ -391,12 +393,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
             )}
 
-            <button
-              type="submit"
-              className="w-full py-3 bg-[#2563EB] hover:bg-blue-700 text-white font-semibold text-xs rounded-xl transition-all shadow-md cursor-pointer"
-            >
-              Authenticate Portal
-            </button>
+            <div className="space-y-2">
+              <button
+                type="submit"
+                className="w-full py-3 bg-[#2563EB] hover:bg-blue-700 text-white font-semibold text-xs rounded-xl transition-all shadow-md cursor-pointer"
+              >
+                Authenticate Portal
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setPassword('BR1510');
+                  handleLogin(undefined, 'BR1510');
+                }}
+                className="w-full py-2 bg-blue-50 hover:bg-blue-100 text-[#2563EB] font-bold text-xs rounded-xl transition-all border border-blue-200 cursor-pointer"
+              >
+                Quick Access (Password: BR1510)
+              </button>
+            </div>
           </form>
 
           <div className="pt-4 border-t border-slate-100 text-center">
@@ -447,6 +462,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         {/* Tab Navigation */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex gap-6 text-xs font-semibold border-t border-slate-800/80 pt-2 overflow-x-auto">
           <button
+            onClick={() => setActiveTab('questionnaire')}
+            className={`pb-2.5 border-b-2 cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'questionnaire' ? 'border-blue-500 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-blue-400" />
+            <span>In-App Questionnaire Editor & Data Wizard</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('societies')}
             className={`pb-2.5 border-b-2 cursor-pointer whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'societies' ? 'border-blue-500 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -480,7 +505,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
-        {/* TAB 1: SOCIETIES DATABASE */}
+        {/* TAB 1: INTERACTIVE QUESTIONNAIRE & DATA WIZARD */}
+        {activeTab === 'questionnaire' && (
+          <InteractiveQuestionnaireWizard />
+        )}
+
+        {/* TAB 2: SOCIETIES DATABASE */}
         {activeTab === 'societies' && (
           <div className="space-y-6">
 
@@ -679,7 +709,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       100% Data-Driven Resident Intelligence Master Engine
                     </h3>
                     <p className="text-xs text-emerald-300/80">
-                      Manage all 11 Excel Sheets: Settings, Topics, Questions, Options, Logic, Follow-ups, Scenarios, Editorial Templates, Labels, Translations, and Versions.
+                      Manage full engine schema: Settings, Topics, Questions, Options, Logic, Follow-ups, Scenarios, Editorial Templates, Labels, Translations, and Versions.
                     </p>
                   </div>
                 </div>

@@ -133,7 +133,7 @@ export const ResidentProfileView: React.FC<ResidentProfileViewProps> = ({
               Topic Breakdown ({profile.topics.length} Topics)
             </h2>
             <p className="text-xs text-slate-500 font-medium">
-              Unlock individual topics for ₹99 or unlock all for ₹399.
+              Unlock individual topics for ₹129 or unlock all for ₹399.
             </p>
           </div>
           <span className="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200 font-semibold">
@@ -254,7 +254,7 @@ export const ResidentProfileView: React.FC<ResidentProfileViewProps> = ({
 
       </section>
 
-      {/* AI Due Diligence Report Modal */}
+      {/* AI Resident Intelligence Report Modal */}
       <AiReportModal
         isOpen={showAiReport}
         onClose={() => setShowAiReport(false)}
