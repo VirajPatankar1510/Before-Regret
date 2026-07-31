@@ -116,17 +116,14 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
       {/* QUICK JUMP BAR */}
       <div className="bg-slate-100/80 border-b border-slate-200/80 py-2.5 px-4 print:hidden overflow-x-auto">
         <div className="max-w-5xl mx-auto flex items-center gap-2 text-xs font-semibold whitespace-nowrap text-slate-600">
-          <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px] mr-1">Page Guide:</span>
+          <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px] mr-1">Report Guide:</span>
           <a href="#glance" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">1. At a Glance</a>
-          <a href="#what-we-found" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">2. What We Found</a>
-          <a href="#top-priorities" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200 font-bold text-blue-700">3. Top Priorities</a>
-          <a href="#things-verifying" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">4. Things Worth Verifying</a>
-          <a href="#budget" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">5. Budget Impact</a>
-          <a href="#environmental" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">6. Environmental</a>
-          <a href="#records" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">7. Property Records</a>
-          <a href="#questions" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">8. Seller Questions</a>
-          <a href="#checklist" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">9. Visit Checklist</a>
-          <a href="#methodology" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">10. Methodology</a>
+          <a href="#top-priorities" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200 font-bold text-blue-700">2. Executive Overview (Top Priorities)</a>
+          <a href="#environmental" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">3. Neighborhood & Local Environment</a>
+          <a href="#records" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">4. Property Records & Building Analysis</a>
+          <a href="#questions" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">5. Seller Questions</a>
+          <a href="#checklist" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">6. Physical Visit Checklist</a>
+          <a href="#methodology" className="hover:text-blue-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">7. Verified Sources & Disclaimer</a>
         </div>
       </div>
 
@@ -141,57 +138,51 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
               <span className="bg-slate-900 text-white font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider">
                 BeforeRegret
               </span>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                Property Decision Guide
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                Property Insights
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-              Everything You Should Know Before Buying This Property
+            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+              BeforeRegret – Property Insights
             </h1>
 
-            <p className="text-xl font-semibold text-slate-600 flex items-center gap-2 pt-1">
+            <p className="text-xl font-semibold text-slate-700 flex items-center gap-2 pt-1">
               <MapPin className="w-5 h-5 text-blue-600 shrink-0" />
-              <span>{info.address}</span>
+              <span>{report.headerInfo?.address || info.address}</span>
             </p>
           </div>
 
-          {/* Visual Property Card Graphic */}
-          <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 text-white space-y-6 relative overflow-hidden shadow-md">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            
+          {/* Minimalist Executive Header Banner */}
+          <div className="bg-slate-900 rounded-2xl p-6 text-white space-y-4 shadow-md">
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700/80 pb-4">
               <div>
-                <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Parcel ID: {info.parcelId}</span>
-                <div className="text-lg font-bold text-white mt-0.5">{info.city}, {info.state} {info.zipCode} • {info.county}</div>
+                <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Subject Property</span>
+                <div className="text-lg font-bold text-white mt-0.5">{report.headerInfo?.address || info.address}</div>
               </div>
               <span className="bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-bold px-3 py-1 rounded-full">
-                {info.propertyType}
+                {info.propertyType || 'Residential'}
               </span>
             </div>
 
-            {/* Key Specs Row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-medium text-slate-300">
+            {/* Header Metadata Row (Address, Year Built, Report Date, Version) */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs font-medium text-slate-300">
               <div>
                 <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Year Built</span>
-                <span className="text-base font-bold text-white">{info.yearBuilt || 1984}</span>
+                <span className="text-base font-bold text-white">{report.headerInfo?.yearBuilt || info.yearBuilt || 1984}</span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Estimated Size</span>
-                <span className="text-base font-bold text-white">{info.estimatedSqFt ? `${info.estimatedSqFt.toLocaleString()} sq ft` : 'Single Family'}</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Report Date</span>
+                <span className="text-base font-bold text-white">{report.headerInfo?.reportDate || report.generatedAt}</span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Zoning Code</span>
-                <span className="text-base font-bold text-white truncate">{info.zoningCode || 'Residential'}</span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Lot Size</span>
-                <span className="text-base font-bold text-white">{info.lotSizeAcres || '0.28 Acres'}</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Report Version</span>
+                <span className="text-base font-bold text-white">{report.headerInfo?.reportVersion || report.reportVersion || 'v1.0.4'}</span>
               </div>
             </div>
           </div>
 
-          {/* Key Metadata Pill Badges */}
+          {/* Key Metadata Badges */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 text-xs font-bold text-slate-700">
             <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl flex items-center gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -212,8 +203,8 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
             <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl flex items-center gap-2.5 col-span-2 sm:col-span-1">
               <FileCheck className="w-4 h-4 text-slate-600 shrink-0" />
               <div>
-                <div className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Generated Date</div>
-                <div className="text-slate-900 font-extrabold">{report.generatedAt}</div>
+                <div className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Independent Assessment</div>
+                <div className="text-slate-900 font-extrabold">Public Record Due Diligence</div>
               </div>
             </div>
           </div>

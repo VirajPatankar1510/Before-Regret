@@ -142,19 +142,16 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
             <HelpCircle className="w-4 h-4 text-blue-600" />
             <span>How Pricing Is Calculated:</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 font-mono text-[11px]">
-            <div className={`p-2 rounded-lg border ${price === 19 ? 'bg-blue-50 border-blue-300 font-bold text-blue-900' : 'bg-white border-slate-200'}`}>
-              10–14 useful sources → $19
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
+            <div className={`p-2.5 rounded-lg border ${price === 19 ? 'bg-blue-50 border-blue-300 font-bold text-blue-900' : 'bg-white border-slate-200'}`}>
+              Sparse Data (≤14 useful sources) → $19
             </div>
-            <div className={`p-2 rounded-lg border ${price === 29 ? 'bg-blue-50 border-blue-300 font-bold text-blue-900' : 'bg-white border-slate-200'}`}>
-              15–21 useful sources → $29
-            </div>
-            <div className={`p-2 rounded-lg border ${price === 39 ? 'bg-blue-50 border-blue-300 font-bold text-blue-900' : 'bg-white border-slate-200'}`}>
-              22+ useful sources → $39
+            <div className={`p-2.5 rounded-lg border ${price === 29 ? 'bg-blue-50 border-blue-300 font-bold text-blue-900' : 'bg-white border-slate-200'}`}>
+              Full Coverage (15+ useful sources) → $29 (Max Cap)
             </div>
           </div>
           <p className="text-[11px] text-slate-500 italic pt-1">
-            We do not charge random flat rates. You only pay based on the volume of verified public data compiled for your subject property.
+            We do not charge random flat rates. Pricing is automatically capped at $29 maximum based on public data density compiled for your subject property.
           </p>
         </div>
 
