@@ -1962,7 +1962,7 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
       id: 'wp_peak_drop',
       topicId: 'water-pressure',
       mainQuestionText: 'How strong and consistent is the water pressure during peak morning hours across all floors?',
-      questionText: 'Have you ever experienced weak water flow or shower pressure drops when everyone is getting ready in the morning?',
+      questionText: 'Does water pressure drop significantly during peak morning hours (7 AM - 9:30 AM)?',
       type: 'single-choice',
       options: [
         'Constant Strong Flow (Zero Pressure Drop)',
@@ -1971,36 +1971,36 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
         'Severe Pressure Cut Every Morning'
       ],
       answers: [
-        "I've rarely noticed any drop in water pressure during the morning rush. Whether I'm taking a shower or using the kitchen tap, the flow has stayed strong enough for everyday use. It hasn't been something I've had to plan around or worry about, even during the busiest part of the morning.",
-        "Around the usual morning rush, I do notice the water pressure becoming slightly lower than normal, but it's never caused any major inconvenience. Showers and taps still work well enough for my daily routine, and the difference isn't significant enough to disrupt my morning.",
-        "During busy morning hours, I've experienced the water pressure dropping enough to notice the difference. The shower doesn't feel as strong, and taps take a little longer to provide a steady flow. It still works, but I can usually tell when many people are using water at the same time.",
-        "Mornings can sometimes be difficult because the water pressure drops so much that even taking a normal shower becomes inconvenient. I've had to wait for the pressure to improve on a few occasions before getting ready. It's one of the issues I've personally noticed while living here."
+        "In my flat, I haven't noticed any meaningful drop in water pressure during the morning rush. Whether it's for taking a shower, washing utensils or filling buckets, the flow stays almost the same throughout the day. Even when everyone is getting ready in the morning, we've never had to plan our routine around water pressure.",
+        "There is a slight drop in pressure during the busiest morning hours, but it's never been a problem for us. The shower and taps still work comfortably, and all our regular household work gets done without any inconvenience. The difference is noticeable only if you're specifically paying attention to it.",
+        "Yes, I can clearly notice the pressure becoming lower between around 7 and 9:30 in the morning. Water is still available, but the flow isn't as strong as it is later in the day. It's manageable for us, although the difference is quite easy to notice during showers.",
+        "The pressure drops significantly during peak morning hours in my experience. Water still comes through the taps, but the flow becomes weak enough that everyday tasks take longer than usual. Once the morning rush is over, the pressure improves and feels much more normal."
       ]
     },
     {
       id: 'wp_booster_pumps',
       topicId: 'water-pressure',
       mainQuestionText: 'How strong and consistent is the water pressure during peak morning hours across all floors?',
-      questionText: 'If you live on an upper floor (10th floor+), do booster pumps maintain comfortable shower pressure without air locks?',
+      questionText: 'Does water pressure feel noticeably weaker on the higher floors compared to lower floors?',
       type: 'single-choice',
       options: [
-        'Booster Pumps Maintain Powerful Flow on All Floors',
-        'Adequate Flow Maintained',
-        'Upper Floors Have Weaker Pressure Than Lower Floors',
-        'Frequent Air Locks in Pipes on Top Floors'
+        'Strong, Consistent Pressure on Every Floor',
+        'Slightly Softer But Still Comfortable Upstairs',
+        'Noticeably Weaker Pressure on Higher Floors',
+        'Water Sputters or Trickles on Higher Floors'
       ],
       answers: [
-        "Living on a higher floor, I've found the water pressure comfortable for everyday use. Showers, bathroom taps and other water outlets have generally worked well without any noticeable interruptions or air locks. From my experience, the flow has been reliable enough that I don't even think about it during daily use.",
-        "The water pressure in my flat has been good enough for normal day-to-day use. While it may not always feel extremely strong, I haven't had any real difficulty using the shower or taps. Overall, the flow has been reasonable and sufficient for my everyday morning routine.",
-        "I've observed that the water flow in my flat feels somewhat weaker compared to what you'd expect. Everyday tasks are still manageable, but showers don't feel very strong and filling buckets takes a bit longer. It's something I've noticed regularly while going about my routine.",
-        "There have been repeated instances where the water pressure suddenly becomes very weak, and occasionally sputtering air comes out of the taps before water flows smoothly again. It doesn't happen every single day, but it has happened often enough that I keep it in mind while living here."
+        "My flat is on one of the upper floors, above the 10th level, and the booster pump system here works well throughout the day. Water pressure in the shower and taps stays fairly consistent, whether it's early morning or later in the evening. Filling buckets or running the washing machine hasn't felt like a struggle because of low pressure up here, even during the busier hours.",
+        "Living well above the 10th floor, the water pressure through the booster pump is decent for nearly all of my daily needs. Showers work fine and the taps give a steady flow, though it does feel a touch softer than what I've noticed on lower floors when visiting. It hasn't stopped me from doing laundry or filling water storage on time, and I haven't had to change my routine around it.",
+        "I live on one of the higher floors, well above the 10th level, and I do notice weaker water pressure compared to lower floors in the same building. The booster pump keeps water coming, but the shower flow is noticeably softer, especially in the evenings. It works fine for daily tasks, just needs a little more patience while filling buckets or running the washing machine.",
+        "Being on a higher floor above the 10th level, I've dealt with air locks in the pipeline a few times, usually noticed as sputtering water or a temporary drop in flow before it stabilises. It clears out on its own within a few minutes once the air escapes. Outside of these occasional moments, the booster pump keeps decent pressure for showers and regular use, without disrupting my daily routine much."
       ]
     },
     {
       id: 'wp_multi_tap',
       topicId: 'water-pressure',
       mainQuestionText: 'How strong and consistent is the water pressure during peak morning hours across all floors?',
-      questionText: 'Does shower water pressure drop if someone turns on a kitchen tap or washing machine inside the flat?',
+      questionText: 'Does shower pressure drop when multiple taps or washing machines run simultaneously inside your flat?',
       type: 'single-choice',
       options: [
         'Zero Drop (Strong Simultaneous Flow)',
@@ -2009,10 +2009,10 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
         'Severe Flow Reduction Across Taps'
       ],
       answers: [
-        "In my experience, running the washing machine or kitchen sink while taking a shower doesn't cause any problem. The water flow stays steady across all taps inside the flat, so family members don't have to coordinate when using water at the same time.",
-        "Most of the time, turning on another tap inside the flat causes only a slight, temporary dip in shower pressure. It's noticeable for a second, but it doesn't interrupt your shower or make the water stop flowing. It's quite manageable for daily living.",
-        "Whenever someone turns on the kitchen tap or starts the washing machine while someone is showering, the shower pressure drops noticeably. We usually end up shouting across the flat or letting each other know before turning on another water outlet during showers.",
-        "Using two taps simultaneously in the flat causes the water flow to drop down to a trickle. If the shower is running and a tap opens in the kitchen, the shower almost stops. We have to be careful and use water strictly one tap at a time."
+        "Even when the washing machine is running along with a shower or two taps open at the same time, I haven't noticed any real drop in pressure. Water flow stays fairly steady no matter how many points are being used together in the flat. It's one thing I never really think about while getting ready in the morning, since everything just works without any adjustment on my end.",
+        "When I run the washing machine while someone else is using the shower, I do notice a slight dip in pressure, but it's nothing that really affects my routine. The flow softens a little rather than stopping, and it usually goes back to normal once one of the taps is turned off. It hasn't caused any real inconvenience so far.",
+        "If more than one tap or the washing machine is running at the same time, the shower pressure drops quite noticeably. What starts as a decent flow turns weak within a minute or two of another appliance being switched on. I've learned to avoid running things together and time my showers around when nothing else is using water.",
+        "The moment a second tap or the washing machine starts, water pressure across the flat drops sharply, sometimes down to barely a trickle at the shower. I've had to plan daily chores like laundry and bathing around each other instead of doing them together. It's become a routine adjustment rather than something I can ignore."
       ]
     },
     {
@@ -2023,11 +2023,11 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
       type: 'rating',
       options: ['1 - Weak & Frustrating', '2 - Below Average', '3 - Acceptable', '4 - Good', '5 - Powerful & Flawless'],
       answers: [
-        "Giving this a 1 star rating because I find the daily water pressure quite disappointing. The weak flow makes simple routines like taking a quick shower or washing utensils take longer than they should. It's a persistent annoyance that regularly affects everyday comfort inside the flat.",
-        "I'd rate the water pressure at 2 stars as it feels below average. You can manage your basic daily chores, but shower pressure is often lukewarm and filling buckets takes time, especially during peak hours. It leaves room for improvement for a comfortable home experience.",
-        "A 3 star rating fits well because the water pressure is fairly decent and functional for day-to-day living. It isn't super strong, but it isn't frustratingly weak either. It's just average enough to handle daily showers, dishwashing, and laundry without any major complaints.",
-        "I would rate the water pressure 4 stars because the flow across taps and showers in my flat has been consistently good. The water pressure feels comfortably strong for daily showers and kitchen work, making everyday household routines hassle-free and dependable almost all the time.",
-        "I'm happy to give a 5 star rating here because the water pressure has been excellent throughout. Showers feel refreshing with strong pressure, and every tap in the flat delivers a full, steady stream without any drops, even during busy morning hours."
+        "Overall, water pressure in my flat has stayed weak through most of the day, not just during peak hours. Showers feel underwhelming and filling anything takes longer than it should. I've had to adjust daily routines like laundry and bathing around whenever the flow happens to be a little better, and it hasn't really improved with time.",
+        "Water pressure here is on the weaker side more often than I'd like, though it's not completely unusable. Showers work, just without much force behind them, and certain hours of the day are clearly better than others. It's manageable day to day, but it's not something I'd describe as satisfying.",
+        "Pressure in my flat is decent enough for daily use, neither particularly strong nor a source of complaint. Showers and taps work fine for regular tasks like washing up or filling buckets. There are occasional softer moments, especially during busier hours, but nothing that has ever really disrupted my routine.",
+        "Water pressure in my flat has been reliably good for daily use, with showers and taps performing well through most of the day. I don't recall many instances where it felt noticeably weak, even during busier morning hours. It's one of the things about living here I don't have to think twice about.",
+        "Water pressure here has been consistently strong since I moved in, with showers and taps performing well at any hour I've used them. Whether it's early morning or late evening, the flow doesn't seem to change much. It's genuinely one less thing to worry about in daily life at home."
       ]
     }
   ],
@@ -2037,57 +2037,57 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
       id: 'wq_hardness_scaling',
       topicId: 'water-quality',
       mainQuestionText: 'Does the tap water quality cause scaling, plumbing corrosion, or unpleasant smells in daily life?',
-      questionText: 'Have you noticed white scaling, ruined geyser elements, or corroded bathroom taps due to hard water?',
+      questionText: 'Does the water leave white marks or damage on your taps, showerhead, or geyser over time?',
       type: 'single-choice',
       options: [
-        'Zero Tap Scaling (Soft Supply)',
-        'Mild Hardness (Easy to Clean)',
-        'High Hardness (Causes White Stains & Tap Corrosion)',
-        'Central Water Softener Active in Society'
+        'No Marks or Damage at All',
+        'Mild Marks, Easy to Clean',
+        'Heavy White Stains & Damage Over Time',
+        'Society Has Fixed This With a Water Softener'
       ],
       answers: [
-        "So far, I haven't noticed any white hard water stains or scaling on bathroom taps and tiles. The tap water feels gentle on skin and hair, and appliances like geysers haven't needed frequent servicing for scale buildup. It's been very clean and easy to maintain.",
-        "The water does carry a mild level of hardness, so you might see light white spots on chrome taps or glass partitions over time. However, these wipe off easily during weekly cleaning and haven't damaged bathroom fittings or heating elements in a major way.",
-        "Hard water is definitely something you notice while living here. White mineral scaling accumulates quickly on shower heads, taps, and glass partitions. I've had to scrub bathroom fittings frequently, and tap finishes tend to lose their shine unless you wipe them down almost every single day.",
-        "From what I've observed, the water quality inside the flat remains comfortable because the treated supply keeps hard water scaling well under control. Bathroom taps stay shiny, tiles don't build up heavy white crusts, and water heaters function smoothly without getting choked up by mineral deposits."
+        "I haven't noticed any white marks or buildup on my taps, showerhead, or geyser since moving in. Everything has stayed looking clean without needing extra scrubbing or descaling. It's not something I've had to think about or budget extra time for as part of regular home upkeep.",
+        "There are occasional light white marks on the taps and showerhead, but a quick wipe during regular cleaning takes care of it. It hasn't caused any real damage to the fittings so far. I just factor in a bit of extra cleaning during my usual bathroom upkeep.",
+        "Over time, I've noticed heavy white staining building up on the taps, showerhead, and even inside the geyser. Regular cleaning doesn't fully remove it anymore, and a couple of fittings have started showing visible wear because of it. It's become a recurring maintenance issue rather than a one-time clean-up.",
+        "The society installed a water softening system a while back, and since then I haven't dealt with the white staining or scaling that used to build up on taps and fixtures. Cleaning the bathroom fittings has become much easier, and the geyser hasn't shown any of the wear I noticed before."
       ]
     },
     {
       id: 'wq_drinking_purifier',
       topicId: 'water-quality',
       mainQuestionText: 'Does the tap water quality cause scaling, plumbing corrosion, or unpleasant smells in daily life?',
-      questionText: 'Can you safely drink municipal tap water with a standard purifier, or do you have to buy bottled 20L water cans?',
+      questionText: 'Can you safely drink the tap water directly, or do you need a filter, purifier, or bottled water?',
       type: 'single-choice',
       options: [
-        'Safe Municipal Tap Water (RO/UV Suffices)',
-        'Multi-Stage RO Essential due to High TDS',
-        'Many Residents Buy 20L Water Cans for Drinking',
-        'Unfit for Direct Tap Consumption'
+        'Tap Water Is Safe to Drink Directly',
+        'Needed a Strong Filter/Purifier at Home',
+        'We Rely on Bottled/Can Water for Drinking',
+        'Tap Water Isn\'t Safe to Drink Even After Boiling'
       ],
       answers: [
-        "For drinking water, we rely completely on a standard home water purifier fitted at the kitchen sink. The water tastes clean and normal, and we haven't needed to order 20-liter water cans or extra bottled water. It's convenient and works seamlessly for our daily cooking and drinking.",
-        "A basic water filter might not be enough here, so we use a multi-stage RO purifier in the kitchen. Once purified through RO, the taste is good and safe for drinking. As long as you have a proper RO unit maintained regularly, you won't need to purchase bottled water.",
-        "Many people I know in the building prefer ordering 20-liter drinking water cans instead of relying solely on tap water purifiers. The raw tap water can sometimes taste a bit heavy or metallic, so keeping a couple of water cans at home feels like a safer and better-tasting option.",
-        "Direct tap water really isn't suitable for drinking here, even after simple filtering or boiling. The raw taste is quite off, so buying sealed 20-liter mineral water cans has become a necessary daily routine for drinking and cooking to ensure complete safety and peace of mind."
+        "I drink water straight from the tap without needing any additional filter or purifier at home. It hasn't caused any issues, and I haven't felt the need to buy bottled water or install an RO system just for peace of mind. It's simply part of daily life here without extra thought.",
+        "I had to install a proper RO or multi-stage purifier at home before I felt comfortable drinking the tap water directly. Without it, the water didn't feel safe enough for regular drinking. Once the filter was set up, it's worked fine as part of the daily routine, though it was an added expense early on.",
+        "For drinking, we mostly depend on bottled or can water rather than the tap supply. It's become a regular part of the monthly routine, arranging refills or deliveries on time. Cooking and other household uses still rely on tap water, but drinking water is kept separate.",
+        "Even after boiling, I haven't felt confident drinking the tap water directly, so I avoid it altogether for consumption. We depend entirely on purchased water or a dedicated purification setup for anything meant for drinking. It's an ongoing cost and habit that's become part of daily life here."
       ]
     },
     {
       id: 'wq_stp_flush',
       topicId: 'water-quality',
       mainQuestionText: 'Does the tap water quality cause scaling, plumbing corrosion, or unpleasant smells in daily life?',
-      questionText: 'Have you ever noticed an unpleasant smell or yellowish tint from the toilet flush water (recycled STP water)?',
+      questionText: 'Does the bathroom ever smell because of the recycled water used for flushing?',
       type: 'single-choice',
       options: [
-        'Clear & Odourless STP Water in Flush Lines',
-        'Slight Odour on Hot Days',
-        'Yellowish Tint & Noticeable Smell',
-        'Fresh Water Used for Flushing (No STP)'
+        'No Smell, Flush Water Is Clean',
+        'Slight Smell Occasionally, Especially in Summer',
+        'Noticeable Smell or Discoloured Water Often',
+        'Society Uses Fresh Water for Flushing, Not Recycled'
       ],
       answers: [
-        "The toilet flush water has always been clean and completely odourless in my flat. Even though it's recycled water, it looks clear and doesn't leave any unpleasant smell or discoloration in the bathroom. It's been managed so well that you wouldn't notice any difference.",
-        "On particularly hot summer days, I've occasionally noticed a faint damp smell from the flush water in the bathroom. It isn't overwhelming or foul, and keeping the bathroom window open or fan on handles it easily. Most of the year, it remains completely fine.",
-        "One thing I've noticed is that the flush water sometimes comes with a pale yellowish tint and a distinct, stale odour. It can be uncomfortable when stepping into the bathroom, especially if the door has been closed for a while. You often need bathroom fresheners to keep it pleasant.",
-        "Flush lines in our bathrooms use regular clean water, so we've never faced any problems with foul smells or discolored water in the toilet bowls. It stays clear and fresh, which helps keep the bathrooms clean and pleasant without needing constant ventilation or heavy air fresheners."
+        "The water used for flushing hasn't caused any smell in the bathroom that I've noticed. It looks and behaves like regular water day to day, and I haven't had to think twice about it during regular use. It's one of those background details of the flat I barely notice.",
+        "Every now and then, especially during the hotter months, there's a faint smell in the bathroom that I associate with the flush water. It's not constant and tends to pass quickly, but I have noticed it more on particularly warm days. Outside of that, it hasn't been a regular issue.",
+        "I've noticed a fairly regular smell in the bathroom, along with the flush water sometimes looking slightly discoloured. It's not something that's gone away on its own, and I tend to keep the exhaust fan running or the window open because of it. It's become something I've just adjusted to over time.",
+        "As far as I know, the flushing water here comes from the regular fresh water supply rather than a recycled source. I haven't dealt with any smell or discolouration issue in the bathroom because of this. It's not something that's ever come up as a concern for me."
       ]
     },
     {
@@ -2098,11 +2098,11 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
       type: 'rating',
       options: ['1 - Poor Quality & Scaling', '2 - Subpar', '3 - Moderate', '4 - Clean', '5 - Pure & Crystal Clear'],
       answers: [
-        "I'd rate overall water quality at 1 star because of persistent issues with scaling and water clarity. Bathrooms require frequent cleaning to remove white marks, and you always feel cautious about tap water quality. It takes extra effort to maintain plumbing fittings in good condition.",
-        "A 2 star rating feels accurate because the overall water quality stays somewhat below expectations. You can manage basic daily needs like washing and cleaning, but mild hardness and occasional clarity issues mean you have to be extra cautious with kitchen purifiers and bathroom fixtures.",
-        "I would give this a 3 star rating because the domestic water quality is fairly average. It works well enough for routine bathing, washing clothes, and daily cleaning without causing major problems, though having a reliable kitchen water purifier is definitely recommended for drinking water.",
-        "Rating this 4 stars because the tap water supply is clean, clear, and dependable. We haven't had issues with murky water or unpleasant odors, and bathroom fittings stay in good shape with simple weekly cleaning. It makes daily household routines feel comfortable and worry-free.",
-        "I am happy to rate this 5 stars for water quality. The tap water looks crystal clear, feels clean, and has no foul smell or heavy scaling. From bathing to kitchen chores, the water supply has been consistently fresh and problem-free since day one."
+        "Overall, water quality in my flat has been a genuine daily concern, with visible staining on fittings and a general sense that it isn't fully clean. I've had to rely on additional filtering and extra cleaning just to manage day-to-day use. It hasn't improved much since I moved in.",
+        "Water quality here is below what I'd hoped for, with occasional staining and a need for a decent filter at home before I feel fully comfortable using it for drinking. It's manageable with some extra effort, but not something I'd call satisfying. I've adjusted my routine around it rather than it ever being properly resolved.",
+        "Water quality in my flat is reasonably okay for daily use, without any major recurring issues so far. There's occasional mild staining on fixtures, and I do use a basic filter for drinking, but nothing that's ever felt like a serious concern day to day in the flat.",
+        "Water quality here has been consistently clean for daily use, with minimal staining on fittings and no real concerns about drinking it after basic filtering at home. It's one part of living in this flat that's worked well without needing much extra attention or upkeep from me.",
+        "Water quality in my flat has been excellent since I moved in, with no staining on fixtures and no hesitation about drinking it directly from the tap. It's genuinely one of the better aspects of living here, and something I've never really had to think twice about."
       ]
     }
   ],
@@ -2112,26 +2112,26 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
       id: 'wa_24x7_supply',
       topicId: 'water-availability',
       mainQuestionText: 'How reliable is the continuous 24x7 water supply, especially during peak summer months?',
-      questionText: 'Do you get continuous 24x7 water at taps, or are you forced to store water due to fixed daily timing cuts?',
+      questionText: 'Is municipal tap water supply available 24x7 continuously without scheduled daily cuts?',
       type: 'single-choice',
       options: [
         '24x7 Uninterrupted Supply Year-Round',
         'Continuous Supply with Rare Maintenance Cuts',
-        'Scheduled Daily Timings Enforced (6-8 Hours)',
+        'Scheduled Daily Timings Enforced (Specific Hours)',
         'Frequent Unscheduled Water Disruptions'
       ],
       answers: [
-        "Water supply in my flat has been genuinely continuous 24 hours a day, 7 days a week. We've never had to store water in buckets or fill tanks in advance for daily routines. It's a huge relief not having to worry about fixed water timings or unexpected morning dry taps.",
-        "For the most part, we enjoy round-the-clock water supply at all taps. On very rare occasions, there might be a short pause for tank cleaning or pipe maintenance, but notice is usually given beforehand. Day-to-day living feels very comfortable without water storage hassles.",
-        "Water is released only during specific morning and evening hours rather than running all day. We've adapted by filling buckets and keeping water stored for afternoon use. While it takes a bit of planning around those scheduled timings, it becomes a predictable part of your routine.",
-        "Dealing with water cuts can be frustrating here because the supply stops unexpectedly without prior warning. You often find taps running dry in the middle of the day, forcing us to keep stored water handy in the bathroom and kitchen at all times just in case."
+        "Municipal tap water runs continuously through the day and night here, without any scheduled cuts that I've noticed since moving in. I've never had to plan my day around water timings, whether it's for cooking, laundry, or bathing. It's simply always available whenever I need it.",
+        "Water supply stays continuous through most of the year, with only occasional maintenance-related cuts that are usually announced beforehand by the society. Outside of those rare instances, I haven't had to adjust my daily routine around water timings. It's been fairly reliable for the most part.",
+        "Water supply here follows a fixed daily schedule rather than running continuously, with a window of a few hours each day. I've had to plan tasks like laundry and filling storage tanks around those specific timings. It's become a routine part of daily life rather than something I question anymore.",
+        "Water supply here is unpredictable, with disruptions that happen without much warning fairly often. I've had to keep extra storage on hand just in case the supply cuts off unexpectedly during the day. It's added a layer of planning to daily tasks that I hadn't expected before moving in."
       ]
     },
     {
       id: 'wa_summer_tankers',
       topicId: 'water-availability',
       mainQuestionText: 'How reliable is the continuous 24x7 water supply, especially during peak summer months?',
-      questionText: 'During peak summer (April-June), does the society run dry and rely heavily on expensive private water tankers?',
+      questionText: 'Are private water tankers required during summer months (April to June)?',
       type: 'single-choice',
       options: [
         'Zero Tankers Needed (100% Municipal Supply)',
@@ -2140,29 +2140,29 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
         'Severe Summer Water Scarcity'
       ],
       answers: [
-        "Even during the hottest summer months like May and June, water supply remains steady without needing private water tankers. The society's municipal connection handles the demand well, so we haven't faced summer water shortages or extra tanker maintenance surcharges on our monthly bills.",
-        "During peak summer heat in May, the society occasionally brings in a few water tankers to supplement the main supply. You might notice a slight change in water pressure on those days, but taps never go completely dry and daily routines continue normally.",
-        "Summers can get tricky because municipal water supply drops, making the society rely heavily on daily private water tankers. You'll see tanker trucks coming in regularly through April and May, which usually leads to extra maintenance charges added to our monthly society bills.",
-        "Water scarcity during peak summer is a real challenge here. Taps frequently run low or dry during hot afternoon hours, and the society relies heavily on tankers every day. Managing water usage carefully during April and May becomes essential for everyone living in the complex."
+        "Even through the peak summer months, I haven't seen the need for private water tankers here at all. Municipal supply has held up consistently through April to June without any noticeable drop in flow. It's one thing I genuinely don't have to worry about when the weather gets hotter.",
+        "During May specifically, the society has brought in a tanker once or twice to supplement supply, though it hasn't been a constant thing. Outside of that short window, municipal water has generally been enough for daily needs. It's a minor seasonal adjustment rather than a recurring concern.",
+        "Through the summer months, tankers have become a near-daily part of managing water supply here, since municipal supply alone doesn't seem to be enough. I've had to time my day around tanker arrival rather than relying purely on the regular pipeline. It's added a layer of planning during those months specifically.",
+        "Summer here has meant genuinely tight water availability, with tankers arriving irregularly and supply falling short of daily needs more than once. I've had to be careful with usage and plan storage well in advance during April to June. It's one of the more challenging parts of living here during that season."
       ]
     },
     {
       id: 'wa_pipeline_repairs',
       topicId: 'water-availability',
       mainQuestionText: 'How reliable is the continuous 24x7 water supply, especially during peak summer months?',
-      questionText: 'How often do sudden main line pipe bursts leave your flat without water for hours unexpectedly?',
+      questionText: 'How often do sudden water cuts happen because of pipeline repair work?',
       type: 'single-choice',
       options: [
-        'Zero Shutdowns (Flawless Plumbing Infrastructure)',
-        'Rare Shutdown (1-2 Times a Year)',
-        'Monthly Pipeline Repair Outages',
-        'Frequent Sudden Outages Without Notice'
+        'Almost Never',
+        'Rarely, Once or Twice a Year',
+        'Happens Almost Every Month',
+        'Frequent, Unannounced Water Cuts'
       ],
       answers: [
-        'Plumbing infrastructure is robust; zero unexpected pipeline shutdowns occur.',
-        'Pipeline breakdowns are rare, occurring only once or twice a year with advance warning.',
-        'Main line pipe repairs cause water shutdowns almost every month.',
-        'Sudden, unannounced water supply shutdowns happen frequently due to aging pipes.'
+        "Sudden water cuts due to pipeline repair work are something I've barely experienced here. On the rare occasion something needs fixing, it's usually a quick, unnoticeable job. I haven't had to keep backup water stored or plan my day around potential outages because of pipeline issues.",
+        "Pipeline-related water cuts happen maybe once or twice a year at most, usually for a few hours at a time. It's infrequent enough that I don't really think about it in advance. When it does happen, I just use stored water until the supply is back.",
+        "There's a pipeline repair causing a water cut almost every month here, usually lasting a few hours. It's become something I've started keeping an eye out for, storing a bit of extra water just in case. It's not constant, but it's frequent enough to notice.",
+        "Water cuts from pipeline repairs happen fairly often here, and there's rarely any warning before they do. I've had to keep water stored at all times just to avoid being caught off guard mid-task. It's added an extra layer of planning to daily chores I hadn't expected."
       ]
     },
     {
@@ -2173,11 +2173,11 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
       type: 'rating',
       options: ['1 - Severe Scarcity', '2 - Poor', '3 - Adequate', '4 - Reliable', '5 - 100% Continuous & Abundant'],
       answers: [
-        'Rating 1/5: Severe water scarcity causing significant lifestyle disruption.',
-        'Rating 2/5: Unreliable water supply requiring active storage planning.',
-        'Rating 3/5: Adequate water availability meeting basic daily needs.',
-        'Rating 4/5: Highly reliable water supply with peace of mind year-round.',
-        'Rating 5/5: 100% continuous, abundant water supply without any scarcity.'
+        "Overall, water supply here has felt genuinely unreliable, with scarcity being a real concern through much of the year, not just summer. I've had to plan storage carefully and adjust daily routines around unpredictable timings. It hasn't given me much peace of mind since moving in.",
+        "Water supply reliability here is below what I'd expect, with more frequent disruptions than I'd like. It's manageable with some extra planning and storage, but it's not something that's given me much peace of mind. I've adjusted my routine around it rather than it improving.",
+        "Water supply here has been adequate for daily needs, without any major recurring issues that stand out through the year. There are occasional adjustments needed during summer, but overall it hasn't caused much concern for me. It's one part of living here I don't think about too often.",
+        "Water supply has been reliable here for the most part, with only minor and infrequent disruptions throughout the year. I haven't had to make major changes to my routine because of supply issues. It's given me a reasonable amount of peace of mind since moving in.",
+        "Water supply here has been genuinely continuous and abundant since I moved in, including through the summer months. I haven't had to think about storage, timing, or tankers at any point. It's one of the things about this place I've come to take for granted."
       ]
     }
   ],
@@ -2187,7 +2187,7 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
       id: 'pu_dimensions',
       topicId: 'parking-usability',
       mainQuestionText: 'How spacious, accessible, and hassle-free is your assigned parking space?',
-      questionText: 'Is your allotted parking slot wide enough to easily park and get out of your car without scraping pillars or walls?',
+      questionText: 'Is your allotted parking slot spacious and easy to maneuver into without pillar obstacles?',
       type: 'single-choice',
       options: [
         'Spacious & Easy Clearance',
@@ -2196,17 +2196,17 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
         'Awkward Angle / Scratches Common'
       ],
       answers: [
-        'Parking slot is broad and open, allowing easy door opening and effortless maneuvering.',
-        'Alignment is tight; pillars require slow, careful reversing to avoid door or bumper scratches.',
-        'Stack or puzzle parking mechanism creates awkward waiting and manual operation hassles.',
-        'Narrow angles and pillar obstructions frequently lead to car bumper or mirror scratches.'
+        "My allotted parking slot is spacious enough that I can pull in and out without worrying about pillars or tight angles. Reversing into it doesn't require much thought, even with a slightly larger car. It's genuinely one of the easier parts of daily life here.",
+        "My parking slot is workable, but a nearby pillar means I have to reverse in carefully to avoid scraping the car. Once I'm in, it's fine, but the process itself takes a bit more attention than I'd like. I've gotten used to it after enough practice.",
+        "My slot is part of a stacked or dependent parking arrangement, which means I sometimes have to wait for another car to move before I can park or exit. It adds a bit of extra time to my routine, especially during busier hours. It's manageable, just not entirely convenient.",
+        "The angle of my parking slot makes maneuvering in and out a bit tricky, and I've picked up a few minor scratches over time because of it. I've had to slow down and take extra care every time I park. It's not something that's gotten easier with practice."
       ]
     },
     {
       id: 'pu_blocking',
       topicId: 'parking-usability',
       mainQuestionText: 'How spacious, accessible, and hassle-free is your assigned parking space?',
-      questionText: 'Do neighbors or illegally parked cars ever block your parking slot or make reversing out a struggle?',
+      questionText: 'Do neighboring car owners double-park or block your designated slot access?',
       type: 'single-choice',
       options: [
         'Never Blocked (Monitored by Basement Guards)',
@@ -2215,29 +2215,29 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
         'Unorganized Driveway Chaos'
       ],
       answers: [
-        'Basement security actively keeps driveways clear; parking slots are never blocked.',
-        'Occasional temporary blocking occurs but is resolved quickly via resident WhatsApp groups.',
-        'Neighbors frequently double-park in driveways, blocking access to assigned slots.',
-        'Unorganized driveway parking creates constant friction and blocked cars.'
+        "My designated slot has never been blocked by another car, since the basement guards seem to keep an eye on things. I haven't had to deal with double-parked cars or delays getting in or out. It's one less thing to worry about when I'm heading out.",
+        "Every now and then, another car ends up blocking my slot temporarily, but it usually gets sorted out fairly quickly once I mention it to security. It's not a frequent occurrence, just an occasional inconvenience. I haven't had to wait long on the occasions it's happened.",
+        "Double parking that blocks my slot happens fairly often here, and I've had to wait or track down the other car owner more than once. It adds unpredictability to something as simple as leaving the house. I've started keeping a bit of extra time buffered in for this.",
+        "The basement driveway often feels disorganized, with cars parked in ways that make getting to my own slot difficult. I've had to navigate around vehicles that aren't in their designated spots more than I'd like. It's added noticeable friction to something that should be simple."
       ]
     },
     {
       id: 'pu_suv_clearance',
       topicId: 'parking-usability',
       mainQuestionText: 'How spacious, accessible, and hassle-free is your assigned parking space?',
-      questionText: 'Can an SUV/large vehicle easily navigate basement entrance ramps, turning corners, and stack mechanisms?',
+      questionText: 'Can bigger cars like SUVs easily enter, exit, and turn in the basement without scraping or getting stuck?',
       type: 'single-choice',
       options: [
-        'Wide Ramps & High Clearance (SUV Friendly)',
-        'Standard Ramps (Manageable with Care)',
-        'Narrow Steep Ramps (Bumper Scratches Common)',
-        'Stack Parking Restrictions for SUVs'
+        'Wide Ramps, No Trouble for Bigger Cars',
+        'Manageable, Just Needs Careful Driving',
+        'Tight Ramps, Scratches Are Common',
+        'Bigger Cars Face Real Parking Restrictions'
       ],
       answers: [
-        'Ramps and turning radii are wide and generous; large SUVs fit comfortably.',
-        'Ramps are standard; SUVs navigate fine with normal driving care.',
-        'Ramps are steep and narrow with tight turns, risking underbody or bumper scrapes.',
-        'Stack parking height/weight limits strictly restrict large SUVs.'
+        "I drive a larger car, and the basement ramps here are wide enough that entering, exiting, and turning has never been an issue. I haven't had to worry about scraping the underside or struggling with tight turns. It's been one less thing to think about while parking.",
+        "With a bigger car, I can manage the ramps and turns here fine, just with a bit more care than I'd need with a smaller vehicle. It's not difficult once you're used to the layout, though I do slow down more than I otherwise would while entering.",
+        "The ramps and turning spaces here are on the tighter side for a bigger car, and I've picked up a few scratches over time because of it. I've learned to go slowly and take wider angles wherever possible. It's a recurring point of caution rather than a one-off.",
+        "Owning a bigger car here has meant dealing with real restrictions, since certain slots or ramps simply aren't built to accommodate the size comfortably. I've had to adjust where and how I park as a result. It's been a noticeable limitation since I got the car."
       ]
     },
     {
@@ -2248,11 +2248,11 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
       type: 'rating',
       options: ['1 - Narrow & Obstructed', '2 - Difficult', '3 - Acceptable', '4 - Good', '5 - Broad & Effortless'],
       answers: [
-        'Rating 1/5: Narrow, obstructed parking slot creating constant driving anxiety.',
-        'Rating 2/5: Difficult parking slot requiring multi-point turns and risk of scratches.',
-        'Rating 3/5: Acceptable parking space suitable for standard hatchback/sedan cars.',
-        'Rating 4/5: Good, comfortable parking slot with clear access.',
-        'Rating 5/5: Broad, effortless parking space with ample opening clearance.'
+        "Overall, my parking experience here has been genuinely difficult, with narrow spacing and obstructions making daily parking a hassle almost every time. I've had to be extremely careful every time I park or reverse out of the slot. It hasn't gotten any easier the longer I've lived here.",
+        "Parking here has been more difficult than I'd like, requiring extra care and time compared to what I'm used to at previous places. It's workable, but not something I'd call convenient. I've adjusted my driving and timing around it rather than it improving over the months.",
+        "My overall parking experience has been acceptable, without any major recurring problems worth mentioning so far. There are occasional minor inconveniences, but nothing that's seriously affected my daily routine. It's one part of living here that's stayed fairly consistent over time, without much change either way.",
+        "Parking here has generally been a good experience, with enough space and clearance for daily use without much hassle involved. I don't recall many instances of real difficulty getting in or out, even during busier hours. It's one of the more convenient aspects of living here.",
+        "Parking here has been genuinely effortless since I moved in, with broad spacing and clear access every single time I've used it. I haven't had to think twice about maneuvering in or out, regardless of the time of day. It's simply not something I have to plan around."
       ]
     }
   ],
@@ -2262,7 +2262,7 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
       id: 'vp_availability',
       topicId: 'visitor-parking',
       mainQuestionText: 'Can your guests park safely inside the society when visiting in the evening?',
-      questionText: 'When guests or family visit on weekends or evenings, can they actually find visitor parking slots inside the gate?',
+      questionText: 'Are dedicated visitor parking slots available when guests arrive in the evening?',
       type: 'single-choice',
       options: [
         'Dedicated Visitor Slots Always Available',
@@ -2271,17 +2271,17 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
         'Zero Visitor Parking Inside Gate'
       ],
       answers: [
-        'Ample dedicated visitor parking bays are always available inside the gate.',
-        'Visitor parking is available on first-come basis but usually fills up after 8 PM.',
-        'Visitor slots are extremely scarce, forcing guests to search repeatedly.',
-        'Zero visitor parking is allowed inside the main gate.'
+        "Whenever guests visit in the evening, there's always a dedicated visitor slot available for them to park in without any trouble. I haven't had to worry about arranging alternatives or apologizing for a lack of space. It's made having people over noticeably less stressful for me.",
+        "Visitor slots are available, but they tend to fill up after around 8 PM, so timing matters if guests are coming later in the evening. Earlier arrivals usually find space without any trouble. I've started asking guests to come a bit earlier when I can.",
+        "Visitor parking here is quite limited, and guests often struggle to find a spot, especially during evenings when several people have visitors over at once. I've had to plan alternate arrangements more than once. It's added a bit of extra coordination whenever someone's coming over to visit.",
+        "There's no dedicated visitor parking inside the gate here, so guests have had to find space outside or manage some other way entirely. It's meant extra planning every time someone visits, especially in the evenings. It's a limitation I've had to work around fairly consistently since moving in."
       ]
     },
     {
       id: 'vp_gate_clearance',
       topicId: 'visitor-parking',
       mainQuestionText: 'Can your guests park safely inside the society when visiting in the evening?',
-      questionText: 'Does gate security clear guest vehicles quickly, or do your visitors get delayed in long queues or aggressive questioning?',
+      questionText: 'How fast is gate security clearance for guest vehicles entering the society?',
       type: 'single-choice',
       options: [
         'Instant Clearance via Mobile App Entry Pass',
@@ -2290,44 +2290,44 @@ export const STRUCTURED_QUESTIONS_DATABASE: Record<string, StructuredSubQuestion
         'Strict Unfriendly Security Interrogation'
       ],
       answers: [
-        'Security clears guests instantly via mobile app pass approval.',
-        'Quick gate register check takes under 2 minutes.',
-        'Long security queues at the main gate hold up guest cars during peak hours.',
-        'Security guard interrogation feels unwelcoming and hostile to visiting guests.'
+        "Getting guest vehicles through the gate is quick here, thanks to a mobile app-based entry pass system that's simple to use. There's no waiting around or explaining who's visiting each time. It's made having guests over feel a lot smoother than I expected when I first moved in.",
+        "Gate clearance for guests involves a quick verification and register entry, usually done within a couple of minutes at most. It's a small step but doesn't cause any real delay overall. Guests haven't complained about waiting at the gate so far, even during busier evening hours.",
+        "Getting guest cars through the gate can take a while here, with guards taking their time on verification during busier hours in particular. I've had guests mention the wait at the gate more than once. It's added a bit of friction to having people over regularly.",
+        "Gate security here can feel quite strict with guests, asking detailed questions before letting a visitor's car in past the barrier. A few guests have mentioned it felt like more scrutiny than they expected. It's something I've had to prepare visitors for in advance before they arrive."
       ]
     },
     {
       id: 'vp_street_overflow',
       topicId: 'visitor-parking',
       mainQuestionText: 'Can your guests park safely inside the society when visiting in the evening?',
-      questionText: 'If visitor slots are full inside, is street parking outside the main gate safe from towing, traffic scrapes, or theft?',
+      questionText: 'Is street parking outside the society gate safe for guest cars if visitor slots fill up?',
       type: 'single-choice',
       options: [
         'Safe Broad Service Road with Ample Space',
-        'Adequate Street Space (Monitored by Cameras)',
+        'Adequate Street Space',
         'Narrow Congested Street (Towing / Scraping Risk)',
         'No Street Parking Allowed (Traffic Police Towing Zone)'
       ],
       answers: [
-        'A wide service road outside the gate provides safe, comfortable overflow parking.',
-        'Street space outside is adequate and covered by security CCTV cameras.',
-        'The outside street is narrow and congested, posing traffic scrape or towing risks.',
-        'Outside street is a strict no-parking towing zone, making guest visits stressful.'
+        "If visitor slots ever fill up, the service road outside the gate is wide and generally feels safe for guest cars to park on instead of squeezing in. I haven't had any issues or complaints from visitors who've had to park there rather than inside the gate.",
+        "When visitor parking is full, the street outside has enough space, and it's monitored by cameras, which gives some reassurance to guests parking there. Guests haven't reported any issues parking there so far. It's a reasonable fallback option whenever the inside slots happen to run out.",
+        "The street outside the gate is fairly narrow and congested, so when visitor slots fill up, parking there feels risky in terms of scraping or towing. I now try to make sure visitors arrive before the inside slots fill up.",
+        "Parking on the street outside the gate isn't really an option, since it's a no-parking zone with active towing enforcement in place. When visitor slots are full, guests have had to find parking elsewhere entirely. It's meant more planning ahead whenever I'm expecting visitors over."
       ]
     },
     {
       id: 'vp_overall_rating',
       topicId: 'visitor-parking',
       mainQuestionText: 'Can your guests park safely inside the society when visiting in the evening?',
-      questionText: 'Overall rating of visitor vehicle parking convenience and guest welcoming ease (1 to 5):',
+      questionText: 'Overall rating of visitor vehicle parking convenience (1 to 5):',
       type: 'rating',
       options: ['1 - Extremely Difficult', '2 - Subpar', '3 - Moderate', '4 - Good', '5 - Welcoming & Effortless'],
       answers: [
-        'Rating 1/5: Extremely difficult visitor parking that discourages friends and family from visiting.',
-        'Rating 2/5: Subpar visitor parking options requiring street parking compromises.',
-        'Rating 3/5: Moderate visitor parking availability for daytime guests.',
-        'Rating 4/5: Good visitor parking setup with quick gate verification.',
-        'Rating 5/5: Welcoming, effortless visitor parking for all guests.'
+        "Overall, visitor parking here has been genuinely difficult to manage, with limited space and no reliable fallback nearby for guests arriving late. I've had to plan well ahead whenever guests are coming over, which gets tiring. It hasn't gotten any easier the longer I've lived here.",
+        "Visitor parking convenience here is below what I'd like, requiring some extra coordination whenever guests visit in the evening hours. It's workable most of the time, but not something I'd call smooth or stress-free. I've adjusted how I plan get-togethers around it as a result.",
+        "Visitor parking here has been moderate overall, without any major recurring problems worth mentioning to anyone thinking about renting or buying this particular flat. There are occasional minor inconveniences during busier evenings, but nothing that's seriously affected how often I have guests over, even during festive seasons.",
+        "Visitor parking here has generally been a good experience, with reasonable availability and quick gate clearance for guests arriving in the evening. I don't recall many instances of real difficulty when people come to visit. It's one of the more convenient aspects of living here overall.",
+        "Visitor parking here has been genuinely welcoming and effortless since the day I moved in, with space almost always available and quick clearance at the gate for anyone visiting me. I haven't had to think twice about having guests over at any hour of the day."
       ]
     }
   ],

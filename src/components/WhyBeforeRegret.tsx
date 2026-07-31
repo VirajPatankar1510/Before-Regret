@@ -106,7 +106,7 @@ const PriceGuessReveal: React.FC = () => {
   const [animIndex, setAnimIndex] = useState<number>(0);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const revealWords = ["Nope", "Get", "Now", "At", "Just", "Rs. 399."];
+  const revealWords = ["Nope", "Get", "Now", "At", "Just", "Rs. 129."];
 
   const triggerReveal = () => {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);

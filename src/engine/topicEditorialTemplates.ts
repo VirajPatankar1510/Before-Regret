@@ -74,7 +74,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback indicates that buyers should request recent utility billing records and inspect filtration options before committing to a flat in this society.`
       );
       addTmpl(`TMPL_${idUpper}_CRIT_CLOSE`, 'SEC_CLOSING', criticalScenarioId, 'Neutral',
-        `In summary, verified resident responses show that water management requires careful pre-purchase due diligence and budgeting for seasonal supply variations.`
+        `In summary, verified resident responses show that water management requires careful pre-purchase verification and budgeting for seasonal supply variations.`
       );
       break;
 
@@ -647,7 +647,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback highlights administrative gate registration delays for domestic staff during initial move-in periods.`
       );
       addTmpl(`TMPL_${idUpper}_CRIT_AGAIN`, 'SEC_BUY_AGAIN', criticalScenarioId, 'Neutral',
-        `Resident responses emphasize that thorough independent due diligence regarding utilities and parking allocation prevents unexpected post-move surprises.`
+        `Resident responses emphasize that thorough independent property review regarding utilities and parking allocation prevents unexpected post-move surprises.`
       );
       addTmpl(`TMPL_${idUpper}_CRIT_CLOSE`, 'SEC_CLOSING', criticalScenarioId, 'Neutral',
         `In summary, evidence from resident responses proves that conducting firsthand checks during peak hours is essential for a regret-free purchase.`

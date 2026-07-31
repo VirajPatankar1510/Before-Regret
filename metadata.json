@@ -1,6 +1,6 @@
 {
-  "name": "Before Regret",
-  "description": "A premium micro-transaction knowledge marketplace for home buyers, renters, and migrating professionals in India to get verified, unvarnished truth about residential societies and localities from resident experts.",
+  "name": "BeforeRegret",
+  "description": "Property research assistant for prospective home buyers in the USA. Scans 27 public data sources to help buyers make better property decisions before making an offer.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

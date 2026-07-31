@@ -51,7 +51,7 @@ export const INITIAL_SOCIETIES: Society[] = [
         topicsAnsweredCount: 11,
         lastUpdated: '12 Days Ago',
         freshnessStatus: 'Current',
-        unlockSinglePrice: 99,
+        unlockSinglePrice: 129,
         unlockAllPrice: 399,
         topics: [
           {
@@ -62,7 +62,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '12 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'Lodha Amara employs a multi-level basement parking system with automated RFID tags at entry. Resident slots are assigned permanently without ownership disputes. Overhead clearances and pillar maneuvering are well designed.',
             structuredQA: [
               {
@@ -81,7 +81,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '12 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'TMC water pressure is boosted by hydro-pneumatic pumps. During peak morning hours (7 AM–9 AM), tap pressure stays consistent across middle and upper floors.',
             structuredQA: [
               {
@@ -100,7 +100,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '1 min read',
             lastUpdated: '12 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'JioFiber and Airtel Xstream provide robust fiber lines. Sound insulation between adjoining flats is good, making calls and WFH quiet.',
             structuredQA: [
               {
@@ -119,7 +119,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '12 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'Towers facing internal central park enjoy quiet surroundings. Road-facing wings experience mild traffic hum during peak morning rush.',
             structuredQA: [
               {
@@ -138,7 +138,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '1 min read',
             lastUpdated: '12 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'MyGate integration is active across main entry gates. Delivery partners verify passcode entry at the gate before accessing residential towers.',
             structuredQA: [
               {
@@ -157,7 +157,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '1 min read',
             lastUpdated: '12 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'MSEDCL supply in Kolshet is highly stable. Power cuts are rare and usually limited to scheduled maintenance once a month.',
             structuredQA: [
               {
@@ -176,7 +176,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '12 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'Maid and cook rates are standard. Housekeeping staff clean corridors twice daily. Domestic helpers undergo mandatory society verification.',
             structuredQA: [
               {
@@ -195,7 +195,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '1 min read',
             lastUpdated: '12 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'Move-in lift protection deposit is ₹5,000 (refundable). The non-refundable society shifting fee is ₹2,500.',
             structuredQA: [
               {
@@ -214,7 +214,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '12 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: '1. Peak morning elevator wait times between 8:15 AM and 8:45 AM can reach 4-5 minutes in high floors.\n2. Grocery delivery via Blinkit takes 8–10 minutes due to security gate processing.',
             structuredQA: [
               {
@@ -242,7 +242,7 @@ export const INITIAL_SOCIETIES: Society[] = [
         topicsAnsweredCount: 9,
         lastUpdated: '5 Days Ago',
         freshnessStatus: 'Current',
-        unlockSinglePrice: 99,
+        unlockSinglePrice: 129,
         unlockAllPrice: 399,
         topics: [
           {
@@ -253,7 +253,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '5 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'As a tenant, my parking slot was clearly specified in the registered rent agreement. RFID tag issuance took 3 working days.',
             structuredQA: [
               {
@@ -272,7 +272,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '5 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'Tenants directly pay for maid verification (₹300 one-time fee) and facility pass generation.',
             structuredQA: [
               {
@@ -316,7 +316,7 @@ export const INITIAL_SOCIETIES: Society[] = [
         topicsAnsweredCount: 11,
         lastUpdated: '3 Days Ago',
         freshnessStatus: 'Current',
-        unlockSinglePrice: 99,
+        unlockSinglePrice: 129,
         unlockAllPrice: 399,
         topics: [
           {
@@ -327,7 +327,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '3 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'Older Hiranandani buildings have open stilt parking where slots are allocated on an annual rotational basis. Newer towers have multi-level podium basements.',
             structuredQA: [
               {
@@ -346,7 +346,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '3 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'BMC water supply is extremely clean. TDS levels stay around 80-110 PPM, among the cleanest municipal water in Mumbai.',
             structuredQA: [
               {
@@ -365,7 +365,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '3 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: '1. Traffic bottleneck at JVLR junction during peak hours can add 20 minutes to your commute.\n2. Walkability inside Hiranandani is world-class.',
             structuredQA: [
               {
@@ -409,7 +409,7 @@ export const INITIAL_SOCIETIES: Society[] = [
         topicsAnsweredCount: 11,
         lastUpdated: '8 Days Ago',
         freshnessStatus: 'Current',
-        unlockSinglePrice: 99,
+        unlockSinglePrice: 129,
         unlockAllPrice: 399,
         topics: [
           {
@@ -420,7 +420,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '8 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'Ghodbunder Road location relies on a mixture of STEM water supply and borewells. Water hardness is higher (~280 PPM), making water softeners recommended.',
             structuredQA: [
               {
@@ -439,7 +439,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '1 min read',
             lastUpdated: '8 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'Yeoor Hills facing apartments enjoy quiet surroundings. Ghodbunder front towers hear heavy vehicle diesel engine noise at night.',
             structuredQA: [
               {
@@ -483,7 +483,7 @@ export const INITIAL_SOCIETIES: Society[] = [
         topicsAnsweredCount: 11,
         lastUpdated: '15 Days Ago',
         freshnessStatus: 'Current',
-        unlockSinglePrice: 99,
+        unlockSinglePrice: 129,
         unlockAllPrice: 399,
         topics: [
           {
@@ -494,7 +494,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '15 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'Podium parking is spacious and well ventilated. Visitor parking is managed via NoBrokerHood digital queue with 2 hours free pass.',
             structuredQA: [
               {
@@ -538,7 +538,7 @@ export const INITIAL_SOCIETIES: Society[] = [
         topicsAnsweredCount: 11,
         lastUpdated: '1 Day Ago',
         freshnessStatus: 'Current',
-        unlockSinglePrice: 99,
+        unlockSinglePrice: 129,
         unlockAllPrice: 399,
         topics: [
           {
@@ -549,7 +549,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '1 Day Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'BWSSB Cauvery water line supplies the complex alongside automated internal water treatment plants. Tanker dependency is zero even during dry months.',
             structuredQA: [
               {
@@ -593,7 +593,7 @@ export const INITIAL_SOCIETIES: Society[] = [
         topicsAnsweredCount: 11,
         lastUpdated: '4 Days Ago',
         freshnessStatus: 'Current',
-        unlockSinglePrice: 99,
+        unlockSinglePrice: 129,
         unlockAllPrice: 399,
         topics: [
           {
@@ -604,7 +604,7 @@ export const INITIAL_SOCIETIES: Society[] = [
             readingTime: '2 min read',
             lastUpdated: '4 Days Ago',
             freshnessStatus: 'Current',
-            singlePrice: 99,
+            singlePrice: 129,
             summary: 'DLF Phase 5 features 3-tier security with armed quick-response vehicles patrolling Golf Course Road perimeter. Visitor verification is instant via digital RFID plates.',
             structuredQA: [
               {
