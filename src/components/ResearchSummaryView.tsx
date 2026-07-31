@@ -44,7 +44,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
             {address.displayName || address.formattedAddress}
           </h1>
           <p className="text-xs text-slate-500 font-medium">
-            {address.county ? `${address.county}, ` : ''}{address.city}, {address.state} {address.zipCode} • {address.propertyType}
+            {address.county ? `${address.county}, ` : ''}{address.city}, {address.state} {address.zipCode}
           </p>
         </div>
 

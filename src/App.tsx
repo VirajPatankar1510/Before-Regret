@@ -4,6 +4,8 @@ import { Hero } from './components/Hero';
 import { ResearchProgressView } from './components/ResearchProgressView';
 import { ResearchSummaryView } from './components/ResearchSummaryView';
 import { PropertyReportView } from './components/PropertyReportView';
+import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorFallback } from './components/ErrorBoundary';
 import { Footer } from './components/Footer';
 import { 
   PropertySearchResult, 
@@ -180,7 +182,7 @@ export function App() {
         ],
         propertyRecordsSplit: {
           verified: [
-            { id: 'v1', label: 'Year Built', value: '1984', confidence: 'Verified Record', detail: 'Confirmed via County Tax Assessor records' },
+            { id: 'v1', label: 'Code Enforcement Clearance', value: 'Zero Active Violations', confidence: 'Verified Record', detail: 'Clean municipal code compliance history on file' },
             { id: 'v2', label: 'Electrical Panel Upgrade', value: '2015 Permit Recorded', confidence: 'Verified Record', detail: 'Electrical permit on file' }
           ],
           unknown: [
@@ -248,10 +250,12 @@ export function App() {
         )}
 
         {currentStep === 'REPORT' && report && (
-          <PropertyReportView
-            report={report}
-            onNewSearch={handleNewSearch}
-          />
+          <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleGenerateReport}>
+            <PropertyReportView
+              report={report}
+              onNewSearch={handleNewSearch}
+            />
+          </ErrorBoundary>
         )}
       </main>
 
