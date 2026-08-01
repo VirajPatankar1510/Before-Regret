@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ResearchProgressView } from './components/ResearchProgressView';
@@ -19,6 +19,34 @@ export function App() {
   const [summaryData, setSummaryData] = useState<ResearchSummaryData | null>(null);
   const [report, setReport] = useState<PropertyReport | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Check URL on mount for standalone report permalinks (e.g. /report/rep_123 or ?reportId=rep_123)
+  useEffect(() => {
+    const pathname = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
+
+    let reportIdFromUrl: string | null = null;
+
+    if (pathname.startsWith('/report/')) {
+      reportIdFromUrl = pathname.replace('/report/', '').trim();
+    } else if (searchParams.get('reportId')) {
+      reportIdFromUrl = searchParams.get('reportId');
+    }
+
+    if (reportIdFromUrl && reportIdFromUrl.length > 0) {
+      setIsLoading(true);
+      fetch(`/api/report/${reportIdFromUrl}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.report) {
+            setReport(data.report);
+            setCurrentStep('REPORT');
+          }
+        })
+        .catch((err) => console.error('Failed to load standalone report from URL:', err))
+        .finally(() => setIsLoading(false));
+    }
+  }, []);
 
   // Step 1 -> Step 2: User selects property address
   const handleSelectProperty = async (property: PropertySearchResult) => {
@@ -87,6 +115,9 @@ export function App() {
         if (json.report) {
           setReport(json.report);
           setCurrentStep('REPORT');
+          if (json.report.id) {
+            window.history.pushState({ reportId: json.report.id }, '', `/report/${json.report.id}`);
+          }
           window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
         }
@@ -219,6 +250,11 @@ export function App() {
     setSummaryData(null);
     setReport(null);
     setCurrentStep('HOME');
+    try {
+      window.history.pushState({}, '', '/');
+    } catch (e) {
+      // Ignore if iframe location is restricted
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

@@ -249,60 +249,68 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
       const res = await fetch(overpassUrl);
       if (res.ok) {
         const data = await res.json();
-        if (!buildingLayerGroupRef.current) {
-          buildingLayerGroupRef.current = L.layerGroup().addTo(map);
-        } else {
-          buildingLayerGroupRef.current.clearLayers();
-        }
+        if (!mapInstanceRef.current || mapInstanceRef.current !== map) return;
 
-        let count = 0;
-        const elements = data.elements || [];
-
-        elements.forEach((el: any) => {
-          const name = el.tags?.name || el.tags?.['building:name'] || el.tags?.description;
-          if (!name) return;
-
-          // Skip non-residential places strictly
-          const nonRes = checkNonResidential(
-            name,
-            el.tags?.amenity || el.tags?.shop || el.tags?.office,
-            el.tags?.building,
-            el.tags
-          );
-          if (nonRes.isNonResidential) return;
-
-          const lat = el.lat || el.center?.lat;
-          const lon = el.lon || el.center?.lon;
-
-          if (lat && lon) {
-            count++;
-            // Create building label marker
-            const buildingIcon = L.divIcon({
-              className: 'custom-building-label-marker',
-              html: `
-                <div class="group relative flex items-center gap-1.5 bg-slate-900/90 hover:bg-blue-600 border border-blue-400/50 text-white px-2.5 py-1 rounded-xl shadow-xl cursor-pointer transition-all transform hover:scale-105 active:scale-95">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-400 group-hover:text-white shrink-0"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
-                  <span class="text-[11px] font-bold tracking-tight whitespace-nowrap max-w-[160px] truncate">${name}</span>
-                </div>
-              `,
-              iconAnchor: [40, 15]
-            });
-
-            const bMarker = L.marker([lat, lon], { icon: buildingIcon });
-            bMarker.on('click', (e) => {
-              L.DomEvent.stopPropagation(e);
-              if (mapInstanceRef.current) {
-                mapInstanceRef.current.setView([lat, lon], 17);
-              }
-              updateMarkerPosition(lat, lon);
-              fetchAddressFromCoords(lat, lon);
-            });
-
-            buildingLayerGroupRef.current?.addLayer(bMarker);
+        try {
+          if (!buildingLayerGroupRef.current) {
+            buildingLayerGroupRef.current = L.layerGroup().addTo(map);
+          } else {
+            buildingLayerGroupRef.current.clearLayers();
           }
-        });
 
-        setDetectedBuildingCount(count);
+          let count = 0;
+          const elements = data.elements || [];
+
+          elements.forEach((el: any) => {
+            const name = el.tags?.name || el.tags?.['building:name'] || el.tags?.description;
+            if (!name) return;
+
+            // Skip non-residential places strictly
+            const nonRes = checkNonResidential(
+              name,
+              el.tags?.amenity || el.tags?.shop || el.tags?.office,
+              el.tags?.building,
+              el.tags
+            );
+            if (nonRes.isNonResidential) return;
+
+            const lat = el.lat || el.center?.lat;
+            const lon = el.lon || el.center?.lon;
+
+            if (lat && lon) {
+              count++;
+              // Create building label marker
+              const buildingIcon = L.divIcon({
+                className: 'custom-building-label-marker',
+                html: `
+                  <div class="group relative flex items-center gap-1.5 bg-slate-900/90 hover:bg-blue-600 border border-blue-400/50 text-white px-2.5 py-1 rounded-xl shadow-xl cursor-pointer transition-all transform hover:scale-105 active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-400 group-hover:text-white shrink-0"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+                    <span class="text-[11px] font-bold tracking-tight whitespace-nowrap max-w-[160px] truncate">${name}</span>
+                  </div>
+                `,
+                iconAnchor: [40, 15]
+              });
+
+              const bMarker = L.marker([lat, lon], { icon: buildingIcon });
+              bMarker.on('click', (e) => {
+                L.DomEvent.stopPropagation(e);
+                if (mapInstanceRef.current) {
+                  try {
+                    mapInstanceRef.current.setView([lat, lon], 17);
+                  } catch (err) {}
+                }
+                updateMarkerPosition(lat, lon);
+                fetchAddressFromCoords(lat, lon);
+              });
+
+              buildingLayerGroupRef.current?.addLayer(bMarker);
+            }
+          });
+
+          setDetectedBuildingCount(count);
+        } catch (layerErr) {
+          console.warn('Modal building layer addition error:', layerErr);
+        }
       }
     } catch (err) {
       console.warn('Overpass building fetch error:', err);
@@ -313,65 +321,117 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
 
   // Initialize Map
   useEffect(() => {
-    if (!isOpen || !mapContainerRef.current) return;
-
-    if (!mapInstanceRef.current) {
-      const map = L.map(mapContainerRef.current, {
-        center: [initialCoords.lat, initialCoords.lon],
-        zoom: 16,
-        zoomControl: false
-      });
-
-      L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-      // Tile layers
-      streetTileLayerRef.current = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 19
-      });
-
-      satelliteTileLayerRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri',
-        maxZoom: 19
-      });
-
-      satelliteLabelsLayerRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 19
-      });
-
-      // Default layer addition based on state
-      if (isSatelliteView) {
-        satelliteTileLayerRef.current.addTo(map);
-        satelliteLabelsLayerRef.current.addTo(map);
-      } else {
-        streetTileLayerRef.current.addTo(map);
+    if (!isOpen) {
+      if (mapInstanceRef.current) {
+        try {
+          mapInstanceRef.current.off();
+          mapInstanceRef.current.remove();
+        } catch (e) {}
+        mapInstanceRef.current = null;
+        markerInstanceRef.current = null;
+        buildingLayerGroupRef.current = null;
+        streetTileLayerRef.current = null;
+        satelliteTileLayerRef.current = null;
+        satelliteLabelsLayerRef.current = null;
       }
-
-      // Click event to place pin
-      map.on('click', (e: L.LeafletMouseEvent) => {
-        const { lat, lng } = e.latlng;
-        updateMarkerPosition(lat, lng);
-        fetchAddressFromCoords(lat, lng);
-      });
-
-      // Moveend listener to load residential building names in visible area
-      map.on('moveend', () => {
-        fetchNearbyBuildings(map);
-      });
-
-      mapInstanceRef.current = map;
-
-      // Add initial marker & fetch buildings
-      updateMarkerPosition(initialCoords.lat, initialCoords.lon);
-      fetchAddressFromCoords(initialCoords.lat, initialCoords.lon);
-      fetchNearbyBuildings(map);
-    } else {
-      mapInstanceRef.current.invalidateSize();
-      mapInstanceRef.current.setView([initialCoords.lat, initialCoords.lon], 16);
-      updateMarkerPosition(initialCoords.lat, initialCoords.lon);
-      fetchAddressFromCoords(initialCoords.lat, initialCoords.lon);
-      fetchNearbyBuildings(mapInstanceRef.current);
+      return;
     }
+
+    if (!mapContainerRef.current) return;
+
+    const timer = setTimeout(() => {
+      if (!mapContainerRef.current || !isOpen) return;
+
+      if (!mapInstanceRef.current) {
+        try {
+          const map = L.map(mapContainerRef.current, {
+            center: [initialCoords.lat, initialCoords.lon],
+            zoom: 16,
+            zoomControl: false
+          });
+
+          L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+          // Tile layers
+          streetTileLayerRef.current = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+          });
+
+          satelliteTileLayerRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri',
+            maxZoom: 19
+          });
+
+          satelliteLabelsLayerRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19
+          });
+
+          // Default layer addition based on state
+          if (isSatelliteView) {
+            satelliteTileLayerRef.current.addTo(map);
+            satelliteLabelsLayerRef.current.addTo(map);
+          } else {
+            streetTileLayerRef.current.addTo(map);
+          }
+
+          // Click event to place pin
+          map.on('click', (e: L.LeafletMouseEvent) => {
+            const { lat, lng } = e.latlng;
+            updateMarkerPosition(lat, lng);
+            fetchAddressFromCoords(lat, lng);
+          });
+
+          // Moveend listener to load residential building names in visible area
+          map.on('moveend', () => {
+            fetchNearbyBuildings(map);
+          });
+
+          mapInstanceRef.current = map;
+
+          // Add initial marker & fetch buildings
+          updateMarkerPosition(initialCoords.lat, initialCoords.lon);
+          fetchAddressFromCoords(initialCoords.lat, initialCoords.lon);
+          fetchNearbyBuildings(map);
+
+          setTimeout(() => {
+            if (mapInstanceRef.current) {
+              try {
+                mapInstanceRef.current.invalidateSize();
+              } catch (e) {}
+            }
+          }, 100);
+        } catch (err) {
+          console.warn('Error initializing Leaflet modal map:', err);
+        }
+      } else {
+        try {
+          mapInstanceRef.current.invalidateSize();
+          mapInstanceRef.current.setView([initialCoords.lat, initialCoords.lon], 16);
+          updateMarkerPosition(initialCoords.lat, initialCoords.lon);
+          fetchAddressFromCoords(initialCoords.lat, initialCoords.lon);
+          fetchNearbyBuildings(mapInstanceRef.current);
+        } catch (err) {
+          console.warn('Error re-centering Leaflet map:', err);
+        }
+      }
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      if (mapInstanceRef.current) {
+        try {
+          mapInstanceRef.current.off();
+          mapInstanceRef.current.remove();
+        } catch (e) {}
+        mapInstanceRef.current = null;
+        markerInstanceRef.current = null;
+        buildingLayerGroupRef.current = null;
+        streetTileLayerRef.current = null;
+        satelliteTileLayerRef.current = null;
+        satelliteLabelsLayerRef.current = null;
+      }
+    };
   }, [isOpen]);
 
   // Toggle map tiles (Satellite vs Street)

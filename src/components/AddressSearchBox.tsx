@@ -57,19 +57,34 @@ const SAMPLE_PROPERTIES: PropertySearchResult[] = [
     displayName: 'Ocean Palms Residential Enclave, 1100 Ocean Dr, Miami Beach, FL 33139'
   },
   {
-    placeId: 'sample_springfield_heights',
-    formattedAddress: 'Evergreen Heights Society, 742 Evergreen Terrace, Springfield, OR 97477',
-    streetNumber: '742',
-    streetName: 'Evergreen Terrace',
-    city: 'Springfield',
-    state: 'OR',
-    zipCode: '97477',
-    county: 'Lane County',
+    placeId: 'sample_willow_maple',
+    formattedAddress: 'Willow & Maple, 6918 Willow Street NW, Washington, DC 20012',
+    streetNumber: '6918',
+    streetName: 'Willow St NW',
+    city: 'Washington',
+    state: 'DC',
+    zipCode: '20012',
+    county: 'District of Columbia',
     country: 'United States',
-    lat: 44.0462,
-    lon: -123.0220,
-    propertyType: 'Residential Society / Complex',
-    displayName: 'Evergreen Heights Society, 742 Evergreen Terrace, Springfield, OR 97477'
+    lat: 38.9760,
+    lon: -77.0272,
+    propertyType: 'Apartment / Condo Complex',
+    displayName: 'Willow & Maple, 6918 Willow Street NW, Washington, DC 20012'
+  },
+  {
+    placeId: 'sample_glade_laurel',
+    formattedAddress: 'The Glade on Laurel, 6896 Laurel Street NW, Washington, DC 20012',
+    streetNumber: '6896',
+    streetName: 'Laurel St NW',
+    city: 'Washington',
+    state: 'DC',
+    zipCode: '20012',
+    county: 'District of Columbia',
+    country: 'United States',
+    lat: 38.9752,
+    lon: -77.0268,
+    propertyType: 'Apartment / Condo Complex',
+    displayName: 'The Glade on Laurel, 6896 Laurel Street NW, Washington, DC 20012'
   }
 ];
 
@@ -380,58 +395,66 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       const res = await fetch(overpassUrl);
       if (res.ok) {
         const data = await res.json();
-        if (!buildingLayerGroupRef.current) {
-          buildingLayerGroupRef.current = L.layerGroup().addTo(map);
-        } else {
-          buildingLayerGroupRef.current.clearLayers();
-        }
+        if (!mapInstanceRef.current || mapInstanceRef.current !== map) return;
 
-        let count = 0;
-        const elements = data.elements || [];
-
-        elements.forEach((el: any) => {
-          const name = el.tags?.name || el.tags?.['building:name'] || el.tags?.description;
-          if (!name) return;
-
-          const nonRes = checkNonResidential(
-            name,
-            el.tags?.amenity || el.tags?.shop || el.tags?.office,
-            el.tags?.building,
-            el.tags
-          );
-          if (nonRes.isNonResidential) return;
-
-          const lat = el.lat || el.center?.lat;
-          const lon = el.lon || el.center?.lon;
-
-          if (lat && lon) {
-            count++;
-            const buildingIcon = L.divIcon({
-              className: 'custom-building-label-marker',
-              html: `
-                <div class="group relative flex items-center gap-1.5 bg-slate-900/90 hover:bg-blue-600 border border-blue-400/50 text-white px-2.5 py-1 rounded-xl shadow-xl cursor-pointer transition-all transform hover:scale-105 active:scale-95">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-400 group-hover:text-white shrink-0"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
-                  <span class="text-[11px] font-bold tracking-tight whitespace-nowrap max-w-[160px] truncate">${name}</span>
-                </div>
-              `,
-              iconAnchor: [40, 15]
-            });
-
-            const bMarker = L.marker([lat, lon], { icon: buildingIcon });
-            bMarker.on('click', (e) => {
-              L.DomEvent.stopPropagation(e);
-              if (mapInstanceRef.current) {
-                mapInstanceRef.current.setView([lat, lon], 17);
-              }
-              updateMarkerPosition(lat, lon);
-              fetchAddressFromCoords(lat, lon);
-            });
-
-            buildingLayerGroupRef.current?.addLayer(bMarker);
+        try {
+          if (!buildingLayerGroupRef.current) {
+            buildingLayerGroupRef.current = L.layerGroup().addTo(map);
+          } else {
+            buildingLayerGroupRef.current.clearLayers();
           }
-        });
 
-        setDetectedBuildingCount(count);
+          let count = 0;
+          const elements = data.elements || [];
+
+          elements.forEach((el: any) => {
+            const name = el.tags?.name || el.tags?.['building:name'] || el.tags?.description;
+            if (!name) return;
+
+            const nonRes = checkNonResidential(
+              name,
+              el.tags?.amenity || el.tags?.shop || el.tags?.office,
+              el.tags?.building,
+              el.tags
+            );
+            if (nonRes.isNonResidential) return;
+
+            const lat = el.lat || el.center?.lat;
+            const lon = el.lon || el.center?.lon;
+
+            if (lat && lon) {
+              count++;
+              const buildingIcon = L.divIcon({
+                className: 'custom-building-label-marker',
+                html: `
+                  <div class="group relative flex items-center gap-1.5 bg-slate-900/90 hover:bg-blue-600 border border-blue-400/50 text-white px-2.5 py-1 rounded-xl shadow-xl cursor-pointer transition-all transform hover:scale-105 active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-400 group-hover:text-white shrink-0"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+                    <span class="text-[11px] font-bold tracking-tight whitespace-nowrap max-w-[160px] truncate">${name}</span>
+                  </div>
+                `,
+                iconAnchor: [40, 15]
+              });
+
+              const bMarker = L.marker([lat, lon], { icon: buildingIcon });
+              bMarker.on('click', (e) => {
+                L.DomEvent.stopPropagation(e);
+                if (mapInstanceRef.current) {
+                  try {
+                    mapInstanceRef.current.setView([lat, lon], 17);
+                  } catch (err) {}
+                }
+                updateMarkerPosition(lat, lon);
+                fetchAddressFromCoords(lat, lon);
+              });
+
+              buildingLayerGroupRef.current?.addLayer(bMarker);
+            }
+          });
+
+          setDetectedBuildingCount(count);
+        } catch (layerErr) {
+          console.warn('Building layer addition error:', layerErr);
+        }
       }
     } catch (err) {
       console.warn('Overpass building fetch error:', err);
@@ -514,10 +537,24 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     }, 200);
 
     return () => {
+      if (buildingLayerGroupRef.current) {
+        try { buildingLayerGroupRef.current.clearLayers(); } catch (e) {}
+        buildingLayerGroupRef.current = null;
+      }
+      if (markerInstanceRef.current) {
+        try { markerInstanceRef.current.remove(); } catch (e) {}
+        markerInstanceRef.current = null;
+      }
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
+        try {
+          mapInstanceRef.current.off();
+          mapInstanceRef.current.remove();
+        } catch (e) {}
         mapInstanceRef.current = null;
       }
+      streetTileLayerRef.current = null;
+      satelliteTileLayerRef.current = null;
+      satelliteLabelsLayerRef.current = null;
     };
   }, []);
 
@@ -705,7 +742,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               onClick={() => onSelectProperty(selectedPinResult)}
               className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer shrink-0 tracking-tight"
             >
-              <span>Generate Intelligence Report</span>
+              <span>Analyze Property</span>
               <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
             </button>
           )}
