@@ -271,6 +271,30 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [checklistCategoryFilter, setChecklistCategoryFilter] = useState<string>('ALL');
   const [copiedLeverId, setCopiedLeverId] = useState<string | null>(null);
+  const [copiedShareUrl, setCopiedShareUrl] = useState(false);
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const offset = 110;
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = el.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handleCopyShareUrl = () => {
+    const reportUrl = `${window.location.origin}/report/${report?.id || 'rep_standard'}`;
+    navigator.clipboard.writeText(reportUrl);
+    setCopiedShareUrl(true);
+    setTimeout(() => setCopiedShareUrl(false), 2500);
+  };
 
   const toggleChecklistItem = (id: string) => {
     setChecklist(prev =>
@@ -471,6 +495,24 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
 
           <div className="flex items-center gap-2">
             <button
+              onClick={handleCopyShareUrl}
+              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer border border-slate-700"
+              title="Copy Unique URL to Share This Report"
+            >
+              {copiedShareUrl ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-emerald-300">Link Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-slate-300" />
+                  <span>Share Report Link</span>
+                </>
+              )}
+            </button>
+
+            <button
               onClick={handleDownloadPDF}
               disabled={isExportingPDF}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-sm border border-blue-500"
@@ -505,14 +547,14 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
         <div className="py-2.5 px-4 border-b border-slate-200 overflow-x-auto">
           <div className="max-w-5xl mx-auto flex items-center gap-2 text-xs font-semibold whitespace-nowrap text-slate-700">
             <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px] mr-1">Report Guide:</span>
-            <a href="#executive-snapshot" className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 font-bold text-emerald-700">Executive Snapshot</a>
-            <a href="#top-priorities" className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 font-bold text-slate-900">1. Executive Overview</a>
-            <a href="#environmental" className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200">2. Local Environment</a>
-            <a href="#records" className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200">3. Property Records</a>
-            <a href="#insurance" className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 text-blue-800 font-bold">4. Insurance Considerations</a>
-            <a href="#questions" className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200">5. Seller Questions</a>
-            <a href="#checklist" className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200">6. Walkthrough Checklist</a>
-            <a href="#methodology" className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200">7. Source Appendix</a>
+            <button onClick={() => scrollToSection('executive-snapshot')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 font-bold text-emerald-700 cursor-pointer">Executive Snapshot</button>
+            <button onClick={() => scrollToSection('top-priorities')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 font-bold text-slate-900 cursor-pointer">1. Executive Overview</button>
+            <button onClick={() => scrollToSection('environmental')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 cursor-pointer">2. Local Environment</button>
+            <button onClick={() => scrollToSection('records')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 cursor-pointer">3. Property Records</button>
+            <button onClick={() => scrollToSection('insurance')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 text-blue-800 font-bold cursor-pointer">4. Insurance Considerations</button>
+            <button onClick={() => scrollToSection('questions')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 cursor-pointer">5. Seller Questions</button>
+            <button onClick={() => scrollToSection('checklist')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 cursor-pointer">6. Walkthrough Checklist</button>
+            <button onClick={() => scrollToSection('methodology')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 cursor-pointer">7. Source Appendix</button>
           </div>
         </div>
 
@@ -1105,7 +1147,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
         {/* FOOTER & BRANDING */}
         <div className="text-center space-y-1.5 pt-6 border-t border-slate-200 text-xs text-slate-500 font-medium print:text-[10px]">
           <div className="font-bold text-slate-900 font-serif text-sm">BeforeRegret (beforeregret.com) – Property Research Assistant</div>
-          <p>Independent, high-trust property research for residential homebuyers across the United States.</p>
+          <p>Independent public record property research for residential homebuyers across the United States.</p>
         </div>
 
       </div>

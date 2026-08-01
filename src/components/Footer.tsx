@@ -35,14 +35,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch }) => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} BeforeRegret. All rights reserved. US Public Records Property Research Assistant.</p>
-          <div className="flex items-center gap-4">
-            <span>27 Public Data Sources</span>
-            <span>•</span>
-            <span>100% Unbiased</span>
-            <span>•</span>
-            <span>US Public Records</span>
-          </div>
+          <p>© {new Date().getFullYear()} BeforeRegret. All rights reserved. Property Research Assistant for US Residential Real Estate.</p>
         </div>
 
       </div>
