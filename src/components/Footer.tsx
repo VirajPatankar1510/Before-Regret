@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShieldCheck, ArrowRight } from 'lucide-react';
+import { Logo } from './Logo';
 
 interface FooterProps {
   onNewSearch: () => void;
@@ -14,9 +15,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch }) => {
           
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-extrabold text-sm flex items-center justify-center">
-                BR
-              </div>
+              <Logo className="w-8 h-8 shrink-0" color="#3B82F6" />
               <span className="font-extrabold text-lg text-white tracking-tight">BeforeRegret</span>
             </div>
             <p className="text-xs text-slate-400 max-w-md">

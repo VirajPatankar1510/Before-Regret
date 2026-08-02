@@ -5,7 +5,11 @@ import {
   FileCheck, AlertCircle, Download, Loader2, Building, Layers,
   BarChart3, Info, Map, Calendar
 } from 'lucide-react';
-import { PropertyReport, ConfidenceLevel, VisitChecklistItem, MapLayerOverlay, ExecutiveSnapshotItem, InsuranceConsiderationItem, DirectSourceLink } from '../types';
+import { 
+  PropertyReport, ConfidenceLevel, VisitChecklistItem, MapLayerOverlay, 
+  ExecutiveSnapshotItem, InsuranceConsiderationItem, DirectSourceLink,
+  BottomLineSection, NearbyEssentialsSection
+} from '../types';
 import { LeadMarketplaceWidget } from './LeadMarketplaceWidget';
 
 interface PropertyReportViewProps {
@@ -146,6 +150,130 @@ const ExecutiveSnapshotDashboard: React.FC<{
   );
 };
 
+const BottomLineSectionView: React.FC<{ bottomLine?: BottomLineSection }> = ({ bottomLine }) => {
+  if (!bottomLine) return null;
+
+  return (
+    <section id="bottom-line" className="bg-slate-900 text-white border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-md space-y-6">
+      <div className="border-b border-slate-800 pb-4">
+        <div className="text-xs font-mono font-extrabold text-amber-400 uppercase tracking-widest">BUYER DECISION GUIDE</div>
+        <h2 className="text-2xl sm:text-3xl font-serif font-black text-white tracking-tight mt-1">
+          The Bottom Line: Buyer Decision Synthesis
+        </h2>
+        <p className="text-sm font-medium text-slate-300 mt-1">
+          A high-level synthesis translating public record findings into clear, practical buyer priorities.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Worth Verifying */}
+        <div className="bg-amber-950/60 border border-amber-600/40 rounded-2xl p-5 space-y-3">
+          <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs uppercase tracking-wider font-mono">
+            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>Worth Verifying (Follow-Up Items)</span>
+          </div>
+          <p className="text-xs text-amber-200/80 font-medium leading-relaxed">
+            Items that warrant follow-up during physical inspection, seller disclosure review, or professional consultation:
+          </p>
+          <ul className="space-y-2.5 pt-1">
+            {bottomLine.worthVerifying.map((item, idx) => (
+              <li key={`wv-${idx}`} className="bg-slate-900/90 border border-amber-900/60 rounded-xl p-3 text-xs space-y-1">
+                <span className="font-bold text-amber-300 block">{item.title}</span>
+                <span className="text-slate-200 leading-relaxed block text-[11px]">{item.detail}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Likely Routine */}
+        <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 space-y-3">
+          <div className="flex items-center gap-2 text-blue-400 font-extrabold text-xs uppercase tracking-wider font-mono">
+            <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+            <span>Likely Routine (Normal Property Context)</span>
+          </div>
+          <p className="text-xs text-slate-300 font-medium leading-relaxed">
+            Common finding categories typical for properties of this type, area, or municipal archive setup:
+          </p>
+          <ul className="space-y-2.5 pt-1">
+            {bottomLine.likelyRoutine.map((item, idx) => (
+              <li key={`lr-${idx}`} className="bg-slate-900/90 border border-slate-700 rounded-xl p-3 text-xs space-y-1">
+                <span className="font-bold text-blue-300 block">{item.title}</span>
+                <span className="text-slate-200 leading-relaxed block text-[11px]">{item.detail}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Bigger Picture */}
+      {bottomLine.biggerPicture && (
+        <div className="bg-blue-950/80 border border-blue-600/40 rounded-2xl p-5 text-xs text-blue-100 space-y-1.5">
+          <div className="text-blue-300 font-mono font-bold text-[10px] uppercase tracking-wider">
+            Bigger Picture: What This Means for Your Decision
+          </div>
+          <p className="text-sm font-medium leading-relaxed text-white">
+            {bottomLine.biggerPicture}
+          </p>
+        </div>
+      )}
+    </section>
+  );
+};
+
+const NearbyEssentialsView: React.FC<{ nearby?: NearbyEssentialsSection }> = ({ nearby }) => {
+  if (!nearby || !nearby.items || nearby.items.length === 0) return null;
+
+  return (
+    <div className="space-y-4 pt-6 border-t border-slate-200">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <div className="text-xs font-mono font-extrabold text-blue-700 uppercase tracking-widest">SECTION 2B</div>
+          <h3 className="text-xl font-serif font-black text-slate-900 tracking-tight mt-0.5">
+            Nearby Essentials & Future Development
+          </h3>
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
+            Verified public source checks for emergency healthcare, municipal zoning dockets, and regional infrastructure projects.
+          </p>
+        </div>
+        {nearby.dataFreshness && (
+          <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-full">
+            {nearby.dataFreshness}
+          </span>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {nearby.items.map((item) => (
+          <div key={item.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
+                <span className="text-[10px] font-mono font-bold text-blue-800 uppercase tracking-wider">{item.category}</span>
+                <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 px-2 py-0.5 rounded-full">
+                  {item.confidence}
+                </span>
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm">{item.title}</h4>
+              <div className="text-xs space-y-2">
+                <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                  <span className="font-bold text-slate-800 font-mono text-[10px] uppercase block mb-0.5">Public Record Finding</span>
+                  <p className="text-slate-800 font-medium">{item.finding}</p>
+                </div>
+                <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                  <span className="font-bold text-blue-700 font-mono text-[10px] uppercase block mb-0.5">Practical Implication</span>
+                  <p className="text-slate-700 leading-relaxed">{item.implication}</p>
+                </div>
+              </div>
+            </div>
+            <div className="text-[10px] font-mono text-slate-500 pt-1 border-t border-slate-200/60">
+              Source: {item.source}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const InsuranceConsiderationsSection: React.FC<{ items?: InsuranceConsiderationItem[]; freshness?: string }> = ({ items, freshness }) => {
   if (!items || items.length === 0) return null;
 
@@ -153,12 +281,12 @@ const InsuranceConsiderationsSection: React.FC<{ items?: InsuranceConsiderationI
     <section id="insurance" className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
       <div className="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <div className="text-xs font-mono font-extrabold text-blue-700 uppercase tracking-widest">SECTION 4B</div>
+          <div className="text-xs font-mono font-extrabold text-blue-700 uppercase tracking-widest">SECTION 4</div>
           <h2 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight mt-1">
-            Insurance Considerations & Carrier Practices
+            Insurance Considerations & Shopping Guide
           </h2>
           <p className="text-sm font-medium text-slate-600 mt-1">
-            Factual statements regarding how specific flagged property findings commonly relate to insurance requirements.
+            Plain-language guidance focused on what public findings mean for your home insurance shopping process.
           </p>
         </div>
         {freshness && (
@@ -168,24 +296,14 @@ const InsuranceConsiderationsSection: React.FC<{ items?: InsuranceConsiderationI
         )}
       </div>
 
-      <div className="bg-amber-50 border border-amber-300 p-4 rounded-2xl text-xs text-amber-950 font-medium leading-relaxed space-y-1">
-        <div className="font-bold flex items-center gap-1.5 font-mono uppercase text-[11px] text-amber-900">
-          <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
-          <span>Underwriting Guidance Note</span>
-        </div>
-        <p>
-          These general observations describe standard insurance carrier practices and underwriting parameters. Policy terms, coverage requirements, and endorsement availability vary by individual insurance provider. Always confirm specific property insurability and coverage options with a licensed insurance agent.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-        {items.map((item) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+        {items.slice(0, 3).map((item) => (
           <div key={item.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3 flex flex-col justify-between">
             <div className="space-y-2">
               <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                 <h3 className="font-bold text-slate-900 text-sm">{item.findingTopic}</h3>
                 <span className="text-[10px] font-mono font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded">
-                  UNDERWRITING FACT
+                  BUYER FACT
                 </span>
               </div>
 
@@ -196,14 +314,14 @@ const InsuranceConsiderationsSection: React.FC<{ items?: InsuranceConsiderationI
                 </div>
 
                 <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                  <span className="font-bold text-slate-700 font-mono text-[10px] uppercase block mb-0.5">Carrier Practice & Policy Factor</span>
+                  <span className="font-bold text-slate-700 font-mono text-[10px] uppercase block mb-0.5">Insurance Shopping Implication</span>
                   <p className="text-slate-800 leading-relaxed">{item.insuranceFactor}</p>
                 </div>
               </div>
             </div>
 
             <div className="bg-slate-900 text-white p-3 rounded-xl text-xs space-y-1">
-              <span className="text-amber-300 font-mono font-bold text-[10px] uppercase block">Action Guidance</span>
+              <span className="text-amber-300 font-mono font-bold text-[10px] uppercase block">Action Line for Insurance Agent</span>
               <p className="text-slate-200 text-[11px]">{item.guidanceNote}</p>
             </div>
           </div>
@@ -272,6 +390,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
   const [checklistCategoryFilter, setChecklistCategoryFilter] = useState<string>('ALL');
   const [copiedLeverId, setCopiedLeverId] = useState<string | null>(null);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
+  const [showFullTechnicalDetail, setShowFullTechnicalDetail] = useState(false);
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -421,32 +540,20 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
   };
 
   const renderConfidenceBadge = (confidence?: ConfidenceLevel) => {
-    switch (confidence) {
-      case 'Verified Record':
-      case 'Verified' as any:
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-900 border border-emerald-300">
-            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-            <span>[VERIFIED RECORD]</span>
-          </span>
-        );
-      case 'Era Expectation':
-      case 'Regional Insight' as any:
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-300">
-            <span className="w-2 h-2 rounded-full bg-amber-600"></span>
-            <span>[ERA EXPECTATION]</span>
-          </span>
-        );
-      case 'Needs Verification':
-      default:
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-900 border border-blue-300">
-            <span className="w-2 h-2 rounded-full bg-blue-600"></span>
-            <span>[NEEDS VERIFICATION]</span>
-          </span>
-        );
+    if (confidence === 'Verified Record' || (confidence as string) === 'Verified') {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-900 border border-emerald-300">
+          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+          <span>[VERIFIED RECORD]</span>
+        </span>
+      );
     }
+    return (
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-300">
+        <span className="w-2 h-2 rounded-full bg-amber-600"></span>
+        <span>[NO RECORD FOUND]</span>
+      </span>
+    );
   };
 
   const info = report?.propertyInfo || {
@@ -455,8 +562,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
     state: 'TX',
     zipCode: '78701',
     county: 'Travis County',
-    propertyType: 'Single Family Home',
-    yearBuilt: 1984
+    propertyType: 'Single Family Home'
   };
 
   return (
@@ -548,6 +654,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
           <div className="max-w-5xl mx-auto flex items-center gap-2 text-xs font-semibold whitespace-nowrap text-slate-700">
             <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px] mr-1">Report Guide:</span>
             <button onClick={() => scrollToSection('executive-snapshot')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 font-bold text-emerald-700 cursor-pointer">Executive Snapshot</button>
+            <button onClick={() => scrollToSection('bottom-line')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 font-bold text-amber-700 cursor-pointer">Bottom Line Synthesis</button>
             <button onClick={() => scrollToSection('top-priorities')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 font-bold text-slate-900 cursor-pointer">1. Executive Overview</button>
             <button onClick={() => scrollToSection('environmental')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 cursor-pointer">2. Local Environment</button>
             <button onClick={() => scrollToSection('records')} className="hover:text-blue-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 cursor-pointer">3. Property Records</button>
@@ -618,6 +725,9 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
           items={report.executiveSnapshot} 
           mostImportantToVerify={report.atAGlance?.mostImportantToVerify}
         />
+
+        {/* BOTTOM LINE BUYER DECISION SYNTHESIS */}
+        <BottomLineSectionView bottomLine={report.bottomLine} />
 
         {/* SECTION 1: EXECUTIVE OVERVIEW (TOP PRIORITIES) */}
         <section id="top-priorities" className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-md space-y-6">
@@ -756,6 +866,9 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
             ))}
           </div>
 
+          {/* Section 2B: Nearby Essentials & Future Development */}
+          <NearbyEssentialsView nearby={report.nearbyEssentials} />
+
         </section>
 
         {/* SECTION 3: PROPERTY RECORDS & BUILDING ANALYSIS */}
@@ -817,56 +930,72 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
                   </div>
                 ))}
               </div>
+
+              {/* Calibrating context callout */}
+              <div className="bg-blue-50/80 border border-blue-200 p-3 rounded-xl text-[11px] text-blue-950 leading-relaxed font-medium">
+                <span className="font-bold block text-[10px] font-mono uppercase text-blue-800 mb-0.5">Calibrating Record Context</span>
+                Older or smaller municipal jurisdictions frequently have incomplete digitized permit archives. A missing record in an online portal does not mean unpermitted work occurred — it often reflects incomplete back-digitization of historical paper files.
+              </div>
             </div>
 
           </div>
 
-          {/* Building Systems & Permit Lifespan Matrix */}
+          {/* Building Systems & Permit History Matrix */}
           <div className="space-y-4 pt-6 border-t border-slate-200">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-base font-serif font-black text-slate-900">
-                  Building Systems & Permit Lifespan Matrix
+                  Building Systems Permit History
                 </h3>
                 <p className="text-xs text-slate-600 font-medium mt-0.5">
-                  Cross-referencing municipal permit filings with standard building component lifespan expectations.
+                  Permit history and official municipal filing audit for major building systems.
                 </p>
               </div>
-              <span className="text-[10px] font-mono font-bold text-slate-500 uppercase bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-md hidden sm:inline-block">
-                System Lifespan Map
-              </span>
+              <button
+                onClick={() => setShowFullTechnicalDetail(!showFullTechnicalDetail)}
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xs rounded-xl border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>{showFullTechnicalDetail ? 'Collapse Detail' : 'Full Technical Detail'}</span>
+                <ChevronRight className={`w-3.5 h-3.5 transition-transform ${showFullTechnicalDetail ? 'rotate-90' : ''}`} />
+              </button>
             </div>
 
-            <div className="overflow-x-auto rounded-2xl border border-slate-200">
-              <table className="w-full text-left text-xs divide-y divide-slate-200">
-                <thead className="bg-slate-900 text-white font-mono text-[10px] uppercase font-bold tracking-wider">
-                  <tr>
-                    <th className="py-3 px-4">System Component</th>
-                    <th className="py-3 px-4">Design Lifespan</th>
-                    <th className="py-3 px-4">Municipal Permit History</th>
-                    <th className="py-3 px-4">Era Expectation</th>
-                    <th className="py-3 px-4 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-slate-100 font-medium text-slate-800">
-                  {(report.permitLifespanMatrix || [
-                    { id: 'pl1', system: 'Roofing Shingles & Flashing', standardLifespanYears: '20 – 25 Years', permitStatus: 'Permit unconfirmed in digitized log', eraExpectation: 'Approaching end-of-design lifespan window', confidence: 'Needs Verification' as const },
-                    { id: 'pl2', system: 'Central AC Compressor', standardLifespanYears: '12 – 15 Years', permitStatus: 'Permit log unconfirmed', eraExpectation: 'Operating in mature secondary cycle', confidence: 'Needs Verification' as const },
-                    { id: 'pl3', system: 'Electrical Breaker Panel', standardLifespanYears: '30 – 40 Years', permitStatus: 'Service recorded in public log', eraExpectation: 'Modern circuit capacity active', confidence: 'Verified Record' as const },
-                    { id: 'pl4', system: 'Domestic Water Heater Tank', standardLifespanYears: '8 – 12 Years', permitStatus: 'Unrecorded in public permit log', eraExpectation: 'Verify age dataplate during physical walkthrough', confidence: 'Needs Verification' as const },
-                    { id: 'pl5', system: 'Main Sewer Waste Line', standardLifespanYears: '40 – 50 Years', permitStatus: 'Original Municipal Connection', eraExpectation: 'Sewer scope camera inspection recommended', confidence: 'Era Expectation' as const }
-                  ]).map((row, rIdx) => (
-                    <tr key={row.id || `pl-row-${rIdx}`} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-slate-900">{row.system}</td>
-                      <td className="py-3.5 px-4 font-mono text-slate-600">{row.standardLifespanYears}</td>
-                      <td className="py-3.5 px-4 text-slate-700">{row.permitStatus}</td>
-                      <td className="py-3.5 px-4 text-slate-600">{row.eraExpectation}</td>
-                      <td className="py-3.5 px-4 text-right shrink-0">{renderConfidenceBadge(row.confidence)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {/* High level summary view in primary reading flow */}
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl text-xs text-slate-700 leading-relaxed">
+              <span className="font-bold text-slate-900 block mb-1">Permit History Overview:</span>
+              Municipal permit archives were scanned for major building system filings (roof, HVAC, electrical, plumbing, sewer). 
+              {showFullTechnicalDetail ? ' Full granular permit rows are shown below:' : ' Expand "Full Technical Detail" above to view granular component-by-component municipal permit logs.'}
             </div>
+
+            {/* Full Technical Detail View (Expandable/Toggleable) */}
+            {showFullTechnicalDetail && (
+              <div className="overflow-x-auto rounded-2xl border border-slate-200 pt-2 animate-fadeIn">
+                <table className="w-full text-left text-xs divide-y divide-slate-200">
+                  <thead className="bg-slate-900 text-white font-mono text-[10px] uppercase font-bold tracking-wider">
+                    <tr>
+                      <th className="py-3 px-4">System Component</th>
+                      <th className="py-3 px-4">Municipal Permit History</th>
+                      <th className="py-3 px-4 text-right">Record Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-slate-100 font-medium text-slate-800">
+                    {(report.permitLifespanMatrix || [
+                      { id: 'pl1', system: 'Roofing Shingles & Flashing', permitStatus: 'No permit on file in digitized municipal log', confidence: 'No Record Found' as const },
+                      { id: 'pl2', system: 'Central AC Compressor', permitStatus: 'No permit on file in digitized municipal log', confidence: 'No Record Found' as const },
+                      { id: 'pl3', system: 'Electrical Breaker Panel', permitStatus: 'Service recorded in public municipal log', confidence: 'Verified Record' as const },
+                      { id: 'pl4', system: 'Domestic Water Heater Tank', permitStatus: 'No permit on file in digitized municipal log', confidence: 'No Record Found' as const },
+                      { id: 'pl5', system: 'Main Sewer Waste Line', permitStatus: 'Original Municipal Sewer Connection', confidence: 'Verified Record' as const }
+                    ]).map((row, rIdx) => (
+                      <tr key={row.id || `pl-row-${rIdx}`} className="hover:bg-slate-50 transition-colors">
+                        <td className="py-3.5 px-4 font-bold text-slate-900">{row.system}</td>
+                        <td className="py-3.5 px-4 text-slate-700">{row.permitStatus}</td>
+                        <td className="py-3.5 px-4 text-right shrink-0">{renderConfidenceBadge(row.confidence)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
         </section>

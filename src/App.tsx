@@ -134,7 +134,6 @@ export function App() {
         reportVersion: 'v1.0.4',
         headerInfo: {
           address: fullAddr,
-          yearBuilt: 1984,
           reportDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
           reportVersion: 'v1.0.4'
         },
@@ -152,15 +151,14 @@ export function App() {
           lat: selectedProperty.lat || 30.2672,
           lon: selectedProperty.lon || -97.7431,
           propertyType: selectedProperty.propertyType || 'Single Family Home',
-          yearBuilt: 1984,
           estimatedSqFt: 2450
         },
         atAGlance: {
           cards: [
             { id: 'a1', status: 'green', title: 'Low Flood Hazard Area', confidence: 'Verified Record' },
-            { id: 'a2', status: 'yellow', title: 'Roof Permit Record Unconfirmed', confidence: 'Needs Verification' },
+            { id: 'a2', status: 'yellow', title: 'Roof Permit Record Unconfirmed', confidence: 'No Record Found' },
             { id: 'a3', status: 'green', title: 'Zero Active Code Violations', confidence: 'Verified Record' },
-            { id: 'a4', status: 'yellow', title: '1980s Era Electrical Standards', confidence: 'Era Expectation' }
+            { id: 'a4', status: 'yellow', title: 'Electrical Permit Log Check', confidence: 'No Record Found' }
           ],
           mostImportantToVerify: {
             title: 'Roof Installation & Maintenance Records',
@@ -187,17 +185,17 @@ export function App() {
           {
             id: 'p1',
             title: 'Roof Installation & Permit Records',
-            confidence: 'Needs Verification',
+            confidence: 'No Record Found',
             whatWeFound: 'Municipal building permit archives contain no permit record for a roof replacement.',
-            whyItMatters: 'Roofing materials approaching 15 to 20 years of age naturally experience atmospheric weathering.',
+            whyItMatters: 'Roofing materials experience atmospheric weathering over time.',
             suggestedNextStep: 'Ask the seller for roof installation receipts and evaluate shingle condition during walkthrough.'
           },
           {
             id: 'p2',
-            title: 'Central Air Conditioning Compressor Age',
-            confidence: 'Needs Verification',
-            whatWeFound: 'No mechanical HVAC replacement permit on file with city building department since 2011.',
-            whyItMatters: 'Heating and cooling compressors operating beyond 12 to 15 years experience declining efficiency.',
+            title: 'Central Air Conditioning Compressor',
+            confidence: 'No Record Found',
+            whatWeFound: 'No mechanical HVAC replacement permit on file in digitized municipal building department logs.',
+            whyItMatters: 'Heating and cooling compressors experience declining efficiency over time.',
             suggestedNextStep: 'Have your inspector record manufacture date on condenser dataplate and measure temperature differential.'
           }
         ],
@@ -217,15 +215,15 @@ export function App() {
             { id: 'v2', label: 'Electrical Panel Upgrade', value: '2015 Permit Recorded', confidence: 'Verified Record', detail: 'Electrical permit on file' }
           ],
           unknown: [
-            { id: 'u1', label: 'Roof Replacement Date', value: 'Unconfirmed in Public Permits', confidence: 'Needs Verification', detail: 'Last permit on file dated 2008' }
+            { id: 'u1', label: 'Roof Replacement Date', value: 'Unconfirmed in Public Permits', confidence: 'No Record Found', detail: 'No permit found in digitized log' }
           ]
         },
         sellerQuestions: [
           {
             id: 'q1',
             ask: 'Has the roof ever been replaced or repaired, and do you have contractor invoices or warranty documentation?',
-            why: 'Public building permit archives do not confirm the roof installation year.',
-            confidence: 'Needs Verification'
+            why: 'Public building permit archives do not confirm a roof replacement permit.',
+            confidence: 'No Record Found'
           }
         ],
         visitChecklist: [

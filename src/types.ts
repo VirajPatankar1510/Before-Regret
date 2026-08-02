@@ -4,7 +4,7 @@ export type ViewState =
   | 'SUMMARY' 
   | 'REPORT';
 
-export type ConfidenceLevel = 'Verified Record' | 'Era Expectation' | 'Needs Verification';
+export type ConfidenceLevel = 'Verified Record' | 'No Record Found';
 
 export interface PropertySearchResult {
   placeId: string;
@@ -152,9 +152,9 @@ export interface SourceReference {
 export interface PermitLifespanItem {
   id: string;
   system: string;
-  standardLifespanYears: string;
+  standardLifespanYears?: string;
   permitStatus: string;
-  eraExpectation: string;
+  eraExpectation?: string;
   confidence: ConfidenceLevel;
 }
 
@@ -208,6 +208,33 @@ export interface MaskedLeadAsset {
   };
 }
 
+export interface BottomLineItem {
+  title: string;
+  detail: string;
+}
+
+export interface BottomLineSection {
+  worthVerifying: BottomLineItem[];
+  likelyRoutine: BottomLineItem[];
+  biggerPicture: string;
+}
+
+export interface NearbyItem {
+  id: string;
+  category: 'Hospital & Healthcare' | 'Zoning & Planning Dockets' | 'Scheduled Infrastructure';
+  title: string;
+  finding: string;
+  implication: string;
+  source: string;
+  confidence: ConfidenceLevel;
+  dataFreshness?: string;
+}
+
+export interface NearbyEssentialsSection {
+  items: NearbyItem[];
+  dataFreshness?: string;
+}
+
 export interface PropertyReport {
   id: string;
   isNonResidential?: boolean;
@@ -217,7 +244,7 @@ export interface PropertyReport {
   reportVersion: string;
   headerInfo: {
     address: string;
-    yearBuilt: number;
+    yearBuilt?: number;
     reportDate: string;
     reportVersion: string;
   };
@@ -230,7 +257,7 @@ export interface PropertyReport {
     lat: number;
     lon: number;
     propertyType: string;
-    yearBuilt: number;
+    yearBuilt?: number;
     estimatedSqFt: number;
     lotSizeAcres?: string;
     zoningCode?: string;
@@ -244,6 +271,9 @@ export interface PropertyReport {
 
   // Executive Snapshot Dashboard
   executiveSnapshot?: ExecutiveSnapshotItem[];
+
+  // Bottom Line Synthesis
+  bottomLine?: BottomLineSection;
 
   // Section 1: Executive Overview
   atAGlance: {
@@ -260,6 +290,7 @@ export interface PropertyReport {
   // Section 2: Neighborhood & Local Environment
   environmentalTopics: ThreePartFinding[];
   environmentalDataFreshness?: string;
+  nearbyEssentials?: NearbyEssentialsSection;
 
   // Section 3: Property Records & Building Analysis
   propertyRecordsSplit: PropertyRecordsSplit;
