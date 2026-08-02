@@ -671,24 +671,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         {/* Leaflet Canvas */}
         <div ref={mapContainerRef} className="w-full h-full z-0" />
 
-        {/* Building Status Badge */}
-        <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-200 shadow-xl backdrop-blur-md">
-          <Building2 className="w-4 h-4 text-blue-400 shrink-0" />
-          {isLoadingBuildings ? (
-            <span className="flex items-center gap-1.5 text-blue-300">
-              <Loader2 className="w-3 h-3 animate-spin text-blue-400" />
-              <span>Scanning residential names...</span>
-            </span>
-          ) : detectedBuildingCount > 0 ? (
-            <span className="text-slate-200 font-semibold">
-              <strong className="text-blue-400">{detectedBuildingCount}</strong> Building Labels
-            </span>
-          ) : (
-            <span className="text-slate-400 text-[11px]">
-              Zoom in for building labels
-            </span>
-          )}
-        </div>
+
 
         {/* Non-Residential Notice Banner */}
         {nonResNotice && (
