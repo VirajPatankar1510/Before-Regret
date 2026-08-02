@@ -11,7 +11,7 @@ interface MapBuildingPickerModalProps {
   initialCoords?: { lat: number; lon: number };
 }
 
-// Helper to check non-residential public/commercial/government places
+// Helper to check non-residential places (streets, lanes, gardens, open land, plots, water bodies, commercial, government, public facilities)
 const checkNonResidential = (
   displayName: string,
   itemClass?: string,
@@ -19,8 +19,69 @@ const checkNonResidential = (
   tags?: Record<string, string>
 ): { isNonResidential: boolean; category: string } => {
   const lower = (displayName || '').toLowerCase();
-  
-  // Non-residential name patterns
+  const cls = (itemClass || '').toLowerCase();
+  const type = (itemType || '').toLowerCase();
+
+  // 1. WATER BODIES, RIVERS, LAKES, PONDS, CANALS, SEAS, OCEANS, WETLANDS
+  if (cls === 'waterway' || (cls === 'natural' && ['water', 'wetland', 'bay', 'beach', 'coastline', 'spring'].includes(type))) {
+    return { isNonResidential: true, category: `Water Body / Aquatic Area (${type || 'Water'})` };
+  }
+  if (tags) {
+    const waterTag = (tags.water || tags.waterway || tags.natural || '').toLowerCase();
+    if (['water', 'river', 'lake', 'stream', 'pond', 'canal', 'reservoir', 'wetland', 'bay', 'beach', 'coastline', 'drain', 'ditch'].some(w => waterTag.includes(w))) {
+      return { isNonResidential: true, category: 'Water Body / Aquatic Feature' };
+    }
+  }
+  const waterPatterns = /\b(lake|pond|river|stream|creek|canal|reservoir|bay|ocean|sea|beach|waterfall|wetland|marsh|swamp|drainage canal|water basin|dock|harbor|water body)\b/i;
+  if (waterPatterns.test(lower) && !/\b(residence|society|apartments|condo|villas|heights|tower|enclave|house|building|park view|lake view|river view|ocean view|bay view)\b/i.test(lower)) {
+    if (cls === 'waterway' || cls === 'natural' || ['water', 'river', 'lake', 'pond', 'stream', 'bay'].includes(type)) {
+      return { isNonResidential: true, category: 'Water Body / Water Feature' };
+    }
+  }
+
+  // 2. STREETS, LANES, HIGHWAYS, ROADS, FOOTPATHS, TRANSIT CORRIDORS
+  if (cls === 'highway' || ['primary', 'secondary', 'tertiary', 'residential', 'service', 'footway', 'pedestrian', 'path', 'track', 'cycleway', 'living_street', 'unclassified', 'motorway', 'trunk', 'road', 'lane', 'street'].includes(type)) {
+    const hasHouseNumber = tags && (tags.house_number || tags['addr:housenumber']);
+    const hasBuildingTag = tags && tags.building && !['no', 'unclassified', 'street'].includes((tags.building || '').toLowerCase());
+    const isResidentialComplexName = /\b(society|apartments|condo|villas|heights|tower|enclave|complex|residence|house|home|building|manor|estates)\b/i.test(lower);
+
+    if (!hasHouseNumber && !hasBuildingTag && !isResidentialComplexName) {
+      return { isNonResidential: true, category: 'Street / Lane / Roadway' };
+    }
+  }
+
+  // 3. GARDENS, PARKS, PLAYGROUNDS, GOLF COURSES, RECREATION GROUNDS, CEMETERIES
+  if (cls === 'leisure' || ['park', 'garden', 'pitch', 'playground', 'golf_course', 'nature_reserve', 'dog_park', 'recreation_ground', 'stadium', 'village_green', 'cemetery'].includes(type)) {
+    return { isNonResidential: true, category: `Garden / Public Park / Recreation (${type || 'Park'})` };
+  }
+  if (tags) {
+    const leisureTag = (tags.leisure || '').toLowerCase();
+    const landuseTag = (tags.landuse || '').toLowerCase();
+    if (leisureTag || ['park', 'recreation_ground', 'garden', 'allotments', 'grass', 'meadow', 'village_green', 'cemetery'].includes(landuseTag)) {
+      return { isNonResidential: true, category: `Garden / Public Park / Open Land (${leisureTag || landuseTag})` };
+    }
+  }
+  const parkPatterns = /\b(public park|botanical garden|city park|community garden|playground|golf course|recreation ground|graveyard|cemetery|memorial park)\b/i;
+  if (parkPatterns.test(lower) && !/\b(apartments|condo|society|villas|heights|tower|residence|enclave|estates|homes)\b/i.test(lower)) {
+    return { isNonResidential: true, category: 'Public Park / Garden / Open Space' };
+  }
+
+  // 4. OPEN LAND, VACANT PLOTS, FARMLAND, FORESTS, FIELDS, CONSTRUCTION SITES
+  if (tags) {
+    const landuseTag = (tags.landuse || '').toLowerCase();
+    if (['farmland', 'farmyard', 'forest', 'meadow', 'grass', 'allotments', 'greenfield', 'brownfield', 'construction', 'landfill', 'quarry', 'basin', 'commercial', 'industrial', 'retail', 'institutional', 'civic', 'government'].includes(landuseTag)) {
+      return { isNonResidential: true, category: `Open Land / Plot / Non-Residential Area (${landuseTag})` };
+    }
+  }
+  if (['farmland', 'farmyard', 'forest', 'meadow', 'grass', 'allotments', 'greenfield', 'brownfield', 'construction', 'plot', 'vacant'].includes(type)) {
+    return { isNonResidential: true, category: `Open Land / Vacant Plot (${type})` };
+  }
+  const openPlotPatterns = /\b(open land|vacant plot|empty plot|open plot|farmland|farmyard|greenfield|brownfield|construction site|land plot|vacant lot)\b/i;
+  if (openPlotPatterns.test(lower) && !/\b(residence|society|apartments|condo|villas|house|building)\b/i.test(lower)) {
+    return { isNonResidential: true, category: 'Open Land / Vacant Plot' };
+  }
+
+  // 5. PUBLIC FACILITIES, GOVERNMENT, INSTITUTIONAL, COMMERCIAL, RELIGIOUS
   const publicFacilityPatterns = [
     { regex: /\b(assessor|county assessor|tax assessor|tax collector|clerk|county clerk|recorder of deeds|register of deeds)\b/i, cat: 'County / Tax Office' },
     { regex: /\b(police station|law enforcement|sheriff|sheriff's office|precinct)\b/i, cat: 'Police / Law Enforcement' },
@@ -33,7 +94,7 @@ const checkNonResidential = (
     { regex: /\b(department of|bureau of|agency|administration|office building|corporate|headquarters|office park)\b/i, cat: 'Government / Commercial Office' },
     { regex: /\b(bank|credit union|atm|supermarket|grocery|mall|shopping center|plaza|retail|store|restaurant|cafe|hotel|motel|resort)\b/i, cat: 'Commercial / Retail' },
     { regex: /\b(church|synagogue|mosque|temple|cathedral|chapel|shrine)\b/i, cat: 'Place of Worship' },
-    { regex: /\b(stadium|arena|gym|fitness center|park|playground)\b/i, cat: 'Recreational / Public Park' }
+    { regex: /\b(stadium|arena|gym|fitness center)\b/i, cat: 'Recreational Facility' }
   ];
 
   for (const p of publicFacilityPatterns) {
@@ -42,13 +103,13 @@ const checkNonResidential = (
     }
   }
 
-  // Non-residential building types in OpenStreetMap
+  // 6. FORBIDDEN OSM BUILDING TYPES AND AMENITY/SHOP/OFFICE TAGS
   const forbiddenBuildingTypes = [
     'commercial', 'office', 'retail', 'industrial', 'warehouse', 'supermarket',
     'school', 'university', 'college', 'kindergarten', 'hospital', 'clinic',
     'public', 'civic', 'government', 'courthouse', 'townhall', 'fire_station', 'police',
     'church', 'synagogue', 'mosque', 'temple', 'cathedral', 'chapel', 'shrine',
-    'hotel', 'motel', 'guest_house', 'hostel', 'pension',
+    'hotel', 'motel', 'guest_house', 'hostel',
     'stadium', 'sports_centre', 'grandstand', 'pavilion', 'hangar', 'garage', 'garages',
     'transportation', 'train_station', 'bus_station', 'terminal', 'kiosk', 'service'
   ];
@@ -61,29 +122,23 @@ const checkNonResidential = (
     const leisureTag = (tags.leisure || '').toLowerCase();
     const tourismTag = (tags.tourism || '').toLowerCase();
     const healthcareTag = (tags.healthcare || '').toLowerCase();
-    const landuseTag = (tags.landuse || '').toLowerCase();
     const governmentTag = (tags.government || '').toLowerCase();
 
-    if (governmentTag) {
-      return { isNonResidential: true, category: `Government Facility (${governmentTag})` };
-    }
+    if (governmentTag) return { isNonResidential: true, category: `Government Office (${governmentTag})` };
     if (forbiddenBuildingTypes.includes(buildingTag)) {
       return { isNonResidential: true, category: `Commercial/Public Building (${buildingTag})` };
     }
     if (amenityTag || shopTag || officeTag || leisureTag || tourismTag || healthcareTag) {
       return { isNonResidential: true, category: amenityTag || shopTag || officeTag || 'Commercial/Public Facility' };
     }
-    if (['commercial', 'industrial', 'retail', 'institutional', 'civic', 'government'].includes(landuseTag)) {
-      return { isNonResidential: true, category: `Non-Residential Land (${landuseTag})` };
-    }
   }
 
   const forbiddenClasses = ['amenity', 'shop', 'office', 'leisure', 'tourism', 'commercial', 'industrial', 'healthcare', 'historic', 'military', 'aeroway', 'railway', 'government', 'civic'];
-  if (itemClass && forbiddenClasses.includes(itemClass.toLowerCase())) {
-    return { isNonResidential: true, category: itemClass };
+  if (cls && forbiddenClasses.includes(cls)) {
+    return { isNonResidential: true, category: cls };
   }
-  if (itemType && forbiddenBuildingTypes.includes(itemType.toLowerCase())) {
-    return { isNonResidential: true, category: itemType };
+  if (type && forbiddenBuildingTypes.includes(type)) {
+    return { isNonResidential: true, category: type };
   }
 
   return { isNonResidential: false, category: '' };
