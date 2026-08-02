@@ -135,13 +135,13 @@ export const SampleReportPreview: React.FC = () => {
 
                 <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 space-y-2">
                   <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-800">
-                    NEEDS VERIFICATION
+                    NO RECORD FOUND
                   </div>
                   <div className="font-bold text-sm text-slate-900">
-                    Roof Replacement Unconfirmed
+                    Roof Permit Unrecorded
                   </div>
                   <p className="text-xs text-slate-600">
-                    No building permit on file for roof replacement since 1984 construction.
+                    No building permit on file for roof replacement in the digitized municipal archive.
                   </p>
                 </div>
 
@@ -157,15 +157,15 @@ export const SampleReportPreview: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-200/80 space-y-2">
-                  <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800">
-                    ERA EXPECTATION
+                <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-2">
+                  <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                    VERIFIED RECORD
                   </div>
                   <div className="font-bold text-sm text-slate-900">
-                    1980s Electrical Standard
+                    Active Municipal Sewer Service
                   </div>
                   <p className="text-xs text-slate-600">
-                    Built in 1984; typically features 150A circuit breaker panel with grounded copper wiring.
+                    City utility department records confirm active municipal wastewater connection.
                   </p>
                 </div>
 

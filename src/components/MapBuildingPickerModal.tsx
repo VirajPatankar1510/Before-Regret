@@ -20,6 +20,28 @@ const checkNonResidential = (
 ): { isNonResidential: boolean; category: string } => {
   const lower = (displayName || '').toLowerCase();
   
+  // Non-residential name patterns
+  const publicFacilityPatterns = [
+    { regex: /\b(assessor|county assessor|tax assessor|tax collector|clerk|county clerk|recorder of deeds|register of deeds)\b/i, cat: 'County / Tax Office' },
+    { regex: /\b(police station|law enforcement|sheriff|sheriff's office|precinct)\b/i, cat: 'Police / Law Enforcement' },
+    { regex: /\b(fire station|fire department|firehouse)\b/i, cat: 'Fire Station' },
+    { regex: /\b(city hall|town hall|courthouse|county court|civic center|municipal building|government center)\b/i, cat: 'Government / Civic' },
+    { regex: /\b(post office|usps|postal service)\b/i, cat: 'Postal Service' },
+    { regex: /\b(jail|prison|detention center|correctional facility)\b/i, cat: 'Correctional Facility' },
+    { regex: /\b(elementary school|middle school|high school|public school|charter school|academy|university|college)\b/i, cat: 'School / Educational' },
+    { regex: /\b(hospital|medical center|urgent care|clinic|health center)\b/i, cat: 'Hospital / Healthcare' },
+    { regex: /\b(department of|bureau of|agency|administration|office building|corporate|headquarters|office park)\b/i, cat: 'Government / Commercial Office' },
+    { regex: /\b(bank|credit union|atm|supermarket|grocery|mall|shopping center|plaza|retail|store|restaurant|cafe|hotel|motel|resort)\b/i, cat: 'Commercial / Retail' },
+    { regex: /\b(church|synagogue|mosque|temple|cathedral|chapel|shrine)\b/i, cat: 'Place of Worship' },
+    { regex: /\b(stadium|arena|gym|fitness center|park|playground)\b/i, cat: 'Recreational / Public Park' }
+  ];
+
+  for (const p of publicFacilityPatterns) {
+    if (p.regex.test(lower)) {
+      return { isNonResidential: true, category: p.cat };
+    }
+  }
+
   // Non-residential building types in OpenStreetMap
   const forbiddenBuildingTypes = [
     'commercial', 'office', 'retail', 'industrial', 'warehouse', 'supermarket',
@@ -62,32 +84,6 @@ const checkNonResidential = (
   }
   if (itemType && forbiddenBuildingTypes.includes(itemType.toLowerCase())) {
     return { isNonResidential: true, category: itemType };
-  }
-
-  // Strict check ONLY for obvious public government/civic/institutional places
-  const publicFacilityPatterns = [
-    { regex: /\b(police station|law enforcement|sheriff office)\b/i, cat: 'Police / Law Enforcement' },
-    { regex: /\b(fire station|fire department)\b/i, cat: 'Fire Station' },
-    { regex: /\b(city hall|town hall|courthouse|county court)\b/i, cat: 'Government / Civic' },
-    { regex: /\b(post office|usps)\b/i, cat: 'Postal Service' },
-    { regex: /\b(jail|prison|detention center)\b/i, cat: 'Correctional Facility' },
-    { regex: /\b(elementary school|middle school|high school|public school)\b/i, cat: 'School' },
-    { regex: /\b(hospital|medical center)\b/i, cat: 'Hospital / Medical' },
-  ];
-
-  for (const p of publicFacilityPatterns) {
-    if (p.regex.test(lower)) {
-      return { isNonResidential: true, category: p.cat };
-    }
-  }
-
-  if (tags) {
-    const amenity = (tags.amenity || '').toLowerCase();
-    const government = (tags.government || '').toLowerCase();
-    if (government) return { isNonResidential: true, category: `Government (${government})` };
-    if (['police', 'fire_station', 'courthouse', 'post_office', 'prison', 'hospital'].includes(amenity)) {
-      return { isNonResidential: true, category: amenity };
-    }
   }
 
   return { isNonResidential: false, category: '' };
@@ -279,31 +275,6 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
 
             if (lat && lon) {
               count++;
-              // Create building label marker
-              const buildingIcon = L.divIcon({
-                className: 'custom-building-label-marker',
-                html: `
-                  <div class="group relative flex items-center gap-1.5 bg-slate-900/90 hover:bg-blue-600 border border-blue-400/50 text-white px-2.5 py-1 rounded-xl shadow-xl cursor-pointer transition-all transform hover:scale-105 active:scale-95">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-400 group-hover:text-white shrink-0"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
-                    <span class="text-[11px] font-bold tracking-tight whitespace-nowrap max-w-[160px] truncate">${name}</span>
-                  </div>
-                `,
-                iconAnchor: [40, 15]
-              });
-
-              const bMarker = L.marker([lat, lon], { icon: buildingIcon });
-              bMarker.on('click', (e) => {
-                L.DomEvent.stopPropagation(e);
-                if (mapInstanceRef.current) {
-                  try {
-                    mapInstanceRef.current.setView([lat, lon], 17);
-                  } catch (err) {}
-                }
-                updateMarkerPosition(lat, lon);
-                fetchAddressFromCoords(lat, lon);
-              });
-
-              buildingLayerGroupRef.current?.addLayer(bMarker);
             }
           });
 
@@ -602,14 +573,11 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
 
           {/* Non-Residential Warning Banner Overlay */}
           {nonResNotice && (
-            <div className="absolute top-4 left-4 right-4 z-20 bg-amber-950/90 border border-amber-500/40 rounded-2xl p-4 text-xs font-medium text-amber-200 shadow-2xl backdrop-blur-md animate-fade-in flex items-start justify-between gap-3">
-              <div className="flex items-start gap-2.5">
-                <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                <div>
-                  <div className="font-bold text-white text-sm">Non-Residential Location Detected</div>
-                  <p className="text-amber-200/90 mt-1 leading-relaxed">
-                    <strong className="text-white">{nonResNotice.name}</strong> is categorized as <strong className="text-amber-300">{nonResNotice.category}</strong>. Please click on a residential society, condo complex, or residential building.
-                  </p>
+            <div className="absolute top-4 left-4 right-4 z-20 bg-amber-950/90 border border-amber-500/40 rounded-2xl p-3.5 text-xs font-medium text-amber-200 shadow-2xl backdrop-blur-md animate-fade-in flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+                <div className="font-bold text-amber-300 text-sm">
+                  This Place is Non-Residential
                 </div>
               </div>
               <button
@@ -675,10 +643,18 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
                   </div>
 
                   <button
-                    onClick={handleConfirmSelection}
-                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-lg flex items-center gap-2 cursor-pointer"
+                    disabled={!!nonResNotice?.isFacility}
+                    onClick={() => {
+                      if (nonResNotice?.isFacility) return;
+                      handleConfirmSelection();
+                    }}
+                    className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition-all shadow-lg flex items-center gap-2 shrink-0 ${
+                      nonResNotice?.isFacility
+                        ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
+                        : 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer'
+                    }`}
                   >
-                    <span>Select This Property</span>
+                    <span>{nonResNotice?.isFacility ? 'Residential Selection Only' : 'Select This Property'}</span>
                     <ArrowRight className="w-4 h-4 text-blue-200" />
                   </button>
                 </div>

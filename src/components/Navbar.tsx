@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, ShieldAlert, ArrowLeft, FileText, CheckCircle2 } from 'lucide-react';
+import { Logo } from './Logo';
 
 interface NavbarProps {
   onNewSearch: () => void;
@@ -13,7 +14,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   selectedAddress
 }) => {
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
+    <header className="bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         
         {/* Brand Logo */}
@@ -21,15 +22,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           onClick={onNewSearch}
           className="flex items-center gap-2.5 text-slate-900 group text-left cursor-pointer"
         >
-          <div className="w-9 h-9 rounded-xl bg-slate-900 text-white font-extrabold text-lg flex items-center justify-center tracking-tight group-hover:bg-blue-600 transition-colors shadow-2xs">
-            BR
-          </div>
+          <Logo className="w-9 h-9 shrink-0 transition-transform group-hover:scale-105" color="#1A6CFF" />
           <div>
             <div className="font-extrabold text-base tracking-tight text-slate-900 flex items-center gap-1.5">
               <span>BeforeRegret</span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded">
-                US Public Records
-              </span>
             </div>
             <div className="text-[10px] font-medium text-slate-500 hidden sm:block">
               Property Research Assistant

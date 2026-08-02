@@ -57,7 +57,7 @@ export const PricingSection: React.FC = () => {
               <div className="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
               </div>
-              <span><strong>Categorized Findings Matrix</strong> (Verified, Needs Verification, Era Expectations)</span>
+              <span><strong>Two-Tier Record Matrix</strong> (Verified Records & No Record Found)</span>
             </div>
 
             <div className="flex items-start gap-3">
