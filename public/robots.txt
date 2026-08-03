@@ -1,4 +1,16 @@
+# BeforeRegret Robots.txt
 User-agent: *
 Allow: /
+Allow: /state/
+Allow: /guides/
+Allow: /compare/
+Allow: /support
+Allow: /terms
+Allow: /privacy
+Allow: /refunds
+
+Disallow: /report/
+Disallow: /admin
+Disallow: /api/
 
 Sitemap: https://beforeregret.com/sitemap.xml
