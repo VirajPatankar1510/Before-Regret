@@ -19,7 +19,17 @@ export const StateHubView: React.FC<StateHubViewProps> = ({ stateSlug, onNavigat
       title: `${stateName} Real Estate Hazard & Property Intelligence Hub | BeforeRegret`,
       description: `Statewide property research directory for ${stateName}. Access verified city and zip-level hazard snapshots, FEMA flood zone maps, and building permit registries.`,
       canonicalUrl,
-      robotsDirective: 'index, follow'
+      robotsDirective: 'index, follow',
+      jsonLdSchema: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          'itemListElement': [
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
+            { '@type': 'ListItem', 'position': 2, 'name': `${stateName} Hub`, 'item': canonicalUrl }
+          ]
+        }
+      ]
     });
   }, [stateName, canonicalUrl]);
 

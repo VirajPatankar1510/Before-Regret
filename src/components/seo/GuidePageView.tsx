@@ -43,6 +43,15 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
                 'text': faq.answer
               }
             }))
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Editorial Guides', 'item': 'https://beforeregret.com/guides/' },
+              { '@type': 'ListItem', 'position': 3, 'name': guide.title, 'item': canonicalUrl }
+            ]
           }
         ]
       });

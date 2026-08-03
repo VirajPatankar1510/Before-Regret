@@ -24,6 +24,7 @@ import { GuidePageView } from './components/seo/GuidePageView';
 import { ZipComparePageView } from './components/seo/ZipComparePageView';
 import { SeoAdminPanel } from './components/seo/SeoAdminPanel';
 import { TopicSlug } from './types/seoTypes';
+import { applyHeadSeo } from './utils/headSeo';
 
 // Legal & Policy Components
 import { ContactUs } from './components/ContactUs';
@@ -212,6 +213,119 @@ export function App() {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  // Set SEO metadata for top-level non-pSEO routes (Homepage, Support, Legal, Report, Admin)
+  useEffect(() => {
+    if (currentStep === 'HOME' && pseoRoute.type === 'none') {
+      applyHeadSeo({
+        title: 'BeforeRegret — Property Research from 20+ Public Records',
+        description: 'Free, address-based public record synthesis for US homebuyers and renters. Uncover FEMA flood zones, municipal permits, radon levels, noise, and broadband.',
+        canonicalUrl: 'https://beforeregret.com/',
+        robotsDirective: 'index, follow',
+        jsonLdSchema: [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            'name': 'Before Regret',
+            'url': 'https://beforeregret.com',
+            'logo': 'https://beforeregret.com/favicon.svg',
+            'parentOrganization': {
+              '@type': 'Organization',
+              'name': 'Atmostellar'
+            }
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            'name': 'BeforeRegret',
+            'url': 'https://beforeregret.com',
+            'potentialAction': {
+              '@type': 'SearchAction',
+              'target': {
+                '@type': 'EntryPoint',
+                'urlTemplate': 'https://beforeregret.com/?address={search_term_string}'
+              },
+              'query-input': 'required name=search_term_string'
+            }
+          }
+        ]
+      });
+    } else if (pseoRoute.type === 'support') {
+      applyHeadSeo({
+        title: 'BeforeRegret Support & Property Research FAQ',
+        description: 'Frequently asked questions regarding BeforeRegret public property record research, data sources, municipal permit checks, and report coverage.',
+        canonicalUrl: 'https://beforeregret.com/support/',
+        robotsDirective: 'index, follow',
+        jsonLdSchema: [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            'mainEntity': [
+              {
+                '@type': 'Question',
+                'name': 'Where does BeforeRegret source its property hazard data?',
+                'acceptedAnswer': {
+                  '@type': 'Answer',
+                  'text': 'BeforeRegret synthesizes records directly from 25+ government portals including FEMA, EPA, USGS, USDA, U.S. DOT, FCC, and local municipal building departments.'
+                }
+              },
+              {
+                '@type': 'Question',
+                'name': 'Are reports one-time flat fee or subscription based?',
+                'acceptedAnswer': {
+                  '@type': 'Answer',
+                  'text': 'All BeforeRegret executive property research reports are backed by a one-time flat fee ($19 to $29 depending on data coverage) with lifetime access.'
+                }
+              }
+            ]
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Support & FAQ', 'item': 'https://beforeregret.com/support/' }
+            ]
+          }
+        ]
+      });
+    } else if (pseoRoute.type === 'terms') {
+      applyHeadSeo({
+        title: 'Terms of Service | BeforeRegret Property Intelligence',
+        description: 'Terms of service and user agreement for BeforeRegret public record property research and automated synthesis tools.',
+        canonicalUrl: 'https://beforeregret.com/terms/',
+        robotsDirective: 'index, follow'
+      });
+    } else if (pseoRoute.type === 'privacy') {
+      applyHeadSeo({
+        title: 'Privacy Policy | BeforeRegret Property Intelligence',
+        description: 'Privacy policy detailing data handling, user anonymity, and secure public record lookup protocols at BeforeRegret.',
+        canonicalUrl: 'https://beforeregret.com/privacy/',
+        robotsDirective: 'index, follow'
+      });
+    } else if (pseoRoute.type === 'refunds') {
+      applyHeadSeo({
+        title: 'Refund Policy & Satisfaction Guarantee | BeforeRegret',
+        description: 'BeforeRegret refund policy and customer support commitments for property research report orders.',
+        canonicalUrl: 'https://beforeregret.com/refunds/',
+        robotsDirective: 'index, follow'
+      });
+    } else if (currentStep === 'REPORT') {
+      applyHeadSeo({
+        title: `Property Research Report | ${report?.propertyInfo?.address || 'Subject Property'}`,
+        description: 'Private, verified multi-hazard public record research synthesis for subject property.',
+        canonicalUrl: `https://beforeregret.com/report/${report?.id || 'private'}`,
+        robotsDirective: 'noindex, nofollow'
+      });
+    } else if (pseoRoute.type === 'admin') {
+      applyHeadSeo({
+        title: 'PSEO Operations & Indexing Control Panel | BeforeRegret',
+        description: 'Internal administration interface for pSEO dataset management, indexation monitoring, and Search Console integration.',
+        canonicalUrl: 'https://beforeregret.com/admin/seo',
+        robotsDirective: 'noindex, nofollow'
+      });
+    }
+  }, [currentStep, pseoRoute.type, report?.id, report?.propertyInfo?.address]);
 
   // Step 1 -> Step 2: User selects property address
   const handleSelectProperty = async (property: PropertySearchResult) => {
