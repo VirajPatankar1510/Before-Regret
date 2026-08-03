@@ -33,6 +33,7 @@ export const ZipComparePageView: React.FC<ZipComparePageViewProps> = ({ slug, on
             '@type': 'Article',
             'headline': article.title,
             'description': article.metaDescription,
+            'image': 'https://beforeregret.com/hero-bg.png',
             'wordCount': article.wordCount,
             'author': {
               '@type': 'Organization',
