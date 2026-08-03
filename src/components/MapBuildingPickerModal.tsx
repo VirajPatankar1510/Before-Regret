@@ -167,7 +167,7 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
   const [detectedBuildingCount, setDetectedBuildingCount] = useState(0);
   const [isSatelliteView, setIsSatelliteView] = useState(false);
   const [selectedPinResult, setSelectedPinResult] = useState<PropertySearchResult | null>(null);
-  const [nonResNotice, setNonResNotice] = useState<{ isFacility: boolean; name: string; category: string } | null>(null);
+  const [nonResNotice, setNonResNotice] = useState<{ isFacility: boolean; name: string; category: string; isDismissed?: boolean } | null>(null);
   const [mapSearchError, setMapSearchError] = useState<string | null>(null);
 
   // Custom SVG marker pin for Leaflet
@@ -627,7 +627,7 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
           </div>
 
           {/* Non-Residential Warning Banner Overlay */}
-          {nonResNotice && (
+          {nonResNotice && !nonResNotice.isDismissed && (
             <div className="absolute top-4 left-4 right-4 z-20 bg-amber-950/90 border border-amber-500/40 rounded-2xl p-3.5 text-xs font-medium text-amber-200 shadow-2xl backdrop-blur-md animate-fade-in flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
                 <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
@@ -636,7 +636,8 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
                 </div>
               </div>
               <button
-                onClick={() => setNonResNotice(null)}
+                type="button"
+                onClick={() => setNonResNotice(prev => prev ? { ...prev, isDismissed: true } : null)}
                 className="text-amber-400 hover:text-white font-bold text-xs cursor-pointer shrink-0"
               >
                 Dismiss

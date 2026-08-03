@@ -15,17 +15,155 @@ import {
 } from './types';
 import { createFallbackSummary, createFallbackReport } from './utils/reportFallback';
 
+// pSEO Components
+import { ZipHubView } from './components/seo/ZipHubView';
+import { TopicDeepPageView } from './components/seo/TopicDeepPageView';
+import { CityHubView } from './components/seo/CityHubView';
+import { StateHubView } from './components/seo/StateHubView';
+import { GuidePageView } from './components/seo/GuidePageView';
+import { ZipComparePageView } from './components/seo/ZipComparePageView';
+import { SeoAdminPanel } from './components/seo/SeoAdminPanel';
+import { TopicSlug } from './types/seoTypes';
+
+// Legal & Policy Components
+import { ContactUs } from './components/ContactUs';
+import { TermsConditions } from './components/TermsConditions';
+import { PrivacyPolicy } from './components/PrivacyPolicy';
+import { RefundPolicy } from './components/RefundPolicy';
+
 export function App() {
-  const [currentStep, setCurrentStep] = useState<'HOME' | 'RESEARCHING' | 'SUMMARY' | 'REPORT'>('HOME');
+  const [currentStep, setCurrentStep] = useState<'HOME' | 'RESEARCHING' | 'SUMMARY' | 'REPORT' | 'PSEO'>('HOME');
   const [selectedProperty, setSelectedProperty] = useState<PropertySearchResult | null>(null);
   const [summaryData, setSummaryData] = useState<ResearchSummaryData | null>(null);
   const [report, setReport] = useState<PropertyReport | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check URL on mount for standalone report permalinks (e.g. /report/rep_123 or ?reportId=rep_123)
+  // Active PSEO / Legal Route State
+  const [pseoRoute, setPseoRoute] = useState<{
+    type: 'admin' | 'state' | 'city' | 'zip' | 'topic' | 'guide' | 'compare' | 'support' | 'terms' | 'privacy' | 'refunds' | 'none';
+    stateSlug?: string;
+    citySlug?: string;
+    zipCode?: string;
+    topicSlug?: TopicSlug;
+    guideSlug?: string;
+    compareSlug?: string;
+  }>({ type: 'none' });
+
+  // Function to resolve current URL path to route
+  const resolveRouteFromPath = (pathname: string) => {
+    // Normalize path trailing slash
+    const path = pathname.endsWith('/') ? pathname : `${pathname}/`;
+
+    if (path === '/support/' || path.startsWith('/support')) {
+      setPseoRoute({ type: 'support' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    if (path === '/terms/' || path.startsWith('/terms')) {
+      setPseoRoute({ type: 'terms' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    if (path === '/privacy/' || path.startsWith('/privacy')) {
+      setPseoRoute({ type: 'privacy' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    if (path === '/refunds/' || path.startsWith('/refunds') || path.startsWith('/refund-policy')) {
+      setPseoRoute({ type: 'refunds' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    if (path.startsWith('/admin/seo')) {
+      setPseoRoute({ type: 'admin' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    if (path.startsWith('/guides/')) {
+      const parts = path.split('/').filter(Boolean);
+      if (parts.length >= 2) {
+        setPseoRoute({ type: 'guide', guideSlug: parts[1] });
+        setCurrentStep('PSEO');
+        return true;
+      }
+    }
+
+    if (path.startsWith('/compare/')) {
+      const parts = path.split('/').filter(Boolean);
+      if (parts.length >= 2) {
+        setPseoRoute({ type: 'compare', compareSlug: parts[1] });
+        setCurrentStep('PSEO');
+        return true;
+      }
+    }
+
+    if (path.startsWith('/state/')) {
+      const parts = path.split('/').filter(Boolean); // ['state', 'texas', 'austin', '78701', 'flood-risk']
+      if (parts.length === 2) {
+        // /state/{state}/
+        setPseoRoute({ type: 'state', stateSlug: parts[1] });
+        setCurrentStep('PSEO');
+        return true;
+      }
+      if (parts.length === 3) {
+        // /state/{state}/{city}/
+        setPseoRoute({ type: 'city', stateSlug: parts[1], citySlug: parts[2] });
+        setCurrentStep('PSEO');
+        return true;
+      }
+      if (parts.length === 4) {
+        // /state/{state}/{city}/{zip}/
+        setPseoRoute({ type: 'zip', stateSlug: parts[1], citySlug: parts[2], zipCode: parts[3] });
+        setCurrentStep('PSEO');
+        return true;
+      }
+      if (parts.length >= 5) {
+        // /state/{state}/{city}/{zip}/{topic}/
+        setPseoRoute({ 
+          type: 'topic', 
+          stateSlug: parts[1], 
+          citySlug: parts[2], 
+          zipCode: parts[3], 
+          topicSlug: parts[4] as TopicSlug 
+        });
+        setCurrentStep('PSEO');
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  const handleNavigate = (targetPath: string) => {
+    try {
+      window.history.pushState({}, '', targetPath);
+    } catch (e) {
+      console.warn('pushState unavailable:', e);
+    }
+
+    if (!resolveRouteFromPath(targetPath)) {
+      if (targetPath === '/') {
+        setCurrentStep('HOME');
+        setPseoRoute({ type: 'none' });
+      }
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Check URL on mount for standalone report permalinks & pSEO routes
   useEffect(() => {
     const pathname = window.location.pathname;
     const searchParams = new URLSearchParams(window.location.search);
+
+    // Try resolving pSEO route first
+    if (resolveRouteFromPath(pathname)) {
+      return;
+    }
 
     let reportIdFromUrl: string | null = null;
 
@@ -61,6 +199,18 @@ export function App() {
         })
         .finally(() => setIsLoading(false));
     }
+
+    // Handle browser popstate
+    const handlePopState = () => {
+      if (!resolveRouteFromPath(window.location.pathname)) {
+        if (window.location.pathname === '/') {
+          setCurrentStep('HOME');
+          setPseoRoute({ type: 'none' });
+        }
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   // Step 1 -> Step 2: User selects property address
@@ -258,9 +408,58 @@ export function App() {
             />
           </ErrorBoundary>
         )}
+
+        {currentStep === 'PSEO' && (
+          <>
+            {pseoRoute.type === 'admin' && (
+              <SeoAdminPanel onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'state' && pseoRoute.stateSlug && (
+              <StateHubView stateSlug={pseoRoute.stateSlug} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'city' && pseoRoute.stateSlug && pseoRoute.citySlug && (
+              <CityHubView stateSlug={pseoRoute.stateSlug} citySlug={pseoRoute.citySlug} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'zip' && pseoRoute.stateSlug && pseoRoute.citySlug && pseoRoute.zipCode && (
+              <ZipHubView 
+                stateSlug={pseoRoute.stateSlug} 
+                citySlug={pseoRoute.citySlug} 
+                zipCode={pseoRoute.zipCode} 
+                onNavigate={handleNavigate} 
+              />
+            )}
+            {pseoRoute.type === 'topic' && pseoRoute.stateSlug && pseoRoute.citySlug && pseoRoute.zipCode && pseoRoute.topicSlug && (
+              <TopicDeepPageView 
+                stateSlug={pseoRoute.stateSlug} 
+                citySlug={pseoRoute.citySlug} 
+                zipCode={pseoRoute.zipCode} 
+                topicSlug={pseoRoute.topicSlug} 
+                onNavigate={handleNavigate} 
+              />
+            )}
+            {pseoRoute.type === 'guide' && pseoRoute.guideSlug && (
+              <GuidePageView guideSlug={pseoRoute.guideSlug} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'compare' && pseoRoute.compareSlug && (
+              <ZipComparePageView slug={pseoRoute.compareSlug} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'support' && (
+              <ContactUs onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'terms' && (
+              <TermsConditions onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'privacy' && (
+              <PrivacyPolicy onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'refunds' && (
+              <RefundPolicy onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
+            )}
+          </>
+        )}
       </main>
 
-      <Footer onNewSearch={handleNewSearch} />
+      <Footer onNewSearch={handleNewSearch} onNavigate={handleNavigate} />
     </div>
   );
 }

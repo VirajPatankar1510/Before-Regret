@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
+import { generateXmlSitemap, generateRobotsTxt } from "./src/utils/sitemapGenerator";
 
 dotenv.config();
 
@@ -12,6 +13,18 @@ async function startServer() {
 
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+  // Dynamic XML Sitemap Endpoint
+  app.get("/sitemap.xml", (req, res) => {
+    res.setHeader("Content-Type", "application/xml");
+    res.send(generateXmlSitemap());
+  });
+
+  // Robots.txt Endpoint
+  app.get("/robots.txt", (req, res) => {
+    res.setHeader("Content-Type", "text/plain");
+    res.send(generateRobotsTxt());
+  });
 
   // In-memory store for standalone report URLs and deep linking
   const reportsStore = new Map<string, any>();

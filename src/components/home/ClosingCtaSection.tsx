@@ -18,7 +18,7 @@ export const ClosingCtaSection: React.FC<ClosingCtaSectionProps> = ({ onScrollTo
             Check Public Records Before Signing
           </h2>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-            Don't rely on seller marketing alone. Enter any US residential address to review municipal permits, FEMA flood zones, and environmental records before making an offer.
+            Enter any US residential address to review municipal permits, FEMA flood zones, and environmental records before making an offer.
           </p>
         </div>
 
@@ -31,10 +31,6 @@ export const ClosingCtaSection: React.FC<ClosingCtaSectionProps> = ({ onScrollTo
             <span>Search Address Now</span>
             <ArrowUp className="w-4 h-4 ml-1" />
           </button>
-        </div>
-
-        <div className="relative z-10 text-xs text-slate-400 font-medium pt-2">
-          Objective Public Record Synthesis • 25+ Government Databases • One-Time $29 Flat Fee
         </div>
 
       </div>

@@ -10,8 +10,8 @@ export const FaqSection: React.FC = () => {
       a: 'No. A physical home inspection evaluates the current physical and mechanical condition of a property (testing electrical outlets, inspecting roof shingles, testing HVAC operation, running plumbing faucets). BeforeRegret synthesizes historical public filings, municipal building permits, FEMA flood map layers, EPA environmental proximity hazards, and county tax assessor records. The two complement each other: BeforeRegret highlights historical permit gaps and environmental hazards so you know exactly what to tell your inspector to examine.'
     },
     {
-      q: 'How does BeforeRegret compare to free real estate listing sites like Zillow or Redfin?',
-      a: 'Free real estate portals display seller-provided marketing descriptions, agent photo galleries, and MLS listings designed to market the home. BeforeRegret independently aggregates municipal building permit departments, FEMA flood zone maps, EPA Superfund registries, FAA airport noise contours, and county clerk archives into an unbiased, buyer-focused report. We do not sell leads to real estate agents or accept sponsored listing placements.'
+      q: 'How does BeforeRegret compare to free real estate listing sites?',
+      a: 'Free real estate portals display seller-provided marketing descriptions, agent photo galleries, and MLS listings designed to market the home. BeforeRegret independently aggregates municipal building permit departments, FEMA flood zone maps, EPA Superfund registries, FAA airport noise contours, and county clerk archives into an unbiased, buyer-focused report.'
     },
     {
       q: 'How does BeforeRegret handle properties with limited digitized records or rural addresses?',
@@ -23,11 +23,11 @@ export const FaqSection: React.FC = () => {
     },
     {
       q: 'How quickly is the report generated?',
-      a: 'Reports are generated instantly in your browser (typically under 60 seconds) once you enter a property address and complete checkout. You receive immediate access to the interactive web report and a downloadable, print-ready PDF.'
+      a: 'Reports are generated instantly in your browser (typically under 60 seconds) once you enter a property address. You receive immediate, unrestricted access to the interactive web report and a downloadable, print-ready PDF with no payment or credit card required.'
     },
     {
       q: 'Are there any recurring subscription fees or hidden costs?',
-      a: 'None. Every BeforeRegret report is a one-time flat purchase of $29 per property report. There are no monthly subscriptions, no recurring charges, and no hidden account fees.'
+      a: 'None. Every BeforeRegret consumer property research report is 100% free with no payment required, no credit card needed, no monthly subscriptions, and no hidden fees.'
     }
   ];
 

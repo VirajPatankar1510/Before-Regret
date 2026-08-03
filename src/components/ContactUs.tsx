@@ -1,218 +1,390 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, ArrowLeft, RefreshCw, Check, Send, FileText, Shield, MapPin } from 'lucide-react';
+import { Mail, ArrowLeft, Send, CheckCircle2, AlertCircle, HelpCircle, ShieldCheck, Clock, Building2, MapPin, Search, FileSpreadsheet } from 'lucide-react';
 
 interface ContactUsProps {
   onBackToHome: () => void;
+  onNavigate?: (path: string) => void;
 }
 
-export const ContactUs: React.FC<ContactUsProps> = ({ onBackToHome }) => {
-  const [contactName, setContactName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [contactMessage, setContactMessage] = useState('');
+export const ContactUs: React.FC<ContactUsProps> = ({ onBackToHome, onNavigate }) => {
+  const [activeTab, setActiveTab] = useState<'consumer' | 'vendor' | 'error_flag'>('consumer');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [addressOrZip, setAddressOrZip] = useState('');
+  const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contactName || !contactEmail || !contactMessage) return;
+    if (!name || !email || !message) return;
 
     setIsSubmitting(true);
-    
-    // Simulate API call and then trigger mailto client-side
+
     setTimeout(() => {
       setIsSubmitting(false);
-      setSubmitSuccess(true);
-      
-      const subject = `Contact Message from ${contactName}`;
-      const body = `Name: ${contactName}\nEmail: ${contactEmail}\n\nMessage:\n${contactMessage}`;
-      
-      // Open standard mailto link
-      window.location.href = `mailto:support@beforeregret.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      
-      // Reset form after a small delay
-      setTimeout(() => {
-        setContactName('');
-        setContactEmail('');
-        setContactMessage('');
-        setSubmitSuccess(false);
-      }, 5000);
-    }, 1000);
+      setIsSubmitted(true);
+
+      const emailSubject = `[BeforeRegret ${activeTab.toUpperCase()}] ${subject || 'Inquiry'}`;
+      const emailBody = `Sender Name: ${name}
+Sender Email: ${email}
+Category: ${activeTab === 'consumer' ? 'Free Consumer Report Question' : activeTab === 'vendor' ? 'Vendor Subscription & Billing' : 'Report Data Discrepancy Flag'}
+${addressOrZip ? `Property Address / Zip Code: ${addressOrZip}\n` : ''}
+Message:
+${message}`;
+
+      window.location.href = `mailto:hello@beforeregret.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    }, 800);
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12 font-sans">
-      {/* Back Button */}
-      <button
-        onClick={() => {
-          onBackToHome();
-          window.scrollTo(0, 0);
-        }}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all mb-8 cursor-pointer border border-slate-200/50"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back to Home</span>
-      </button>
+    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 font-sans text-slate-900">
+      <div className="max-w-5xl mx-auto space-y-8">
+        
+        {/* Navigation Breadcrumb / Header */}
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
+          <button
+            onClick={() => {
+              if (onNavigate) onNavigate('/');
+              else onBackToHome();
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition-all border border-slate-200 cursor-pointer shadow-xs"
+          >
+            <ArrowLeft className="w-4 h-4 text-slate-500" />
+            <span>Return to Property Search</span>
+          </button>
 
-      {/* Content Pane */}
-      <div className="bg-white border border-slate-150 rounded-3xl p-6 sm:p-10 shadow-3xs">
-        <div className="space-y-6">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-            <div className="p-2.5 bg-rose-500/10 text-rose-600 rounded-2xl">
-              <Mail className="w-6 h-6" />
+          <div className="flex items-center gap-2 text-xs font-mono text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+            <Building2 className="w-3.5 h-3.5 text-blue-600" />
+            <span>Operating Entity: <strong>Atmostellar</strong></span>
+          </div>
+        </div>
+
+        {/* Hero Banner */}
+        <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl space-y-4 relative overflow-hidden">
+          <div className="relative z-10 max-w-2xl space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-400/30 rounded-full text-xs font-bold tracking-wide uppercase">
+              <Mail className="w-3.5 h-3.5" />
+              <span>Customer Support Portal</span>
             </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-display font-black text-slate-900 leading-tight">Contact Us</h1>
-              <p className="text-xs text-slate-400 font-medium">Get in Touch with Atmostellar Support</p>
+            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+              How Can We Help You?
+            </h1>
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+              Before Regret is a property research product owned and operated by Atmostellar. Whether you are a home buyer inquiring about a report or a verified business vendor managing a sponsored placement subscription, we are here to assist.
+            </p>
+          </div>
+          
+          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-mono text-slate-300 border-t border-slate-800">
+            <div className="flex items-center gap-1.5">
+              <Mail className="w-4 h-4 text-blue-400" />
+              <span>Contact Channel: <strong>hello@beforeregret.com</strong></span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-emerald-400" />
+              <span>Expected Response Time: <strong>1–2 business days</strong></span>
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-2">
-            {/* Left side: Contact form */}
-            <div className="lg:col-span-7 bg-white border border-slate-100 rounded-3xl p-6 shadow-xs space-y-6">
-              <div>
-                <h3 className="font-bold text-slate-900 text-sm sm:text-base">Send us a Message</h3>
-                <p className="text-xs text-slate-400 mt-1">Fill out the form below to initiate an email to our support board.</p>
+        {/* Contact Path Selector & Form Card */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Form Side */}
+          <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">Send an Inquiry</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                Select your category below so your inquiry routes logically to the right support queue.
+              </p>
+            </div>
+
+            {/* Path Tabs */}
+            <div className="grid grid-cols-3 gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+              <button
+                type="button"
+                onClick={() => { setActiveTab('consumer'); setIsSubmitted(false); }}
+                className={`py-2 px-2 text-center text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'consumer'
+                    ? 'bg-white text-blue-700 shadow-xs border border-slate-200'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Consumer Inquiry
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setActiveTab('vendor'); setIsSubmitted(false); }}
+                className={`py-2 px-2 text-center text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'vendor'
+                    ? 'bg-white text-blue-700 shadow-xs border border-slate-200'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Vendor Billing
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setActiveTab('error_flag'); setIsSubmitted(false); }}
+                className={`py-2 px-2 text-center text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                  activeTab === 'error_flag'
+                    ? 'bg-white text-amber-800 shadow-xs border border-amber-200'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Data Discrepancy
+              </button>
+            </div>
+
+            {/* Path Explanatory Note */}
+            <div className="p-3.5 bg-blue-50/60 border border-blue-100 rounded-2xl text-xs text-blue-900 leading-relaxed">
+              {activeTab === 'consumer' && (
+                <p>
+                  <strong>Free Consumer Report Support:</strong> For property buyers or renters with questions regarding free property reports, data coverage, or understanding public dataset indicators.
+                </p>
+              )}
+              {activeTab === 'vendor' && (
+                <p>
+                  <strong>Business Vendor Support:</strong> For contractors, inspectors, structural engineers, or trade specialists with questions about sponsored placement subscriptions, zip code availability, or monthly billing.
+                </p>
+              )}
+              {activeTab === 'error_flag' && (
+                <p>
+                  <strong>Data Discrepancy Flag:</strong> Found a discrepancy between a BeforeRegret report and an official government record? Report it here for rapid audit and correction by our data team.
+                </p>
+              )}
+            </div>
+
+            {isSubmitted ? (
+              <div className="p-6 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-3">
+                <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
+                <h3 className="font-bold text-emerald-950 text-base">Inquiry Dispatched</h3>
+                <p className="text-xs text-emerald-800 leading-relaxed">
+                  Your email client has been opened with your pre-formatted message addressed to <strong>hello@beforeregret.com</strong>. Our team will review your message and reply within 1–2 business days.
+                </p>
+                <button
+                  onClick={() => setIsSubmitted(false)}
+                  className="mt-2 text-xs font-bold text-emerald-700 underline cursor-pointer"
+                >
+                  Send another message
+                </button>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Your Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="e.g., Sarah Jenkins"
+                      className="w-full text-xs bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white rounded-xl px-3.5 py-2.5 outline-none font-medium"
+                    />
+                  </div>
 
-              <form onSubmit={handleContactSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="e.g., sarah@example.com"
+                      className="w-full text-xs bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white rounded-xl px-3.5 py-2.5 outline-none font-medium"
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label htmlFor="contactName" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Your Name
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Subject / Topic
                   </label>
                   <input
-                    id="contactName"
                     type="text"
-                    required
-                    value={contactName}
-                    onChange={(e) => setContactName(e.target.value)}
-                    placeholder="John Doe"
-                    className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white rounded-xl px-4 py-3 outline-none transition-all placeholder:text-slate-400 text-slate-900 font-medium"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    placeholder={
+                      activeTab === 'vendor'
+                        ? 'e.g., Change subscription zip codes or billing'
+                        : activeTab === 'error_flag'
+                        ? 'e.g., Flood zone classification correction for ZIP 78701'
+                        : 'e.g., Question about Austin TX property report sources'
+                    }
+                    className="w-full text-xs bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white rounded-xl px-3.5 py-2.5 outline-none font-medium"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="contactEmail" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Your Email Address
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Property Address or ZIP Code (Optional)
                   </label>
                   <input
-                    id="contactEmail"
-                    type="email"
-                    required
-                    value={contactEmail}
-                    onChange={(e) => setContactEmail(e.target.value)}
-                    placeholder="john@example.com"
-                    className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white rounded-xl px-4 py-3 outline-none transition-all placeholder:text-slate-400 text-slate-900 font-medium"
+                    type="text"
+                    value={addressOrZip}
+                    onChange={(e) => setAddressOrZip(e.target.value)}
+                    placeholder="e.g., 1204 Oakridge Dr, Austin, TX 78701"
+                    className="w-full text-xs bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white rounded-xl px-3.5 py-2.5 outline-none font-medium"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="contactMessage" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Your Message
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Message Details *
                   </label>
                   <textarea
-                    id="contactMessage"
                     required
                     rows={4}
-                    value={contactMessage}
-                    onChange={(e) => setContactMessage(e.target.value)}
-                    placeholder="Tell us what you need help with..."
-                    className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white rounded-xl px-4 py-3 outline-none transition-all placeholder:text-slate-400 text-slate-900 font-medium resize-none"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder={
+                      activeTab === 'error_flag'
+                        ? 'Please specify the exact data point, the address/zip, and provide a link or reference to the official source showing the correct record.'
+                        : 'Describe your question or inquiry in detail...'
+                    }
+                    className="w-full text-xs bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white rounded-xl px-3.5 py-2.5 outline-none font-medium resize-y"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs animate-none"
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      <span>Preparing email client...</span>
-                    </>
-                  ) : submitSuccess ? (
-                    <>
-                      <Check className="w-4 h-4" />
-                      <span>Email Client Opened!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4" />
-                      <span>Submit</span>
-                    </>
-                  )}
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{isSubmitting ? 'Preparing Email...' : 'Send Message to hello@beforeregret.com'}</span>
                 </button>
-
-                {submitSuccess && (
-                  <p className="text-[11px] text-emerald-600 text-center font-semibold bg-emerald-50 rounded-xl p-3 border border-emerald-100/50 animate-none">
-                    If your email client didn't launch automatically, please copy your message and mail it directly to support@beforeregret.com
-                  </p>
-                )}
               </form>
-            </div>
+            )}
+          </div>
 
-            {/* Right side: Contact Information & Billing Guidelines */}
-            <div className="lg:col-span-5 space-y-6">
-              {/* Corporate Block */}
-              <div className="bg-slate-50/50 border border-slate-100 rounded-3xl p-6 space-y-4">
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  We generally reply within 12-24 business hours to all registered queries.
-                </p>
+          {/* Right Info Sidebar */}
+          <div className="lg:col-span-5 space-y-6">
+            
+            {/* Direct Contact Card */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
+              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-blue-600" />
+                <span>Contact & Entity Details</span>
+              </h3>
 
-                <div className="space-y-3.5">
-
-
-                  <div className="flex items-start gap-3 text-xs">
-                    <div className="p-1.5 bg-slate-100 rounded-lg text-slate-500 mt-0.5">
-                      <Mail className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-800">Support Email Address</div>
-                      <a href="mailto:support@beforeregret.com" className="text-blue-600 hover:underline mt-0.5 block font-semibold">
-                        support@beforeregret.com
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 text-xs">
-                    <div className="p-1.5 bg-slate-100 rounded-lg text-slate-500 mt-0.5">
-                      <MapPin className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-800">Registered Mailing Address</div>
-                      <div className="text-slate-500 mt-0.5 leading-relaxed">
-                        Atmostellar,<br />
-                        Mumbai, Maharashtra,<br />
-                        PIN 401203, India.
-                      </div>
-                    </div>
-                  </div>
+              <div className="space-y-3 text-xs text-slate-600 border-t border-slate-100 pt-3">
+                <div>
+                  <span className="text-slate-400 block font-medium">Product Brand:</span>
+                  <span className="font-bold text-slate-900">Before Regret</span>
                 </div>
-              </div>
 
-              {/* Billing Instructions Card */}
-              <div className="p-6 bg-slate-50 border border-slate-100 rounded-3xl space-y-4">
-                <h3 className="font-bold text-slate-900 text-sm">Need Help with a Paid Booking?</h3>
-                <p className="text-[11px] text-slate-500 leading-relaxed">
-                  If you are writing regarding an active transaction, please ensure your email includes the following details so we can trace your billing:
-                </p>
-                <ul className="space-y-1 text-[11px] text-slate-600 font-medium">
-                  <li>• Seeker Name & Email Address</li>
-                  <li>• Date of transaction</li>
-                  <li>• Booking ID or Seeker/Expert Name</li>
-                  <li>• Payment ID (e.g., pay_xxxxx)</li>
-                </ul>
-                <div className="pt-2 text-[10px] text-amber-600 font-medium bg-amber-50 rounded-xl p-3 border border-amber-100/50 leading-relaxed">
-                  Please do not share your bank credentials, PIN numbers, or card CVVs in your email communications. Atmostellar will never ask for password variables.
+                <div>
+                  <span className="text-slate-400 block font-medium">Operating Legal Entity:</span>
+                  <span className="font-bold text-slate-900">Atmostellar</span>
+                </div>
+
+                <div>
+                  <span className="text-slate-400 block font-medium">Support Email:</span>
+                  <a href="mailto:hello@beforeregret.com" className="font-bold text-blue-600 hover:underline">
+                    hello@beforeregret.com
+                  </a>
+                </div>
+
+                <div>
+                  <span className="text-slate-400 block font-medium">Registered Business Location:</span>
+                  <p className="font-medium text-slate-800">
+                    Atmostellar<br />
+                    Mumbai, Maharashtra, India
+                  </p>
+                </div>
+
+                <div>
+                  <span className="text-slate-400 block font-medium">Operational Support Hours:</span>
+                  <span className="font-medium text-slate-800">Monday – Friday (10:00 AM – 6:00 PM IST)</span>
                 </div>
               </div>
             </div>
+
+            {/* Informational Disclaimer Box */}
+            <div className="bg-amber-50 border border-amber-200/80 rounded-3xl p-5 text-xs text-amber-900 space-y-2">
+              <div className="font-bold flex items-center gap-1.5 text-amber-950">
+                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Informational Research Disclaimer</span>
+              </div>
+              <p className="leading-relaxed">
+                BeforeRegret property research reports are compiled strictly for preliminary informational research purposes. Reports are not physical home inspections, engineering assessments, legal title reviews, or financial valuations. All findings must be independently verified with licensed professionals before making property purchase or leasing decisions.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Frequently Asked Questions (FAQ) Section */}
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xs space-y-8">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <HelpCircle className="w-5 h-5 text-blue-600" />
+              <span>Frequently Asked Support Questions</span>
+            </h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Quick answers to common questions about report data, vendor listings, and subscription terms.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* FAQ 1 */}
+            <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+              <h3 className="font-bold text-slate-900 text-xs sm:text-sm">
+                Is the report accurate or guaranteed?
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                BeforeRegret reports assemble public data from official sources including FEMA, USGS, FCC, and municipal open data archives. Reports are provided on an <strong>"as-is"</strong> basis for preliminary research only. We do not warrant complete accuracy or real-time completeness, and reports are <strong>not guaranteed</strong> or a substitute for a licensed professional home inspection or engineering evaluation.
+              </p>
+            </div>
+
+            {/* FAQ 2 */}
+            <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+              <h3 className="font-bold text-slate-900 text-xs sm:text-sm">
+                How do I stop seeing ads for a specific business?
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Local business listings appearing in "Need help verifying this?" sections are clearly labeled as <strong>"Sponsored"</strong> placements. If you believe a sponsored vendor listing violates our editorial standards, contains inaccurate credential claims, or is inappropriate, please email <strong>hello@beforeregret.com</strong> with details and our compliance team will review the listing.
+              </p>
+            </div>
+
+            {/* FAQ 3 */}
+            <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+              <h3 className="font-bold text-slate-900 text-xs sm:text-sm">
+                How do I cancel my vendor subscription?
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Verified local business vendors on paid monthly subscription plans can cancel their recurring subscription at any time by emailing <strong>hello@beforeregret.com</strong>. Cancellations take effect at the start of the next monthly billing cycle. No prorated refunds are issued for unused days in the current billing cycle.
+              </p>
+            </div>
+
+            {/* FAQ 4 */}
+            <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+              <h3 className="font-bold text-slate-900 text-xs sm:text-sm">
+                How do I report incorrect information in a report?
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                If you identify a data error or discrepancy between a BeforeRegret report and an official municipal archive or GIS layer, select the <strong>"Data Discrepancy"</strong> tab above or email <strong>hello@beforeregret.com</strong>. Include the property address/zip code, the specific data field in question, and a link or citation to the official record. Our audit team reviews and corrects verified errors within 1–2 business days.
+              </p>
+            </div>
+
           </div>
         </div>
+
       </div>
     </div>
   );

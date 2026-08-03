@@ -118,41 +118,22 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
             <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Automatic Research Pricing
             </div>
-            <div className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight flex items-baseline gap-2">
-              <span>${price}</span>
-              <span className="text-sm font-semibold text-slate-500">one-time full report access</span>
+            <div className="text-3xl sm:text-4xl font-black text-emerald-600 tracking-tight flex items-baseline gap-2">
+              <span>$0</span>
+              <span className="text-sm font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">100% Free</span>
             </div>
             <p className="text-xs text-slate-600 font-medium max-w-lg mt-1">
-              {priceRationale}
+              {priceRationale || 'Full public record property synthesis is completely free for home buyers and renters.'}
             </p>
           </div>
 
           <button
             onClick={onGenerateReport}
-            className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg rounded-2xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 cursor-pointer shrink-0"
+            className="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-lg rounded-2xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 cursor-pointer shrink-0"
           >
-            <span>Generate Report (${price})</span>
+            <span>View Report</span>
             <ArrowRight className="w-5 h-5" />
           </button>
-        </div>
-
-        {/* Pricing Transparency Rules Note */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 space-y-2">
-          <div className="font-bold text-slate-900 flex items-center gap-1.5">
-            <HelpCircle className="w-4 h-4 text-blue-600" />
-            <span>How Pricing Is Calculated:</span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
-            <div className={`p-2.5 rounded-lg border ${price === 19 ? 'bg-blue-50 border-blue-300 font-bold text-blue-900' : 'bg-white border-slate-200'}`}>
-              Sparse Data (≤14 useful sources) → $19
-            </div>
-            <div className={`p-2.5 rounded-lg border ${price === 29 ? 'bg-blue-50 border-blue-300 font-bold text-blue-900' : 'bg-white border-slate-200'}`}>
-              Full Coverage (15+ useful sources) → $29 (Max Cap)
-            </div>
-          </div>
-          <p className="text-[11px] text-slate-500 italic pt-1">
-            We do not charge random flat rates. Pricing is automatically capped at $29 maximum based on public data density compiled for your subject property.
-          </p>
         </div>
 
       </div>
