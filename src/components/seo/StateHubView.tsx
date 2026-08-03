@@ -10,7 +10,9 @@ interface StateHubViewProps {
 
 export const StateHubView: React.FC<StateHubViewProps> = ({ stateSlug, onNavigate }) => {
   const stateName = stateSlug === 'texas' ? 'Texas' : stateSlug.toUpperCase();
-  const stateMarkets = VALIDATED_MARKETS.filter(m => m.state === stateSlug.toLowerCase());
+  // Only markets that have completed validation are shown/linked — Phase 2
+  // candidates (isValidated:false) stay invisible until launched.
+  const stateMarkets = VALIDATED_MARKETS.filter(m => m.state === stateSlug.toLowerCase() && m.isValidated);
 
   const canonicalUrl = `https://beforeregret.com/state/${stateSlug}/`;
 
