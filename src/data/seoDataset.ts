@@ -1,8 +1,13 @@
 import { ZipPSeoData, SingleTopicDetail, EditorialGuide, ZipComparisonData, TopicSlug } from '../types/seoTypes';
 
+// Only Austin has completed Stage 0-4 market validation and is the single
+// approved launch market. Houston and Dallas are Phase 2 candidates and must
+// stay isValidated:false until their own validation pass completes — flipping
+// either to true expands generation scope (sitemaps, city hub listing,
+// indexability) to that market.
 export const VALIDATED_MARKETS = [
   { state: 'texas', stateAbbr: 'TX', stateName: 'Texas', city: 'austin', cityName: 'Austin', phase: 1, isValidated: true },
-  { state: 'texas', stateAbbr: 'TX', stateName: 'Texas', city: 'houston', cityName: 'Houston', phase: 2, isValidated: true },
+  { state: 'texas', stateAbbr: 'TX', stateName: 'Texas', city: 'houston', cityName: 'Houston', phase: 2, isValidated: false },
   { state: 'texas', stateAbbr: 'TX', stateName: 'Texas', city: 'dallas', cityName: 'Dallas', phase: 2, isValidated: false }
 ];
 

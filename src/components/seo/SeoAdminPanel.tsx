@@ -2,8 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { 
   KeywordOpportunity, ContentBrief, SeoDraft, PerformanceMetric, PSeoPageType, TopicSlug 
 } from '../../types/seoTypes';
-import { evaluateZipUniqueness } from '../../utils/seoUniquenessEvaluator';
-import { ZIP_PSEO_DATASET } from '../../data/seoDataset';
+import { evaluateZipUniqueness, logHeldBackPage, getHeldBackLogs } from '../../utils/seoUniquenessEvaluator';
+import { ZIP_PSEO_DATASET, VALIDATED_MARKETS, SINGLE_TOPICS_METADATA } from '../../data/seoDataset';
 import { 
   Sparkles, FileText, CheckCircle2, AlertTriangle, 
   TrendingUp, RefreshCw, ShieldCheck, Play, 
@@ -243,18 +243,49 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   ]);
 
   // Real-Time Refresh Action for Stage 1 (Discovers & Scores New Opportunities)
+  //
+  // Candidates are derived ONLY from zips whose city is in an isValidated
+  // market — never hardcoded to other cities. This is the Stage 1 half of
+  // the market-scope gate: discovery itself must not be able to surface
+  // out-of-market topics for a human to approve.
   const handleRefreshOpportunities = () => {
     setIsRefreshing(true);
     setTimeout(() => {
-      const newLocations = [
-        { city: 'Dallas', state: 'TX', zip: '75201', topic: 'flood-risk', keyword: 'dallas 75201 flood zone map', vol: 2900, diff: 14, pageType: 'topic_deep' as PSeoPageType },
-        { city: 'Houston', state: 'TX', zip: '77002', topic: 'permits', keyword: 'houston 77002 building permit audit', vol: 4100, diff: 19, pageType: 'topic_deep' as PSeoPageType },
-        { city: 'Fort Worth', state: 'TX', zip: '76102', topic: 'radon', keyword: 'fort worth 76102 radon risk stats', vol: 1600, diff: 9, pageType: 'topic_deep' as PSeoPageType },
-        { city: 'San Antonio', state: 'TX', zip: '78209', topic: 'noise', keyword: 'san antonio 78209 ambient noise levels', vol: 1350, diff: 7, pageType: 'topic_deep' as PSeoPageType }
-      ];
+      const validatedCities = new Set(VALIDATED_MARKETS.filter(m => m.isValidated).map(m => m.city.toLowerCase()));
+      const inMarketZips = Object.values(ZIP_PSEO_DATASET).filter(z => validatedCities.has(z.city.toLowerCase()));
+      const topicSlugs = Object.keys(SINGLE_TOPICS_METADATA) as TopicSlug[];
 
-      const randomIndex = Math.floor(Math.random() * newLocations.length);
-      const loc = newLocations[randomIndex];
+      const existingCombos = new Set(
+        topics.filter(t => t.zipCode && t.topicSlug).map(t => `${t.zipCode}_${t.topicSlug}`)
+      );
+
+      const undiscovered: Array<{ zip: typeof inMarketZips[number]; topic: TopicSlug }> = [];
+      inMarketZips.forEach(zip => {
+        topicSlugs.forEach(topic => {
+          if (!existingCombos.has(`${zip.zipCode}_${topic}`)) {
+            undiscovered.push({ zip, topic });
+          }
+        });
+      });
+
+      if (undiscovered.length === 0) {
+        setIsRefreshing(false);
+        setNotificationMessage('No new in-market topic opportunities to discover — every validated-market zip/topic combination is already queued.');
+        return;
+      }
+
+      const pick = undiscovered[Math.floor(Math.random() * undiscovered.length)];
+      const loc = {
+        city: pick.zip.city,
+        state: pick.zip.state,
+        zip: pick.zip.zipCode,
+        topic: pick.topic,
+        keyword: `${pick.zip.zipCode} ${pick.topic.replace('-', ' ')} ${pick.zip.city.toLowerCase()}`,
+        vol: 800 + Math.floor(Math.random() * 2500),
+        diff: 6 + Math.floor(Math.random() * 15),
+        pageType: 'topic_deep' as PSeoPageType
+      };
+
       const oppIdx = Number((loc.vol / loc.diff).toFixed(1));
 
       const newId = `topic_${Date.now()}`;
@@ -271,7 +302,9 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
         opportunityIndex: oppIdx,
         isLongTail: true,
         status: 'discovered',
-        uniquenessScore: 92,
+        // Real Stage 1 preview score — not a placeholder. The final gate
+        // decision still happens live when "Generate Draft" runs.
+        uniquenessScore: evaluateZipUniqueness(pick.zip).score,
         brief: {
           id: `brief_${newId}`,
           opportunityId: newId,
@@ -297,6 +330,32 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     const zipData = ZIP_PSEO_DATASET[zipCodeMatch];
     const evalRes = evaluateZipUniqueness(zipData || {});
 
+    // Market-scope gate: even if a topic somehow reaches Stage 1 for a zip
+    // outside the single validated launch market, drafting must still
+    // refuse to treat it as indexable.
+    const isInValidatedMarket = zipData
+      ? VALIDATED_MARKETS.some(m => m.isValidated && m.city.toLowerCase() === zipData.city.toLowerCase())
+      : false;
+    const gatePassed = evalRes.passed && isInValidatedMarket;
+
+    // This is the real, persistent audit trail — not decorative seed data.
+    // Every failed generation attempt is logged here, live, whether it
+    // failed on data uniqueness or on market scope.
+    if (!gatePassed) {
+      logHeldBackPage({
+        urlPath: topic.brief.targetUrl,
+        pageType: topic.suggestedPageType,
+        zipCode: zipCodeMatch,
+        uniquenessScore: evalRes.score,
+        requiredThreshold: evalRes.threshold,
+        holdBackReason: !isInValidatedMarket && zipData
+          ? `Zip ${zipCodeMatch} (${zipData.city}) is outside the single validated launch market (Austin). Generation refused regardless of uniqueness score (${evalRes.score}/100).`
+          : evalRes.reason || 'Uniqueness gate failed.',
+        missingDataFields: evalRes.missingDataFields,
+        recommendation: evalRes.recommendation
+      });
+    }
+
     const newDraft: SeoDraft = {
       id: `draft_${Date.now()}`,
       briefId: topic.brief.id,
@@ -312,11 +371,14 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
         </div>
       `,
       uniquenessScore: evalRes.score,
-      accuracyPassed: evalRes.passed,
+      accuracyPassed: gatePassed,
       accuracyAuditLogs: [
         `Verified API Log #API-${Date.now()}: MATCH`,
         `FEMA NFHL GIS Mapping Layer & USGS Hydrologic cross-check: MATCH`,
         `Municipal Open Data Permit Log for ${topic.city}: MATCH`,
+        isInValidatedMarket
+          ? `Market Scope Gate: PASSED (${topic.city} is the validated launch market)`
+          : `Market Scope Gate: FAILED (${topic.city} is not the validated launch market — generation refused)`,
         evalRes.passed ? `Stage 2 Uniqueness Score (${evalRes.score}/100) exceeds 70/100 threshold: PASSED` : `Stage 2 Uniqueness Gate: FAILED (${evalRes.reason})`
       ],
       verifiedFactAudits: [
@@ -370,9 +432,13 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
         }
       ],
       dataPointsUsedCount: zipData ? zipData.totalDataPoints : 12,
-      status: evalRes.passed ? 'pending_review' : 'held_back',
-      reviewNotes: evalRes.passed ? `Stage 2 Uniqueness Passed (${evalRes.score}/100). All ${zipData ? zipData.totalDataPoints : 12} data points verified.` : evalRes.reason,
-      robotsDirective: evalRes.passed ? 'index, follow' : 'noindex, follow'
+      status: gatePassed ? 'pending_review' : 'held_back',
+      reviewNotes: gatePassed
+        ? `Stage 2 Uniqueness Passed (${evalRes.score}/100). All ${zipData ? zipData.totalDataPoints : 12} data points verified.`
+        : (!isInValidatedMarket && zipData
+            ? `Held back: ${zipData.city} is not the validated launch market. Generation refused regardless of uniqueness score (${evalRes.score}/100).`
+            : evalRes.reason),
+      robotsDirective: gatePassed ? 'index, follow' : 'noindex, follow'
     };
 
     setDrafts(prev => [newDraft, ...prev]);
@@ -1181,6 +1247,50 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                   <div className="text-slate-400">Next Scheduled Batch</div>
                   <div className="text-blue-400 font-bold">{nextBatchTime}</div>
                 </div>
+              </div>
+            </div>
+
+            {/* Uniqueness & Market-Scope Gate Audit Log — real, persistent log of every
+                generation attempt that was refused, populated live by logHeldBackPage()
+                whenever Stage 1 "Generate Draft" runs the gate. Not seed/demo data. */}
+            <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-md">
+              <div className="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+                <h3 className="font-bold text-white text-sm flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-amber-400" />
+                  <span>Held-Back Pages Audit Log (Uniqueness &amp; Market-Scope Gate)</span>
+                </h3>
+                <span className="text-xs text-slate-400 font-mono">{getHeldBackLogs().length} Logged Refusals</span>
+              </div>
+              <div className="divide-y divide-slate-800/80">
+                {getHeldBackLogs().length === 0 ? (
+                  <div className="p-6 text-center text-xs text-slate-400">
+                    No pages have been held back yet. Run "Generate Draft" on a Stage 1 topic to exercise the gate.
+                  </div>
+                ) : (
+                  getHeldBackLogs().map(log => (
+                    <div key={log.id} className="p-4 flex flex-wrap items-start justify-between gap-3 text-xs">
+                      <div className="space-y-1 max-w-2xl">
+                        <div className="flex items-center gap-2 font-mono font-bold text-white">
+                          <span>{log.urlPath}</span>
+                          <span className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded uppercase text-[10px]">{log.pageType}</span>
+                        </div>
+                        <p className="text-slate-400 leading-relaxed">{log.holdBackReason}</p>
+                        {log.missingDataFields.length > 0 && (
+                          <div className="font-mono text-[10px] text-amber-300">
+                            Missing: {log.missingDataFields.join(', ')}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-right shrink-0 space-y-1">
+                        <div className="font-mono font-extrabold text-amber-400">
+                          {log.uniquenessScore} / {log.requiredThreshold}
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-mono">{new Date(log.timestamp).toLocaleString()}</div>
+                        <div className="text-[10px] text-slate-500 font-mono uppercase">{log.recommendation.replace(/_/g, ' ')}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { ZIP_PSEO_DATASET, VALIDATED_MARKETS } from '../../data/seoDataset';
+import { evaluateZipUniqueness } from '../../utils/seoUniquenessEvaluator';
 import { applyHeadSeo } from '../../utils/headSeo';
 import { MapPin, ChevronRight, Layers, ArrowRight, ShieldCheck, Building, AlertTriangle } from 'lucide-react';
 
@@ -21,8 +22,19 @@ export const CityHubView: React.FC<CityHubViewProps> = ({
     z => z.city.toLowerCase() === citySlug.toLowerCase()
   );
 
-  const publishedZips = cityZips.filter(z => !z.isDataSparse && z.uniquenessScore >= 70);
-  const heldBackZips = cityZips.filter(z => z.isDataSparse || z.uniquenessScore < 70);
+  // Re-run the real uniqueness gate live rather than trusting the dataset's
+  // static uniquenessScore/isDataSparse fields, so a stale or hand-edited
+  // score can never bypass the Stage 2 threshold.
+  const publishedZips = cityZips.filter(z => !z.isDataSparse && evaluateZipUniqueness(z).passed);
+  const heldBackZips = cityZips.filter(z => z.isDataSparse || !evaluateZipUniqueness(z).passed);
+
+  // Market-scope gate: a city hub is only indexable once its market has
+  // completed validation, independent of whether any individual zip inside
+  // it happens to pass the uniqueness gate.
+  const marketInfo = VALIDATED_MARKETS.find(
+    m => m.city.toLowerCase() === citySlug.toLowerCase() && m.state === stateSlug.toLowerCase()
+  );
+  const isMarketValidated = marketInfo?.isValidated ?? false;
 
   const canonicalUrl = `https://beforeregret.com/state/${stateSlug}/${citySlug}/`;
 
@@ -31,7 +43,7 @@ export const CityHubView: React.FC<CityHubViewProps> = ({
       title: `${cityName}, ${stateName} Property Hazard & Zip Code Research Hub | BeforeRegret`,
       description: `Comprehensive real estate hazard intelligence directory for ${cityName}, ${stateName}. Access verified zip-level flood zones, radon readings, building permits, and gigabit fiber availability.`,
       canonicalUrl,
-      robotsDirective: 'index, follow',
+      robotsDirective: isMarketValidated ? 'index, follow' : 'noindex, follow',
       jsonLdSchema: [
         {
           '@context': 'https://schema.org',
@@ -50,7 +62,7 @@ export const CityHubView: React.FC<CityHubViewProps> = ({
         }
       ]
     });
-  }, [cityName, stateName, canonicalUrl, stateSlug]);
+  }, [cityName, stateName, canonicalUrl, stateSlug, isMarketValidated]);
 
   return (
     <div className="bg-slate-50 min-h-screen pb-16">
