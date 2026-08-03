@@ -102,7 +102,7 @@ export const TopicDetailModal: React.FC<TopicDetailModalProps> = ({
                 ))
               ) : (
                 <div className="p-4 text-xs text-slate-500 bg-slate-50 rounded-xl">
-                  Comprehensive topic evaluation verified by resident contributor.
+                  Comprehensive topic evaluation confirmed by resident contributor.
                 </div>
               )}
             </div>

@@ -10,7 +10,7 @@ export interface SourceRegistryEntry {
   refreshCadence: 'Real-Time Sync' | 'Daily API Refresh' | 'Weekly Sync' | 'Monthly Batch' | 'Quarterly Update' | 'Annual Assessor Cycle';
   isRealTime: boolean;
   lastVerifiedActiveDate: string;
-  quarterlyAuditStatus: 'Audited & Verified' | 'Pending Next Cycle';
+  quarterlyAuditStatus: 'Audited & Confirmed' | 'Pending Next Cycle';
   scrapingStatus: 'No Scraping (Direct API / Licensed Open Data Only)';
   notes: string;
 }
@@ -28,7 +28,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     refreshCadence: 'Quarterly Update',
     isRealTime: false,
     lastVerifiedActiveDate: '2026-08-01',
-    quarterlyAuditStatus: 'Audited & Verified',
+    quarterlyAuditStatus: 'Audited & Confirmed',
     scrapingStatus: 'No Scraping (Direct API / Licensed Open Data Only)',
     notes: 'Direct spatial query via ArcGIS REST Endpoint on FEMA MSC GIS service.'
   },
@@ -44,7 +44,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     refreshCadence: 'Real-Time Sync',
     isRealTime: true,
     lastVerifiedActiveDate: '2026-08-01',
-    quarterlyAuditStatus: 'Audited & Verified',
+    quarterlyAuditStatus: 'Audited & Confirmed',
     scrapingStatus: 'No Scraping (Direct API / Licensed Open Data Only)',
     notes: 'Layer 1 Address format and resolution gate API.'
   },
@@ -60,7 +60,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     refreshCadence: 'Quarterly Update',
     isRealTime: false,
     lastVerifiedActiveDate: '2026-08-01',
-    quarterlyAuditStatus: 'Audited & Verified',
+    quarterlyAuditStatus: 'Audited & Confirmed',
     scrapingStatus: 'No Scraping (Direct API / Licensed Open Data Only)',
     notes: 'Layer 2 Federal/Government facility exclusion boundary check.'
   },
@@ -76,7 +76,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     refreshCadence: 'Annual Assessor Cycle',
     isRealTime: false,
     lastVerifiedActiveDate: '2026-08-01',
-    quarterlyAuditStatus: 'Audited & Verified',
+    quarterlyAuditStatus: 'Audited & Confirmed',
     scrapingStatus: 'No Scraping (Direct API / Licensed Open Data Only)',
     notes: 'EPA Zone 1/2/3 regional geologic radon potential lookup.'
   },
@@ -92,7 +92,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     refreshCadence: 'Quarterly Update',
     isRealTime: false,
     lastVerifiedActiveDate: '2026-08-01',
-    quarterlyAuditStatus: 'Audited & Verified',
+    quarterlyAuditStatus: 'Audited & Confirmed',
     scrapingStatus: 'No Scraping (Direct API / Licensed Open Data Only)',
     notes: 'Location-level provider and technology availability query.'
   },
@@ -108,7 +108,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     refreshCadence: 'Monthly Batch',
     isRealTime: false,
     lastVerifiedActiveDate: '2026-08-01',
-    quarterlyAuditStatus: 'Audited & Verified',
+    quarterlyAuditStatus: 'Audited & Confirmed',
     scrapingStatus: 'No Scraping (Direct API / Licensed Open Data Only)',
     notes: 'Proximity radius query for federally registered environmental facilities.'
   },
@@ -124,7 +124,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     refreshCadence: 'Quarterly Update',
     isRealTime: false,
     lastVerifiedActiveDate: '2026-08-01',
-    quarterlyAuditStatus: 'Audited & Verified',
+    quarterlyAuditStatus: 'Audited & Confirmed',
     scrapingStatus: 'No Scraping (Direct API / Licensed Open Data Only)',
     notes: 'Acoustic flight corridor spatial mapping.'
   },
@@ -140,7 +140,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     refreshCadence: 'Weekly Sync',
     isRealTime: false,
     lastVerifiedActiveDate: '2026-08-01',
-    quarterlyAuditStatus: 'Audited & Verified',
+    quarterlyAuditStatus: 'Audited & Confirmed',
     scrapingStatus: 'No Scraping (Direct API / Licensed Open Data Only)',
     notes: 'Digitized municipal permit archives via Socrata / ArcGIS open data APIs.'
   },
@@ -156,7 +156,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     refreshCadence: 'Annual Assessor Cycle',
     isRealTime: false,
     lastVerifiedActiveDate: '2026-08-01',
-    quarterlyAuditStatus: 'Audited & Verified',
+    quarterlyAuditStatus: 'Audited & Confirmed',
     scrapingStatus: 'No Scraping (Direct API / Licensed Open Data Only)',
     notes: 'Layer 3 County Assessor classification gate data.'
   }

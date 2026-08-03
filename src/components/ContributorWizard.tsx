@@ -536,7 +536,7 @@ export const ContributorWizard: React.FC<ContributorWizardProps> = ({
 
     // 3. Construct clean narrative summary text
     const highlights = structuredQA.map(sq => `${sq.question}: ${sq.answer}`).join('. ');
-    const summaryText = `Verified resident report from ${relevantExperienceLabels.label1 || 'Resident'} (${relevantExperienceLabels.label2 || selectedSociety.name}). ${highlights}`;
+    const summaryText = `Resident report from ${relevantExperienceLabels.label1 || 'Resident'} (${relevantExperienceLabels.label2 || selectedSociety.name}). ${highlights}`;
 
     // 4. Build TopicKnowledge object
     const newTopic: TopicKnowledge = {
@@ -720,10 +720,10 @@ export const ContributorWizard: React.FC<ContributorWizardProps> = ({
             <div className="space-y-1">
               <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-[#2563EB] text-[10px] font-bold border border-blue-100">
                 <ShieldCheck className="w-3 h-3" />
-                <span>Verified Resident Contribution</span>
+                <span>Confirmed Resident Contribution</span>
               </div>
               <h2 className="text-base sm:text-lg font-bold text-slate-900">
-                Resident Verification & Identity
+                Resident Confirmation & Identity
               </h2>
               <p className="text-xs text-slate-500 leading-normal">
                 Your private name is strictly for payouts. A 100% anonymous public persona protects your privacy.
@@ -1404,7 +1404,7 @@ export const ContributorWizard: React.FC<ContributorWizardProps> = ({
                       <span>Step 2 of 2: Relevant Living Experience Context</span>
                     </div>
                     <p className="text-xs text-slate-600">
-                      Answer these 3 quick experience questions (2 generic + 1 topic-specific context) to build your verified experience labels.
+                      Answer these 3 quick experience questions (2 generic + 1 topic-specific context) to build your experience labels.
                     </p>
                   </div>
 
@@ -1448,7 +1448,7 @@ export const ContributorWizard: React.FC<ContributorWizardProps> = ({
                   {/* 2 DISTINCT RELEVANT EXPERIENCE LABELS PREVIEW */}
                   <div className="p-3 bg-white border border-blue-200 rounded-lg space-y-1.5">
                     <div className="text-[10px] font-extrabold text-[#2563EB] uppercase">
-                      Generated Verified Experience Labels (Shown Publicly)
+                      Generated Experience Labels (Shown Publicly)
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
@@ -1522,7 +1522,7 @@ export const ContributorWizard: React.FC<ContributorWizardProps> = ({
             {/* 2 RELEVANT EXPERIENCE LABELS SUMMARY (PURPOSE 1) */}
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg space-y-2">
               <div className="text-[10px] uppercase font-bold text-[#2563EB]">
-                Public Verified Experience Labels (Purpose 1)
+                Public Experience Labels (Purpose 1)
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="p-2 bg-white border border-blue-200 rounded-md text-xs font-bold text-slate-800 flex items-center gap-1.5">

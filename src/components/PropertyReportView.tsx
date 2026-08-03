@@ -234,7 +234,7 @@ const NearbyEssentialsView: React.FC<{ nearby?: NearbyEssentialsSection }> = ({ 
             Nearby Essentials & Future Development
           </h3>
           <p className="text-xs text-slate-600 font-medium mt-0.5">
-            Verified public source checks for emergency healthcare, municipal zoning dockets, and regional infrastructure projects.
+            Public source checks for emergency healthcare, municipal zoning dockets, and regional infrastructure projects.
           </p>
         </div>
         {nearby.dataFreshness && (
@@ -544,11 +544,11 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
   };
 
   const renderConfidenceBadge = (confidence?: ConfidenceLevel) => {
-    if (confidence === 'Verified Record' || (confidence as string) === 'Verified') {
+    if (confidence === 'Confirmed Record' || (confidence as string) === 'Confirmed') {
       return (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-900 border border-emerald-300">
           <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-          <span>[VERIFIED RECORD]</span>
+          <span>[CONFIRMED RECORD]</span>
         </span>
       );
     }
@@ -676,7 +676,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
           <div className="flex items-center gap-2 truncate">
             <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
             <span className="truncate">
-              <strong>INFORMATIONAL PUBLIC RECORD REPORT ONLY</strong> — Not a home inspection, title guarantee, or engineering appraisal. All findings are derived directly from official public databases and must be independently verified with licensed professionals.
+              <strong>INFORMATIONAL PUBLIC RECORD REPORT ONLY</strong> — Not a home inspection, title guarantee, or engineering appraisal. All findings are derived directly from official public databases and must be independently confirmed with licensed professionals.
             </span>
           </div>
           <button
@@ -929,16 +929,16 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
             </span>
           </div>
 
-          {/* Records Split: Verified Records vs Unknown / Needs Verification */}
+          {/* Records Split: Confirmed Records vs Unknown / Needs Confirmation */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
             
-            {/* VERIFIED PUBLIC RECORDS */}
+            {/* CONFIRMED PUBLIC RECORDS */}
             <div className="space-y-3">
               <div className="text-xs font-mono font-extrabold uppercase tracking-wider text-emerald-900 bg-emerald-50 border border-emerald-300 px-3 py-1 rounded-full inline-block">
-                ✓ Verified Public Records
+                ✓ Confirmed Public Records
               </div>
               <div className="space-y-2">
-                {report.propertyRecordsSplit?.verified
+                {(report.propertyRecordsSplit?.confirmed || report.propertyRecordsSplit?.verified)
                   ?.filter(item => !/year built|property type/i.test(item.label))
                   .map((item, idx) => (
                   <div key={item.id || `rec-v-${idx}`} className="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl text-xs space-y-0.5">
@@ -1022,9 +1022,9 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
                     {(report.permitLifespanMatrix || [
                       { id: 'pl1', system: 'Roofing Shingles & Flashing', permitStatus: 'No permit on file in digitized municipal log', confidence: 'No Record Found' as const },
                       { id: 'pl2', system: 'Central AC Compressor', permitStatus: 'No permit on file in digitized municipal log', confidence: 'No Record Found' as const },
-                      { id: 'pl3', system: 'Electrical Breaker Panel', permitStatus: 'Service recorded in public municipal log', confidence: 'Verified Record' as const },
+                      { id: 'pl3', system: 'Electrical Breaker Panel', permitStatus: 'Service recorded in public municipal log', confidence: 'Confirmed Record' as const },
                       { id: 'pl4', system: 'Domestic Water Heater Tank', permitStatus: 'No permit on file in digitized municipal log', confidence: 'No Record Found' as const },
-                      { id: 'pl5', system: 'Main Sewer Waste Line', permitStatus: 'Original Municipal Sewer Connection', confidence: 'Verified Record' as const }
+                      { id: 'pl5', system: 'Main Sewer Waste Line', permitStatus: 'Original Municipal Sewer Connection', confidence: 'Confirmed Record' as const }
                     ]).map((row, rIdx) => (
                       <tr key={row.id || `pl-row-${rIdx}`} className="hover:bg-slate-50 transition-colors">
                         <td className="py-3.5 px-4 font-bold text-slate-900">{row.system}</td>
@@ -1253,13 +1253,13 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
 
         </section>
 
-        {/* SECTION 7: VERIFIED DATA SOURCES & OFFICIAL DISCLAIMER */}
+        {/* SECTION 7: PUBLIC DATA SOURCES & OFFICIAL DISCLAIMER */}
         <section id="methodology" className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 space-y-6">
           
           <div className="border-b border-slate-800 pb-4">
             <div className="text-xs font-mono font-extrabold text-amber-400 uppercase tracking-widest">SECTION 7</div>
             <h2 className="text-2xl sm:text-3xl font-serif font-black text-white tracking-tight mt-1">
-              Verified Public Sources & Methodology
+              Public Sources & Methodology
             </h2>
             <p className="text-sm font-medium text-slate-400 mt-1">
               100% public record attribution to federal, state, county, and municipal public databases.
@@ -1321,7 +1321,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
             </p>
 
             <p className="leading-relaxed text-[11px]">
-              <strong>Mandatory Professional Verification:</strong> Every finding, permit gap, and environmental overlay must be independently verified with qualified, licensed professionals (including a licensed home inspector, structural engineer, real estate attorney, land surveyor, or insurance broker) prior to executing any binding real estate contract or financial transaction. While our platform adheres to strict data sourcing discipline, scope limitation, and automated address gates, no software or report architecture can guarantee immunity from legal claims or guarantee complete completeness of underlying municipal archives.
+              <strong>Mandatory Professional Verification:</strong> Every finding, permit gap, and environmental overlay must be independently confirmed with qualified, licensed professionals (including a licensed home inspector, structural engineer, real estate attorney, land surveyor, or insurance broker) prior to executing any binding real estate contract or financial transaction. While our platform adheres to strict data sourcing discipline, scope limitation, and automated address gates, no software or report architecture can guarantee immunity from legal claims or guarantee complete completeness of underlying municipal archives.
             </p>
 
             <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-slate-700 text-[11px]">

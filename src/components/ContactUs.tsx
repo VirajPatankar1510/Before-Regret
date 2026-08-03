@@ -76,7 +76,7 @@ ${message}`;
               How Can We Help You?
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
-              Before Regret is a property research product owned and operated by Atmostellar. Whether you are a home buyer inquiring about a report or a verified business vendor managing a sponsored placement subscription, we are here to assist.
+              Before Regret is a property research product owned and operated by Atmostellar. Whether you are a home buyer inquiring about a report or a business vendor managing a sponsored placement subscription, we are here to assist.
             </p>
           </div>
           
@@ -320,7 +320,7 @@ ${message}`;
                 <span>Informational Research Disclaimer</span>
               </div>
               <p className="leading-relaxed">
-                BeforeRegret property research reports are compiled strictly for preliminary informational research purposes. Reports are not physical home inspections, engineering assessments, legal title reviews, or financial valuations. All findings must be independently verified with licensed professionals before making property purchase or leasing decisions.
+                BeforeRegret property research reports are compiled strictly for preliminary informational research purposes. Reports are not physical home inspections, engineering assessments, legal title reviews, or financial valuations. All findings must be independently confirmed with licensed professionals before making property purchase or leasing decisions.
               </p>
             </div>
 
@@ -368,7 +368,7 @@ ${message}`;
                 How do I cancel my vendor subscription?
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Verified local business vendors on paid monthly subscription plans can cancel their recurring subscription at any time by emailing <strong>hello@beforeregret.com</strong>. Cancellations take effect at the start of the next monthly billing cycle. No prorated refunds are issued for unused days in the current billing cycle.
+                Local business vendors on paid monthly subscription plans can cancel their recurring subscription at any time by emailing <strong>hello@beforeregret.com</strong>. Cancellations take effect at the start of the next monthly billing cycle. No prorated refunds are issued for unused days in the current billing cycle.
               </p>
             </div>
 
@@ -378,7 +378,7 @@ ${message}`;
                 How do I report incorrect information in a report?
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                If you identify a data error or discrepancy between a BeforeRegret report and an official municipal archive or GIS layer, select the <strong>"Data Discrepancy"</strong> tab above or email <strong>hello@beforeregret.com</strong>. Include the property address/zip code, the specific data field in question, and a link or citation to the official record. Our audit team reviews and corrects verified errors within 1–2 business days.
+                If you identify a data error or discrepancy between a BeforeRegret report and an official municipal archive or GIS layer, select the <strong>"Data Discrepancy"</strong> tab above or email <strong>hello@beforeregret.com</strong>. Include the property address/zip code, the specific data field in question, and a link or citation to the official record. Our audit team reviews and corrects confirmed errors within 1–2 business days.
               </p>
             </div>
 

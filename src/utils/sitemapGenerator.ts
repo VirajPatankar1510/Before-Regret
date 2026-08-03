@@ -1,19 +1,8 @@
 import { ZIP_PSEO_DATASET, EDITORIAL_GUIDES_DATASET, ZIP_COMPARISONS_DATASET, VALIDATED_MARKETS, SINGLE_TOPICS_METADATA } from '../data/seoDataset';
 import { evaluateZipUniqueness } from './seoUniquenessEvaluator';
-import { ZipPSeoData } from '../types/seoTypes';
 
 const BASE_URL = 'https://beforeregret.com';
 const MAX_URLS_PER_SITEMAP = 45000;
-
-// Market-scope gate: independent of data quality. A zip only enters the
-// generation surface (sitemaps, hub pages) if its city belongs to a market
-// that has completed validation — this must hold even if that zip's own
-// uniqueness score would otherwise pass.
-function isZipInValidatedMarket(z: ZipPSeoData): boolean {
-  return VALIDATED_MARKETS.some(
-    m => m.isValidated && m.city.toLowerCase() === z.city.toLowerCase() && m.stateAbbr.toLowerCase() === z.state.toLowerCase()
-  );
-}
 
 export interface SitemapUrlEntry {
   loc: string;
@@ -114,7 +103,7 @@ export function generateChildSitemapXml(name: string): string {
     const pageNumStr = cleanName.replace('sitemap-zips-', '');
     const pageNum = parseInt(pageNumStr, 10) || 1;
 
-    const validZips = Object.values(ZIP_PSEO_DATASET).filter(z => isZipInValidatedMarket(z) && evaluateZipUniqueness(z).passed && !z.isDataSparse);
+    const validZips = Object.values(ZIP_PSEO_DATASET).filter(z => evaluateZipUniqueness(z).passed && !z.isDataSparse);
     const startIdx = (pageNum - 1) * MAX_URLS_PER_SITEMAP;
     const pageZips = validZips.slice(startIdx, startIdx + MAX_URLS_PER_SITEMAP);
 
@@ -133,7 +122,7 @@ export function generateChildSitemapXml(name: string): string {
     const pageNum = parseInt(pageNumStr, 10) || 1;
 
     const allTopicEntries: SitemapUrlEntry[] = [];
-    const validZips = Object.values(ZIP_PSEO_DATASET).filter(z => isZipInValidatedMarket(z) && evaluateZipUniqueness(z).passed && !z.isDataSparse);
+    const validZips = Object.values(ZIP_PSEO_DATASET).filter(z => evaluateZipUniqueness(z).passed && !z.isDataSparse);
 
     validZips.forEach(z => {
       const stateSlug = z.stateFullName.toLowerCase().replace(/\s+/g, '');

@@ -84,7 +84,7 @@ export const LeadMarketplaceWidget: React.FC<LeadMarketplaceWidgetProps> = ({ wi
       {/* Dynamic Local Vendor Badges */}
       <div className="bg-slate-800/90 border border-slate-700 rounded-xl p-3 space-y-2">
         <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-          Matched Verified Local {widget.tradeCategory} Pros in {widget.zipCode}:
+          Matched Local {widget.tradeCategory} Pros in {widget.zipCode}:
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {widget.vendors.map((vendor, vIdx) => (
@@ -241,7 +241,7 @@ export const LeadMarketplaceWidget: React.FC<LeadMarketplaceWidgetProps> = ({ wi
                 <div className="bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-2xl flex items-center gap-3">
                   <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0" />
                   <div>
-                    <div className="text-sm font-bold text-emerald-300">Request Confirmed & SMS Verified!</div>
+                    <div className="text-sm font-bold text-emerald-300">Request Confirmed & SMS Validated!</div>
                     <div className="text-xs text-slate-300">Matching contractors ({vendorNames}) have been notified.</div>
                   </div>
                 </div>
@@ -322,7 +322,7 @@ export const LeadMarketplaceWidget: React.FC<LeadMarketplaceWidgetProps> = ({ wi
                       </button>
                     ) : (
                       <div className="p-2 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-center font-sans font-bold text-xs rounded-xl">
-                        ✓ Lead Contact Details Unmasked for Verified Pro
+                        ✓ Lead Contact Details Unmasked for Local Pro
                       </div>
                     )}
                   </div>

@@ -62,7 +62,7 @@ export const ZipHubView: React.FC<ZipHubViewProps> = ({
               'addressRegion': data.state,
               'addressCountry': 'US'
             },
-            'description': `Verified property research and environmental risk profile for ${data.zipCode}.`
+            'description': `Public property research and environmental risk profile for ${data.zipCode}.`
           },
           {
             '@context': 'https://schema.org',
@@ -85,9 +85,9 @@ export const ZipHubView: React.FC<ZipHubViewProps> = ({
         <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto">
           <AlertTriangle className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-bold text-slate-900">Zip Code Data Pending Verification</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Zip Code Data Pending Review</h1>
         <p className="text-sm text-slate-600 max-w-md mx-auto">
-          Data for zip code <strong>{zipCode}</strong> has not yet completed Stage 0–4 verification. To preserve content quality, dedicated pages are published only when data completeness is guaranteed.
+          Data for zip code <strong>{zipCode}</strong> has not yet completed Stage 0–4 processing. To preserve content quality, dedicated pages are published only when data completeness is guaranteed.
         </p>
         <button
           onClick={() => onNavigate(`/state/${stateSlug}/${citySlug}/`)}
@@ -262,12 +262,12 @@ export const ZipHubView: React.FC<ZipHubViewProps> = ({
           </div>
         </div>
 
-        {/* Verified Public Source Evidence Log */}
+        {/* Public Source Evidence Log */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xs">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>Verified API Data Evidence Trail for {data.zipCode}</span>
+              <span>Public API Data Evidence Trail for {data.zipCode}</span>
             </h3>
             <span className="text-[11px] font-mono text-slate-500">100% Sourced</span>
           </div>
@@ -277,7 +277,7 @@ export const ZipHubView: React.FC<ZipHubViewProps> = ({
               <div key={i} className="py-2.5 flex items-center justify-between">
                 <div>
                   <div className="font-bold text-slate-900">{ev.sourceName}</div>
-                  <div className="text-slate-500 text-[11px]">{ev.verifiedDataPoint}</div>
+                  <div className="text-slate-500 text-[11px]">{ev.evidenceDataPoint}</div>
                 </div>
                 <a 
                   href={ev.sourceUrl} 

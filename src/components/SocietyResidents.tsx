@@ -48,7 +48,7 @@ export const SocietyResidents: React.FC<SocietyResidentsProps> = ({
               Resident Guides for {locality.name}
             </h1>
             <p className="text-sm text-slate-500 mt-2 max-w-3xl leading-relaxed">
-              We found <strong className="text-slate-800 font-bold">{matchedExperts.length} verified residents</strong> living in {locality.name}, {locality.city}. Select a resident to get honest, unfiltered insights on water supply, maintenance, committee rules, and neighborhood life.
+              We found <strong className="text-slate-800 font-bold">{matchedExperts.length} local residents</strong> living in {locality.name}, {locality.city}. Select a resident to get honest, unfiltered insights on water supply, maintenance, committee rules, and neighborhood life.
             </p>
           </div>
           <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 shrink-0 hidden md:block">

@@ -320,7 +320,7 @@ export function importSocietiesFromCSV(
         pincode,
         builder,
         landmark,
-        verificationStatus: 'Verified',
+        verificationStatus: 'Active',
         aliases,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -371,7 +371,7 @@ export function exportSocietiesToCSV(societies: Society[]): string {
     `"${s.pincode || ''}"`,
     `"${(s.landmark || '').replace(/"/g, '""')}"`,
     `"${(s.builder || '').replace(/"/g, '""')}"`,
-    `"${s.verificationStatus || 'Verified'}"`,
+    `"${s.verificationStatus || 'Active'}"`,
     `"${(s.aliases || []).join(';')}"`,
     s.residentProfilesCount || 0
   ]);

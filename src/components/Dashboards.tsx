@@ -1631,9 +1631,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ queries, experts, onUpdateExper
           {/* SIMULATE EXPERT STATE */}
           <div className="space-y-4 md:pl-8 pt-6 md:pt-0">
             <h3 className="font-bold text-xs text-purple-800 font-mono uppercase tracking-wider">
-              🧪 Simulate Expert Verification Gates
+              🧪 Simulate Expert Confirmation Gates
             </h3>
-            <p className="text-xs text-slate-400">Toggle whether this resident expert has completed KYC checks, verified banking, and is active for payouts prior to releasing settlements.</p>
+            <p className="text-xs text-slate-400">Toggle whether this resident expert has completed KYC checks, confirmed banking, and is active for payouts prior to releasing settlements.</p>
 
             <div className="space-y-4">
               <div className="space-y-1.5 text-left">

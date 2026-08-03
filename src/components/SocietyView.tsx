@@ -383,7 +383,7 @@ export const SocietyView: React.FC<SocietyViewProps> = ({
                           </div>
 
                           <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">
-                            Verified Answer
+                            Confirmed Answer
                           </span>
                         </div>
                       </div>
@@ -508,7 +508,7 @@ export const SocietyView: React.FC<SocietyViewProps> = ({
                   Resident Contributor Profiles ({society.profiles.length})
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Verified resident contributors who answered questions for {society.name}.
+                  Resident contributors who answered questions for {society.name}.
                 </p>
               </div>
             </div>

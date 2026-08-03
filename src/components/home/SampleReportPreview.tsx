@@ -89,7 +89,7 @@ export const SampleReportPreview: React.FC = () => {
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
-              2. Verified Records vs. Gaps
+              2. Confirmed Records vs. Gaps
             </button>
             <button
               onClick={() => setActiveTab('SELLER_QUESTIONS')}
@@ -123,7 +123,7 @@ export const SampleReportPreview: React.FC = () => {
                 
                 <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-2">
                   <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                    VERIFIED RECORD
+                    CONFIRMED RECORD
                   </div>
                   <div className="font-bold text-sm text-slate-900">
                     Low Flood Hazard Area
@@ -147,7 +147,7 @@ export const SampleReportPreview: React.FC = () => {
 
                 <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-2">
                   <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                    VERIFIED RECORD
+                    CONFIRMED RECORD
                   </div>
                   <div className="font-bold text-sm text-slate-900">
                     Zero Code Enforcement Violations
@@ -159,7 +159,7 @@ export const SampleReportPreview: React.FC = () => {
 
                 <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-2">
                   <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                    VERIFIED RECORD
+                    CONFIRMED RECORD
                   </div>
                   <div className="font-bold text-sm text-slate-900">
                     Active Municipal Sewer Service
@@ -192,7 +192,7 @@ export const SampleReportPreview: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-emerald-700 font-bold text-sm border-b border-emerald-100 pb-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Verified Public Records</span>
+                  <span>Confirmed Public Records</span>
                 </div>
                 <ul className="space-y-3 text-xs sm:text-sm text-slate-700">
                   <li className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">

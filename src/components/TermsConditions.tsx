@@ -55,7 +55,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               <span>Mandatory Informational Research Disclaimer</span>
             </div>
             <p className="leading-relaxed">
-              BeforeRegret property research reports are compiled solely for preliminary informational and research purposes. Reports do NOT constitute a physical home inspection, structural engineering report, legal title opinion, property valuation, or professional financial advice. All findings must be independently verified with licensed professionals before entering into any binding real estate purchase or leasing contract.
+              BeforeRegret property research reports are compiled solely for preliminary informational and research purposes. Reports do NOT constitute a physical home inspection, structural engineering report, legal title opinion, property valuation, or professional financial advice. All findings must be independently confirmed with licensed professionals before entering into any binding real estate purchase or leasing contract.
             </p>
           </div>
 
@@ -87,7 +87,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                   <strong>Free Consumer Property Research Reports:</strong> Searchable, interactive property intelligence reports compiled from open-source government, municipal, and public datasets (e.g., FEMA flood maps, USGS radon data, FCC broadband registries, and municipal permit archives). Consumer reports are provided 100% free of charge with zero payment obligation.
                 </li>
                 <li>
-                  <strong>Paid Business Vendor Subscriptions:</strong> A recurring monthly subscription service enabling verified local business vendors (contractors, licensed inspectors, structural engineers, environmental specialists) to display sponsored placements ("Need help verifying this?" sections, clearly labeled "Sponsored") within designated zip codes and trade categories on free consumer reports.
+                  <strong>Paid Business Vendor Subscriptions:</strong> A recurring monthly subscription service enabling local business vendors (contractors, licensed inspectors, structural engineers, environmental specialists) to display sponsored placements ("Need help inspecting this?" sections, clearly labeled "Sponsored") within designated zip codes and trade categories on free consumer reports.
                 </li>
               </ul>
             </section>
@@ -105,7 +105,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                   <strong>3.2 As-Is Provision & Non-Diagnostic Stance:</strong> Property research reports assemble raw or aggregated public data provided by third-party government and municipal agencies. All reports are provided strictly on an <strong>"AS-IS"</strong> and <strong>"AS-AVAILABLE"</strong> basis without warranty of any kind. Atmostellar makes no guarantees regarding the completeness, accuracy, timeliness, or real-time status of public records.
                 </p>
                 <p>
-                  <strong>3.3 Duty to Independently Verify:</strong> BeforeRegret reports are preliminary discovery tools only. They are not a substitute for physical site visits, structural inspections, environmental testing, or legal title searches. Consumers expressly agree that they remain solely responsible for independently verifying all hazard classifications, building permit histories, and property characteristics with qualified, licensed professionals prior to making any financial, leasing, or purchasing commitment.
+                  <strong>3.3 Duty to Independently Confirm:</strong> BeforeRegret reports are preliminary discovery tools only. They are not a substitute for physical site visits, structural inspections, environmental testing, or legal title searches. Consumers expressly agree that they remain solely responsible for independently confirming all hazard classifications, building permit histories, and property characteristics with qualified, licensed professionals prior to making any financial, leasing, or purchasing commitment.
                 </p>
               </div>
             </section>
@@ -117,7 +117,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               </h2>
               <div className="space-y-2.5 text-xs text-slate-600">
                 <p>
-                  <strong>4.1 Subscription Service & Tiers:</strong> Verified local business vendors may subscribe to display sponsored placements on property reports corresponding to specific zip codes and trade categories. Subscriptions are billed on a recurring monthly auto-renewal basis:
+                  <strong>4.1 Subscription Service & Tiers:</strong> Local business vendors may subscribe to display sponsored placements on property reports corresponding to specific zip codes and trade categories. Subscriptions are billed on a recurring monthly auto-renewal basis:
                 </p>
                 <ul className="list-disc pl-5 space-y-1">
                   <li><strong>Tier 1 (2 Zip Codes):</strong> $29 / month</li>
@@ -126,7 +126,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                 </ul>
 
                 <p>
-                  <strong>4.2 Zip Code, Trade Category & Vendor Slot Cap:</strong> Vendor placements are bound to the specific zip code(s) and trade category (e.g., Roof Inspection, Structural Engineering, Radon Mitigation) selected during enrollment. To maintain report clarity, placements are capped at a maximum of three (3) verified vendors per trade category within any individual zip code.
+                  <strong>4.2 Zip Code, Trade Category & Vendor Slot Cap:</strong> Vendor placements are bound to the specific zip code(s) and trade category (e.g., Roof Inspection, Structural Engineering, Radon Mitigation) selected during enrollment. To maintain report clarity, placements are capped at a maximum of three (3) vendors per trade category within any individual zip code.
                 </p>
 
                 <p>

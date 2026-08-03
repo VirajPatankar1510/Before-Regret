@@ -127,7 +127,7 @@ export function validatePropertyAddressGate(property: PropertySearchResult): Add
       layerName: 'County Assessor Land Use Classification',
       passed: false,
       code: 'L3_UNDETERMINED_CLASSIFICATION',
-      message: 'Assessor parcel code is undetermined or unverified. Will not default to single-family.',
+      message: 'Assessor parcel code is undetermined or pending. Will not default to single-family.',
       details: { rawType: property.propertyType }
     });
 
@@ -166,7 +166,7 @@ export function validatePropertyAddressGate(property: PropertySearchResult): Add
     layerName: 'County Assessor Land Use Classification',
     passed: true,
     code: 'L3_CLASSIFIED_RESIDENTIAL',
-    message: `Parcel land use verified as ${parcelClassification}.`,
+    message: `Parcel land use confirmed as ${parcelClassification}.`,
     details: { parcelClassification }
   });
 

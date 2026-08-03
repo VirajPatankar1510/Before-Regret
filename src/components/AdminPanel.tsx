@@ -58,7 +58,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [activeTab, setActiveTab] = useState<'questionnaire' | 'societies' | 'import_export' | 'orders'>('questionnaire');
   
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'Pending' | 'Verified' | 'Archived'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'Pending' | 'Active' | 'Archived'>('ALL');
 
   // Edit / Merge modal states
   const [selectedSocietyForEdit, setSelectedSocietyForEdit] = useState<Society | null>(null);
@@ -147,7 +147,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         s.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (s.aliases || []).some(a => a.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      const status = s.verificationStatus || 'Verified';
+      const status = s.verificationStatus || 'Active';
       const matchesStatus = statusFilter === 'ALL' || status === statusFilter;
 
       return matchesSearch && matchesStatus;
@@ -179,7 +179,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       if (s.id === societyId) {
         return {
           ...s,
-          verificationStatus: 'Verified' as const,
+          verificationStatus: 'Active' as const,
           updatedAt: new Date().toISOString(),
           history: [
             ...(s.history || []),
@@ -569,7 +569,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 {/* Status Filter */}
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-mono font-semibold text-slate-500 uppercase">Status:</span>
-                  {(['ALL', 'Pending', 'Verified', 'Archived'] as const).map((st) => (
+                  {(['ALL', 'Pending', 'Active', 'Archived'] as const).map((st) => (
                     <button
                       key={st}
                       onClick={() => setStatusFilter(st)}
@@ -602,7 +602,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800">
                     {filteredSocieties.map((s) => {
-                      const status = s.verificationStatus || 'Verified';
+                      const status = s.verificationStatus || 'Active';
                       return (
                         <tr key={s.id} className="hover:bg-slate-50/80 transition-colors">
                           <td className="p-4">
@@ -630,7 +630,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                           <td className="p-4">
                             <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full ${
-                              status === 'Verified' ? 'bg-emerald-100 text-emerald-800' :
+                              status === 'Active' ? 'bg-emerald-100 text-emerald-800' :
                               status === 'Pending' ? 'bg-amber-100 text-amber-800' : 'bg-slate-200 text-slate-700'
                             }`}>
                               {status}

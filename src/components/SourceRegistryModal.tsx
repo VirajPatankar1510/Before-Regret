@@ -39,7 +39,7 @@ export const SourceRegistryModal: React.FC<SourceRegistryModalProps> = ({ isOpen
               Official Data Source Registry & License Registry
             </h2>
             <p className="text-xs text-slate-400">
-              Every data point in BeforeRegret reports originates from an official, verified government REST API or open data portal. Zero web scraping.
+              Every data point in BeforeRegret reports originates from an official government REST API or open data portal. Zero web scraping.
             </p>
           </div>
           <button
@@ -141,7 +141,7 @@ export const SourceRegistryModal: React.FC<SourceRegistryModalProps> = ({ isOpen
                   </div>
 
                   <div className="space-y-0.5">
-                    <span className="text-slate-400 font-medium block">Last Verified Active:</span>
+                    <span className="text-slate-400 font-medium block">Last Audited Active:</span>
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3 h-3 text-emerald-600" />
                       <span className="font-mono font-semibold text-slate-800">{src.lastVerifiedActiveDate}</span>

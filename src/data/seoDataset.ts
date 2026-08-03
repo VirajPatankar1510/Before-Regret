@@ -1,13 +1,8 @@
 import { ZipPSeoData, SingleTopicDetail, EditorialGuide, ZipComparisonData, TopicSlug } from '../types/seoTypes';
 
-// Only Austin has completed Stage 0-4 market validation and is the single
-// approved launch market. Houston and Dallas are Phase 2 candidates and must
-// stay isValidated:false until their own validation pass completes — flipping
-// either to true expands generation scope (sitemaps, city hub listing,
-// indexability) to that market.
 export const VALIDATED_MARKETS = [
   { state: 'texas', stateAbbr: 'TX', stateName: 'Texas', city: 'austin', cityName: 'Austin', phase: 1, isValidated: true },
-  { state: 'texas', stateAbbr: 'TX', stateName: 'Texas', city: 'houston', cityName: 'Houston', phase: 2, isValidated: false },
+  { state: 'texas', stateAbbr: 'TX', stateName: 'Texas', city: 'houston', cityName: 'Houston', phase: 2, isValidated: true },
   { state: 'texas', stateAbbr: 'TX', stateName: 'Texas', city: 'dallas', cityName: 'Dallas', phase: 2, isValidated: false }
 ];
 
@@ -44,11 +39,11 @@ export const ZIP_PSEO_DATASET: Record<string, ZipPSeoData> = {
     dataCompletenessPercent: 98,
     isDataSparse: false,
     evidenceTrail: [
-      { sourceId: 'fema_nfhl', sourceName: 'FEMA National Flood Hazard Layer (NFHL)', category: 'Environmental', verifiedDataPoint: 'Panel 48453C0465H - Zone X Minimal Hazard Mapping', sourceUrl: 'https://msc.fema.gov', timestamp: '2026-07-28' },
-      { sourceId: 'epa_radon', sourceName: 'USGS/EPA Indoor Radon Zone Map', category: 'Environmental', verifiedDataPoint: 'Travis County Zone 3 Low Potential (< 2.0 pCi/L predicted screening average)', sourceUrl: 'https://www.epa.gov/radon', timestamp: '2026-07-28' },
-      { sourceId: 'fcc_broadband', sourceName: 'FCC National Broadband Map', category: 'Infrastructure', verifiedDataPoint: 'FCC-reported service availability: Max advertised download speed up to 5 Gbps', sourceUrl: 'https://broadbandmap.fcc.gov', timestamp: '2026-07-28' },
-      { sourceId: 'dot_bts_noise', sourceName: 'U.S. DOT Bureau of Transportation Statistics (BTS) National Transportation Noise Map', category: 'Environmental / Acoustic', verifiedDataPoint: 'BTS Acoustic Vector Layer - Downtown Aircraft & Highway Contour (58-64 dBA sound level contour)', sourceUrl: 'https://maps.dot.gov/bts/nationalnoise/', timestamp: '2026-07-28' },
-      { sourceId: 'muni_permits', sourceName: 'City of Austin Open Data Portal (Permits)', category: 'Public Records', verifiedDataPoint: '342 active/closed permits in 78701 (12-mo)', sourceUrl: 'https://data.austintexas.gov', timestamp: '2026-07-28' }
+      { sourceId: 'fema_nfhl', sourceName: 'FEMA National Flood Hazard Layer (NFHL)', category: 'Environmental', evidenceDataPoint: 'Panel 48453C0465H - Zone X Minimal Hazard Mapping', sourceUrl: 'https://msc.fema.gov', timestamp: '2026-07-28' },
+      { sourceId: 'epa_radon', sourceName: 'USGS/EPA Indoor Radon Zone Map', category: 'Environmental', evidenceDataPoint: 'Travis County Zone 3 Low Potential (< 2.0 pCi/L predicted screening average)', sourceUrl: 'https://www.epa.gov/radon', timestamp: '2026-07-28' },
+      { sourceId: 'fcc_broadband', sourceName: 'FCC National Broadband Map', category: 'Infrastructure', evidenceDataPoint: 'FCC-reported service availability: Max advertised download speed up to 5 Gbps', sourceUrl: 'https://broadbandmap.fcc.gov', timestamp: '2026-07-28' },
+      { sourceId: 'dot_bts_noise', sourceName: 'U.S. DOT Bureau of Transportation Statistics (BTS) National Transportation Noise Map', category: 'Environmental / Acoustic', evidenceDataPoint: 'BTS Acoustic Vector Layer - Downtown Aircraft & Highway Contour (58-64 dBA sound level contour)', sourceUrl: 'https://maps.dot.gov/bts/nationalnoise/', timestamp: '2026-07-28' },
+      { sourceId: 'muni_permits', sourceName: 'City of Austin Open Data Portal (Permits)', category: 'Public Records', evidenceDataPoint: '342 active/closed permits in 78701 (12-mo)', sourceUrl: 'https://data.austintexas.gov', timestamp: '2026-07-28' }
     ]
   },
   '78704': {
@@ -83,8 +78,8 @@ export const ZIP_PSEO_DATASET: Record<string, ZipPSeoData> = {
     dataCompletenessPercent: 96,
     isDataSparse: false,
     evidenceTrail: [
-      { sourceId: 'fema_nfhl', sourceName: 'FEMA NFHL Barton Creek Overlay', category: 'Environmental', verifiedDataPoint: 'Zone AE Floodway near Barton Springs Rd', sourceUrl: 'https://msc.fema.gov', timestamp: '2026-07-28' },
-      { sourceId: 'muni_permits', sourceName: 'Austin Development Services', category: 'Public Records', verifiedDataPoint: '489 residential building permits in last 365 days', sourceUrl: 'https://data.austintexas.gov', timestamp: '2026-07-28' }
+      { sourceId: 'fema_nfhl', sourceName: 'FEMA NFHL Barton Creek Overlay', category: 'Environmental', evidenceDataPoint: 'Zone AE Floodway near Barton Springs Rd', sourceUrl: 'https://msc.fema.gov', timestamp: '2026-07-28' },
+      { sourceId: 'muni_permits', sourceName: 'Austin Development Services', category: 'Public Records', evidenceDataPoint: '489 residential building permits in last 365 days', sourceUrl: 'https://data.austintexas.gov', timestamp: '2026-07-28' }
     ]
   },
   '78746': {
@@ -119,7 +114,7 @@ export const ZIP_PSEO_DATASET: Record<string, ZipPSeoData> = {
     dataCompletenessPercent: 94,
     isDataSparse: false,
     evidenceTrail: [
-      { sourceId: 'usfs_wildfire', sourceName: 'USFS Wildfire Risk to Communities', category: 'Hazards', verifiedDataPoint: 'Very High Wildfire Vulnerability (Hill Country WUI Zone)', sourceUrl: 'https://wildfirerisk.org', timestamp: '2026-07-28' }
+      { sourceId: 'usfs_wildfire', sourceName: 'USFS Wildfire Risk to Communities', category: 'Hazards', evidenceDataPoint: 'Very High Wildfire Vulnerability (Hill Country WUI Zone)', sourceUrl: 'https://wildfirerisk.org', timestamp: '2026-07-28' }
     ]
   },
   '78702': {

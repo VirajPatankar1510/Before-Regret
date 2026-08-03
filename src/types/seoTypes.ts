@@ -5,7 +5,7 @@ export interface PublicSourceEvidence {
   sourceId: string;
   sourceName: string;
   category: string;
-  verifiedDataPoint: string;
+  evidenceDataPoint: string;
   sourceUrl: string;
   timestamp: string;
 }
@@ -20,7 +20,7 @@ export interface ZipPSeoData {
   population: number;
   medianHomeValue: number;
   
-  // Topic specific verified facts
+  // Topic specific recorded facts
   floodZone: string; // e.g., 'Zone X (Low Risk)' or 'Zone AE (High Risk 100-yr)'
   floodHazardSeverityLabel?: string; // e.g. 'Low Hazard Zone X'
   floodRiskScore: number; // 1-10 scale
@@ -133,13 +133,13 @@ export interface ContentBrief {
   createdDate: string;
 }
 
-export interface VerifiedFactAudit {
+export interface FactAudit {
   claimCategory: string;
   extractedClaimText: string;
   underlyingSource: string;
   exactSourceQuery: string;
-  verifiedValue: string;
-  status: 'VERIFIED' | 'UNVERIFIED';
+  auditValue: string;
+  status: 'CONFIRMED' | 'UNCONFIRMED';
 }
 
 export interface SeoDraft {
@@ -153,7 +153,7 @@ export interface SeoDraft {
   uniquenessScore: number;
   accuracyPassed: boolean;
   accuracyAuditLogs: string[];
-  verifiedFactAudits?: VerifiedFactAudit[];
+  factAudits?: FactAudit[];
   dataPointsUsedCount: number;
   status: 'draft' | 'pending_review' | 'approved' | 'rejected' | 'held_back' | 'published';
   reviewNotes?: string;
