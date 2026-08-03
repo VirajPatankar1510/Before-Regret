@@ -45,7 +45,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
           </div>
 
           {/* Search Box Container (Preserved Untouched) */}
-          <div ref={searchBoxRef} className="pt-2">
+          <div ref={searchBoxRef} id="address-search-box" className="pt-2">
             <AddressSearchBox onSelectProperty={onSelectProperty} />
           </div>
 
@@ -64,7 +64,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
       <SampleReportPreview />
 
       {/* 5. PLAIN, TRANSPARENT PRICING */}
-      <PricingSection />
+      <PricingSection onScrollToSearch={handleScrollToSearch} />
 
       {/* 6. FREQUENTLY ASKED QUESTIONS */}
       <FaqSection />

@@ -10,16 +10,14 @@ interface StateHubViewProps {
 
 export const StateHubView: React.FC<StateHubViewProps> = ({ stateSlug, onNavigate }) => {
   const stateName = stateSlug === 'texas' ? 'Texas' : stateSlug.toUpperCase();
-  // Only markets that have completed validation are shown/linked — Phase 2
-  // candidates (isValidated:false) stay invisible until launched.
-  const stateMarkets = VALIDATED_MARKETS.filter(m => m.state === stateSlug.toLowerCase() && m.isValidated);
+  const stateMarkets = VALIDATED_MARKETS.filter(m => m.state === stateSlug.toLowerCase());
 
   const canonicalUrl = `https://beforeregret.com/state/${stateSlug}/`;
 
   useEffect(() => {
     applyHeadSeo({
       title: `${stateName} Real Estate Hazard & Property Intelligence Hub | BeforeRegret`,
-      description: `Statewide property research directory for ${stateName}. Access verified city and zip-level hazard snapshots, FEMA flood zone maps, and building permit registries.`,
+      description: `Statewide property research directory for ${stateName}. Access city and zip-level hazard snapshots, FEMA flood zone maps, and building permit registries.`,
       canonicalUrl,
       robotsDirective: 'index, follow',
       jsonLdSchema: [
@@ -54,7 +52,7 @@ export const StateHubView: React.FC<StateHubViewProps> = ({ stateSlug, onNavigat
           </div>
           <h1 className="text-3xl font-extrabold">{stateName} Municipal Property Hazard Directory</h1>
           <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
-            Select a municipality below to browse verified zip-code hazard snapshots, flood risk profiles, and building permit datasets.
+            Select a municipality below to browse zip-code hazard snapshots, flood risk profiles, and building permit datasets.
           </p>
         </div>
       </div>
@@ -99,7 +97,7 @@ export const StateHubView: React.FC<StateHubViewProps> = ({ stateSlug, onNavigat
                 </span>
               </div>
               <p className="text-xs text-slate-500">
-                Verified municipal permit feeds, FEMA layers, and broadband infrastructure active.
+                Official municipal permit feeds, FEMA layers, and broadband infrastructure active.
               </p>
               <div className="text-xs font-semibold text-blue-600 flex items-center gap-1">
                 <span>Browse {m.cityName} Hub</span>

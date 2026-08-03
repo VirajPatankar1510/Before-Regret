@@ -1,5 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
+
+// Safeguard Leaflet DomUtil methods against undefined/null elements during unmount/animations
+if (typeof window !== 'undefined' && L && L.DomUtil) {
+  const origGetPosition = L.DomUtil.getPosition;
+  if (origGetPosition) {
+    L.DomUtil.getPosition = function (el: HTMLElement | undefined | null) {
+      if (!el) {
+        return new L.Point(0, 0);
+      }
+      try {
+        return origGetPosition.call(this, el);
+      } catch (err) {
+        return new L.Point(0, 0);
+      }
+    };
+  }
+  const origSetPosition = L.DomUtil.setPosition;
+  if (origSetPosition) {
+    L.DomUtil.setPosition = function (el: HTMLElement | undefined | null, point: L.Point) {
+      if (!el) return;
+      try {
+        return origSetPosition.call(this, el, point);
+      } catch (err) {}
+    };
+  }
+}
 import { 
   Building2, Loader2, AlertCircle, MapPin, 
   Layers, Navigation, CheckCircle2, ArrowRight, Search 
@@ -560,14 +586,24 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
+    if (mapContainerRef.current) {
+      delete (mapContainerRef.current as any)._leaflet_id;
+    }
+
     const initialLat = SAMPLE_PROPERTIES[0].lat;
     const initialLon = SAMPLE_PROPERTIES[0].lon;
 
-    const map = L.map(mapContainerRef.current, {
-      center: [initialLat, initialLon],
-      zoom: 16,
-      zoomControl: false
-    });
+    let map: L.Map;
+    try {
+      map = L.map(mapContainerRef.current, {
+        center: [initialLat, initialLon],
+        zoom: 16,
+        zoomControl: false
+      });
+    } catch (e) {
+      console.warn('Map creation skipped:', e);
+      return;
+    }
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
@@ -595,7 +631,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     });
 
     map.on('moveend', () => {
-      fetchNearbyBuildings(map);
+      if (mapInstanceRef.current && (mapInstanceRef.current as any)._container) {
+        fetchNearbyBuildings(mapInstanceRef.current);
+      }
     });
 
     mapInstanceRef.current = map;
@@ -603,11 +641,16 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     fetchAddressFromCoords(initialLat, initialLon);
     fetchNearbyBuildings(map);
 
-    setTimeout(() => {
-      map.invalidateSize();
+    const invalidateTimer = setTimeout(() => {
+      if (mapInstanceRef.current && (mapInstanceRef.current as any)._container) {
+        try {
+          mapInstanceRef.current.invalidateSize();
+        } catch (e) {}
+      }
     }, 200);
 
     return () => {
+      clearTimeout(invalidateTimer);
       if (buildingLayerGroupRef.current) {
         try { buildingLayerGroupRef.current.clearLayers(); } catch (e) {}
         buildingLayerGroupRef.current = null;
@@ -622,6 +665,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           mapInstanceRef.current.remove();
         } catch (e) {}
         mapInstanceRef.current = null;
+      }
+      if (mapContainerRef.current) {
+        try { delete (mapContainerRef.current as any)._leaflet_id; } catch (e) {}
       }
       streetTileLayerRef.current = null;
       satelliteTileLayerRef.current = null;

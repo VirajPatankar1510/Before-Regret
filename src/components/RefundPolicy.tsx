@@ -67,7 +67,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                 1. Business Vendor Subscriptions Overview
               </h2>
               <p>
-                Atmostellar offers a paid monthly subscription service for verified local business vendors (contractors, licensed home inspectors, structural engineers, environmental remediation specialists) to display sponsored placements ("Need help verifying this?" sections) in specific zip codes and trade categories on free consumer reports.
+                Atmostellar offers a paid monthly subscription service for local business vendors (contractors, licensed home inspectors, structural engineers, environmental remediation specialists) to display sponsored placements ("Need help inspecting this?" sections) in specific zip codes and trade categories on free consumer reports.
               </p>
               <p>Vendor subscription tiers are structured as follows:</p>
               

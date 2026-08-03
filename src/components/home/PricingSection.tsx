@@ -1,7 +1,24 @@
 import React from 'react';
-import { Check, ShieldCheck, Download, Sparkles, FileCheck2, Database, Gift } from 'lucide-react';
+import { Check, ShieldCheck, Download, Sparkles, FileCheck2, Database, Gift, MapPin, ArrowUp } from 'lucide-react';
 
-export const PricingSection: React.FC = () => {
+interface PricingSectionProps {
+  onScrollToSearch?: () => void;
+}
+
+export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch }) => {
+  const handleGoToMap = () => {
+    if (onScrollToSearch) {
+      onScrollToSearch();
+    } else {
+      const el = document.getElementById('address-search-box');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <section id="what-we-found" className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-12">
       
@@ -58,7 +75,7 @@ export const PricingSection: React.FC = () => {
               <div className="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
               </div>
-              <span><strong>Two-Tier Record Matrix</strong> (Verified Records & Needs Verification)</span>
+              <span><strong>Two-Tier Record Matrix</strong> (Confirmed Records & Needs Inspection)</span>
             </div>
 
             <div className="flex items-start gap-3">
@@ -89,6 +106,25 @@ export const PricingSection: React.FC = () => {
               <span><strong>Instant Web & PDF Access</strong> with zero payment or credit card required</span>
             </div>
 
+          </div>
+        </div>
+
+        {/* Mission Statement & CTA to Map */}
+        <div className="pt-6 border-t border-slate-200/80 space-y-5">
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal bg-slate-50 border border-slate-200/80 p-4 sm:p-5 rounded-2xl">
+            BeforeRegret isn't here to criticize builders, agents, consultants, brokers or sellers. We believe greater transparency creates better conversations and more confident property decisions. Our role is to bring together public records and practical, everyday insights so every buyer can make a more informed decision.
+          </p>
+
+          <div className="flex justify-center pt-1">
+            <button
+              type="button"
+              onClick={handleGoToMap}
+              className="w-full sm:w-auto px-6 py-3.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md hover:shadow-slate-900/20 transition-all flex items-center justify-center gap-2 cursor-pointer group"
+            >
+              <MapPin className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
+              <span>Explore Property Map</span>
+              <ArrowUp className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
+            </button>
           </div>
         </div>
 

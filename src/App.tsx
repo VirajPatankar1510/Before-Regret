@@ -274,7 +274,7 @@ export function App() {
                 'name': 'Are reports one-time flat fee or subscription based?',
                 'acceptedAnswer': {
                   '@type': 'Answer',
-                  'text': 'All BeforeRegret executive property research reports are backed by a one-time flat fee ($19 to $29 depending on data coverage) with lifetime access.'
+                  'text': 'All BeforeRegret consumer property research reports are 100% free with lifetime access.'
                 }
               }
             ]
@@ -313,7 +313,7 @@ export function App() {
     } else if (currentStep === 'REPORT') {
       applyHeadSeo({
         title: `Property Research Report | ${report?.propertyInfo?.address || 'Subject Property'}`,
-        description: 'Private, verified multi-hazard public record research synthesis for subject property.',
+        description: 'Private multi-hazard public record research synthesis for subject property.',
         canonicalUrl: `https://beforeregret.com/report/${report?.id || 'private'}`,
         robotsDirective: 'noindex, nofollow'
       });

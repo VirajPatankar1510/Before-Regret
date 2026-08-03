@@ -136,7 +136,7 @@ export const AiReportModal: React.FC<AiReportModalProps> = ({
                   Resident Intelligence Report
                 </h2>
                 <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 text-[10px] font-extrabold uppercase rounded border border-blue-400/30">
-                  AI Verified Product
+                  AI Intelligence Product
                 </span>
               </div>
               <p className="text-xs text-slate-400">
@@ -174,7 +174,7 @@ export const AiReportModal: React.FC<AiReportModalProps> = ({
                   Synthesizing Resident Intelligence Report...
                 </h3>
                 <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  Gemini AI is executing strict evidence interpretation without hallucinating unverified facts.
+                  Gemini AI is executing strict evidence interpretation based on resident input.
                 </p>
               </div>
             </div>
@@ -300,7 +300,7 @@ export const AiReportModal: React.FC<AiReportModalProps> = ({
                       {societyName}
                     </h1>
                     <p className="text-xs text-slate-600 mt-1">
-                      {locality ? `${locality}, ` : ''}{city ? city : ''} • Verified Resident Analysis
+                      {locality ? `${locality}, ` : ''}{city ? city : ''} • Resident Analysis
                     </p>
                   </div>
 
@@ -450,7 +450,7 @@ export const AiReportModal: React.FC<AiReportModalProps> = ({
 
                 {/* PDF Footer Disclaimer */}
                 <div className="pt-4 border-t border-slate-200 text-[10px] text-slate-400 flex items-center justify-between">
-                  <span>Resident Intelligence Platform • ₹129/topic Verified Report</span>
+                  <span>Resident Intelligence Platform • ₹129/topic Intelligence Report</span>
                   <span>Zero Hallucination Standard Applied</span>
                 </div>
 

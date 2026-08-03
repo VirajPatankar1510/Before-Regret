@@ -60,7 +60,7 @@ export const KnowledgeLibrary: React.FC<KnowledgeLibraryProps> = ({
             </div>
             <h3 className="text-lg font-bold text-slate-900">No Unlocked Knowledge Yet</h3>
             <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto">
-              Search any residential society on the homepage to unlock verified resident insights on water, parking, noise, and hidden costs.
+              Search any residential society on the homepage to unlock resident insights on water, parking, noise, and hidden costs.
             </p>
             <div className="pt-2">
               <button
@@ -96,7 +96,7 @@ export const KnowledgeLibrary: React.FC<KnowledgeLibraryProps> = ({
                       {purchase.societyName}
                     </h3>
                     <p className="text-xs text-slate-500 font-mono">
-                      Paid ₹{purchase.pricePaid} • Verified Resident Intelligence
+                      Paid ₹{purchase.pricePaid} • Resident Intelligence
                     </p>
                   </div>
 

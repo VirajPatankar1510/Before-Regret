@@ -4,7 +4,7 @@ export type ViewState =
   | 'SUMMARY' 
   | 'REPORT';
 
-export type ConfidenceLevel = 'Verified Record' | 'No Record Found';
+export type ConfidenceLevel = 'Confirmed Record' | 'No Record Found';
 
 export interface PropertySearchResult {
   placeId: string;
@@ -120,7 +120,8 @@ export interface PropertyRecordItem {
 }
 
 export interface PropertyRecordsSplit {
-  verified: PropertyRecordItem[];
+  confirmed?: PropertyRecordItem[];
+  verified?: PropertyRecordItem[];
   unknown: PropertyRecordItem[];
 }
 
@@ -144,7 +145,7 @@ export interface SourceReference {
   name: string;
   agency: string;
   category: string;
-  status: 'Verified Available' | 'Data Found' | 'No Active Hazards' | 'Records Clean';
+  status: 'Confirmed Available' | 'Data Found' | 'No Active Hazards' | 'Records Clean';
   url: string;
   description: string;
 }
@@ -306,7 +307,7 @@ export interface PropertyReport {
   visitChecklist: VisitChecklistItem[];
   disclosureLevers?: DisclosureLeverItem[];
 
-  // Section 6: Source Appendix with Direct Links & Verified References
+  // Section 6: Source Appendix with Direct Links & Source References
   leadWidgets?: LeadWidget[];
   sourceReferences: SourceReference[];
   directSourceLinks?: DirectSourceLink[];

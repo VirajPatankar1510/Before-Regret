@@ -245,7 +245,7 @@ export const TopicDeepPageView: React.FC<TopicDeepPageViewProps> = ({
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-emerald-600" />
-              <span>Verified Public API Source Evidence Trail</span>
+              <span>Public API Source Evidence Trail</span>
             </h3>
             <span className="text-[11px] font-mono text-slate-500">100% Sourced</span>
           </div>
@@ -255,7 +255,7 @@ export const TopicDeepPageView: React.FC<TopicDeepPageViewProps> = ({
               <div key={i} className="py-2.5 flex items-center justify-between">
                 <div>
                   <div className="font-bold text-slate-900">{ev.sourceName}</div>
-                  <div className="text-slate-500 text-[11px]">{ev.verifiedDataPoint}</div>
+                  <div className="text-slate-500 text-[11px]">{ev.evidenceDataPoint}</div>
                 </div>
                 <a 
                   href={ev.sourceUrl} 

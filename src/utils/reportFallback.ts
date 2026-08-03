@@ -21,7 +21,7 @@ export function createFallbackSummary(property: PropertySearchResult | null): Re
     usefulSourcesFound: 18,
     estimatedPages: 'Executive Property Insights (8 Min Read)',
     price: 29,
-    priceRationale: '18 verified public data sources contain active records for this parcel.',
+    priceRationale: '18 public data sources contain active records for this parcel.',
     includedCategories: [
       'Environmental',
       'Hazards',
@@ -117,9 +117,9 @@ export function createFallbackReport(
     },
     atAGlance: {
       cards: [
-        { id: 'a1', status: 'green', title: 'Low Flood Hazard Designation', confidence: 'Verified Record' },
+        { id: 'a1', status: 'green', title: 'Low Flood Hazard Designation', confidence: 'Confirmed Record' },
         { id: 'a2', status: 'yellow', title: 'Roof Replacement Permit Log Unconfirmed', confidence: 'No Record Found' },
-        { id: 'a3', status: 'green', title: 'Zero Open Municipal Code Violations', confidence: 'Verified Record' },
+        { id: 'a3', status: 'green', title: 'Zero Open Municipal Code Violations', confidence: 'Confirmed Record' },
         { id: 'a4', status: 'yellow', title: 'HVAC Mechanical Permit Log Check', confidence: 'No Record Found' }
       ],
       mostImportantToVerify: {
@@ -165,7 +165,7 @@ export function createFallbackReport(
       {
         id: 'e1',
         title: 'Flood Hazard Designation',
-        confidence: 'Verified Record',
+        confidence: 'Confirmed Record',
         whatWeFound: 'FEMA Flood Hazard Layer classifies this parcel in Zone X (Outside 500-year hazard zone).',
         whyItMatters: 'Flood zone designations determine mandatory lender flood insurance requirements.',
         suggestedNextStep: 'Confirm flood zone status with your home insurance representative for optimal policy rate.'
@@ -180,7 +180,7 @@ export function createFallbackReport(
           finding: 'Full-service acute care hospital located 2.4 miles from parcel.',
           implication: 'Ensures rapid emergency response access while remaining outside high-frequency siren noise corridors.',
           source: 'State Dept of Health Facilities Database',
-          confidence: 'Verified Record'
+          confidence: 'Confirmed Record'
         },
         {
           id: 'ne2',
@@ -189,14 +189,18 @@ export function createFallbackReport(
           finding: 'City public works docket includes minor road resurfacing within 0.5 miles.',
           implication: 'Temporary localized traffic detour expected during Q3 municipal paving window.',
           source: 'City Capital Improvement Plan',
-          confidence: 'Verified Record'
+          confidence: 'Confirmed Record'
         }
       ]
     },
     propertyRecordsSplit: {
+      confirmed: [
+        { id: 'v1', label: 'Code Enforcement Clearance', value: 'Zero Active Violations', confidence: 'Confirmed Record', detail: 'Clean municipal code compliance history on file' },
+        { id: 'v2', label: 'Electrical Panel Upgrade', value: '2015 Permit Recorded', confidence: 'Confirmed Record', detail: '200A main service panel upgrade permit on file' }
+      ],
       verified: [
-        { id: 'v1', label: 'Code Enforcement Clearance', value: 'Zero Active Violations', confidence: 'Verified Record', detail: 'Clean municipal code compliance history on file' },
-        { id: 'v2', label: 'Electrical Panel Upgrade', value: '2015 Permit Recorded', confidence: 'Verified Record', detail: '200A main service panel upgrade permit on file' }
+        { id: 'v1', label: 'Code Enforcement Clearance', value: 'Zero Active Violations', confidence: 'Confirmed Record', detail: 'Clean municipal code compliance history on file' },
+        { id: 'v2', label: 'Electrical Panel Upgrade', value: '2015 Permit Recorded', confidence: 'Confirmed Record', detail: '200A main service panel upgrade permit on file' }
       ],
       unknown: [
         { id: 'u1', label: 'Roof Replacement Date', value: 'Unconfirmed in Public Permits', confidence: 'No Record Found', detail: 'No permit found in digitized municipal log' }
@@ -204,7 +208,7 @@ export function createFallbackReport(
     },
     permitLifespanMatrix: [
       { id: 'm1', system: 'Architectural Shingle Roof', standardLifespanYears: '20 - 25 Yrs', permitStatus: 'Unconfirmed in Public Log', confidence: 'No Record Found' },
-      { id: 'm2', system: 'Electrical Service Panel (200A)', standardLifespanYears: '30 - 40 Yrs', permitStatus: 'Permitted in 2015', confidence: 'Verified Record' },
+      { id: 'm2', system: 'Electrical Service Panel (200A)', standardLifespanYears: '30 - 40 Yrs', permitStatus: 'Permitted in 2015', confidence: 'Confirmed Record' },
       { id: 'm3', system: 'Central AC Compressor', standardLifespanYears: '12 - 15 Yrs', permitStatus: 'Unconfirmed in Public Log', confidence: 'No Record Found' }
     ],
     insuranceConsiderations: [
@@ -247,8 +251,8 @@ export function createFallbackReport(
       }
     ],
     sourceReferences: [
-      { id: 'sr1', name: 'FEMA Flood Maps', agency: 'Federal Emergency Management Agency', category: 'Flood Hazard', status: 'Verified Available', url: 'https://msc.fema.gov/', description: 'Official flood hazard map layer.' },
-      { id: 'sr2', name: 'Municipal Permitting Portal', agency: 'City Building Department', category: 'Building Records', status: 'Verified Available', url: 'https://www.austintexas.gov/department/building-permits', description: 'Digitized building and trade permit archive.' }
+      { id: 'sr1', name: 'FEMA Flood Maps', agency: 'Federal Emergency Management Agency', category: 'Flood Hazard', status: 'Confirmed Available', url: 'https://msc.fema.gov/', description: 'Official flood hazard map layer.' },
+      { id: 'sr2', name: 'Municipal Permitting Portal', agency: 'City Building Department', category: 'Building Records', status: 'Confirmed Available', url: 'https://www.austintexas.gov/department/building-permits', description: 'Digitized building and trade permit archive.' }
     ],
     directSourceLinks: [
       { id: 'ds1', title: 'FEMA Flood Map Service Center', agency: 'FEMA', category: 'Flood Risk', directUrl: 'https://msc.fema.gov/portal/search', lastUpdatedPeriod: '2024 Layer Sync', description: 'Interactive official flood plain map search tool.' }

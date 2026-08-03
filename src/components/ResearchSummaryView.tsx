@@ -50,7 +50,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
 
         <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-800 shrink-0">
           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          <span>Research Verified</span>
+          <span>Research Checked</span>
         </div>
       </div>
 
@@ -143,7 +143,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
         <div className="flex items-center justify-between">
           <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <Database className="w-4 h-4 text-blue-600" />
-            <span>Public Data Sources Verified ({totalSourcesSearched})</span>
+            <span>Public Data Sources Checked ({totalSourcesSearched})</span>
           </h3>
           <span className="text-xs font-semibold text-slate-500">
             {usefulSourcesFound} Active Records Found

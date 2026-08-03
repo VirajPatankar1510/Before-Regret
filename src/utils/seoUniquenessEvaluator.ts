@@ -185,7 +185,7 @@ export function evaluateDraftQuality(
     ? `Corporate Fluff & Filler Check: PASSED (0 banned phrases found)` 
     : `Filler Flag: DETECTED BANNED PHRASES [${fillerPhrasesFound.join(', ')}]`);
 
-  logs.push(`Factual Data Point Density: ${factualDensityScore}/100 (${metricsCount} verified metrics integrated across ${wordCount} words)`);
+  logs.push(`Factual Data Point Density: ${factualDensityScore}/100 (${metricsCount} metrics integrated across ${wordCount} words)`);
   logs.push(`Overall Explanatory Depth Score: ${explanatoryDepthScore}/100`);
 
   return {

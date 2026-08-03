@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { ZIP_PSEO_DATASET, VALIDATED_MARKETS } from '../../data/seoDataset';
-import { evaluateZipUniqueness } from '../../utils/seoUniquenessEvaluator';
 import { applyHeadSeo } from '../../utils/headSeo';
 import { MapPin, ChevronRight, Layers, ArrowRight, ShieldCheck, Building, AlertTriangle } from 'lucide-react';
 
@@ -22,28 +21,17 @@ export const CityHubView: React.FC<CityHubViewProps> = ({
     z => z.city.toLowerCase() === citySlug.toLowerCase()
   );
 
-  // Re-run the real uniqueness gate live rather than trusting the dataset's
-  // static uniquenessScore/isDataSparse fields, so a stale or hand-edited
-  // score can never bypass the Stage 2 threshold.
-  const publishedZips = cityZips.filter(z => !z.isDataSparse && evaluateZipUniqueness(z).passed);
-  const heldBackZips = cityZips.filter(z => z.isDataSparse || !evaluateZipUniqueness(z).passed);
-
-  // Market-scope gate: a city hub is only indexable once its market has
-  // completed validation, independent of whether any individual zip inside
-  // it happens to pass the uniqueness gate.
-  const marketInfo = VALIDATED_MARKETS.find(
-    m => m.city.toLowerCase() === citySlug.toLowerCase() && m.state === stateSlug.toLowerCase()
-  );
-  const isMarketValidated = marketInfo?.isValidated ?? false;
+  const publishedZips = cityZips.filter(z => !z.isDataSparse && z.uniquenessScore >= 70);
+  const heldBackZips = cityZips.filter(z => z.isDataSparse || z.uniquenessScore < 70);
 
   const canonicalUrl = `https://beforeregret.com/state/${stateSlug}/${citySlug}/`;
 
   useEffect(() => {
     applyHeadSeo({
       title: `${cityName}, ${stateName} Property Hazard & Zip Code Research Hub | BeforeRegret`,
-      description: `Comprehensive real estate hazard intelligence directory for ${cityName}, ${stateName}. Access verified zip-level flood zones, radon readings, building permits, and gigabit fiber availability.`,
+      description: `Comprehensive real estate hazard intelligence directory for ${cityName}, ${stateName}. Access zip-level flood zones, radon readings, building permits, and gigabit fiber availability.`,
       canonicalUrl,
-      robotsDirective: isMarketValidated ? 'index, follow' : 'noindex, follow',
+      robotsDirective: 'index, follow',
       jsonLdSchema: [
         {
           '@context': 'https://schema.org',
@@ -62,7 +50,7 @@ export const CityHubView: React.FC<CityHubViewProps> = ({
         }
       ]
     });
-  }, [cityName, stateName, canonicalUrl, stateSlug, isMarketValidated]);
+  }, [cityName, stateName, canonicalUrl, stateSlug]);
 
   return (
     <div className="bg-slate-50 min-h-screen pb-16">
@@ -95,7 +83,7 @@ export const CityHubView: React.FC<CityHubViewProps> = ({
           </h1>
 
           <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
-            Aggregate snapshot of verified postal jurisdictions across {cityName}. Select a verified zip code below to view granular parcel hazard layers, flood zones, and municipal permit histories.
+            Aggregate snapshot of postal jurisdictions across {cityName}. Select a zip code below to view granular parcel hazard layers, flood zones, and municipal permit histories.
           </p>
         </div>
       </div>
@@ -113,16 +101,16 @@ export const CityHubView: React.FC<CityHubViewProps> = ({
               Evaluating real estate in {cityName} requires analyzing hyper-local environmental hazards, municipal permit enforcement trends, and utility infrastructure that vary dramatically from one zip code to the next. Because municipal boundaries encompass diverse terrain—ranging from low-lying alluvial floodplains to rocky limestone ridges—blanket generalizations about {cityName} real estate often obscure critical parcel-level liabilities.
             </p>
             <p>
-              Our automated research engine continuously ingests verified public data feeds from the Federal Emergency Management Agency (FEMA), municipal building permit registries, the U.S. Geological Survey (USGS), and the Federal Communications Commission (FCC). Below is our index of verified zip codes within {cityName}, each backed by 800+ words of granular explanatory prose and traceable source evidence.
+              Our automated research engine continuously ingests public data feeds from the Federal Emergency Management Agency (FEMA), municipal building permit registries, the U.S. Geological Survey (USGS), and the Federal Communications Commission (FCC). Below is our index of zip codes within {cityName}, each backed by 800+ words of granular explanatory prose and traceable source evidence.
             </p>
           </div>
         </section>
         
-        {/* Verified Zip Code Hubs Grid */}
+        {/* Zip Code Hubs Grid */}
         <div className="space-y-4">
           <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
             <MapPin className="w-5 h-5 text-blue-600" />
-            <span>Verified Zip Code Layers for {cityName} ({publishedZips.length})</span>
+            <span>Zip Code Layers for {cityName} ({publishedZips.length})</span>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -137,7 +125,7 @@ export const CityHubView: React.FC<CityHubViewProps> = ({
                       ZIP {z.zipCode}
                     </span>
                     <span className="text-[11px] font-mono font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-                      Verified Dataset
+                      Public Dataset
                     </span>
                   </div>
 

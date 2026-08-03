@@ -107,7 +107,7 @@ export const INITIAL_SOCIETIES: Society[] = [
                 questionId: 'q_internet_providers',
                 question: 'Which internet providers are allowed and how stable is fiber for WFH?',
                 answer: 'Multiple Fiber Lines (Jio, Airtel, Tata Play). Excellent reliability with 99.8% uptime.',
-                badge: 'WFH Verified'
+                badge: 'WFH Confirmed'
               }
             ]
           },
@@ -182,7 +182,7 @@ export const INITIAL_SOCIETIES: Society[] = [
               {
                 questionId: 'q_maintenance_maids',
                 question: 'How reasonable are maid and cook rates in this society?',
-                answer: 'Standard City Rates & Abundant Staff. MyGate pass system ensures verified domestic helpers.',
+                answer: 'Standard City Rates & Abundant Staff. MyGate pass system ensures background-checked domestic helpers.',
                 badge: 'Domestic Help'
               }
             ]

@@ -69,12 +69,12 @@ export const HowItWorksSection: React.FC = () => {
                 Get Objective Fact Report
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Receive a categorized report distinguishing verified records from missing permit trails, complete with tailored questions to ask the seller.
+                Receive a categorized report distinguishing confirmed records from missing permit trails, complete with tailored questions to ask the seller.
               </p>
             </div>
             <div className="pt-3 border-t border-slate-700/60 text-xs text-blue-400 font-medium flex items-center gap-1.5">
               <FileText className="w-4 h-4" />
-              <span>Verified Records & Seller Checklist</span>
+              <span>Confirmed Records & Seller Checklist</span>
             </div>
           </div>
 

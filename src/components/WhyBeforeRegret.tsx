@@ -296,7 +296,7 @@ export const WhyBeforeRegret: React.FC<WhyBeforeRegretProps> = ({
               </div>
             </div>
 
-            {/* Right: What verified residents uncover */}
+            {/* Right: What real residents uncover */}
             <div className="bg-gradient-to-br from-blue-900 via-slate-900 to-slate-950 border border-blue-800 text-white rounded-2xl p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-lg relative overflow-hidden">
               <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
               

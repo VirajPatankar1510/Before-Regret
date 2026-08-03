@@ -72,12 +72,12 @@ export function generateTopicDeepArticle(
       id: 'sec-methodology',
       title: `2. Data Sources, Hydrologic Modeling & NOAA Atlas 14 Revisions`,
       paragraphs: [
-        `Regional Context: NOAA Atlas 14 Precipitation Study Across ${county}. The data presented in this analysis is derived directly from verified public registries, including the FEMA National Flood Hazard Layer (NFHL), United States Geological Survey (USGS) peak discharge stream gauges, and the City of ${city} Open Data Portal. In Central Texas, hydrologic risk evaluation was fundamentally updated following the publication of NOAA Atlas 14 Volume 11, which increased regional 100-year rainfall depth projections across ${county}.`,
+        `Regional Context: NOAA Atlas 14 Precipitation Study Across ${county}. The data presented in this analysis is derived directly from public registries, including the FEMA National Flood Hazard Layer (NFHL), United States Geological Survey (USGS) peak discharge stream gauges, and the City of ${city} Open Data Portal. In Central Texas, hydrologic risk evaluation was fundamentally updated following the publication of NOAA Atlas 14 Volume 11, which increased regional 100-year rainfall depth projections across ${county}.`,
         `Zip-Specific Flood Map Status for Zip ${zip}: While Atlas 14 triggered floodplain map revisions along major creek corridors across Central Texas, parcel-level flood map boundaries depend on micro-topography. In zip code ${zip}, specific FEMA map revisions are tied to local GIS elevation layers. For parcels mapped in Zone X outside local creek channels, flood risk maps reflect minimal 500-year flood hazard unless a parcel-specific elevation survey indicates local drainage constraints.`
       ],
       callout: {
         type: 'methodology',
-        title: 'Verified API Source Ledger',
+        title: 'API Source Ledger',
         content: zipData.evidenceTrail.length > 0 
           ? `Data validated against ${zipData.evidenceTrail.map(e => e.sourceName).join(', ')}.`
           : `Validated against FEMA NFHL GIS Panel 48453C and USGS Hydrologic Data.`
@@ -321,7 +321,7 @@ export function generateTopicDeepArticle(
       id: 'sec-methodology',
       title: `2. FCC National Broadband Fabric Data & Fiber Technology`,
       paragraphs: [
-        `The broadband data presented for zip code ${zip} is sourced from the Federal Communications Commission (FCC) National Broadband Map Broadband Serviceable Location (BSL) fabric dataset. This granular spatial registry logs verified service availability at the individual building location level, distinguishing between true Fiber-to-the-Home (FTTH), hybrid fiber-coaxial cable (DOCSIS 3.1), fixed wireless, and satellite connections.`,
+        `The broadband data presented for zip code ${zip} is sourced from the Federal Communications Commission (FCC) National Broadband Map Broadband Serviceable Location (BSL) fabric dataset. This granular spatial registry logs service availability at the individual building location level, distinguishing between true Fiber-to-the-Home (FTTH), hybrid fiber-coaxial cable (DOCSIS 3.1), fixed wireless, and satellite connections.`,
         `Unlike legacy copper DSL or traditional cable systems, pure fiber optic networks transmit data using light pulses over glass strands. This architecture provides symmetrical upload and download bandwidth with ultra-low latency (typically < 10 ms), making it ideal for video conferencing, large cloud data transfers, and multi-device households in ${city}.`
       ]
     });
@@ -384,14 +384,14 @@ export function generateZipHubArticle(zipData: ZipPSeoData): LongformArticle {
   const state = zipData.stateFullName;
 
   const title = `Zip Code ${zip} (${neighborhood}, ${city} TX) Property Hazard & Public Record Intelligence Hub`;
-  const metaDescription = `Verified multi-hazard property intelligence for ${zip} in ${city}, TX. Evaluates FEMA flood zone ${zipData.floodZone}, radon level ${zipData.radonPciL} pCi/L, ${zipData.recentPermitsCount12mo} municipal permits, fiber coverage ${zipData.fiberCoveragePercent}%, and nearby trauma hospitals.`;
+  const metaDescription = `Multi-hazard property intelligence for ${zip} in ${city}, TX. Evaluates FEMA flood zone ${zipData.floodZone}, radon level ${zipData.radonPciL} pCi/L, ${zipData.recentPermitsCount12mo} municipal permits, fiber coverage ${zipData.fiberCoveragePercent}%, and nearby trauma hospitals.`;
 
   const sections: ArticleSection[] = [
     {
       id: 'sec-intro',
       title: `Comprehensive Property Research & Public Record Overview for Zip ${zip}`,
       paragraphs: [
-        `Evaluating residential real estate in zip code ${zip} (${neighborhood}, ${city}, ${state}) requires access to objective, data-backed municipal records rather than marketing brochures. This research hub aggregates verified datasets from federal environmental agencies, municipal development services portals, and national infrastructure registries to provide a transparent property hazard profile for buyers, renters, and real estate professionals.`,
+        `Evaluating residential real estate in zip code ${zip} (${neighborhood}, ${city}, ${state}) requires access to objective, data-backed municipal records rather than marketing brochures. This research hub aggregates datasets from federal environmental agencies, municipal development services portals, and national infrastructure registries to provide a transparent property hazard profile for buyers, renters, and real estate professionals.`,
         `With a local population of ${zipData.population.toLocaleString()} and a median home value of $${zipData.medianHomeValue.toLocaleString()}, ${zip} represents a key residential quadrant of ${city}. However, structural risks, environmental hazards, and utility infrastructure vary significantly from parcel to parcel across ${neighborhood}. The sections below provide detailed prose analyses of the five core environmental and public record vectors governing this zip code.`
       ],
       callout: {
@@ -485,7 +485,7 @@ export function generateZipComparisonArticle(
   const city = zipAData.city;
 
   const title = `Zip Code Comparison: ${zipA} (${zipAData.neighborhoodName}) vs ${zipB} (${zipBData.neighborhoodName}) | ${city}, TX`;
-  const metaDescription = `Direct verified data comparison between ${zipA} and ${zipB} in ${city}, TX. Compare FEMA flood risk, permit activity, ambient noise, fiber internet, and housing values.`;
+  const metaDescription = `Direct data comparison between ${zipA} and ${zipB} in ${city}, TX. Compare FEMA flood risk, permit activity, ambient noise, fiber internet, and housing values.`;
 
   const sections: ArticleSection[] = [
     {

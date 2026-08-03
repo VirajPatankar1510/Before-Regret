@@ -42,7 +42,7 @@ export function getTopicEditorialTemplates(
         `Residents who responded favorably noted that scheduled storage tank maintenance and periodic quality checks are conducted, helping maintain baseline supply cleanliness.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_BUYER`, 'SEC_BUYER_KNOW', defaultScenarioId, 'Detailed',
-        `Based on verified resident input, buyers should verify whether the unit relies primarily on municipal lines or supplementary tanker supply, as tanker dependency during dry seasons can impact recurring maintenance costs.`
+        `Based on resident input, buyers should verify whether the unit relies primarily on municipal lines or supplementary tanker supply, as tanker dependency during dry seasons can impact recurring maintenance costs.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_FRUST`, 'SEC_FRUSTRATIONS', defaultScenarioId, 'Direct',
         `Resident responses indicate that hard water mineral accumulation on fixtures and appliances remains a reported concern, requiring periodic maintenance or filtration solutions.`
@@ -74,7 +74,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback indicates that buyers should request recent utility billing records and inspect filtration options before committing to a flat in this society.`
       );
       addTmpl(`TMPL_${idUpper}_CRIT_CLOSE`, 'SEC_CLOSING', criticalScenarioId, 'Neutral',
-        `In summary, verified resident responses show that water management requires careful pre-purchase verification and budgeting for seasonal supply variations.`
+        `In summary, resident responses show that water management requires careful pre-purchase verification and budgeting for seasonal supply variations.`
       );
       break;
 
@@ -96,7 +96,7 @@ export function getTopicEditorialTemplates(
         `Feedback from residents indicates that visitor parking capacity is limited, which can create access friction and require guests to seek external parking options.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_AGAIN`, 'SEC_BUY_AGAIN', defaultScenarioId, 'Neutral',
-        `Based on verified resident input, parking satisfaction remains high provided a designated covered slot is explicitly tied to the property agreement.`
+        `Based on resident input, parking satisfaction remains high provided a designated covered slot is explicitly tied to the property agreement.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
         `In summary, available resident feedback confirms that confirming designated parking slot registration is a critical step during property negotiations.`
@@ -147,7 +147,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback suggests that maintenance standards align with recurring fee structures, provided residents maintain direct contacts for urgent internal repairs.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident responses show that facility management maintains common areas effectively, while internal repairs benefit from clear resident follow-up.`
+        `In summary, resident responses show that facility management maintains common areas effectively, while internal repairs benefit from clear resident follow-up.`
       );
 
       // Critical Scenario
@@ -195,7 +195,7 @@ export function getTopicEditorialTemplates(
         `Current resident responses suggest that structured governance maintains orderly living conditions and protects long-term community standards.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident feedback advises prospective buyers to review society bye-laws to ensure compliance expectations align with their lifestyle.`
+        `In summary, resident feedback advises prospective buyers to review society bye-laws to ensure compliance expectations align with their lifestyle.`
       );
 
       // Critical Scenario
@@ -243,7 +243,7 @@ export function getTopicEditorialTemplates(
         `Current resident responses show that acoustic satisfaction is high for units situated away from main roadways and high-activity common zones.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident feedback highlights that selecting an internally oriented unit significantly enhances acoustic comfort.`
+        `In summary, resident feedback highlights that selecting an internally oriented unit significantly enhances acoustic comfort.`
       );
 
       // Critical Scenario
@@ -291,7 +291,7 @@ export function getTopicEditorialTemplates(
         `Current resident responses suggest that society drainage preparedness is generally adequate to protect residential structures and parking areas.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident feedback confirms that inspecting window sills and balcony drainage is a prudent pre-purchase step.`
+        `In summary, resident feedback confirms that inspecting window sills and balcony drainage is a prudent pre-purchase step.`
       );
 
       // Critical Scenario
@@ -339,7 +339,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback confirms that reliable backup power switchover prevents major disruption during unexpected grid interruptions.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident input shows that checking backup power load limits ensures uninterrupted daily operations for remote work and household needs.`
+        `In summary, resident input shows that checking backup power load limits ensures uninterrupted daily operations for remote work and household needs.`
       );
 
       // Critical Scenario
@@ -387,7 +387,7 @@ export function getTopicEditorialTemplates(
         `Current resident responses indicate high satisfaction with daily delivery logistics, making routine household procurement efficient.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident feedback demonstrates that digital gate authorization and package management support smooth everyday convenience.`
+        `In summary, resident feedback demonstrates that digital gate authorization and package management support smooth everyday convenience.`
       );
 
       // Critical Scenario
@@ -435,7 +435,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback indicates that overall financial transparency is maintained through documented accounting records presented to owners.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident input advises buyers to review recent maintenance bills and society financial statements before finalizing purchase terms.`
+        `In summary, resident input advises buyers to review recent maintenance bills and society financial statements before finalizing purchase terms.`
       );
 
       // Critical Scenario
@@ -483,7 +483,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback indicates that a cooperative neighborly environment provides a supportive setting for families.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident input demonstrates that balanced resident demographics foster an engaging and respectful community culture.`
+        `In summary, resident input demonstrates that balanced resident demographics foster an engaging and respectful community culture.`
       );
 
       // Critical Scenario
@@ -531,7 +531,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback shows that secure play environments and vehicular separation offer valuable peace of mind for parents.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident responses confirm that vehicle-free play areas and security surveillance make the society well-suited for families.`
+        `In summary, resident responses confirm that vehicle-free play areas and security surveillance make the society well-suited for families.`
       );
 
       // Critical Scenario
@@ -579,7 +579,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback shows that adhering to designated guidelines maintains a workable balance between pet owners and other residents.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident input confirms that clear pet protocols and perimeter walking areas support comfortable co-existence.`
+        `In summary, resident input confirms that clear pet protocols and perimeter walking areas support comfortable co-existence.`
       );
 
       // Critical Scenario
@@ -627,7 +627,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback indicates that strong location connectivity and community security outweigh minor operational quirks.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident input demonstrates that testing mobile connectivity and peak-hour elevator availability ensures a well-informed buying decision.`
+        `In summary, resident input demonstrates that testing mobile connectivity and peak-hour elevator availability ensures a well-informed buying decision.`
       );
 
       // Critical Scenario
@@ -675,7 +675,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback confirms that dedicated backup power integration keeps elevators operational during power outages.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident input shows that checking elevator maintenance history and backup power connections ensures comfortable high-rise living.`
+        `In summary, resident input shows that checking elevator maintenance history and backup power connections ensures comfortable high-rise living.`
       );
 
       // Critical Scenario
@@ -698,7 +698,7 @@ export function getTopicEditorialTemplates(
         `Resident responses recommend inspecting elevator service logs displayed in tower lobbies prior to committing to a high-floor apartment.`
       );
       addTmpl(`TMPL_${idUpper}_CRIT_CLOSE`, 'SEC_CLOSING', criticalScenarioId, 'Neutral',
-        `In summary, evidence from resident responses demonstrates that elevator age, maintenance logs, and backup switchover speed should be thoroughly verified.`
+        `In summary, evidence from resident responses demonstrates that elevator age, maintenance logs, and backup switchover speed should be thoroughly reviewed.`
       );
       break;
 
@@ -720,10 +720,10 @@ export function getTopicEditorialTemplates(
         `Feedback from residents notes that holiday periods or seasonal festival leave can lead to temporary domestic help absenteeism.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_AGAIN`, 'SEC_BUY_AGAIN', defaultScenarioId, 'Neutral',
-        `Current resident feedback confirms that verified domestic help availability simplifies routine household upkeep for working couples.`
+        `Current resident feedback confirms that domestic help availability simplifies routine household upkeep for working couples.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident responses demonstrate that digital gate verification and established helper networks support reliable household management.`
+        `In summary, resident responses demonstrate that digital gate authorization and established helper networks support reliable household management.`
       );
 
       // Critical Scenario
@@ -771,7 +771,7 @@ export function getTopicEditorialTemplates(
         `Current resident responses indicate that transparent society NOC guidelines make both renting and leasing property straightforward.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident input confirms that standardized agreements and digital NOC processes support a stable rental environment.`
+        `In summary, resident input confirms that standardized agreements and digital NOC processes support a stable rental environment.`
       );
 
       // Critical Scenario
@@ -819,7 +819,7 @@ export function getTopicEditorialTemplates(
         `Current resident responses reflect high overall satisfaction, with long-term occupants expressing confidence in their decision to reside here.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident feedback confirms that overall satisfaction, strong resale demand, and daily convenience make this society a solid investment.`
+        `In summary, resident feedback confirms that overall satisfaction, strong resale demand, and daily convenience make this society a solid investment.`
       );
 
       // Critical Scenario
@@ -839,7 +839,7 @@ export function getTopicEditorialTemplates(
         `Current resident feedback highlights ongoing facility maintenance costs and committee decision delays as factors affecting overall satisfaction.`
       );
       addTmpl(`TMPL_${idUpper}_CRIT_AGAIN`, 'SEC_BUY_AGAIN', criticalScenarioId, 'Neutral',
-        `Resident responses indicate that purchasing here is recommended if buyers secure a favorable purchase price and verified parking slot.`
+        `Resident responses indicate that purchasing here is recommended if buyers secure a favorable purchase price and designated parking slot.`
       );
       addTmpl(`TMPL_${idUpper}_CRIT_CLOSE`, 'SEC_CLOSING', criticalScenarioId, 'Neutral',
         `In summary, evidence from resident responses advises buyers to weigh location benefits against recurring maintenance outlays before finalizing their decision.`
@@ -867,7 +867,7 @@ export function getTopicEditorialTemplates(
         `Current resident responses suggest that ${topicTitle.toLowerCase()} conditions are manageable when prospective buyers perform thorough pre-purchase checks.`
       );
       addTmpl(`TMPL_${idUpper}_NORM_CLOSE`, 'SEC_CLOSING', defaultScenarioId, 'Neutral',
-        `In summary, verified resident feedback demonstrates that checking ${topicTitle.toLowerCase()} details firsthand ensures a well-informed property purchase in {Society_Name}.`
+        `In summary, resident feedback demonstrates that checking ${topicTitle.toLowerCase()} details firsthand ensures a well-informed property purchase in {Society_Name}.`
       );
 
       // Critical

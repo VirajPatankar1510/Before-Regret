@@ -1,5 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
+
+// Safeguard Leaflet DomUtil methods against undefined/null elements during unmount/animations
+if (typeof window !== 'undefined' && L && L.DomUtil) {
+  const origGetPosition = L.DomUtil.getPosition;
+  if (origGetPosition) {
+    L.DomUtil.getPosition = function (el: HTMLElement | undefined | null) {
+      if (!el) {
+        return new L.Point(0, 0);
+      }
+      try {
+        return origGetPosition.call(this, el);
+      } catch (err) {
+        return new L.Point(0, 0);
+      }
+    };
+  }
+  const origSetPosition = L.DomUtil.setPosition;
+  if (origSetPosition) {
+    L.DomUtil.setPosition = function (el: HTMLElement | undefined | null, point: L.Point) {
+      if (!el) return;
+      try {
+        return origSetPosition.call(this, el, point);
+      } catch (err) {}
+    };
+  }
+}
 import { X, MapPin, Search, Building2, Loader2, Navigation, AlertCircle, CheckCircle2, ArrowRight, Layers, Eye } from 'lucide-react';
 import { PropertySearchResult } from '../types';
 
@@ -360,10 +386,17 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
         satelliteTileLayerRef.current = null;
         satelliteLabelsLayerRef.current = null;
       }
+      if (mapContainerRef.current) {
+        try { delete (mapContainerRef.current as any)._leaflet_id; } catch (e) {}
+      }
       return;
     }
 
     if (!mapContainerRef.current) return;
+
+    if (mapContainerRef.current) {
+      delete (mapContainerRef.current as any)._leaflet_id;
+    }
 
     const timer = setTimeout(() => {
       if (!mapContainerRef.current || !isOpen) return;
@@ -410,7 +443,9 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
 
           // Moveend listener to load residential building names in visible area
           map.on('moveend', () => {
-            fetchNearbyBuildings(map);
+            if (mapInstanceRef.current && (mapInstanceRef.current as any)._container) {
+              fetchNearbyBuildings(mapInstanceRef.current);
+            }
           });
 
           mapInstanceRef.current = map;
@@ -421,7 +456,7 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
           fetchNearbyBuildings(map);
 
           setTimeout(() => {
-            if (mapInstanceRef.current) {
+            if (mapInstanceRef.current && (mapInstanceRef.current as any)._container) {
               try {
                 mapInstanceRef.current.invalidateSize();
               } catch (e) {}
@@ -432,11 +467,13 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
         }
       } else {
         try {
-          mapInstanceRef.current.invalidateSize();
-          mapInstanceRef.current.setView([initialCoords.lat, initialCoords.lon], 16);
-          updateMarkerPosition(initialCoords.lat, initialCoords.lon);
-          fetchAddressFromCoords(initialCoords.lat, initialCoords.lon);
-          fetchNearbyBuildings(mapInstanceRef.current);
+          if ((mapInstanceRef.current as any)._container) {
+            mapInstanceRef.current.invalidateSize();
+            mapInstanceRef.current.setView([initialCoords.lat, initialCoords.lon], 16);
+            updateMarkerPosition(initialCoords.lat, initialCoords.lon);
+            fetchAddressFromCoords(initialCoords.lat, initialCoords.lon);
+            fetchNearbyBuildings(mapInstanceRef.current);
+          }
         } catch (err) {
           console.warn('Error re-centering Leaflet map:', err);
         }
@@ -456,6 +493,9 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
         streetTileLayerRef.current = null;
         satelliteTileLayerRef.current = null;
         satelliteLabelsLayerRef.current = null;
+      }
+      if (mapContainerRef.current) {
+        try { delete (mapContainerRef.current as any)._leaflet_id; } catch (e) {}
       }
     };
   }, [isOpen]);
