@@ -32,14 +32,25 @@ export const CityHubView: React.FC<CityHubViewProps> = ({
       description: `Comprehensive real estate hazard intelligence directory for ${cityName}, ${stateName}. Access verified zip-level flood zones, radon readings, building permits, and gigabit fiber availability.`,
       canonicalUrl,
       robotsDirective: 'index, follow',
-      jsonLdSchema: {
-        '@context': 'https://schema.org',
-        '@type': 'Place',
-        'name': `${cityName}, ${stateName}`,
-        'description': `Property research and hazard directory for ${cityName}, ${stateName}.`
-      }
+      jsonLdSchema: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Place',
+          'name': `${cityName}, ${stateName}`,
+          'description': `Property research and hazard directory for ${cityName}, ${stateName}.`
+        },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          'itemListElement': [
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
+            { '@type': 'ListItem', 'position': 2, 'name': stateName, 'item': `https://beforeregret.com/state/${stateSlug}/` },
+            { '@type': 'ListItem', 'position': 3, 'name': `${cityName} Hub`, 'item': canonicalUrl }
+          ]
+        }
+      ]
     });
-  }, [cityName, stateName, canonicalUrl]);
+  }, [cityName, stateName, canonicalUrl, stateSlug]);
 
   return (
     <div className="bg-slate-50 min-h-screen pb-16">

@@ -3,7 +3,8 @@ import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
-import { generateXmlSitemap, generateRobotsTxt } from "./src/utils/sitemapGenerator";
+import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } from "./src/utils/sitemapGenerator";
+import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService";
 
 dotenv.config();
 
@@ -14,17 +15,45 @@ async function startServer() {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-  // Dynamic XML Sitemap Endpoint
-  app.get("/sitemap.xml", (req, res) => {
-    res.setHeader("Content-Type", "application/xml");
-    res.send(generateXmlSitemap());
+  // Master Sitemap Index Endpoint (/sitemap.xml and /sitemaps/sitemap-index.xml)
+  app.get(["/sitemap.xml", "/sitemaps/sitemap-index.xml"], (req, res) => {
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.send(generateSitemapIndexXml());
+  });
+
+  // Child Modular Sitemap Endpoints (/sitemaps/sitemap-pages.xml, /sitemaps/sitemap-zips-1.xml, etc.)
+  app.get("/sitemaps/:sitemapName", (req, res) => {
+    const { sitemapName } = req.params;
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.send(generateChildSitemapXml(sitemapName));
   });
 
   // Robots.txt Endpoint
   app.get("/robots.txt", (req, res) => {
-    res.setHeader("Content-Type", "text/plain");
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=86400");
     res.send(generateRobotsTxt());
   });
+
+  // IndexNow Key Verification File
+  app.get(`/${INDEXNOW_KEY}.txt`, (req, res) => {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.send(INDEXNOW_KEY);
+  });
+
+  // IndexNow API Submission Proxy Endpoint
+  app.post("/api/seo/indexnow", async (req, res) => {
+    const { urls } = req.body;
+    if (!Array.isArray(urls) || urls.length === 0) {
+      res.status(400).json({ success: false, error: "Array of URLs is required." });
+      return;
+    }
+    const result = await submitUrlsToIndexNow(urls);
+    res.json(result);
+  });
+
 
   // In-memory store for standalone report URLs and deep linking
   const reportsStore = new Map<string, any>();
