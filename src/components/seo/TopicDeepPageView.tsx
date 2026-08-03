@@ -47,6 +47,7 @@ export const TopicDeepPageView: React.FC<TopicDeepPageViewProps> = ({
             '@type': 'Article',
             'headline': article.title,
             'description': article.metaDescription,
+            'image': 'https://beforeregret.com/hero-bg.png',
             'wordCount': article.wordCount,
             'author': {
               '@type': 'Organization',

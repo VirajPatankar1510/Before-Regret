@@ -26,6 +26,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             '@type': 'Article',
             'headline': guide.title,
             'description': guide.metaDescription,
+            'image': 'https://beforeregret.com/hero-bg.png',
             'datePublished': guide.publishDate,
             'author': {
               '@type': 'Organization',
