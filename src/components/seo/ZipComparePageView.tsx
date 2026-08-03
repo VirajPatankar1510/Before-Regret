@@ -44,6 +44,15 @@ export const ZipComparePageView: React.FC<ZipComparePageViewProps> = ({ slug, on
             '@type': 'WebPage',
             'name': `${comparison.zipA} vs ${comparison.zipB} Real Estate Comparison`,
             'description': comparison.summaryVerdict
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Comparisons', 'item': 'https://beforeregret.com/compare/' },
+              { '@type': 'ListItem', 'position': 3, 'name': `${comparison.zipA} vs ${comparison.zipB}`, 'item': canonicalUrl }
+            ]
           }
         ]
       });

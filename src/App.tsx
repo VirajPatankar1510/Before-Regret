@@ -294,21 +294,51 @@ export function App() {
         title: 'Terms of Service | BeforeRegret Property Intelligence',
         description: 'Terms of service and user agreement for BeforeRegret public record property research and automated synthesis tools.',
         canonicalUrl: 'https://beforeregret.com/terms/',
-        robotsDirective: 'index, follow'
+        robotsDirective: 'index, follow',
+        jsonLdSchema: [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Terms of Service', 'item': 'https://beforeregret.com/terms/' }
+            ]
+          }
+        ]
       });
     } else if (pseoRoute.type === 'privacy') {
       applyHeadSeo({
         title: 'Privacy Policy | BeforeRegret Property Intelligence',
         description: 'Privacy policy detailing data handling, user anonymity, and secure public record lookup protocols at BeforeRegret.',
         canonicalUrl: 'https://beforeregret.com/privacy/',
-        robotsDirective: 'index, follow'
+        robotsDirective: 'index, follow',
+        jsonLdSchema: [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Privacy Policy', 'item': 'https://beforeregret.com/privacy/' }
+            ]
+          }
+        ]
       });
     } else if (pseoRoute.type === 'refunds') {
       applyHeadSeo({
         title: 'Refund Policy & Satisfaction Guarantee | BeforeRegret',
         description: 'BeforeRegret refund policy and customer support commitments for property research report orders.',
         canonicalUrl: 'https://beforeregret.com/refunds/',
-        robotsDirective: 'index, follow'
+        robotsDirective: 'index, follow',
+        jsonLdSchema: [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Refund Policy', 'item': 'https://beforeregret.com/refunds/' }
+            ]
+          }
+        ]
       });
     } else if (currentStep === 'REPORT') {
       applyHeadSeo({
