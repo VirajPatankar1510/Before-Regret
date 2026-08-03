@@ -50,9 +50,6 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
           </div>
 
           {/* Subtext */}
-          <div className="text-xs text-slate-400 font-medium">
-            Objective public record synthesis • No marketing hype • No agent reviews • No broker ads
-          </div>
 
         </div>
       </section>

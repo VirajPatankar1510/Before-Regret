@@ -1,129 +1,212 @@
 import React, { useEffect } from 'react';
-import { FileText, ArrowLeft } from 'lucide-react';
+import { FileText, ArrowLeft, ShieldAlert, Building2, CheckCircle2, Lock, Scale, AlertTriangle } from 'lucide-react';
 
 interface TermsConditionsProps {
   onBackToHome: () => void;
+  onNavigate?: (path: string) => void;
 }
 
-export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome }) => {
+export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, onNavigate }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12 font-sans">
-      {/* Back Button */}
-      <button
-        onClick={() => {
-          onBackToHome();
-          window.scrollTo(0, 0);
-        }}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all mb-8 cursor-pointer border border-slate-200/50"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back to Home</span>
-      </button>
+    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 font-sans text-slate-900">
+      <div className="max-w-4xl mx-auto space-y-8">
+        
+        {/* Navigation Breadcrumb */}
+        <div className="flex items-center justify-between border-b border-slate-200 pb-6">
+          <button
+            onClick={() => {
+              if (onNavigate) onNavigate('/');
+              else onBackToHome();
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition-all border border-slate-200 cursor-pointer shadow-xs"
+          >
+            <ArrowLeft className="w-4 h-4 text-slate-500" />
+            <span>Return to Home</span>
+          </button>
 
-      {/* Content Pane */}
-      <div className="bg-white border border-slate-150 rounded-3xl p-6 sm:p-10 shadow-3xs">
-        <div className="space-y-6">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-            <div className="p-2.5 bg-blue-500/10 text-blue-600 rounded-2xl">
-              <FileText className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-display font-black text-slate-900 leading-tight">Terms & Conditions</h1>
-              <p className="text-xs text-slate-400 font-medium font-mono">Last updated on 20-07-2026 19:42:35</p>
-            </div>
-          </div>
-
-          <div className="prose prose-slate max-w-none text-xs sm:text-sm text-slate-600 leading-relaxed space-y-4">
-            <p>
-              These Terms and Conditions, along with privacy policy or other terms (“Terms”) constitute a binding
-              agreement by and between Atmostellar, ( “Website Owner” or “we” or “us” or
-              “our”) and you (“you” or “your”) and relate to your use of our website, goods (as applicable) or services
-              (as applicable) (collectively, “Services”).
-            </p>
-
-            <p>
-              By using our website and availing the Services, you agree that you have read and accepted these Terms
-              (including the Privacy Policy). We reserve the right to modify these Terms at any time and without
-              assigning any reason. It is your responsibility to periodically review these Terms to stay informed of
-              updates.
-            </p>
-
-            <p className="font-semibold text-slate-900 mt-6 text-sm">
-              The use of this website or availing of our Services is subject to the following terms of use:
-            </p>
-
-            <ul className="list-disc pl-5 space-y-3 text-xs sm:text-sm text-slate-600">
-              <li>
-                To access and use the Services, you agree to provide true, accurate and complete information to us
-                during and after registration, and you shall be responsible for all acts done through the use of your
-                registered account.
-              </li>
-              <li>
-                Neither we nor any third parties provide any warranty or guarantee as to the accuracy, timeliness,
-                performance, completeness or suitability of the information and materials offered on this website
-                or through the Services, for any specific purpose. You acknowledge that such information and
-                materials may contain inaccuracies or errors and we expressly exclude liability for any such
-                inaccuracies or errors to the fullest extent permitted by law.
-              </li>
-              <li>
-                Your use of our Services and the website is solely at your own risk and discretion.. You are
-                required to independently assess and ensure that the Services meet your requirements.
-              </li>
-              <li>
-                The contents of the Website and the Services are proprietary to Us and you will not have any
-                authority to claim any intellectual property rights, title, or interest in its contents.
-              </li>
-              <li>
-                You acknowledge that unauthorized use of the Website or the Services may lead to action against
-                you as per these Terms or applicable laws.
-              </li>
-              <li>
-                You agree to pay us the charges associated with availing the Services.
-              </li>
-              <li>
-                You agree not to use the website and/ or Services for any purpose that is unlawful, illegal or
-                forbidden by these Terms, or Indian or local laws that might apply to you.
-              </li>
-              <li>
-                You agree and acknowledge that website and the Services may contain links to other third party
-                websites. On accessing these links, you will be governed by the terms of use, privacy policy and
-                such other policies of such third party websites.
-              </li>
-              <li>
-                You understand that upon initiating a transaction for availing the Services you are entering into a
-                legally binding and enforceable contract with the us for the Services.
-              </li>
-              <li>
-                You shall be entitled to claim a refund of the payment made by you in case we are not able to
-                provide the Service. The timelines for such return and refund will be according to the specific
-                Service you have availed or within the time period provided in our policies (as applicable). In case
-                you do not raise a refund claim within the stipulated time, than this would make you ineligible for
-                a refund.
-              </li>
-              <li>
-                Notwithstanding anything contained in these Terms, the parties shall not be liable for any failure to
-                perform an obligation under these Terms if performance is prevented or delayed by a force majeure
-                event.
-              </li>
-              <li>
-                These Terms and any dispute or claim relating to it, or its enforceability, shall be governed by and
-                construed in accordance with the laws of India.
-              </li>
-              <li>
-                All disputes arising out of or in connection with these Terms shall be subject to the exclusive
-                jurisdiction of the courts in <strong className="font-normal">Nallasopara, MAHARASHTRA</strong>.
-              </li>
-              <li>
-                All concerns or communications relating to these Terms must be communicated to us using the
-                contact information provided on this website.
-              </li>
-            </ul>
-          </div>
+          <span className="text-xs font-mono text-slate-500">Last Revised: August 3, 2026</span>
         </div>
+
+        {/* Content Pane */}
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs space-y-8">
+          
+          {/* Document Header */}
+          <div className="border-b border-slate-200 pb-6 space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold font-mono">
+              <FileText className="w-3.5 h-3.5" />
+              <span>Legal Document</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Terms of Service
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              These Terms of Service ("Terms") govern your access to and use of the web platform, software, and property research services provided under the brand name <strong>Before Regret</strong>, owned and operated by <strong>Atmostellar</strong> ("Company", "we", "us", "our"). Registered Office: Atmostellar, Mumbai, Maharashtra, India. Support Contact: <a href="mailto:hello@beforeregret.com" className="text-blue-600 hover:underline font-bold">hello@beforeregret.com</a>.
+            </p>
+          </div>
+
+          {/* Quick Notice Banner */}
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 space-y-2">
+            <div className="font-bold flex items-center gap-1.5 text-amber-950">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>Mandatory Informational Research Disclaimer</span>
+            </div>
+            <p className="leading-relaxed">
+              BeforeRegret property research reports are compiled solely for preliminary informational and research purposes. Reports do NOT constitute a physical home inspection, structural engineering report, legal title opinion, property valuation, or professional financial advice. All findings must be independently verified with licensed professionals before entering into any binding real estate purchase or leasing contract.
+            </p>
+          </div>
+
+          <div className="prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed space-y-6">
+            
+            {/* Section 1 */}
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
+                <span>1. Acceptance of Terms & Entity Information</span>
+              </h2>
+              <p>
+                By accessing, browsing, or utilizing the Before Regret platform or generating property research reports, you ("User", "you", or "your") acknowledge that you have read, understood, and agree to be bound by these Terms and our Privacy Policy. If you do not agree to these Terms, you must immediately discontinue use of the platform.
+              </p>
+              <p>
+                <strong>Operating Entity:</strong> Atmostellar is a registered corporate entity headquartered in Mumbai, Maharashtra, India. The name "Before Regret" is used strictly as a commercial brand and product name representing Atmostellar's online property research software.
+              </p>
+            </section>
+
+            {/* Section 2 */}
+            <section className="space-y-3">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
+                <span>2. Platform Business Model & Service Structure</span>
+              </h2>
+              <p>
+                Before Regret operates two distinct services within one unified platform:
+              </p>
+              <ul className="list-disc pl-5 space-y-1.5">
+                <li>
+                  <strong>Free Consumer Property Research Reports:</strong> Searchable, interactive property intelligence reports compiled from open-source government, municipal, and public datasets (e.g., FEMA flood maps, USGS radon data, FCC broadband registries, and municipal permit archives). Consumer reports are provided 100% free of charge with zero payment obligation.
+                </li>
+                <li>
+                  <strong>Paid Business Vendor Subscriptions:</strong> A recurring monthly subscription service enabling verified local business vendors (contractors, licensed inspectors, structural engineers, environmental specialists) to display sponsored placements ("Need help verifying this?" sections, clearly labeled "Sponsored") within designated zip codes and trade categories on free consumer reports.
+                </li>
+              </ul>
+            </section>
+
+            {/* Section 3 */}
+            <section className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-200 pb-2">
+                3. Terms Applicable to Consumer Users (Free Property Research Reports)
+              </h2>
+              <div className="space-y-2 text-xs text-slate-600">
+                <p>
+                  <strong>3.1 No Payment Relationship:</strong> Free consumer property reports carry no fee, hidden charge, or financial transaction. Using or viewing a report does not establish a contractual or fiduciary advisory relationship between you and Atmostellar.
+                </p>
+                <p>
+                  <strong>3.2 As-Is Provision & Non-Diagnostic Stance:</strong> Property research reports assemble raw or aggregated public data provided by third-party government and municipal agencies. All reports are provided strictly on an <strong>"AS-IS"</strong> and <strong>"AS-AVAILABLE"</strong> basis without warranty of any kind. Atmostellar makes no guarantees regarding the completeness, accuracy, timeliness, or real-time status of public records.
+                </p>
+                <p>
+                  <strong>3.3 Duty to Independently Verify:</strong> BeforeRegret reports are preliminary discovery tools only. They are not a substitute for physical site visits, structural inspections, environmental testing, or legal title searches. Consumers expressly agree that they remain solely responsible for independently verifying all hazard classifications, building permit histories, and property characteristics with qualified, licensed professionals prior to making any financial, leasing, or purchasing commitment.
+                </p>
+              </div>
+            </section>
+
+            {/* Section 4 */}
+            <section className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-200 pb-2">
+                4. Terms Applicable to Local Business Vendors (Sponsored Placements)
+              </h2>
+              <div className="space-y-2.5 text-xs text-slate-600">
+                <p>
+                  <strong>4.1 Subscription Service & Tiers:</strong> Verified local business vendors may subscribe to display sponsored placements on property reports corresponding to specific zip codes and trade categories. Subscriptions are billed on a recurring monthly auto-renewal basis:
+                </p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li><strong>Tier 1 (2 Zip Codes):</strong> $29 / month</li>
+                  <li><strong>Tier 2 (5 Zip Codes):</strong> $49 / month</li>
+                  <li><strong>Tier 3 (10 Zip Codes):</strong> $59 / month</li>
+                </ul>
+
+                <p>
+                  <strong>4.2 Zip Code, Trade Category & Vendor Slot Cap:</strong> Vendor placements are bound to the specific zip code(s) and trade category (e.g., Roof Inspection, Structural Engineering, Radon Mitigation) selected during enrollment. To maintain report clarity, placements are capped at a maximum of three (3) verified vendors per trade category within any individual zip code.
+                </p>
+
+                <p>
+                  <strong>4.3 Vendor Cancellation Terms:</strong> Vendors may cancel their recurring subscription or modify their tier/zip selection at any time by contacting <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>. Cancellations and changes take effect at the <strong>start of the next monthly billing cycle</strong>. Current billing periods are non-refundable, and no prorated refunds or credits are issued for the remainder of an active billing cycle.
+                </p>
+
+                <p>
+                  <strong>4.4 Vendor Licensure & Removal Rights:</strong> Vendors warrant that they hold valid, active state/local licenses and liability insurance required for their trade category. Atmostellar explicitly reserves the right to immediately suspend or remove a vendor's sponsored placement without notice if: (a) the vendor's professional licensure or registration expires, is suspended, or is revoked; (b) unresolved consumer fraud or quality complaints are filed; or (c) the vendor breaches these Terms.
+                </p>
+
+                <p>
+                  <strong>4.5 No Lead Volume or Outcome Guarantee:</strong> Sponsored placements are promotional advertisements clearly labeled "Sponsored". Atmostellar makes <strong>no guarantee or representation</strong> regarding specific impression volumes, click-through rates, phone call volumes, lead generation numbers, client conversions, or revenue outcomes resulting from a sponsored placement.
+                </p>
+              </div>
+            </section>
+
+            {/* Section 5 */}
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
+                5. Intellectual Property Rights
+              </h2>
+              <p>
+                All rights, title, and interest in and to the Before Regret platform, including software code, report layout structures, compiled dataset formats, visual designs, graphics, and trademarks, are and shall remain the exclusive property of Atmostellar. User-submitted vendor business details (company logos, trademarks, and business contact information) remain the property of the respective vendor, and the vendor grants Atmostellar a non-exclusive, worldwide license to display such material within sponsored placements.
+              </p>
+            </section>
+
+            {/* Section 6 */}
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
+                6. Limitation of Liability
+              </h2>
+              <p>
+                To the maximum extent permitted by applicable law, in no event shall Atmostellar, its directors, officers, employees, or agents be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, real estate transaction losses, data errors, or business interruption, arising out of or in connection with your use of Before Regret. Atmostellar's total aggregate liability for any claims under these Terms shall not exceed the total fees actually paid by you to Atmostellar in the three (3) months preceding the claim, or $100 in the case of free report consumers.
+              </p>
+            </section>
+
+            {/* Section 7 */}
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
+                7. Governing Law, Jurisdiction & Legal Note
+              </h2>
+              <p>
+                These Terms shall be governed by, construed, and enforced in accordance with the laws of India, without regard to its conflict of law principles. Any dispute or claim arising out of or relating to these Terms shall be subject to the exclusive jurisdiction of the courts located in Mumbai, Maharashtra, India.
+              </p>
+              <div className="p-3 bg-slate-100 rounded-xl text-[11px] text-slate-600 font-mono">
+                <strong>Legal Jurisdiction Note:</strong> Governing law and jurisdiction are specified based on Atmostellar's corporate registration in Mumbai, Maharashtra, India. Prior to US commercial scaling, formal legal confirmation regarding Indian vs. US jurisdiction for US-based consumer and vendor contracts is recommended.
+              </div>
+            </section>
+
+            {/* Section 8 */}
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
+                8. General Provisions
+              </h2>
+              <ul className="list-disc pl-5 space-y-1.5">
+                <li><strong>Severability:</strong> If any provision of these Terms is held invalid or unenforceable, that provision shall be severed and the remaining provisions shall continue in full force.</li>
+                <li><strong>Modifications:</strong> Atmostellar reserves the right to modify these Terms at any time. Updated Terms will be published on the platform with a revised effective date.</li>
+                <li><strong>Age Requirement:</strong> You must be at least 18 years of age to use this platform or subscribe as a business vendor.</li>
+              </ul>
+            </section>
+
+            {/* Section 9 */}
+            <section className="space-y-2 pt-2 border-t border-slate-200">
+              <h2 className="text-base font-bold text-slate-900">
+                9. Contact Information
+              </h2>
+              <p>
+                For questions or formal notices regarding these Terms of Service, please contact us at:
+              </p>
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-1">
+                <p className="font-bold text-slate-900">Atmostellar (Operating Entity for Before Regret)</p>
+                <p>Mumbai, Maharashtra, India</p>
+                <p>Support Email: <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a></p>
+              </div>
+            </section>
+
+          </div>
+
+        </div>
+
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import {
   MapPin, ExternalLink, ShieldCheck, AlertTriangle, CheckCircle2, 
   Lightbulb, Copy, Check, ChevronRight, Clock, CheckSquare, Square, 
   FileCheck, AlertCircle, Download, Loader2, Building, Layers,
-  BarChart3, Info, Map, Calendar
+  BarChart3, Info, Map, Calendar, Flag, ShieldAlert, Database
 } from 'lucide-react';
 import { 
   PropertyReport, ConfidenceLevel, VisitChecklistItem, MapLayerOverlay, 
@@ -11,6 +11,8 @@ import {
   BottomLineSection, NearbyEssentialsSection
 } from '../types';
 import { LeadMarketplaceWidget } from './LeadMarketplaceWidget';
+import { SourceRegistryModal } from './SourceRegistryModal';
+import { ErrorReportingModal } from './ErrorReportingModal';
 
 interface PropertyReportViewProps {
   report: PropertyReport;
@@ -391,6 +393,8 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
   const [copiedLeverId, setCopiedLeverId] = useState<string | null>(null);
   const [copiedShareUrl, setCopiedShareUrl] = useState(false);
   const [showFullTechnicalDetail, setShowFullTechnicalDetail] = useState(false);
+  const [isSourceRegistryOpen, setIsSourceRegistryOpen] = useState(false);
+  const [isErrorReportingOpen, setIsErrorReportingOpen] = useState(false);
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -601,6 +605,24 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
 
           <div className="flex items-center gap-2">
             <button
+              onClick={() => setIsSourceRegistryOpen(true)}
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-300 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer border border-emerald-500/30"
+              title="View Official Government Source Registry & License Terms"
+            >
+              <Database className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="hidden sm:inline">Source Registry</span>
+            </button>
+
+            <button
+              onClick={() => setIsErrorReportingOpen(true)}
+              className="px-3 py-1.5 bg-amber-950/80 hover:bg-amber-900 text-amber-300 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer border border-amber-600/50"
+              title="Report a Suspected Data Error or Discrepancy"
+            >
+              <Flag className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Report Error</span>
+            </button>
+
+            <button
               onClick={handleCopyShareUrl}
               className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer border border-slate-700"
               title="Copy Unique URL to Share This Report"
@@ -613,7 +635,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
               ) : (
                 <>
                   <Copy className="w-3.5 h-3.5 text-slate-300" />
-                  <span>Share Report Link</span>
+                  <span>Share Link</span>
                 </>
               )}
             </button>
@@ -632,7 +654,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
               ) : (
                 <>
                   <Download className="w-4 h-4 text-white" />
-                  <span>Download / Save Executive PDF</span>
+                  <span>Save PDF</span>
                 </>
               )}
             </button>
@@ -641,10 +663,28 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
               onClick={onNewSearch}
               className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer border border-slate-700"
             >
-              <span>Search Another Address</span>
+              <span>New Search</span>
             </button>
           </div>
 
+        </div>
+      </div>
+
+      {/* PERSISTENT CONDENSED NON-DIAGNOSTIC DISCLAIMER BANNER */}
+      <div className="bg-amber-50/90 border-b border-amber-200 px-4 py-2 text-[11px] text-amber-950 print:hidden font-medium">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 truncate">
+            <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
+            <span className="truncate">
+              <strong>INFORMATIONAL PUBLIC RECORD REPORT ONLY</strong> — Not a home inspection, title guarantee, or engineering appraisal. All findings are derived directly from official public databases and must be independently verified with licensed professionals.
+            </span>
+          </div>
+          <button
+            onClick={() => setIsSourceRegistryOpen(true)}
+            className="text-blue-700 hover:underline font-bold shrink-0 text-[10px] uppercase font-mono"
+          >
+            Inspect Source Registry &rarr;
+          </button>
         </div>
       </div>
 
@@ -1262,13 +1302,45 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
           <DirectSourceAppendix sources={report.directSourceLinks} />
 
           {/* Strict Legal Disclaimer & Non-Diagnostic Stance */}
-          <div className="bg-slate-800/90 border border-slate-700 p-5 rounded-2xl text-xs space-y-2 text-slate-300">
-            <div className="text-amber-400 font-bold uppercase tracking-wider text-[11px] font-mono">
-              Independent Research Disclaimer & Non-Diagnostic Stance
+          <div className="bg-slate-800/90 border border-slate-700 p-6 rounded-2xl text-xs space-y-3 text-slate-300">
+            <div className="text-amber-400 font-bold uppercase tracking-wider text-[11px] font-mono flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-amber-400" />
+              <span>Full Legal Disclaimer & Non-Diagnostic Disclosure Architecture</span>
             </div>
+            
             <p className="leading-relaxed text-[11px]">
-              BeforeRegret provides independent public record property research rather than physical engineering inspections or financial valuations. We do not diagnose physical defects, estimate repair costs, or predict future property appreciation. All findings are derived from public record database scans and general building era trends. Homebuyers should always verify physical property conditions with a licensed home inspector and consult municipal building officials prior to executing a purchase agreement.
+              <strong>Informational & Educational Purposes Only:</strong> BeforeRegret (operated by Atmostellar) provides public record property research synthesis for informational and educational purposes. This report does <strong>not</strong> constitute a physical home inspection, structural engineering assessment, environmental audit, title search, land survey, appraisal, insurance binder, legal opinion, or financial advice.
             </p>
+
+            <p className="leading-relaxed text-[11px]">
+              <strong>Public Records & Retrieval Disclaimers:</strong> All findings in this report are retrieved directly from official federal, state, county, and municipal public databases. Public records may be incomplete, delayed, outdated, digitized with clerical errors, or contain omissions. Atmostellar and BeforeRegret retrieve, aggregate, and format public record findings, but do <strong>not</strong> independently verify or audit the underlying government data itself.
+            </p>
+
+            <p className="leading-relaxed text-[11px]">
+              <strong>Calibrating Context ("No Record Found"):</strong> Findings marked as <em>"No Record Found"</em> indicate that a matching permit, inspection, or hazard record was not returned in digitized public database indices at the time of query. A missing public record does <strong>not</strong> necessarily indicate a physical defect, unpermitted construction, or property risk. Homeowners frequently maintain valid unrecorded upgrades or work completed under historic municipal permit exemptions.
+            </p>
+
+            <p className="leading-relaxed text-[11px]">
+              <strong>Mandatory Professional Verification:</strong> Every finding, permit gap, and environmental overlay must be independently verified with qualified, licensed professionals (including a licensed home inspector, structural engineer, real estate attorney, land surveyor, or insurance broker) prior to executing any binding real estate contract or financial transaction. While our platform adheres to strict data sourcing discipline, scope limitation, and automated address gates, no software or report architecture can guarantee immunity from legal claims or guarantee complete completeness of underlying municipal archives.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-slate-700 text-[11px]">
+              <button
+                onClick={() => setIsSourceRegistryOpen(true)}
+                className="text-emerald-400 hover:underline font-bold font-mono flex items-center gap-1.5"
+              >
+                <Database className="w-3.5 h-3.5" />
+                <span>View Auditable Source Registry & Government Licenses</span>
+              </button>
+
+              <button
+                onClick={() => setIsErrorReportingOpen(true)}
+                className="text-amber-300 hover:underline font-bold font-mono flex items-center gap-1.5"
+              >
+                <Flag className="w-3.5 h-3.5 text-amber-400" />
+                <span>Report Suspected Data Discrepancy (1-2 Day Review)</span>
+              </button>
+            </div>
           </div>
 
         </section>
@@ -1280,6 +1352,20 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({
         </div>
 
       </div>
+
+      {/* AUDITABLE SOURCE REGISTRY MODAL */}
+      <SourceRegistryModal
+        isOpen={isSourceRegistryOpen}
+        onClose={() => setIsSourceRegistryOpen(false)}
+      />
+
+      {/* ERROR REPORTING / DATA DISCREPANCY MODAL */}
+      <ErrorReportingModal
+        isOpen={isErrorReportingOpen}
+        onClose={() => setIsErrorReportingOpen(false)}
+        propertyAddress={info.address}
+        reportId={report.id}
+      />
 
     </div>
   );
