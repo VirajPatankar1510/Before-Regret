@@ -17,11 +17,11 @@ export function createFallbackSummary(property: PropertySearchResult | null): Re
 
   return {
     address: addr,
-    totalSourcesSearched: 21,
-    usefulSourcesFound: 21,
-    estimatedPages: 'Executive Property Insights',
-    price: 29,
-    priceRationale: '21 verified public data sources contain active records for this parcel.',
+    totalSourcesSearched: 6,
+    usefulSourcesFound: 0,
+    estimatedPages: 'Property Research Checklist',
+    price: 0,
+    priceRationale: 'BeforeRegret does not yet have a live, verified data connection for this address. This checklist links you directly to the official public sources so you can look up the records yourself.',
     includedCategories: [
       'Property Records',
       'Environment',
@@ -30,12 +30,12 @@ export function createFallbackSummary(property: PropertySearchResult | null): Re
       'Utilities'
     ],
     publicSourcesList: [
-      { id: 's1', name: 'FEMA Flood Map Service Center', category: 'Environmental', foundInfo: true, itemCount: 1, details: 'Zone X Classification' },
-      { id: 's2', name: 'Municipal Building Permit Records', category: 'Public Records', foundInfo: true, itemCount: 4, details: 'Electrical Panel Permit (2015)' },
-      { id: 's3', name: 'County Assessor Parcel Records', category: 'Public Records', foundInfo: true, itemCount: 12, details: 'Parcel Tax Valuation History' },
-      { id: 's4', name: 'EPA Superfund & Toxic Sites', category: 'Hazards', foundInfo: true, itemCount: 0, details: 'Zero Nearby Contamination' },
-      { id: 's5', name: 'City Code Enforcement Portal', category: 'Public Records', foundInfo: true, itemCount: 0, details: 'Zero Open Violations' },
-      { id: 's6', name: 'DOT Highway Noise Index', category: 'Transit & Noise', foundInfo: true, itemCount: 1, details: '52 dB Average Level' }
+      { id: 's1', name: 'FEMA Flood Map Service Center', category: 'Environmental', foundInfo: false, itemCount: 0, details: 'Not yet independently verified for this address.' },
+      { id: 's2', name: 'Municipal Building Permit Records', category: 'Public Records', foundInfo: false, itemCount: 0, details: 'Not yet independently verified for this address.' },
+      { id: 's3', name: 'County Assessor Parcel Records', category: 'Public Records', foundInfo: false, itemCount: 0, details: 'Not yet independently verified for this address.' },
+      { id: 's4', name: 'EPA Superfund & Toxic Sites', category: 'Hazards', foundInfo: false, itemCount: 0, details: 'Not yet independently verified for this address.' },
+      { id: 's5', name: 'City Code Enforcement Portal', category: 'Public Records', foundInfo: false, itemCount: 0, details: 'Not yet independently verified for this address.' },
+      { id: 's6', name: 'DOT Highway Noise Index', category: 'Transit & Noise', foundInfo: false, itemCount: 0, details: 'Not yet independently verified for this address.' }
     ]
   };
 }
@@ -77,128 +77,128 @@ export function createFallbackReport(
       id: 'f_roof',
       subject: 'Roof & Envelope Replacement Records',
       category: 'Property Records',
-      status: 'NO RECORD FOUND',
-      summaryText: 'Public building permit archives contain no permit record for roof replacement.',
-      whatWeFound: 'Municipal building permit archives contain no permit record for a roof replacement.',
+      status: 'NOT YET VERIFIED',
+      summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal roof permit records for this address.',
+      whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet. This is not a confirmed absence of a permit.',
       whyItMatters: 'Roofing materials experience atmospheric weathering over time and represent significant replacement costs if nearing end-of-life.',
-      suggestedNextStep: 'Ask the seller for roof replacement receipts or contractor invoice documentation.',
+      suggestedNextStep: 'Ask the seller for roof replacement receipts or contractor invoice documentation, and check the municipal permit portal directly.',
       actionItem: {
         type: 'sellerQuestion',
         title: 'Roof Installation & Warranty',
         description: 'Has the roof ever been replaced or repaired, and do you have contractor invoices or warranty documentation?',
-        why: 'No roof permit found in municipal digitized archive.'
+        why: 'BeforeRegret has not yet independently verified permit records for this address.'
       },
-      lastUpdated: 'Updated Monthly',
-      sourceAgency: 'City Building Department'
+      lastUpdated: 'Not yet integrated',
+      sourceAgency: 'City Building Department (not yet queried)'
     },
     {
       id: 'f_elec',
       subject: 'Main Electrical Service Panel',
       category: 'Property Records',
-      status: 'CONFIRMED RECORD',
-      summaryText: 'A building permit for a 200-amp main electrical service panel upgrade is on file in municipal archives, finaled in 2015.',
-      whatWeFound: 'A building permit was issued and passed final inspection in 2015 for a 200-amp main service panel upgrade.',
-      whyItMatters: 'A permitted 200A electrical service panel meets modern safety standards for contemporary household appliances.',
-      suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough.',
+      status: 'NOT YET VERIFIED',
+      summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal electrical permit records for this address.',
+      whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
+      whyItMatters: 'A permitted electrical service panel meets modern safety standards for contemporary household appliances.',
+      suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough, and check the municipal permit portal directly.',
       actionItem: {
         type: 'walkthroughItem',
         title: 'Main Electrical Panel Walkthrough',
-        description: 'Locate 200A main service panel in garage or utility area and confirm municipal inspection sticker.',
-        why: 'Confirmed 2015 electrical permit on file.'
+        description: 'Locate the main service panel in garage or utility area and confirm municipal inspection sticker.',
+        why: 'BeforeRegret has not yet independently verified permit records for this address.'
       },
-      lastUpdated: 'Updated Monthly',
-      sourceAgency: 'City Building Department'
+      lastUpdated: 'Not yet integrated',
+      sourceAgency: 'City Building Department (not yet queried)'
     },
     {
       id: 'f_hvac',
       subject: 'HVAC Compressor & Mechanical System',
       category: 'Property Records',
-      status: 'NO RECORD FOUND',
-      summaryText: 'No mechanical replacement permit on file in digitized municipal building department logs.',
-      whatWeFound: 'Municipal building department logs show no mechanical permit record for HVAC unit replacement.',
-      whyItMatters: 'Central cooling compressors experience declining efficiency over 12–15 year lifespans.',
-      suggestedNextStep: 'Have your home inspector record manufacturing date on condenser unit dataplate.',
+      status: 'NOT YET VERIFIED',
+      summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal mechanical permit records for this address.',
+      whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
+      whyItMatters: 'Central cooling compressors experience declining efficiency over 12-15 year lifespans.',
+      suggestedNextStep: 'Have your home inspector record the manufacturing date on the condenser unit dataplate.',
       actionItem: {
         type: 'sellerQuestion',
         title: 'HVAC Age & Service History',
         description: 'What is the age of the central AC compressor, and are annual maintenance records available?',
-        why: 'No mechanical replacement permit on file in city log.'
+        why: 'BeforeRegret has not yet independently verified permit records for this address.'
       },
-      lastUpdated: 'Updated Monthly',
-      sourceAgency: 'City Mechanical Permitting Division'
+      lastUpdated: 'Not yet integrated',
+      sourceAgency: 'City Mechanical Permitting Division (not yet queried)'
     },
     {
       id: 'f_flood',
       subject: 'FEMA Flood Hazard Risk Zone',
       category: 'Environment',
-      status: 'CONFIRMED RECORD',
-      summaryText: 'FEMA Flood Hazard Layer classifies parcel in Zone X (Minimal flood risk, outside 500-year zone).',
-      whatWeFound: 'FEMA National Flood Hazard Layer map panel classifies this parcel in Zone X (Area of Minimal Flood Hazard).',
-      whyItMatters: 'Zone X classification means lender flood insurance is not federally mandated.',
-      suggestedNextStep: 'Confirm Zone X status with your home insurance provider during binder quotation.',
+      status: 'NOT YET VERIFIED',
+      summaryText: 'BeforeRegret does not yet have a live, verified connection to the FEMA National Flood Hazard Layer for this address.',
+      whatWeFound: 'No live data connection to FEMA NFHL exists yet for this address.',
+      whyItMatters: 'Flood zone classification affects whether mortgage lenders require flood insurance.',
+      suggestedNextStep: 'Look up the official flood zone yourself at the FEMA Flood Map Service Center before making assumptions about insurance requirements.',
       actionItem: {
         type: 'disclosureLever',
         title: 'Flood Insurance Verification',
-        description: 'Supply FEMA Zone X determination letter to home insurance agent for optimal policy binder quote.',
-        why: 'Confirmed FEMA NFHL Zone X mapping.'
+        description: 'Ask your insurance agent to pull the official FEMA flood zone determination for this address.',
+        why: 'BeforeRegret has not yet independently verified FEMA flood zone data for this address.'
       },
-      lastUpdated: 'Updated 2024',
-      sourceAgency: 'FEMA Flood Map Service Center'
+      lastUpdated: 'Not yet integrated',
+      sourceAgency: 'FEMA Flood Map Service Center (not yet queried)'
     },
     {
       id: 'f_radon',
       subject: 'EPA Indoor Radon Hazard Zone',
       category: 'Environment',
-      status: 'CONFIRMED RECORD',
-      summaryText: 'USGS / EPA Map classifies county in Radon Zone 2 (Moderate risk, 2.0 to 4.0 pCi/L average).',
-      whatWeFound: 'USGS / EPA Radon map designates this county in Zone 2 with moderate indoor radon potential.',
-      whyItMatters: 'Radon is an odorless soil gas that accumulates in ground-contact living spaces.',
-      suggestedNextStep: 'Deploy a 48-hour continuous radon test monitor during home inspection contingency window.',
+      status: 'NOT YET VERIFIED',
+      summaryText: 'BeforeRegret does not yet have a live, verified connection to USGS/EPA radon zone data for this address.',
+      whatWeFound: 'No live data connection to the USGS/EPA radon dataset exists yet for this address.',
+      whyItMatters: 'Radon is an odorless soil gas that can accumulate in ground-contact living spaces.',
+      suggestedNextStep: 'Deploy a radon test monitor during your home inspection contingency window regardless of zone.',
       actionItem: {
         type: 'walkthroughItem',
         title: 'Radon Test Monitor Placement',
-        description: 'Ensure inspector places continuous radon monitor in lowest livable floor during contingency period.',
-        why: 'EPA Zone 2 moderate regional baseline.'
+        description: 'Ask your inspector to place a continuous radon monitor on the lowest livable floor during the contingency period.',
+        why: 'BeforeRegret has not yet independently verified radon zone data for this address.'
       },
-      lastUpdated: 'Updated 2024',
-      sourceAgency: 'USGS / EPA Indoor Radon Map'
+      lastUpdated: 'Not yet integrated',
+      sourceAgency: 'USGS / EPA Indoor Radon Map (not yet queried)'
     },
     {
       id: 'f_code',
       subject: 'Municipal Code Enforcement Standing',
       category: 'Neighborhood',
-      status: 'CONFIRMED RECORD',
-      summaryText: 'Zero open building code violations, health hazards, or active citations on file.',
-      whatWeFound: 'City Code Enforcement database shows zero active code violations or municipal citations for this parcel.',
-      whyItMatters: 'Clean code standing confirms no unaddressed municipal orders or property maintenance liens.',
-      suggestedNextStep: 'Retain code clearance record in closing files.',
-      lastUpdated: 'Updated Monthly',
-      sourceAgency: 'City Code Enforcement Department'
+      status: 'NOT YET VERIFIED',
+      summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal code enforcement records for this address.',
+      whatWeFound: 'No live data connection to this jurisdiction\'s code enforcement system exists yet.',
+      whyItMatters: 'Open code violations or municipal orders can affect closing and future liability.',
+      suggestedNextStep: 'Check the municipal code enforcement portal directly before closing.',
+      lastUpdated: 'Not yet integrated',
+      sourceAgency: 'City Code Enforcement Department (not yet queried)'
     }
   ];
 
   const sourceRegistry: SourceReferenceItem[] = [
-    { id: 'sr1', name: 'FEMA National Flood Hazard Layer (NFHL)', agency: 'Federal Emergency Management Agency', category: 'Hazards', status: 'CONFIRMED RECORD', url: 'https://msc.fema.gov/portal/search', lastUpdated: 'Updated 2024', description: 'Official flood hazard zone boundary mapping.' },
-    { id: 'sr2', name: 'Municipal Building Permit Registry', agency: 'City Building & Development Department', category: 'Property Records', status: 'CONFIRMED RECORD', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Digitized building, electrical, and mechanical permits.' },
-    { id: 'sr3', name: 'County Tax Assessor Parcel Database', agency: 'County Tax Assessor Office', category: 'Property Records', status: 'CONFIRMED RECORD', url: 'https://traviscad.org/propertysearch', lastUpdated: 'Updated 2025', description: 'Property tax assessment and land-use records.' },
-    { id: 'sr4', name: 'EPA Superfund & Toxics Inventory', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://enviro.epa.gov', lastUpdated: 'Updated Monthly', description: 'Hazardous waste and toxic release site mapping.' },
-    { id: 'sr5', name: 'City Code Enforcement Portal', agency: 'Municipal Code Compliance Division', category: 'Property Records', status: 'CONFIRMED RECORD', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Active and closed code violations or citations.' },
-    { id: 'sr6', name: 'USGS / EPA Indoor Radon Map', agency: 'U.S. Geological Survey & EPA', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://www.epa.gov/radon/find-information-about-local-radon-zones-and-radon-programs', lastUpdated: 'Updated 2024', description: 'County-level indoor radon hazard classification.' },
-    { id: 'sr7', name: 'USFS Wildfire Risk Dataset', agency: 'U.S. Forest Service', category: 'Hazards', status: 'CONFIRMED RECORD', url: 'https://www.wildfirerisk.org', lastUpdated: 'Updated 2024', description: 'Community wildfire hazard exposure mapping.' },
-    { id: 'sr8', name: 'NOAA Severe Storm Surge Database', agency: 'National Oceanic and Atmospheric Administration', category: 'Hazards', status: 'CONFIRMED RECORD', url: 'https://www.ncdc.noaa.gov/stormevents/', lastUpdated: 'Updated 2024', description: 'Storm surge and coastal wind hazard records.' },
-    { id: 'sr9', name: 'FAA Airport Noise Contours', agency: 'Federal Aviation Administration', category: 'Neighborhood', status: 'CONFIRMED RECORD', url: 'https://www.faa.gov/regulations_policies/policy_guidance/noise', lastUpdated: 'Updated 2024', description: 'Aircraft noise exposure and DNL flight path contours.' },
-    { id: 'sr10', name: 'DOT Capital Improvement Projects (STIP)', agency: 'State Department of Transportation', category: 'Neighborhood', status: 'CONFIRMED RECORD', url: 'https://www.fhwa.dot.gov/stip/', lastUpdated: 'Updated Monthly', description: '5-year regional highway and transit project pipeline.' },
-    { id: 'sr11', name: 'FCC Broadband & Fiber Coverage Map', agency: 'Federal Communications Commission', category: 'Utilities', status: 'CONFIRMED RECORD', url: 'https://broadbandmap.fcc.gov', lastUpdated: 'Updated 2025', description: 'Verified fiber and high-speed internet availability.' },
-    { id: 'sr12', name: 'EPA Safe Drinking Water Information System', agency: 'U.S. Environmental Protection Agency', category: 'Utilities', status: 'CONFIRMED RECORD', url: 'https://www.epa.gov/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting', lastUpdated: 'Updated Monthly', description: 'Public water utility quality and compliance records.' },
-    { id: 'sr13', name: 'USDA NRCS Soil Survey', agency: 'USDA Natural Resources Conservation Service', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://websoilsurvey.nrcs.usda.gov', lastUpdated: 'Updated 2024', description: 'Soil drainage and expansive clay soil stability data.' },
-    { id: 'sr14', name: 'USGS National Seismic Hazard Map', agency: 'U.S. Geological Survey', category: 'Hazards', status: 'CONFIRMED RECORD', url: 'https://earthquake.usgs.gov/hazards/hazmaps/', lastUpdated: 'Updated 2024', description: 'Ground motion acceleration and earthquake probability.' },
-    { id: 'sr15', name: 'U.S. EIA Power Grid Reliability Map', agency: 'U.S. Energy Information Administration', category: 'Utilities', status: 'CONFIRMED RECORD', url: 'https://www.eia.gov/electricity/gridmonitor/', lastUpdated: 'Updated 2025', description: 'Regional electric utility grid stability records.' },
-    { id: 'sr16', name: 'FRA Railroad Crossing Registry', agency: 'Federal Railroad Administration', category: 'Neighborhood', status: 'CONFIRMED RECORD', url: 'https://railroads.dot.gov/railroad-safety/accident-incident-reporting/emergency-notification-system-ens/ens', lastUpdated: 'Updated 2024', description: 'Active rail line proximity and train horn noise points.' },
-    { id: 'sr17', name: 'Municipal Water District & Sewer Authority', agency: 'Local Public Works Department', category: 'Utilities', status: 'CONFIRMED RECORD', url: 'https://www.austintexas.gov/department/austin-water', lastUpdated: 'Updated Monthly', description: 'Municipal water supply and sewer service connection.' },
-    { id: 'sr18', name: 'EPA AirNow Historical Air Quality Index', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://www.airnow.gov', lastUpdated: 'Updated 2025', description: '3-year particulate matter and ozone index averages.' },
-    { id: 'sr19', name: 'County Planning Commission Re-Zoning Dockets', agency: 'County Land Use & Planning Office', category: 'Neighborhood', status: 'CONFIRMED RECORD', url: 'https://www.austintexas.gov/department/development-services', lastUpdated: 'Updated Monthly', description: 'Pending commercial re-zoning and variance applications.' },
-    { id: 'sr20', name: 'USPS Address & Parcel Verification', agency: 'U.S. Postal Service', category: 'Property Records', status: 'CONFIRMED RECORD', url: 'https://tools.usps.com/zip-code-lookup.htm', lastUpdated: 'Updated Monthly', description: 'Standardized postal delivery point validation.' },
-    { id: 'sr21', name: 'USGS National Elevation & Slope Model', agency: 'U.S. Geological Survey', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://apps.nationalmap.gov/elevation/', lastUpdated: 'Updated 2024', description: 'Parcel topography and surface drainage slope gradient.' }
+    { id: 'sr1', name: 'FEMA National Flood Hazard Layer (NFHL)', agency: 'Federal Emergency Management Agency', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://msc.fema.gov/portal/search', lastUpdated: 'Updated 2024', description: 'Official flood hazard zone boundary mapping.' },
+    { id: 'sr2', name: 'Municipal Building Permit Registry', agency: 'City Building & Development Department', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Digitized building, electrical, and mechanical permits.' },
+    { id: 'sr3', name: 'County Tax Assessor Parcel Database', agency: 'County Tax Assessor Office', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://traviscad.org/propertysearch', lastUpdated: 'Updated 2025', description: 'Property tax assessment and land-use records.' },
+    { id: 'sr4', name: 'EPA Superfund & Toxics Inventory', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://enviro.epa.gov', lastUpdated: 'Updated Monthly', description: 'Hazardous waste and toxic release site mapping.' },
+    { id: 'sr5', name: 'City Code Enforcement Portal', agency: 'Municipal Code Compliance Division', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Active and closed code violations or citations.' },
+    { id: 'sr6', name: 'USGS / EPA Indoor Radon Map', agency: 'U.S. Geological Survey & EPA', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://www.epa.gov/radon/find-information-about-local-radon-zones-and-radon-programs', lastUpdated: 'Updated 2024', description: 'County-level indoor radon hazard classification.' },
+    { id: 'sr7', name: 'USFS Wildfire Risk Dataset', agency: 'U.S. Forest Service', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://www.wildfirerisk.org', lastUpdated: 'Updated 2024', description: 'Community wildfire hazard exposure mapping.' },
+    { id: 'sr8', name: 'NOAA Severe Storm Surge Database', agency: 'National Oceanic and Atmospheric Administration', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://www.ncdc.noaa.gov/stormevents/', lastUpdated: 'Updated 2024', description: 'Storm surge and coastal wind hazard records.' },
+    { id: 'sr9', name: 'FAA Airport Noise Contours', agency: 'Federal Aviation Administration', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.faa.gov/regulations_policies/policy_guidance/noise', lastUpdated: 'Updated 2024', description: 'Aircraft noise exposure and DNL flight path contours.' },
+    { id: 'sr10', name: 'DOT Capital Improvement Projects (STIP)', agency: 'State Department of Transportation', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.fhwa.dot.gov/stip/', lastUpdated: 'Updated Monthly', description: '5-year regional highway and transit project pipeline.' },
+    { id: 'sr11', name: 'FCC Broadband & Fiber Coverage Map', agency: 'Federal Communications Commission', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://broadbandmap.fcc.gov', lastUpdated: 'Updated 2025', description: 'Verified fiber and high-speed internet availability.' },
+    { id: 'sr12', name: 'EPA Safe Drinking Water Information System', agency: 'U.S. Environmental Protection Agency', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.epa.gov/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting', lastUpdated: 'Updated Monthly', description: 'Public water utility quality and compliance records.' },
+    { id: 'sr13', name: 'USDA NRCS Soil Survey', agency: 'USDA Natural Resources Conservation Service', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://websoilsurvey.nrcs.usda.gov', lastUpdated: 'Updated 2024', description: 'Soil drainage and expansive clay soil stability data.' },
+    { id: 'sr14', name: 'USGS National Seismic Hazard Map', agency: 'U.S. Geological Survey', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://earthquake.usgs.gov/hazards/hazmaps/', lastUpdated: 'Updated 2024', description: 'Ground motion acceleration and earthquake probability.' },
+    { id: 'sr15', name: 'U.S. EIA Power Grid Reliability Map', agency: 'U.S. Energy Information Administration', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.eia.gov/electricity/gridmonitor/', lastUpdated: 'Updated 2025', description: 'Regional electric utility grid stability records.' },
+    { id: 'sr16', name: 'FRA Railroad Crossing Registry', agency: 'Federal Railroad Administration', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://railroads.dot.gov/railroad-safety/accident-incident-reporting/emergency-notification-system-ens/ens', lastUpdated: 'Updated 2024', description: 'Active rail line proximity and train horn noise points.' },
+    { id: 'sr17', name: 'Municipal Water District & Sewer Authority', agency: 'Local Public Works Department', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.austintexas.gov/department/austin-water', lastUpdated: 'Updated Monthly', description: 'Municipal water supply and sewer service connection.' },
+    { id: 'sr18', name: 'EPA AirNow Historical Air Quality Index', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://www.airnow.gov', lastUpdated: 'Updated 2025', description: '3-year particulate matter and ozone index averages.' },
+    { id: 'sr19', name: 'County Planning Commission Re-Zoning Dockets', agency: 'County Land Use & Planning Office', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.austintexas.gov/department/development-services', lastUpdated: 'Updated Monthly', description: 'Pending commercial re-zoning and variance applications.' },
+    { id: 'sr20', name: 'USPS Address & Parcel Verification', agency: 'U.S. Postal Service', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://tools.usps.com/zip-code-lookup.htm', lastUpdated: 'Updated Monthly', description: 'Standardized postal delivery point validation.' },
+    { id: 'sr21', name: 'USGS National Elevation & Slope Model', agency: 'U.S. Geological Survey', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://apps.nationalmap.gov/elevation/', lastUpdated: 'Updated 2024', description: 'Parcel topography and surface drainage slope gradient.' }
   ];
 
   return {
@@ -212,8 +212,8 @@ export function createFallbackReport(
       reportVersion: 'v2.0.0-prod'
     },
     pricing: {
-      amount: summaryData?.price || 29,
-      usefulSourcesCount: 21,
+      amount: summaryData?.price || 0,
+      usefulSourcesCount: 0,
       totalSourcesCount: 21
     },
     propertyInfo: {
@@ -234,15 +234,11 @@ export function createFallbackReport(
     // Bottom Line Synthesis
     bottomLine: {
       worthVerifyingSummary: [
-        'Roof Replacement Permit: Public permit archive contains no permit record for roof replacement. Ask seller for contractor invoices.',
-        'HVAC Mechanical System: No mechanical replacement permit recorded in municipal building logs. Have inspector check unit manufacturing date.'
+        'Roof Replacement Permit: Not yet independently verified. Ask the seller for contractor invoices and check the municipal permit portal directly.',
+        'HVAC Mechanical System: Not yet independently verified. Have your inspector check the unit\'s manufacturing date during the walkthrough.'
       ],
-      likelyRoutineSummary: [
-        'Main Electrical Panel: Permitted 200A service panel upgrade recorded and passed inspection in 2015.',
-        'FEMA Flood Risk: Classified in Zone X (Minimal flood hazard, outside 500-year zone).',
-        'Municipal Standing: Zero open code violations or active citations on file.'
-      ],
-      biggerPicture: 'Public record synthesis reveals a structurally sound parcel with clean municipal code standing. Primary buyer verification priorities center on roof replacement age documentation and central AC mechanical service history.'
+      likelyRoutineSummary: [],
+      biggerPicture: 'BeforeRegret does not yet have a live, verified data connection to government records for this address. This checklist links you directly to the official public sources below so you can verify each item yourself before closing.'
     },
 
     // Source Registry

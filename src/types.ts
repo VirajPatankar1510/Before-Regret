@@ -4,8 +4,8 @@ export type ViewState =
   | 'SUMMARY' 
   | 'REPORT';
 
-export type ConfidenceLevel = 'CONFIRMED RECORD' | 'NO RECORD FOUND' | 'Confirmed Record' | 'No Record Found';
-export type CanonicalStatus = 'CONFIRMED RECORD' | 'NO RECORD FOUND';
+export type ConfidenceLevel = 'CONFIRMED RECORD' | 'NO RECORD FOUND' | 'Confirmed Record' | 'No Record Found' | 'NOT YET VERIFIED';
+export type CanonicalStatus = 'CONFIRMED RECORD' | 'NO RECORD FOUND' | 'NOT YET VERIFIED';
 
 export interface ActionItem {
   type: 'sellerQuestion' | 'walkthroughItem' | 'disclosureLever';
@@ -273,6 +273,7 @@ export interface PropertyReport {
   id: string;
   isNonResidential?: boolean;
   rejectionReason?: string;
+  blockedAtLayer?: 1 | 2 | 3 | null;
   generatedAt: string;
   readingTimeMinutes: number;
   reportVersion: string;
