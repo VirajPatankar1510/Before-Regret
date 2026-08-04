@@ -363,7 +363,7 @@ export function App() {
       });
     } else if (currentStep === 'REPORT') {
       applyHeadSeo({
-        title: `Property Research Report | ${report?.propertyInfo?.address || 'Subject Property'}`,
+        title: `Property Insights | ${report?.propertyInfo?.address || 'Subject Property'}`,
         description: 'Private multi-hazard public record research synthesis for subject property.',
         canonicalUrl: `https://beforeregret.com/report/${report?.id || 'private'}`,
         robotsDirective: 'noindex, nofollow'

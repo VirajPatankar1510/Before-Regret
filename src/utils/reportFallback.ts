@@ -19,7 +19,7 @@ export function createFallbackSummary(property: PropertySearchResult | null): Re
     address: addr,
     totalSourcesSearched: 21,
     usefulSourcesFound: 21,
-    estimatedPages: 'Executive Property Insights (8 Min Read)',
+    estimatedPages: 'Executive Property Insights',
     price: 29,
     priceRationale: '21 verified public data sources contain active records for this parcel.',
     includedCategories: [
@@ -194,10 +194,10 @@ export function createFallbackReport(
     { id: 'sr14', name: 'USGS National Seismic Hazard Map', agency: 'U.S. Geological Survey', category: 'Hazards', status: 'CONFIRMED RECORD', url: 'https://www.usgs.gov/programs/earthquake-hazards/hazards', lastUpdated: 'Updated 2024', description: 'Ground motion acceleration and earthquake probability.' },
     { id: 'sr15', name: 'U.S. EIA Power Grid Reliability Map', agency: 'U.S. Energy Information Administration', category: 'Utilities', status: 'CONFIRMED RECORD', url: 'https://www.eia.gov/', lastUpdated: 'Updated 2025', description: 'Regional electric utility grid stability records.' },
     { id: 'sr16', name: 'FRA Railroad Crossing Registry', agency: 'Federal Railroad Administration', category: 'Neighborhood', status: 'CONFIRMED RECORD', url: 'https://railroads.dot.gov/safety-data', lastUpdated: 'Updated 2024', description: 'Active rail line proximity and train horn noise points.' },
-    { id: 'sr17', name: 'Municipal Water District & Sewer Authority', agency: 'Local Public Works Department', category: 'Utilities', status: 'CONFIRMED RECORD', url: 'https://www.usa.gov/public-records', lastUpdated: 'Updated Monthly', description: 'Municipal water supply and sewer service connection.' },
+    { id: 'sr17', name: 'Municipal Water District & Sewer Authority', agency: 'Local Public Works Department', category: 'Utilities', status: 'CONFIRMED RECORD', url: 'https://www.austintexas.gov/department/austin-water', lastUpdated: 'Updated Monthly', description: 'Municipal water supply and sewer service connection.' },
     { id: 'sr18', name: 'EPA AirNow Historical Air Quality Index', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://www.airnow.gov/', lastUpdated: 'Updated 2025', description: '3-year particulate matter and ozone index averages.' },
-    { id: 'sr19', name: 'County Planning Commission Re-Zoning Dockets', agency: 'County Land Use & Planning Office', category: 'Neighborhood', status: 'CONFIRMED RECORD', url: 'https://www.usa.gov/public-records', lastUpdated: 'Updated Monthly', description: 'Pending commercial re-zoning and variance applications.' },
-    { id: 'sr20', name: 'USPS Address & Parcel Verification', agency: 'U.S. Postal Service', category: 'Property Records', status: 'CONFIRMED RECORD', url: 'https://www.usps.com/', lastUpdated: 'Updated Monthly', description: 'Standardized postal delivery point validation.' },
+    { id: 'sr19', name: 'County Planning Commission Re-Zoning Dockets', agency: 'County Land Use & Planning Office', category: 'Neighborhood', status: 'CONFIRMED RECORD', url: 'https://www.traviscountytx.gov/planning', lastUpdated: 'Updated Monthly', description: 'Pending commercial re-zoning and variance applications.' },
+    { id: 'sr20', name: 'USPS Address & Parcel Verification', agency: 'U.S. Postal Service', category: 'Property Records', status: 'CONFIRMED RECORD', url: 'https://tools.usps.com/zip-code-lookup.htm', lastUpdated: 'Updated Monthly', description: 'Standardized postal delivery point validation.' },
     { id: 'sr21', name: 'USGS National Elevation & Slope Model', agency: 'U.S. Geological Survey', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://www.usgs.gov/3d-elevation-program', lastUpdated: 'Updated 2024', description: 'Parcel topography and surface drainage slope gradient.' }
   ];
 
