@@ -37,19 +37,22 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
           {/* Main Risk-Framed Headline & Subhead */}
           <div className="space-y-4">
             <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal text-white tracking-tight leading-[1.15]">
-              Could You Regret Moving Here?
+              Could you regret moving here?
             </h1>
             <p className="text-base sm:text-xl text-slate-300 font-sans font-normal max-w-2xl mx-auto leading-relaxed">
-              BeforeRegret synthesizes 25+ government databases into one objective public-record report — so you uncover missing permits, flood risks, and environmental hazards before making an offer.
+              Search any US residential address. We cross-reference 20+ government databases and give you a plain-language report — flood risk, permits, noise, environment, broadband — before you make an offer or sign a lease.
             </p>
           </div>
 
-          {/* Search Box Container (Preserved Untouched) */}
+          {/* Search Box Container */}
           <div ref={searchBoxRef} id="address-search-box" className="pt-2">
             <AddressSearchBox onSelectProperty={onSelectProperty} />
           </div>
 
           {/* Subtext */}
+          <p className="text-xs sm:text-sm text-slate-400 font-medium">
+            Your first report is free. No credit card required.
+          </p>
 
         </div>
       </section>

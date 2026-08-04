@@ -15,10 +15,10 @@ export const ClosingCtaSection: React.FC<ClosingCtaSectionProps> = ({ onScrollTo
 
         <div className="relative z-10 max-w-3xl mx-auto space-y-4">
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-white tracking-tight leading-tight">
-            Check Public Records Before Signing
+            Check public records before signing
           </h2>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-            Enter any US residential address to review municipal permits, FEMA flood zones, and environmental records before making an offer.
+            Search any US address to verify flood risk, permits, noise, and environment before you make an offer or sign a lease. Your first report is free.
           </p>
         </div>
 

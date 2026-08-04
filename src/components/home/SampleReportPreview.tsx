@@ -32,8 +32,8 @@ export const SampleReportPreview: React.FC = () => {
         <div className="flex items-center gap-3">
           <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
           <div>
-            <span className="font-bold uppercase tracking-wider text-amber-800 mr-2">Sample Report:</span>
-            <span>Illustrative Example, Not a Real Property. Address: 404 Evergreen Way, Oakridge, VA 22101.</span>
+            <span className="font-bold uppercase tracking-wider text-amber-800 mr-2">Sample Report — Illustrative Example. Not a Real Property.</span>
+            <span>Address: 123 Example Street, Anytown, TX 00000.</span>
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@ export const SampleReportPreview: React.FC = () => {
                 BeforeRegret Property Synthesis
               </div>
               <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">
-                404 Evergreen Way, Oakridge, VA 22101
+                123 Example Street, Anytown, TX 00000
               </h3>
               <div className="text-xs text-slate-300 mt-1 flex flex-wrap items-center gap-3 font-mono">
                 <span>Fairfax County</span>

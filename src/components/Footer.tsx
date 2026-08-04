@@ -25,16 +25,6 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {onNavigate && (
-              <button
-                onClick={() => onNavigate('/admin/seo')}
-                className="px-3.5 py-2.5 bg-slate-900 border border-slate-800 hover:border-blue-500 text-blue-400 hover:text-white font-mono font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                <span>pSEO Admin Engine</span>
-              </button>
-            )}
-
             <button
               onClick={onNewSearch}
               className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md"
@@ -90,6 +80,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                 <span>Legal & Support Policies</span>
               </div>
               <ul className="space-y-1">
+                <li><button onClick={() => onNavigate('/vendors')} className="hover:text-white cursor-pointer font-bold text-amber-300">Local Business Placements (/vendors)</button></li>
                 <li><button onClick={() => onNavigate('/support')} className="hover:text-white cursor-pointer font-medium text-slate-300">Customer Support (/support)</button></li>
                 <li><button onClick={() => onNavigate('/terms')} className="hover:text-white cursor-pointer text-slate-400">Terms of Service (/terms)</button></li>
                 <li><button onClick={() => onNavigate('/privacy')} className="hover:text-white cursor-pointer text-slate-400">Privacy Policy (/privacy)</button></li>
