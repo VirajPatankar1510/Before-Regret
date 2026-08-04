@@ -144,7 +144,8 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
       const response = await fetch(
         `/api/geocode/reverse?lat=${lat}&lon=${lon}`
       );
-      if (response.ok) {
+      const contentType = response.headers.get('content-type') || '';
+      if (response.ok && contentType.includes('application/json')) {
         const item = await response.json();
         const addr = item.address || {};
 

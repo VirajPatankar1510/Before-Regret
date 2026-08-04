@@ -68,34 +68,43 @@ async function startServer() {
     });
   });
 
-  // Map geocoding proxy (LocationIQ) -- keeps the API key server-side only, never bundled into
-  // the browser JS. LocationIQ's Search/Reverse APIs are explicitly compatible with Nominatim's
-  // response shape, so the frontend map code that parses these responses (address components,
-  // lat/lon, class/type) needed no changes beyond pointing at these endpoints instead of
-  // nominatim.openstreetmap.org directly. This replaces direct calls to Nominatim's free public
-  // instance for map interactivity (search-as-you-type, click/drag-to-address) -- Nominatim's
-  // usage policy prohibits the kind of unthrottled production traffic a paid product generates
-  // against it, which is a separate concern from Layer 1 (which already uses the Census
-  // Bureau geocoder, not Nominatim, for the actual residential-address validation decision).
-  //
-  // Does NOT silently fall back to calling Nominatim directly if no key is configured -- that
-  // would just reintroduce the exact problem this proxy exists to remove. Get a free API key at
-  // https://locationiq.com (5,000 requests/day free tier as of this writing) and set
-  // LOCATIONIQ_API_KEY in your environment.
+  // Map geocoding proxy (LocationIQ with server-side Nominatim fallback)
+  // Keeps the API key server-side only. If LOCATIONIQ_API_KEY is configured, queries LocationIQ.
+  // If not configured, safely falls back to Nominatim with a proper User-Agent header from the server.
   app.get("/api/geocode/search", async (req, res) => {
-    const apiKey = process.env.LOCATIONIQ_API_KEY;
-    if (!apiKey) {
-      res.status(503).json({ error: "Map search is not configured. Set LOCATIONIQ_API_KEY." });
-      return;
-    }
     const { q, limit, addressdetails, countrycodes } = req.query;
     if (!q || typeof q !== "string") {
       res.status(400).json({ error: "q is required." });
       return;
     }
+
+    const apiKey = process.env.LOCATIONIQ_API_KEY;
+    if (apiKey) {
+      try {
+        const params = new URLSearchParams({
+          key: apiKey,
+          q,
+          format: "json",
+          addressdetails: (addressdetails as string) || "1",
+          limit: (limit as string) || "5",
+        });
+        if (countrycodes && typeof countrycodes === "string") {
+          params.set("countrycodes", countrycodes);
+        }
+        const upstream = await fetch(`https://us1.locationiq.com/v1/search?${params.toString()}`);
+        if (upstream.ok) {
+          const data = await upstream.json();
+          res.json(data);
+          return;
+        }
+      } catch (err) {
+        console.error("[Geocode LocationIQ Search Error]:", err);
+      }
+    }
+
+    // Fallback to OpenStreetMap Nominatim with proper User-Agent
     try {
       const params = new URLSearchParams({
-        key: apiKey,
         q,
         format: "json",
         addressdetails: (addressdetails as string) || "1",
@@ -104,7 +113,9 @@ async function startServer() {
       if (countrycodes && typeof countrycodes === "string") {
         params.set("countrycodes", countrycodes);
       }
-      const upstream = await fetch(`https://us1.locationiq.com/v1/search?${params.toString()}`);
+      const upstream = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
+        headers: { "User-Agent": "BeforeRegret-App/1.0 (contact@beforeregret.com)" }
+      });
       if (!upstream.ok) {
         res.status(upstream.status).json({ error: "Map search provider error." });
         return;
@@ -118,26 +129,46 @@ async function startServer() {
   });
 
   app.get("/api/geocode/reverse", async (req, res) => {
-    const apiKey = process.env.LOCATIONIQ_API_KEY;
-    if (!apiKey) {
-      res.status(503).json({ error: "Map search is not configured. Set LOCATIONIQ_API_KEY." });
-      return;
-    }
     const { lat, lon } = req.query;
     if (!lat || !lon) {
       res.status(400).json({ error: "lat and lon are required." });
       return;
     }
+
+    const apiKey = process.env.LOCATIONIQ_API_KEY;
+    if (apiKey) {
+      try {
+        const params = new URLSearchParams({
+          key: apiKey,
+          lat: lat as string,
+          lon: lon as string,
+          format: "json",
+          addressdetails: "1",
+          zoom: "18",
+        });
+        const upstream = await fetch(`https://us1.locationiq.com/v1/reverse?${params.toString()}`);
+        if (upstream.ok) {
+          const data = await upstream.json();
+          res.json(data);
+          return;
+        }
+      } catch (err) {
+        console.error("[Geocode LocationIQ Reverse Error]:", err);
+      }
+    }
+
+    // Fallback to OpenStreetMap Nominatim with proper User-Agent
     try {
       const params = new URLSearchParams({
-        key: apiKey,
         lat: lat as string,
         lon: lon as string,
         format: "json",
         addressdetails: "1",
         zoom: "18",
       });
-      const upstream = await fetch(`https://us1.locationiq.com/v1/reverse?${params.toString()}`);
+      const upstream = await fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`, {
+        headers: { "User-Agent": "BeforeRegret-App/1.0 (contact@beforeregret.com)" }
+      });
       if (!upstream.ok) {
         res.status(upstream.status).json({ error: "Map search provider error." });
         return;
