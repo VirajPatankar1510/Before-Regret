@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { 
-  Building2, Loader2, AlertCircle, MapPin, 
-  Layers, Navigation, CheckCircle2, ArrowRight, Search 
+import {
+  Loader2, AlertCircle, MapPin,
+  Layers, CheckCircle2, ArrowRight, Search
 } from 'lucide-react';
 import { PropertySearchResult } from '../types';
 
@@ -11,83 +11,10 @@ interface AddressSearchBoxProps {
   onSelectProperty: (property: PropertySearchResult) => void;
 }
 
-const SAMPLE_PROPERTIES: PropertySearchResult[] = [
-  {
-    placeId: 'sample_austin_society',
-    formattedAddress: 'Oakridge Residential Society, 1204 Oakridge Dr, Austin, TX 78701',
-    streetNumber: '1204',
-    streetName: 'Oakridge Dr',
-    city: 'Austin',
-    state: 'TX',
-    zipCode: '78701',
-    county: 'Travis County',
-    country: 'United States',
-    lat: 30.2672,
-    lon: -97.7431,
-    propertyType: 'Residential Society / Complex',
-    displayName: 'Oakridge Residential Society, 1204 Oakridge Dr, Austin, TX 78701'
-  },
-  {
-    placeId: 'sample_sf_condo',
-    formattedAddress: 'Sutter Street Condo Complex, 450 Sutter St, San Francisco, CA 94108',
-    streetNumber: '450',
-    streetName: 'Sutter St',
-    city: 'San Francisco',
-    state: 'CA',
-    zipCode: '94108',
-    county: 'San Francisco County',
-    country: 'United States',
-    lat: 37.7897,
-    lon: -122.4080,
-    propertyType: 'Condo / Townhouse Complex',
-    displayName: 'Sutter Street Condo Complex, 450 Sutter St, San Francisco, CA 94108'
-  },
-  {
-    placeId: 'sample_miami_enclave',
-    formattedAddress: 'Ocean Palms Residential Enclave, 1100 Ocean Dr, Miami Beach, FL 33139',
-    streetNumber: '1100',
-    streetName: 'Ocean Dr',
-    city: 'Miami Beach',
-    state: 'FL',
-    zipCode: '33139',
-    county: 'Miami-Dade County',
-    country: 'United States',
-    lat: 25.7820,
-    lon: -80.1303,
-    propertyType: 'Residential Society / Complex',
-    displayName: 'Ocean Palms Residential Enclave, 1100 Ocean Dr, Miami Beach, FL 33139'
-  },
-  {
-    placeId: 'sample_willow_maple',
-    formattedAddress: 'Willow & Maple, 6918 Willow Street NW, Washington, DC 20012',
-    streetNumber: '6918',
-    streetName: 'Willow St NW',
-    city: 'Washington',
-    state: 'DC',
-    zipCode: '20012',
-    county: 'District of Columbia',
-    country: 'United States',
-    lat: 38.9760,
-    lon: -77.0272,
-    propertyType: 'Apartment / Condo Complex',
-    displayName: 'Willow & Maple, 6918 Willow Street NW, Washington, DC 20012'
-  },
-  {
-    placeId: 'sample_glade_laurel',
-    formattedAddress: 'The Glade on Laurel, 6896 Laurel Street NW, Washington, DC 20012',
-    streetNumber: '6896',
-    streetName: 'Laurel St NW',
-    city: 'Washington',
-    state: 'DC',
-    zipCode: '20012',
-    county: 'District of Columbia',
-    country: 'United States',
-    lat: 38.9752,
-    lon: -77.0268,
-    propertyType: 'Apartment / Condo Complex',
-    displayName: 'The Glade on Laurel, 6896 Laurel Street NW, Washington, DC 20012'
-  }
-];
+// Neutral continental-US view shown before the user has searched for anything -- no property is
+// pre-selected on load (a prior version defaulted to a sample Austin address, which meant the
+// "Analyze Property" button was usable before the user had chosen anything).
+const DEFAULT_VIEW = { lat: 39.8, lon: -98.5, zoom: 3.4 };
 
 // Real residential-only validation gate: calls the backend, which runs Census geocoder
 // (Layer 1) + HIFLD-successor federal/military/protected-area checks (Layer 2) + the
@@ -128,11 +55,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<maplibregl.Map | null>(null);
   const markerInstanceRef = useRef<maplibregl.Marker | null>(null);
-  const buildingMarkersRef = useRef<maplibregl.Marker[]>([]);
 
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
-  const [isLoadingBuildings, setIsLoadingBuildings] = useState(false);
-  const [detectedBuildingCount, setDetectedBuildingCount] = useState(0);
   const [isSatelliteView, setIsSatelliteView] = useState(false);
   const [selectedPinResult, setSelectedPinResult] = useState<PropertySearchResult | null>(() => {
     try {
@@ -162,7 +86,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Synchronize draft map selection with sessionStorage
+  // Synchronize draft selection with sessionStorage
   useEffect(() => {
     try {
       if (selectedPinResult || mapSearchQuery) {
@@ -176,9 +100,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     } catch (e) {}
   }, [selectedPinResult, mapSearchQuery]);
 
-  // Layer 4 gate: every time a pin/search result is selected, synchronously (from the user's
-  // point of view) re-verify it against the real backend gate (Census geocoder + government
-  // facility check + jurisdiction support) before the "Analyze Property" button can be enabled.
+  // Layer 4 gate: every time a search result is selected, synchronously (from the user's point
+  // of view) re-verify it against the real backend gate (Census geocoder + government facility
+  // check + jurisdiction support) before the "Analyze Property" button can be enabled.
   useEffect(() => {
     if (!selectedPinResult) {
       setGateState(null);
@@ -189,7 +113,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
     const addressForGate = selectedPinResult.formattedAddress || selectedPinResult.displayName;
     validateAddressGate(addressForGate, selectedPinResult.city, selectedPinResult.state).then((outcome) => {
-      // Ignore stale responses if the user already selected a different pin.
+      // Ignore stale responses if the user already selected a different result.
       if (requestId !== gateRequestIdRef.current) return;
       setGateState({ status: outcome.passed ? 'passed' : 'blocked', message: outcome.message });
     });
@@ -225,13 +149,107 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     return () => clearTimeout(timer);
   }, [mapSearchQuery]);
 
+  const updateMarkerPosition = (lat: number, lon: number) => {
+    if (!mapInstanceRef.current) return;
+
+    if (!markerInstanceRef.current) {
+      const pinEl = document.createElement('div');
+      pinEl.innerHTML = `
+        <div class="relative flex flex-col items-center justify-end transform -translate-x-1/2 -translate-y-full" style="width:36px; height:44px;">
+          <div class="w-9 h-9 bg-blue-600 border-2 border-white text-white rounded-full flex items-center justify-center shadow-2xl ring-4 ring-blue-500/30">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-blue-600 -mt-[1px]"></div>
+        </div>
+      `;
+
+      // Static confirmation pin only -- not draggable. Selecting a different address means
+      // searching again, not repositioning this marker.
+      const marker = new maplibregl.Marker({
+        element: pinEl,
+        draggable: false,
+        anchor: 'bottom'
+      })
+        .setLngLat([lon, lat])
+        .addTo(mapInstanceRef.current);
+
+      markerInstanceRef.current = marker;
+    } else {
+      markerInstanceRef.current.setLngLat([lon, lat]);
+    }
+  };
+
+  // Reverse geocode a resolved coordinate into a display-ready property result. Only called
+  // after a search selection, not from any map interaction (the map is a static confirmation
+  // preview, not an input).
+  const fetchAddressFromCoords = async (lat: number, lon: number) => {
+    setIsReverseGeocoding(true);
+
+    try {
+      const response = await fetch(`/api/geocode/reverse?lat=${lat}&lon=${lon}`);
+      const contentType = response.headers.get('content-type') || '';
+      if (response.ok && contentType.includes('application/json')) {
+        const item = await response.json();
+        const addr = item.address || {};
+        const city = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.hamlet || addr.county || '';
+        const state = addr.state_code ? addr.state_code.toUpperCase() : (addr.state || '');
+        const zip = addr.postcode || '';
+        const county = addr.county || '';
+        const houseNumber = addr.house_number || '';
+        const road = addr.road || addr.street || addr.pedestrian || addr.footway || '';
+        const street = [houseNumber, road].filter(Boolean).join(' ');
+
+        let pType: PropertySearchResult['propertyType'] = 'Residential Society / Complex';
+        const itemTypeLower = (item.type || '').toLowerCase();
+        const displayNameLower = (item.display_name || '').toLowerCase();
+
+        if (itemTypeLower === 'condominium' || displayNameLower.includes('condo') || displayNameLower.includes('townhouse')) {
+          pType = 'Condo / Townhouse Complex';
+        } else if (itemTypeLower === 'apartments' || displayNameLower.includes('apartment') || displayNameLower.includes('complex') || displayNameLower.includes('tower')) {
+          pType = 'Apartment / Condo Complex';
+        } else if (displayNameLower.includes('society') || displayNameLower.includes('residence') || displayNameLower.includes('enclave') || displayNameLower.includes('heights') || displayNameLower.includes('villas')) {
+          pType = 'Residential Society / Complex';
+        } else {
+          pType = 'Single Family Residential';
+        }
+
+        let cleanDisplayName = item.display_name;
+        if (street && city && state) {
+          cleanDisplayName = zip ? `${street}, ${city}, ${state} ${zip}` : `${street}, ${city}, ${state}`;
+        } else {
+          cleanDisplayName = item.display_name.replace(/,\s*United States$/i, '');
+        }
+
+        setSelectedPinResult({
+          placeId: `search_${item.place_id || Math.random().toString(36).substring(7)}`,
+          formattedAddress: cleanDisplayName,
+          streetNumber: houseNumber,
+          streetName: road,
+          city,
+          state,
+          zipCode: zip,
+          county,
+          country: 'United States',
+          lat,
+          lon,
+          propertyType: pType,
+          displayName: cleanDisplayName
+        });
+      }
+    } catch (err) {
+      console.error('Reverse geocoding error:', err);
+    } finally {
+      setIsReverseGeocoding(false);
+    }
+  };
+
   const selectLocation = (lat: number, lon: number, name?: string, item?: any) => {
     setShowSuggestions(false);
     if (name) setMapSearchQuery(name);
     if (mapInstanceRef.current && !isNaN(lat) && !isNaN(lon)) {
-      mapInstanceRef.current.flyTo({ center: [lon, lat], zoom: 18, duration: 1200 });
+      mapInstanceRef.current.jumpTo({ center: [lon, lat], zoom: 17 });
       updateMarkerPosition(lat, lon);
-      
+
       if (item && item.address) {
         const addr = item.address || {};
         const city = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.hamlet || addr.county || '';
@@ -258,7 +276,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         const cleanDisplayName = item.display_name.replace(/,\s*United States$/i, '');
 
         setSelectedPinResult({
-          placeId: `map_pin_${item.place_id || Math.random().toString(36).substring(7)}`,
+          placeId: `search_${item.place_id || Math.random().toString(36).substring(7)}`,
           formattedAddress: cleanDisplayName,
           streetNumber: houseNumber,
           streetName: road,
@@ -298,7 +316,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           const lon = parseFloat(first.lon);
           selectLocation(lat, lon, first.display_name, first);
         } else {
-          setMapSearchError('Location not found. Please try entering a city, address, or society name.');
+          setMapSearchError('Location not found. Please try entering a full street address.');
         }
       }
     } catch (err) {
@@ -309,184 +327,17 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     }
   };
 
-  // Reverse geocode
-  const fetchAddressFromCoords = async (lat: number, lon: number) => {
-    setIsReverseGeocoding(true);
-
-    try {
-      const response = await fetch(
-        `/api/geocode/reverse?lat=${lat}&lon=${lon}`
-      );
-      const contentType = response.headers.get('content-type') || '';
-      if (response.ok && contentType.includes('application/json')) {
-        const item = await response.json();
-        const addr = item.address || {};
-        const city = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.hamlet || addr.county || '';
-        const state = addr.state_code ? addr.state_code.toUpperCase() : (addr.state || '');
-        const zip = addr.postcode || '';
-        const county = addr.county || '';
-        const houseNumber = addr.house_number || '';
-        const road = addr.road || addr.street || addr.pedestrian || addr.footway || '';
-        const street = [houseNumber, road].filter(Boolean).join(' ');
-
-        let pType: PropertySearchResult['propertyType'] = 'Residential Society / Complex';
-        const itemTypeLower = (item.type || '').toLowerCase();
-        const displayNameLower = (item.display_name || '').toLowerCase();
-
-        if (itemTypeLower === 'condominium' || displayNameLower.includes('condo') || displayNameLower.includes('townhouse')) {
-          pType = 'Condo / Townhouse Complex';
-        } else if (itemTypeLower === 'apartments' || displayNameLower.includes('apartment') || displayNameLower.includes('complex') || displayNameLower.includes('tower')) {
-          pType = 'Apartment / Condo Complex';
-        } else if (displayNameLower.includes('society') || displayNameLower.includes('residence') || displayNameLower.includes('enclave') || displayNameLower.includes('heights') || displayNameLower.includes('villas')) {
-          pType = 'Residential Society / Complex';
-        } else {
-          pType = 'Single Family Residential';
-        }
-
-        let cleanDisplayName = item.display_name;
-        if (street && city && state) {
-          cleanDisplayName = zip ? `${street}, ${city}, ${state} ${zip}` : `${street}, ${city}, ${state}`;
-        } else {
-          cleanDisplayName = item.display_name.replace(/,\s*United States$/i, '');
-        }
-
-        setSelectedPinResult({
-          placeId: `map_pin_${item.place_id || Math.random().toString(36).substring(7)}`,
-          formattedAddress: cleanDisplayName,
-          streetNumber: houseNumber,
-          streetName: road,
-          city,
-          state,
-          zipCode: zip,
-          county,
-          country: 'United States',
-          lat,
-          lon,
-          propertyType: pType,
-          displayName: cleanDisplayName
-        });
-      }
-    } catch (err) {
-      console.error('Map pin reverse geocoding error:', err);
-    } finally {
-      setIsReverseGeocoding(false);
-    }
-  };
-
-  // Fetch nearby residential buildings
-  const fetchNearbyBuildings = async (map: maplibregl.Map) => {
-    if (map.getZoom() < 14) {
-      buildingMarkersRef.current.forEach(m => m.remove());
-      buildingMarkersRef.current = [];
-      setDetectedBuildingCount(0);
-      return;
-    }
-
-    setIsLoadingBuildings(true);
-    const bounds = map.getBounds();
-    const s = bounds.getSouth();
-    const w = bounds.getWest();
-    const n = bounds.getNorth();
-    const e = bounds.getEast();
-
-    // Strict Overpass query ONLY for residential buildings & societies
-    const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json][timeout:12];(` +
-      `way["building"="apartments"]["name"](${s},${w},${n},${e});` +
-      `way["building"="residential"]["name"](${s},${w},${n},${e});` +
-      `way["building"="condominium"]["name"](${s},${w},${n},${e});` +
-      `way["building"="townhouse"]["name"](${s},${w},${n},${e});` +
-      `way["landuse"="residential"]["name"](${s},${w},${n},${e});` +
-      `way["place"="housing_estate"]["name"](${s},${w},${n},${e});` +
-      `relation["building"="apartments"]["name"](${s},${w},${n},${e});` +
-      `relation["building"="residential"]["name"](${s},${w},${n},${e});` +
-      `relation["place"="housing_estate"]["name"](${s},${w},${n},${e});` +
-      `node["place"="housing_estate"]["name"](${s},${w},${n},${e});` +
-      `);out center 35;`;
-
-    try {
-      const res = await fetch(overpassUrl);
-      if (res.ok) {
-        const data = await res.json();
-        if (!mapInstanceRef.current || mapInstanceRef.current !== map) return;
-
-        try {
-          buildingMarkersRef.current.forEach(m => m.remove());
-          buildingMarkersRef.current = [];
-
-          let count = 0;
-          const elements = data.elements || [];
-
-          elements.forEach((el: any) => {
-            const name = el.tags?.name || el.tags?.['building:name'] || el.tags?.description;
-            if (!name) return;
-
-            const lat = el.lat || el.center?.lat;
-            const lon = el.lon || el.center?.lon;
-
-            if (lat && lon) {
-              count++;
-              const labelEl = document.createElement('div');
-              labelEl.className = 'bg-slate-900/90 text-emerald-400 border border-emerald-500/50 text-[10px] font-medium px-2 py-0.5 rounded shadow whitespace-nowrap pointer-events-none';
-              labelEl.innerText = name;
-
-              const bMarker = new maplibregl.Marker({ element: labelEl, anchor: 'center' })
-                .setLngLat([lon, lat])
-                .addTo(map);
-              buildingMarkersRef.current.push(bMarker);
-            }
-          });
-
-          setDetectedBuildingCount(count);
-        } catch (layerErr) {
-          console.warn('Building layer addition error:', layerErr);
-        }
-      }
-    } catch (err) {
-      console.warn('Overpass building fetch error:', err);
-    } finally {
-      setIsLoadingBuildings(false);
-    }
-  };
-
-  const updateMarkerPosition = (lat: number, lon: number) => {
-    if (!mapInstanceRef.current) return;
-
-    if (!markerInstanceRef.current) {
-      const pinEl = document.createElement('div');
-      pinEl.innerHTML = `
-        <div class="relative flex flex-col items-center justify-end cursor-grab active:cursor-grabbing transform -translate-x-1/2 -translate-y-full" style="width:36px; height:44px;">
-          <div class="w-9 h-9 bg-blue-600 border-2 border-white text-white rounded-full flex items-center justify-center shadow-2xl ring-4 ring-blue-500/30">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-          </div>
-          <div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-blue-600 -mt-[1px]"></div>
-        </div>
-      `;
-
-      const marker = new maplibregl.Marker({
-        element: pinEl,
-        draggable: true,
-        anchor: 'bottom'
-      })
-        .setLngLat([lon, lat])
-        .addTo(mapInstanceRef.current);
-
-      marker.on('dragend', () => {
-        const lngLat = marker.getLngLat();
-        fetchAddressFromCoords(lngLat.lat, lngLat.lng);
-      });
-
-      markerInstanceRef.current = marker;
-    } else {
-      markerInstanceRef.current.setLngLat([lon, lat]);
-    }
-  };
-
-  // Init Map directly inline
+  // Init map: a static confirmation preview, not an input surface. No click-to-select, no
+  // drag-to-reposition, no pan/zoom-triggered data fetching -- those were the biggest source of
+  // background API traffic in the old design (a request on every pan/zoom to fetch nearby
+  // building labels, on top of one for every pin drag). Address entry now happens exclusively
+  // through the search bar above; the map only ever shows where the searched address resolved.
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
-    const initialLat = selectedPinResult?.lat || SAMPLE_PROPERTIES[0].lat;
-    const initialLon = selectedPinResult?.lon || SAMPLE_PROPERTIES[0].lon;
+    const initialLat = selectedPinResult?.lat || DEFAULT_VIEW.lat;
+    const initialLon = selectedPinResult?.lon || DEFAULT_VIEW.lon;
+    const initialZoom = selectedPinResult ? 17 : DEFAULT_VIEW.zoom;
 
     let map: maplibregl.Map;
     try {
@@ -536,32 +387,19 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           ]
         },
         center: [initialLon, initialLat],
-        zoom: 16,
-        attributionControl: { compact: true }
+        zoom: initialZoom,
+        attributionControl: { compact: true },
+        interactive: false
       });
-
-      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
     } catch (e) {
       console.warn('Map creation skipped:', e);
       return;
     }
 
-    map.on('click', (e) => {
-      const { lat, lng } = e.lngLat;
-      updateMarkerPosition(lat, lng);
-      fetchAddressFromCoords(lat, lng);
-    });
-
-    map.on('moveend', () => {
-      if (mapInstanceRef.current) {
-        fetchNearbyBuildings(mapInstanceRef.current);
-      }
-    });
-
     mapInstanceRef.current = map;
-    updateMarkerPosition(initialLat, initialLon);
-    fetchAddressFromCoords(initialLat, initialLon);
-    fetchNearbyBuildings(map);
+    if (selectedPinResult) {
+      updateMarkerPosition(initialLat, initialLon);
+    }
 
     const resizeTimer = setTimeout(() => {
       if (mapInstanceRef.current) {
@@ -573,8 +411,6 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
     return () => {
       clearTimeout(resizeTimer);
-      buildingMarkersRef.current.forEach(m => m.remove());
-      buildingMarkersRef.current = [];
       if (markerInstanceRef.current) {
         try { markerInstanceRef.current.remove(); } catch (e) {}
         markerInstanceRef.current = null;
@@ -587,6 +423,13 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       }
     };
   }, []);
+
+  // Recenter/show the pin whenever a new address is selected via search.
+  useEffect(() => {
+    if (!mapInstanceRef.current || !selectedPinResult) return;
+    mapInstanceRef.current.jumpTo({ center: [selectedPinResult.lon, selectedPinResult.lat], zoom: 17 });
+    updateMarkerPosition(selectedPinResult.lat, selectedPinResult.lon);
+  }, [selectedPinResult?.lat, selectedPinResult?.lon]);
 
   // Toggle tile layer
   useEffect(() => {
@@ -609,18 +452,10 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     }
   }, [isSatelliteView]);
 
-  const handleSelectSample = (prop: PropertySearchResult) => {
-    if (mapInstanceRef.current && prop.lat && prop.lon) {
-      mapInstanceRef.current.jumpTo({ center: [prop.lon, prop.lat], zoom: 17 });
-      updateMarkerPosition(prop.lat, prop.lon);
-      fetchAddressFromCoords(prop.lat, prop.lon);
-    }
-  };
-
   return (
     <div className="w-full max-w-4xl mx-auto space-y-4 text-left">
-      
-      {/* Map Control Bar (Search + View Controls) */}
+
+      {/* Search Bar + View Controls */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3 backdrop-blur-md shadow-lg relative z-30">
         <form onSubmit={handleMapSearch} className="flex-1 min-w-[260px] flex items-center gap-2 relative">
           <div className="relative flex-1 flex items-center bg-slate-950 border border-slate-700 focus-within:border-blue-500 rounded-xl px-3 py-2 transition-all">
@@ -635,7 +470,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               onFocus={() => {
                 if (suggestions.length > 0) setShowSuggestions(true);
               }}
-              placeholder="Search city, street address, or society name..."
+              placeholder="Enter your full street address..."
               className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-transparent focus:outline-none"
             />
           </div>
@@ -644,7 +479,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             disabled={isSearchingMap}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50"
           >
-            {isSearchingMap ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>Search Map</span>}
+            {isSearchingMap ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>Search</span>}
           </button>
 
           {/* Search Auto-suggestions Dropdown */}
@@ -689,13 +524,19 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         </div>
       )}
 
-      {/* Map View Container */}
-      <div className="relative w-full h-[450px] sm:h-[500px] bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
-        
-        {/* Leaflet Canvas */}
-        <div ref={mapContainerRef} className="w-full h-full z-0" />
+      {/* Static Confirmation Map -- preview only, not an input */}
+      <div className="relative w-full h-[350px] sm:h-[400px] bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
 
+        <div ref={mapContainerRef} className="w-full h-full z-0 pointer-events-none" />
 
+        {!selectedPinResult && !isReverseGeocoding && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+            <div className="bg-slate-900/90 border border-slate-700 rounded-2xl px-5 py-3 text-center backdrop-blur-md">
+              <p className="text-sm font-bold text-white">Search for your address above</p>
+              <p className="text-xs text-slate-400 mt-1">We'll show a preview pin here once it's found</p>
+            </div>
+          </div>
+        )}
 
         {/* Address Validation Gate Banner */}
         {gateState && gateState.status === 'blocked' && !gateState.isDismissed && (
@@ -716,64 +557,65 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           </div>
         )}
 
-        {/* Bottom Property Selection Panel */}
-        <div className="absolute bottom-2.5 sm:bottom-4 left-2.5 sm:left-4 right-2.5 sm:right-4 z-20 bg-slate-900/95 border border-slate-700/90 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-white shadow-2xl backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 max-h-[50%] sm:max-h-none overflow-y-auto">
-          <div className="min-w-0 flex-1 space-y-0.5 sm:space-y-1">
-            <div className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
-              {isReverseGeocoding ? (
-                <span className="flex items-center gap-1.5 text-blue-300">
-                  <Loader2 className="w-3 h-3 animate-spin text-blue-400 shrink-0" />
-                  <span>Identifying Building Address...</span>
-                </span>
-              ) : selectedPinResult ? (
-                <span className="flex items-center gap-1 text-emerald-400 font-bold">
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                  <span>Property Selected</span>
-                </span>
-              ) : (
-                <span>Click Any Building on Map</span>
+        {/* Bottom Property Confirmation Panel */}
+        {(selectedPinResult || isReverseGeocoding) && (
+          <div className="absolute bottom-2.5 sm:bottom-4 left-2.5 sm:left-4 right-2.5 sm:right-4 z-20 bg-slate-900/95 border border-slate-700/90 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-white shadow-2xl backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 max-h-[50%] sm:max-h-none overflow-y-auto">
+            <div className="min-w-0 flex-1 space-y-0.5 sm:space-y-1">
+              <div className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                {isReverseGeocoding ? (
+                  <span className="flex items-center gap-1.5 text-blue-300">
+                    <Loader2 className="w-3 h-3 animate-spin text-blue-400 shrink-0" />
+                    <span>Looking Up Address...</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-emerald-400 font-bold">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    <span>Address Found</span>
+                  </span>
+                )}
+              </div>
+
+              {selectedPinResult && (
+                <>
+                  <div className="text-xs sm:text-base font-bold text-white truncate leading-tight sm:leading-normal">
+                    {selectedPinResult.displayName}
+                  </div>
+                  <div className="text-[11px] sm:text-xs text-slate-400 truncate">
+                    {[selectedPinResult.city, selectedPinResult.state, selectedPinResult.county].filter(Boolean).join(', ')}
+                  </div>
+                </>
               )}
             </div>
 
-            <div className="text-xs sm:text-base font-bold text-white truncate leading-tight sm:leading-normal">
-              {selectedPinResult ? selectedPinResult.displayName : 'Click on a residential building or drag the pin on the map'}
-            </div>
-            
             {selectedPinResult && (
-              <div className="text-[11px] sm:text-xs text-slate-400 truncate">
-                {[selectedPinResult.city, selectedPinResult.state, selectedPinResult.county].filter(Boolean).join(', ')}
-              </div>
+              <button
+                type="button"
+                disabled={gateState?.status !== 'passed'}
+                onClick={() => {
+                  if (gateState?.status !== 'passed') return;
+                  onSelectProperty(selectedPinResult);
+                }}
+                className={`w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 shrink-0 tracking-tight ${
+                  gateState?.status !== 'passed'
+                    ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
+                    : 'bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white cursor-pointer hover:shadow-blue-500/25'
+                }`}
+              >
+                {gateState?.status === 'checking' ? (
+                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 animate-spin" />
+                ) : null}
+                <span>
+                  {gateState?.status === 'checking'
+                    ? 'Verifying Address…'
+                    : gateState?.status === 'blocked'
+                      ? 'Residential Selection Only'
+                      : 'Analyze Property'}
+                </span>
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              </button>
             )}
           </div>
-
-          {selectedPinResult && (
-            <button
-              type="button"
-              disabled={gateState?.status !== 'passed'}
-              onClick={() => {
-                if (gateState?.status !== 'passed') return;
-                onSelectProperty(selectedPinResult);
-              }}
-              className={`w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 shrink-0 tracking-tight ${
-                gateState?.status !== 'passed'
-                  ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
-                  : 'bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white cursor-pointer hover:shadow-blue-500/25'
-              }`}
-            >
-              {gateState?.status === 'checking' ? (
-                <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 animate-spin" />
-              ) : null}
-              <span>
-                {gateState?.status === 'checking'
-                  ? 'Verifying Address…'
-                  : gateState?.status === 'blocked'
-                    ? 'Residential Selection Only'
-                    : 'Analyze Property'}
-              </span>
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            </button>
-          )}
-        </div>
+        )}
 
       </div>
 
