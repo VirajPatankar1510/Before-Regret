@@ -162,20 +162,30 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             setLoading(false);
           });
         } else {
-          // If Clerk is signed out, clear any stale non-mock user session
+          // If Clerk is signed out, check if a mock/demo bypass session exists
           const storedUser = localStorage.getItem('br_current_user');
           if (storedUser) {
             try {
               const parsed = JSON.parse(storedUser);
-              if (parsed.uid && !parsed.uid.startsWith('mock_')) {
+              if (parsed && parsed.uid && (parsed.uid.startsWith('mock_') || parsed.uid.startsWith('demo_'))) {
+                setUser(parsed);
+                refreshExpertProfile(parsed.uid).then(() => {
+                  setLoading(false);
+                });
+                return;
+              } else {
                 setUser(null);
                 setExpertProfile(null);
                 setActiveRole('guest');
                 localStorage.removeItem('br_current_user');
               }
             } catch (e) {
-              // ignore
+              setUser(null);
             }
+          } else {
+            setUser(null);
+            setExpertProfile(null);
+            setActiveRole('guest');
           }
           setLoading(false);
         }
