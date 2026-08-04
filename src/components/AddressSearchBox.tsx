@@ -1,31 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import L from 'leaflet';
-
-// Safeguard Leaflet DomUtil methods against undefined/null elements during unmount/animations
-if (typeof window !== 'undefined' && L && L.DomUtil) {
-  const origGetPosition = L.DomUtil.getPosition;
-  if (origGetPosition) {
-    L.DomUtil.getPosition = function (el: HTMLElement | undefined | null) {
-      if (!el) {
-        return new L.Point(0, 0);
-      }
-      try {
-        return origGetPosition.call(this, el);
-      } catch (err) {
-        return new L.Point(0, 0);
-      }
-    };
-  }
-  const origSetPosition = L.DomUtil.setPosition;
-  if (origSetPosition) {
-    L.DomUtil.setPosition = function (el: HTMLElement | undefined | null, point: L.Point) {
-      if (!el) return;
-      try {
-        return origSetPosition.call(this, el, point);
-      } catch (err) {}
-    };
-  }
-}
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { 
   Building2, Loader2, AlertCircle, MapPin, 
   Layers, Navigation, CheckCircle2, ArrowRight, Search 
@@ -151,13 +126,9 @@ async function validateAddressGate(address: string, city: string, state: string)
 
 export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-  const markerInstanceRef = useRef<L.Marker | null>(null);
-  const buildingLayerGroupRef = useRef<L.LayerGroup | null>(null);
-
-  const streetTileLayerRef = useRef<L.TileLayer | null>(null);
-  const satelliteTileLayerRef = useRef<L.TileLayer | null>(null);
-  const satelliteLabelsLayerRef = useRef<L.TileLayer | null>(null);
+  const mapInstanceRef = useRef<maplibregl.Map | null>(null);
+  const markerInstanceRef = useRef<maplibregl.Marker | null>(null);
+  const buildingMarkersRef = useRef<maplibregl.Marker[]>([]);
 
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
   const [isLoadingBuildings, setIsLoadingBuildings] = useState(false);
@@ -258,7 +229,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     setShowSuggestions(false);
     if (name) setMapSearchQuery(name);
     if (mapInstanceRef.current && !isNaN(lat) && !isNaN(lon)) {
-      mapInstanceRef.current.flyTo([lat, lon], 18, { duration: 1.2 });
+      mapInstanceRef.current.flyTo({ center: [lon, lat], zoom: 18, duration: 1200 });
       updateMarkerPosition(lat, lon);
       
       if (item && item.address) {
@@ -338,23 +309,6 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     }
   };
 
-  // Custom pin icon
-  const createPinIcon = () => {
-    return L.divIcon({
-      className: 'custom-leaflet-marker',
-      html: `
-        <div class="relative flex flex-col items-center justify-end" style="width:36px; height:44px; cursor:grab;">
-          <div class="w-9 h-9 bg-blue-600 border-2 border-white text-white rounded-full flex items-center justify-center shadow-2xl ring-4 ring-blue-500/30">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-          </div>
-          <div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-blue-600 -mt-[1px]"></div>
-        </div>
-      `,
-      iconSize: [36, 44],
-      iconAnchor: [18, 44],
-    });
-  };
-
   // Reverse geocode
   const fetchAddressFromCoords = async (lat: number, lon: number) => {
     setIsReverseGeocoding(true);
@@ -420,9 +374,10 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   };
 
   // Fetch nearby residential buildings
-  const fetchNearbyBuildings = async (map: L.Map) => {
+  const fetchNearbyBuildings = async (map: maplibregl.Map) => {
     if (map.getZoom() < 14) {
-      if (buildingLayerGroupRef.current) buildingLayerGroupRef.current.clearLayers();
+      buildingMarkersRef.current.forEach(m => m.remove());
+      buildingMarkersRef.current = [];
       setDetectedBuildingCount(0);
       return;
     }
@@ -455,11 +410,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         if (!mapInstanceRef.current || mapInstanceRef.current !== map) return;
 
         try {
-          if (!buildingLayerGroupRef.current) {
-            buildingLayerGroupRef.current = L.layerGroup().addTo(map);
-          } else {
-            buildingLayerGroupRef.current.clearLayers();
-          }
+          buildingMarkersRef.current.forEach(m => m.remove());
+          buildingMarkersRef.current = [];
 
           let count = 0;
           const elements = data.elements || [];
@@ -468,16 +420,19 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             const name = el.tags?.name || el.tags?.['building:name'] || el.tags?.description;
             if (!name) return;
 
-            // The Overpass query above already restricts results to residential-tagged
-            // building/landuse/place values, so no further filtering is needed here -- this
-            // count is a cosmetic map label, not part of the residential-only validation gate
-            // (that gate runs server-side against Census + government-facility data, see
-            // validateAddressGate()).
             const lat = el.lat || el.center?.lat;
             const lon = el.lon || el.center?.lon;
 
             if (lat && lon) {
               count++;
+              const labelEl = document.createElement('div');
+              labelEl.className = 'bg-slate-900/90 text-emerald-400 border border-emerald-500/50 text-[10px] font-medium px-2 py-0.5 rounded shadow whitespace-nowrap pointer-events-none';
+              labelEl.innerText = name;
+
+              const bMarker = new maplibregl.Marker({ element: labelEl, anchor: 'center' })
+                .setLngLat([lon, lat])
+                .addTo(map);
+              buildingMarkersRef.current.push(bMarker);
             }
           });
 
@@ -497,21 +452,32 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     if (!mapInstanceRef.current) return;
 
     if (!markerInstanceRef.current) {
-      markerInstanceRef.current = L.marker([lat, lon], {
-        icon: createPinIcon(),
-        draggable: true
-      }).addTo(mapInstanceRef.current);
+      const pinEl = document.createElement('div');
+      pinEl.innerHTML = `
+        <div class="relative flex flex-col items-center justify-end cursor-grab active:cursor-grabbing transform -translate-x-1/2 -translate-y-full" style="width:36px; height:44px;">
+          <div class="w-9 h-9 bg-blue-600 border-2 border-white text-white rounded-full flex items-center justify-center shadow-2xl ring-4 ring-blue-500/30">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-blue-600 -mt-[1px]"></div>
+        </div>
+      `;
 
-      markerInstanceRef.current.setZIndexOffset(1000);
+      const marker = new maplibregl.Marker({
+        element: pinEl,
+        draggable: true,
+        anchor: 'bottom'
+      })
+        .setLngLat([lon, lat])
+        .addTo(mapInstanceRef.current);
 
-      markerInstanceRef.current.on('dragend', (e) => {
-        const marker = e.target;
-        const position = marker.getLatLng();
-        fetchAddressFromCoords(position.lat, position.lng);
+      marker.on('dragend', () => {
+        const lngLat = marker.getLngLat();
+        fetchAddressFromCoords(lngLat.lat, lngLat.lng);
       });
+
+      markerInstanceRef.current = marker;
     } else {
-      markerInstanceRef.current.setLatLng([lat, lon]);
-      markerInstanceRef.current.setZIndexOffset(1000);
+      markerInstanceRef.current.setLngLat([lon, lat]);
     }
   };
 
@@ -519,52 +485,75 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
-    if (mapContainerRef.current) {
-      delete (mapContainerRef.current as any)._leaflet_id;
-    }
-
     const initialLat = selectedPinResult?.lat || SAMPLE_PROPERTIES[0].lat;
     const initialLon = selectedPinResult?.lon || SAMPLE_PROPERTIES[0].lon;
 
-    let map: L.Map;
+    let map: maplibregl.Map;
     try {
-      map = L.map(mapContainerRef.current, {
-        center: [initialLat, initialLon],
+      const tileUrl = `${window.location.origin}/api/geocode/tiles/streets/{z}/{x}/{y}.png`;
+      map = new maplibregl.Map({
+        container: mapContainerRef.current,
+        style: {
+          version: 8,
+          sources: {
+            'locationiq-streets': {
+              type: 'raster',
+              tiles: [tileUrl],
+              tileSize: 256,
+              attribution: '&copy; LocationIQ'
+            },
+            'esri-satellite': {
+              type: 'raster',
+              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+              tileSize: 256,
+              attribution: 'Tiles &copy; Esri'
+            },
+            'esri-labels': {
+              type: 'raster',
+              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],
+              tileSize: 256
+            }
+          },
+          layers: [
+            {
+              id: 'streets-layer',
+              type: 'raster',
+              source: 'locationiq-streets',
+              layout: { visibility: isSatelliteView ? 'none' : 'visible' }
+            },
+            {
+              id: 'satellite-layer',
+              type: 'raster',
+              source: 'esri-satellite',
+              layout: { visibility: isSatelliteView ? 'visible' : 'none' }
+            },
+            {
+              id: 'satellite-labels-layer',
+              type: 'raster',
+              source: 'esri-labels',
+              layout: { visibility: isSatelliteView ? 'visible' : 'none' }
+            }
+          ]
+        },
+        center: [initialLon, initialLat],
         zoom: 16,
-        zoomControl: false
+        attributionControl: { compact: true }
       });
+
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
     } catch (e) {
       console.warn('Map creation skipped:', e);
       return;
     }
 
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-    streetTileLayerRef.current = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19
-    });
-
-    satelliteTileLayerRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri',
-      maxZoom: 19
-    });
-
-    satelliteLabelsLayerRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 19
-    });
-
-    // Default to Street Map View
-    streetTileLayerRef.current.addTo(map);
-
-    map.on('click', (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
+    map.on('click', (e) => {
+      const { lat, lng } = e.lngLat;
       updateMarkerPosition(lat, lng);
       fetchAddressFromCoords(lat, lng);
     });
 
     map.on('moveend', () => {
-      if (mapInstanceRef.current && (mapInstanceRef.current as any)._container) {
+      if (mapInstanceRef.current) {
         fetchNearbyBuildings(mapInstanceRef.current);
       }
     });
@@ -574,37 +563,28 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     fetchAddressFromCoords(initialLat, initialLon);
     fetchNearbyBuildings(map);
 
-    const invalidateTimer = setTimeout(() => {
-      if (mapInstanceRef.current && (mapInstanceRef.current as any)._container) {
+    const resizeTimer = setTimeout(() => {
+      if (mapInstanceRef.current) {
         try {
-          mapInstanceRef.current.invalidateSize();
+          mapInstanceRef.current.resize();
         } catch (e) {}
       }
     }, 200);
 
     return () => {
-      clearTimeout(invalidateTimer);
-      if (buildingLayerGroupRef.current) {
-        try { buildingLayerGroupRef.current.clearLayers(); } catch (e) {}
-        buildingLayerGroupRef.current = null;
-      }
+      clearTimeout(resizeTimer);
+      buildingMarkersRef.current.forEach(m => m.remove());
+      buildingMarkersRef.current = [];
       if (markerInstanceRef.current) {
         try { markerInstanceRef.current.remove(); } catch (e) {}
         markerInstanceRef.current = null;
       }
       if (mapInstanceRef.current) {
         try {
-          mapInstanceRef.current.off();
           mapInstanceRef.current.remove();
         } catch (e) {}
         mapInstanceRef.current = null;
       }
-      if (mapContainerRef.current) {
-        try { delete (mapContainerRef.current as any)._leaflet_id; } catch (e) {}
-      }
-      streetTileLayerRef.current = null;
-      satelliteTileLayerRef.current = null;
-      satelliteLabelsLayerRef.current = null;
     };
   }, []);
 
@@ -612,21 +592,26 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   useEffect(() => {
     if (!mapInstanceRef.current) return;
     const map = mapInstanceRef.current;
+    if (!map.isStyleLoaded()) return;
 
-    if (isSatelliteView) {
-      if (streetTileLayerRef.current) map.removeLayer(streetTileLayerRef.current);
-      if (satelliteTileLayerRef.current) satelliteTileLayerRef.current.addTo(map);
-      if (satelliteLabelsLayerRef.current) satelliteLabelsLayerRef.current.addTo(map);
-    } else {
-      if (satelliteTileLayerRef.current) map.removeLayer(satelliteTileLayerRef.current);
-      if (satelliteLabelsLayerRef.current) map.removeLayer(satelliteLabelsLayerRef.current);
-      if (streetTileLayerRef.current) streetTileLayerRef.current.addTo(map);
+    try {
+      if (isSatelliteView) {
+        if (map.getLayer('streets-layer')) map.setLayoutProperty('streets-layer', 'visibility', 'none');
+        if (map.getLayer('satellite-layer')) map.setLayoutProperty('satellite-layer', 'visibility', 'visible');
+        if (map.getLayer('satellite-labels-layer')) map.setLayoutProperty('satellite-labels-layer', 'visibility', 'visible');
+      } else {
+        if (map.getLayer('streets-layer')) map.setLayoutProperty('streets-layer', 'visibility', 'visible');
+        if (map.getLayer('satellite-layer')) map.setLayoutProperty('satellite-layer', 'visibility', 'none');
+        if (map.getLayer('satellite-labels-layer')) map.setLayoutProperty('satellite-labels-layer', 'visibility', 'none');
+      }
+    } catch (err) {
+      console.warn('Error toggling layers:', err);
     }
   }, [isSatelliteView]);
 
   const handleSelectSample = (prop: PropertySearchResult) => {
     if (mapInstanceRef.current && prop.lat && prop.lon) {
-      mapInstanceRef.current.setView([prop.lat, prop.lon], 17);
+      mapInstanceRef.current.jumpTo({ center: [prop.lon, prop.lat], zoom: 17 });
       updateMarkerPosition(prop.lat, prop.lon);
       fetchAddressFromCoords(prop.lat, prop.lon);
     }

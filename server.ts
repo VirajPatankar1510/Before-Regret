@@ -68,9 +68,9 @@ async function startServer() {
     });
   });
 
-  // Map geocoding proxy (LocationIQ with server-side Nominatim fallback)
-  // Keeps the API key server-side only. If LOCATIONIQ_API_KEY is configured, queries LocationIQ.
-  // If not configured, safely falls back to Nominatim with a proper User-Agent header from the server.
+  // Map geocoding & tile proxy (LocationIQ exclusive)
+  // Keeps the API key server-side only. All map search, reverse geocoding, and map tiles
+  // are served exclusively via LocationIQ.
   app.get("/api/geocode/search", async (req, res) => {
     const { q, limit, addressdetails, countrycodes } = req.query;
     if (!q || typeof q !== "string") {
@@ -79,32 +79,14 @@ async function startServer() {
     }
 
     const apiKey = process.env.LOCATIONIQ_API_KEY;
-    if (apiKey) {
-      try {
-        const params = new URLSearchParams({
-          key: apiKey,
-          q,
-          format: "json",
-          addressdetails: (addressdetails as string) || "1",
-          limit: (limit as string) || "5",
-        });
-        if (countrycodes && typeof countrycodes === "string") {
-          params.set("countrycodes", countrycodes);
-        }
-        const upstream = await fetch(`https://us1.locationiq.com/v1/search?${params.toString()}`);
-        if (upstream.ok) {
-          const data = await upstream.json();
-          res.json(data);
-          return;
-        }
-      } catch (err) {
-        console.error("[Geocode LocationIQ Search Error]:", err);
-      }
+    if (!apiKey) {
+      res.status(503).json({ error: "Map search is not configured. Set LOCATIONIQ_API_KEY." });
+      return;
     }
 
-    // Fallback to OpenStreetMap Nominatim with proper User-Agent
     try {
       const params = new URLSearchParams({
+        key: apiKey,
         q,
         format: "json",
         addressdetails: (addressdetails as string) || "1",
@@ -113,9 +95,7 @@ async function startServer() {
       if (countrycodes && typeof countrycodes === "string") {
         params.set("countrycodes", countrycodes);
       }
-      const upstream = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
-        headers: { "User-Agent": "BeforeRegret-App/1.0 (contact@beforeregret.com)" }
-      });
+      const upstream = await fetch(`https://us1.locationiq.com/v1/search?${params.toString()}`);
       if (!upstream.ok) {
         res.status(upstream.status).json({ error: "Map search provider error." });
         return;
@@ -123,7 +103,7 @@ async function startServer() {
       const data = await upstream.json();
       res.json(data);
     } catch (err) {
-      console.error("[Geocode Search Proxy Error]:", err);
+      console.error("[LocationIQ Search Proxy Error]:", err);
       res.status(502).json({ error: "Map search is temporarily unavailable." });
     }
   });
@@ -136,39 +116,21 @@ async function startServer() {
     }
 
     const apiKey = process.env.LOCATIONIQ_API_KEY;
-    if (apiKey) {
-      try {
-        const params = new URLSearchParams({
-          key: apiKey,
-          lat: lat as string,
-          lon: lon as string,
-          format: "json",
-          addressdetails: "1",
-          zoom: "18",
-        });
-        const upstream = await fetch(`https://us1.locationiq.com/v1/reverse?${params.toString()}`);
-        if (upstream.ok) {
-          const data = await upstream.json();
-          res.json(data);
-          return;
-        }
-      } catch (err) {
-        console.error("[Geocode LocationIQ Reverse Error]:", err);
-      }
+    if (!apiKey) {
+      res.status(503).json({ error: "Map search is not configured. Set LOCATIONIQ_API_KEY." });
+      return;
     }
 
-    // Fallback to OpenStreetMap Nominatim with proper User-Agent
     try {
       const params = new URLSearchParams({
+        key: apiKey,
         lat: lat as string,
         lon: lon as string,
         format: "json",
         addressdetails: "1",
         zoom: "18",
       });
-      const upstream = await fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`, {
-        headers: { "User-Agent": "BeforeRegret-App/1.0 (contact@beforeregret.com)" }
-      });
+      const upstream = await fetch(`https://us1.locationiq.com/v1/reverse?${params.toString()}`);
       if (!upstream.ok) {
         res.status(upstream.status).json({ error: "Map search provider error." });
         return;
@@ -176,8 +138,38 @@ async function startServer() {
       const data = await upstream.json();
       res.json(data);
     } catch (err) {
-      console.error("[Geocode Reverse Proxy Error]:", err);
+      console.error("[LocationIQ Reverse Proxy Error]:", err);
       res.status(502).json({ error: "Map search is temporarily unavailable." });
+    }
+  });
+
+  // Map tile proxy (LocationIQ map tiles)
+  app.get("/api/geocode/tiles/:style/:z/:x/:y.png", async (req, res) => {
+    const { style, z, x, y } = req.params;
+    const apiKey = process.env.LOCATIONIQ_API_KEY;
+
+    if (!apiKey) {
+      res.status(503).send("LocationIQ API key required for tiles.");
+      return;
+    }
+
+    const validStyle = ['streets', 'dark', 'light'].includes(style) ? style : 'streets';
+
+    try {
+      const sub = ['a', 'b', 'c'][(parseInt(x || '0', 10) + parseInt(y || '0', 10)) % 3];
+      const upstreamUrl = `https://${sub}-tiles.locationiq.com/v3/${validStyle}/r/${z}/${x}/${y}.png?key=${apiKey}`;
+      const upstream = await fetch(upstreamUrl);
+      if (upstream.ok) {
+        const buffer = await upstream.arrayBuffer();
+        res.setHeader("Content-Type", "image/png");
+        res.setHeader("Cache-Control", "public, max-age=86400");
+        res.send(Buffer.from(buffer));
+        return;
+      }
+      res.status(upstream.status).send("Tile fetch failed");
+    } catch (err) {
+      console.error("[LocationIQ Tile Proxy Error]:", err);
+      res.status(502).send("Tile fetch failed");
     }
   });
 
