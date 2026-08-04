@@ -1,9 +1,10 @@
 // Real, executing residential-address validation gate.
 //
 // Replaces the dead code in addressValidationGate.ts (never called anywhere, confirmed by a
-// repo-wide search) and the OSM-keyword heuristics duplicated in AddressSearchBox.tsx /
-// MapBuildingPickerModal.tsx / server.ts's resolvePropertyMetadata() (all confirmed to be
-// text-keyword guesses, not real government-data checks -- see the Task 1/2 audit).
+// repo-wide search) and the OSM-keyword heuristics that used to live in AddressSearchBox.tsx,
+// the since-removed MapBuildingPickerModal.tsx, and server.ts's resolvePropertyMetadata() (all
+// confirmed to be text-keyword guesses, not real government-data checks -- see the Task 1/2
+// audit).
 //
 // Every layer here fails CLOSED: a network error, timeout, ambiguous match, or missing data
 // source blocks the address. Nothing here is allowed to silently default to "residential."
