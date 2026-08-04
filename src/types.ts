@@ -4,7 +4,40 @@ export type ViewState =
   | 'SUMMARY' 
   | 'REPORT';
 
-export type ConfidenceLevel = 'Confirmed Record' | 'No Record Found';
+export type ConfidenceLevel = 'CONFIRMED RECORD' | 'NO RECORD FOUND' | 'Confirmed Record' | 'No Record Found';
+export type CanonicalStatus = 'CONFIRMED RECORD' | 'NO RECORD FOUND';
+
+export interface ActionItem {
+  type: 'sellerQuestion' | 'walkthroughItem' | 'disclosureLever';
+  title: string;
+  description: string;
+  why: string;
+}
+
+export interface CanonicalFinding {
+  id: string;
+  subject: string;
+  category: 'Property Records' | 'Environment' | 'Neighborhood';
+  status: CanonicalStatus;
+  summaryText: string;
+  whatWeFound: string;
+  whyItMatters: string;
+  suggestedNextStep: string;
+  actionItem?: ActionItem;
+  lastUpdated?: string;
+  sourceAgency?: string;
+}
+
+export interface SourceReferenceItem {
+  id: string;
+  name: string;
+  agency: string;
+  category: 'Property Records' | 'Environment' | 'Neighborhood' | 'Hazards' | 'Utilities';
+  status: CanonicalStatus | 'Records Indexed';
+  url: string;
+  lastUpdated: string;
+  description: string;
+}
 
 export interface PropertySearchResult {
   placeId: string;
@@ -270,14 +303,24 @@ export interface PropertyReport {
     totalSourcesCount: number;
   };
 
-  // Executive Snapshot Dashboard
-  executiveSnapshot?: ExecutiveSnapshotItem[];
+  // Single Source of Truth
+  canonicalFindings: CanonicalFinding[];
 
   // Bottom Line Synthesis
-  bottomLine?: BottomLineSection;
+  bottomLine: {
+    worthVerifyingSummary: string[];
+    likelyRoutineSummary: string[];
+    biggerPicture: string;
+    worthVerifying?: BottomLineItem[];
+    likelyRoutine?: BottomLineItem[];
+  };
 
-  // Section 1: Executive Overview
-  atAGlance: {
+  // Source Registry
+  sourceRegistry: SourceReferenceItem[];
+
+  // Optional legacy fields for backward compatibility if needed
+  executiveSnapshot?: ExecutiveSnapshotItem[];
+  atAGlance?: {
     cards: AtAGlanceStatusCard[];
     dataFreshness?: string;
     mostImportantToVerify: {
@@ -285,31 +328,21 @@ export interface PropertyReport {
       description: string;
     };
   };
-  whatWeFound: ThreeColumnFinding;
-  topPriorities: ThreePartFinding[]; // Top 3 priority verification items
-
-  // Section 2: Neighborhood & Local Environment
-  environmentalTopics: ThreePartFinding[];
+  whatWeFound?: ThreeColumnFinding;
+  topPriorities?: ThreePartFinding[];
+  environmentalTopics?: ThreePartFinding[];
   environmentalDataFreshness?: string;
   nearbyEssentials?: NearbyEssentialsSection;
-
-  // Section 3: Property Records & Building Analysis
-  propertyRecordsSplit: PropertyRecordsSplit;
+  propertyRecordsSplit?: PropertyRecordsSplit;
   recordsDataFreshness?: string;
   permitLifespanMatrix?: PermitLifespanItem[];
-
-  // Section 4: Insurance Considerations
   insuranceConsiderations?: InsuranceConsiderationItem[];
   insuranceDataFreshness?: string;
-
-  // Section 5: Walkthrough & Seller Guidance
-  sellerQuestions: SellerQuestionCard[];
-  visitChecklist: VisitChecklistItem[];
+  sellerQuestions?: SellerQuestionCard[];
+  visitChecklist?: VisitChecklistItem[];
   disclosureLevers?: DisclosureLeverItem[];
-
-  // Section 6: Source Appendix with Direct Links & Source References
   leadWidgets?: LeadWidget[];
-  sourceReferences: SourceReference[];
+  sourceReferences?: SourceReference[];
   directSourceLinks?: DirectSourceLink[];
 }
 

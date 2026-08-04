@@ -6,11 +6,12 @@ import {
 import { OFFICIAL_SOURCE_REGISTRY, SourceRegistryEntry } from '../data/sourceRegistry';
 
 interface SourceRegistryModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
+  sources?: any[];
   onClose: () => void;
 }
 
-export const SourceRegistryModal: React.FC<SourceRegistryModalProps> = ({ isOpen, onClose }) => {
+export const SourceRegistryModal: React.FC<SourceRegistryModalProps> = ({ isOpen = true, sources, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLevel, setFilterLevel] = useState<string>('ALL');
 

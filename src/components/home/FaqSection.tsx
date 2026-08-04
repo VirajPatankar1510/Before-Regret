@@ -27,7 +27,7 @@ export const FaqSection: React.FC = () => {
     },
     {
       q: 'Are there any recurring subscription fees or hidden costs?',
-      a: 'None. Every BeforeRegret consumer property research report is 100% free with no payment required, no credit card needed, no monthly subscriptions, and no hidden fees.'
+      a: 'None. Your first report is 100% free with no credit card required. Additional reports are $14.99 each. No subscription, no auto-renewal, and no hidden charges ever.'
     }
   ];
 

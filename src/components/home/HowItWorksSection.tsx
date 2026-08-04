@@ -30,7 +30,7 @@ export const HowItWorksSection: React.FC = () => {
                 1
               </div>
               <h3 className="font-serif text-xl font-bold text-white">
-                Enter Any US Address
+                Enter any US residential address
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Search any single-family home, condo, townhouse, or multi-family parcel across all 50 US states using our street-level address lookup.
@@ -48,7 +48,7 @@ export const HowItWorksSection: React.FC = () => {
                 2
               </div>
               <h3 className="font-serif text-xl font-bold text-white">
-                Query 25+ Public Databases
+                We pull from 20+ government databases
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Our engine aggregates municipal building permit archives, FEMA flood layers, EPA environmental databases, FAA noise contours, and tax assessor records.
@@ -56,7 +56,7 @@ export const HowItWorksSection: React.FC = () => {
             </div>
             <div className="pt-3 border-t border-slate-700/60 text-xs text-blue-400 font-medium flex items-center gap-1.5">
               <Database className="w-4 h-4" />
-              <span>Federal, State & County Registries</span>
+              <span>Federal, State & Municipal Registries</span>
             </div>
           </div>
 
@@ -66,10 +66,10 @@ export const HowItWorksSection: React.FC = () => {
                 3
               </div>
               <h3 className="font-serif text-xl font-bold text-white">
-                Get Objective Fact Report
+                Get one plain-language report
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Receive a categorized report distinguishing confirmed records from missing permit trails, complete with tailored questions to ask the seller.
+                You get one plain-language report with what to verify and what to ask before you make an offer or sign a lease.
               </p>
             </div>
             <div className="pt-3 border-t border-slate-700/60 text-xs text-blue-400 font-medium flex items-center gap-1.5">
@@ -78,6 +78,38 @@ export const HowItWorksSection: React.FC = () => {
             </div>
           </div>
 
+        </div>
+
+        {/* Pricing Subtext Line Immediately Below Steps */}
+        <div className="text-center pt-2">
+          <span className="inline-block px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm font-bold text-emerald-400">
+            First report: Free. Additional reports: $14.99 each. No subscription.
+          </span>
+        </div>
+
+        {/* Why Not Just Check Zillow? Synthesis Explanation */}
+        <div className="bg-slate-800/90 border border-slate-700/90 rounded-2xl p-6 sm:p-8 space-y-4 text-slate-200">
+          <h3 className="font-serif text-2xl font-bold text-white flex items-center gap-2">
+            <Layers className="w-5 h-5 text-blue-400" />
+            <span>Why not just check Zillow?</span>
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Listing portals are designed to help you find a home — not to surface problems with one. They show flood scores and school ratings. They don't show permit gaps, undigitized roof records, pending rezoning nearby, or radon zone classifications. We pull from 20+ separate government sources and synthesize them into one plain-language briefing. That synthesis — at the moment you're evaluating a specific address — is what you're getting.
+          </p>
+        </div>
+
+        {/* Independence Statement */}
+        <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-3 text-slate-300">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Our Independence Statement</span>
+          </div>
+          <p className="text-xs sm:text-sm leading-relaxed text-slate-300">
+            BeforeRegret isn't here to criticize builders, agents, or sellers. We believe greater transparency creates better conversations and more confident property decisions. Our role is to bring together public records and practical insights so every buyer can make a more informed decision — the details are always yours to verify.
+          </p>
+          <p className="text-xs leading-relaxed text-slate-400">
+            We have no financial relationship with any builder, agent, lender, or listing portal. Reports are based entirely on public government data.
+          </p>
         </div>
 
 

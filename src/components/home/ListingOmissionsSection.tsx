@@ -12,39 +12,39 @@ export const ListingOmissionsSection: React.FC = () => {
   const categories = [
     {
       icon: Waves,
-      title: 'FEMA Flood Zone & Watershed Overlay',
-      publicFinding: 'Properties situated in 100-year flood zones or subject to recent FEMA flood map revisions require mandatory flood insurance ($2,000–$5,000+/yr), which rarely appears on listing sheets.',
-      source: 'FEMA Flood Map Service Center (MSC) & NFIP Rate Archives'
-    },
-    {
-      icon: Plane,
-      title: 'FAA Flight Path & Airport Noise Contours',
-      publicFinding: 'FAA 65+ DNL noise contour lines and low-altitude arrival tracks directly impact acoustic peace and long-term resale liquidity, yet are never mentioned in broker marketing.',
-      source: 'Federal Aviation Administration (FAA) Noise Compatibility Maps'
+      title: 'Flood Zone',
+      publicFinding: 'Is this address inside a mapped federal flood hazard area?',
+      source: 'FEMA Flood Map Service Center (MSC)'
     },
     {
       icon: FileCheck,
-      title: 'Municipal Permit Archives & Unpermitted Additions',
-      publicFinding: 'Missing building department permits for major roof replacements, room additions, or electrical panel work expose buyers to uninsurable hazards or forced municipal remediation.',
-      source: 'Municipal & County Building Permit Registries'
+      title: 'Permit History',
+      publicFinding: 'Was that finished basement or garage conversion ever inspected?',
+      source: 'Municipal & County Building Department Archives'
+    },
+    {
+      icon: Plane,
+      title: 'Airport Noise',
+      publicFinding: 'Does this street sit under an active flight arrival corridor?',
+      source: 'FAA Noise Compatibility Maps & Flight Corridors'
     },
     {
       icon: ShieldAlert,
-      title: 'EPA Environmental Proximity & Superfund Buffers',
-      publicFinding: 'Active EPA Superfund NPL boundaries, Toxic Release Inventory (TRI) facilities, or underground fuel storage tank leaks within 1.5 miles of parcel boundaries.',
-      source: 'EPA Envirofacts & USGS Geological Soil Hazard Maps'
+      title: 'Radon Zone',
+      publicFinding: "What's the EPA-classified radon baseline for this zip code?",
+      source: 'EPA Indoor Radon Zones & Geological Maps'
     },
     {
       icon: Radio,
-      title: 'FCC Broadband Infrastructure Reality',
-      publicFinding: 'Listing claims of "high-speed internet" often mask legacy copper or fixed-wireless limits. Official FCC fabric maps disclose true fiber-to-the-home ISP options.',
-      source: 'Federal Communications Commission (FCC) National Broadband Map'
+      title: 'Broadband',
+      publicFinding: 'Is fiber service confirmed at this specific address or just nearby?',
+      source: 'FCC National Broadband Fabric Registry'
     },
     {
       icon: Building,
-      title: 'Zoning & Municipal Development Pipeline',
-      publicFinding: 'City planning commission filings for upcoming multi-lane highway expansions, commercial re-zoning proposals, or high-density residential developments adjacent to the neighborhood.',
-      source: 'County Land Records & State Dept of Transportation (DOT) STIP Pipelines'
+      title: 'Development Pipeline',
+      publicFinding: 'Is there a rezoning petition filed within half a mile?',
+      source: 'Municipal Planning & Zoning Filings'
     }
   ];
 

@@ -4,6 +4,8 @@ import { Hero } from './components/Hero';
 import { ResearchProgressView } from './components/ResearchProgressView';
 import { ResearchSummaryView } from './components/ResearchSummaryView';
 import { PropertyReportView } from './components/PropertyReportView';
+import { Vendors } from './components/Vendors';
+import { ReportGatingModal } from './components/ReportGatingModal';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from './components/ErrorBoundary';
 import { Footer } from './components/Footer';
@@ -38,10 +40,11 @@ export function App() {
   const [summaryData, setSummaryData] = useState<ResearchSummaryData | null>(null);
   const [report, setReport] = useState<PropertyReport | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGatingModalOpen, setIsGatingModalOpen] = useState(false);
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'state' | 'city' | 'zip' | 'topic' | 'guide' | 'compare' | 'support' | 'terms' | 'privacy' | 'refunds' | 'none';
+    type: 'admin' | 'state' | 'city' | 'zip' | 'topic' | 'guide' | 'compare' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'none';
     stateSlug?: string;
     citySlug?: string;
     zipCode?: string;
@@ -54,6 +57,17 @@ export function App() {
   const resolveRouteFromPath = (pathname: string) => {
     // Normalize path trailing slash
     const path = pathname.endsWith('/') ? pathname : `${pathname}/`;
+
+    if (path === '/vendors/' || path.startsWith('/vendors') || path.startsWith('/advertise')) {
+      if (path.startsWith('/advertise')) {
+        try {
+          window.history.replaceState({}, '', '/vendors');
+        } catch (e) {}
+      }
+      setPseoRoute({ type: 'vendors' });
+      setCurrentStep('PSEO');
+      return true;
+    }
 
     if (path === '/support/' || path.startsWith('/support')) {
       setPseoRoute({ type: 'support' });
@@ -104,27 +118,23 @@ export function App() {
     }
 
     if (path.startsWith('/state/')) {
-      const parts = path.split('/').filter(Boolean); // ['state', 'texas', 'austin', '78701', 'flood-risk']
+      const parts = path.split('/').filter(Boolean);
       if (parts.length === 2) {
-        // /state/{state}/
         setPseoRoute({ type: 'state', stateSlug: parts[1] });
         setCurrentStep('PSEO');
         return true;
       }
       if (parts.length === 3) {
-        // /state/{state}/{city}/
         setPseoRoute({ type: 'city', stateSlug: parts[1], citySlug: parts[2] });
         setCurrentStep('PSEO');
         return true;
       }
       if (parts.length === 4) {
-        // /state/{state}/{city}/{zip}/
         setPseoRoute({ type: 'zip', stateSlug: parts[1], citySlug: parts[2], zipCode: parts[3] });
         setCurrentStep('PSEO');
         return true;
       }
       if (parts.length >= 5) {
-        // /state/{state}/{city}/{zip}/{topic}/
         setPseoRoute({ 
           type: 'topic', 
           stateSlug: parts[1], 
@@ -168,15 +178,26 @@ export function App() {
 
     let reportIdFromUrl: string | null = null;
 
-    if (pathname.startsWith('/report/')) {
-      reportIdFromUrl = pathname.replace('/report/', '').trim();
+    if (pathname.startsWith('/insights/')) {
+      reportIdFromUrl = pathname.replace('/insights/', '').trim().replace(/\/$/, '');
+    } else if (pathname.startsWith('/report/')) {
+      reportIdFromUrl = pathname.replace('/report/', '').trim().replace(/\/$/, '');
+      try {
+        window.history.replaceState({}, '', `/insights/${reportIdFromUrl}`);
+      } catch (e) {}
     } else if (searchParams.get('reportId')) {
       reportIdFromUrl = searchParams.get('reportId');
     }
 
     if (reportIdFromUrl && reportIdFromUrl.length > 0) {
       setIsLoading(true);
-      fetch(`/api/report/${reportIdFromUrl}`)
+      fetch(`/api/insights/${reportIdFromUrl}`)
+        .then((res) => {
+          if (!res.ok) {
+            return fetch(`/api/report/${reportIdFromUrl}`);
+          }
+          return res;
+        })
         .then((res) => {
           const contentType = res.headers.get('content-type') || '';
           if (res.ok && contentType.includes('application/json')) {
@@ -399,10 +420,15 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Step 3 -> Step 4: Generate Full Report
-  const handleGenerateReport = async () => {
+  // Step 3 -> Step 4: Open Gating Modal or Trigger Full Report Generation
+  const handleOpenGatingModal = () => {
+    setIsGatingModalOpen(true);
+  };
+
+  const handleConfirmAndGenerateReport = async (userEmail: string, isPaid: boolean) => {
+    setIsGatingModalOpen(false);
+
     if (!selectedProperty && !summaryData?.address) {
-      // Create default property if none selected
       const defaultProp: PropertySearchResult = {
         placeId: 'default_prop',
         formattedAddress: '1204 Oakridge Dr, Austin, TX 78701',
@@ -447,7 +473,9 @@ export function App() {
           county: activeProperty.county,
           propertyType: activeProperty.propertyType,
           usefulSourcesCount: summaryData?.usefulSourcesFound || 18,
-          price: summaryData?.price || 29
+          price: isPaid ? 14.99 : 0,
+          userEmail: userEmail,
+          isPaid: isPaid
         })
       });
 
@@ -459,7 +487,7 @@ export function App() {
           setCurrentStep('REPORT');
           if (json.report.id) {
             try {
-              window.history.pushState({ reportId: json.report.id }, '', `/report/${json.report.id}`);
+              window.history.pushState({ reportId: json.report.id }, '', `/insights/${json.report.id}`);
             } catch (e) {
               console.warn('pushState not allowed or failed:', e);
             }
@@ -474,6 +502,11 @@ export function App() {
       const fallbackReport = createFallbackReport(activeProperty, summaryData);
       setReport(fallbackReport);
       setCurrentStep('REPORT');
+      if (fallbackReport.id) {
+        try {
+          window.history.pushState({ reportId: fallbackReport.id }, '', `/insights/${fallbackReport.id}`);
+        } catch (e) {}
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setIsLoading(false);
@@ -540,12 +573,12 @@ export function App() {
         {currentStep === 'SUMMARY' && (
           <ResearchSummaryView
             summaryData={activeSummaryData}
-            onGenerateReport={handleGenerateReport}
+            onGenerateReport={handleOpenGatingModal}
           />
         )}
 
         {currentStep === 'REPORT' && (
-          <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleGenerateReport}>
+          <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleOpenGatingModal}>
             <PropertyReportView
               report={activeReport}
               onNewSearch={handleNewSearch}
@@ -555,6 +588,9 @@ export function App() {
 
         {currentStep === 'PSEO' && (
           <>
+            {pseoRoute.type === 'vendors' && (
+              <Vendors onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
+            )}
             {pseoRoute.type === 'admin' && (
               <SeoAdminPanel onNavigate={handleNavigate} />
             )}
@@ -604,6 +640,13 @@ export function App() {
       </main>
 
       <Footer onNewSearch={handleNewSearch} onNavigate={handleNavigate} />
+
+      <ReportGatingModal
+        isOpen={isGatingModalOpen}
+        onClose={() => setIsGatingModalOpen(false)}
+        targetAddress={selectedProperty?.formattedAddress || selectedProperty?.displayName || 'Selected Address'}
+        onConfirmAndGenerate={handleConfirmAndGenerateReport}
+      />
     </div>
   );
 }
