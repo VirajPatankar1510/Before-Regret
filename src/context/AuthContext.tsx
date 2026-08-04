@@ -104,19 +104,22 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const refreshExpertProfile = async (uid: string) => {
     try {
       const res = await fetch('/api/experts');
-      if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
         const allExperts = await res.json();
-        const matched = allExperts.filter((e: any) => e.userId === uid);
-        setUserExperts(matched);
-        if (matched.length > 0) {
-          setExpertProfile((prev) => {
-            if (prev && matched.some((e: any) => e.id === prev.id)) {
-              return matched.find((e: any) => e.id === prev.id) || matched[0];
-            }
-            return matched[0];
-          });
-          setActiveRole('expert');
-          return;
+        if (Array.isArray(allExperts)) {
+          const matched = allExperts.filter((e: any) => e.userId === uid);
+          setUserExperts(matched);
+          if (matched.length > 0) {
+            setExpertProfile((prev) => {
+              if (prev && matched.some((e: any) => e.id === prev.id)) {
+                return matched.find((e: any) => e.id === prev.id) || matched[0];
+              }
+              return matched[0];
+            });
+            setActiveRole('expert');
+            return;
+          }
         }
       }
       
@@ -138,7 +141,20 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setActiveRole('buyer');
       }
     } catch (err) {
-      console.error('Error fetching expert profile:', err);
+      // Fallback local storage lookup on fetch failure or invalid JSON
+      try {
+        const expertsRaw = localStorage.getItem('br_experts');
+        const allExpertsLocal = expertsRaw ? JSON.parse(expertsRaw) : [];
+        const matchedLocal = allExpertsLocal.filter((e: any) => e.userId === uid);
+        setUserExperts(matchedLocal);
+        if (matchedLocal.length > 0) {
+          setExpertProfile(matchedLocal[0]);
+          setActiveRole('expert');
+          return;
+        }
+      } catch (localErr) {
+        // Ignore local parse errors
+      }
       setExpertProfile(null);
       setUserExperts([]);
       setActiveRole('buyer');

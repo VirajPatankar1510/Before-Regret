@@ -74,16 +74,52 @@
     margin: 0 !important;
   }
 
-  /* Prevent card & section breaks across pages */
-  section, .rounded-2xl, .rounded-3xl {
+  /* Collapse containers to content height to eliminate large blank spaces */
+  section, main, .container, div, article {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  /* Do NOT apply break-inside: avoid to section containers (causes entire sections to jump leaving blank spaces) */
+  section, main, .rounded-2xl, .rounded-3xl {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+    box-shadow: none !important;
+    margin-bottom: 16px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+
+  /* Apply break-inside: avoid ONLY to individual finding/action cards */
+  .finding-card, .action-item-card, .source-card, .card-item {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
-    box-shadow: none !important;
+  }
+
+  /* Remove or collapse spacer divs, padding-only elements, or decorative whitespace */
+  .spacer, .py-10, .py-12 {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  /* Display URLs as visible text in PDF export for Source Registry and references */
+  a[href]::after {
+    content: " (" attr(href) ")" !important;
+    font-size: 80% !important;
+    color: #475569 !important;
+    font-weight: normal !important;
+  }
+
+  a {
+    text-decoration: underline !important;
+    color: #2563eb !important;
   }
 
   /* Make headings and text crisp */
   h1, h2, h3, h4 {
     color: #0f172a !important;
+    page-break-after: avoid !important;
   }
 
   /* Background colors preservation */

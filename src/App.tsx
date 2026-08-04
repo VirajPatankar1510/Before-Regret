@@ -35,12 +35,77 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { RefundPolicy } from './components/RefundPolicy';
 
 export function App() {
-  const [currentStep, setCurrentStep] = useState<'HOME' | 'RESEARCHING' | 'SUMMARY' | 'REPORT' | 'PSEO'>('HOME');
-  const [selectedProperty, setSelectedProperty] = useState<PropertySearchResult | null>(null);
-  const [summaryData, setSummaryData] = useState<ResearchSummaryData | null>(null);
-  const [report, setReport] = useState<PropertyReport | null>(null);
+  // Session state restoration to continue where left off after auth login/signup
+  const [currentStep, setCurrentStep] = useState<'HOME' | 'RESEARCHING' | 'SUMMARY' | 'REPORT' | 'PSEO'>(() => {
+    try {
+      const saved = sessionStorage.getItem('beforeregret_session_state');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.currentStep) {
+          return parsed.currentStep;
+        }
+      }
+    } catch (e) {}
+    return 'HOME';
+  });
+
+  const [selectedProperty, setSelectedProperty] = useState<PropertySearchResult | null>(() => {
+    try {
+      const saved = sessionStorage.getItem('beforeregret_session_state');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.selectedProperty) {
+          return parsed.selectedProperty;
+        }
+      }
+    } catch (e) {}
+    return null;
+  });
+
+  const [summaryData, setSummaryData] = useState<ResearchSummaryData | null>(() => {
+    try {
+      const saved = sessionStorage.getItem('beforeregret_session_state');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.summaryData) {
+          return parsed.summaryData;
+        }
+      }
+    } catch (e) {}
+    return null;
+  });
+
+  const [report, setReport] = useState<PropertyReport | null>(() => {
+    try {
+      const saved = sessionStorage.getItem('beforeregret_session_state');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.report) {
+          return parsed.report;
+        }
+      }
+    } catch (e) {}
+    return null;
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const [isGatingModalOpen, setIsGatingModalOpen] = useState(false);
+
+  // Synchronize active session state with sessionStorage
+  useEffect(() => {
+    try {
+      if (currentStep !== 'HOME' || selectedProperty || summaryData || report) {
+        sessionStorage.setItem('beforeregret_session_state', JSON.stringify({
+          currentStep,
+          selectedProperty,
+          summaryData,
+          report
+        }));
+      } else {
+        sessionStorage.removeItem('beforeregret_session_state');
+      }
+    } catch (e) {}
+  }, [currentStep, selectedProperty, summaryData, report]);
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
@@ -520,6 +585,8 @@ export function App() {
     setReport(null);
     setCurrentStep('HOME');
     try {
+      sessionStorage.removeItem('beforeregret_session_state');
+      sessionStorage.removeItem('beforeregret_map_draft');
       window.history.pushState({}, '', '/');
     } catch (e) {
       // Ignore if iframe location is restricted

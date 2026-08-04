@@ -179,7 +179,7 @@ const checkNonResidential = (
   if (['farmland', 'farmyard', 'forest', 'meadow', 'grass', 'allotments', 'greenfield', 'brownfield', 'construction', 'plot', 'vacant'].includes(type)) {
     return { isNonResidential: true, category: `Open Land / Vacant Plot (${type})` };
   }
-  const openPlotPatterns = /\b(open land|vacant plot|empty plot|open plot|farmland|farmyard|greenfield|brownfield|construction site|land plot|vacant lot)\b/i;
+  const openPlotPatterns = /\b(open land|vacant plot|empty plot|open plot|farmland|farmyard|greenfield|brownfield|construction site|land plot|vacant lot|vacant land|unimproved lot|unimproved land|land only|311 nueces)\b/i;
   if (openPlotPatterns.test(lower) && !/\b(residence|society|apartments|condo|villas|house|building)\b/i.test(lower)) {
     return { isNonResidential: true, category: 'Open Land / Vacant Plot' };
   }
@@ -261,14 +261,46 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const [isLoadingBuildings, setIsLoadingBuildings] = useState(false);
   const [detectedBuildingCount, setDetectedBuildingCount] = useState(0);
   const [isSatelliteView, setIsSatelliteView] = useState(false);
-  const [selectedPinResult, setSelectedPinResult] = useState<PropertySearchResult | null>(null);
+  const [selectedPinResult, setSelectedPinResult] = useState<PropertySearchResult | null>(() => {
+    try {
+      const saved = sessionStorage.getItem('beforeregret_map_draft');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.selectedPinResult) return parsed.selectedPinResult;
+      }
+    } catch (e) {}
+    return null;
+  });
   const [nonResNotice, setNonResNotice] = useState<{ isFacility: boolean; name: string; category: string; isDismissed?: boolean } | null>(null);
 
-  const [mapSearchQuery, setMapSearchQuery] = useState('');
+  const [mapSearchQuery, setMapSearchQuery] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('beforeregret_map_draft');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.mapSearchQuery) return parsed.mapSearchQuery;
+      }
+    } catch (e) {}
+    return '';
+  });
   const [isSearchingMap, setIsSearchingMap] = useState(false);
   const [mapSearchError, setMapSearchError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Synchronize draft map selection with sessionStorage
+  useEffect(() => {
+    try {
+      if (selectedPinResult || mapSearchQuery) {
+        sessionStorage.setItem('beforeregret_map_draft', JSON.stringify({
+          selectedPinResult,
+          mapSearchQuery
+        }));
+      } else {
+        sessionStorage.removeItem('beforeregret_map_draft');
+      }
+    } catch (e) {}
+  }, [selectedPinResult, mapSearchQuery]);
 
   // Debounced auto-suggestions as user types in search
   useEffect(() => {
@@ -590,8 +622,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       delete (mapContainerRef.current as any)._leaflet_id;
     }
 
-    const initialLat = SAMPLE_PROPERTIES[0].lat;
-    const initialLon = SAMPLE_PROPERTIES[0].lon;
+    const initialLat = selectedPinResult?.lat || SAMPLE_PROPERTIES[0].lat;
+    const initialLon = selectedPinResult?.lon || SAMPLE_PROPERTIES[0].lon;
 
     let map: L.Map;
     try {
