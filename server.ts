@@ -213,7 +213,7 @@ async function startServer() {
   // AND independently re-run before report generation below, so a bypassed or stale frontend
   // check can never let a non-residential or unsupported address through.
   app.post("/api/address/validate", async (req, res) => {
-    const { address, city, state } = req.body;
+    const { address, city, state, declaredPropertyType, unitNumber } = req.body;
 
     if (!address || typeof address !== 'string') {
       res.status(400).json({ error: 'address is required.' });
@@ -221,7 +221,7 @@ async function startServer() {
     }
 
     try {
-      const gateResult = await runAddressGate(address, city || '', state || '');
+      const gateResult = await runAddressGate(address, city || '', state || '', declaredPropertyType || null, unitNumber || null);
       res.json({ success: true, gate: gateResult });
     } catch (err) {
       // Fail closed: an unexpected error in the gate itself must never be treated as a pass.
@@ -240,7 +240,7 @@ async function startServer() {
 
   // 1. Research Summary & Public Data Scan Endpoint
   app.post("/api/property/research", async (req, res) => {
-    const { address, city, state, zipCode, lat, lon, propertyType, displayName } = req.body;
+    const { address, city, state, zipCode, lat, lon, propertyType, displayName, declaredPropertyType, unitNumber } = req.body;
 
     if (!address && !displayName) {
       res.status(400).json({ error: "Property address or name is required." });
@@ -249,7 +249,7 @@ async function startServer() {
 
     const fullAddrStr = address || displayName || 'Subject Property';
 
-    const gateResult = await runAddressGate(fullAddrStr, city || '', state || '');
+    const gateResult = await runAddressGate(fullAddrStr, city || '', state || '', declaredPropertyType || null, unitNumber || null);
     if (!gateResult.canGenerateReport) {
       res.json({
         success: true,
@@ -346,15 +346,16 @@ async function startServer() {
 
   // 2. Full AI Property Report Generation Endpoint (Gemini 3.6 Flash)
   app.post(["/api/property/generate-report", "/api/generate-report"], async (req, res) => {
-    const { address, city, state, zipCode, county, propertyType, usefulSourcesCount, price } = req.body;
+    const { address, city, state, zipCode, county, propertyType, usefulSourcesCount, price, declaredPropertyType, unitNumber } = req.body;
 
     const fullAddr = formattedAddress(address, city, state, zipCode);
 
     // Authoritative, synchronous gate. This is the check that actually matters: it re-runs
     // Layers 1-3 independently of whatever the map UI decided, so no client-side bypass, stale
-    // state, or direct API call can ever produce a report for a non-residential, unresolvable,
-    // or unsupported-jurisdiction address. Fails closed on any error inside runAddressGate.
-    const gateResult = await runAddressGate(fullAddr, city || '', state || '');
+    // state, or direct API call can ever produce a report for an unresolvable address, a
+    // government facility, or a property type the requester didn't actually declare. Fails
+    // closed on any error inside runAddressGate.
+    const gateResult = await runAddressGate(fullAddr, city || '', state || '', declaredPropertyType || null, unitNumber || null);
     if (!gateResult.canGenerateReport) {
       const blockedReport = {
         id: `rep_blocked_${Date.now()}`,

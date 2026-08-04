@@ -553,6 +553,8 @@ export function App() {
           zipCode: activeProperty.zipCode,
           county: activeProperty.county,
           propertyType: activeProperty.propertyType,
+          declaredPropertyType: activeProperty.declaredPropertyType,
+          unitNumber: activeProperty.unitNumber,
           usefulSourcesCount: summaryData?.usefulSourcesFound || 18,
           price: isPaid ? 14.99 : 0,
           userEmail: userEmail,
