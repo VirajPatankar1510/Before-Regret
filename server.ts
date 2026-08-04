@@ -61,11 +61,93 @@ async function startServer() {
 
   // API Health check
   app.get("/api/health", (req, res) => {
-    res.json({ 
-      status: "ok", 
+    res.json({
+      status: "ok",
       app: "BeforeRegret - Property Research Assistant (USA)",
       version: "4.0.0"
     });
+  });
+
+  // Map geocoding proxy (LocationIQ) -- keeps the API key server-side only, never bundled into
+  // the browser JS. LocationIQ's Search/Reverse APIs are explicitly compatible with Nominatim's
+  // response shape, so the frontend map code that parses these responses (address components,
+  // lat/lon, class/type) needed no changes beyond pointing at these endpoints instead of
+  // nominatim.openstreetmap.org directly. This replaces direct calls to Nominatim's free public
+  // instance for map interactivity (search-as-you-type, click/drag-to-address) -- Nominatim's
+  // usage policy prohibits the kind of unthrottled production traffic a paid product generates
+  // against it, which is a separate concern from Layer 1 (which already uses the Census
+  // Bureau geocoder, not Nominatim, for the actual residential-address validation decision).
+  //
+  // Does NOT silently fall back to calling Nominatim directly if no key is configured -- that
+  // would just reintroduce the exact problem this proxy exists to remove. Get a free API key at
+  // https://locationiq.com (5,000 requests/day free tier as of this writing) and set
+  // LOCATIONIQ_API_KEY in your environment.
+  app.get("/api/geocode/search", async (req, res) => {
+    const apiKey = process.env.LOCATIONIQ_API_KEY;
+    if (!apiKey) {
+      res.status(503).json({ error: "Map search is not configured. Set LOCATIONIQ_API_KEY." });
+      return;
+    }
+    const { q, limit, addressdetails, countrycodes } = req.query;
+    if (!q || typeof q !== "string") {
+      res.status(400).json({ error: "q is required." });
+      return;
+    }
+    try {
+      const params = new URLSearchParams({
+        key: apiKey,
+        q,
+        format: "json",
+        addressdetails: (addressdetails as string) || "1",
+        limit: (limit as string) || "5",
+      });
+      if (countrycodes && typeof countrycodes === "string") {
+        params.set("countrycodes", countrycodes);
+      }
+      const upstream = await fetch(`https://us1.locationiq.com/v1/search?${params.toString()}`);
+      if (!upstream.ok) {
+        res.status(upstream.status).json({ error: "Map search provider error." });
+        return;
+      }
+      const data = await upstream.json();
+      res.json(data);
+    } catch (err) {
+      console.error("[Geocode Search Proxy Error]:", err);
+      res.status(502).json({ error: "Map search is temporarily unavailable." });
+    }
+  });
+
+  app.get("/api/geocode/reverse", async (req, res) => {
+    const apiKey = process.env.LOCATIONIQ_API_KEY;
+    if (!apiKey) {
+      res.status(503).json({ error: "Map search is not configured. Set LOCATIONIQ_API_KEY." });
+      return;
+    }
+    const { lat, lon } = req.query;
+    if (!lat || !lon) {
+      res.status(400).json({ error: "lat and lon are required." });
+      return;
+    }
+    try {
+      const params = new URLSearchParams({
+        key: apiKey,
+        lat: lat as string,
+        lon: lon as string,
+        format: "json",
+        addressdetails: "1",
+        zoom: "18",
+      });
+      const upstream = await fetch(`https://us1.locationiq.com/v1/reverse?${params.toString()}`);
+      if (!upstream.ok) {
+        res.status(upstream.status).json({ error: "Map search provider error." });
+        return;
+      }
+      const data = await upstream.json();
+      res.json(data);
+    } catch (err) {
+      console.error("[Geocode Reverse Proxy Error]:", err);
+      res.status(502).json({ error: "Map search is temporarily unavailable." });
+    }
   });
 
   // GET Standalone Report by Unique ID

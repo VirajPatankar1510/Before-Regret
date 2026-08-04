@@ -142,7 +142,7 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
 
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1&zoom=18`
+        `/api/geocode/reverse?lat=${lat}&lon=${lon}`
       );
       if (response.ok) {
         const item = await response.json();
@@ -458,7 +458,7 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
 
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&countrycodes=us&q=${encodeURIComponent(mapSearchQuery)}&limit=1`
+        `/api/geocode/search?countrycodes=us&q=${encodeURIComponent(mapSearchQuery)}&limit=1`
       );
       if (res.ok) {
         const data = await res.json();
