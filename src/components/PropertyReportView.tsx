@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  MapPin, ExternalLink, ShieldCheck, AlertTriangle, CheckCircle2, 
+  MapPin, ExternalLink, AlertTriangle, CheckCircle2,
   Check, ChevronRight, Clock, CheckSquare, Square, 
   FileCheck, AlertCircle, Download, Building, Layers,
   BarChart3, Info, Calendar, Database, Sparkles, Filter, FileText, ArrowRight
@@ -27,23 +27,31 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
     .replace(/\s+/g, ' ')
     .trim();
 
-  // If non-residential parcel gate was triggered, show elegant rejection message
+  // If the address validation gate blocked this address, show why -- headline varies by which
+  // layer blocked it (bad address format / government facility / unsupported jurisdiction).
   if (report.isNonResidential) {
+    const layerHeadline: Record<number, string> = {
+      1: 'Address Could Not Be Verified',
+      2: 'Government Facility Detected',
+      3: 'Area Not Yet Supported',
+    };
+    const headline = layerHeadline[report.blockedAtLayer as number] || 'Residential Address Required';
+
     return (
       <div className="max-w-4xl mx-auto px-4 py-12 space-y-6 font-sans">
         <div className="bg-slate-900 border border-slate-800 text-white rounded-3xl p-8 space-y-6 shadow-xl">
           <div className="flex items-center gap-3 text-amber-400">
             <Building className="w-8 h-8 shrink-0" />
             <div>
-              <span className="text-xs font-mono font-bold uppercase tracking-widest text-amber-400">CLASSIFICATION GATE TRIGGERED</span>
+              <span className="text-xs font-mono font-bold uppercase tracking-widest text-amber-400">VALIDATION GATE</span>
               <h1 className="text-2xl font-serif font-black text-white">Residential Scope Verification</h1>
             </div>
           </div>
-          
+
           <div className="bg-amber-950/60 border border-amber-600/40 rounded-2xl p-6 space-y-3">
-            <h2 className="text-lg font-bold text-amber-200">Non-Residential Commercial Parcel Detected</h2>
+            <h2 className="text-lg font-bold text-amber-200">{headline}</h2>
             <p className="text-sm text-slate-200 leading-relaxed">
-              {report.rejectionReason || `BeforeRegret due diligence reports apply exclusively to residential properties (Single Family Homes, Condos, Townhomes, Multi-Family Apartments). Tax assessor and land-use records indicate ${formattedAddress || 'this address'} is classified as a Commercial Office Building, Industrial Property, or Retail Parcel.`}
+              {report.rejectionReason || `BeforeRegret due diligence reports apply exclusively to residential properties. ${formattedAddress || 'This address'} could not be verified as a residential property.`}
             </p>
           </div>
 
@@ -64,7 +72,10 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
     );
   }
 
-  // Derive canonical findings array
+  // Derive canonical findings array.
+  // NOTE: BeforeRegret has no live data connection to any government record source yet, so the
+  // fallback below must never assert a specific "CONFIRMED RECORD" (a permit date, a flood
+  // zone, etc.) -- every entry here is honestly labeled 'NOT YET VERIFIED'.
   const findings: CanonicalFinding[] = report.canonicalFindings && report.canonicalFindings.length > 0
     ? report.canonicalFindings
     : [
@@ -72,111 +83,121 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           id: 'f1',
           subject: 'Roof & Building Envelope Permit Records',
           category: 'Property Records',
-          status: 'NO RECORD FOUND',
-          summaryText: 'Public permit archive contains no permit record for roof replacement.',
-          whatWeFound: 'Municipal building permit archives contain no permit record for a roof replacement.',
+          status: 'NOT YET VERIFIED',
+          summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal roof permit records for this address.',
+          whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
           whyItMatters: 'Roofing materials experience atmospheric weathering over time and represent significant replacement costs if nearing end-of-life.',
-          suggestedNextStep: 'Ask the seller for roof installation receipts or contractor invoice documentation.',
+          suggestedNextStep: 'Ask the seller for roof installation receipts or contractor invoice documentation, and check the municipal permit portal directly.',
           actionItem: {
             type: 'sellerQuestion',
             title: 'Roof Installation & Warranty',
             description: 'Has the roof ever been replaced or repaired, and do you have contractor invoices or warranty documentation?',
-            why: 'No roof permit found in municipal digitized archive.'
+            why: 'BeforeRegret has not yet independently verified permit records for this address.'
           },
-          sourceAgency: 'City Building Department'
+          sourceAgency: 'City Building Department (not yet queried)'
         },
         {
           id: 'f2',
           subject: 'Main Electrical Service Panel',
           category: 'Property Records',
-          status: 'CONFIRMED RECORD',
-          summaryText: 'A building permit for a 200-amp main electrical service panel upgrade is on file in municipal archives, finaled in 2015.',
-          whatWeFound: 'A building permit was issued and passed final inspection in 2015 for a 200-amp main service panel upgrade.',
-          whyItMatters: 'A permitted 200A electrical service panel meets modern safety standards for contemporary household appliances.',
-          suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough.',
+          status: 'NOT YET VERIFIED',
+          summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal electrical permit records for this address.',
+          whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
+          whyItMatters: 'A permitted electrical service panel meets modern safety standards for contemporary household appliances.',
+          suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough, and check the municipal permit portal directly.',
           actionItem: {
             type: 'walkthroughItem',
             title: 'Main Electrical Panel Walkthrough',
-            description: 'Locate 200A main service panel in garage or utility area and confirm municipal inspection sticker.',
-            why: 'Confirmed 2015 electrical permit on file.'
+            description: 'Locate the main service panel in garage or utility area and confirm municipal inspection sticker.',
+            why: 'BeforeRegret has not yet independently verified permit records for this address.'
           },
-          sourceAgency: 'City Building Department'
+          sourceAgency: 'City Building Department (not yet queried)'
         },
         {
           id: 'f3',
           subject: 'HVAC Compressor & Mechanical System',
           category: 'Property Records',
-          status: 'NO RECORD FOUND',
-          summaryText: 'No mechanical replacement permit on file in digitized municipal building logs.',
-          whatWeFound: 'Municipal building department logs show no mechanical permit record for HVAC unit replacement.',
-          whyItMatters: 'Central cooling compressors experience declining efficiency over 12–15 year lifespans.',
+          status: 'NOT YET VERIFIED',
+          summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal mechanical permit records for this address.',
+          whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
+          whyItMatters: 'Central cooling compressors experience declining efficiency over 12-15 year lifespans.',
           suggestedNextStep: 'Have your home inspector record manufacturing date on condenser unit dataplate.',
           actionItem: {
             type: 'sellerQuestion',
             title: 'HVAC Age & Service History',
             description: 'What is the age of the central AC compressor, and are annual maintenance records available?',
-            why: 'No mechanical replacement permit on file in city log.'
+            why: 'BeforeRegret has not yet independently verified permit records for this address.'
           },
-          sourceAgency: 'City Mechanical Permitting Division'
+          sourceAgency: 'City Mechanical Permitting Division (not yet queried)'
         },
         {
           id: 'f4',
           subject: 'FEMA Flood Hazard Risk Zone',
           category: 'Environment',
-          status: 'CONFIRMED RECORD',
-          summaryText: 'FEMA Flood Hazard Layer classifies parcel in Zone X (Minimal flood risk).',
-          whatWeFound: 'FEMA National Flood Hazard Layer map panel classifies this parcel in Zone X (Area of Minimal Flood Hazard).',
-          whyItMatters: 'Zone X classification means lender flood insurance is not federally mandated.',
-          suggestedNextStep: 'Confirm Zone X status with your home insurance provider during binder quotation.',
+          status: 'NOT YET VERIFIED',
+          summaryText: 'BeforeRegret does not yet have a live, verified connection to the FEMA National Flood Hazard Layer for this address.',
+          whatWeFound: 'No live data connection to FEMA NFHL exists yet for this address.',
+          whyItMatters: 'Flood zone classification affects whether mortgage lenders require flood insurance.',
+          suggestedNextStep: 'Look up the official flood zone yourself at the FEMA Flood Map Service Center before making assumptions about insurance requirements.',
           actionItem: {
             type: 'disclosureLever',
             title: 'Flood Insurance Verification',
-            description: 'Supply FEMA Zone X determination letter to home insurance agent for optimal policy binder quote.',
-            why: 'Confirmed FEMA NFHL Zone X mapping.'
+            description: 'Ask your insurance agent to pull the official FEMA flood zone determination for this address.',
+            why: 'BeforeRegret has not yet independently verified FEMA flood zone data for this address.'
           },
-          sourceAgency: 'FEMA Flood Map Service Center'
+          sourceAgency: 'FEMA Flood Map Service Center (not yet queried)'
         },
         {
           id: 'f5',
           subject: 'Municipal Code Enforcement Standing',
           category: 'Neighborhood',
-          status: 'CONFIRMED RECORD',
-          summaryText: 'Zero open building code violations, health hazards, or active citations on file.',
-          whatWeFound: 'City Code Enforcement database shows zero active code violations or municipal citations for this parcel.',
-          whyItMatters: 'Clean code standing confirms no unaddressed municipal orders or property maintenance liens.',
-          suggestedNextStep: 'Retain code clearance record in closing files.',
-          sourceAgency: 'City Code Enforcement Department'
+          status: 'NOT YET VERIFIED',
+          summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal code enforcement records for this address.',
+          whatWeFound: 'No live data connection to this jurisdiction\'s code enforcement system exists yet.',
+          whyItMatters: 'Open code violations or municipal orders can affect closing and future liability.',
+          suggestedNextStep: 'Check the municipal code enforcement portal directly before closing.',
+          sourceAgency: 'City Code Enforcement Department (not yet queried)'
         }
       ];
 
   // Derive source registry
   const sourceRegistry: SourceReferenceItem[] = report.sourceRegistry || [
-    { id: 'sr1', name: 'FEMA National Flood Hazard Layer (NFHL)', agency: 'Federal Emergency Management Agency', category: 'Hazards', status: 'CONFIRMED RECORD', url: 'https://msc.fema.gov/portal/search', lastUpdated: 'Updated 2024', description: 'Official flood hazard zone boundary mapping.' },
-    { id: 'sr2', name: 'Municipal Building Permit Registry', agency: 'City Building & Development Department', category: 'Property Records', status: 'CONFIRMED RECORD', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Digitized building, electrical, and mechanical permits.' },
-    { id: 'sr3', name: 'County Tax Assessor Parcel Database', agency: 'County Tax Assessor Office', category: 'Property Records', status: 'CONFIRMED RECORD', url: 'https://traviscad.org/propertysearch', lastUpdated: 'Updated 2025', description: 'Property tax assessment and land-use records.' },
-    { id: 'sr4', name: 'EPA Superfund & Toxics Inventory', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://enviro.epa.gov', lastUpdated: 'Updated Monthly', description: 'Hazardous waste and toxic release site mapping.' },
-    { id: 'sr5', name: 'City Code Enforcement Portal', agency: 'Municipal Code Compliance Division', category: 'Property Records', status: 'CONFIRMED RECORD', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Active and closed code violations or citations.' },
-    { id: 'sr6', name: 'USGS / EPA Indoor Radon Map', agency: 'U.S. Geological Survey & EPA', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://www.epa.gov/radon/find-information-about-local-radon-zones-and-radon-programs', lastUpdated: 'Updated 2024', description: 'County-level indoor radon hazard classification.' },
-    { id: 'sr7', name: 'USFS Wildfire Risk Dataset', agency: 'U.S. Forest Service', category: 'Hazards', status: 'CONFIRMED RECORD', url: 'https://www.wildfirerisk.org', lastUpdated: 'Updated 2024', description: 'Community wildfire hazard exposure mapping.' },
-    { id: 'sr8', name: 'NOAA Severe Storm Surge Database', agency: 'National Oceanic and Atmospheric Administration', category: 'Hazards', status: 'CONFIRMED RECORD', url: 'https://www.ncdc.noaa.gov/stormevents/', lastUpdated: 'Updated 2024', description: 'Storm surge and coastal wind hazard records.' },
-    { id: 'sr9', name: 'FAA Airport Noise Contours', agency: 'Federal Aviation Administration', category: 'Neighborhood', status: 'CONFIRMED RECORD', url: 'https://www.faa.gov/regulations_policies/policy_guidance/noise', lastUpdated: 'Updated 2024', description: 'Aircraft noise exposure and DNL flight path contours.' },
-    { id: 'sr10', name: 'DOT Capital Improvement Projects (STIP)', agency: 'State Department of Transportation', category: 'Neighborhood', status: 'CONFIRMED RECORD', url: 'https://www.fhwa.dot.gov/stip/', lastUpdated: 'Updated Monthly', description: '5-year regional highway and transit project pipeline.' },
-    { id: 'sr11', name: 'FCC Broadband & Fiber Coverage Map', agency: 'Federal Communications Commission', category: 'Utilities', status: 'CONFIRMED RECORD', url: 'https://broadbandmap.fcc.gov', lastUpdated: 'Updated 2025', description: 'Verified fiber and high-speed internet availability.' },
-    { id: 'sr12', name: 'EPA Safe Drinking Water Information System', agency: 'U.S. Environmental Protection Agency', category: 'Utilities', status: 'CONFIRMED RECORD', url: 'https://www.epa.gov/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting', lastUpdated: 'Updated Monthly', description: 'Public water utility quality and compliance records.' },
-    { id: 'sr13', name: 'USDA NRCS Soil Survey', agency: 'USDA Natural Resources Conservation Service', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://websoilsurvey.nrcs.usda.gov', lastUpdated: 'Updated 2024', description: 'Soil drainage and expansive clay soil stability data.' },
-    { id: 'sr14', name: 'USGS National Seismic Hazard Map', agency: 'U.S. Geological Survey', category: 'Hazards', status: 'CONFIRMED RECORD', url: 'https://earthquake.usgs.gov/hazards/hazmaps/', lastUpdated: 'Updated 2024', description: 'Ground motion acceleration and earthquake probability.' },
-    { id: 'sr15', name: 'U.S. EIA Power Grid Reliability Map', agency: 'U.S. Energy Information Administration', category: 'Utilities', status: 'CONFIRMED RECORD', url: 'https://www.eia.gov/electricity/gridmonitor/', lastUpdated: 'Updated 2025', description: 'Regional electric utility grid stability records.' },
-    { id: 'sr16', name: 'FRA Railroad Crossing Registry', agency: 'Federal Railroad Administration', category: 'Neighborhood', status: 'CONFIRMED RECORD', url: 'https://railroads.dot.gov/railroad-safety/accident-incident-reporting/emergency-notification-system-ens/ens', lastUpdated: 'Updated 2024', description: 'Active rail line proximity and train horn noise points.' },
-    { id: 'sr17', name: 'Municipal Water District & Sewer Authority', agency: 'Local Public Works Department', category: 'Utilities', status: 'CONFIRMED RECORD', url: 'https://www.austintexas.gov/department/austin-water', lastUpdated: 'Updated Monthly', description: 'Municipal water supply and sewer service connection.' },
-    { id: 'sr18', name: 'EPA AirNow Historical Air Quality Index', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://www.airnow.gov', lastUpdated: 'Updated 2025', description: '3-year particulate matter and ozone index averages.' },
-    { id: 'sr19', name: 'County Planning Commission Re-Zoning Dockets', agency: 'County Land Use & Planning Office', category: 'Neighborhood', status: 'CONFIRMED RECORD', url: 'https://www.austintexas.gov/department/development-services', lastUpdated: 'Updated Monthly', description: 'Pending commercial re-zoning and variance applications.' },
-    { id: 'sr20', name: 'USPS Address & Parcel Verification', agency: 'U.S. Postal Service', category: 'Property Records', status: 'CONFIRMED RECORD', url: 'https://tools.usps.com/zip-code-lookup.htm', lastUpdated: 'Updated Monthly', description: 'Standardized postal delivery point validation.' },
-    { id: 'sr21', name: 'USGS National Elevation & Slope Model', agency: 'U.S. Geological Survey', category: 'Environment', status: 'CONFIRMED RECORD', url: 'https://apps.nationalmap.gov/elevation/', lastUpdated: 'Updated 2024', description: 'Parcel topography and surface drainage slope gradient.' }
+    { id: 'sr1', name: 'FEMA National Flood Hazard Layer (NFHL)', agency: 'Federal Emergency Management Agency', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://msc.fema.gov/portal/search', lastUpdated: 'Updated 2024', description: 'Official flood hazard zone boundary mapping.' },
+    { id: 'sr2', name: 'Municipal Building Permit Registry', agency: 'City Building & Development Department', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Digitized building, electrical, and mechanical permits.' },
+    { id: 'sr3', name: 'County Tax Assessor Parcel Database', agency: 'County Tax Assessor Office', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://traviscad.org/propertysearch', lastUpdated: 'Updated 2025', description: 'Property tax assessment and land-use records.' },
+    { id: 'sr4', name: 'EPA Superfund & Toxics Inventory', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://enviro.epa.gov', lastUpdated: 'Updated Monthly', description: 'Hazardous waste and toxic release site mapping.' },
+    { id: 'sr5', name: 'City Code Enforcement Portal', agency: 'Municipal Code Compliance Division', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Active and closed code violations or citations.' },
+    { id: 'sr6', name: 'USGS / EPA Indoor Radon Map', agency: 'U.S. Geological Survey & EPA', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://www.epa.gov/radon/find-information-about-local-radon-zones-and-radon-programs', lastUpdated: 'Updated 2024', description: 'County-level indoor radon hazard classification.' },
+    { id: 'sr7', name: 'USFS Wildfire Risk Dataset', agency: 'U.S. Forest Service', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://www.wildfirerisk.org', lastUpdated: 'Updated 2024', description: 'Community wildfire hazard exposure mapping.' },
+    { id: 'sr8', name: 'NOAA Severe Storm Surge Database', agency: 'National Oceanic and Atmospheric Administration', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://www.ncdc.noaa.gov/stormevents/', lastUpdated: 'Updated 2024', description: 'Storm surge and coastal wind hazard records.' },
+    { id: 'sr9', name: 'FAA Airport Noise Contours', agency: 'Federal Aviation Administration', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.faa.gov/regulations_policies/policy_guidance/noise', lastUpdated: 'Updated 2024', description: 'Aircraft noise exposure and DNL flight path contours.' },
+    { id: 'sr10', name: 'DOT Capital Improvement Projects (STIP)', agency: 'State Department of Transportation', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.fhwa.dot.gov/stip/', lastUpdated: 'Updated Monthly', description: '5-year regional highway and transit project pipeline.' },
+    { id: 'sr11', name: 'FCC Broadband & Fiber Coverage Map', agency: 'Federal Communications Commission', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://broadbandmap.fcc.gov', lastUpdated: 'Updated 2025', description: 'Verified fiber and high-speed internet availability.' },
+    { id: 'sr12', name: 'EPA Safe Drinking Water Information System', agency: 'U.S. Environmental Protection Agency', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.epa.gov/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting', lastUpdated: 'Updated Monthly', description: 'Public water utility quality and compliance records.' },
+    { id: 'sr13', name: 'USDA NRCS Soil Survey', agency: 'USDA Natural Resources Conservation Service', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://websoilsurvey.nrcs.usda.gov', lastUpdated: 'Updated 2024', description: 'Soil drainage and expansive clay soil stability data.' },
+    { id: 'sr14', name: 'USGS National Seismic Hazard Map', agency: 'U.S. Geological Survey', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://earthquake.usgs.gov/hazards/hazmaps/', lastUpdated: 'Updated 2024', description: 'Ground motion acceleration and earthquake probability.' },
+    { id: 'sr15', name: 'U.S. EIA Power Grid Reliability Map', agency: 'U.S. Energy Information Administration', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.eia.gov/electricity/gridmonitor/', lastUpdated: 'Updated 2025', description: 'Regional electric utility grid stability records.' },
+    { id: 'sr16', name: 'FRA Railroad Crossing Registry', agency: 'Federal Railroad Administration', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://railroads.dot.gov/railroad-safety/accident-incident-reporting/emergency-notification-system-ens/ens', lastUpdated: 'Updated 2024', description: 'Active rail line proximity and train horn noise points.' },
+    { id: 'sr17', name: 'Municipal Water District & Sewer Authority', agency: 'Local Public Works Department', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.austintexas.gov/department/austin-water', lastUpdated: 'Updated Monthly', description: 'Municipal water supply and sewer service connection.' },
+    { id: 'sr18', name: 'EPA AirNow Historical Air Quality Index', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://www.airnow.gov', lastUpdated: 'Updated 2025', description: '3-year particulate matter and ozone index averages.' },
+    { id: 'sr19', name: 'County Planning Commission Re-Zoning Dockets', agency: 'County Land Use & Planning Office', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.austintexas.gov/department/development-services', lastUpdated: 'Updated Monthly', description: 'Pending commercial re-zoning and variance applications.' },
+    { id: 'sr20', name: 'USPS Address & Parcel Verification', agency: 'U.S. Postal Service', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://tools.usps.com/zip-code-lookup.htm', lastUpdated: 'Updated Monthly', description: 'Standardized postal delivery point validation.' },
+    { id: 'sr21', name: 'USGS National Elevation & Slope Model', agency: 'U.S. Geological Survey', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://apps.nationalmap.gov/elevation/', lastUpdated: 'Updated 2024', description: 'Parcel topography and surface drainage slope gradient.' }
   ];
 
-  // Filter findings by status
+  // Filter findings by status. Most findings today are 'NOT YET VERIFIED' because BeforeRegret
+  // has no live data connection yet -- this stays generic so it renders correctly once real
+  // 'CONFIRMED RECORD' / 'NO RECORD FOUND' data exists for a jurisdiction.
   const verifiedFindings = findings.filter(f => f.status === 'CONFIRMED RECORD');
   const unconfirmedFindings = findings.filter(f => f.status === 'NO RECORD FOUND');
+  const pendingFindings = findings.filter(f => f.status === 'NOT YET VERIFIED');
+  const allPending = findings.length > 0 && pendingFindings.length === findings.length;
+
+  const statusBadgeClasses = (status: string) => {
+    if (status === 'CONFIRMED RECORD') return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+    if (status === 'NO RECORD FOUND') return 'bg-amber-50 text-amber-800 border-amber-200';
+    return 'bg-slate-100 text-slate-600 border-slate-300';
+  };
 
   // Toggle checklist checkbox
   const toggleCheck = (id: string) => {
@@ -244,8 +265,8 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xs">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
             <div>
-              <span className="text-[11px] font-mono font-bold text-blue-600 uppercase tracking-widest block">
-                VERIFIED PUBLIC PROPERTY RESEARCH
+              <span className={`text-[11px] font-mono font-bold uppercase tracking-widest block ${allPending ? 'text-slate-500' : 'text-blue-600'}`}>
+                {allPending ? 'RECORDS REFERENCE — NOT YET INDEPENDENTLY VERIFIED' : 'VERIFIED PUBLIC PROPERTY RESEARCH'}
               </span>
               <h1 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight mt-1">
                 {formattedAddress}
@@ -258,23 +279,30 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </div>
           </div>
 
+          {allPending && (
+            <div className="bg-slate-100 border border-slate-300 rounded-xl p-4 text-xs text-slate-700 leading-relaxed">
+              <span className="font-bold block text-slate-900 mb-1">BeforeRegret does not yet have a live, verified data connection for this address.</span>
+              This page links directly to the official public sources below so you can check each record yourself before closing. Nothing on this page should be treated as a confirmed finding until you verify it at the source.
+            </div>
+          )}
+
           {/* Quick Metrics */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
               <span className="text-[10px] font-mono text-slate-500 uppercase block">Public Sources</span>
-              <span className="text-base font-bold text-slate-900 block mt-0.5">{sourceRegistry.length} Verified</span>
+              <span className="text-base font-bold text-slate-900 block mt-0.5">{sourceRegistry.length} Linked</span>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
               <span className="text-[10px] font-mono text-slate-500 uppercase block">Confirmed Records</span>
               <span className="text-base font-bold text-emerald-700 block mt-0.5">{verifiedFindings.length} Items</span>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <span className="text-[10px] font-mono text-slate-500 uppercase block">Unconfirmed Items</span>
-              <span className="text-base font-bold text-amber-700 block mt-0.5">{unconfirmedFindings.length} Items</span>
+              <span className="text-[10px] font-mono text-slate-500 uppercase block">Not Yet Verified</span>
+              <span className="text-base font-bold text-slate-600 block mt-0.5">{pendingFindings.length} Items</span>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <span className="text-[10px] font-mono text-slate-500 uppercase block">Parcel Audit</span>
-              <span className="text-base font-bold text-slate-900 block mt-0.5">Full Public Audit</span>
+              <span className="text-[10px] font-mono text-slate-500 uppercase block">Research Type</span>
+              <span className="text-base font-bold text-slate-900 block mt-0.5">{allPending ? 'Reference Checklist' : 'Full Public Audit'}</span>
             </div>
           </div>
         </section>
@@ -298,42 +326,64 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                 Bottom Line Guidance
               </h3>
               <p className="text-sm text-slate-300 mt-1 leading-relaxed">
-                {report.bottomLine?.biggerPicture || 'Public record synthesis reveals clean municipal standing with key verification focus on roof replacement history and mechanical AC service records.'}
+                {report.bottomLine?.biggerPicture || 'BeforeRegret does not yet have a live, verified data connection to government records for this address. This checklist links you directly to the official public sources so you can verify each item yourself before closing.'}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-              {/* Worth Verifying */}
-              <div className="bg-amber-950/60 border border-amber-600/40 rounded-xl p-5 space-y-3">
-                <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs uppercase tracking-wider font-mono">
-                  <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Worth Verifying (Priority Items)</span>
+              {/* Not Yet Verified */}
+              {pendingFindings.length > 0 && (
+                <div className={`bg-slate-800/80 border border-slate-700 rounded-xl p-5 space-y-3 ${unconfirmedFindings.length === 0 && verifiedFindings.length === 0 ? 'md:col-span-2' : ''}`}>
+                  <div className="flex items-center gap-2 text-slate-300 font-extrabold text-xs uppercase tracking-wider font-mono">
+                    <Info className="w-4 h-4 text-slate-400 shrink-0" />
+                    <span>Not Yet Verified — Check These Yourself</span>
+                  </div>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    {pendingFindings.map((item, idx) => (
+                      <li key={`pd-${idx}`} className="bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-xs space-y-1">
+                        <span className="font-bold text-slate-200 block">{item.subject}</span>
+                        <span className="text-slate-400 leading-relaxed block text-[11px]">{item.summaryText}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2 pt-1">
-                  {unconfirmedFindings.map((item, idx) => (
-                    <li key={`wv-${idx}`} className="bg-slate-900/90 border border-amber-900/60 rounded-lg p-3 text-xs space-y-1">
-                      <span className="font-bold text-amber-300 block">{item.subject}</span>
-                      <span className="text-slate-200 leading-relaxed block text-[11px]">{item.summaryText}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              )}
+
+              {/* Worth Verifying */}
+              {unconfirmedFindings.length > 0 && (
+                <div className="bg-amber-950/60 border border-amber-600/40 rounded-xl p-5 space-y-3">
+                  <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs uppercase tracking-wider font-mono">
+                    <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>Worth Verifying (Priority Items)</span>
+                  </div>
+                  <ul className="space-y-2 pt-1">
+                    {unconfirmedFindings.map((item, idx) => (
+                      <li key={`wv-${idx}`} className="bg-slate-900/90 border border-amber-900/60 rounded-lg p-3 text-xs space-y-1">
+                        <span className="font-bold text-amber-300 block">{item.subject}</span>
+                        <span className="text-slate-200 leading-relaxed block text-[11px]">{item.summaryText}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Likely Routine */}
-              <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 space-y-3">
-                <div className="flex items-center gap-2 text-blue-400 font-extrabold text-xs uppercase tracking-wider font-mono">
-                  <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                  <span>Likely Routine (Confirmed Status)</span>
+              {verifiedFindings.length > 0 && (
+                <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 space-y-3">
+                  <div className="flex items-center gap-2 text-blue-400 font-extrabold text-xs uppercase tracking-wider font-mono">
+                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                    <span>Likely Routine (Confirmed Status)</span>
+                  </div>
+                  <ul className="space-y-2 pt-1">
+                    {verifiedFindings.map((item, idx) => (
+                      <li key={`lr-${idx}`} className="bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-xs space-y-1">
+                        <span className="font-bold text-blue-300 block">{item.subject}</span>
+                        <span className="text-slate-200 leading-relaxed block text-[11px]">{item.summaryText}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2 pt-1">
-                  {verifiedFindings.map((item, idx) => (
-                    <li key={`lr-${idx}`} className="bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-xs space-y-1">
-                      <span className="font-bold text-blue-300 block">{item.subject}</span>
-                      <span className="text-slate-200 leading-relaxed block text-[11px]">{item.summaryText}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              )}
             </div>
           </div>
 
@@ -345,11 +395,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                 <div key={f.id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono text-slate-500 uppercase">{f.category}</span>
-                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
-                      f.status === 'CONFIRMED RECORD' 
-                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                        : 'bg-amber-50 text-amber-800 border-amber-200'
-                    }`}>
+                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${statusBadgeClasses(f.status)}`}>
                       {f.status}
                     </span>
                   </div>
@@ -376,17 +422,13 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
                   <div>
                     <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">
-                      {finding.category} • {finding.sourceAgency || 'Verified Public Source'}
+                      {finding.category} • {finding.sourceAgency || 'Public Source (not yet queried)'}
                     </span>
                     <h3 className="text-lg font-serif font-bold text-slate-900 mt-0.5">
                       {finding.subject}
                     </h3>
                   </div>
-                  <span className={`text-xs font-mono font-bold px-3 py-1 rounded-full border ${
-                    finding.status === 'CONFIRMED RECORD'
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                      : 'bg-amber-50 text-amber-800 border-amber-200'
-                  }`}>
+                  <span className={`text-xs font-mono font-bold px-3 py-1 rounded-full border ${statusBadgeClasses(finding.status)}`}>
                     {finding.status}
                   </span>
                 </div>
@@ -411,35 +453,35 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             ))}
           </div>
 
-          {/* Reconciliation of All Queried Sources without Findings */}
+          {/* Remaining linked sources not covered by a specific finding above */}
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <Database className="w-4 h-4 text-slate-500" />
                 <h4 className="text-xs font-mono font-bold text-slate-800 uppercase tracking-wider">
-                  Queried Sources Reconciliation ({sourceRegistry.length} Databases Total)
+                  Other Linked Public Sources ({sourceRegistry.length} Total)
                 </h4>
               </div>
-              <span className="text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
-                ABSENCE OF HAZARD / VIOLATION CONFIRMED
+              <span className="text-[10px] font-mono font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-300">
+                NOT YET QUERIED
               </span>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              In public record research, the absence of a record is essential positive information. Beyond the priority findings detailed above, the remaining <strong>{Math.max(0, sourceRegistry.length - findings.length)} queried government databases</strong> returned <strong>zero active citations, open code enforcement orders, or environmental hazard designations</strong> for this parcel:
+              BeforeRegret has not yet independently queried these sources for this address. They are provided as direct links to the official portals so you can check them yourself:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1 text-xs">
               {sourceRegistry
                 .filter(s => !findings.some(f => f.sourceAgency?.toLowerCase().includes(s.agency.toLowerCase().substring(0, 5)) || f.subject.toLowerCase().includes(s.category.toLowerCase())))
                 .map(s => (
-                  <div key={s.id} className="bg-white border border-slate-200 rounded-lg p-2.5 flex items-center justify-between gap-2">
+                  <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="bg-white border border-slate-200 rounded-lg p-2.5 flex items-center justify-between gap-2 hover:border-blue-300 transition-all">
                     <div className="min-w-0 flex-1">
                       <span className="font-bold text-slate-900 block text-[11px] truncate">{s.name}</span>
                       <span className="text-[10px] text-slate-500 font-mono block truncate">{s.agency}</span>
                     </div>
-                    <span className="text-[9px] font-mono font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 whitespace-nowrap shrink-0">
-                      NO RECORD
+                    <span className="text-[9px] font-mono font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300 whitespace-nowrap shrink-0">
+                      NOT QUERIED
                     </span>
-                  </div>
+                  </a>
                 ))}
             </div>
           </div>
@@ -529,16 +571,16 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           <div className="border-b border-slate-200 pb-2">
             <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 4 OF 4</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-              Verified Source Registry &amp; Methodology
+              Source Registry &amp; Methodology
             </h2>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-lg font-serif font-bold text-slate-900">Public Records Audit Registry</h3>
+                <h3 className="text-lg font-serif font-bold text-slate-900">Public Records Reference Registry</h3>
                 <p className="text-xs text-slate-500">
-                  {sourceRegistry.length} public databases were scanned and cross-verified for this parcel.
+                  {sourceRegistry.length} official public sources are linked below for your own reference. BeforeRegret has not yet independently queried these for this address.
                 </p>
               </div>
               <button
@@ -596,7 +638,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-[11px] text-slate-500 leading-relaxed space-y-1">
               <span className="font-bold text-slate-700 block uppercase font-mono tracking-wider">METHODOLOGY &amp; LEGAL DISCLAIMER</span>
               <p>
-                This Property Insights report is generated solely from publicly accessible government datasets, municipal permit archives, and environmental hazard databases. BeforeRegret does not perform physical engineering inspections, legal title searches, or property valuations. Users are advised to confirm physical building conditions with a licensed home inspector prior to transaction execution.
+                BeforeRegret does not yet have a live, verified data connection to government datasets, municipal permit archives, or environmental hazard databases for this address. This page links to the official public sources so you can check them yourself. BeforeRegret does not perform physical engineering inspections, legal title searches, or property valuations, and nothing on this page should be treated as a confirmed record until you verify it directly with the source agency. Users are advised to confirm physical building conditions with a licensed home inspector prior to transaction execution.
               </p>
             </div>
           </div>

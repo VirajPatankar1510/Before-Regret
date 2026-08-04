@@ -464,6 +464,22 @@ export function App() {
       const contentType = res.headers.get('content-type') || '';
       if (res.ok && contentType.includes('application/json')) {
         const json = await res.json();
+        if (json && json.blocked) {
+          // The address validation gate rejected this address -- skip straight to the report
+          // screen's rejection message instead of running the research/summary steps for an
+          // address that will never be able to generate a report.
+          setReport({
+            id: `rep_blocked_${Date.now()}`,
+            isNonResidential: true,
+            rejectionReason: json.rejectionReason,
+            blockedAtLayer: json.blockedAtLayer,
+            headerInfo: { address: property.formattedAddress || property.displayName },
+            propertyInfo: { address: property.formattedAddress || property.displayName, city: property.city, state: property.state, zipCode: property.zipCode, county: property.county || '', propertyType: 'Not Verified', estimatedSqFt: 0 },
+            leadWidgets: []
+          } as unknown as PropertyReport);
+          setCurrentStep('REPORT');
+          return;
+        }
         if (json && json.data) {
           setSummaryData(json.data);
           return;

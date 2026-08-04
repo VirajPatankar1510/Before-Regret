@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-import { 
-  AlertTriangle, 
-  CheckCircle2, 
-  HelpCircle, 
-  Info, 
-  FileText, 
-  Building2, 
-  ShieldCheck, 
-  ListChecks, 
-  MapPin 
+import {
+  AlertTriangle,
+  HelpCircle,
+  Info
 } from 'lucide-react';
 
 export const SampleReportPreview: React.FC = () => {
@@ -23,7 +17,7 @@ export const SampleReportPreview: React.FC = () => {
           Sample Report Preview
         </h2>
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-          Explore how public record facts, missing permit trails, and seller verification questions are presented in an objective, easy-to-read layout.
+          Explore how linked public records, items still needing verification, and seller questions are presented in an objective, easy-to-read layout.
         </p>
       </div>
 
@@ -33,7 +27,7 @@ export const SampleReportPreview: React.FC = () => {
           <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
           <div>
             <span className="font-bold uppercase tracking-wider text-amber-800 mr-2">Sample Report — Illustrative Example. Not a Real Property.</span>
-            <span>Address: 123 Example Street, Anytown, TX 00000.</span>
+            <span>Address: 123 Example Street, Anytown, TX 00000. BeforeRegret does not yet have a live, verified data connection for any address — this preview shows the actual current format.</span>
           </div>
         </div>
       </div>
@@ -89,7 +83,7 @@ export const SampleReportPreview: React.FC = () => {
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
-              2. Confirmed Records vs. Gaps
+              2. Found vs. Not Yet Verified
             </button>
             <button
               onClick={() => setActiveTab('SELLER_QUESTIONS')}
@@ -115,57 +109,57 @@ export const SampleReportPreview: React.FC = () => {
                   Public Record Status Overview
                 </h4>
                 <p className="text-xs text-slate-500">
-                  Categorized status based on cross-referencing county tax, municipal building permit, FEMA hazard, and EPA databases.
+                  BeforeRegret does not yet have a live, verified data connection to county tax, municipal building permit, FEMA hazard, or EPA databases for any address. Each item below links to the official source so you can check it yourself.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                
-                <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-2">
-                  <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                    CONFIRMED RECORD
+
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 text-slate-600">
+                    NOT YET VERIFIED
                   </div>
                   <div className="font-bold text-sm text-slate-900">
-                    Low Flood Hazard Area
+                    Flood Hazard Zone
                   </div>
                   <p className="text-xs text-slate-600">
-                    FEMA Rate Map confirms parcel sits in Zone X (outside 100-year flood zone).
+                    No live connection to the FEMA flood hazard layer yet. Look up the official zone yourself at the FEMA Flood Map Service Center.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 space-y-2">
-                  <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-800">
-                    NO RECORD FOUND
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 text-slate-600">
+                    NOT YET VERIFIED
                   </div>
                   <div className="font-bold text-sm text-slate-900">
-                    Roof Permit Unrecorded
+                    Roof Replacement Permit
                   </div>
                   <p className="text-xs text-slate-600">
-                    No building permit on file for roof replacement in the digitized municipal archive.
+                    No live connection to this jurisdiction's permit archive yet. Check the municipal permit portal directly.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-2">
-                  <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                    CONFIRMED RECORD
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 text-slate-600">
+                    NOT YET VERIFIED
                   </div>
                   <div className="font-bold text-sm text-slate-900">
-                    Zero Code Enforcement Violations
+                    Code Enforcement Standing
                   </div>
                   <p className="text-xs text-slate-600">
-                    Municipal building department records show zero open code compliance cases.
+                    No live connection to municipal code enforcement records yet. Check the code enforcement portal directly.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-2">
-                  <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                    CONFIRMED RECORD
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 text-slate-600">
+                    NOT YET VERIFIED
                   </div>
                   <div className="font-bold text-sm text-slate-900">
-                    Active Municipal Sewer Service
+                    Municipal Sewer Connection
                   </div>
                   <p className="text-xs text-slate-600">
-                    City utility department records confirm active municipal wastewater connection.
+                    No live connection to the municipal utility authority yet. Check with the local water/sewer authority directly.
                   </p>
                 </div>
 
@@ -179,7 +173,7 @@ export const SampleReportPreview: React.FC = () => {
                   Inspect Shingle Condition & Ask for Roof Replacement Receipts
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Because digitized municipal records contain no roof permit history since 1984, verify shingle age directly with your licensed inspector and request contractor warranty receipts from the seller during the option period.
+                  Since BeforeRegret hasn't yet independently verified permit records for this jurisdiction, confirm roof age directly with your licensed inspector and request contractor warranty receipts from the seller during the option period.
                 </p>
               </div>
             </div>
@@ -190,19 +184,19 @@ export const SampleReportPreview: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-emerald-700 font-bold text-sm border-b border-emerald-100 pb-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Confirmed Public Records</span>
+                <div className="flex items-center gap-2 text-slate-600 font-bold text-sm border-b border-slate-200 pb-2">
+                  <Info className="w-4 h-4 text-slate-500" />
+                  <span>Not Yet Verified — Check These Yourself</span>
                 </div>
                 <ul className="space-y-3 text-xs sm:text-sm text-slate-700">
                   <li className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
-                    <strong>Building Permit Record:</strong> Central HVAC Heat Pump installation signed off in October 2019.
+                    <strong>Building Permit Archive:</strong> No live connection to this jurisdiction's permit records yet. Link provided to the official portal.
                   </li>
                   <li className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
-                    <strong>FEMA Flood Hazard Map Panel:</strong> Outside 100-year and 500-year flood hazard areas.
+                    <strong>FEMA Flood Hazard Map:</strong> No live connection to the FEMA NFHL yet. Look up the official flood zone yourself.
                   </li>
                   <li className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
-                    <strong>Tax Assessor Records:</strong> Parcel square footage matches listed dimensions; zero unrecorded acreage changes.
+                    <strong>Tax Assessor Records:</strong> No live connection to the county assessor yet. Check the parcel record directly.
                   </li>
                 </ul>
               </div>
@@ -210,17 +204,17 @@ export const SampleReportPreview: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-amber-700 font-bold text-sm border-b border-amber-100 pb-2">
                   <HelpCircle className="w-4 h-4 text-amber-600" />
-                  <span>Public Record Gaps (Needs Verification)</span>
+                  <span>Worth Verifying (Priority Items)</span>
                 </div>
                 <ul className="space-y-3 text-xs sm:text-sm text-slate-700">
                   <li className="p-3 bg-amber-50/50 rounded-xl border border-amber-200/70">
-                    <strong>Roof Replacement Permit:</strong> Missing in municipal digitized logs. Verify installation date with inspector.
+                    <strong>Roof Replacement Permit:</strong> Not yet independently verified. Verify installation date with your inspector and ask the seller for receipts.
                   </li>
                   <li className="p-3 bg-amber-50/50 rounded-xl border border-amber-200/70">
-                    <strong>EPA Radon Zone 2:</strong> Moderate indoor radon potential. Request 48-hour continuous monitor test.
+                    <strong>Indoor Radon Levels:</strong> No live connection to EPA radon zone data yet. Request a 48-hour continuous monitor test regardless.
                   </li>
                   <li className="p-3 bg-amber-50/50 rounded-xl border border-amber-200/70">
-                    <strong>Sewer Lateral Connection:</strong> 1984 original connection. Recommend camera scope during inspection.
+                    <strong>Sewer Lateral Connection:</strong> Not yet independently verified. Recommend a camera scope during inspection.
                   </li>
                 </ul>
               </div>
@@ -246,7 +240,7 @@ export const SampleReportPreview: React.FC = () => {
                     1. Roof Replacement & Warranty Records
                   </div>
                   <p className="text-slate-600">
-                    "Municipal permit archives show no recorded roof replacement permit since 1984. What year was the current roof installed, and do you have contractor receipts or transferable shingle warranties?"
+                    "We haven't yet verified a roof replacement permit in the municipal archive for this address. What year was the current roof installed, and do you have contractor receipts or transferable shingle warranties?"
                   </p>
                 </div>
 
@@ -264,7 +258,7 @@ export const SampleReportPreview: React.FC = () => {
                     3. Radon Mitigation System
                   </div>
                   <p className="text-slate-600">
-                    "This address sits in EPA Radon Hazard Zone 2. Has an active indoor radon testing or sub-slab depressurization fan system been installed in the basement?"
+                    "We don't yet have a live connection to EPA radon zone data for this address. Has any indoor radon testing or a sub-slab depressurization fan system been installed in the basement?"
                   </p>
                 </div>
               </div>

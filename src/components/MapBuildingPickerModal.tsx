@@ -37,138 +37,40 @@ interface MapBuildingPickerModalProps {
   initialCoords?: { lat: number; lon: number };
 }
 
-// Helper to check non-residential places (streets, lanes, gardens, open land, plots, water bodies, commercial, government, public facilities)
-const checkNonResidential = (
-  displayName: string,
-  itemClass?: string,
-  itemType?: string,
-  tags?: Record<string, string>
-): { isNonResidential: boolean; category: string } => {
-  const lower = (displayName || '').toLowerCase();
-  const cls = (itemClass || '').toLowerCase();
-  const type = (itemType || '').toLowerCase();
+// Real residential-only validation gate: calls the backend, which runs Census geocoder
+// (Layer 1) + HIFLD-successor federal/military/protected-area checks (Layer 2) + the
+// supported-jurisdiction assessor gate (Layer 3). This replaces the old OSM class/type/tag
+// keyword heuristic, which was guessing from Nominatim display names and tags rather than
+// checking any authoritative government data source.
+interface AddressGateOutcome {
+  passed: boolean;
+  message: string;
+  blockedAtLayer: 1 | 2 | 3 | null;
+}
 
-  // 1. WATER BODIES, RIVERS, LAKES, PONDS, CANALS, SEAS, OCEANS, WETLANDS
-  if (cls === 'waterway' || (cls === 'natural' && ['water', 'wetland', 'bay', 'beach', 'coastline', 'spring'].includes(type))) {
-    return { isNonResidential: true, category: `Water Body / Aquatic Area (${type || 'Water'})` };
-  }
-  if (tags) {
-    const waterTag = (tags.water || tags.waterway || tags.natural || '').toLowerCase();
-    if (['water', 'river', 'lake', 'stream', 'pond', 'canal', 'reservoir', 'wetland', 'bay', 'beach', 'coastline', 'drain', 'ditch'].some(w => waterTag.includes(w))) {
-      return { isNonResidential: true, category: 'Water Body / Aquatic Feature' };
+async function validateAddressGate(address: string, city: string, state: string): Promise<AddressGateOutcome> {
+  try {
+    const res = await fetch('/api/address/validate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address, city, state })
+    });
+    if (!res.ok) {
+      return { passed: false, message: 'Address verification is temporarily unavailable. Please try again.', blockedAtLayer: 1 };
     }
+    const data = await res.json();
+    const gate = data?.gate;
+    return {
+      passed: !!gate?.canGenerateReport,
+      message: gate?.message || "This location isn't a residential address. Try searching for a specific home or condo address.",
+      blockedAtLayer: gate?.blockedAtLayer ?? 1
+    };
+  } catch (err) {
+    console.warn('Address gate request failed:', err);
+    // Fail closed: a network error is never treated as a pass.
+    return { passed: false, message: 'Address verification is temporarily unavailable. Please try again.', blockedAtLayer: 1 };
   }
-  const waterPatterns = /\b(lake|pond|river|stream|creek|canal|reservoir|bay|ocean|sea|beach|waterfall|wetland|marsh|swamp|drainage canal|water basin|dock|harbor|water body)\b/i;
-  if (waterPatterns.test(lower) && !/\b(residence|society|apartments|condo|villas|heights|tower|enclave|house|building|park view|lake view|river view|ocean view|bay view)\b/i.test(lower)) {
-    if (cls === 'waterway' || cls === 'natural' || ['water', 'river', 'lake', 'pond', 'stream', 'bay'].includes(type)) {
-      return { isNonResidential: true, category: 'Water Body / Water Feature' };
-    }
-  }
-
-  // 2. STREETS, LANES, HIGHWAYS, ROADS, FOOTPATHS, TRANSIT CORRIDORS
-  if (cls === 'highway' || ['primary', 'secondary', 'tertiary', 'residential', 'service', 'footway', 'pedestrian', 'path', 'track', 'cycleway', 'living_street', 'unclassified', 'motorway', 'trunk', 'road', 'lane', 'street'].includes(type)) {
-    const hasHouseNumber = tags && (tags.house_number || tags['addr:housenumber']);
-    const hasBuildingTag = tags && tags.building && !['no', 'unclassified', 'street'].includes((tags.building || '').toLowerCase());
-    const isResidentialComplexName = /\b(society|apartments|condo|villas|heights|tower|enclave|complex|residence|house|home|building|manor|estates)\b/i.test(lower);
-
-    if (!hasHouseNumber && !hasBuildingTag && !isResidentialComplexName) {
-      return { isNonResidential: true, category: 'Street / Lane / Roadway' };
-    }
-  }
-
-  // 3. GARDENS, PARKS, PLAYGROUNDS, GOLF COURSES, RECREATION GROUNDS, CEMETERIES
-  if (cls === 'leisure' || ['park', 'garden', 'pitch', 'playground', 'golf_course', 'nature_reserve', 'dog_park', 'recreation_ground', 'stadium', 'village_green', 'cemetery'].includes(type)) {
-    return { isNonResidential: true, category: `Garden / Public Park / Recreation (${type || 'Park'})` };
-  }
-  if (tags) {
-    const leisureTag = (tags.leisure || '').toLowerCase();
-    const landuseTag = (tags.landuse || '').toLowerCase();
-    if (leisureTag || ['park', 'recreation_ground', 'garden', 'allotments', 'grass', 'meadow', 'village_green', 'cemetery'].includes(landuseTag)) {
-      return { isNonResidential: true, category: `Garden / Public Park / Open Land (${leisureTag || landuseTag})` };
-    }
-  }
-  const parkPatterns = /\b(public park|botanical garden|city park|community garden|playground|golf course|recreation ground|graveyard|cemetery|memorial park)\b/i;
-  if (parkPatterns.test(lower) && !/\b(apartments|condo|society|villas|heights|tower|residence|enclave|estates|homes)\b/i.test(lower)) {
-    return { isNonResidential: true, category: 'Public Park / Garden / Open Space' };
-  }
-
-  // 4. OPEN LAND, VACANT PLOTS, FARMLAND, FORESTS, FIELDS, CONSTRUCTION SITES
-  if (tags) {
-    const landuseTag = (tags.landuse || '').toLowerCase();
-    if (['farmland', 'farmyard', 'forest', 'meadow', 'grass', 'allotments', 'greenfield', 'brownfield', 'construction', 'landfill', 'quarry', 'basin', 'commercial', 'industrial', 'retail', 'institutional', 'civic', 'government'].includes(landuseTag)) {
-      return { isNonResidential: true, category: `Open Land / Plot / Non-Residential Area (${landuseTag})` };
-    }
-  }
-  if (['farmland', 'farmyard', 'forest', 'meadow', 'grass', 'allotments', 'greenfield', 'brownfield', 'construction', 'plot', 'vacant'].includes(type)) {
-    return { isNonResidential: true, category: `Open Land / Vacant Plot (${type})` };
-  }
-  const openPlotPatterns = /\b(open land|vacant plot|empty plot|open plot|farmland|farmyard|greenfield|brownfield|construction site|land plot|vacant lot)\b/i;
-  if (openPlotPatterns.test(lower) && !/\b(residence|society|apartments|condo|villas|house|building)\b/i.test(lower)) {
-    return { isNonResidential: true, category: 'Open Land / Vacant Plot' };
-  }
-
-  // 5. PUBLIC FACILITIES, GOVERNMENT, INSTITUTIONAL, COMMERCIAL, RELIGIOUS
-  const publicFacilityPatterns = [
-    { regex: /\b(assessor|county assessor|tax assessor|tax collector|clerk|county clerk|recorder of deeds|register of deeds)\b/i, cat: 'County / Tax Office' },
-    { regex: /\b(police station|law enforcement|sheriff|sheriff's office|precinct)\b/i, cat: 'Police / Law Enforcement' },
-    { regex: /\b(fire station|fire department|firehouse)\b/i, cat: 'Fire Station' },
-    { regex: /\b(city hall|town hall|courthouse|county court|civic center|municipal building|government center)\b/i, cat: 'Government / Civic' },
-    { regex: /\b(post office|usps|postal service)\b/i, cat: 'Postal Service' },
-    { regex: /\b(jail|prison|detention center|correctional facility)\b/i, cat: 'Correctional Facility' },
-    { regex: /\b(elementary school|middle school|high school|public school|charter school|academy|university|college)\b/i, cat: 'School / Educational' },
-    { regex: /\b(hospital|medical center|urgent care|clinic|health center)\b/i, cat: 'Hospital / Healthcare' },
-    { regex: /\b(department of|bureau of|agency|administration|office building|corporate|headquarters|office park)\b/i, cat: 'Government / Commercial Office' },
-    { regex: /\b(bank|credit union|atm|supermarket|grocery|mall|shopping center|plaza|retail|store|restaurant|cafe|hotel|motel|resort)\b/i, cat: 'Commercial / Retail' },
-    { regex: /\b(church|synagogue|mosque|temple|cathedral|chapel|shrine)\b/i, cat: 'Place of Worship' },
-    { regex: /\b(stadium|arena|gym|fitness center)\b/i, cat: 'Recreational Facility' }
-  ];
-
-  for (const p of publicFacilityPatterns) {
-    if (p.regex.test(lower)) {
-      return { isNonResidential: true, category: p.cat };
-    }
-  }
-
-  // 6. FORBIDDEN OSM BUILDING TYPES AND AMENITY/SHOP/OFFICE TAGS
-  const forbiddenBuildingTypes = [
-    'commercial', 'office', 'retail', 'industrial', 'warehouse', 'supermarket',
-    'school', 'university', 'college', 'kindergarten', 'hospital', 'clinic',
-    'public', 'civic', 'government', 'courthouse', 'townhall', 'fire_station', 'police',
-    'church', 'synagogue', 'mosque', 'temple', 'cathedral', 'chapel', 'shrine',
-    'hotel', 'motel', 'guest_house', 'hostel',
-    'stadium', 'sports_centre', 'grandstand', 'pavilion', 'hangar', 'garage', 'garages',
-    'transportation', 'train_station', 'bus_station', 'terminal', 'kiosk', 'service'
-  ];
-
-  if (tags) {
-    const buildingTag = (tags.building || '').toLowerCase();
-    const amenityTag = (tags.amenity || '').toLowerCase();
-    const shopTag = (tags.shop || '').toLowerCase();
-    const officeTag = (tags.office || '').toLowerCase();
-    const leisureTag = (tags.leisure || '').toLowerCase();
-    const tourismTag = (tags.tourism || '').toLowerCase();
-    const healthcareTag = (tags.healthcare || '').toLowerCase();
-    const governmentTag = (tags.government || '').toLowerCase();
-
-    if (governmentTag) return { isNonResidential: true, category: `Government Office (${governmentTag})` };
-    if (forbiddenBuildingTypes.includes(buildingTag)) {
-      return { isNonResidential: true, category: `Commercial/Public Building (${buildingTag})` };
-    }
-    if (amenityTag || shopTag || officeTag || leisureTag || tourismTag || healthcareTag) {
-      return { isNonResidential: true, category: amenityTag || shopTag || officeTag || 'Commercial/Public Facility' };
-    }
-  }
-
-  const forbiddenClasses = ['amenity', 'shop', 'office', 'leisure', 'tourism', 'commercial', 'industrial', 'healthcare', 'historic', 'military', 'aeroway', 'railway', 'government', 'civic'];
-  if (cls && forbiddenClasses.includes(cls)) {
-    return { isNonResidential: true, category: cls };
-  }
-  if (type && forbiddenBuildingTypes.includes(type)) {
-    return { isNonResidential: true, category: type };
-  }
-
-  return { isNonResidential: false, category: '' };
-};
+}
 
 export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
   isOpen,
@@ -193,7 +95,27 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
   const [detectedBuildingCount, setDetectedBuildingCount] = useState(0);
   const [isSatelliteView, setIsSatelliteView] = useState(false);
   const [selectedPinResult, setSelectedPinResult] = useState<PropertySearchResult | null>(null);
-  const [nonResNotice, setNonResNotice] = useState<{ isFacility: boolean; name: string; category: string; isDismissed?: boolean } | null>(null);
+  const [gateState, setGateState] = useState<{ status: 'checking' | 'passed' | 'blocked'; message: string; isDismissed?: boolean } | null>(null);
+  const gateRequestIdRef = useRef(0);
+
+  // Layer 4 gate: every time a pin/search result is selected, synchronously (from the user's
+  // point of view) re-verify it against the real backend gate (Census geocoder + government
+  // facility check + jurisdiction support) before the "Select This Property" button can be
+  // enabled.
+  useEffect(() => {
+    if (!selectedPinResult) {
+      setGateState(null);
+      return;
+    }
+    const requestId = ++gateRequestIdRef.current;
+    setGateState({ status: 'checking', message: 'Verifying this address…' });
+
+    const addressForGate = selectedPinResult.formattedAddress || selectedPinResult.displayName;
+    validateAddressGate(addressForGate, selectedPinResult.city, selectedPinResult.state).then((outcome) => {
+      if (requestId !== gateRequestIdRef.current) return;
+      setGateState({ status: outcome.passed ? 'passed' : 'blocked', message: outcome.message });
+    });
+  }, [selectedPinResult]);
   const [mapSearchError, setMapSearchError] = useState<string | null>(null);
 
   // Custom SVG marker pin for Leaflet
@@ -216,7 +138,6 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
   // Reverse geocode lat/lon into property search result
   const fetchAddressFromCoords = async (lat: number, lon: number) => {
     setIsReverseGeocoding(true);
-    setNonResNotice(null);
     setMapSearchError(null);
 
     try {
@@ -226,7 +147,7 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
       if (response.ok) {
         const item = await response.json();
         const addr = item.address || {};
-        
+
         const city = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.county || '';
         const state = addr.state_code ? addr.state_code.toUpperCase() : (addr.state || '');
         const zip = addr.postcode || '';
@@ -234,15 +155,6 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
         const houseNumber = addr.house_number || '';
         const road = addr.road || addr.street || addr.pedestrian || addr.footway || '';
         const street = [houseNumber, road].filter(Boolean).join(' ');
-
-        const nonResCheck = checkNonResidential(item.display_name, item.class, item.type, item.extratags);
-        if (nonResCheck.isNonResidential) {
-          setNonResNotice({
-            isFacility: true,
-            name: item.display_name,
-            category: nonResCheck.category
-          });
-        }
 
         let pType: PropertySearchResult['propertyType'] = 'Residential Society / Complex';
         const itemTypeLower = (item.type || '').toLowerCase();
@@ -342,15 +254,11 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
             const name = el.tags?.name || el.tags?.['building:name'] || el.tags?.description;
             if (!name) return;
 
-            // Skip non-residential places strictly
-            const nonRes = checkNonResidential(
-              name,
-              el.tags?.amenity || el.tags?.shop || el.tags?.office,
-              el.tags?.building,
-              el.tags
-            );
-            if (nonRes.isNonResidential) return;
-
+            // The Overpass query above already restricts results to residential-tagged
+            // building/landuse/place values, so no further filtering is needed here -- this
+            // count is a cosmetic map label, not part of the residential-only validation gate
+            // (that gate runs server-side against Census + government-facility data, see
+            // validateAddressGate()).
             const lat = el.lat || el.center?.lat;
             const lon = el.lon || el.center?.lon;
 
@@ -666,18 +574,18 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
             )}
           </div>
 
-          {/* Non-Residential Warning Banner Overlay */}
-          {nonResNotice && !nonResNotice.isDismissed && (
+          {/* Address Validation Gate Banner */}
+          {gateState && gateState.status === 'blocked' && !gateState.isDismissed && (
             <div className="absolute top-4 left-4 right-4 z-20 bg-amber-950/90 border border-amber-500/40 rounded-2xl p-3.5 text-xs font-medium text-amber-200 shadow-2xl backdrop-blur-md animate-fade-in flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
                 <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
                 <div className="font-bold text-amber-300 text-sm">
-                  This Place is Non-Residential
+                  {gateState.message}
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => setNonResNotice(prev => prev ? { ...prev, isDismissed: true } : null)}
+                onClick={() => setGateState(prev => prev ? { ...prev, isDismissed: true } : null)}
                 className="text-amber-400 hover:text-white font-bold text-xs cursor-pointer shrink-0"
               >
                 Dismiss
@@ -739,18 +647,27 @@ export const MapBuildingPickerModal: React.FC<MapBuildingPickerModalProps> = ({
                   </div>
 
                   <button
-                    disabled={!!nonResNotice?.isFacility}
+                    disabled={gateState?.status !== 'passed'}
                     onClick={() => {
-                      if (nonResNotice?.isFacility) return;
+                      if (gateState?.status !== 'passed') return;
                       handleConfirmSelection();
                     }}
                     className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition-all shadow-lg flex items-center gap-2 shrink-0 ${
-                      nonResNotice?.isFacility
+                      gateState?.status !== 'passed'
                         ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
                         : 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer'
                     }`}
                   >
-                    <span>{nonResNotice?.isFacility ? 'Residential Selection Only' : 'Select This Property'}</span>
+                    {gateState?.status === 'checking' ? (
+                      <Loader2 className="w-4 h-4 text-blue-200 animate-spin" />
+                    ) : null}
+                    <span>
+                      {gateState?.status === 'checking'
+                        ? 'Verifying Address…'
+                        : gateState?.status === 'blocked'
+                          ? 'Residential Selection Only'
+                          : 'Select This Property'}
+                    </span>
                     <ArrowRight className="w-4 h-4 text-blue-200" />
                   </button>
                 </div>

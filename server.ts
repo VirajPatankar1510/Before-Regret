@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
 import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } from "./src/utils/sitemapGenerator";
 import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService";
+import { runAddressGate } from "./src/engine/geoValidationGate";
 
 dotenv.config();
 
@@ -102,8 +103,38 @@ async function startServer() {
     res.redirect(301, `/insights/${reportId}`);
   });
 
+  // 0. Residential-Only Address Validation Gate (Layers 1-3)
+  // Synchronous, authoritative check -- called by the map/search UI for real-time feedback
+  // AND independently re-run before report generation below, so a bypassed or stale frontend
+  // check can never let a non-residential or unsupported address through.
+  app.post("/api/address/validate", async (req, res) => {
+    const { address, city, state } = req.body;
+
+    if (!address || typeof address !== 'string') {
+      res.status(400).json({ error: 'address is required.' });
+      return;
+    }
+
+    try {
+      const gateResult = await runAddressGate(address, city || '', state || '');
+      res.json({ success: true, gate: gateResult });
+    } catch (err) {
+      // Fail closed: an unexpected error in the gate itself must never be treated as a pass.
+      console.error('[Address Gate Error]:', err);
+      res.status(200).json({
+        success: true,
+        gate: {
+          canGenerateReport: false,
+          blockedAtLayer: 1,
+          message: 'Address verification is temporarily unavailable. Please try again in a moment.',
+          layer1: { passed: false, code: 'L1_GATE_EXCEPTION', message: 'Unexpected error during validation.' },
+        },
+      });
+    }
+  });
+
   // 1. Research Summary & Public Data Scan Endpoint
-  app.post("/api/property/research", (req, res) => {
+  app.post("/api/property/research", async (req, res) => {
     const { address, city, state, zipCode, lat, lon, propertyType, displayName } = req.body;
 
     if (!address && !displayName) {
@@ -112,68 +143,74 @@ async function startServer() {
     }
 
     const fullAddrStr = address || displayName || 'Subject Property';
+
+    const gateResult = await runAddressGate(fullAddrStr, city || '', state || '');
+    if (!gateResult.canGenerateReport) {
+      res.json({
+        success: true,
+        blocked: true,
+        blockedAtLayer: gateResult.blockedAtLayer,
+        rejectionReason: gateResult.message,
+      });
+      return;
+    }
+
     const resolvedMeta = resolvePropertyMetadata(fullAddrStr, city, state, zipCode, undefined, propertyType);
     const addressKey = resolvedMeta.formattedAddress.toLowerCase();
     const hash = simpleHash(addressKey);
 
+    // NOTE: BeforeRegret does not yet have live API integrations for any of these agencies.
+    // Every source below is listed as a reference link only -- foundInfo must stay false and
+    // no fabricated record counts may be generated. Do not derive "found" status from a hash
+    // of the address; that produced fake, per-address-consistent "results" for data that was
+    // never actually queried.
     const publicDataSources = [
-      { id: 'fema_nfhl', name: 'FEMA National Flood Hazard Layer (NFHL)', category: 'Environmental', baseFound: true },
-      { id: 'epa_superfund', name: 'EPA Envirofacts & Superfund / NPL Sites', category: 'Environmental', baseFound: hash % 3 === 0 },
-      { id: 'epa_airnow', name: 'EPA AirNow & AQI Historical Index', category: 'Environmental', baseFound: true },
-      { id: 'usgs_radon', name: 'USGS / EPA Indoor Radon Zone Map', category: 'Environmental', baseFound: true },
-      { id: 'usda_soil', name: 'USDA Natural Resources Conservation Service Soil Survey', category: 'Environmental', baseFound: hash % 2 === 0 },
-      { id: 'usgs_seismic', name: 'USGS National Seismic Hazard Maps', category: 'Hazards', baseFound: true },
-      { id: 'usfs_wildfire', name: 'USFS Wildfire Risk to Communities Dataset', category: 'Hazards', baseFound: true },
-      { id: 'noaa_storm', name: 'NOAA Severe Weather & Storm Surge Database', category: 'Hazards', baseFound: true },
-      { id: 'fema_disaster', name: 'FEMA Historical Disaster Declarations', category: 'Hazards', baseFound: hash % 4 !== 0 },
-      { id: 'county_assessor', name: 'County Tax Assessor & Parcel Property Records', category: 'Public Records', baseFound: true },
-      { id: 'county_recorder', name: 'County Clerk & Deed / Lien Registry', category: 'Public Records', baseFound: true },
-      { id: 'muni_permits', name: 'Municipal Building Permit History & Code Enforcement', category: 'Public Records', baseFound: hash % 3 !== 1 },
-      { id: 'muni_zoning', name: 'Municipal Zoning Code & Land Use Plan', category: 'Zoning & Planning', baseFound: true },
-      { id: 'dot_stip', name: 'State Dept of Transportation 5-Year Capital Projects', category: 'Zoning & Planning', baseFound: hash % 2 === 1 },
-      { id: 'county_planning', name: 'County Planning Commission Re-Zoning Dockets', category: 'Zoning & Planning', baseFound: hash % 3 === 2 },
-      { id: 'fhwa_hpms', name: 'FHWA Traffic Volumes & Highway Performance', category: 'Transit & Noise', baseFound: true },
-      { id: 'faa_noise', name: 'FAA Aviation Flight Path & Airport Noise Contours', category: 'Transit & Noise', baseFound: hash % 2 === 0 },
-      { id: 'fra_rail', name: 'Federal Railroad Administration Grade Crossings', category: 'Transit & Noise', baseFound: hash % 3 === 0 },
-      { id: 'us_dot_transit', name: 'US DOT National Transit Map & Access', category: 'Transit & Noise', baseFound: true },
-      { id: 'eia_grid', name: 'U.S. EIA Power Grid & Electric Reliability', category: 'Infrastructure', baseFound: true },
-      { id: 'fcc_broadband', name: 'FCC National Broadband Map & Fiber Internet', category: 'Infrastructure', baseFound: true },
-      { id: 'epa_sdwis', name: 'EPA Safe Drinking Water Information System', category: 'Utilities', baseFound: true },
-      { id: 'county_water', name: 'Municipal Water District & Sewer Authority', category: 'Utilities', baseFound: true },
-      { id: 'open_elevation', name: 'USGS National Elevation & Slope Model', category: 'Environmental', baseFound: true },
-      { id: 'usace_dams', name: 'U.S. Army Corps of Engineers Dam Inventory', category: 'Hazards', baseFound: hash % 5 === 0 },
-      { id: 'usps_carrier', name: 'USPS Address Verification', category: 'Public Records', baseFound: true },
-      { id: 'nws_heat', name: 'National Weather Service Extreme Heat Index', category: 'Hazards', baseFound: true },
+      { id: 'fema_nfhl', name: 'FEMA National Flood Hazard Layer (NFHL)', category: 'Environmental' },
+      { id: 'epa_superfund', name: 'EPA Envirofacts & Superfund / NPL Sites', category: 'Environmental' },
+      { id: 'epa_airnow', name: 'EPA AirNow & AQI Historical Index', category: 'Environmental' },
+      { id: 'usgs_radon', name: 'USGS / EPA Indoor Radon Zone Map', category: 'Environmental' },
+      { id: 'usda_soil', name: 'USDA Natural Resources Conservation Service Soil Survey', category: 'Environmental' },
+      { id: 'usgs_seismic', name: 'USGS National Seismic Hazard Maps', category: 'Hazards' },
+      { id: 'usfs_wildfire', name: 'USFS Wildfire Risk to Communities Dataset', category: 'Hazards' },
+      { id: 'noaa_storm', name: 'NOAA Severe Weather & Storm Surge Database', category: 'Hazards' },
+      { id: 'fema_disaster', name: 'FEMA Historical Disaster Declarations', category: 'Hazards' },
+      { id: 'county_assessor', name: 'County Tax Assessor & Parcel Property Records', category: 'Public Records' },
+      { id: 'county_recorder', name: 'County Clerk & Deed / Lien Registry', category: 'Public Records' },
+      { id: 'muni_permits', name: 'Municipal Building Permit History & Code Enforcement', category: 'Public Records' },
+      { id: 'muni_zoning', name: 'Municipal Zoning Code & Land Use Plan', category: 'Zoning & Planning' },
+      { id: 'dot_stip', name: 'State Dept of Transportation 5-Year Capital Projects', category: 'Zoning & Planning' },
+      { id: 'county_planning', name: 'County Planning Commission Re-Zoning Dockets', category: 'Zoning & Planning' },
+      { id: 'fhwa_hpms', name: 'FHWA Traffic Volumes & Highway Performance', category: 'Transit & Noise' },
+      { id: 'faa_noise', name: 'FAA Aviation Flight Path & Airport Noise Contours', category: 'Transit & Noise' },
+      { id: 'fra_rail', name: 'Federal Railroad Administration Grade Crossings', category: 'Transit & Noise' },
+      { id: 'us_dot_transit', name: 'US DOT National Transit Map & Access', category: 'Transit & Noise' },
+      { id: 'eia_grid', name: 'U.S. EIA Power Grid & Electric Reliability', category: 'Infrastructure' },
+      { id: 'fcc_broadband', name: 'FCC National Broadband Map & Fiber Internet', category: 'Infrastructure' },
+      { id: 'epa_sdwis', name: 'EPA Safe Drinking Water Information System', category: 'Utilities' },
+      { id: 'county_water', name: 'Municipal Water District & Sewer Authority', category: 'Utilities' },
+      { id: 'open_elevation', name: 'USGS National Elevation & Slope Model', category: 'Environmental' },
+      { id: 'usace_dams', name: 'U.S. Army Corps of Engineers Dam Inventory', category: 'Hazards' },
+      { id: 'usps_carrier', name: 'USPS Address Verification', category: 'Public Records' },
+      { id: 'nws_heat', name: 'National Weather Service Extreme Heat Index', category: 'Hazards' },
     ];
 
-    const sourcesList = publicDataSources.map(s => {
-      const isFound = s.baseFound;
-      return {
-        id: s.id,
-        name: s.name,
-        category: s.category as any,
-        foundInfo: isFound,
-        itemCount: isFound ? Math.floor((hash % 7) + 2) : 0,
-        details: isFound ? 'Records verified and mapped to parcel location.' : 'No active hazards or issues recorded for this property.',
-        sourceUrl: getPublicSourceUrl(s.id)
-      };
-    });
+    const sourcesList = publicDataSources.map(s => ({
+      id: s.id,
+      name: s.name,
+      category: s.category as any,
+      foundInfo: false,
+      itemCount: 0,
+      details: 'Not yet independently verified for this address. Link provided for your own reference.',
+      sourceUrl: getPublicSourceUrl(s.id)
+    }));
 
-    const usefulSourcesFound = sourcesList.filter(s => s.foundInfo).length;
+    const usefulSourcesFound = 0;
     const totalSourcesSearched = sourcesList.length;
 
-    let price = 29;
-    let priceRationale = "";
+    const price = 0;
+    const priceRationale = `BeforeRegret does not yet have a live, verified data connection for this address. This is a free reference checklist linking to the ${totalSourcesSearched} official public sources so you can look up records yourself.`;
 
-    if (usefulSourcesFound <= 14) {
-      price = 19;
-      priceRationale = `${usefulSourcesFound} verified public data sources contain active records for this parcel. Standard research tier applied ($19).`;
-    } else {
-      price = 29;
-      priceRationale = `${usefulSourcesFound} verified public data sources contain active records for this parcel, including environmental hazards, permit history, and DOT infrastructure projects. Maximum full coverage tier applied ($29).`;
-    }
-
-    const categoriesSet = Array.from(new Set(sourcesList.filter(s => s.foundInfo).map(s => s.category)));
+    const categoriesSet = Array.from(new Set(sourcesList.map(s => s.category)));
 
     res.json({
       success: true,
@@ -207,6 +244,26 @@ async function startServer() {
     const { address, city, state, zipCode, county, propertyType, usefulSourcesCount, price } = req.body;
 
     const fullAddr = formattedAddress(address, city, state, zipCode);
+
+    // Authoritative, synchronous gate. This is the check that actually matters: it re-runs
+    // Layers 1-3 independently of whatever the map UI decided, so no client-side bypass, stale
+    // state, or direct API call can ever produce a report for a non-residential, unresolvable,
+    // or unsupported-jurisdiction address. Fails closed on any error inside runAddressGate.
+    const gateResult = await runAddressGate(fullAddr, city || '', state || '');
+    if (!gateResult.canGenerateReport) {
+      const blockedReport = {
+        id: `rep_blocked_${Date.now()}`,
+        isNonResidential: true,
+        rejectionReason: gateResult.message,
+        blockedAtLayer: gateResult.blockedAtLayer,
+        headerInfo: { address: fullAddr },
+        propertyInfo: { address: fullAddr, city: city || '', state: state || '', zipCode: zipCode || '', county: county || '', propertyType: 'Not Verified', estimatedSqFt: 0 },
+        leadWidgets: []
+      };
+      res.json({ success: true, report: blockedReport });
+      return;
+    }
+
     const resolvedMeta = resolvePropertyMetadata(fullAddr, city, state, zipCode, county, propertyType);
 
     const fallbackReport = generateStructuredPropertyReport(
@@ -675,118 +732,100 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
 function validateAndFixReportContradictions(report: any) {
   if (!report) return report;
 
+  // NOTE: BeforeRegret has no live data connection to any county/municipal/federal record
+  // source yet. This fallback must never assert a specific "CONFIRMED RECORD" (e.g. a permit
+  // date, a flood zone) because nothing was actually queried. Every finding here is honestly
+  // labeled 'NOT YET VERIFIED' until a real integration exists for that source.
   if (!report.canonicalFindings || !Array.isArray(report.canonicalFindings) || report.canonicalFindings.length === 0) {
     report.canonicalFindings = [
       {
         id: 'f_roof',
         subject: 'Roof Replacement Permit Records',
         category: 'Property Records',
-        status: 'NO RECORD FOUND',
-        summaryText: 'Public building permit archives contain no permit record for roof replacement.',
-        whatWeFound: 'Municipal building permit archives contain no permit record for a roof replacement.',
+        status: 'NOT YET VERIFIED',
+        summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal roof permit records for this address.',
+        whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
         whyItMatters: 'Roofing materials experience atmospheric weathering over time and represent significant replacement costs if nearing end-of-life.',
-        suggestedNextStep: 'Ask the seller for roof replacement receipts or contractor invoice documentation.',
+        suggestedNextStep: 'Ask the seller for roof replacement receipts or contractor invoice documentation, and check the municipal permit portal directly.',
         actionItem: {
           type: 'sellerQuestion',
           title: 'Roof Installation & Warranty',
           description: 'Has the roof ever been replaced or repaired, and do you have contractor invoices or warranty paperwork?',
-          why: 'No roof permit found in municipal digitized archive.'
+          why: 'BeforeRegret has not yet independently verified permit records for this address.'
         }
       },
       {
         id: 'f_elec',
         subject: 'Main Electrical Service Panel',
         category: 'Property Records',
-        status: 'CONFIRMED RECORD',
-        summaryText: 'A building permit for a 200-amp main electrical service panel upgrade is on file in municipal archives, finaled in 2015.',
-        whatWeFound: 'A building permit was issued and passed final inspection in 2015 for a 200-amp main service panel upgrade.',
-        whyItMatters: 'A permitted 200A electrical service panel meets modern safety standards for contemporary household appliances.',
-        suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough.',
+        status: 'NOT YET VERIFIED',
+        summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal electrical permit records for this address.',
+        whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
+        whyItMatters: 'A permitted electrical service panel meets modern safety standards for contemporary household appliances.',
+        suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough, and check the municipal permit portal directly.',
         actionItem: {
           type: 'walkthroughItem',
           title: 'Main Electrical Panel Walkthrough',
-          description: 'Locate 200A main service panel in garage or utility area and confirm municipal inspection sticker.',
-          why: 'Confirmed 2015 electrical permit on file.'
+          description: 'Locate the main service panel in garage or utility area and confirm municipal inspection sticker.',
+          why: 'BeforeRegret has not yet independently verified permit records for this address.'
         }
       },
       {
         id: 'f_hvac',
         subject: 'HVAC Compressor & Mechanical System',
         category: 'Property Records',
-        status: 'NO RECORD FOUND',
-        summaryText: 'No mechanical replacement permit on file in digitized municipal building department logs.',
-        whatWeFound: 'Municipal building department logs show no mechanical permit record for HVAC unit replacement.',
-        whyItMatters: 'Central cooling compressors experience declining efficiency over 12–15 year lifespans.',
-        suggestedNextStep: 'Have your home inspector record manufacturing date on condenser unit dataplate.',
+        status: 'NOT YET VERIFIED',
+        summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal mechanical permit records for this address.',
+        whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
+        whyItMatters: 'Central cooling compressors experience declining efficiency over 12-15 year lifespans.',
+        suggestedNextStep: 'Have your home inspector record the manufacturing date on the condenser unit dataplate.',
         actionItem: {
           type: 'sellerQuestion',
           title: 'HVAC Age & Service History',
           description: 'What is the age of the central AC compressor, and are annual maintenance records available?',
-          why: 'No mechanical replacement permit on file in city log.'
+          why: 'BeforeRegret has not yet independently verified permit records for this address.'
         }
       },
       {
         id: 'f_flood',
         subject: 'FEMA Flood Hazard Risk Zone',
         category: 'Environment',
-        status: 'CONFIRMED RECORD',
-        summaryText: 'FEMA Flood Hazard Layer classifies parcel in Zone X (Minimal flood risk).',
-        whatWeFound: 'FEMA National Flood Hazard Layer map panel classifies this parcel in Zone X (Area of Minimal Flood Hazard).',
-        whyItMatters: 'Zone X classification means lender flood insurance is not federally mandated.',
-        suggestedNextStep: 'Confirm Zone X status with your home insurance provider during binder quotation.',
+        status: 'NOT YET VERIFIED',
+        summaryText: 'BeforeRegret does not yet have a live, verified connection to the FEMA National Flood Hazard Layer for this address.',
+        whatWeFound: 'No live data connection to FEMA NFHL exists yet for this address.',
+        whyItMatters: 'Flood zone classification affects whether mortgage lenders require flood insurance.',
+        suggestedNextStep: 'Look up the official flood zone yourself at the FEMA Flood Map Service Center before making assumptions about insurance requirements.',
         actionItem: {
           type: 'disclosureLever',
           title: 'Flood Insurance Verification',
-          description: 'Supply FEMA Zone X determination letter to home insurance agent for optimal policy binder quote.',
-          why: 'Confirmed FEMA NFHL Zone X mapping.'
+          description: 'Ask your insurance agent to pull the official FEMA flood zone determination for this address.',
+          why: 'BeforeRegret has not yet independently verified FEMA flood zone data for this address.'
         }
       },
       {
         id: 'f_code',
         subject: 'Municipal Code Enforcement Standing',
         category: 'Neighborhood',
-        status: 'CONFIRMED RECORD',
-        summaryText: 'Zero open building code violations, health hazards, or active citations on file.',
-        whatWeFound: 'City Code Enforcement database shows zero active code violations or municipal citations for this parcel.',
-        whyItMatters: 'Clean code standing confirms no unaddressed municipal orders or property maintenance liens.',
-        suggestedNextStep: 'Retain code clearance record in closing files.'
+        status: 'NOT YET VERIFIED',
+        summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal code enforcement records for this address.',
+        whatWeFound: 'No live data connection to this jurisdiction\'s code enforcement system exists yet.',
+        whyItMatters: 'Open code violations or municipal orders can affect closing and future liability.',
+        suggestedNextStep: 'Check the municipal code enforcement portal directly before closing.'
       }
     ];
   }
 
-  const statusBySubject = new Map<string, string>();
-  let contradictions = 0;
-
+  // Normalize status values without inventing confirmation: anything not already an honest
+  // 'NOT YET VERIFIED' is preserved only if it's a real CONFIRMED/NO RECORD value; unknown or
+  // missing statuses fail closed to 'NOT YET VERIFIED' rather than defaulting to a confirmed claim.
   (report.canonicalFindings || []).forEach((f: any) => {
     const rawStatus = (f.status || '').toUpperCase();
-    const status = (rawStatus.includes('CONFIRMED') || rawStatus.includes('VERIFIED'))
-      ? 'CONFIRMED RECORD'
-      : 'NO RECORD FOUND';
+    let status = 'NOT YET VERIFIED';
+    if (rawStatus === 'CONFIRMED RECORD' || rawStatus === 'NO RECORD FOUND' || rawStatus === 'NOT YET VERIFIED') {
+      status = rawStatus;
+    }
     f.status = status;
-    statusBySubject.set(f.subject.toLowerCase(), status);
   });
-
-  // Cross-audit legacy fields to enforce 100% status alignment
-  if (Array.isArray(report.topPriorities)) {
-    report.topPriorities.forEach((tp: any) => {
-      const match = report.canonicalFindings.find((cf: any) =>
-        cf.subject.toLowerCase().includes(tp.title.toLowerCase().substring(0, 4))
-      );
-      if (match) {
-        if (tp.confidence !== match.status) {
-          contradictions++;
-          console.warn(`[PRE-DELIVERY CONTRADICTION DETECTED] Subject "${match.subject}": Mismatched legacy status "${tp.confidence}" vs canonical status "${match.status}". Harmonized.`);
-          tp.confidence = match.status;
-        }
-      }
-    });
-  }
-
-  if (contradictions === 0) {
-    console.log(`[PRE-DELIVERY CONTRADICTION CHECK] Passed. 0 contradictions found across all report sections.`);
-  } else {
-    console.warn(`[PRE-DELIVERY CONTRADICTION CHECK] Fixed ${contradictions} contradiction(s) prior to delivery.`);
-  }
 
   return report;
 }
@@ -935,21 +974,16 @@ function resolvePropertyMetadata(
       rawPropertyType.toLowerCase().includes('water')
     ));
 
-  console.log(`[TRAVIS COUNTY ASSESSOR API REQUEST] GET /api/v1/tax_assessor/parcel_lookup?address=${encodeURIComponent(fullAddr)}&zip=${zipStr}&jurisdiction=Travis+County`);
-
+  // NOTE: classification below is a text-keyword heuristic on the address string, not a real
+  // county assessor API call. No network request is made here. Do not log fabricated
+  // "API request/response" lines that imply otherwise.
   if (isNonResidential) {
     const parcelClass = isParkTrailOrWaterway
       ? 'Municipal Public Park / Trail / Waterway'
       : (isVacantLand ? 'Vacant Land / Unimproved Parcel' : 'Commercial Office Building / Non-Residential');
-    const landUseCode = isParkTrailOrWaterway
-      ? '9100 - PUBLIC PARK / OPEN WATER / TRAIL'
-      : (isVacantLand ? '9000 - VACANT / UNIMPROVED RESIDENTIAL LAND' : '8100 - COMMERCIAL / INSTITUTIONAL / OFFICE');
-
-    console.log(`[TRAVIS COUNTY ASSESSOR API RESPONSE] Status: 200 OK | Parcel ID: 0204050101 | Account: #02040501010000 | Land Use Code: "${landUseCode}" | Classification: "${parcelClass}"`);
-    console.log(`[ASSESSOR CLASSIFICATION LOOKUP] Target Address: "${fullAddr}" | Zip: "${zipStr}" | Parcel Classification: "${parcelClass}" | Status: FAILED_CLOSED (Non-Residential Gate Triggered)`);
+    console.log(`[HEURISTIC CLASSIFICATION] Address: "${fullAddr}" | Zip: "${zipStr}" | Keyword-matched classification: "${parcelClass}" | Not sourced from a live assessor API.`);
   } else {
-    console.log(`[TRAVIS COUNTY ASSESSOR API RESPONSE] Status: 200 OK | Parcel ID: 0102030405 | Account: #01020304050000 | Land Use Code: "1000 - SINGLE FAMILY RESIDENTIAL" | Classification: "Single Family Residential"`);
-    console.log(`[ASSESSOR CLASSIFICATION LOOKUP] Target Address: "${fullAddr}" | Zip: "${zipStr}" | Parcel Classification: "${rawPropertyType || 'Single Family Residential'}" | Status: PASSED (Residential Property Validated)`);
+    console.log(`[HEURISTIC CLASSIFICATION] Address: "${fullAddr}" | Zip: "${zipStr}" | No non-residential keywords matched; defaulting toward "${rawPropertyType || 'Single Family Home'}" | Not sourced from a live assessor API.`);
   }
 
   // FEW-SHOT / KNOWN SPECIAL CASE 1: 6896 Laurel St NW ("The Glade on Laurel")

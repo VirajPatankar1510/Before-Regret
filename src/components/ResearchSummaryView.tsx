@@ -61,15 +61,15 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs font-bold text-emerald-400">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Research Complete</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-500/10 border border-slate-500/20 rounded-full text-xs font-bold text-slate-300">
+            <CheckCircle2 className="w-4 h-4 text-slate-300" />
+            <span>Reference Checklist Ready</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
-            Property Public Record Findings
+            Public Record Reference Links
           </h2>
           <p className="text-base text-slate-300 max-w-2xl">
-            We searched <strong className="text-white font-bold">{totalSourcesSearched} public data sources</strong> for this address. Information was found in <strong className="text-emerald-400 font-bold">{usefulSourcesFound} sources</strong>.
+            BeforeRegret does not yet have a live, verified data connection for this address. Below are <strong className="text-white font-bold">{totalSourcesSearched} official public sources</strong> linked directly so you can check the records yourself.
           </p>
         </div>
 
@@ -77,15 +77,15 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
           <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 text-center">
             <div className="text-2xl sm:text-3xl font-black text-white font-mono">{totalSourcesSearched}</div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Data Sources Searched</div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Public Sources Linked</div>
           </div>
           <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 text-center">
-            <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">{usefulSourcesFound}</div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Sources With Useful Info</div>
+            <div className="text-2xl sm:text-3xl font-black text-slate-300 font-mono">{usefulSourcesFound}</div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Independently Verified</div>
           </div>
           <div className="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 text-center">
             <div className="text-2xl sm:text-3xl font-black text-blue-400 font-mono">{estimatedPages}</div>
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Estimated Report Length</div>
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Estimated Reading Length</div>
           </div>
         </div>
 
@@ -143,10 +143,10 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
         <div className="flex items-center justify-between">
           <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <Database className="w-4 h-4 text-blue-600" />
-            <span>Public Data Sources Checked ({totalSourcesSearched})</span>
+            <span>Public Data Sources Linked ({totalSourcesSearched})</span>
           </h3>
           <span className="text-xs font-semibold text-slate-500">
-            {usefulSourcesFound} Active Records Found
+            {usefulSourcesFound} Independently Verified
           </span>
         </div>
 
@@ -167,11 +167,11 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
 
               {src.foundInfo ? (
                 <span className="px-2 py-0.5 bg-emerald-600 text-white font-bold rounded text-[10px] shrink-0">
-                  Data Found
+                  Verified
                 </span>
               ) : (
                 <span className="px-2 py-0.5 bg-slate-200 text-slate-500 font-medium rounded text-[10px] shrink-0">
-                  No Hazard
+                  Not Yet Verified
                 </span>
               )}
             </div>
