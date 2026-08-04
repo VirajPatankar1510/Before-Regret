@@ -9,9 +9,14 @@ import { runAddressGate } from "./src/engine/geoValidationGate";
 
 dotenv.config();
 
-async function startServer() {
+const PORT = 3000;
+
+// Builds and returns the fully-configured Express app, without binding a port. Shared by the
+// local/traditional-server bootstrap below (startServer) and the Vercel serverless entry point
+// (api/index.ts) -- Vercel's runtime invokes the app directly per-request and must never see
+// app.listen() called, since there's no persistent process to bind a port on.
+export async function createApp() {
   const app = express();
-  const PORT = 3000;
 
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -830,6 +835,14 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     });
   }
 
+  return app;
+}
+
+// Traditional persistent-server bootstrap for local dev (npm run dev) and any host that runs
+// this as a long-lived Node process (e.g. `npm start` / `node dist/server.cjs`). Not used on
+// Vercel -- see api/index.ts, which calls createApp() directly and never binds a port.
+async function startServer() {
+  const app = await createApp();
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`[BeforeRegret] Property Research Engine running on http://0.0.0.0:${PORT}`);
   });
@@ -1802,6 +1815,11 @@ function generateStructuredPropertyReport(
   };
 }
 
-startServer().catch(err => {
-  console.error("Failed to start BeforeRegret server:", err);
-});
+// Vercel sets VERCEL=1 in both its build and serverless runtime environments. Skip the
+// persistent-server bootstrap there -- api/index.ts owns app startup on Vercel, and calling
+// app.listen() inside a serverless function invocation would be a no-op at best.
+if (process.env.VERCEL !== '1') {
+  startServer().catch(err => {
+    console.error("Failed to start BeforeRegret server:", err);
+  });
+}
