@@ -55,6 +55,12 @@ export interface PropertySearchResult {
   displayName: string;
   isPublicFacility?: boolean;
   facilityCategory?: string;
+  // Layer 3 (see geoValidationGate.ts): the requester's own declaration of property type, since
+  // BeforeRegret has no real assessor data source to verify it against. Carried through from
+  // selection all the way to report generation so the gate doesn't need to be re-declared, and
+  // so the report can honestly label this as self-reported, not independently verified.
+  declaredPropertyType?: 'single_family' | 'condo_or_multifamily' | 'other' | null;
+  unitNumber?: string;
 }
 
 export interface PublicDataSourceStatus {

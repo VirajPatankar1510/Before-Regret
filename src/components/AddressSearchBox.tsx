@@ -17,22 +17,33 @@ interface AddressSearchBoxProps {
 const DEFAULT_VIEW = { lat: 39.8, lon: -98.5, zoom: 3.4 };
 
 // Real residential-only validation gate: calls the backend, which runs Census geocoder
-// (Layer 1) + HIFLD-successor federal/military/protected-area checks (Layer 2) + the
-// supported-jurisdiction assessor gate (Layer 3). This replaces the old OSM class/type/tag
-// keyword heuristic, which was guessing from Nominatim display names and tags rather than
-// checking any authoritative government data source.
+// (Layer 1) + HIFLD-successor federal/military/protected-area checks (Layer 2) + a
+// requester-declared property type (Layer 3). BeforeRegret has no real, legally-cleared county
+// assessor data source for any jurisdiction, and testing showed OSM/geocoder metadata alone
+// isn't reliable enough to auto-detect residential vs. commercial (it false-positives on real
+// commercial buildings). So Layer 3 asks the requester to declare the property type directly,
+// and every report is honest that this field is self-reported, not independently verified.
+export type DeclaredPropertyType = 'single_family' | 'condo_or_multifamily' | 'other';
+
 interface AddressGateOutcome {
   passed: boolean;
   message: string;
   blockedAtLayer: 1 | 2 | 3 | null;
+  promptForUnit?: boolean;
 }
 
-async function validateAddressGate(address: string, city: string, state: string): Promise<AddressGateOutcome> {
+async function validateAddressGate(
+  address: string,
+  city: string,
+  state: string,
+  declaredPropertyType: DeclaredPropertyType | null,
+  unitNumber: string
+): Promise<AddressGateOutcome> {
   try {
     const res = await fetch('/api/address/validate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address, city, state })
+      body: JSON.stringify({ address, city, state, declaredPropertyType, unitNumber })
     });
     if (!res.ok) {
       return { passed: false, message: 'Address verification is temporarily unavailable. Please try again.', blockedAtLayer: 1 };
@@ -42,13 +53,25 @@ async function validateAddressGate(address: string, city: string, state: string)
     return {
       passed: !!gate?.canGenerateReport,
       message: gate?.message || "This location isn't a residential address. Try searching for a specific home or condo address.",
-      blockedAtLayer: gate?.blockedAtLayer ?? 1
+      blockedAtLayer: gate?.blockedAtLayer ?? 1,
+      promptForUnit: gate?.promptForUnit
     };
   } catch (err) {
     console.warn('Address gate request failed:', err);
     // Fail closed: a network error is never treated as a pass.
     return { passed: false, message: 'Address verification is temporarily unavailable. Please try again.', blockedAtLayer: 1 };
   }
+}
+
+// Soft, non-blocking sanity check only -- NOT a validation gate. Tested empirically: OSM
+// class/type tags are not reliable enough to trust as a hard pass/fail (real commercial
+// buildings frequently get generic "house" tags too), so this only ever produces a dismissible
+// warning nudge, never a block. The actual gate decision is the requester's own declaration.
+function looksCommercial(itemClass?: string, itemType?: string): boolean {
+  const cls = (itemClass || '').toLowerCase();
+  const type = (itemType || '').toLowerCase();
+  const commercialSignals = ['shop', 'amenity', 'office', 'commercial', 'industrial', 'retail', 'restaurant', 'tourism', 'government', 'civic'];
+  return commercialSignals.includes(cls) || commercialSignals.includes(type);
 }
 
 export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty }) => {
@@ -68,8 +91,12 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     } catch (e) {}
     return null;
   });
-  const [gateState, setGateState] = useState<{ status: 'checking' | 'passed' | 'blocked'; message: string; isDismissed?: boolean } | null>(null);
+  const [gateState, setGateState] = useState<{ status: 'checking' | 'passed' | 'blocked'; message: string; promptForUnit?: boolean; isDismissed?: boolean } | null>(null);
   const gateRequestIdRef = useRef(0);
+  const [declaredPropertyType, setDeclaredPropertyType] = useState<DeclaredPropertyType | null>(null);
+  const [unitNumber, setUnitNumber] = useState('');
+  const [commercialHint, setCommercialHint] = useState(false);
+  const [commercialHintDismissed, setCommercialHintDismissed] = useState(false);
 
   const [mapSearchQuery, setMapSearchQuery] = useState(() => {
     try {
@@ -100,24 +127,45 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     } catch (e) {}
   }, [selectedPinResult, mapSearchQuery]);
 
-  // Layer 4 gate: every time a search result is selected, synchronously (from the user's point
-  // of view) re-verify it against the real backend gate (Census geocoder + government facility
-  // check + jurisdiction support) before the "Analyze Property" button can be enabled.
+  // A newly selected address clears any prior property-type declaration -- it belongs to the
+  // previous address, not this one.
+  useEffect(() => {
+    setDeclaredPropertyType(null);
+    setUnitNumber('');
+    setCommercialHintDismissed(false);
+  }, [selectedPinResult?.placeId]);
+
+  // Layer 4 gate: does NOT run until the requester has declared a property type (Layer 3 needs
+  // it -- there's no external data source to check property type against, see
+  // geoValidationGate.ts). Re-verifies against the real backend gate (Census geocoder +
+  // government facility check + the declared type) every time the address or declaration
+  // changes, before the "Analyze Property" button can be enabled.
   useEffect(() => {
     if (!selectedPinResult) {
       setGateState(null);
       return;
     }
+    if (!declaredPropertyType) {
+      // Don't call the gate yet -- wait for the requester to pick a property type below.
+      setGateState(null);
+      return;
+    }
+
     const requestId = ++gateRequestIdRef.current;
     setGateState({ status: 'checking', message: 'Verifying this address…' });
 
-    const addressForGate = selectedPinResult.formattedAddress || selectedPinResult.displayName;
-    validateAddressGate(addressForGate, selectedPinResult.city, selectedPinResult.state).then((outcome) => {
-      // Ignore stale responses if the user already selected a different result.
-      if (requestId !== gateRequestIdRef.current) return;
-      setGateState({ status: outcome.passed ? 'passed' : 'blocked', message: outcome.message });
-    });
-  }, [selectedPinResult]);
+    // Debounce so typing a unit number doesn't fire a request per keystroke.
+    const timer = setTimeout(() => {
+      const addressForGate = selectedPinResult.formattedAddress || selectedPinResult.displayName;
+      validateAddressGate(addressForGate, selectedPinResult.city, selectedPinResult.state, declaredPropertyType, unitNumber).then((outcome) => {
+        // Ignore stale responses if the user already selected a different result/declaration.
+        if (requestId !== gateRequestIdRef.current) return;
+        setGateState({ status: outcome.passed ? 'passed' : 'blocked', message: outcome.message, promptForUnit: outcome.promptForUnit });
+      });
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [selectedPinResult, declaredPropertyType, unitNumber]);
 
   // Debounced auto-suggestions as user types in search
   useEffect(() => {
@@ -220,6 +268,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           cleanDisplayName = item.display_name.replace(/,\s*United States$/i, '');
         }
 
+        setCommercialHint(looksCommercial(item.class, item.type));
         setSelectedPinResult({
           placeId: `search_${item.place_id || Math.random().toString(36).substring(7)}`,
           formattedAddress: cleanDisplayName,
@@ -275,6 +324,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
         const cleanDisplayName = item.display_name.replace(/,\s*United States$/i, '');
 
+        setCommercialHint(looksCommercial(item.class, item.type));
         setSelectedPinResult({
           placeId: `search_${item.place_id || Math.random().toString(36).substring(7)}`,
           formattedAddress: cleanDisplayName,
@@ -559,8 +609,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
         {/* Bottom Property Confirmation Panel */}
         {(selectedPinResult || isReverseGeocoding) && (
-          <div className="absolute bottom-2.5 sm:bottom-4 left-2.5 sm:left-4 right-2.5 sm:right-4 z-20 bg-slate-900/95 border border-slate-700/90 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-white shadow-2xl backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 max-h-[50%] sm:max-h-none overflow-y-auto">
-            <div className="min-w-0 flex-1 space-y-0.5 sm:space-y-1">
+          <div className="absolute bottom-2.5 sm:bottom-4 left-2.5 sm:left-4 right-2.5 sm:right-4 z-20 bg-slate-900/95 border border-slate-700/90 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-white shadow-2xl backdrop-blur-md space-y-3 max-h-[70%] sm:max-h-none overflow-y-auto">
+            <div className="min-w-0 space-y-0.5 sm:space-y-1">
               <div className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
                 {isReverseGeocoding ? (
                   <span className="flex items-center gap-1.5 text-blue-300">
@@ -587,15 +637,63 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               )}
             </div>
 
+            {selectedPinResult && commercialHint && !commercialHintDismissed && (
+              <div className="bg-amber-950/60 border border-amber-600/40 rounded-xl p-2.5 text-[11px] text-amber-200 flex items-start justify-between gap-2">
+                <span>This address looks like it might be a business, not a home. Double-check before continuing.</span>
+                <button type="button" onClick={() => setCommercialHintDismissed(true)} className="text-amber-400 hover:text-white font-bold shrink-0 cursor-pointer">Dismiss</button>
+              </div>
+            )}
+
+            {selectedPinResult && (
+              <div className="space-y-2">
+                <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
+                  What type of property is this?
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {([
+                    ['single_family', 'Single-Family Home'],
+                    ['condo_or_multifamily', 'Condo / Multifamily'],
+                    ['other', 'Other'],
+                  ] as [DeclaredPropertyType, string][]).map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setDeclaredPropertyType(value)}
+                      className={`px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold border transition-all cursor-pointer ${
+                        declaredPropertyType === value
+                          ? 'bg-blue-600 text-white border-blue-400'
+                          : 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white hover:border-slate-600'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-slate-500">
+                  We haven't independently verified property records for this address yet, so we ask you to confirm this directly. This will be shown on the report as self-reported, not verified.
+                </p>
+
+                {declaredPropertyType === 'condo_or_multifamily' && (
+                  <input
+                    type="text"
+                    value={unitNumber}
+                    onChange={(e) => setUnitNumber(e.target.value)}
+                    placeholder="Unit number (e.g. #705)"
+                    className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
+                  />
+                )}
+              </div>
+            )}
+
             {selectedPinResult && (
               <button
                 type="button"
                 disabled={gateState?.status !== 'passed'}
                 onClick={() => {
                   if (gateState?.status !== 'passed') return;
-                  onSelectProperty(selectedPinResult);
+                  onSelectProperty({ ...selectedPinResult, declaredPropertyType, unitNumber });
                 }}
-                className={`w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 shrink-0 tracking-tight ${
+                className={`w-full px-4 sm:px-5 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 shrink-0 tracking-tight ${
                   gateState?.status !== 'passed'
                     ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
                     : 'bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white cursor-pointer hover:shadow-blue-500/25'
@@ -605,11 +703,13 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                   <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 animate-spin" />
                 ) : null}
                 <span>
-                  {gateState?.status === 'checking'
-                    ? 'Verifying Address…'
-                    : gateState?.status === 'blocked'
-                      ? 'Residential Selection Only'
-                      : 'Analyze Property'}
+                  {!declaredPropertyType
+                    ? 'Select a Property Type Above'
+                    : gateState?.status === 'checking'
+                      ? 'Verifying Address…'
+                      : gateState?.status === 'blocked'
+                        ? (gateState.promptForUnit ? 'Enter Unit Number Above' : 'Not Supported Yet')
+                        : 'Analyze Property'}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
               </button>

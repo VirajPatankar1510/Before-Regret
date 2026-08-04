@@ -341,64 +341,82 @@ export async function validateLayer2(lat: number, lon: number): Promise<Layer2Re
 }
 
 // ---------------------------------------------------------------------------
-// LAYER 3 -- County Assessor Parcel Classification / Supported Jurisdictions
+// LAYER 3 -- Requester-Declared Property Type
 // ---------------------------------------------------------------------------
-// BeforeRegret does not currently have a real, legally-cleared county assessor data
-// integration anywhere -- Task 1 found the previous "assessor lookup" was entirely fabricated
-// (hardcoded parcel IDs, fake "200 OK" log lines for calls that never happened). Building a
-// per-county scraper raises the licensing/ToS questions already discussed and not yet resolved
-// (see conversation on data licensing and the ATTOM/CoreLogic/Regrid alternative).
+// BeforeRegret does not have a real, legally-cleared county assessor data integration anywhere
+// (see Task 1 audit -- the previous "assessor lookup" was entirely fabricated, and a follow-up
+// evaluation of free/open county parcel data found real candidates but none with an
+// independently confirmed commercial-use license reachable without per-jurisdiction legal
+// review, which doesn't scale for a small team).
 //
-// Every jurisdiction is therefore "not supported" and every address is honestly told so --
-// never silently defaulted to "residential." Do not add an entry to SUPPORTED_JURISDICTIONS
-// without a real backing data source -- that would re-introduce the exact fabrication problem
-// this gate exists to remove.
+// Rather than either blocking every address (safe but non-functional) or silently guessing
+// residential from unreliable signals (re-introducing the original fabrication problem --
+// tested empirically: OSM's "house" type tag alone false-positives on real commercial
+// buildings), this layer requires the person requesting the report to explicitly declare the
+// property type, and is honest everywhere in the product that this field is self-reported, not
+// independently verified by BeforeRegret. This is a deliberate, disclosed trade-off, not a
+// hidden one -- see docs/ADDRESS_VALIDATION_GATE.md.
 
 export interface Layer3Result {
   passed: boolean;
   code: string;
   message: string;
+  promptForUnit?: boolean;
 }
 
-// No jurisdiction currently has a real, legally-cleared assessor data source, so this layer
-// does exactly one thing: check whether the address's county/state is on the supported list,
-// and fail closed with an honest "not covered yet" message if not. It intentionally does NOT
-// attempt any parcel-level classification (vacant land, unit numbers, commercial vs.
-// residential) -- building that decision logic against a data source that doesn't exist yet
-// would be unverified, untested code sitting in a shipped file for no current benefit. When a
-// real jurisdiction is onboarded with a real assessor API, that classification logic should be
-// designed against that API's actual shape and tested against real responses, not built
-// speculatively in advance.
-const SUPPORTED_JURISDICTIONS: string[] = [];
-
-function jurisdictionKey(county: string, state: string): string {
-  return `${(county || '').trim().toLowerCase()}|${(state || '').trim().toLowerCase()}`;
-}
+export type DeclaredPropertyType = 'single_family' | 'condo_or_multifamily' | 'other';
 
 /**
- * Checks: whether the address's county/state is in SUPPORTED_JURISDICTIONS.
- * Calls: no external API -- SUPPORTED_JURISDICTIONS is currently an empty in-memory list,
- * because no jurisdiction has a real, legally-cleared county assessor data source yet.
- * On failure: returns { passed: false, code, message } -- never throws.
- * Fails closed on: any jurisdiction not explicitly in the list (i.e. every jurisdiction today).
- * Never defaults an unrecognized or unsupported area to "residential."
+ * Checks: the property type as declared by the requester (there is no external data source to
+ * check it against -- see module comment above).
+ * Calls: no external API.
+ * On failure: returns { passed: false, code, message, promptForUnit? } -- never throws.
+ * Fails closed on: no declaration provided, an unrecognized declared type, "other" (a type this
+ * product doesn't support), or "condo/multifamily" without a specific unit number (prompts for
+ * one rather than passing or failing outright). Never defaults a missing or unrecognized
+ * declaration to "residential."
  */
-export async function validateLayer3(city: string, state: string): Promise<Layer3Result> {
-  const isSupported = SUPPORTED_JURISDICTIONS.includes(jurisdictionKey(city, state));
-
-  if (!isSupported) {
+export function validateLayer3(
+  declaredPropertyType: DeclaredPropertyType | undefined | null,
+  unitNumber: string | undefined | null
+): Layer3Result {
+  if (!declaredPropertyType) {
     return {
       passed: false,
-      code: 'L3_JURISDICTION_NOT_SUPPORTED',
-      message: "BeforeRegret doesn't yet cover this area. We're expanding — check back soon.",
+      code: 'L3_DECLARATION_REQUIRED',
+      message: 'Please tell us what type of property this is before generating a report.',
     };
   }
 
-  // Reached only once a jurisdiction is actually onboarded with a real assessor data source.
+  if (declaredPropertyType === 'single_family') {
+    return {
+      passed: true,
+      code: 'L3_DECLARED_SINGLE_FAMILY',
+      message: 'Property type as provided by the requester: single-family home. Not independently verified by BeforeRegret.',
+    };
+  }
+
+  if (declaredPropertyType === 'condo_or_multifamily') {
+    if (!unitNumber || !unitNumber.trim()) {
+      return {
+        passed: false,
+        code: 'L3_UNIT_REQUIRED',
+        message: 'Please enter a specific unit number (e.g., #705) for this building.',
+        promptForUnit: true,
+      };
+    }
+    return {
+      passed: true,
+      code: 'L3_DECLARED_CONDO_MULTIFAMILY',
+      message: 'Property type as provided by the requester: condo/multifamily unit. Not independently verified by BeforeRegret.',
+    };
+  }
+
+  // declaredPropertyType === 'other', or any unrecognized value -- fail closed.
   return {
     passed: false,
-    code: 'L3_NOT_IMPLEMENTED',
-    message: "BeforeRegret doesn't yet cover this area. We're expanding — check back soon.",
+    code: 'L3_UNSUPPORTED_PROPERTY_TYPE',
+    message: "BeforeRegret doesn't yet support this property type. We currently cover single-family homes and condo/multifamily units with a specific unit number.",
   };
 }
 
@@ -410,6 +428,7 @@ export interface AddressGateResult {
   canGenerateReport: boolean;
   blockedAtLayer: 1 | 2 | 3 | null;
   message: string;
+  promptForUnit?: boolean;
   layer1: Layer1Result;
   layer2?: Layer2Result;
   layer3?: Layer3Result;
@@ -429,7 +448,13 @@ export interface AddressGateResult {
  * independently again inside report generation (POST /api/property/generate-report), so a
  * bypassed or stale frontend check can never let a report through on its own.
  */
-export async function runAddressGate(rawAddress: string, city: string, state: string): Promise<AddressGateResult> {
+export async function runAddressGate(
+  rawAddress: string,
+  city: string,
+  state: string,
+  declaredPropertyType?: DeclaredPropertyType | null,
+  unitNumber?: string | null
+): Promise<AddressGateResult> {
   const layer1 = await validateLayer1(rawAddress);
   if (!layer1.passed) {
     return { canGenerateReport: false, blockedAtLayer: 1, message: layer1.message, layer1 };
@@ -449,12 +474,13 @@ export async function runAddressGate(rawAddress: string, city: string, state: st
     };
   }
 
-  const layer3 = await validateLayer3(city, state);
+  const layer3 = validateLayer3(declaredPropertyType, unitNumber);
   if (!layer3.passed) {
     return {
       canGenerateReport: false,
       blockedAtLayer: 3,
       message: layer3.message,
+      promptForUnit: layer3.promptForUnit,
       layer1,
       layer2,
       layer3,
