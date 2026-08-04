@@ -363,7 +363,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       const response = await fetch(
         `/api/geocode/reverse?lat=${lat}&lon=${lon}`
       );
-      if (response.ok) {
+      const contentType = response.headers.get('content-type') || '';
+      if (response.ok && contentType.includes('application/json')) {
         const item = await response.json();
         const addr = item.address || {};
         const city = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.hamlet || addr.county || '';
