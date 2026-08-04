@@ -117,7 +117,7 @@ export const SourceRegistryModal: React.FC<SourceRegistryModalProps> = ({ isOpen
                   </div>
 
                   <a
-                    href={src.officialUrl}
+                    href={src.officialUrl || (src as any).url || 'https://msc.fema.gov/portal/search'}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-xl transition-colors shrink-0 self-start sm:self-auto"
