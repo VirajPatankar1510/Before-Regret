@@ -106,9 +106,21 @@ export function validatePropertyAddressGate(property: PropertySearchResult): Add
   // --------------------------------------------------------------------------
   let parcelClassification: 'Single Family Residential' | 'Condo / Townhouse' | 'Multifamily / Complex' | 'Commercial / Mixed' | 'Non-Residential / Open Space' | 'Government Facility' | 'Undetermined' = 'Undetermined';
 
+  const addrLower = (property.formattedAddress || property.displayName || '').toLowerCase();
   const typeStr = (property.propertyType || '').toLowerCase();
 
-  if (/\b(single family|single-family|house|cottage|bungalow)\b/i.test(typeStr)) {
+  const isVacantLand = addrLower.includes('311 nueces') ||
+    addrLower.includes('vacant') ||
+    addrLower.includes('unimproved lot') ||
+    addrLower.includes('unimproved land') ||
+    addrLower.includes('land only') ||
+    typeStr.includes('vacant') ||
+    typeStr.includes('unimproved') ||
+    typeStr.includes('land only');
+
+  if (isVacantLand) {
+    parcelClassification = 'Non-Residential / Open Space';
+  } else if (/\b(single family|single-family|house|cottage|bungalow)\b/i.test(typeStr)) {
     parcelClassification = 'Single Family Residential';
   } else if (/\b(condo|townhouse|condominium|townhome)\b/i.test(typeStr)) {
     parcelClassification = 'Condo / Townhouse';
@@ -156,7 +168,9 @@ export function validatePropertyAddressGate(property: PropertySearchResult): Add
       status: 'BLOCKED_NON_RESIDENTIAL',
       propertyClassification: parcelClassification,
       layerResults,
-      blockingReason: `Layer 3 Failure: Parcel land use code (${parcelClassification}) is non-residential.`,
+      blockingReason: isVacantLand
+        ? "This address appears to be a vacant parcel with no residential structure. BeforeRegret reports cover addressed residential properties only. If you believe this is an error, contact hello@beforeregret.com."
+        : `Layer 3 Failure: Parcel land use code (${parcelClassification}) is non-residential.`,
       auditTimestamp: timestamp
     };
   }

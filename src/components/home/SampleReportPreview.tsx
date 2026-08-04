@@ -196,10 +196,10 @@ export const SampleReportPreview: React.FC = () => {
                 </div>
                 <ul className="space-y-3 text-xs sm:text-sm text-slate-700">
                   <li className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
-                    <strong>Building Permit #2019-882:</strong> Central HVAC Heat Pump installation signed off in October 2019.
+                    <strong>Building Permit Record:</strong> Central HVAC Heat Pump installation signed off in October 2019.
                   </li>
                   <li className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
-                    <strong>FEMA Map Panel #51059C0280E:</strong> Outside 100-year and 500-year flood hazard areas.
+                    <strong>FEMA Flood Hazard Map Panel:</strong> Outside 100-year and 500-year flood hazard areas.
                   </li>
                   <li className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
                     <strong>Tax Assessor Records:</strong> Parcel square footage matches listed dimensions; zero unrecorded acreage changes.
