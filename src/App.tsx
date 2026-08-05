@@ -241,6 +241,14 @@ export function App() {
       return;
     }
 
+    // No pSEO route matched -- if we're sitting at the root path, make sure we actually land on
+    // the homepage rather than a stale non-HOME step restored from a prior page's sessionStorage
+    // (e.g. the user was on /vendors, then hard-navigated straight to the bare domain).
+    if (pathname === '/') {
+      setCurrentStep('HOME');
+      setPseoRoute({ type: 'none' });
+    }
+
     let reportIdFromUrl: string | null = null;
 
     if (pathname.startsWith('/insights/')) {
