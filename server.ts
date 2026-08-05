@@ -2,9 +2,9 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
-import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } from "./src/utils/sitemapGenerator";
-import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService";
-import { runAddressGate } from "./src/engine/geoValidationGate";
+import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } from "./src/utils/sitemapGenerator.js";
+import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService.js";
+import { runAddressGate } from "./src/engine/geoValidationGate.js";
 
 dotenv.config();
 
