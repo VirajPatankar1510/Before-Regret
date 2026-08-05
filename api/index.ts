@@ -1,5 +1,11 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import { createApp } from '../server';
+// Extension required: package.json has "type": "module", and Vercel's Node.js function runtime
+// resolves this import with Node's native strict ESM resolver at runtime rather than inlining it
+// via a bundler -- confirmed live via Vercel's runtime logs: an extensionless '../server' import
+// failed with ERR_MODULE_NOT_FOUND ("Cannot find module '/var/task/server'"). The source file is
+// server.ts, but Node's ESM resolver needs the extension of the file it will actually load at
+// runtime (the transpiled .js), not the TypeScript source extension.
+import { createApp } from '../server.js';
 
 // Vercel Node.js serverless function entry point for all /api/* traffic. This project isn't
 // Next.js, so Vercel's [...param] catch-all filename convention doesn't apply here -- confirmed
