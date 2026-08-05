@@ -1,6 +1,6 @@
-import { ZIP_PSEO_DATASET, EDITORIAL_GUIDES_DATASET, ZIP_COMPARISONS_DATASET, VALIDATED_MARKETS, SINGLE_TOPICS_METADATA } from '../data/seoDataset.js';
-import { evaluateZipUniqueness } from './seoUniquenessEvaluator.js';
-import { ZipPSeoData } from '../types/seoTypes.js';
+import { ZIP_PSEO_DATASET, EDITORIAL_GUIDES_DATASET, ZIP_COMPARISONS_DATASET, VALIDATED_MARKETS, SINGLE_TOPICS_METADATA } from '../data/seoDataset';
+import { evaluateZipUniqueness } from './seoUniquenessEvaluator';
+import { ZipPSeoData } from '../types/seoTypes';
 
 const BASE_URL = 'https://beforeregret.com';
 const MAX_URLS_PER_SITEMAP = 45000;

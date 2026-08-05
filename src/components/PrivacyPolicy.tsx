@@ -73,15 +73,14 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
                   <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
                     <Eye className="w-4 h-4 text-blue-600" />
-                    <span>A. Consumer Users</span>
+                    <span>A. Consumer Users (Free Reports)</span>
                   </h3>
                   <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
                     <li>Property address and zip code search query inputs.</li>
-                    <li>Account email address (required to claim your free report and track per-account usage).</li>
                     <li>Technical session metadata (IP address, browser type, device OS) for rate limiting and security.</li>
                     <li>Inquiries sent to customer support via email.</li>
                     <li className="font-semibold text-slate-900">
-                      For any report beyond your first free report, billing and payment card details are collected and processed directly by a PCI-DSS compliant third-party payment processor; Atmostellar does not store your full card number.
+                      Zero payment details are collected from consumers because property research reports are 100% free.
                     </li>
                   </ul>
                 </div>
@@ -94,7 +93,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                   <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
                     <li>Business contact details (company name, owner name, email address, business phone number).</li>
                     <li>Trade category, state licensure number, and registration verification details (non-mandatory).</li>
-                    <li>Selected zip code and trade category placement choices.</li>
+                    <li>Selected zip code coverage choices and subscription tier choices.</li>
                     <li>Billing and invoice transaction records handled by our secure payment gateway.</li>
                   </ul>
                 </div>

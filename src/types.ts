@@ -227,20 +227,6 @@ export interface LeadWidget {
   status?: 'ACTIVE' | 'SUBMITTED' | 'UNMASKED';
 }
 
-// A single paying, ZIP-exclusive vendor placement -- visibility, not a lead-unlock transaction
-// (see VendorPartner/LeadWidget/MaskedLeadAsset above, none of which are wired into the actual
-// report; this is a deliberately simpler, separate model). At most one active sponsor per ZIP.
-export interface SponsoredVendor {
-  id: string;
-  zipCode: string;
-  businessName: string;
-  tradeCategory: string; // e.g. "Home Inspector", "Roofing Contractor", "Electrician"
-  phone: string;
-  website?: string;
-  tagline?: string; // short one-liner the vendor writes about themselves
-  active: boolean;
-}
-
 export interface MaskedLeadAsset {
   leadId: string;
   zipCode: string;
@@ -294,9 +280,6 @@ export interface PropertyReport {
   isNonResidential?: boolean;
   rejectionReason?: string;
   blockedAtLayer?: 1 | 2 | 3 | null;
-  // The ZIP-exclusive sponsored vendor for this address, if one has actually paid for this ZIP
-  // -- null/absent is the normal, honest state for almost every report right now, not an error.
-  sponsoredVendor?: SponsoredVendor | null;
   generatedAt: string;
   readingTimeMinutes: number;
   reportVersion: string;
