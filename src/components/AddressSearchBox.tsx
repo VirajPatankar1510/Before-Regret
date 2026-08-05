@@ -3,7 +3,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
   Loader2, AlertCircle, MapPin,
-  Layers, CheckCircle2, ArrowRight, Search, X
+  CheckCircle2, ArrowRight, Search, X
 } from 'lucide-react';
 import { PropertySearchResult } from '../types';
 
@@ -89,7 +89,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const markerInstanceRef = useRef<maplibregl.Marker | null>(null);
 
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
-  const [isSatelliteView, setIsSatelliteView] = useState(false);
+
   const [selectedPinResult, setSelectedPinResult] = useState<PropertySearchResult | null>(() => {
     try {
       const saved = sessionStorage.getItem('beforeregret_map_draft');
@@ -469,19 +469,19 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               id: 'streets-layer',
               type: 'raster',
               source: 'locationiq-streets',
-              layout: { visibility: isSatelliteView ? 'none' : 'visible' }
+              layout: { visibility: 'none' }
             },
             {
               id: 'satellite-layer',
               type: 'raster',
               source: 'esri-satellite',
-              layout: { visibility: isSatelliteView ? 'visible' : 'none' }
+              layout: { visibility: 'visible' }
             },
             {
               id: 'satellite-labels-layer',
               type: 'raster',
               source: 'esri-labels',
-              layout: { visibility: isSatelliteView ? 'visible' : 'none' }
+              layout: { visibility: 'visible' }
             }
           ]
         },
@@ -530,33 +530,13 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     updateMarkerPosition(selectedPinResult.lat, selectedPinResult.lon);
   }, [selectedPinResult?.lat, selectedPinResult?.lon]);
 
-  // Toggle tile layer
-  useEffect(() => {
-    if (!mapInstanceRef.current) return;
-    const map = mapInstanceRef.current;
-    if (!map.isStyleLoaded()) return;
-
-    try {
-      if (isSatelliteView) {
-        if (map.getLayer('streets-layer')) map.setLayoutProperty('streets-layer', 'visibility', 'none');
-        if (map.getLayer('satellite-layer')) map.setLayoutProperty('satellite-layer', 'visibility', 'visible');
-        if (map.getLayer('satellite-labels-layer')) map.setLayoutProperty('satellite-labels-layer', 'visibility', 'visible');
-      } else {
-        if (map.getLayer('streets-layer')) map.setLayoutProperty('streets-layer', 'visibility', 'visible');
-        if (map.getLayer('satellite-layer')) map.setLayoutProperty('satellite-layer', 'visibility', 'none');
-        if (map.getLayer('satellite-labels-layer')) map.setLayoutProperty('satellite-labels-layer', 'visibility', 'none');
-      }
-    } catch (err) {
-      console.warn('Error toggling layers:', err);
-    }
-  }, [isSatelliteView]);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-4 text-left">
 
-      {/* Search Bar + View Controls */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3 backdrop-blur-md shadow-lg relative z-30">
-        <form onSubmit={handleMapSearch} className="flex-1 min-w-[260px] flex items-center gap-2 relative">
+      {/* Search Bar */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 backdrop-blur-md shadow-lg relative z-30">
+        <form onSubmit={handleMapSearch} className="flex items-center gap-2 relative">
           <div className="relative flex-1 flex items-center bg-slate-950 border border-slate-700 focus-within:border-blue-500 rounded-xl px-3 py-2 transition-all">
             <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
             <input
@@ -598,22 +578,6 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             </div>
           )}
         </form>
-
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={() => setIsSatelliteView(!isSatelliteView)}
-            className={`px-3 py-2 border rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-              isSatelliteView
-                ? 'bg-blue-600/90 text-white border-blue-400/50 shadow-md shadow-blue-500/20'
-                : 'bg-slate-800 text-slate-300 hover:text-white border-slate-700'
-            }`}
-            title="Toggle between Satellite view and Street map"
-          >
-            <Layers className="w-3.5 h-3.5 text-blue-400" />
-            <span>{isSatelliteView ? 'Satellite View' : 'Street Map'}</span>
-          </button>
-        </div>
       </div>
 
       {mapSearchError && (
