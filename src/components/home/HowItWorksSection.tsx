@@ -3,13 +3,13 @@ import { Search, Database, FileText, ArrowRight, ShieldCheck, Building2, Layers,
 
 export const HowItWorksSection: React.FC = () => {
   return (
-    <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white rounded-3xl max-w-6xl mx-auto shadow-2xl relative overflow-hidden my-12">
-      
+    <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white relative overflow-hidden">
+
       {/* Background ambient lighting */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-slate-800/40 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative z-10 space-y-12 sm:space-y-16">
+      <div className="max-w-6xl mx-auto relative z-10 space-y-12 sm:space-y-16">
         
         {/* Header */}
         <div className="text-center space-y-4 max-w-3xl mx-auto">

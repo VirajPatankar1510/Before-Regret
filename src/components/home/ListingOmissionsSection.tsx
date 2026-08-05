@@ -67,12 +67,12 @@ export const ListingOmissionsSection: React.FC = () => {
           {categories.map((cat, idx) => {
             const Icon = cat.icon;
             return (
-              <div 
+              <div
                 key={idx}
-                className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-7 shadow-sm hover:shadow-md hover:border-slate-300 transition-all space-y-4 flex flex-col justify-between"
+                className="bg-white rounded-2xl p-6 sm:p-7 shadow-sm hover:shadow-lg transition-all space-y-4 flex flex-col justify-between"
               >
                 <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center border border-slate-200 shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center shrink-0">
                     <Icon className="w-5 h-5 text-slate-800" />
                   </div>
                   <h3 className="font-sans text-lg font-bold text-slate-900 leading-snug">
