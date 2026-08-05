@@ -44,27 +44,44 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               Cancellation & Refund Policy
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              This Cancellation & Refund Policy outlines the terms governing free consumer usage and paid local business vendor subscriptions for <strong>Before Regret</strong>, owned and operated by <strong>Atmostellar</strong>. Registered Office: Atmostellar, Mumbai, Maharashtra, India. Contact: <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>.
+              This Cancellation & Refund Policy outlines the terms governing consumer property insight report purchases and paid local business vendor subscriptions for <strong>Before Regret</strong>, owned and operated by <strong>Atmostellar</strong>. Registered Office: Atmostellar, Mumbai, Maharashtra, India. Contact: <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>.
             </p>
           </div>
 
-          {/* Core Rule Banner #1: Consumer Free Notice */}
+          {/* Core Rule Banner #1: First Report Free Notice */}
           <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2">
             <div className="flex items-center gap-2 font-bold text-emerald-950 text-sm">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-              <span>Consumer Property Research Reports: 100% Free of Charge</span>
+              <span>Your First Property Insight Report Is Free</span>
             </div>
             <p className="text-xs text-emerald-800 leading-relaxed">
-              BeforeRegret consumer property research reports are provided completely free of charge. Consumer users are never required to submit payment information, credit card credentials, or enter into a paid contract. Because no financial transaction takes place for report usage, <strong>no cancellations, billing charges, or refund claims apply to consumer users.</strong>
+              Every account is entitled to one free property insight report, with no payment information required. Because no financial transaction takes place for a first report, <strong>no cancellations, billing charges, or refund claims apply to a first free report.</strong> Additional reports beyond your first are a one-time paid purchase — see Section 1 below.
             </p>
           </div>
 
           <div className="prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed space-y-6">
-            
+
             {/* Section 1 */}
+            <section className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-200 pb-2">
+                1. Consumer Report Purchases
+              </h2>
+              <p>
+                Every consumer account is entitled to <strong>one free property insight report</strong>, with no payment information required. Each additional report beyond your first is a <strong>one-time purchase of $14.99 USD</strong> — this is a single, non-recurring charge per report, not a subscription. A new report request only reaches payment after the property address has already been confirmed eligible (a valid U.S. residential property); addresses that cannot be verified are never charged.
+              </p>
+              <p>
+                <strong>No Refunds:</strong> Because payment is only collected after address eligibility is confirmed and the report is generated and delivered immediately upon payment, <strong>all report purchases are final and non-refundable.</strong>
+              </p>
+              <div className="flex items-start gap-2 text-xs text-slate-500 pt-1">
+                <CreditCard className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                <p>Card details are collected and processed directly by a PCI-DSS compliant third-party payment processor; Atmostellar does not store your full card number.</p>
+              </div>
+            </section>
+
+            {/* Section 2 */}
             <section className="space-y-3">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
-                1. Business Vendor Subscriptions Overview
+                2. Business Vendor Subscriptions Overview
               </h2>
               <p>
                 Atmostellar offers a paid monthly subscription service for local business vendors (contractors, licensed home inspectors, structural engineers, environmental remediation specialists) to display a sponsored placement ("Need help inspecting this?" section) in one specific zip code and trade category on free consumer reports.
@@ -85,10 +102,10 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               </div>
             </section>
 
-            {/* Section 2 */}
+            {/* Section 3 */}
             <section className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-200 pb-2">
-                2. Vendor Cancellation Terms
+                3. Vendor Cancellation Terms
               </h2>
               <ul className="space-y-2 text-xs text-slate-600">
                 <li>
@@ -103,10 +120,10 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               </ul>
             </section>
 
-            {/* Section 3 */}
+            {/* Section 4 */}
             <section className="space-y-3">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
-                3. Listing Removal & Refund Eligibility (Atmostellar-Initiated)
+                4. Listing Removal & Refund Eligibility (Atmostellar-Initiated)
               </h2>
               <p>
                 To maintain the integrity of BeforeRegret reports, Atmostellar enforces strict vendor licensure and quality standards, and also reserves the right to discontinue the vendor placement program, or a specific placement, for administrative or business reasons.
@@ -135,12 +152,12 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               </div>
             </section>
 
-            {/* Section 4 */}
+            {/* Section 5 */}
             <section className="space-y-3">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
-                4. Policy Summary Matrix
+                5. Policy Summary Matrix
               </h2>
-              
+
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
@@ -152,9 +169,14 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                   </thead>
                   <tbody className="divide-y divide-slate-200 text-slate-600">
                     <tr>
-                      <td className="p-3 font-semibold text-slate-900">Consumer Report Usage</td>
+                      <td className="p-3 font-semibold text-slate-900">Consumer First Report</td>
                       <td className="p-3">N/A (Always Free)</td>
                       <td className="p-3 text-emerald-700 font-bold">N/A (No charge ever)</td>
+                    </tr>
+                    <tr>
+                      <td className="p-3 font-semibold text-slate-900">Consumer Additional Report Purchase ($14.99)</td>
+                      <td className="p-3">N/A (One-time purchase)</td>
+                      <td className="p-3 text-rose-700 font-bold">No refund</td>
                     </tr>
                     <tr>
                       <td className="p-3 font-semibold text-slate-900">Vendor Self-Cancellation</td>
@@ -181,13 +203,13 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               </div>
             </section>
 
-            {/* Section 5 */}
+            {/* Section 6 */}
             <section className="space-y-2 pt-2 border-t border-slate-200">
               <h2 className="text-base font-bold text-slate-900">
-                5. Billing Support & Inquiries
+                6. Billing Support & Inquiries
               </h2>
               <p>
-                If you have questions regarding a vendor subscription invoice or billing status, please contact our support team:
+                If you have questions regarding a report purchase, a vendor subscription invoice, or billing status, please contact our support team:
               </p>
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-1">
                 <p className="font-bold text-slate-900">Atmostellar Support Desk</p>
