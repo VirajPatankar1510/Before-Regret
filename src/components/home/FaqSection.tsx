@@ -41,7 +41,7 @@ export const FaqSection: React.FC = () => {
             Frequently Asked Questions
           </h2>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-            Understand how public record synthesis works, how it differs from physical inspections, and how we protect your independence.
+            How this differs from a home inspection, and how we stay independent.
           </p>
         </div>
 

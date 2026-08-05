@@ -17,7 +17,7 @@ export const SampleReportPreview: React.FC = () => {
           Sample Report Preview
         </h2>
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-          Explore how linked public records, items still needing verification, and seller questions are presented in an objective, easy-to-read layout.
+          See exactly how records, open items, and seller questions are laid out in a real report.
         </p>
       </div>
 

@@ -17,7 +17,7 @@ export const HowItWorksSection: React.FC = () => {
             How BeforeRegret Works
           </h2>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-            Public government records exist across thousands of fragmented municipal portals, county clerk archives, and federal registries. BeforeRegret synthesizes them into one clear, objective report in under 60 seconds.
+            These records live across thousands of disconnected municipal, county, and federal systems. We pull them into one report in under 60 seconds.
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export const HowItWorksSection: React.FC = () => {
                 Get one plain-language report
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                You get one plain-language report with what to verify and what to ask before you make an offer or sign a lease.
+                Exactly what to verify in person and what to ask the seller — ready before your option period closes.
               </p>
             </div>
             <div className="pt-3 border-t border-slate-700/60 text-xs text-blue-400 font-medium flex items-center gap-1.5">
@@ -94,7 +94,7 @@ export const HowItWorksSection: React.FC = () => {
             <span>Why not just check Zillow?</span>
           </h3>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            Listing portals are designed to help you find a home — not to surface problems with one. They show flood scores and school ratings. They don't show permit gaps, undigitized roof records, pending rezoning nearby, or radon zone classifications. We pull from 20+ separate government sources and synthesize them into one plain-language briefing. That synthesis — at the moment you're evaluating a specific address — is what you're getting.
+            Listing portals are built to help you find a home — not to flag problems with one. They show flood scores and school ratings, not permit gaps, undigitized roof work, pending rezoning nearby, or radon classifications. That gap is what this report closes.
           </p>
         </div>
 
@@ -105,7 +105,7 @@ export const HowItWorksSection: React.FC = () => {
             <span>Our Independence Statement</span>
           </div>
           <p className="text-xs sm:text-sm leading-relaxed text-slate-300">
-            BeforeRegret isn't here to criticize builders, agents, or sellers. We believe greater transparency creates better conversations and more confident property decisions. Our role is to bring together public records and practical insights so every buyer can make a more informed decision — the details are always yours to verify.
+            BeforeRegret isn't here to criticize builders, agents, or sellers — we believe transparency leads to better conversations and more confident decisions. The details are always yours to verify.
           </p>
           <p className="text-xs leading-relaxed text-slate-400">
             We have no financial relationship with any builder, agent, lender, or listing portal. Reports are based entirely on public government data.

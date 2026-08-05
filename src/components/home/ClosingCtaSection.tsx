@@ -18,7 +18,7 @@ export const ClosingCtaSection: React.FC<ClosingCtaSectionProps> = ({ onScrollTo
             Check public records before signing
           </h2>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-            Search any US address to verify flood risk, permits, noise, and environment before you make an offer or sign a lease. Your first report is free.
+            One search tells you what the listing won't. Your first report is free.
           </p>
         </div>
 
