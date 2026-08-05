@@ -24,7 +24,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
       
       {/* Header */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
-        <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-slate-900 tracking-tight">
+        <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
           Simple, Transparent Pricing
         </h2>
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
@@ -36,14 +36,14 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
         
         {/* Card 1: First Report Free */}
-        <div className="bg-white border-2 border-emerald-600 rounded-3xl p-8 shadow-lg relative flex flex-col justify-between space-y-6">
+        <div className="bg-white border-2 border-blue-600 rounded-3xl p-8 shadow-lg relative flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
-                <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider block">First Report</span>
-                <h3 className="font-serif text-xl font-bold text-slate-900">Free Trial Report</h3>
+                <span className="text-xs font-bold text-blue-600 uppercase tracking-wider block">First Report</span>
+                <h3 className="font-sans text-xl font-bold text-slate-900">Free Trial Report</h3>
               </div>
-              <div className="text-3xl font-black text-emerald-600">$0</div>
+              <div className="text-3xl font-black text-blue-600">$0</div>
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
@@ -52,15 +52,15 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
 
             <ul className="space-y-2.5 text-xs text-slate-700">
               <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                <Check className="w-4 h-4 text-blue-600 shrink-0" />
                 <span>Full 20+ public database synthesis</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                <Check className="w-4 h-4 text-blue-600 shrink-0" />
                 <span>Instant web link delivery at /insights/</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                <Check className="w-4 h-4 text-blue-600 shrink-0" />
                 <span>No credit card or payment required</span>
               </li>
             </ul>
@@ -68,7 +68,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
 
           <button
             onClick={handleGoToMap}
-            className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-sm text-center"
+            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-sm text-center"
           >
             Claim Your Free Report
           </button>
@@ -80,7 +80,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
               <div>
                 <span className="text-xs font-bold text-blue-400 uppercase tracking-wider block">Additional Reports</span>
-                <h3 className="font-serif text-xl font-bold text-white">Pay-As-You-Go</h3>
+                <h3 className="font-sans text-xl font-bold text-white">Pay-As-You-Go</h3>
               </div>
               <div className="text-3xl font-black text-white">$14.99 <span className="text-xs font-normal text-slate-400">/ report</span></div>
             </div>

@@ -23,7 +23,7 @@ export const FaqSection: React.FC = () => {
     },
     {
       q: 'How quickly is the report generated?',
-      a: 'Reports are generated instantly in your browser (typically under 60 seconds) once you enter a property address. You receive immediate, unrestricted access to the interactive web report and a downloadable, print-ready PDF with no payment or credit card required.'
+      a: 'Reports are generated instantly in your browser (typically under 60 seconds) once you enter a property address. You get immediate access to the interactive web report at a permanent link you can revisit or share anytime.'
     },
     {
       q: 'Are there any recurring subscription fees or hidden costs?',
@@ -37,11 +37,11 @@ export const FaqSection: React.FC = () => {
         
         {/* Header */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-slate-900 tracking-tight">
+          <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
             Frequently Asked Questions
           </h2>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-            Understand how public record synthesis works, how it differs from physical inspections, and how we protect your independence.
+            How this differs from a home inspection, and how we stay independent.
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export const FaqSection: React.FC = () => {
               >
                 <button
                   onClick={() => setOpenIdx(isOpen ? null : idx)}
-                  className="w-full p-6 text-left flex items-center justify-between gap-4 font-serif text-lg font-bold text-slate-900 cursor-pointer hover:bg-slate-50/80 transition-colors"
+                  className="w-full p-6 text-left flex items-center justify-between gap-4 font-sans text-lg font-bold text-slate-900 cursor-pointer hover:bg-slate-50/80 transition-colors"
                 >
                   <span>{faq.q}</span>
                   <ChevronDown className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-blue-600' : ''}`} />
