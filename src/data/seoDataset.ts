@@ -1,4 +1,4 @@
-import { ZipPSeoData, SingleTopicDetail, EditorialGuide, ZipComparisonData, TopicSlug } from '../types/seoTypes.js';
+import { ZipPSeoData, SingleTopicDetail, EditorialGuide, ZipComparisonData, TopicSlug } from '../types/seoTypes';
 
 // Only Austin has completed Stage 0-4 market validation and is the single
 // approved launch market. Houston and Dallas are Phase 2 candidates and must

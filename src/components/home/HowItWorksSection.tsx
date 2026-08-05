@@ -3,21 +3,21 @@ import { Search, Database, FileText, ArrowRight, ShieldCheck, Building2, Layers,
 
 export const HowItWorksSection: React.FC = () => {
   return (
-    <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white relative overflow-hidden">
-
+    <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white rounded-3xl max-w-6xl mx-auto shadow-2xl relative overflow-hidden my-12">
+      
       {/* Background ambient lighting */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-slate-800/40 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-6xl mx-auto relative z-10 space-y-12 sm:space-y-16">
+      <div className="relative z-10 space-y-12 sm:space-y-16">
         
         {/* Header */}
         <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-white tracking-tight">
             How BeforeRegret Works
           </h2>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-            These records live across thousands of disconnected municipal, county, and federal systems. We pull them into one report in under 60 seconds.
+            Public government records exist across thousands of fragmented municipal portals, county clerk archives, and federal registries. BeforeRegret synthesizes them into one clear, objective report in under 60 seconds.
           </p>
         </div>
 
@@ -29,7 +29,7 @@ export const HowItWorksSection: React.FC = () => {
               <div className="w-12 h-12 rounded-xl bg-blue-600 text-white font-extrabold text-xl flex items-center justify-center shadow-md">
                 1
               </div>
-              <h3 className="font-sans text-xl font-bold text-white">
+              <h3 className="font-serif text-xl font-bold text-white">
                 Enter any US residential address
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -47,7 +47,7 @@ export const HowItWorksSection: React.FC = () => {
               <div className="w-12 h-12 rounded-xl bg-blue-600 text-white font-extrabold text-xl flex items-center justify-center shadow-md">
                 2
               </div>
-              <h3 className="font-sans text-xl font-bold text-white">
+              <h3 className="font-serif text-xl font-bold text-white">
                 We pull from 20+ government databases
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -65,11 +65,11 @@ export const HowItWorksSection: React.FC = () => {
               <div className="w-12 h-12 rounded-xl bg-blue-600 text-white font-extrabold text-xl flex items-center justify-center shadow-md">
                 3
               </div>
-              <h3 className="font-sans text-xl font-bold text-white">
+              <h3 className="font-serif text-xl font-bold text-white">
                 Get one plain-language report
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Exactly what to verify in person and what to ask the seller — ready before your option period closes.
+                You get one plain-language report with what to verify and what to ask before you make an offer or sign a lease.
               </p>
             </div>
             <div className="pt-3 border-t border-slate-700/60 text-xs text-blue-400 font-medium flex items-center gap-1.5">
@@ -82,30 +82,30 @@ export const HowItWorksSection: React.FC = () => {
 
         {/* Pricing Subtext Line Immediately Below Steps */}
         <div className="text-center pt-2">
-          <span className="inline-block px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm font-bold text-blue-400">
+          <span className="inline-block px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm font-bold text-emerald-400">
             First report: Free. Additional reports: $14.99 each. No subscription.
           </span>
         </div>
 
         {/* Why Not Just Check Zillow? Synthesis Explanation */}
         <div className="bg-slate-800/90 border border-slate-700/90 rounded-2xl p-6 sm:p-8 space-y-4 text-slate-200">
-          <h3 className="font-sans text-2xl font-bold text-white flex items-center gap-2">
+          <h3 className="font-serif text-2xl font-bold text-white flex items-center gap-2">
             <Layers className="w-5 h-5 text-blue-400" />
             <span>Why not just check Zillow?</span>
           </h3>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            Listing portals are built to help you find a home — not to flag problems with one. They show flood scores and school ratings, not permit gaps, undigitized roof work, pending rezoning nearby, or radon classifications. That gap is what this report closes.
+            Listing portals are designed to help you find a home — not to surface problems with one. They show flood scores and school ratings. They don't show permit gaps, undigitized roof records, pending rezoning nearby, or radon zone classifications. We pull from 20+ separate government sources and synthesize them into one plain-language briefing. That synthesis — at the moment you're evaluating a specific address — is what you're getting.
           </p>
         </div>
 
         {/* Independence Statement */}
         <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-3 text-slate-300">
-          <div className="flex items-center gap-2 text-xs font-sans font-bold text-blue-400 uppercase tracking-wider">
-            <ShieldCheck className="w-4 h-4 text-blue-400 shrink-0" />
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>Our Independence Statement</span>
           </div>
           <p className="text-xs sm:text-sm leading-relaxed text-slate-300">
-            BeforeRegret isn't here to criticize builders, agents, or sellers — we believe transparency leads to better conversations and more confident decisions. The details are always yours to verify.
+            BeforeRegret isn't here to criticize builders, agents, or sellers. We believe greater transparency creates better conversations and more confident property decisions. Our role is to bring together public records and practical insights so every buyer can make a more informed decision — the details are always yours to verify.
           </p>
           <p className="text-xs leading-relaxed text-slate-400">
             We have no financial relationship with any builder, agent, lender, or listing portal. Reports are based entirely on public government data.

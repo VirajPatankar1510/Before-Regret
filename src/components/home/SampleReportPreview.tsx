@@ -13,11 +13,11 @@ export const SampleReportPreview: React.FC = () => {
       
       {/* Section Header */}
       <div className="text-center space-y-3 max-w-3xl mx-auto">
-        <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+        <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-slate-900 tracking-tight">
           Sample Report Preview
         </h2>
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-          See exactly how records, open items, and seller questions are laid out in a real report.
+          Explore how linked public records, items still needing verification, and seller questions are presented in an objective, easy-to-read layout.
         </p>
       </div>
 
@@ -42,10 +42,10 @@ export const SampleReportPreview: React.FC = () => {
               <div className="text-xs text-blue-400 font-bold uppercase tracking-wider mb-1">
                 BeforeRegret Property Synthesis
               </div>
-              <h3 className="font-sans text-2xl sm:text-3xl font-bold text-white">
+              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">
                 123 Example Street, Anytown, TX 00000
               </h3>
-              <div className="text-xs text-slate-300 mt-1 flex flex-wrap items-center gap-3 font-sans font-medium">
+              <div className="text-xs text-slate-300 mt-1 flex flex-wrap items-center gap-3 font-mono">
                 <span>Fairfax County</span>
                 <span>•</span>
                 <span>Built: 1984</span>
@@ -105,7 +105,7 @@ export const SampleReportPreview: React.FC = () => {
           {activeTab === 'AT_A_GLANCE' && (
             <div className="space-y-6">
               <div className="space-y-1">
-                <h4 className="font-sans text-xl font-bold text-slate-900">
+                <h4 className="font-serif text-xl font-bold text-slate-900">
                   Public Record Status Overview
                 </h4>
                 <p className="text-xs text-slate-500">
@@ -226,7 +226,7 @@ export const SampleReportPreview: React.FC = () => {
           {activeTab === 'SELLER_QUESTIONS' && (
             <div className="space-y-4">
               <div className="space-y-1">
-                <h4 className="font-sans text-xl font-bold text-slate-900">
+                <h4 className="font-serif text-xl font-bold text-slate-900">
                   Tailored Seller Interrogation Questions
                 </h4>
                 <p className="text-xs text-slate-500">

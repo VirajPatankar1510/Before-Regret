@@ -1,4 +1,4 @@
-import { ZipPSeoData, HeldBackLog, PSeoPageType } from '../types/seoTypes.js';
+import { ZipPSeoData, HeldBackLog, PSeoPageType } from '../types/seoTypes';
 
 export interface UniquenessResult {
   passed: boolean;

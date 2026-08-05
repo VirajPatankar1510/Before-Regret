@@ -241,14 +241,6 @@ export function App() {
       return;
     }
 
-    // No pSEO route matched -- if we're sitting at the root path, make sure we actually land on
-    // the homepage rather than a stale non-HOME step restored from a prior page's sessionStorage
-    // (e.g. the user was on /vendors, then hard-navigated straight to the bare domain).
-    if (pathname === '/') {
-      setCurrentStep('HOME');
-      setPseoRoute({ type: 'none' });
-    }
-
     let reportIdFromUrl: string | null = null;
 
     if (pathname.startsWith('/insights/')) {
@@ -368,7 +360,7 @@ export function App() {
                 'name': 'Are reports one-time flat fee or subscription based?',
                 'acceptedAnswer': {
                   '@type': 'Answer',
-                  'text': 'Your first BeforeRegret property report is free. Additional reports are a one-time flat fee of $14.99 each -- there is no subscription or recurring charge for consumer reports.'
+                  'text': 'All BeforeRegret consumer property research reports are 100% free with lifetime access.'
                 }
               }
             ]
