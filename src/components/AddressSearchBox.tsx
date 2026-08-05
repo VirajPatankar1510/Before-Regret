@@ -356,7 +356,19 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           pType = 'Single Family Residential';
         }
 
-        const cleanDisplayName = item.display_name.replace(/,\s*United States$/i, '');
+        // Reconstruct "house_number street, city, state zip" rather than trusting
+        // item.display_name directly -- LocationIQ prefixes a POI/building name (e.g. "White
+        // House, 1600, Pennsylvania Avenue Northwest, ...") for well-known addresses, which put
+        // the street number nowhere near the start of the string and tripped Layer 1's "must
+        // start with a street number" check even though the address itself is perfectly valid.
+        // Mirrors the same reconstruction fetchAddressFromCoords below already does.
+        const street = [houseNumber, road].filter(Boolean).join(' ');
+        let cleanDisplayName = item.display_name;
+        if (street && city && state) {
+          cleanDisplayName = zip ? `${street}, ${city}, ${state} ${zip}` : `${street}, ${city}, ${state}`;
+        } else {
+          cleanDisplayName = item.display_name.replace(/,\s*United States$/i, '');
+        }
 
         setCommercialHint(looksCommercial(item.class, item.type));
         setSelectedPinResult({
