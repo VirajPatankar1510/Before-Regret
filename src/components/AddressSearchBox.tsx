@@ -235,6 +235,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       const pinEl = document.createElement('div');
       pinEl.innerHTML = `
         <div class="relative flex flex-col items-center justify-end transform -translate-x-1/2 -translate-y-full" style="width:36px; height:44px;">
+          <div class="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg border border-slate-700">
+            This is your selected location
+          </div>
           <div class="w-9 h-9 bg-blue-600 border-2 border-white text-white rounded-full flex items-center justify-center shadow-2xl ring-4 ring-blue-500/30">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
           </div>
@@ -621,34 +624,39 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       )}
 
       {/* Static Confirmation Map -- preview only, not an input. Not mounted until a search
-          result exists (see showMap above), so there's nothing to show before that. */}
+          result exists (see showMap above), so there's nothing to show before that. The gate
+          banner and confirmation panel below used to overlay the bottom half of the map itself;
+          they're now separate blocks stacked below it so nothing covers the map. */}
       {showMap && (
+      <>
       <div className="relative w-full h-[350px] sm:h-[400px] bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
 
         <div ref={mapContainerRef} className="w-full h-full z-0 pointer-events-none" />
 
-        {/* Address Validation Gate Banner */}
-        {gateState && gateState.status === 'blocked' && !gateState.isDismissed && (
-          <div className="absolute top-4 left-4 right-4 z-20 bg-amber-950/90 border border-amber-500/40 rounded-2xl p-3.5 text-xs font-medium text-amber-200 shadow-2xl backdrop-blur-md animate-fade-in flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
-              <div className="font-bold text-amber-300 text-sm">
-                {gateState.message}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setGateState(prev => prev ? { ...prev, isDismissed: true } : null)}
-              className="text-amber-400 hover:text-white font-bold cursor-pointer shrink-0 text-xs"
-            >
-              Dismiss
-            </button>
-          </div>
-        )}
+      </div>
 
-        {/* Bottom Property Confirmation Panel */}
-        {(selectedPinResult || isReverseGeocoding) && (
-          <div className="absolute bottom-2.5 sm:bottom-4 left-2.5 sm:left-4 right-2.5 sm:right-4 z-20 bg-slate-900/95 border border-slate-700/90 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-white shadow-2xl backdrop-blur-md space-y-3 max-h-[70%] sm:max-h-none overflow-y-auto">
+      {/* Address Validation Gate Banner */}
+      {gateState && gateState.status === 'blocked' && !gateState.isDismissed && (
+        <div className="bg-amber-950/90 border border-amber-500/40 rounded-2xl p-3.5 text-xs font-medium text-amber-200 shadow-2xl backdrop-blur-md animate-fade-in flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+            <div className="font-bold text-amber-300 text-sm">
+              {gateState.message}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setGateState(prev => prev ? { ...prev, isDismissed: true } : null)}
+            className="text-amber-400 hover:text-white font-bold cursor-pointer shrink-0 text-xs"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Property Confirmation Panel */}
+      {(selectedPinResult || isReverseGeocoding) && (
+        <div className="bg-slate-900/95 border border-slate-700/90 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-white shadow-2xl backdrop-blur-md space-y-3">
             <div className="min-w-0 space-y-0.5 sm:space-y-1">
               <div className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
                 {isReverseGeocoding ? (
@@ -751,10 +759,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
               </button>
             )}
-          </div>
-        )}
-
-      </div>
+        </div>
+      )}
+      </>
       )}
 
       {/* Property Type Modal -- the required next step after an address is confirmed, shown as
@@ -826,10 +833,6 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
               />
             )}
-
-            <p className="text-[10px] text-slate-500">
-              We haven't independently verified property records for this address yet, so we ask you to confirm this directly. This will be shown on the report as self-reported, not verified.
-            </p>
 
             <button
               type="button"
