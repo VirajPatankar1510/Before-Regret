@@ -160,7 +160,11 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         }
       ];
 
-  // Derive source registry
+  // Derive source registry. sr14 (USGS seismic) mirrors whatever the Findings section actually
+  // shows for f_seismic -- otherwise this static list would still say "NOT YET VERIFIED" for
+  // USGS even on a report where the seismic finding was genuinely live-queried and confirmed,
+  // contradicting the Findings section on the same page.
+  const seismicConfirmed = findings.some(f => f.id === 'f_seismic' && f.status === 'CONFIRMED RECORD');
   const sourceRegistry: SourceReferenceItem[] = report.sourceRegistry || [
     { id: 'sr1', name: 'FEMA National Flood Hazard Layer (NFHL)', agency: 'Federal Emergency Management Agency', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://msc.fema.gov/portal/search', lastUpdated: 'Updated 2024', description: 'Official flood hazard zone boundary mapping.' },
     { id: 'sr2', name: 'Municipal Building Permit Registry', agency: 'City Building & Development Department', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Digitized building, electrical, and mechanical permits.' },
@@ -175,7 +179,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
     { id: 'sr11', name: 'FCC Broadband & Fiber Coverage Map', agency: 'Federal Communications Commission', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://broadbandmap.fcc.gov', lastUpdated: 'Updated 2025', description: 'Verified fiber and high-speed internet availability.' },
     { id: 'sr12', name: 'EPA Safe Drinking Water Information System', agency: 'U.S. Environmental Protection Agency', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.epa.gov/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting', lastUpdated: 'Updated Monthly', description: 'Public water utility quality and compliance records.' },
     { id: 'sr13', name: 'USDA NRCS Soil Survey', agency: 'USDA Natural Resources Conservation Service', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://websoilsurvey.nrcs.usda.gov', lastUpdated: 'Updated 2024', description: 'Soil drainage and expansive clay soil stability data.' },
-    { id: 'sr14', name: 'USGS National Seismic Hazard Map', agency: 'U.S. Geological Survey', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://earthquake.usgs.gov/hazards/hazmaps/', lastUpdated: 'Updated 2024', description: 'Ground motion acceleration and earthquake probability.' },
+    { id: 'sr14', name: 'USGS National Seismic Hazard Map', agency: 'U.S. Geological Survey', category: 'Hazards', status: seismicConfirmed ? 'CONFIRMED RECORD' : 'NOT YET VERIFIED', url: 'https://earthquake.usgs.gov/hazards/hazmaps/', lastUpdated: seismicConfirmed ? 'Live-queried (ASCE 7-22)' : 'Updated 2024', description: 'Ground motion acceleration and earthquake probability.' },
     { id: 'sr15', name: 'U.S. EIA Power Grid Reliability Map', agency: 'U.S. Energy Information Administration', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.eia.gov/electricity/gridmonitor/', lastUpdated: 'Updated 2025', description: 'Regional electric utility grid stability records.' },
     { id: 'sr16', name: 'FRA Railroad Crossing Registry', agency: 'Federal Railroad Administration', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://railroads.dot.gov/railroad-safety/accident-incident-reporting/emergency-notification-system-ens/ens', lastUpdated: 'Updated 2024', description: 'Active rail line proximity and train horn noise points.' },
     { id: 'sr17', name: 'Municipal Water District & Sewer Authority', agency: 'Local Public Works Department', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.austintexas.gov/department/austin-water', lastUpdated: 'Updated Monthly', description: 'Municipal water supply and sewer service connection.' },
