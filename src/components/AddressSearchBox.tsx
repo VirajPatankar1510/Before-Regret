@@ -113,6 +113,12 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  // The map is a confirmation preview for a result the user already searched for -- it has
+  // nothing to show before that, so it isn't mounted at all until there's a result (or one is
+  // being looked up). Rendering a large empty map box on every page load, before any search,
+  // wasted prime above-the-fold space and read as broken rather than intentional.
+  const showMap = !!(selectedPinResult || isReverseGeocoding);
+
   // Synchronize draft selection with sessionStorage
   useEffect(() => {
     try {
@@ -383,7 +389,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   // building labels, on top of one for every pin drag). Address entry now happens exclusively
   // through the search bar above; the map only ever shows where the searched address resolved.
   useEffect(() => {
-    if (!mapContainerRef.current || mapInstanceRef.current) return;
+    if (!showMap || !mapContainerRef.current || mapInstanceRef.current) return;
 
     const initialLat = selectedPinResult?.lat || DEFAULT_VIEW.lat;
     const initialLon = selectedPinResult?.lon || DEFAULT_VIEW.lon;
@@ -472,7 +478,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [showMap]);
 
   // Recenter/show the pin whenever a new address is selected via search.
   useEffect(() => {
@@ -574,19 +580,12 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         </div>
       )}
 
-      {/* Static Confirmation Map -- preview only, not an input */}
+      {/* Static Confirmation Map -- preview only, not an input. Not mounted until a search
+          result exists (see showMap above), so there's nothing to show before that. */}
+      {showMap && (
       <div className="relative w-full h-[350px] sm:h-[400px] bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
 
         <div ref={mapContainerRef} className="w-full h-full z-0 pointer-events-none" />
-
-        {!selectedPinResult && !isReverseGeocoding && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-            <div className="bg-slate-900/90 border border-slate-700 rounded-2xl px-5 py-3 text-center backdrop-blur-md">
-              <p className="text-sm font-bold text-white">Search for your address above</p>
-              <p className="text-xs text-slate-400 mt-1">We'll show a preview pin here once it's found</p>
-            </div>
-          </div>
-        )}
 
         {/* Address Validation Gate Banner */}
         {gateState && gateState.status === 'blocked' && !gateState.isDismissed && (
@@ -718,6 +717,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         )}
 
       </div>
+      )}
 
     </div>
   );
