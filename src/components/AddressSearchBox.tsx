@@ -6,6 +6,7 @@ import {
   CheckCircle2, ArrowRight, Search, X
 } from 'lucide-react';
 import { PropertySearchResult } from '../types';
+import { isPlausibleYearBuilt } from '../engine/inspectionPriorities';
 
 interface AddressSearchBoxProps {
   onSelectProperty: (property: PropertySearchResult) => void;
@@ -104,6 +105,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const gateRequestIdRef = useRef(0);
   const [declaredPropertyType, setDeclaredPropertyType] = useState<DeclaredPropertyType | null>(null);
   const [unitNumber, setUnitNumber] = useState('');
+  // Optional, and deliberately never gates the flow -- most buyers know the year built from the
+  // listing, but a blank answer just means the era-based inspection priorities don't render.
+  const [yearBuilt, setYearBuilt] = useState('');
   const [commercialHint, setCommercialHint] = useState(false);
   const [commercialHintDismissed, setCommercialHintDismissed] = useState(false);
   // Property type is a required next step, not one of several optional things to fill in on the
@@ -157,6 +161,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   useEffect(() => {
     setDeclaredPropertyType(null);
     setUnitNumber('');
+    setYearBuilt('');
     setCommercialHintDismissed(false);
     if (selectedPinResult) {
       setShowPropertyTypeModal(true);
@@ -696,7 +701,13 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                     return;
                   }
                   if (gateState?.status !== 'passed') return;
-                  onSelectProperty({ ...selectedPinResult, declaredPropertyType, unitNumber });
+                  const parsedYear = parseInt(yearBuilt, 10);
+                  onSelectProperty({
+                    ...selectedPinResult,
+                    declaredPropertyType,
+                    unitNumber,
+                    yearBuilt: isPlausibleYearBuilt(parsedYear) ? parsedYear : null,
+                  });
                 }}
                 className={`w-full px-4 sm:px-5 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 shrink-0 tracking-tight ${
                   canAnalyze
@@ -797,6 +808,24 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
               />
             )}
+
+            <div className="space-y-1.5 pt-1 border-t border-slate-800">
+              <label htmlFor="year-built-input" className="block text-[11px] font-bold text-slate-300 pt-2">
+                Year built <span className="font-normal text-slate-500">— optional, usually on the listing</span>
+              </label>
+              <input
+                id="year-built-input"
+                type="text"
+                inputMode="numeric"
+                value={yearBuilt}
+                onChange={(e) => setYearBuilt(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                placeholder="e.g. 1968"
+                className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
+              />
+              <p className="text-[10px] text-slate-500 leading-relaxed">
+                Lets us show which checks matter most for homes of that era. We can't verify it — it's used exactly as you enter it.
+              </p>
+            </div>
 
             <button
               type="button"
