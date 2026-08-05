@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } from "./src/utils/sitemapGenerator.js";
 import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService.js";
 import { runAddressGate } from "./src/engine/geoValidationGate.js";
+import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
 
 dotenv.config();
 
@@ -376,6 +377,12 @@ export async function createApp() {
 
     const resolvedMeta = resolvePropertyMetadata(fullAddr, city, state, zipCode, county, propertyType);
 
+    // BeforeRegret's first genuinely live, confirmed finding (see seismicHazard.ts) -- queried
+    // once here, against the Census-verified coordinate from the gate itself (not whatever the
+    // frontend happened to send), then threaded through to validateAndFixReportContradictions
+    // below so it survives regardless of whether Gemini-based content generation succeeds.
+    const liveSeismicFinding = await fetchSeismicHazardFinding(gateResult.layer1.lat as number, gateResult.layer1.lon as number);
+
     const fallbackReport = generateStructuredPropertyReport(
       resolvedMeta.formattedAddress,
       resolvedMeta.city,
@@ -685,7 +692,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
           disclosureLevers: Array.isArray(parsedReport.disclosureLevers) && parsedReport.disclosureLevers.length > 0 ? parsedReport.disclosureLevers : fallbackReport.disclosureLevers
         };
 
-        let cleanedReport = validateAndFixReportContradictions(mergedReport);
+        let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding].filter(Boolean));
         cleanedReport = stripInternalMetadata(cleanedReport);
 
         if (!cleanedReport.id) {
@@ -703,7 +710,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
       }
     }
 
-    let cleanedReport = validateAndFixReportContradictions(fallbackReport);
+    let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
 
     if (!cleanedReport.id) {
@@ -851,7 +858,7 @@ async function startServer() {
   });
 }
 
-function validateAndFixReportContradictions(report: any) {
+function validateAndFixReportContradictions(report: any, liveFindings: any[] = []) {
   if (!report) return report;
 
   // NOTE: BeforeRegret has no live data connection to any county/municipal/federal record
@@ -935,6 +942,18 @@ function validateAndFixReportContradictions(report: any) {
         suggestedNextStep: 'Check the municipal code enforcement portal directly before closing.'
       }
     ];
+  }
+
+  // Splice in any genuinely live-queried findings (see seismicHazard.ts) that aren't already
+  // present. These carry a real 'CONFIRMED RECORD' status set by their own fetch function, not
+  // by this fallback -- unlike everything above, they reflect an API call that actually happened
+  // for this address. Placed first so real findings surface ahead of the "not yet verified" list.
+  for (const finding of liveFindings) {
+    if (!finding || !finding.id) continue;
+    const alreadyPresent = report.canonicalFindings.some((f: any) => f.id === finding.id);
+    if (!alreadyPresent) {
+      report.canonicalFindings.unshift(finding);
+    }
   }
 
   // Normalize status values without inventing confirmation: anything not already an honest
