@@ -36,7 +36,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
           
           {/* Main Risk-Framed Headline & Subhead */}
           <div className="space-y-4">
-            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal text-white tracking-tight leading-[1.15]">
+            <h1 className="font-sans text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
               Could you regret moving here?
             </h1>
             <p className="text-base sm:text-xl text-slate-300 font-sans font-normal max-w-2xl mx-auto leading-relaxed">

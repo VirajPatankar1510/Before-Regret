@@ -13,7 +13,7 @@ export const HowItWorksSection: React.FC = () => {
         
         {/* Header */}
         <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-white tracking-tight">
+          <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
             How BeforeRegret Works
           </h2>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
@@ -29,7 +29,7 @@ export const HowItWorksSection: React.FC = () => {
               <div className="w-12 h-12 rounded-xl bg-blue-600 text-white font-extrabold text-xl flex items-center justify-center shadow-md">
                 1
               </div>
-              <h3 className="font-serif text-xl font-bold text-white">
+              <h3 className="font-sans text-xl font-bold text-white">
                 Enter any US residential address
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -47,7 +47,7 @@ export const HowItWorksSection: React.FC = () => {
               <div className="w-12 h-12 rounded-xl bg-blue-600 text-white font-extrabold text-xl flex items-center justify-center shadow-md">
                 2
               </div>
-              <h3 className="font-serif text-xl font-bold text-white">
+              <h3 className="font-sans text-xl font-bold text-white">
                 We pull from 20+ government databases
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -65,7 +65,7 @@ export const HowItWorksSection: React.FC = () => {
               <div className="w-12 h-12 rounded-xl bg-blue-600 text-white font-extrabold text-xl flex items-center justify-center shadow-md">
                 3
               </div>
-              <h3 className="font-serif text-xl font-bold text-white">
+              <h3 className="font-sans text-xl font-bold text-white">
                 Get one plain-language report
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -89,7 +89,7 @@ export const HowItWorksSection: React.FC = () => {
 
         {/* Why Not Just Check Zillow? Synthesis Explanation */}
         <div className="bg-slate-800/90 border border-slate-700/90 rounded-2xl p-6 sm:p-8 space-y-4 text-slate-200">
-          <h3 className="font-serif text-2xl font-bold text-white flex items-center gap-2">
+          <h3 className="font-sans text-2xl font-bold text-white flex items-center gap-2">
             <Layers className="w-5 h-5 text-blue-400" />
             <span>Why not just check Zillow?</span>
           </h3>
@@ -100,7 +100,7 @@ export const HowItWorksSection: React.FC = () => {
 
         {/* Independence Statement */}
         <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-3 text-slate-300">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-xs font-sans font-bold text-emerald-400 uppercase tracking-wider">
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>Our Independence Statement</span>
           </div>
