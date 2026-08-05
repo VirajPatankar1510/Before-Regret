@@ -6,6 +6,7 @@ import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } f
 import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService.js";
 import { runAddressGate } from "./src/engine/geoValidationGate.js";
 import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
+import { getSponsoredVendorForZip } from "./src/data/sponsoredVendors.js";
 
 dotenv.config();
 
@@ -383,6 +384,10 @@ export async function createApp() {
     // below so it survives regardless of whether Gemini-based content generation succeeds.
     const liveSeismicFinding = await fetchSeismicHazardFinding(gateResult.layer1.lat as number, gateResult.layer1.lon as number);
 
+    // ZIP-exclusive sponsored vendor placement, if one exists. Looked up once here and attached
+    // below regardless of whether Gemini-based generation succeeds, same as the seismic finding.
+    const sponsoredVendor = getSponsoredVendorForZip(resolvedMeta.zipCode);
+
     const fallbackReport = generateStructuredPropertyReport(
       resolvedMeta.formattedAddress,
       resolvedMeta.city,
@@ -679,21 +684,19 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
             ...fallbackReport.whatWeFound,
             ...(parsedReport.whatWeFound || {})
           },
-          topPriorities: Array.isArray(parsedReport.topPriorities) && parsedReport.topPriorities.length > 0 ? parsedReport.topPriorities : fallbackReport.topPriorities,
-          environmentalTopics: Array.isArray(parsedReport.environmentalTopics) && parsedReport.environmentalTopics.length > 0 ? parsedReport.environmentalTopics : fallbackReport.environmentalTopics,
           propertyRecordsSplit: {
             ...fallbackReport.propertyRecordsSplit,
             ...(parsedReport.propertyRecordsSplit || {})
           },
           sellerQuestions: Array.isArray(parsedReport.sellerQuestions) && parsedReport.sellerQuestions.length > 0 ? parsedReport.sellerQuestions : fallbackReport.sellerQuestions,
           visitChecklist: Array.isArray(parsedReport.visitChecklist) && parsedReport.visitChecklist.length > 0 ? parsedReport.visitChecklist : fallbackReport.visitChecklist,
-          sourceReferences: Array.isArray(parsedReport.sourceReferences) && parsedReport.sourceReferences.length > 0 ? parsedReport.sourceReferences : fallbackReport.sourceReferences,
           permitLifespanMatrix: Array.isArray(parsedReport.permitLifespanMatrix) && parsedReport.permitLifespanMatrix.length > 0 ? parsedReport.permitLifespanMatrix : fallbackReport.permitLifespanMatrix,
           disclosureLevers: Array.isArray(parsedReport.disclosureLevers) && parsedReport.disclosureLevers.length > 0 ? parsedReport.disclosureLevers : fallbackReport.disclosureLevers
         };
 
         let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding].filter(Boolean));
         cleanedReport = stripInternalMetadata(cleanedReport);
+        cleanedReport.sponsoredVendor = sponsoredVendor;
 
         if (!cleanedReport.id) {
           cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -712,6 +715,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
 
     let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
+    cleanedReport.sponsoredVendor = sponsoredVendor;
 
     if (!cleanedReport.id) {
       cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -1275,63 +1279,6 @@ function generateStructuredPropertyReport(
     };
   }
 
-  let topPriorities = [];
-  if (meta.isMultiFamilyOrApartment) {
-    topPriorities = [
-      {
-        id: 'p1',
-        title: 'HOA Reserve Study & Master Building Policy',
-        confidence: 'No Record Found' as const,
-        whatWeFound: 'Multi-family residential buildings share exterior roofs, corridors, elevators, and foundation structures.',
-        whyItMatters: 'Adequate reserve funding prevents unexpected special assessments for major building repairs and exterior capital projects.',
-        suggestedNextStep: 'Request the latest HOA Reserve Study and Master Insurance Policy declaration from property management.'
-      },
-      {
-        id: 'p2',
-        title: 'Utility Sub-metering & Community Fee Structure',
-        confidence: 'No Record Found' as const,
-        whatWeFound: 'Public records show central municipal utility hookups for the multi-family parcel.',
-        whyItMatters: 'Individual utility charges (water, gas, trash) may be billed directly or allocated across residents.',
-        suggestedNextStep: 'Verify sub-metering terms and review monthly HOA or amenity fee schedules.'
-      },
-      {
-        id: 'p3',
-        title: 'Shared Wall Acoustic Sound Attenuation',
-        confidence: 'No Record Found' as const,
-        whatWeFound: 'Building records do not detail specific wall assembly Sound Transmission Class (STC) ratings.',
-        whyItMatters: 'Acoustic sound isolation prevents sound transfer between shared wall partitions.',
-        suggestedNextStep: 'Test sound levels from adjacent hallways during your physical walkthrough.'
-      }
-    ];
-  } else {
-    topPriorities = [
-      {
-        id: 'p1',
-        title: 'Roof Installation & Permit Records',
-        confidence: 'No Record Found' as const,
-        whatWeFound: 'No matching roof replacement permit record located in digitized municipal building archives.',
-        whyItMatters: 'Roofing materials experience atmospheric weathering and seal deterioration over time.',
-        suggestedNextStep: 'Ask the seller for roof installation receipts and request that your licensed home inspector evaluate shingle condition.'
-      },
-      {
-        id: 'p2',
-        title: 'Central Air Conditioning Compressor Permit Filing',
-        confidence: 'No Record Found' as const,
-        whatWeFound: 'No matching mechanical HVAC replacement permit record located in city building department digitized logs.',
-        whyItMatters: 'Heating and cooling compressors operating without documented permit history require on-site mechanical evaluation.',
-        suggestedNextStep: 'Have your licensed home inspector record the manufacture date on condenser dataplate and measure cooling differential.'
-      },
-      {
-        id: 'p3',
-        title: 'State Highway Expansion Project',
-        confidence: 'No Record Found' as const,
-        whatWeFound: 'State Dept of Transportation capital improvement plan lists a road project within the regional corridor.',
-        whyItMatters: 'Regional infrastructure projects can temporarily alter traffic flow patterns or ambient noise levels.',
-        suggestedNextStep: 'Review state highway project schedules online and test local commute times during peak rush hour.'
-      }
-    ];
-  }
-
   let propertyRecordsSplitVerified = [];
   let propertyRecordsSplitUnknown = [];
   let permitLifespanMatrix = [];
@@ -1570,110 +1517,6 @@ function generateStructuredPropertyReport(
         'Planned state DOT road project travel detours nearby'
       ]
     },
-    topPriorities,
-    environmentalDataFreshness: 'EPA, FEMA, FAA, FCC & USGS Public Databases as of Q2 2026',
-    environmentalTopics: [
-      {
-        id: 'e1',
-        title: 'Flood Hazard Designation',
-        confidence: 'Verified Record' as const,
-        whatWeFound: 'FEMA National Flood Hazard Layer classifies this parcel in Zone X (Outside 500-year high hazard zone).',
-        whyItMatters: 'Living in a Zone X parcel means mandatory lender flood insurance is not required, keeping initial housing and monthly insurance costs lower.',
-        suggestedNextStep: 'Confirm flood zone status with your insurance representative to verify standard policy terms.',
-        baselineComparison: 'Zone X parcel location compared to 12% of county residential land located inside 100-year SFHA high-hazard flood zones (FEMA NFHL).',
-        dataFreshness: 'Data as of July 2026',
-        mapOverlay: {
-          layerName: 'FEMA NFHL Flood Hazard Overlay',
-          layerSource: 'FEMA Flood Map Service Center',
-          boundaryType: 'flood',
-          detailsText: 'Parcel sits 0.8 miles outside Zone A/AE 100-year inundation boundary.'
-        }
-      },
-      {
-        id: 'e2',
-        title: 'Seismic Ground Motion Risk',
-        confidence: 'Verified Record' as const,
-        whatWeFound: 'USGS National Seismic Hazard mapping indicates peak ground acceleration probability below 0.04g.',
-        whyItMatters: 'Low regional seismic probability minimizes structural earthquake shaking exposure and specialized insurance requirements.',
-        suggestedNextStep: 'No specialized seismic retrofit required; confirm standard property insurance policy terms.',
-        baselineComparison: '<0.04g peak ground acceleration compared to state seismic hazard threshold baseline of 0.08g (USGS Model).',
-        dataFreshness: 'Data as of 2026',
-        mapOverlay: {
-          layerName: 'USGS Seismic Fault & Peak Acceleration Overlay',
-          layerSource: 'USGS Earthquake Hazards Portal',
-          boundaryType: 'seismic',
-          detailsText: 'No active quaternary fault lines located within a 15-mile radius.'
-        }
-      },
-      {
-        id: 'e3',
-        title: 'Wildfire Exposure Buffer',
-        confidence: 'Verified Record' as const,
-        whatWeFound: 'USFS Wildfire Risk dataset designates this parcel in a low-density developed suburban zone.',
-        whyItMatters: 'Suburban development buffers protect surrounding structures and simplify home insurance availability.',
-        suggestedNextStep: 'Maintain standard defensible brush clearance around yard boundaries.',
-        baselineComparison: 'Low-density developed suburban zone compared to high-risk wildland-urban interface (WUI) buffer zones in western county districts.',
-        dataFreshness: 'Data as of Q2 2026',
-        mapOverlay: {
-          layerName: 'USFS Wildfire Risk Buffer Overlay',
-          layerSource: 'USFS Wildfire Risk Portal',
-          boundaryType: 'facility',
-          detailsText: 'Surrounding fuel load classified as low risk residential vegetation.'
-        }
-      },
-      {
-        id: 'e4',
-        title: 'Extreme Heat Index',
-        confidence: 'Era Expectation' as const,
-        whatWeFound: 'NOAA historical weather monitoring indicates an average of 15+ summer days exceeding 100°F annually.',
-        whyItMatters: 'Sustained seasonal high temperatures place increased operational demand on central cooling equipment and utility bills during peak summer months.',
-        suggestedNextStep: 'Verify window weatherstripping condition and confirm central AC cooling capacity during walkthrough.',
-        baselineComparison: '15 summer days >100°F compared to regional 30-year climate baseline average of 14 days (NOAA NCEI).',
-        dataFreshness: 'Data as of Q2 2026'
-      },
-      {
-        id: 'e5',
-        title: 'Ambient Air Quality Index',
-        confidence: 'Verified Record' as const,
-        whatWeFound: 'EPA AirNow historical monitoring shows good air quality index ratings year-round for this zip code.',
-        whyItMatters: 'Clean outdoor air supports everyday living comfort, outdoor activities, and reduced indoor HVAC filter strain.',
-        suggestedNextStep: 'Replace central HVAC air filters regularly according to manufacturer guidelines.',
-        baselineComparison: 'AQI 28 ambient measurement compared to county annual residential average of 35 AQI (EPA AirNow).',
-        dataFreshness: 'Data as of Q2 2026'
-      },
-      {
-        id: 'e6',
-        title: 'Traffic & Corridor Noise',
-        confidence: 'Needs Verification' as const,
-        whatWeFound: 'State DOT capital plan lists road infrastructure projects within regional transportation corridors.',
-        whyItMatters: 'Sound levels from nearby commuting corridors impact daily outdoor enjoyment and window sound insulation requirements.',
-        suggestedNextStep: 'Visit the street at different times of day, including peak evening commute hours, to observe ambient sound.',
-        baselineComparison: '48 dB DNL ambient noise level compared to a typical quiet residential block average of 45 dB DNL in this metropolitan area.',
-        dataFreshness: 'Data as of Q2 2026',
-        mapOverlay: {
-          layerName: 'FAA & DOT Transit Noise Contour Overlay',
-          layerSource: 'FAA Airspace & DOT Corridor Mapping',
-          boundaryType: 'noise',
-          detailsText: 'Property located 3.2 miles north of primary commercial flight corridor.'
-        }
-      },
-      {
-        id: 'e7',
-        title: 'Public Drinking Water Quality',
-        confidence: 'Verified Record' as const,
-        whatWeFound: 'EPA Safe Drinking Water System records show municipal compliance for the public water utility.',
-        whyItMatters: 'Municipal compliance confirms treated water meets health standards for daily cooking and bathing.',
-        suggestedNextStep: 'Test indoor water pressure during walkthrough and consider a standard inline refrigerator filter.',
-        baselineComparison: '0 water quality system violations in past 36 months compared to state utility compliance average of 98.4% (EPA SDWIS).',
-        dataFreshness: 'Data as of Q2 2026',
-        mapOverlay: {
-          layerName: 'EPA SDWIS Water Service Area Overlay',
-          layerSource: 'EPA Safe Drinking Water System',
-          boundaryType: 'facility',
-          detailsText: 'Served by primary municipal public water utility district.'
-        }
-      }
-    ],
     nearbyEssentials: {
       dataFreshness: 'HIFLD, City Planning & State DOT Public Registries as of Q2 2026',
       items: [
@@ -1761,13 +1604,6 @@ function generateStructuredPropertyReport(
       { id: 'c6', task: 'Test cellular signal strength', detail: 'Verify mobile phone signal bar strength inside bedrooms, kitchen, and basement/garage.', category: 'Connectivity' },
       { id: 'c7', task: 'Inspect ceilings and closets', detail: 'Look for discoloration or water stains on upper ceilings and interior closet corners.', category: 'Interior' },
       { id: 'c8', task: 'Check exterior ground drainage', detail: 'Verify downspouts extend away from exterior walls to prevent water pooling at foundation.', category: 'Yard & Foundation' }
-    ],
-    sourceReferences: [
-      { id: 'sr1', name: 'FEMA Flood Maps', agency: 'Federal Emergency Management Agency', category: 'Flood Hazard', status: 'Verified Available', url: 'https://msc.fema.gov/portal', description: 'Official flood hazard map confirming property location outside high-risk flood zones.' },
-      { id: 'sr2', name: 'EPA Envirofacts Registry', agency: 'U.S. Environmental Protection Agency', category: 'Environmental Risk', status: 'Data Found', url: 'https://www.epa.gov/enviro', description: 'Environmental hazards, toxic release, and radon zone mapping for zip code.' },
-      { id: 'sr3', name: 'USGS Earthquake Hazard Map', agency: 'United States Geological Survey', category: 'Seismic Hazard', status: 'No Active Hazards', url: 'https://www.usgs.gov/programs/earthquake-hazards', description: 'Seismic activity records confirming low peak ground acceleration probability.' },
-      { id: 'sr4', name: 'State Dept of Transportation', agency: 'State Highway Administration', category: 'Infrastructure', status: 'Data Found', url: 'https://www.highways.dot.gov/', description: '5-year capital improvement projects and corridor dockets.' },
-      { id: 'sr5', name: 'County Tax Assessor & Records', agency: 'County Clerk Bureau', category: 'Public Records', status: 'Verified Available', url: 'https://www.usa.gov/public-records', description: 'Property deed records, tax valuation trends, and official parcel mapping.' }
     ],
     directSourceLinks: [
       {
