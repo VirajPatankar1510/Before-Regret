@@ -1294,7 +1294,7 @@ function generateStructuredPropertyReport(
       isNonResidential: true,
       rejectionReason: isVacant
         ? "This address appears to be a vacant parcel with no residential structure. BeforeRegret reports cover addressed residential properties only. If you believe this is an error, contact hello@beforeregret.com."
-        : `BeforeRegret due diligence reports apply exclusively to residential properties. Public tax assessor and municipal land-use records indicate ${meta.formattedAddress} is classified as a Commercial Building, Office Tower, or Industrial Facility.`,
+        : `BeforeRegret insight reports apply exclusively to residential properties. Public tax assessor and municipal land-use records indicate ${meta.formattedAddress} is classified as a Commercial Building, Office Tower, or Industrial Facility.`,
       headerInfo: {
         address: meta.formattedAddress,
         propertyType: isVacant ? 'Vacant Land / Unimproved Parcel' : 'Non-Residential Commercial Parcel'
@@ -1542,7 +1542,7 @@ function generateStructuredPropertyReport(
         { title: 'Zone X Minimal Flood Risk Classification', detail: 'Findings like this are common in properties located outside high-risk coastal zones and do not by themselves eliminate the need to inspect localized site drainage.' },
         { title: 'Municipal Sewer Line Connection', detail: 'Findings like this are common in residential parcels connected to city utility mains and do not by themselves replace a physical sewer line camera inspection.' }
       ],
-      biggerPicture: 'Public records reveal a clean title and environmental baseline with standard municipal permit archives. Focusing your due diligence on physical inspection verification of major systems and asking targeted seller questions ensures a confident purchase decision with zero surprises.'
+      biggerPicture: 'Public records reveal a clean title and environmental baseline with standard municipal permit archives. Pairing these insights with physical inspection verification of major systems and targeted seller questions ensures a confident purchase decision with zero surprises.'
     },
     leadWidgets,
     atAGlance: {

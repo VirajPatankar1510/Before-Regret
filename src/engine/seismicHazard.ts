@@ -31,7 +31,7 @@ function describeSeismicDesignCategory(sdc: string): { headline: string; nextSte
     case 'A':
       return {
         headline: 'minimal seismic design requirements -- this area has very low earthquake risk',
-        nextStep: 'This is a standard, low seismic-risk area. No special earthquake-related questions are needed beyond your normal due diligence.',
+        nextStep: 'This is a standard, low seismic-risk area. No special earthquake-related questions are needed beyond the insights already covered in this report.',
       };
     case 'B':
       return {

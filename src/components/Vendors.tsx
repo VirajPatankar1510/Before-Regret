@@ -54,7 +54,7 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
               Put your business in front of buyers actively researching properties in your zip codes.
             </h1>
             <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-              BeforeRegret users are in active due diligence — comparing addresses, preparing offers, scheduling inspections. These are the highest-intent homebuyer moments in the market.
+              BeforeRegret users are actively researching insights — comparing addresses, preparing offers, scheduling inspections. These are the highest-intent homebuyer moments in the market.
             </p>
           </div>
         </div>
