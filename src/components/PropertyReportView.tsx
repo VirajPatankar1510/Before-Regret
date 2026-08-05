@@ -392,7 +392,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </div>
           </div>
 
-          <SponsoredVendorCard vendor={report.sponsoredVendor} zipCode={report.propertyInfo?.zipCode} />
+          <SponsoredVendorCard vendor={report.sponsoredVendor} />
 
           {/* Status Overview Grid */}
           <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
