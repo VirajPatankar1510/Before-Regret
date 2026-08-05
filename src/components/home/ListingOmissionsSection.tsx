@@ -58,7 +58,7 @@ export const ListingOmissionsSection: React.FC = () => {
             What a Listing Won't Tell You
           </h2>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-            Real estate portals display seller marketing photos and agent copy. BeforeRegret cross-references official public record archives to uncover the physical, legal, and environmental realities of the parcel.
+            Real estate portals show seller marketing photos and agent copy. BeforeRegret checks the physical, legal, and environmental record instead.
           </p>
         </div>
 
