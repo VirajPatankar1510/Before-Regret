@@ -82,7 +82,7 @@ export const HowItWorksSection: React.FC = () => {
 
         {/* Pricing Subtext Line Immediately Below Steps */}
         <div className="text-center pt-2">
-          <span className="inline-block px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm font-bold text-emerald-400">
+          <span className="inline-block px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm font-bold text-blue-400">
             First report: Free. Additional reports: $14.99 each. No subscription.
           </span>
         </div>
@@ -100,8 +100,8 @@ export const HowItWorksSection: React.FC = () => {
 
         {/* Independence Statement */}
         <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-3 text-slate-300">
-          <div className="flex items-center gap-2 text-xs font-sans font-bold text-emerald-400 uppercase tracking-wider">
-            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="flex items-center gap-2 text-xs font-sans font-bold text-blue-400 uppercase tracking-wider">
+            <ShieldCheck className="w-4 h-4 text-blue-400 shrink-0" />
             <span>Our Independence Statement</span>
           </div>
           <p className="text-xs sm:text-sm leading-relaxed text-slate-300">

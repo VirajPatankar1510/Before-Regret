@@ -54,7 +54,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
 
             <div className="space-y-2">
               <div className="font-bold text-white flex items-center gap-1.5">
-                <BookOpen className="w-3.5 h-3.5 text-indigo-400" />
+                <BookOpen className="w-3.5 h-3.5 text-blue-400" />
                 <span>Editorial Guides</span>
               </div>
               <ul className="space-y-1">
@@ -65,7 +65,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
 
             <div className="space-y-2">
               <div className="font-bold text-white flex items-center gap-1.5">
-                <Scale className="w-3.5 h-3.5 text-emerald-400" />
+                <Scale className="w-3.5 h-3.5 text-blue-400" />
                 <span>Zip Comparisons</span>
               </div>
               <ul className="space-y-1">
@@ -76,11 +76,11 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
 
             <div className="space-y-2">
               <div className="font-bold text-white flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                 <span>Legal & Support Policies</span>
               </div>
               <ul className="space-y-1">
-                <li><button onClick={() => onNavigate('/vendors')} className="hover:text-white cursor-pointer font-bold text-amber-300">Local Business Placements (/vendors)</button></li>
+                <li><button onClick={() => onNavigate('/vendors')} className="hover:text-white cursor-pointer font-bold text-blue-300">Local Business Placements (/vendors)</button></li>
                 <li><button onClick={() => onNavigate('/support')} className="hover:text-white cursor-pointer font-medium text-slate-300">Customer Support (/support)</button></li>
                 <li><button onClick={() => onNavigate('/terms')} className="hover:text-white cursor-pointer text-slate-400">Terms of Service (/terms)</button></li>
                 <li><button onClick={() => onNavigate('/privacy')} className="hover:text-white cursor-pointer text-slate-400">Privacy Policy (/privacy)</button></li>
