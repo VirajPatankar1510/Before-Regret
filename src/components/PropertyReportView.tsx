@@ -52,7 +52,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           <div className="bg-amber-950/60 border border-amber-600/40 rounded-2xl p-6 space-y-3">
             <h2 className="text-lg font-bold text-amber-200">{headline}</h2>
             <p className="text-sm text-slate-200 leading-relaxed">
-              {report.rejectionReason || `BeforeRegret due diligence reports apply exclusively to residential properties. ${formattedAddress || 'This address'} could not be verified as a residential property.`}
+              {report.rejectionReason || `BeforeRegret insight reports apply exclusively to residential properties. ${formattedAddress || 'This address'} could not be verified as a residential property.`}
             </p>
           </div>
 

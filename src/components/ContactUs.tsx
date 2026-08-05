@@ -147,7 +147,7 @@ ${message}`;
             <div className="p-3.5 bg-blue-50/60 border border-blue-100 rounded-2xl text-xs text-blue-900 leading-relaxed">
               {activeTab === 'consumer' && (
                 <p>
-                  <strong>Free Consumer Report Support:</strong> For property buyers or renters with questions regarding free property reports, data coverage, or understanding public dataset indicators.
+                  <strong>Consumer Report Support:</strong> For property buyers or renters with questions regarding your free or purchased property reports, data coverage, or understanding public dataset indicators.
                 </p>
               )}
               {activeTab === 'vendor' && (

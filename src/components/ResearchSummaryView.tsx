@@ -87,15 +87,14 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-slate-200 pb-6">
           <div className="space-y-1">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Automatic Research Pricing
+              Report Pricing
             </div>
-            <div className="text-3xl sm:text-4xl font-black text-emerald-600 tracking-tight flex items-baseline gap-2 flex-wrap">
-              <span className="text-lg sm:text-xl font-bold text-slate-400 line-through">$14.99</span>
-              <span>$0</span>
-              <span className="text-sm font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">100% Free</span>
+            <div className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight flex items-baseline gap-2 flex-wrap">
+              <span>First report free</span>
+              <span className="text-sm font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">then $14.99 / report</span>
             </div>
             <p className="text-xs text-slate-600 font-medium max-w-lg mt-1">
-              {priceRationale || 'Full public record property synthesis is completely free for home buyers and renters.'}
+              {priceRationale || 'Your first property report is free. Each additional report is a one-time purchase of $14.99 -- no subscription, no recurring charges.'}
             </p>
           </div>
 

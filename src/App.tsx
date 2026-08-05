@@ -360,7 +360,7 @@ export function App() {
                 'name': 'Are reports one-time flat fee or subscription based?',
                 'acceptedAnswer': {
                   '@type': 'Answer',
-                  'text': 'All BeforeRegret consumer property research reports are 100% free with lifetime access.'
+                  'text': 'Your first BeforeRegret property report is free. Additional reports are a one-time flat fee of $14.99 each -- there is no subscription or recurring charge for consumer reports.'
                 }
               }
             ]
