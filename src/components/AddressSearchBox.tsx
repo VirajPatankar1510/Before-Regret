@@ -3,7 +3,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
   Loader2, AlertCircle, MapPin,
-  Layers, CheckCircle2, ArrowRight, Search
+  Layers, CheckCircle2, ArrowRight, Search, X
 } from 'lucide-react';
 import { PropertySearchResult } from '../types';
 
@@ -74,6 +74,15 @@ function looksCommercial(itemClass?: string, itemType?: string): boolean {
   return commercialSignals.includes(cls) || commercialSignals.includes(type);
 }
 
+// Unlike residential-vs-commercial (proven unreliable above), "specific address vs. generic
+// area" IS a reliable signal: a real street-level match always carries a house_number in
+// LocationIQ's address breakdown, while a county/city/state-level match never does. Filtering on
+// this keeps results like "Washington County, Pennsylvania, USA" out of the picker entirely,
+// rather than letting the user select something the backend gate would reject anyway.
+function isSpecificAddress(item: any): boolean {
+  return !!item?.address?.house_number;
+}
+
 export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<maplibregl.Map | null>(null);
@@ -97,6 +106,10 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const [unitNumber, setUnitNumber] = useState('');
   const [commercialHint, setCommercialHint] = useState(false);
   const [commercialHintDismissed, setCommercialHintDismissed] = useState(false);
+  // Property type is a required next step, not one of several optional things to fill in on the
+  // same panel as the address confirmation -- shown as its own modal so it reads as a distinct
+  // step rather than adding more clutter to an already-busy confirmation panel.
+  const [showPropertyTypeModal, setShowPropertyTypeModal] = useState(false);
 
   const [mapSearchQuery, setMapSearchQuery] = useState(() => {
     try {
@@ -119,6 +132,11 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   // wasted prime above-the-fold space and read as broken rather than intentional.
   const showMap = !!(selectedPinResult || isReverseGeocoding);
 
+  // Whether the "Analyze Property" button can actually submit vs. still needs a property-type
+  // declaration/unit number vs. is genuinely blocked pending or failing the backend gate check.
+  const canAnalyze = !!declaredPropertyType && !gateState?.promptForUnit && gateState?.status === 'passed';
+  const analyzeDisabled = !!declaredPropertyType && !gateState?.promptForUnit && gateState?.status !== 'passed';
+
   // Synchronize draft selection with sessionStorage
   useEffect(() => {
     try {
@@ -134,11 +152,15 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   }, [selectedPinResult, mapSearchQuery]);
 
   // A newly selected address clears any prior property-type declaration -- it belongs to the
-  // previous address, not this one.
+  // previous address, not this one. Opens the property-type modal automatically as the next
+  // step (only when an address actually just got selected, not on initial mount with none).
   useEffect(() => {
     setDeclaredPropertyType(null);
     setUnitNumber('');
     setCommercialHintDismissed(false);
+    if (selectedPinResult) {
+      setShowPropertyTypeModal(true);
+    }
   }, [selectedPinResult?.placeId]);
 
   // Layer 4 gate: does NOT run until the requester has declared a property type (Layer 3 needs
@@ -183,13 +205,16 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
     const timer = setTimeout(async () => {
       try {
+        // Over-fetch (limit=8) since filtering to specific addresses below can drop several
+        // results (e.g. a query matching a county name alongside real street addresses in it).
         const res = await fetch(
-          `/api/geocode/search?q=${encodeURIComponent(mapSearchQuery.trim())}&addressdetails=1&limit=5`
+          `/api/geocode/search?q=${encodeURIComponent(mapSearchQuery.trim())}&addressdetails=1&limit=8`
         );
         if (res.ok) {
           const data = await res.json();
-          if (data && data.length > 0) {
-            setSuggestions(data);
+          const specific = Array.isArray(data) ? data.filter(isSpecificAddress).slice(0, 5) : [];
+          if (specific.length > 0) {
+            setSuggestions(specific);
             setShowSuggestions(true);
           } else {
             setSuggestions([]);
@@ -365,17 +390,17 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
     try {
       const res = await fetch(
-        `/api/geocode/search?q=${encodeURIComponent(mapSearchQuery.trim())}&addressdetails=1&limit=5`
+        `/api/geocode/search?q=${encodeURIComponent(mapSearchQuery.trim())}&addressdetails=1&limit=8`
       );
       if (res.ok) {
         const results = await res.json();
-        if (results && results.length > 0) {
-          const first = results[0];
+        const first = Array.isArray(results) ? results.find(isSpecificAddress) : null;
+        if (first) {
           const lat = parseFloat(first.lat);
           const lon = parseFloat(first.lon);
           selectLocation(lat, lon, first.display_name, first);
         } else {
-          setMapSearchError('Location not found. Please try entering a full street address.');
+          setMapSearchError('Please enter a specific street address (e.g. "123 Main St, Austin, TX"), not just a city, county, or state.');
         }
       }
     } catch (err) {
@@ -647,58 +672,54 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             )}
 
             {selectedPinResult && (
-              <div className="space-y-2">
-                <div className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">
-                  What type of property is this?
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {([
-                    ['single_family', 'Single-Family Home'],
-                    ['condo_or_multifamily', 'Condo / Multifamily'],
-                    ['other', 'Other'],
-                  ] as [DeclaredPropertyType, string][]).map(([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setDeclaredPropertyType(value)}
-                      className={`px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold border transition-all cursor-pointer ${
-                        declaredPropertyType === value
-                          ? 'bg-blue-600 text-white border-blue-400'
-                          : 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white hover:border-slate-600'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-[10px] text-slate-500">
-                  We haven't independently verified property records for this address yet, so we ask you to confirm this directly. This will be shown on the report as self-reported, not verified.
-                </p>
-
-                {declaredPropertyType === 'condo_or_multifamily' && (
-                  <input
-                    type="text"
-                    value={unitNumber}
-                    onChange={(e) => setUnitNumber(e.target.value)}
-                    placeholder="Unit number (e.g. #705)"
-                    className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
-                  />
-                )}
-              </div>
+              declaredPropertyType ? (
+                <button
+                  type="button"
+                  onClick={() => setShowPropertyTypeModal(true)}
+                  className="w-full flex items-center justify-between gap-2 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 transition-all cursor-pointer"
+                >
+                  <span className="text-xs text-slate-300">
+                    <span className="text-slate-500">Property type: </span>
+                    <span className="font-bold text-white">
+                      {declaredPropertyType === 'single_family'
+                        ? 'Single-Family Home'
+                        : declaredPropertyType === 'condo_or_multifamily'
+                          ? `Condo / Multifamily${unitNumber.trim() ? ` — Unit ${unitNumber.trim()}` : ''}`
+                          : 'Other'}
+                    </span>
+                  </span>
+                  <span className="text-[11px] font-bold text-blue-400 shrink-0">Edit</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowPropertyTypeModal(true)}
+                  className="w-full flex items-center justify-between gap-2 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer"
+                >
+                  <span>What type of property is this?</span>
+                  <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                </button>
+              )
             )}
 
             {selectedPinResult && (
               <button
                 type="button"
-                disabled={gateState?.status !== 'passed'}
+                disabled={analyzeDisabled}
                 onClick={() => {
+                  if (!declaredPropertyType || gateState?.promptForUnit) {
+                    setShowPropertyTypeModal(true);
+                    return;
+                  }
                   if (gateState?.status !== 'passed') return;
                   onSelectProperty({ ...selectedPinResult, declaredPropertyType, unitNumber });
                 }}
                 className={`w-full px-4 sm:px-5 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 shrink-0 tracking-tight ${
-                  gateState?.status !== 'passed'
-                    ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
-                    : 'bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white cursor-pointer hover:shadow-blue-500/25'
+                  canAnalyze
+                    ? 'bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white cursor-pointer hover:shadow-blue-500/25'
+                    : analyzeDisabled
+                      ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
+                      : 'bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 hover:text-white cursor-pointer'
                 }`}
               >
                 {gateState?.status === 'checking' ? (
@@ -706,12 +727,14 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 ) : null}
                 <span>
                   {!declaredPropertyType
-                    ? 'Select a Property Type Above'
+                    ? 'Set Property Type to Continue'
                     : gateState?.status === 'checking'
                       ? 'Verifying Address…'
-                      : gateState?.status === 'blocked'
-                        ? (gateState.promptForUnit ? 'Enter Unit Number Above' : 'Not Supported Yet')
-                        : 'Analyze Property'}
+                      : gateState?.promptForUnit
+                        ? 'Enter Unit Number'
+                        : gateState?.status === 'blocked'
+                          ? 'Not Supported Yet'
+                          : 'Analyze Property'}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
               </button>
@@ -720,6 +743,97 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         )}
 
       </div>
+      )}
+
+      {/* Property Type Modal -- the required next step after an address is confirmed, shown as
+          its own step rather than crammed into the confirmation panel above. Non-blocking: it
+          can be dismissed (backdrop click or the X) and reopened via the prompt in the panel,
+          since "Analyze Property" already stays disabled until a type is declared regardless. */}
+      {showPropertyTypeModal && selectedPinResult && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in"
+          onClick={() => setShowPropertyTypeModal(false)}
+        >
+          <div
+            className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 space-y-1">
+                <div className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider">
+                  Step 2 of 2
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-white">What type of property is this?</h3>
+                <p className="text-xs text-slate-400 truncate">{selectedPinResult.displayName}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPropertyTypeModal(false)}
+                className="text-slate-500 hover:text-white shrink-0 cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {commercialHint && !commercialHintDismissed && (
+              <div className="bg-amber-950/60 border border-amber-600/40 rounded-xl p-2.5 text-[11px] text-amber-200 flex items-start justify-between gap-2">
+                <span>This address looks like it might be a business, not a home. Double-check before continuing.</span>
+                <button type="button" onClick={() => setCommercialHintDismissed(true)} className="text-amber-400 hover:text-white font-bold shrink-0 cursor-pointer">Dismiss</button>
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-1.5">
+              {([
+                ['single_family', 'Single-Family Home'],
+                ['condo_or_multifamily', 'Condo / Multifamily'],
+                ['other', 'Other'],
+              ] as [DeclaredPropertyType, string][]).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setDeclaredPropertyType(value)}
+                  className={`px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold border transition-all cursor-pointer ${
+                    declaredPropertyType === value
+                      ? 'bg-blue-600 text-white border-blue-400'
+                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white hover:border-slate-600'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {declaredPropertyType === 'condo_or_multifamily' && (
+              <input
+                type="text"
+                value={unitNumber}
+                onChange={(e) => setUnitNumber(e.target.value)}
+                placeholder="Unit number (e.g. #705)"
+                autoFocus
+                className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
+              />
+            )}
+
+            <p className="text-[10px] text-slate-500">
+              We haven't independently verified property records for this address yet, so we ask you to confirm this directly. This will be shown on the report as self-reported, not verified.
+            </p>
+
+            <button
+              type="button"
+              disabled={!declaredPropertyType || (declaredPropertyType === 'condo_or_multifamily' && !unitNumber.trim())}
+              onClick={() => setShowPropertyTypeModal(false)}
+              className={`w-full px-4 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 tracking-tight ${
+                !declaredPropertyType || (declaredPropertyType === 'condo_or_multifamily' && !unitNumber.trim())
+                  ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
+                  : 'bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white cursor-pointer hover:shadow-blue-500/25'
+              }`}
+            >
+              <span>Continue</span>
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            </button>
+          </div>
+        </div>
       )}
 
     </div>
