@@ -93,7 +93,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                   <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
                     <li>Business contact details (company name, owner name, email address, business phone number).</li>
                     <li>Trade category, state licensure number, and registration verification details (non-mandatory).</li>
-                    <li>Selected zip code coverage choices and subscription tier choices.</li>
+                    <li>Selected zip code and trade category placement choices.</li>
                     <li>Billing and invoice transaction records handled by our secure payment gateway.</li>
                   </ul>
                 </div>

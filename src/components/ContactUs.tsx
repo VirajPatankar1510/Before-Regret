@@ -368,7 +368,7 @@ ${message}`;
                 How do I cancel my vendor subscription?
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Local business vendors on paid monthly subscription plans can cancel their recurring subscription at any time by emailing <strong>hello@beforeregret.com</strong>. Cancellations take effect at the start of the next monthly billing cycle. No prorated refunds are issued for unused days in the current billing cycle.
+                Local business vendors on paid monthly subscriptions can cancel their recurring subscription at any time by emailing <strong>hello@beforeregret.com</strong>. Cancellation takes effect immediately and the placement is removed. All payments are final -- no refunds are issued for any unused portion of the current billing cycle.
               </p>
             </div>
 
