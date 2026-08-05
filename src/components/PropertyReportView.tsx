@@ -9,6 +9,7 @@ import { PropertyReport, CanonicalFinding, SourceReferenceItem } from '../types'
 import { LeadMarketplaceWidget } from './LeadMarketplaceWidget';
 import { SourceRegistryModal } from './SourceRegistryModal';
 import { ErrorReportingModal } from './ErrorReportingModal';
+import { SponsoredVendorCard } from './SponsoredVendorCard';
 
 interface PropertyReportViewProps {
   report: PropertyReport;
@@ -390,6 +391,8 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
               )}
             </div>
           </div>
+
+          <SponsoredVendorCard vendor={report.sponsoredVendor} zipCode={report.propertyInfo?.zipCode} />
 
           {/* Status Overview Grid */}
           <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
