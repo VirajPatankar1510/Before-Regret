@@ -667,6 +667,7 @@ export function App() {
           <ResearchSummaryView
             summaryData={activeSummaryData}
             onGenerateReport={handleOpenGatingModal}
+            declaredProperty={selectedProperty}
           />
         )}
 

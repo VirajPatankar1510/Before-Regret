@@ -61,6 +61,10 @@ export interface PropertySearchResult {
   // so the report can honestly label this as self-reported, not independently verified.
   declaredPropertyType?: 'single_family' | 'condo_or_multifamily' | 'other' | null;
   unitNumber?: string;
+  // Also requester-declared, for the same reason declaredPropertyType is: there is no assessor
+  // connection to verify a year built against. Drives the era-based inspection priorities
+  // (see engine/inspectionPriorities.ts) and must always surface labeled as self-reported.
+  yearBuilt?: number | null;
 }
 
 export interface PublicDataSourceStatus {
