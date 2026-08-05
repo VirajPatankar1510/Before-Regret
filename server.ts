@@ -2,7 +2,6 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
-import { createServer as createViteServer } from "vite";
 import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } from "./src/utils/sitemapGenerator";
 import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService";
 import { runAddressGate } from "./src/engine/geoValidationGate";
@@ -815,7 +814,11 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
   });
 
   // Vite Integration for Dev / Static Assets in Prod
+  // Dynamic import: vite is dev-only tooling with heavy transitive deps (esbuild, rollup) that
+  // has no reason to load in production, and especially not inside a Vercel serverless function
+  // bundle, which always runs with NODE_ENV=production and never reaches this branch anyway.
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
