@@ -24,7 +24,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
       
       {/* Header */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
-        <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-slate-900 tracking-tight">
+        <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
           Simple, Transparent Pricing
         </h2>
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
@@ -41,7 +41,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
                 <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider block">First Report</span>
-                <h3 className="font-serif text-xl font-bold text-slate-900">Free Trial Report</h3>
+                <h3 className="font-sans text-xl font-bold text-slate-900">Free Trial Report</h3>
               </div>
               <div className="text-3xl font-black text-emerald-600">$0</div>
             </div>
@@ -80,7 +80,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
               <div>
                 <span className="text-xs font-bold text-blue-400 uppercase tracking-wider block">Additional Reports</span>
-                <h3 className="font-serif text-xl font-bold text-white">Pay-As-You-Go</h3>
+                <h3 className="font-sans text-xl font-bold text-white">Pay-As-You-Go</h3>
               </div>
               <div className="text-3xl font-black text-white">$14.99 <span className="text-xs font-normal text-slate-400">/ report</span></div>
             </div>
