@@ -6,7 +6,7 @@ import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } f
 import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService.js";
 import { runAddressGate } from "./src/engine/geoValidationGate.js";
 import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
-import { getSponsoredVendorForZip } from "./src/data/sponsoredVendors.js";
+import { getSponsoredVendorForZip, getSlotAvailability, TRADE_CATEGORIES } from "./src/data/sponsoredVendors.js";
 
 dotenv.config();
 
@@ -177,6 +177,74 @@ export async function createApp() {
       console.error("[LocationIQ Tile Proxy Error]:", err);
       res.status(502).send("Tile fetch failed");
     }
+  });
+
+  // Vendor Slot Availability Check -- first come, first served, at most MAX_SLOTS_PER_ZIP_TRADE
+  // active sponsors per (ZIP, trade category) pair. Read-only; used by the signup form before it
+  // reveals the rest of the fields, and re-checked authoritatively again on actual submission
+  // below (never trust the client's own idea of whether a slot is still open).
+  app.get("/api/vendor-slots", (req, res) => {
+    const zipCode = typeof req.query.zip === 'string' ? req.query.zip.trim() : '';
+    const tradeCategory = typeof req.query.tradeCategory === 'string' ? req.query.tradeCategory.trim() : '';
+
+    if (!/^\d{5}$/.test(zipCode)) {
+      res.status(400).json({ error: "A valid 5-digit ZIP code is required." });
+      return;
+    }
+    if (!TRADE_CATEGORIES.includes(tradeCategory as any)) {
+      res.status(400).json({ error: "tradeCategory must be one of the supported categories." });
+      return;
+    }
+
+    res.json({ success: true, ...getSlotAvailability(zipCode, tradeCategory) });
+  });
+
+  // Vendor Interest Submission -- v1 has no self-serve payment or persistent vendor database yet
+  // (that's a separate, larger piece: Stripe subscriptions, webhooks, a real DB). This endpoint
+  // re-validates slot availability server-side and logs the structured submission so it's visible
+  // in Vercel's Runtime Logs; a human follows up manually to complete payment and add the vendor
+  // to sponsoredVendors.ts. Never writes to SPONSORED_VENDORS itself -- that stays a deliberate,
+  // manual step so a report never shows a sponsor who hasn't actually paid.
+  app.post("/api/vendor-interest", (req, res) => {
+    const { businessName, tradeCategory, zipCode, phone, email, website, tagline } = req.body || {};
+
+    const errors: string[] = [];
+    if (typeof businessName !== 'string' || !businessName.trim()) errors.push("businessName is required.");
+    if (typeof tradeCategory !== 'string' || !TRADE_CATEGORIES.includes(tradeCategory as any)) errors.push("tradeCategory must be one of the supported categories.");
+    if (typeof zipCode !== 'string' || !/^\d{5}$/.test(zipCode)) errors.push("A valid 5-digit zipCode is required.");
+    if (typeof phone !== 'string' || phone.trim().length < 7) errors.push("A valid phone is required.");
+    if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push("A valid email is required.");
+    if (errors.length > 0) {
+      res.status(400).json({ success: false, errors });
+      return;
+    }
+
+    const availability = getSlotAvailability(zipCode, tradeCategory);
+    if (!availability.available) {
+      res.status(409).json({
+        success: false,
+        errors: [`Both slots for ${tradeCategory} in ZIP ${zipCode} are already taken.`],
+        ...availability,
+      });
+      return;
+    }
+
+    console.log("[Vendor Interest Submission]", JSON.stringify({
+      businessName: businessName.trim(),
+      tradeCategory,
+      zipCode,
+      phone: phone.trim(),
+      email: email.trim(),
+      website: typeof website === 'string' ? website.trim() : undefined,
+      tagline: typeof tagline === 'string' ? tagline.trim() : undefined,
+      slotsRemainingBeforeThisRequest: availability.slotsRemaining,
+      submittedAt: new Date().toISOString(),
+    }));
+
+    res.json({
+      success: true,
+      message: "Thanks -- we've received your request and will reach out within 24 hours to complete setup.",
+    });
   });
 
   // GET Standalone Report by Unique ID
