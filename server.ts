@@ -314,7 +314,7 @@ export async function createApp() {
 
   // 1. Research Summary & Public Data Scan Endpoint
   app.post("/api/property/research", async (req, res) => {
-    const { address, city, state, zipCode, lat, lon, propertyType, displayName, declaredPropertyType, unitNumber } = req.body;
+    const { address, city, state, zipCode, county, lat, lon, propertyType, displayName, declaredPropertyType, unitNumber } = req.body;
 
     if (!address && !displayName) {
       res.status(400).json({ error: "Property address or name is required." });
@@ -334,7 +334,7 @@ export async function createApp() {
       return;
     }
 
-    const resolvedMeta = resolvePropertyMetadata(fullAddrStr, city, state, zipCode, undefined, propertyType);
+    const resolvedMeta = resolvePropertyMetadata(fullAddrStr, city, state, zipCode, county, propertyType);
     const addressKey = resolvedMeta.formattedAddress.toLowerCase();
     const hash = simpleHash(addressKey);
 
@@ -380,7 +380,7 @@ export async function createApp() {
       foundInfo: false,
       itemCount: 0,
       details: 'Not yet independently verified for this address. Link provided for your own reference.',
-      sourceUrl: getPublicSourceUrl(s.id)
+      sourceUrl: getPublicSourceUrl(s.id, resolvedMeta.county)
     }));
 
     const usefulSourcesFound = 0;
@@ -1067,31 +1067,81 @@ function simpleHash(str: string): number {
   return Math.abs(hash);
 }
 
-function getPublicSourceUrl(id: string): string {
+// Local government portals genuinely differ by jurisdiction. This app currently only targets
+// Travis (Austin), Harris (Houston), and Dallas counties (see seoDataset.ts) -- those are the
+// only three with real, individually-verified URLs below. Every address outside them falls
+// through to the same honest generic directory sourceRegistry.ts already uses for these
+// categories, rather than silently pointing every address in the country at Austin's portal
+// regardless of where the property actually is.
+type LocalSourceId = 'county_assessor' | 'county_recorder' | 'muni_permits' | 'muni_zoning' | 'county_planning' | 'county_water' | 'city_code';
+
+const LOCAL_JURISDICTION_SOURCES: Record<string, Partial<Record<LocalSourceId, string>>> = {
+  'travis county': {
+    county_assessor: 'https://traviscad.org/propertysearch',
+    county_recorder: 'https://www.traviscountyclerk.org',
+    muni_permits: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search',
+    city_code: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search',
+    muni_zoning: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search',
+    county_planning: 'https://www.austintexas.gov/department/development-services',
+    county_water: 'https://www.austintexas.gov/department/austin-water',
+  },
+  'harris county': {
+    county_assessor: 'https://hcad.org',
+    county_recorder: 'https://www.cclerk.hctx.net',
+    muni_permits: 'https://www.houstonpermittingcenter.org',
+    city_code: 'https://www.houstonpermittingcenter.org',
+    muni_zoning: 'https://www.houstonpermittingcenter.org',
+    // Houston has no zoning code -- Harris County's own government portal is the honest
+    // stand-in for a dedicated planning department page that doesn't exist in the usual form.
+    county_planning: 'https://www.harriscountytx.gov',
+    county_water: 'https://www.houstontx.gov/redirect/waterbills.html',
+  },
+  'dallas county': {
+    county_assessor: 'https://www.dallascad.org',
+    // Dallas County Clerk's site could not be independently verified as reachable -- omitted
+    // rather than guessed, so it falls through to the generic directory below.
+    muni_permits: 'https://dallascityhall.com',
+    city_code: 'https://dallascityhall.com',
+    muni_zoning: 'https://dallascityhall.com',
+    county_planning: 'https://dallascityhall.com',
+    county_water: 'https://dallascityhall.com',
+  },
+};
+
+const GENERIC_LOCAL_GOVERNMENT_DIRECTORY = 'https://www.usa.gov/local-governments';
+
+const LOCAL_SOURCE_IDS: LocalSourceId[] = ['county_assessor', 'county_recorder', 'muni_permits', 'muni_zoning', 'county_planning', 'county_water', 'city_code'];
+
+function getPublicSourceUrl(id: string, county?: string): string {
+  if ((LOCAL_SOURCE_IDS as string[]).includes(id)) {
+    const jurisdiction = LOCAL_JURISDICTION_SOURCES[(county || '').toLowerCase().trim()];
+    return jurisdiction?.[id as LocalSourceId] || GENERIC_LOCAL_GOVERNMENT_DIRECTORY;
+  }
+
   const map: Record<string, string> = {
     fema_nfhl: 'https://msc.fema.gov/portal/search',
-    muni_permits: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search',
-    county_assessor: 'https://traviscad.org/propertysearch',
     epa_superfund: 'https://enviro.epa.gov',
-    city_code: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search',
     usgs_radon: 'https://www.epa.gov/radon/find-information-about-local-radon-zones-and-radon-programs',
     usfs_wildfire: 'https://www.wildfirerisk.org',
     noaa_storm: 'https://www.ncdc.noaa.gov/stormevents/',
+    fema_disaster: 'https://www.fema.gov',
     faa_noise: 'https://www.faa.gov/regulations_policies/policy_guidance/noise',
     dot_stip: 'https://www.fhwa.dot.gov/stip/',
+    fhwa_hpms: 'https://www.fhwa.dot.gov',
     fcc_broadband: 'https://broadbandmap.fcc.gov',
     epa_sdwis: 'https://www.epa.gov/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting',
     usda_soil: 'https://websoilsurvey.nrcs.usda.gov',
     usgs_seismic: 'https://earthquake.usgs.gov/hazards/hazmaps/',
     eia_grid: 'https://www.eia.gov/electricity/gridmonitor/',
     fra_rail: 'https://railroads.dot.gov/railroad-safety/accident-incident-reporting/emergency-notification-system-ens/ens',
-    muni_water: 'https://www.austintexas.gov/department/austin-water',
+    us_dot_transit: 'https://www.transit.dot.gov',
     epa_airnow: 'https://www.airnow.gov',
-    county_planning: 'https://www.austintexas.gov/department/development-services',
-    usps_verify: 'https://tools.usps.com/zip-code-lookup.htm',
-    usgs_elevation: 'https://apps.nationalmap.gov/elevation/'
+    usps_carrier: 'https://tools.usps.com/zip-code-lookup.htm',
+    open_elevation: 'https://apps.nationalmap.gov/elevation/',
+    usace_dams: 'https://nid.sec.usace.army.mil',
+    nws_heat: 'https://www.weather.gov/safety/heat',
   };
-  return map[id] || 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search';
+  return map[id] || GENERIC_LOCAL_GOVERNMENT_DIRECTORY;
 }
 
 interface PropertyMetadata {
