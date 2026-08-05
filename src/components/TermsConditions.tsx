@@ -84,10 +84,10 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               </p>
               <ul className="list-disc pl-5 space-y-1.5">
                 <li>
-                  <strong>Free Consumer Property Research Reports:</strong> Searchable, interactive property intelligence reports compiled from open-source government, municipal, and public datasets (e.g., FEMA flood maps, USGS radon data, FCC broadband registries, and municipal permit archives). Consumer reports are provided 100% free of charge with zero payment obligation.
+                  <strong>Consumer Property Insight Reports:</strong> Searchable, interactive property intelligence reports compiled from open-source government, municipal, and public datasets (e.g., FEMA flood maps, USGS radon data, FCC broadband registries, and municipal permit archives). Every consumer account is entitled to <strong>one free report</strong>; each additional report is a one-time purchase of <strong>$14.99 USD</strong>.
                 </li>
                 <li>
-                  <strong>Paid Business Vendor Subscriptions:</strong> A recurring monthly subscription service enabling local business vendors (contractors, licensed inspectors, structural engineers, environmental specialists) to display sponsored placements ("Need help inspecting this?" sections, clearly labeled "Sponsored") within designated zip codes and trade categories on free consumer reports.
+                  <strong>Paid Business Vendor Subscriptions:</strong> A recurring monthly subscription service enabling local business vendors (contractors, licensed inspectors, structural engineers, environmental specialists) to display sponsored placements ("Need help inspecting this?" sections, clearly labeled "Sponsored") within designated zip codes and trade categories on consumer reports.
                 </li>
               </ul>
             </section>
@@ -95,17 +95,20 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
             {/* Section 3 */}
             <section className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-200 pb-2">
-                3. Terms Applicable to Consumer Users (Free Property Research Reports)
+                3. Terms Applicable to Consumer Users
               </h2>
               <div className="space-y-2 text-xs text-slate-600">
                 <p>
-                  <strong>3.1 No Payment Relationship:</strong> Free consumer property reports carry no fee, hidden charge, or financial transaction. Using or viewing a report does not establish a contractual or fiduciary advisory relationship between you and Atmostellar.
+                  <strong>3.1 Report Pricing & Payment:</strong> Your first property insight report is free, with no payment information required. Each additional report is a one-time purchase of $14.99 USD — a single, non-recurring charge, not a subscription. Card details for paid reports are collected and processed directly by a PCI-DSS compliant third-party payment processor; Atmostellar does not store your full card number. Using or viewing a report does not establish a contractual or fiduciary advisory relationship between you and Atmostellar.
                 </p>
                 <p>
                   <strong>3.2 As-Is Provision & Non-Diagnostic Stance:</strong> Property research reports assemble raw or aggregated public data provided by third-party government and municipal agencies. All reports are provided strictly on an <strong>"AS-IS"</strong> and <strong>"AS-AVAILABLE"</strong> basis without warranty of any kind. Atmostellar makes no guarantees regarding the completeness, accuracy, timeliness, or real-time status of public records.
                 </p>
                 <p>
                   <strong>3.3 Duty to Independently Confirm:</strong> BeforeRegret reports are preliminary discovery tools only. They are not a substitute for physical site visits, structural inspections, environmental testing, or legal title searches. Consumers expressly agree that they remain solely responsible for independently confirming all hazard classifications, building permit histories, and property characteristics with qualified, licensed professionals prior to making any financial, leasing, or purchasing commitment.
+                </p>
+                <p>
+                  <strong>3.4 No Refunds on Report Purchases:</strong> Report purchases are only charged after a property address has been confirmed eligible and the report is generated and delivered immediately upon payment. <strong>All report purchases are final and non-refundable.</strong> See our Cancellation & Refund Policy for full detail.
                 </p>
               </div>
             </section>
