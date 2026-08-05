@@ -9,7 +9,52 @@ import type { SponsoredVendor } from '../types.js';
 // fill it.
 export const SPONSORED_VENDORS: SponsoredVendor[] = [];
 
+// First come, first served: at most this many active sponsors per (ZIP, trade category) pair.
+// Single source of truth -- Vendors.tsx and the slot-availability API both reference this rather
+// than hardcoding the number separately, so the two can never quietly drift out of sync again
+// (the pre-existing landing page copy claimed "3 vendors per category" before this was wired up).
+export const MAX_SLOTS_PER_ZIP_TRADE = 2;
+
+// Shared between the signup form's dropdown and the server-side validation on submission, so
+// the two can't silently diverge (a category typed on one side but not recognized on the other).
+export const TRADE_CATEGORIES = [
+  'Roof Inspection',
+  'HVAC Inspection',
+  'Sewer Scope',
+  'Radon Testing',
+  'Foundation Engineer',
+  'Electrician',
+  'Home Inspector',
+  'Insurance Agent',
+  'Real Estate Attorney',
+  'Moving Company',
+] as const;
+
 export function getSponsoredVendorForZip(zipCode: string | undefined | null): SponsoredVendor | null {
   if (!zipCode) return null;
   return SPONSORED_VENDORS.find(v => v.active && v.zipCode === zipCode) || null;
+}
+
+export interface SlotAvailability {
+  zipCode: string;
+  tradeCategory: string;
+  slotsTotal: number;
+  slotsTaken: number;
+  slotsRemaining: number;
+  available: boolean;
+}
+
+export function getSlotAvailability(zipCode: string, tradeCategory: string): SlotAvailability {
+  const slotsTaken = SPONSORED_VENDORS.filter(
+    v => v.active && v.zipCode === zipCode && v.tradeCategory === tradeCategory
+  ).length;
+  const slotsRemaining = Math.max(0, MAX_SLOTS_PER_ZIP_TRADE - slotsTaken);
+  return {
+    zipCode,
+    tradeCategory,
+    slotsTotal: MAX_SLOTS_PER_ZIP_TRADE,
+    slotsTaken,
+    slotsRemaining,
+    available: slotsRemaining > 0,
+  };
 }
