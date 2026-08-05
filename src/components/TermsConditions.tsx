@@ -117,20 +117,15 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               </h2>
               <div className="space-y-2.5 text-xs text-slate-600">
                 <p>
-                  <strong>4.1 Subscription Service & Tiers:</strong> Local business vendors may subscribe to display sponsored placements on property reports corresponding to specific zip codes and trade categories. Subscriptions are billed on a recurring monthly auto-renewal basis:
-                </p>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li><strong>Tier 1 (2 Zip Codes):</strong> $29 / month</li>
-                  <li><strong>Tier 2 (5 Zip Codes):</strong> $49 / month</li>
-                  <li><strong>Tier 3 (10 Zip Codes):</strong> $59 / month</li>
-                </ul>
-
-                <p>
-                  <strong>4.2 Zip Code, Trade Category & Vendor Slot Cap:</strong> Vendor placements are bound to the specific zip code(s) and trade category (e.g., Roof Inspection, Structural Engineering, Radon Mitigation) selected during enrollment. To maintain report clarity, placements are capped at a maximum of three (3) vendors per trade category within any individual zip code.
+                  <strong>4.1 Subscription Service & Pricing:</strong> Local business vendors may subscribe to display a sponsored placement on property reports for one specific zip code and trade category combination, at a flat rate of <strong>$29.00 USD per month</strong>. This is a recurring subscription that <strong>automatically renews and re-bills every month</strong> until cancelled by the vendor or terminated by Atmostellar as described below. A separate subscription, billed separately, is required for each additional zip code and/or trade category combination a vendor wishes to appear in.
                 </p>
 
                 <p>
-                  <strong>4.3 Vendor Cancellation Terms:</strong> Vendors may cancel their recurring subscription or modify their tier/zip selection at any time by contacting <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>. Cancellations and changes take effect at the <strong>start of the next monthly billing cycle</strong>. Current billing periods are non-refundable, and no prorated refunds or credits are issued for the remainder of an active billing cycle.
+                  <strong>4.2 First-Come, First-Served Slot Allocation:</strong> Vendor placements are bound to the specific zip code and trade category (e.g., Roof Inspection, Electrician, Home Inspector) selected during enrollment. To maintain report clarity, placements are capped at a maximum of <strong>two (2) active vendors per trade category within any individual zip code</strong>. Available slots are allocated strictly on a first-come, first-served basis at the time payment is successfully completed; selecting a zip code and trade category does not reserve a slot until payment succeeds.
+                </p>
+
+                <p>
+                  <strong>4.3 Vendor Cancellation, Non-Payment & Slot Release:</strong> Vendors may cancel their recurring subscription at any time by contacting <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>. If a scheduled renewal payment is declined, fails, or is not completed for any reason, or if a vendor cancels, that vendor's placement is removed and the slot becomes immediately available to other vendors on a first-come, first-served basis. <strong>All payments are final. No refunds, partial refunds, or credits are issued under any circumstance</strong>, including self-cancellation, non-payment, or removal by Atmostellar as described in Section 4.4. See our Cancellation & Refund Policy for full detail.
                 </p>
 
                 <p>
