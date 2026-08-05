@@ -68,7 +68,7 @@ export const StateHubView: React.FC<StateHubViewProps> = ({ stateSlug, onNavigat
           </h2>
           <div className="text-xs sm:text-sm text-slate-700 leading-relaxed space-y-3">
             <p>
-              Navigating real estate due diligence in {stateName} requires an understanding of distinct state-level regulatory frameworks, watershed divisions, and municipal reporting standards. Environmental hazards—such as expansive soil conditions, coastal and riverine flood basins, and varying local building code adoption—mandate a data-driven approach prior to making property acquisition decisions.
+              Gathering real estate insights in {stateName} requires an understanding of distinct state-level regulatory frameworks, watershed divisions, and municipal reporting standards. Environmental hazards—such as expansive soil conditions, coastal and riverine flood basins, and varying local building code adoption—mandate a data-driven approach prior to making property acquisition decisions.
             </p>
             <p>
               BeforeRegret aggregates multi-jurisdictional spatial data to provide home buyers and tenants with unvarnished, objective intelligence. Select a validated municipal market below to explore city-wide directories and individual postal code hazard profiles.

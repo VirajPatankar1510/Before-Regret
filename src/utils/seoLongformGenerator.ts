@@ -111,7 +111,7 @@ export function generateTopicDeepArticle(
       id: 'sec-due-diligence',
       title: `5. Recommended Option Period Inspection & Verification Steps`,
       paragraphs: [
-        `During the contract option period for any property in zip code ${zip}, prospective buyers should execute a structured environmental due diligence protocol:`,
+        `During the contract option period for any property in zip code ${zip}, prospective buyers should gather the following structured environmental insights:`,
         `First, order an official FEMA Flood Zone Determination from your lender or an independent GIS survey company. Second, if the property sits in or adjacent to Zone AE, obtain an Elevation Certificate (EC) to measure the exact distance between the lowest finished floor level and the calculated Base Flood Elevation. Third, inspect foundation walls, perimeter weep holes, and site grading for evidence of past water staining or pooling. Finally, check municipal building permit records for prior flood repair permits or storm drainage retrofits.`
       ]
     });

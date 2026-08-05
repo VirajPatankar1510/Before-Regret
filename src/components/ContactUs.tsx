@@ -147,7 +147,7 @@ ${message}`;
             <div className="p-3.5 bg-blue-50/60 border border-blue-100 rounded-2xl text-xs text-blue-900 leading-relaxed">
               {activeTab === 'consumer' && (
                 <p>
-                  <strong>Free Consumer Report Support:</strong> For property buyers or renters with questions regarding free property reports, data coverage, or understanding public dataset indicators.
+                  <strong>Consumer Report Support:</strong> For property buyers or renters with questions regarding your free or purchased property reports, data coverage, or understanding public dataset indicators.
                 </p>
               )}
               {activeTab === 'vendor' && (
@@ -368,7 +368,7 @@ ${message}`;
                 How do I cancel my vendor subscription?
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Local business vendors on paid monthly subscription plans can cancel their recurring subscription at any time by emailing <strong>hello@beforeregret.com</strong>. Cancellations take effect at the start of the next monthly billing cycle. No prorated refunds are issued for unused days in the current billing cycle.
+                Local business vendors on paid monthly subscriptions can cancel their recurring subscription at any time by emailing <strong>hello@beforeregret.com</strong>. Cancellation takes effect immediately and the placement is removed. All payments are final -- no refunds are issued for any unused portion of the current billing cycle.
               </p>
             </div>
 
