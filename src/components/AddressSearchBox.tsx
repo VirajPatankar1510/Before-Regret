@@ -301,10 +301,13 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const selectLocation = (lat: number, lon: number, name?: string, item?: any) => {
     setShowSuggestions(false);
     if (name) setMapSearchQuery(name);
-    if (mapInstanceRef.current && !isNaN(lat) && !isNaN(lon)) {
-      mapInstanceRef.current.jumpTo({ center: [lon, lat], zoom: 17 });
-      updateMarkerPosition(lat, lon);
-
+    // Deliberately does not require mapInstanceRef.current to already exist: the map only
+    // mounts once selectedPinResult is set (see showMap above), so gating this on the map
+    // already existing would mean neither could ever happen first. The map-init effect reads
+    // selectedPinResult for its initial center once it mounts, and the separate recenter effect
+    // re-centers/drops the marker whenever selectedPinResult's lat/lon changes -- both handle
+    // actually moving the map, so this function only needs to set the result state.
+    if (!isNaN(lat) && !isNaN(lon)) {
       if (item && item.address) {
         const addr = item.address || {};
         const city = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || addr.hamlet || addr.county || '';
