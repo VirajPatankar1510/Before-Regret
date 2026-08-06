@@ -26,6 +26,12 @@ export interface CanonicalFinding {
   actionItem?: ActionItem;
   lastUpdated?: string;
   sourceAgency?: string;
+  // Set server-side when a real, paying vendor matches this finding's trade category for this
+  // ZIP (see FINDING_TRADE_CATEGORY in sponsoredVendors.ts). Replaces the old single
+  // report-level sponsoredVendor slot -- each finding gets its own contextual match instead of
+  // one generic slot for the whole report, which is what let paying vendors 2-20 in a ZIP never
+  // actually appear anywhere.
+  sponsoredVendor?: SponsoredVendor | null;
 }
 
 export interface SourceReferenceItem {
@@ -298,9 +304,6 @@ export interface PropertyReport {
   isNonResidential?: boolean;
   rejectionReason?: string;
   blockedAtLayer?: 1 | 2 | 3 | null;
-  // The ZIP-exclusive sponsored vendor for this address, if one has actually paid for this ZIP
-  // -- null/absent is the normal, honest state for almost every report right now, not an error.
-  sponsoredVendor?: SponsoredVendor | null;
   generatedAt: string;
   readingTimeMinutes: number;
   reportVersion: string;

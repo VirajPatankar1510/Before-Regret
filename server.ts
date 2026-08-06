@@ -6,7 +6,7 @@ import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } f
 import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService.js";
 import { runAddressGate } from "./src/engine/geoValidationGate.js";
 import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
-import { getSponsoredVendorForZip, getSlotAvailability, TRADE_CATEGORIES } from "./src/data/sponsoredVendors.js";
+import { getSponsoredVendorForZipAndTrade, FINDING_TRADE_CATEGORY, getSlotAvailability, TRADE_CATEGORIES } from "./src/data/sponsoredVendors.js";
 
 dotenv.config();
 
@@ -452,10 +452,6 @@ export async function createApp() {
     // below so it survives regardless of whether Gemini-based content generation succeeds.
     const liveSeismicFinding = await fetchSeismicHazardFinding(gateResult.layer1.lat as number, gateResult.layer1.lon as number);
 
-    // ZIP-exclusive sponsored vendor placement, if one exists. Looked up once here and attached
-    // below regardless of whether Gemini-based generation succeeds, same as the seismic finding.
-    const sponsoredVendor = getSponsoredVendorForZip(resolvedMeta.zipCode);
-
     const fallbackReport = generateStructuredPropertyReport(
       resolvedMeta.formattedAddress,
       resolvedMeta.city,
@@ -764,7 +760,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
 
         let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding].filter(Boolean));
         cleanedReport = stripInternalMetadata(cleanedReport);
-        cleanedReport.sponsoredVendor = sponsoredVendor;
+        attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
 
         if (!cleanedReport.id) {
           cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -783,7 +779,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
 
     let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
-    cleanedReport.sponsoredVendor = sponsoredVendor;
+    attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
 
     if (!cleanedReport.id) {
       cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -1040,6 +1036,21 @@ function validateAndFixReportContradictions(report: any, liveFindings: any[] = [
     f.status = status;
   });
 
+  return report;
+}
+
+// Attaches a real, paying vendor to each finding whose trade category matches, for this specific
+// ZIP -- contextual, per-finding placement instead of one generic report-level slot. Replaces the
+// old getSponsoredVendorForZip(zip) call, which matched on ZIP alone and could only ever surface
+// one vendor per report regardless of how many paying vendors actually cover that ZIP across
+// different trades. Mutates report.canonicalFindings in place; safe to call after
+// validateAndFixReportContradictions has populated that array.
+function attachSponsoredVendors(report: any, zipCode: string) {
+  if (!report || !Array.isArray(report.canonicalFindings)) return report;
+  for (const finding of report.canonicalFindings) {
+    const tradeCategory = FINDING_TRADE_CATEGORY[finding.id as keyof typeof FINDING_TRADE_CATEGORY];
+    finding.sponsoredVendor = tradeCategory ? getSponsoredVendorForZipAndTrade(zipCode, tradeCategory) : null;
+  }
   return report;
 }
 
@@ -1592,7 +1603,7 @@ function generateStructuredPropertyReport(
         { title: 'Zone X Minimal Flood Risk Classification', detail: 'Findings like this are common in properties located outside high-risk coastal zones and do not by themselves eliminate the need to inspect localized site drainage.' },
         { title: 'Municipal Sewer Line Connection', detail: 'Findings like this are common in residential parcels connected to city utility mains and do not by themselves replace a physical sewer line camera inspection.' }
       ],
-      biggerPicture: 'Public records reveal a clean title and environmental baseline with standard municipal permit archives. Pairing these insights with physical inspection verification of major systems and targeted seller questions ensures a confident purchase decision with zero surprises.'
+      biggerPicture: 'BeforeRegret does not yet have a live, verified data connection to government records for this address. This checklist links you directly to the official public sources so you can verify each item yourself before closing.'
     },
     leadWidgets,
     atAGlance: {

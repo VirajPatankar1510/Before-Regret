@@ -35,6 +35,28 @@ export function getSponsoredVendorForZip(zipCode: string | undefined | null): Sp
   return SPONSORED_VENDORS.find(v => v.active && v.zipCode === zipCode) || null;
 }
 
+// Matches a specific report finding's trade category, not just its ZIP. Report findings today
+// are a small, fixed set (see validateAndFixReportContradictions in server.ts) -- this maps each
+// finding id to whichever paid trade category it's actually relevant to, so a report can carry a
+// separate, contextual vendor match per finding instead of one generic slot for the whole report.
+// f_code (municipal code enforcement) has no natural trade match and is deliberately omitted --
+// not every finding needs an ad slot.
+export const FINDING_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGORIES[number]>> = {
+  f_roof: 'Roof Inspection',
+  f_elec: 'Electrician',
+  f_hvac: 'HVAC Inspection',
+  f_flood: 'Insurance Agent',
+  f_seismic: 'Foundation Engineer',
+};
+
+export function getSponsoredVendorForZipAndTrade(
+  zipCode: string | undefined | null,
+  tradeCategory: string | undefined | null
+): SponsoredVendor | null {
+  if (!zipCode || !tradeCategory) return null;
+  return SPONSORED_VENDORS.find(v => v.active && v.zipCode === zipCode && v.tradeCategory === tradeCategory) || null;
+}
+
 export interface SlotAvailability {
   zipCode: string;
   tradeCategory: string;
