@@ -6,7 +6,6 @@ import { OFFICIAL_SOURCE_REGISTRY } from '../data/sourceRegistry';
 
 interface SourceRegistryModalProps {
   isOpen?: boolean;
-  sources?: any[];
   onClose: () => void;
 }
 
@@ -15,7 +14,7 @@ interface SourceRegistryModalProps {
 // BeforeRegret has never actually queried (a decommissioned HIFLD portal, county assessor
 // records that don't exist anywhere in this codebase). Rewritten to say exactly what's true:
 // which sources are genuinely queried live right now, and which are reference links only.
-export const SourceRegistryModal: React.FC<SourceRegistryModalProps> = ({ isOpen = true, sources, onClose }) => {
+export const SourceRegistryModal: React.FC<SourceRegistryModalProps> = ({ isOpen = true, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLevel, setFilterLevel] = useState<string>('ALL');
 

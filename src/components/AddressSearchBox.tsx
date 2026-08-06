@@ -105,8 +105,11 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const gateRequestIdRef = useRef(0);
   const [declaredPropertyType, setDeclaredPropertyType] = useState<DeclaredPropertyType | null>(null);
   const [unitNumber, setUnitNumber] = useState('');
-  // Optional, and deliberately never gates the flow -- most buyers know the year built from the
-  // listing, but a blank answer just means the era-based inspection priorities don't render.
+  // Required, not optional -- a skippable year built meant the Inspection Budget Priorities
+  // section (the report's most useful part for older homes) silently never rendered unless the
+  // buyer happened to fill in an optional field. Gating on it means every report either shows
+  // era-specific priorities or the requester actively declared "other" and skipped it, not "we
+  // just didn't ask."
   const [yearBuilt, setYearBuilt] = useState('');
   const [commercialHint, setCommercialHint] = useState(false);
   const [commercialHintDismissed, setCommercialHintDismissed] = useState(false);
@@ -136,10 +139,13 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   // wasted prime above-the-fold space and read as broken rather than intentional.
   const showMap = !!(selectedPinResult || isReverseGeocoding);
 
+  const yearBuiltValid = isPlausibleYearBuilt(parseInt(yearBuilt, 10));
+
   // Whether the "Analyze Property" button can actually submit vs. still needs a property-type
-  // declaration/unit number vs. is genuinely blocked pending or failing the backend gate check.
-  const canAnalyze = !!declaredPropertyType && !gateState?.promptForUnit && gateState?.status === 'passed';
-  const analyzeDisabled = !!declaredPropertyType && !gateState?.promptForUnit && gateState?.status !== 'passed';
+  // declaration/unit number/year built vs. is genuinely blocked pending or failing the backend
+  // gate check.
+  const canAnalyze = !!declaredPropertyType && yearBuiltValid && !gateState?.promptForUnit && gateState?.status === 'passed';
+  const analyzeDisabled = !!declaredPropertyType && yearBuiltValid && !gateState?.promptForUnit && gateState?.status !== 'passed';
 
   // Synchronize draft selection with sessionStorage
   useEffect(() => {
@@ -696,17 +702,16 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 type="button"
                 disabled={analyzeDisabled}
                 onClick={() => {
-                  if (!declaredPropertyType || gateState?.promptForUnit) {
+                  if (!declaredPropertyType || !yearBuiltValid || gateState?.promptForUnit) {
                     setShowPropertyTypeModal(true);
                     return;
                   }
                   if (gateState?.status !== 'passed') return;
-                  const parsedYear = parseInt(yearBuilt, 10);
                   onSelectProperty({
                     ...selectedPinResult,
                     declaredPropertyType,
                     unitNumber,
-                    yearBuilt: isPlausibleYearBuilt(parsedYear) ? parsedYear : null,
+                    yearBuilt: parseInt(yearBuilt, 10),
                   });
                 }}
                 className={`w-full px-4 sm:px-5 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 shrink-0 tracking-tight ${
@@ -723,7 +728,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 <span>
                   {!declaredPropertyType
                     ? 'Set Property Type to Continue'
-                    : gateState?.status === 'checking'
+                    : !yearBuiltValid
+                      ? 'Enter Year Built to Continue'
+                      : gateState?.status === 'checking'
                       ? 'Verifying Address…'
                       : gateState?.promptForUnit
                         ? 'Enter Unit Number'
@@ -811,7 +818,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
             <div className="space-y-1.5 pt-1 border-t border-slate-800">
               <label htmlFor="year-built-input" className="block text-[11px] font-bold text-slate-300 pt-2">
-                Year built <span className="font-normal text-slate-500">— optional, usually on the listing</span>
+                Year built <span className="font-normal text-slate-500">— usually on the listing</span>
               </label>
               <input
                 id="year-built-input"
@@ -823,16 +830,16 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
               />
               <p className="text-[10px] text-slate-500 leading-relaxed">
-                Lets us show which checks matter most for homes of that era. We can't verify it — it's used exactly as you enter it.
+                Lets us show which checks matter most for homes of that era. We can't verify it — it's used exactly as you enter it. Don't know it exactly? A close estimate is fine.
               </p>
             </div>
 
             <button
               type="button"
-              disabled={!declaredPropertyType || (declaredPropertyType === 'condo_or_multifamily' && !unitNumber.trim())}
+              disabled={!declaredPropertyType || !yearBuiltValid || (declaredPropertyType === 'condo_or_multifamily' && !unitNumber.trim())}
               onClick={() => setShowPropertyTypeModal(false)}
               className={`w-full px-4 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 tracking-tight ${
-                !declaredPropertyType || (declaredPropertyType === 'condo_or_multifamily' && !unitNumber.trim())
+                !declaredPropertyType || !yearBuiltValid || (declaredPropertyType === 'condo_or_multifamily' && !unitNumber.trim())
                   ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
                   : 'bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white cursor-pointer hover:shadow-blue-500/25'
               }`}
