@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { 
   MapPin, ExternalLink, AlertTriangle, CheckCircle2,
-  Check, ChevronRight, Clock, CheckSquare, Square, 
+  Check, Clock, CheckSquare, Square,
   FileCheck, AlertCircle, Download, Building, Layers,
   BarChart3, Info, Calendar, Database, Sparkles, Filter, FileText, ArrowRight
 } from 'lucide-react';
-import { PropertyReport, CanonicalFinding, SourceReferenceItem } from '../types';
+import { PropertyReport, CanonicalFinding } from '../types';
 import { LeadMarketplaceWidget } from './LeadMarketplaceWidget';
 import { SourceRegistryModal } from './SourceRegistryModal';
+import { OFFICIAL_SOURCE_REGISTRY } from '../data/sourceRegistry';
 import { ErrorReportingModal } from './ErrorReportingModal';
 import { SponsoredVendorCard } from './SponsoredVendorCard';
 import { InspectionPriorities } from './InspectionPriorities';
@@ -162,34 +163,10 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         }
       ];
 
-  // Derive source registry. sr14 (USGS seismic) mirrors whatever the Findings section actually
-  // shows for f_seismic -- otherwise this static list would still say "NOT YET VERIFIED" for
-  // USGS even on a report where the seismic finding was genuinely live-queried and confirmed,
-  // contradicting the Findings section on the same page.
-  const seismicConfirmed = findings.some(f => f.id === 'f_seismic' && f.status === 'CONFIRMED RECORD');
-  const sourceRegistry: SourceReferenceItem[] = report.sourceRegistry || [
-    { id: 'sr1', name: 'FEMA National Flood Hazard Layer (NFHL)', agency: 'Federal Emergency Management Agency', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://msc.fema.gov/portal/search', lastUpdated: 'Updated 2024', description: 'Official flood hazard zone boundary mapping.' },
-    { id: 'sr2', name: 'Municipal Building Permit Registry', agency: 'City Building & Development Department', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Digitized building, electrical, and mechanical permits.' },
-    { id: 'sr3', name: 'County Tax Assessor Parcel Database', agency: 'County Tax Assessor Office', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://traviscad.org/propertysearch', lastUpdated: 'Updated 2025', description: 'Property tax assessment and land-use records.' },
-    { id: 'sr4', name: 'EPA Superfund & Toxics Inventory', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://enviro.epa.gov', lastUpdated: 'Updated Monthly', description: 'Hazardous waste and toxic release site mapping.' },
-    { id: 'sr5', name: 'City Code Enforcement Portal', agency: 'Municipal Code Compliance Division', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Active and closed code violations or citations.' },
-    { id: 'sr6', name: 'USGS / EPA Indoor Radon Map', agency: 'U.S. Geological Survey & EPA', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://www.epa.gov/radon/find-information-about-local-radon-zones-and-radon-programs', lastUpdated: 'Updated 2024', description: 'County-level indoor radon hazard classification.' },
-    { id: 'sr7', name: 'USFS Wildfire Risk Dataset', agency: 'U.S. Forest Service', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://www.wildfirerisk.org', lastUpdated: 'Updated 2024', description: 'Community wildfire hazard exposure mapping.' },
-    { id: 'sr8', name: 'NOAA Severe Storm Surge Database', agency: 'National Oceanic and Atmospheric Administration', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://www.ncdc.noaa.gov/stormevents/', lastUpdated: 'Updated 2024', description: 'Storm surge and coastal wind hazard records.' },
-    { id: 'sr9', name: 'FAA Airport Noise Contours', agency: 'Federal Aviation Administration', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.faa.gov/regulations_policies/policy_guidance/noise', lastUpdated: 'Updated 2024', description: 'Aircraft noise exposure and DNL flight path contours.' },
-    { id: 'sr10', name: 'DOT Capital Improvement Projects (STIP)', agency: 'State Department of Transportation', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.fhwa.dot.gov/stip/', lastUpdated: 'Updated Monthly', description: '5-year regional highway and transit project pipeline.' },
-    { id: 'sr11', name: 'FCC Broadband & Fiber Coverage Map', agency: 'Federal Communications Commission', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://broadbandmap.fcc.gov', lastUpdated: 'Updated 2025', description: 'Verified fiber and high-speed internet availability.' },
-    { id: 'sr12', name: 'EPA Safe Drinking Water Information System', agency: 'U.S. Environmental Protection Agency', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.epa.gov/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting', lastUpdated: 'Updated Monthly', description: 'Public water utility quality and compliance records.' },
-    { id: 'sr13', name: 'USDA NRCS Soil Survey', agency: 'USDA Natural Resources Conservation Service', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://websoilsurvey.nrcs.usda.gov', lastUpdated: 'Updated 2024', description: 'Soil drainage and expansive clay soil stability data.' },
-    { id: 'sr14', name: 'USGS National Seismic Hazard Map', agency: 'U.S. Geological Survey', category: 'Hazards', status: seismicConfirmed ? 'CONFIRMED RECORD' : 'NOT YET VERIFIED', url: 'https://earthquake.usgs.gov/hazards/hazmaps/', lastUpdated: seismicConfirmed ? 'Live-queried (ASCE 7-22)' : 'Updated 2024', description: 'Ground motion acceleration and earthquake probability.' },
-    { id: 'sr15', name: 'U.S. EIA Power Grid Reliability Map', agency: 'U.S. Energy Information Administration', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.eia.gov/electricity/gridmonitor/', lastUpdated: 'Updated 2025', description: 'Regional electric utility grid stability records.' },
-    { id: 'sr16', name: 'FRA Railroad Crossing Registry', agency: 'Federal Railroad Administration', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://railroads.dot.gov/railroad-safety/accident-incident-reporting/emergency-notification-system-ens/ens', lastUpdated: 'Updated 2024', description: 'Active rail line proximity and train horn noise points.' },
-    { id: 'sr17', name: 'Municipal Water District & Sewer Authority', agency: 'Local Public Works Department', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.austintexas.gov/department/austin-water', lastUpdated: 'Updated Monthly', description: 'Municipal water supply and sewer service connection.' },
-    { id: 'sr18', name: 'EPA AirNow Historical Air Quality Index', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://www.airnow.gov', lastUpdated: 'Updated 2025', description: '3-year particulate matter and ozone index averages.' },
-    { id: 'sr19', name: 'County Planning Commission Re-Zoning Dockets', agency: 'County Land Use & Planning Office', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.austintexas.gov/department/development-services', lastUpdated: 'Updated Monthly', description: 'Pending commercial re-zoning and variance applications.' },
-    { id: 'sr20', name: 'USPS Address & Parcel Verification', agency: 'U.S. Postal Service', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://tools.usps.com/zip-code-lookup.htm', lastUpdated: 'Updated Monthly', description: 'Standardized postal delivery point validation.' },
-    { id: 'sr21', name: 'USGS National Elevation & Slope Model', agency: 'U.S. Geological Survey', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://apps.nationalmap.gov/elevation/', lastUpdated: 'Updated 2024', description: 'Parcel topography and surface drainage slope gradient.' }
-  ];
+  // Source count shown in the header/metrics comes from the same honest registry the modal
+  // renders (src/data/sourceRegistry.ts) -- not a report-specific list, since BeforeRegret
+  // queries the same fixed set of public sources for every address.
+  const sourceCount = OFFICIAL_SOURCE_REGISTRY.length;
 
   // Filter findings by status. Most findings today are 'NOT YET VERIFIED' because BeforeRegret
   // has no live data connection yet -- this stays generic so it renders correctly once real
@@ -257,7 +234,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
               className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <Database className="w-3.5 h-3.5 text-slate-500" />
-              <span className="hidden sm:inline">Source Registry</span> ({sourceRegistry.length})
+              <span className="hidden sm:inline">Source Registry</span> ({sourceCount})
             </button>
             <button
               onClick={() => window.print()}
@@ -302,7 +279,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
               <span className="text-[10px] font-mono text-slate-500 uppercase block">Public Sources</span>
-              <span className="text-base font-bold text-slate-900 block mt-0.5">{sourceRegistry.length} Linked</span>
+              <span className="text-base font-bold text-slate-900 block mt-0.5">{sourceCount} Linked</span>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
               <span className="text-[10px] font-mono text-slate-500 uppercase block">Confirmed Records</span>
@@ -322,7 +299,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         {/* SECTION 1: SUMMARY & BOTTOM LINE SYNTHESIS */}
         <section id="section-summary" className="space-y-6">
           <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 1 OF {report.inspectionPriorities ? 5 : 4}</span>
+            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 1 OF {report.inspectionPriorities ? 4 : 3}</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Executive Summary &amp; Bottom Line Synthesis
             </h2>
@@ -422,7 +399,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         {/* SECTION 2: DETAILED FINDINGS */}
         <section id="section-findings" className="space-y-6">
           <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 2 OF {report.inspectionPriorities ? 5 : 4}</span>
+            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 2 OF {report.inspectionPriorities ? 4 : 3}</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Detailed Public Record Findings
             </h2>
@@ -459,6 +436,17 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                   <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 space-y-1">
                     <span className="font-mono font-bold text-blue-600 uppercase text-[10px] block">3. Suggested Next Step</span>
                     <p className="text-blue-950 font-semibold leading-relaxed">{finding.suggestedNextStep}</p>
+                    {finding.sourceUrl && (
+                      <a
+                        href={finding.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-blue-700 hover:text-blue-900 font-bold pt-1 hover:underline"
+                      >
+                        <span>Check the official record</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
                   </div>
                 </div>
 
@@ -471,38 +459,15 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             ))}
           </div>
 
-          {/* Remaining linked sources not covered by a specific finding above */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2">
-              <div className="flex items-center gap-2">
-                <Database className="w-4 h-4 text-slate-500" />
-                <h4 className="text-xs font-mono font-bold text-slate-800 uppercase tracking-wider">
-                  Other Linked Public Sources ({sourceRegistry.length} Total)
-                </h4>
-              </div>
-              <span className="text-[10px] font-mono font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-300">
-                NOT YET QUERIED
-              </span>
-            </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              BeforeRegret has not yet independently queried these sources for this address. They are provided as direct links to the official portals so you can check them yourself:
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1 text-xs">
-              {sourceRegistry
-                .filter(s => !findings.some(f => f.sourceAgency?.toLowerCase().includes(s.agency.toLowerCase().substring(0, 5)) || f.subject.toLowerCase().includes(s.category.toLowerCase())))
-                .map(s => (
-                  <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="bg-white border border-slate-200 rounded-lg p-2.5 flex items-center justify-between gap-2 hover:border-blue-300 transition-all">
-                    <div className="min-w-0 flex-1">
-                      <span className="font-bold text-slate-900 block text-[11px] truncate">{s.name}</span>
-                      <span className="text-[10px] text-slate-500 font-mono block truncate">{s.agency}</span>
-                    </div>
-                    <span className="text-[9px] font-mono font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300 whitespace-nowrap shrink-0">
-                      NOT QUERIED
-                    </span>
-                  </a>
-                ))}
-            </div>
-          </div>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Want to see every public source BeforeRegret checks, and which ones are live vs. reference-only?{' '}
+            <button
+              onClick={() => setIsSourceModalOpen(true)}
+              className="text-blue-600 hover:text-blue-800 font-bold hover:underline cursor-pointer"
+            >
+              Open the full Source Registry
+            </button>.
+          </p>
         </section>
 
         {/* SECTION 3: INSPECTION BUDGET PRIORITIES -- renders nothing when no rule set covers
@@ -510,7 +475,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         {report.inspectionPriorities && (
           <section id="section-inspection-priorities" className="space-y-6">
             <div className="border-b border-slate-200 pb-2">
-              <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 3 OF 5</span>
+              <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 3 OF 4</span>
               <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
                 Inspection Budget Priorities
               </h2>
@@ -522,7 +487,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         {/* SECTION 4: YOUR ACTION LIST */}
         <section id="section-action-list" className="space-y-6">
           <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {report.inspectionPriorities ? 4 : 3} OF {report.inspectionPriorities ? 5 : 4}</span>
+            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {report.inspectionPriorities ? 4 : 3} OF {report.inspectionPriorities ? 4 : 3}</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Your Action List
             </h2>
@@ -598,90 +563,19 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           </div>
         </section>
 
-        {/* SECTION 5 (or 4 without inspection priorities): SOURCES & METHODOLOGY */}
-        <section id="section-sources" className="space-y-6">
-          <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {report.inspectionPriorities ? 5 : 4} OF {report.inspectionPriorities ? 5 : 4}</span>
-            <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-              Source Registry &amp; Methodology
-            </h2>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="text-lg font-serif font-bold text-slate-900">Public Records Reference Registry</h3>
-                <p className="text-xs text-slate-500">
-                  {sourceRegistry.length} official public sources are linked below for your own reference. BeforeRegret has not yet independently queried these for this address.
-                </p>
-              </div>
-              <button
-                onClick={() => setIsSourceModalOpen(true)}
-                className="text-xs text-blue-600 hover:text-blue-700 font-bold flex items-center gap-1 cursor-pointer"
-              >
-                <span>View Full Registry Details</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-200 text-[10px] font-mono text-slate-500 uppercase bg-slate-50">
-                    <th className="p-3">Source Name</th>
-                    <th className="p-3">Agency</th>
-                    <th className="p-3">Category</th>
-                    <th className="p-3">Last Updated</th>
-                    <th className="p-3">Direct Link</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {sourceRegistry.map((src) => {
-                    const portalUrl = src.url || (src as any).officialUrl || 'https://msc.fema.gov/portal/search';
-                    return (
-                      <tr key={src.id} className="hover:bg-slate-50/80 transition-all">
-                        <td className="p-3 font-bold text-slate-900">{src.name}</td>
-                        <td className="p-3 text-slate-600">{src.agency}</td>
-                        <td className="p-3">
-                          <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-mono rounded border border-slate-200">
-                            {src.category}
-                          </span>
-                        </td>
-                        <td className="p-3 font-mono text-[10px] text-slate-500">{src.lastUpdated || 'Active'}</td>
-                        <td className="p-3">
-                          <a
-                            href={portalUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1 hover:underline"
-                          >
-                            <span>Open Record</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Non-Diagnostic Disclaimer */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-[11px] text-slate-500 leading-relaxed space-y-1">
-              <span className="font-bold text-slate-700 block uppercase font-mono tracking-wider">METHODOLOGY &amp; LEGAL DISCLAIMER</span>
-              <p>
-                BeforeRegret does not yet have a live, verified data connection to government datasets, municipal permit archives, or environmental hazard databases for this address. This page links to the official public sources so you can check them yourself. BeforeRegret does not perform physical engineering inspections, legal title searches, or property valuations, and nothing on this page should be treated as a confirmed record until you verify it directly with the source agency. Users are advised to confirm physical building conditions with a licensed home inspector prior to transaction execution.
-              </p>
-            </div>
-          </div>
-        </section>
+        {/* Legal Disclaimer -- kept short and at the bottom, not a full page section, but the
+            substance (no physical inspection, no title search, no valuation, verify at source)
+            has to stay somewhere on every report. */}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-[11px] text-slate-500 leading-relaxed">
+          <span className="font-bold text-slate-700 block uppercase font-mono tracking-wider mb-1">Disclaimer</span>
+          BeforeRegret links you to official public sources -- it does not perform physical engineering inspections, legal title searches, or property valuations. Nothing on this page is a confirmed record until you verify it directly with the source agency, and physical building conditions should be confirmed with a licensed home inspector before closing.
+        </div>
 
       </main>
 
       {/* Source Modal */}
       {isSourceModalOpen && (
         <SourceRegistryModal
-          sources={sourceRegistry}
           onClose={() => setIsSourceModalOpen(false)}
         />
       )}

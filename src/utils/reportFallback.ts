@@ -1,4 +1,4 @@
-import { PropertySearchResult, ResearchSummaryData, PropertyReport, CanonicalFinding, SourceReferenceItem } from '../types';
+import { PropertySearchResult, ResearchSummaryData, PropertyReport, CanonicalFinding } from '../types';
 
 export function createFallbackSummary(property: PropertySearchResult | null): ResearchSummaryData {
   const addr = property || {
@@ -177,30 +177,6 @@ export function createFallbackReport(
     }
   ];
 
-  const sourceRegistry: SourceReferenceItem[] = [
-    { id: 'sr1', name: 'FEMA National Flood Hazard Layer (NFHL)', agency: 'Federal Emergency Management Agency', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://msc.fema.gov/portal/search', lastUpdated: 'Updated 2024', description: 'Official flood hazard zone boundary mapping.' },
-    { id: 'sr2', name: 'Municipal Building Permit Registry', agency: 'City Building & Development Department', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Digitized building, electrical, and mechanical permits.' },
-    { id: 'sr3', name: 'County Tax Assessor Parcel Database', agency: 'County Tax Assessor Office', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://traviscad.org/propertysearch', lastUpdated: 'Updated 2025', description: 'Property tax assessment and land-use records.' },
-    { id: 'sr4', name: 'EPA Superfund & Toxics Inventory', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://enviro.epa.gov', lastUpdated: 'Updated Monthly', description: 'Hazardous waste and toxic release site mapping.' },
-    { id: 'sr5', name: 'City Code Enforcement Portal', agency: 'Municipal Code Compliance Division', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search', lastUpdated: 'Updated Monthly', description: 'Active and closed code violations or citations.' },
-    { id: 'sr6', name: 'USGS / EPA Indoor Radon Map', agency: 'U.S. Geological Survey & EPA', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://www.epa.gov/radon/find-information-about-local-radon-zones-and-radon-programs', lastUpdated: 'Updated 2024', description: 'County-level indoor radon hazard classification.' },
-    { id: 'sr7', name: 'USFS Wildfire Risk Dataset', agency: 'U.S. Forest Service', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://www.wildfirerisk.org', lastUpdated: 'Updated 2024', description: 'Community wildfire hazard exposure mapping.' },
-    { id: 'sr8', name: 'NOAA Severe Storm Surge Database', agency: 'National Oceanic and Atmospheric Administration', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://www.ncdc.noaa.gov/stormevents/', lastUpdated: 'Updated 2024', description: 'Storm surge and coastal wind hazard records.' },
-    { id: 'sr9', name: 'FAA Airport Noise Contours', agency: 'Federal Aviation Administration', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.faa.gov/regulations_policies/policy_guidance/noise', lastUpdated: 'Updated 2024', description: 'Aircraft noise exposure and DNL flight path contours.' },
-    { id: 'sr10', name: 'DOT Capital Improvement Projects (STIP)', agency: 'State Department of Transportation', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.fhwa.dot.gov/stip/', lastUpdated: 'Updated Monthly', description: '5-year regional highway and transit project pipeline.' },
-    { id: 'sr11', name: 'FCC Broadband & Fiber Coverage Map', agency: 'Federal Communications Commission', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://broadbandmap.fcc.gov', lastUpdated: 'Updated 2025', description: 'Verified fiber and high-speed internet availability.' },
-    { id: 'sr12', name: 'EPA Safe Drinking Water Information System', agency: 'U.S. Environmental Protection Agency', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.epa.gov/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting', lastUpdated: 'Updated Monthly', description: 'Public water utility quality and compliance records.' },
-    { id: 'sr13', name: 'USDA NRCS Soil Survey', agency: 'USDA Natural Resources Conservation Service', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://websoilsurvey.nrcs.usda.gov', lastUpdated: 'Updated 2024', description: 'Soil drainage and expansive clay soil stability data.' },
-    { id: 'sr14', name: 'USGS National Seismic Hazard Map', agency: 'U.S. Geological Survey', category: 'Hazards', status: 'NOT YET VERIFIED', url: 'https://earthquake.usgs.gov/hazards/hazmaps/', lastUpdated: 'Updated 2024', description: 'Ground motion acceleration and earthquake probability.' },
-    { id: 'sr15', name: 'U.S. EIA Power Grid Reliability Map', agency: 'U.S. Energy Information Administration', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.eia.gov/electricity/gridmonitor/', lastUpdated: 'Updated 2025', description: 'Regional electric utility grid stability records.' },
-    { id: 'sr16', name: 'FRA Railroad Crossing Registry', agency: 'Federal Railroad Administration', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://railroads.dot.gov/railroad-safety/accident-incident-reporting/emergency-notification-system-ens/ens', lastUpdated: 'Updated 2024', description: 'Active rail line proximity and train horn noise points.' },
-    { id: 'sr17', name: 'Municipal Water District & Sewer Authority', agency: 'Local Public Works Department', category: 'Utilities', status: 'NOT YET VERIFIED', url: 'https://www.austintexas.gov/department/austin-water', lastUpdated: 'Updated Monthly', description: 'Municipal water supply and sewer service connection.' },
-    { id: 'sr18', name: 'EPA AirNow Historical Air Quality Index', agency: 'U.S. Environmental Protection Agency', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://www.airnow.gov', lastUpdated: 'Updated 2025', description: '3-year particulate matter and ozone index averages.' },
-    { id: 'sr19', name: 'County Planning Commission Re-Zoning Dockets', agency: 'County Land Use & Planning Office', category: 'Neighborhood', status: 'NOT YET VERIFIED', url: 'https://www.austintexas.gov/department/development-services', lastUpdated: 'Updated Monthly', description: 'Pending commercial re-zoning and variance applications.' },
-    { id: 'sr20', name: 'USPS Address & Parcel Verification', agency: 'U.S. Postal Service', category: 'Property Records', status: 'NOT YET VERIFIED', url: 'https://tools.usps.com/zip-code-lookup.htm', lastUpdated: 'Updated Monthly', description: 'Standardized postal delivery point validation.' },
-    { id: 'sr21', name: 'USGS National Elevation & Slope Model', agency: 'U.S. Geological Survey', category: 'Environment', status: 'NOT YET VERIFIED', url: 'https://apps.nationalmap.gov/elevation/', lastUpdated: 'Updated 2024', description: 'Parcel topography and surface drainage slope gradient.' }
-  ];
-
   return {
     id: `rep_${Date.now()}`,
     generatedAt: currentDate,
@@ -239,9 +215,6 @@ export function createFallbackReport(
       ],
       likelyRoutineSummary: [],
       biggerPicture: 'BeforeRegret does not yet have a live, verified data connection to government records for this address. This checklist links you directly to the official public sources below so you can verify each item yourself before closing.'
-    },
-
-    // Source Registry
-    sourceRegistry
+    }
   };
 }

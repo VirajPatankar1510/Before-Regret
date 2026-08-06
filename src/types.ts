@@ -28,6 +28,12 @@ export interface CanonicalFinding {
   actionItem?: ActionItem;
   lastUpdated?: string;
   sourceAgency?: string;
+  // Set server-side, jurisdiction-aware (see attachFindingSourceUrls in server.ts). Replaces the
+  // old approach of a single hardcoded 21-item "Source Registry" table that pointed every report
+  // nationwide at Austin/Travis County portals regardless of the actual address, and that listed
+  // most of its own entries as "NOT QUERIED" -- padding that made a thin report look thinner, not
+  // fuller. Each finding now carries its own real, correct link instead.
+  sourceUrl?: string;
   // Set server-side when a real, paying vendor matches this finding's trade category for this
   // ZIP (see FINDING_TRADE_CATEGORY in sponsoredVendors.ts). Replaces the old single
   // report-level sponsoredVendor slot -- each finding gets its own contextual match instead of
@@ -51,16 +57,6 @@ export interface InspectionPrioritiesReportData {
   priorities: InspectionPriorityWithVendor[];
 }
 
-export interface SourceReferenceItem {
-  id: string;
-  name: string;
-  agency: string;
-  category: 'Property Records' | 'Environment' | 'Neighborhood' | 'Hazards' | 'Utilities';
-  status: CanonicalStatus | 'Records Indexed';
-  url: string;
-  lastUpdated: string;
-  description: string;
-}
 
 export interface PropertySearchResult {
   placeId: string;
@@ -368,9 +364,6 @@ export interface PropertyReport {
     worthVerifying?: BottomLineItem[];
     likelyRoutine?: BottomLineItem[];
   };
-
-  // Source Registry
-  sourceRegistry: SourceReferenceItem[];
 
   // Optional legacy fields for backward compatibility if needed
   executiveSnapshot?: ExecutiveSnapshotItem[];

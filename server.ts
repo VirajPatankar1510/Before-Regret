@@ -828,6 +828,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
         let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding].filter(Boolean));
         cleanedReport = stripInternalMetadata(cleanedReport);
         attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
+        attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
         cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode);
 
         if (!cleanedReport.id) {
@@ -848,6 +849,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
     attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
+    attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
     cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode);
 
     if (!cleanedReport.id) {
@@ -1119,6 +1121,37 @@ function attachSponsoredVendors(report: any, zipCode: string) {
   for (const finding of report.canonicalFindings) {
     const tradeCategory = FINDING_TRADE_CATEGORY[finding.id as keyof typeof FINDING_TRADE_CATEGORY];
     finding.sponsoredVendor = tradeCategory ? getSponsoredVendorForZipAndTrade(zipCode, tradeCategory) : null;
+  }
+  return report;
+}
+
+// Maps each of the report's fixed finding ids (see validateAndFixReportContradictions) to the
+// getPublicSourceUrl lookup key that actually answers it. getPublicSourceUrl already knows how to
+// resolve this correctly per jurisdiction (or fall back to the honest generic directory outside
+// the counties this app covers) -- this just wires each finding to the right key so the report
+// stops linking every address in the country at Austin/Travis County portals.
+const FINDING_SOURCE_LOOKUP_KEY: Record<string, string> = {
+  f_roof: 'muni_permits',
+  f_elec: 'muni_permits',
+  f_hvac: 'muni_permits',
+  f_flood: 'fema_nfhl',
+  f_code: 'city_code',
+  f_seismic: 'usgs_seismic',
+};
+
+// Attaches a real, jurisdiction-correct link to each finding, replacing the old flat 21-item
+// "Source Registry" table that pointed every report nationwide at the same Austin/Travis County
+// portals regardless of the actual address -- confirmed still happening on a live report for a
+// Seattle-area address after the jurisdiction fix in getPublicSourceUrl, because that table lived
+// as a second, disconnected hardcoded copy in PropertyReportView.tsx and reportFallback.ts rather
+// than reading from the fixed lookup. Mutates report.canonicalFindings in place.
+function attachFindingSourceUrls(report: any, county: string) {
+  if (!report || !Array.isArray(report.canonicalFindings)) return report;
+  for (const finding of report.canonicalFindings) {
+    const lookupKey = FINDING_SOURCE_LOOKUP_KEY[finding.id];
+    if (lookupKey) {
+      finding.sourceUrl = getPublicSourceUrl(lookupKey, county);
+    }
   }
   return report;
 }
