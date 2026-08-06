@@ -8,6 +8,14 @@ import { runAddressGate } from "./src/engine/geoValidationGate.js";
 import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
 import { getInspectionPriorities } from "./src/engine/inspectionPriorities.js";
 import { getSponsoredVendorForZipAndTrade, FINDING_TRADE_CATEGORY, PRIORITY_TRADE_CATEGORY, getSlotAvailability, TRADE_CATEGORIES } from "./src/data/sponsoredVendors.js";
+import {
+  isAdminConfigured,
+  verifyPassword,
+  createSessionToken,
+  setSessionCookie,
+  clearSessionCookie,
+  hasValidSession,
+} from "./src/server/adminAuth.js";
 
 dotenv.config();
 
@@ -22,6 +30,64 @@ export async function createApp() {
 
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+  // --- Admin authentication ---------------------------------------------------------------
+  // Guards /admin/*. Before this existed, the pSEO control panel at /admin/seo was reachable by
+  // anyone who knew the URL -- `noindex` only hides a page from search results, it does not
+  // restrict access. See src/server/adminAuth.ts for why the gate is server-side.
+
+  // Best-effort brute-force slowdown. Deliberately in-memory: on Vercel each serverless instance
+  // has its own copy, so this is a speed bump rather than a real distributed rate limiter -- it
+  // raises the cost of guessing without pretending to be airtight. A proper implementation needs
+  // the shared datastore that's coming with the CMS work.
+  const loginAttempts = new Map<string, { count: number; firstAttemptAt: number }>();
+  const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+  const MAX_LOGIN_ATTEMPTS = 10;
+
+  app.post("/api/admin/login", (req, res) => {
+    if (!isAdminConfigured()) {
+      res.status(503).json({
+        success: false,
+        error: 'Admin access is not set up on this server yet.',
+      });
+      return;
+    }
+
+    const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim();
+    const now = Date.now();
+    const record = loginAttempts.get(ip);
+    if (record && now - record.firstAttemptAt < LOGIN_WINDOW_MS && record.count >= MAX_LOGIN_ATTEMPTS) {
+      res.status(429).json({ success: false, error: 'Too many attempts. Try again in a few minutes.' });
+      return;
+    }
+
+    if (!verifyPassword(req.body?.password)) {
+      if (!record || now - record.firstAttemptAt >= LOGIN_WINDOW_MS) {
+        loginAttempts.set(ip, { count: 1, firstAttemptAt: now });
+      } else {
+        record.count += 1;
+      }
+      res.status(401).json({ success: false, error: 'That password is not correct.' });
+      return;
+    }
+
+    loginAttempts.delete(ip);
+    setSessionCookie(res, createSessionToken());
+    res.json({ success: true });
+  });
+
+  app.post("/api/admin/logout", (req, res) => {
+    clearSessionCookie(res);
+    res.json({ success: true });
+  });
+
+  app.get("/api/admin/session", (req, res) => {
+    res.json({
+      success: true,
+      configured: isAdminConfigured(),
+      signedIn: hasValidSession(req),
+    });
+  });
 
   // Master Sitemap Index Endpoint (/sitemap.xml and /sitemaps/sitemap-index.xml)
   app.get(["/sitemap.xml", "/sitemaps/sitemap-index.xml"], (req, res) => {
