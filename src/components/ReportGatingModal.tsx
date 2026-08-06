@@ -32,6 +32,12 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
   useEffect(() => {
     if (!user) {
       setStep('AUTH_REQUIRED');
+    } else if (user.uid.startsWith('demo_') || user.uid.startsWith('mock_')) {
+      // Demo/mock sessions always use the same fixed email (buyer.demo@beforeregret.com), so the
+      // per-email free-report cap below would otherwise hit the simulated $14.99 card form on the
+      // second and every later click -- defeating the entire point of a button whose job is
+      // letting someone test the flow repeatedly. Demo sessions skip the paywall entirely instead.
+      setStep('CLAIM_FREE');
     } else {
       const activeEmail = user.email || `${user.uid}@beforeregret.com`;
       const count = getReportCount(activeEmail);
