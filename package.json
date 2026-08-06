@@ -8,7 +8,9 @@
     "build": "npx tsx scripts/generate-sitemap.ts && vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "start": "node dist/server.cjs",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "outreach:dry-run": "tsx scripts/send-vendor-outreach.ts",
+    "outreach:send": "SEND=true tsx scripts/send-vendor-outreach.ts"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.3",
