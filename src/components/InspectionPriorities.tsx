@@ -48,9 +48,6 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
           <ClipboardCheck className="w-3.5 h-3.5" />
           <span>Where your inspection budget goes furthest</span>
         </div>
-        <h3 className="font-sans text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-          Priorities for {result.eraLabel} in {result.regionLabel}
-        </h3>
         <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
           Based on the year built you entered (<strong className="text-slate-900">{result.yearBuilt}</strong>). These are
           the checks that tend to matter most for homes of this era and area — not findings about this specific house.
