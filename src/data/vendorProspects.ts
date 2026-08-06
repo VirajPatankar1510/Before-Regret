@@ -7,11 +7,15 @@ import { TRADE_CATEGORIES } from './sponsoredVendors.js';
 // confident is theirs. Never invent a plausible-sounding business to fill this list; an empty
 // array is the honest, correct state until real prospecting happens.
 //
-// Real Estate Attorney and Moving Category are deliberately excluded from
+// Real Estate Attorney and Moving Company are deliberately excluded from
 // OUTREACH_ELIGIBLE_TRADES below -- neither has a placement anywhere in the report yet (see
 // FINDING_TRADE_CATEGORY / PRIORITY_TRADE_CATEGORY in sponsoredVendors.ts), so a prospect who
 // signs up under either category would pay and never actually appear. Don't add prospects in
 // those two categories until a real placement exists for them.
+//
+// Prospects sourced via Instagram DM (see docs/VENDOR_INSTAGRAM_OUTREACH_PLAYBOOK.md) belong in
+// this same list once they reply with interest -- add a note saying where they came from. That
+// playbook is a manual, human-executed workflow, not a script; nothing here automates it.
 export const OUTREACH_ELIGIBLE_TRADES = TRADE_CATEGORIES.filter(
   (t) => t !== 'Real Estate Attorney' && t !== 'Moving Company'
 );
