@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { EDITORIAL_GUIDES_DATASET, ZIP_PSEO_DATASET } from '../../data/seoDataset';
+import { EDITORIAL_GUIDES_DATASET } from '../../data/seoDataset';
 import { applyHeadSeo } from '../../utils/headSeo';
-import { ChevronRight, BookOpen, Clock, Calendar, User, ArrowRight, HelpCircle, FileText } from 'lucide-react';
+import { ChevronRight, Clock, Calendar, User, HelpCircle } from 'lucide-react';
 
 interface GuidePageViewProps {
   guideSlug: string;
@@ -71,8 +71,6 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
     );
   }
 
-  const referencedZipData = guide.referencedZipCodes.map(z => ZIP_PSEO_DATASET[z]).filter(Boolean);
-
   return (
     <div className="bg-slate-50 min-h-screen pb-16">
       
@@ -124,36 +122,6 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             {guide.contentMarkdown}
           </div>
         </div>
-
-        {/* Supporting Zip Data Panel */}
-        {referencedZipData.length > 0 && (
-          <div className="bg-blue-50/70 border border-blue-200 rounded-3xl p-6 space-y-4">
-            <h2 className="text-sm font-bold text-blue-900 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-blue-600" />
-              <span>Referenced Zip Code Data Points in this Guide</span>
-            </h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {referencedZipData.map(z => (
-                <div key={z.zipCode} className="bg-white border border-blue-200 p-4 rounded-2xl space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-xs">ZIP {z.zipCode} ({z.neighborhoodName})</span>
-                    <button
-                      onClick={() => onNavigate(`/state/texas/${z.city.toLowerCase()}/${z.zipCode}/`)}
-                      className="text-[11px] text-blue-600 font-bold hover:underline flex items-center gap-1"
-                    >
-                      <span>Hub</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
-                  <div className="text-[11px] text-slate-600 font-medium">
-                    FEMA: {z.floodZone} | Permits: {z.recentPermitsCount12mo}/yr | Fiber: {z.fiberCoveragePercent}%
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* FAQ Section */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">

@@ -17,16 +17,11 @@ import {
 } from './types';
 import { createFallbackSummary, createFallbackReport } from './utils/reportFallback';
 
-// pSEO Components
-import { ZipHubView } from './components/seo/ZipHubView';
-import { TopicDeepPageView } from './components/seo/TopicDeepPageView';
-import { CityHubView } from './components/seo/CityHubView';
-import { StateHubView } from './components/seo/StateHubView';
+// pSEO Components -- the fabricated-stats ZIP/city/state/topic/compare surface (36 live URLs)
+// was fully removed; only the hand-written editorial guides remain.
 import { GuidePageView } from './components/seo/GuidePageView';
-import { ZipComparePageView } from './components/seo/ZipComparePageView';
 import { SeoAdminPanel } from './components/seo/SeoAdminPanel';
 import { AdminGate } from './components/admin/AdminGate';
-import { TopicSlug } from './types/seoTypes';
 import { applyHeadSeo } from './utils/headSeo';
 
 // Legal & Policy Components
@@ -110,13 +105,8 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'state' | 'city' | 'zip' | 'topic' | 'guide' | 'compare' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'none';
-    stateSlug?: string;
-    citySlug?: string;
-    zipCode?: string;
-    topicSlug?: TopicSlug;
+    type: 'admin' | 'guide' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'none';
     guideSlug?: string;
-    compareSlug?: string;
   }>({ type: 'none' });
 
   // Function to resolve current URL path to route
@@ -174,44 +164,9 @@ export function App() {
       }
     }
 
-    if (path.startsWith('/compare/')) {
-      const parts = path.split('/').filter(Boolean);
-      if (parts.length >= 2) {
-        setPseoRoute({ type: 'compare', compareSlug: parts[1] });
-        setCurrentStep('PSEO');
-        return true;
-      }
-    }
-
-    if (path.startsWith('/state/')) {
-      const parts = path.split('/').filter(Boolean);
-      if (parts.length === 2) {
-        setPseoRoute({ type: 'state', stateSlug: parts[1] });
-        setCurrentStep('PSEO');
-        return true;
-      }
-      if (parts.length === 3) {
-        setPseoRoute({ type: 'city', stateSlug: parts[1], citySlug: parts[2] });
-        setCurrentStep('PSEO');
-        return true;
-      }
-      if (parts.length === 4) {
-        setPseoRoute({ type: 'zip', stateSlug: parts[1], citySlug: parts[2], zipCode: parts[3] });
-        setCurrentStep('PSEO');
-        return true;
-      }
-      if (parts.length >= 5) {
-        setPseoRoute({ 
-          type: 'topic', 
-          stateSlug: parts[1], 
-          citySlug: parts[2], 
-          zipCode: parts[3], 
-          topicSlug: parts[4] as TopicSlug 
-        });
-        setCurrentStep('PSEO');
-        return true;
-      }
-    }
+    // /state/* and /compare/* routes (city/state/zip hubs, topic pages, zip comparisons) were
+    // removed along with the fabricated per-ZIP dataset they rendered. Old URLs in those two
+    // trees fall through to `return false` below, which the caller treats as "no route matched."
 
     return false;
   };
@@ -692,34 +647,8 @@ export function App() {
                 <SeoAdminPanel onNavigate={handleNavigate} />
               </AdminGate>
             )}
-            {pseoRoute.type === 'state' && pseoRoute.stateSlug && (
-              <StateHubView stateSlug={pseoRoute.stateSlug} onNavigate={handleNavigate} />
-            )}
-            {pseoRoute.type === 'city' && pseoRoute.stateSlug && pseoRoute.citySlug && (
-              <CityHubView stateSlug={pseoRoute.stateSlug} citySlug={pseoRoute.citySlug} onNavigate={handleNavigate} />
-            )}
-            {pseoRoute.type === 'zip' && pseoRoute.stateSlug && pseoRoute.citySlug && pseoRoute.zipCode && (
-              <ZipHubView 
-                stateSlug={pseoRoute.stateSlug} 
-                citySlug={pseoRoute.citySlug} 
-                zipCode={pseoRoute.zipCode} 
-                onNavigate={handleNavigate} 
-              />
-            )}
-            {pseoRoute.type === 'topic' && pseoRoute.stateSlug && pseoRoute.citySlug && pseoRoute.zipCode && pseoRoute.topicSlug && (
-              <TopicDeepPageView 
-                stateSlug={pseoRoute.stateSlug} 
-                citySlug={pseoRoute.citySlug} 
-                zipCode={pseoRoute.zipCode} 
-                topicSlug={pseoRoute.topicSlug} 
-                onNavigate={handleNavigate} 
-              />
-            )}
             {pseoRoute.type === 'guide' && pseoRoute.guideSlug && (
               <GuidePageView guideSlug={pseoRoute.guideSlug} onNavigate={handleNavigate} />
-            )}
-            {pseoRoute.type === 'compare' && pseoRoute.compareSlug && (
-              <ZipComparePageView slug={pseoRoute.compareSlug} onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'support' && (
               <ContactUs onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
