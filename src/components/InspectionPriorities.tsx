@@ -1,10 +1,17 @@
 import React from 'react';
 import { ClipboardCheck, Info } from 'lucide-react';
 import { getInspectionPriorities, PriorityLevel } from '../engine/inspectionPriorities';
+import { InspectionPrioritiesReportData, InspectionPriorityWithVendor } from '../types';
+import { SponsoredVendorCard } from './SponsoredVendorCard';
 
 interface InspectionPrioritiesProps {
   yearBuilt?: number | null;
   county?: string | null;
+  // If provided, skip client-side computation and render this directly. Used by the paid report,
+  // which computes server-side so it can attach a real, trade-matched vendor per item (vendor
+  // data lives server-side only -- same reason CanonicalFinding.sponsoredVendor is set server-side
+  // rather than computed here). Takes precedence over yearBuilt/county when present.
+  precomputed?: InspectionPrioritiesReportData | null;
 }
 
 const PRIORITY_STYLES: Record<PriorityLevel, { label: string; chip: string; rail: string }> = {
@@ -29,8 +36,8 @@ const PRIORITY_STYLES: Record<PriorityLevel, { label: string; chip: string; rail
 // honest answer for most US addresses today, since v1 covers one era in one county. Never falls
 // back to generic filler, same principle as SponsoredVendorCard rendering nothing without a real
 // paying vendor.
-export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ yearBuilt, county }) => {
-  const result = getInspectionPriorities(yearBuilt, county);
+export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ yearBuilt, county, precomputed }) => {
+  const result = precomputed !== undefined ? precomputed : getInspectionPriorities(yearBuilt, county);
   if (!result) return null;
 
   return (
@@ -81,6 +88,13 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
                 <p className="text-xs text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 leading-relaxed">
                   {item.howToCheck}
                 </p>
+
+                {/* Contextual vendor match for this item's trade category, if a real vendor has
+                    paid for it in this ZIP -- only ever present on the server-precomputed
+                    (paid report) path; absent entirely when computed client-side. */}
+                {(item as InspectionPriorityWithVendor).sponsoredVendor && (
+                  <SponsoredVendorCard vendor={(item as InspectionPriorityWithVendor).sponsoredVendor} />
+                )}
               </div>
             </div>
           );

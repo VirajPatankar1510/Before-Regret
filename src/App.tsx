@@ -563,6 +563,7 @@ export function App() {
           propertyType: activeProperty.propertyType,
           declaredPropertyType: activeProperty.declaredPropertyType,
           unitNumber: activeProperty.unitNumber,
+          yearBuilt: activeProperty.yearBuilt,
           usefulSourcesCount: summaryData?.usefulSourcesFound || 18,
           price: isPaid ? 14.99 : 0,
           userEmail: userEmail,
