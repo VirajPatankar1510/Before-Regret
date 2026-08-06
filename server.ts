@@ -829,7 +829,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
         cleanedReport = stripInternalMetadata(cleanedReport);
         attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
         attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
-        cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode);
+        cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode, resolvedMeta.state);
 
         if (!cleanedReport.id) {
           cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -850,7 +850,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     cleanedReport = stripInternalMetadata(cleanedReport);
     attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
     attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
-    cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode);
+    cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode, resolvedMeta.state);
 
     if (!cleanedReport.id) {
       cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -1160,11 +1160,11 @@ function attachFindingSourceUrls(report: any, county: string) {
 // (year built, county) pair and attaches a per-item vendor match, same pattern as
 // attachSponsoredVendors above but for priority items instead of findings. yearBuilt is
 // requester-declared and unvalidated at this point -- coerced defensively; the engine itself
-// fails closed to null for anything implausible or for an uncovered region, which is the correct,
-// honest result for the overwhelming majority of addresses today (v1 covers one county).
-function buildInspectionPrioritiesForReport(rawYearBuilt: unknown, county: string, zipCode: string) {
+// fails closed to null only for a missing/implausible year built, since national rules now cover
+// every US county (see src/engine/inspectionPriorities.ts).
+function buildInspectionPrioritiesForReport(rawYearBuilt: unknown, county: string, zipCode: string, state: string) {
   const yearBuilt = typeof rawYearBuilt === 'number' ? rawYearBuilt : parseInt(String(rawYearBuilt ?? ''), 10);
-  const result = getInspectionPriorities(yearBuilt, county);
+  const result = getInspectionPriorities(yearBuilt, county, state);
   if (!result) return null;
   return {
     ...result,

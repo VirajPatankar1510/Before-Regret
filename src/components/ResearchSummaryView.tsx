@@ -120,6 +120,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
       <InspectionPriorities
         yearBuilt={declaredProperty?.yearBuilt}
         county={declaredProperty?.county || address?.county}
+        state={address?.state}
       />
 
       {/* Public Data Sources Accordion / Preview */}
