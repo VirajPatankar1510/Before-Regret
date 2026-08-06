@@ -196,7 +196,13 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   const verifiedFindings = findings.filter(f => f.status === 'CONFIRMED RECORD');
   const unconfirmedFindings = findings.filter(f => f.status === 'NO RECORD FOUND');
   const pendingFindings = findings.filter(f => f.status === 'NOT YET VERIFIED');
-  const allPending = findings.length > 0 && pendingFindings.length === findings.length;
+  // This used to only flip to the confident "VERIFIED PUBLIC PROPERTY RESEARCH" / "Full Public
+  // Audit" label when *every* finding was unverified. Once USGS seismic became a genuinely live
+  // finding queried for every address, that meant a single real source out of ~21 permanently
+  // flipped every report to the confident label -- 1-for-21 is not an audit. Require verified
+  // findings to be a real majority before making that claim; short of that, stay in the honest
+  // reference-checklist framing regardless of exactly how many sources are still pending.
+  const mostlyUnverified = findings.length === 0 || verifiedFindings.length < findings.length / 2;
 
   const statusBadgeClasses = (status: string) => {
     if (status === 'CONFIRMED RECORD') return 'bg-emerald-50 text-emerald-800 border-emerald-200';
@@ -270,8 +276,8 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xs">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
             <div>
-              <span className={`text-[11px] font-mono font-bold uppercase tracking-widest block ${allPending ? 'text-slate-500' : 'text-blue-600'}`}>
-                {allPending ? 'RECORDS REFERENCE — NOT YET INDEPENDENTLY VERIFIED' : 'VERIFIED PUBLIC PROPERTY RESEARCH'}
+              <span className={`text-[11px] font-mono font-bold uppercase tracking-widest block ${mostlyUnverified ? 'text-slate-500' : 'text-blue-600'}`}>
+                {mostlyUnverified ? 'RECORDS REFERENCE — NOT YET INDEPENDENTLY VERIFIED' : 'VERIFIED PUBLIC PROPERTY RESEARCH'}
               </span>
               <h1 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight mt-1">
                 {formattedAddress}
@@ -284,7 +290,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </div>
           </div>
 
-          {allPending && (
+          {mostlyUnverified && (
             <div className="bg-slate-100 border border-slate-300 rounded-xl p-4 text-xs text-slate-700 leading-relaxed">
               <span className="font-bold block text-slate-900 mb-1">BeforeRegret does not yet have a live, verified data connection for this address.</span>
               This page links directly to the official public sources below so you can check each record yourself before closing. Nothing on this page should be treated as a confirmed finding until you verify it at the source.
@@ -307,7 +313,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
               <span className="text-[10px] font-mono text-slate-500 uppercase block">Research Type</span>
-              <span className="text-base font-bold text-slate-900 block mt-0.5">{allPending ? 'Reference Checklist' : 'Full Public Audit'}</span>
+              <span className="text-base font-bold text-slate-900 block mt-0.5">{mostlyUnverified ? 'Reference Checklist' : 'Full Public Audit'}</span>
             </div>
           </div>
         </section>
@@ -392,8 +398,6 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </div>
           </div>
 
-          <SponsoredVendorCard vendor={report.sponsoredVendor} />
-
           {/* Status Overview Grid */}
           <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
             <h3 className="text-lg font-serif font-bold text-slate-900">Findings At a Glance</h3>
@@ -456,6 +460,12 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                     <p className="text-blue-950 font-semibold leading-relaxed">{finding.suggestedNextStep}</p>
                   </div>
                 </div>
+
+                {/* Contextual vendor match for this specific finding's trade category, if a real
+                    vendor has paid for it in this ZIP -- renders nothing otherwise. */}
+                {finding.sponsoredVendor && (
+                  <SponsoredVendorCard vendor={finding.sponsoredVendor} />
+                )}
               </div>
             ))}
           </div>
