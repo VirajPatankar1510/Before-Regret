@@ -49,7 +49,7 @@ export function buildOutreachEmail(prospect: VendorProspect): OutreachEmailConte
 
 I run BeforeRegret (beforeregret.com), a property research tool homebuyers use during their option period -- checking flood zones, permit history, and similar records before closing.
 
-On every report for ${prospect.zipCode}, we show ${placementContext}. Right below it, we place a spot for one local ${prospect.tradeCategory.toLowerCase()} business -- your name, phone number, and a one-line tagline, shown at the exact moment someone is reading about the issue you'd be called in for.
+On every report for ${prospect.zipCode}, we show ${placementContext}. Right below it, we place a spot for one local ${prospect.tradeCategory} business -- your name, phone number, and a one-line tagline, shown at the exact moment someone is reading about the issue you'd be called in for.
 
 The terms are simple: $29/month, flat rate, for exclusive placement in ${prospect.zipCode} under ${prospect.tradeCategory}. We only allow 2 businesses per ZIP/category, first come first served, and either side can cancel anytime -- no long-term contract.
 
@@ -65,7 +65,7 @@ ${SENDER_ADDRESS}`;
   const html = `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.6; color: #0f172a; max-width: 560px;">
   <p>${greeting}</p>
   <p>I run <a href="https://beforeregret.com" style="color:#2563eb;">BeforeRegret</a>, a property research tool homebuyers use during their option period &mdash; checking flood zones, permit history, and similar records before closing.</p>
-  <p>On every report for <strong>${prospect.zipCode}</strong>, we show ${placementContext}. Right below it, we place a spot for <strong>one local ${prospect.tradeCategory.toLowerCase()} business</strong> &mdash; your name, phone number, and a one-line tagline, shown at the exact moment someone is reading about the issue you'd be called in for.</p>
+  <p>On every report for <strong>${prospect.zipCode}</strong>, we show ${placementContext}. Right below it, we place a spot for <strong>one local ${prospect.tradeCategory} business</strong> &mdash; your name, phone number, and a one-line tagline, shown at the exact moment someone is reading about the issue you'd be called in for.</p>
   <p>The terms are simple: <strong>$29/month</strong>, flat rate, for exclusive placement in ${prospect.zipCode} under ${prospect.tradeCategory}. We only allow 2 businesses per ZIP/category, first come first served, and either side can cancel anytime &mdash; no long-term contract.</p>
   <p>If that's of interest, just reply to this email or take a look at <a href="https://beforeregret.com/vendors" style="color:#2563eb;">beforeregret.com/vendors</a>. Happy to answer questions either way.</p>
   <p>Viraj<br/>Atmostellar (operating BeforeRegret)</p>
