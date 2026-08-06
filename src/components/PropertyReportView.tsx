@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  MapPin, ExternalLink, AlertTriangle, CheckCircle2,
+import {
+  MapPin, ExternalLink,
   Check, Clock, CheckSquare, Square,
   FileCheck, AlertCircle, Download, Building, Layers,
-  BarChart3, Info, Calendar, Database, Sparkles, Filter, FileText, ArrowRight
+  BarChart3, Calendar, Database, Sparkles, Filter, FileText, ArrowRight
 } from 'lucide-react';
 import { PropertyReport, CanonicalFinding } from '../types';
 import { LeadMarketplaceWidget } from './LeadMarketplaceWidget';
@@ -172,7 +172,6 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   // has no live data connection yet -- this stays generic so it renders correctly once real
   // 'CONFIRMED RECORD' / 'NO RECORD FOUND' data exists for a jurisdiction.
   const verifiedFindings = findings.filter(f => f.status === 'CONFIRMED RECORD');
-  const unconfirmedFindings = findings.filter(f => f.status === 'NO RECORD FOUND');
   const pendingFindings = findings.filter(f => f.status === 'NOT YET VERIFIED');
   // This used to only flip to the confident "VERIFIED PUBLIC PROPERTY RESEARCH" / "Full Public
   // Audit" label when *every* finding was unverified. Once USGS seismic became a genuinely live
@@ -206,6 +205,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
       <style>{`
         @media print {
           header { display: none !important; }
+          footer { display: none !important; }
           body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; color: #0f172a !important; background: #ffffff !important; }
           main { max-width: 100% !important; padding: 0 !important; }
           section { page-break-inside: avoid; margin-bottom: 24px !important; }
@@ -296,110 +296,10 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           </div>
         </section>
 
-        {/* SECTION 1: SUMMARY & BOTTOM LINE SYNTHESIS */}
-        <section id="section-summary" className="space-y-6">
-          <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 1 OF {report.inspectionPriorities ? 4 : 3}</span>
-            <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-              Executive Summary &amp; Bottom Line Synthesis
-            </h2>
-          </div>
-
-          {/* Single Dark Card for Bottom Line Synthesis */}
-          <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-md">
-            <div>
-              <span className="text-xs font-mono font-extrabold text-amber-400 uppercase tracking-widest block">
-                BUYER DECISION SYNTHESIS
-              </span>
-              <h3 className="text-xl sm:text-2xl font-serif font-bold text-white mt-1">
-                Bottom Line Guidance
-              </h3>
-              <p className="text-sm text-slate-300 mt-1 leading-relaxed">
-                {report.bottomLine?.biggerPicture || 'BeforeRegret does not yet have a live, verified data connection to government records for this address. This checklist links you directly to the official public sources so you can verify each item yourself before closing.'}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-              {/* Not Yet Verified */}
-              {pendingFindings.length > 0 && (
-                <div className={`bg-slate-800/80 border border-slate-700 rounded-xl p-5 space-y-3 ${unconfirmedFindings.length === 0 && verifiedFindings.length === 0 ? 'md:col-span-2' : ''}`}>
-                  <div className="flex items-center gap-2 text-slate-300 font-extrabold text-xs uppercase tracking-wider font-mono">
-                    <Info className="w-4 h-4 text-slate-400 shrink-0" />
-                    <span>Not Yet Verified — Check These Yourself</span>
-                  </div>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                    {pendingFindings.map((item, idx) => (
-                      <li key={`pd-${idx}`} className="bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-xs space-y-1">
-                        <span className="font-bold text-slate-200 block">{item.subject}</span>
-                        <span className="text-slate-400 leading-relaxed block text-[11px]">{item.summaryText}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Worth Verifying */}
-              {unconfirmedFindings.length > 0 && (
-                <div className="bg-amber-950/60 border border-amber-600/40 rounded-xl p-5 space-y-3">
-                  <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs uppercase tracking-wider font-mono">
-                    <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Worth Verifying (Priority Items)</span>
-                  </div>
-                  <ul className="space-y-2 pt-1">
-                    {unconfirmedFindings.map((item, idx) => (
-                      <li key={`wv-${idx}`} className="bg-slate-900/90 border border-amber-900/60 rounded-lg p-3 text-xs space-y-1">
-                        <span className="font-bold text-amber-300 block">{item.subject}</span>
-                        <span className="text-slate-200 leading-relaxed block text-[11px]">{item.summaryText}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Likely Routine */}
-              {verifiedFindings.length > 0 && (
-                <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-5 space-y-3">
-                  <div className="flex items-center gap-2 text-blue-400 font-extrabold text-xs uppercase tracking-wider font-mono">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Likely Routine (Confirmed Status)</span>
-                  </div>
-                  <ul className="space-y-2 pt-1">
-                    {verifiedFindings.map((item, idx) => (
-                      <li key={`lr-${idx}`} className="bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-xs space-y-1">
-                        <span className="font-bold text-blue-300 block">{item.subject}</span>
-                        <span className="text-slate-200 leading-relaxed block text-[11px]">{item.summaryText}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Status Overview Grid */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
-            <h3 className="text-lg font-serif font-bold text-slate-900">Findings At a Glance</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              {findings.map((f) => (
-                <div key={f.id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase">{f.category}</span>
-                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${statusBadgeClasses(f.status)}`}>
-                      {f.status}
-                    </span>
-                  </div>
-                  <h4 className="text-sm font-bold text-slate-900">{f.subject}</h4>
-                  <p className="text-xs text-slate-600 line-clamp-2">{f.summaryText}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 2: DETAILED FINDINGS */}
+        {/* SECTION 1: DETAILED FINDINGS */}
         <section id="section-findings" className="space-y-6">
           <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 2 OF {report.inspectionPriorities ? 4 : 3}</span>
+            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 1 OF {report.inspectionPriorities ? 3 : 2}</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Detailed Public Record Findings
             </h2>
@@ -470,12 +370,12 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           </p>
         </section>
 
-        {/* SECTION 3: INSPECTION BUDGET PRIORITIES -- renders nothing when no rule set covers
+        {/* SECTION 2: INSPECTION BUDGET PRIORITIES -- renders nothing when no rule set covers
             this (year built, county) pair, same as the free summary version. */}
         {report.inspectionPriorities && (
           <section id="section-inspection-priorities" className="space-y-6">
             <div className="border-b border-slate-200 pb-2">
-              <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 3 OF 4</span>
+              <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 2 OF 3</span>
               <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
                 Inspection Budget Priorities
               </h2>
@@ -484,10 +384,10 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           </section>
         )}
 
-        {/* SECTION 4: YOUR ACTION LIST */}
+        {/* SECTION 3 (or 2 without inspection priorities): YOUR ACTION LIST */}
         <section id="section-action-list" className="space-y-6">
           <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {report.inspectionPriorities ? 4 : 3} OF {report.inspectionPriorities ? 4 : 3}</span>
+            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {report.inspectionPriorities ? 3 : 2} OF {report.inspectionPriorities ? 3 : 2}</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Your Action List
             </h2>
