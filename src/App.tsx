@@ -25,6 +25,7 @@ import { StateHubView } from './components/seo/StateHubView';
 import { GuidePageView } from './components/seo/GuidePageView';
 import { ZipComparePageView } from './components/seo/ZipComparePageView';
 import { SeoAdminPanel } from './components/seo/SeoAdminPanel';
+import { AdminGate } from './components/admin/AdminGate';
 import { TopicSlug } from './types/seoTypes';
 import { applyHeadSeo } from './utils/headSeo';
 
@@ -687,7 +688,9 @@ export function App() {
               <Vendors onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'admin' && (
-              <SeoAdminPanel onNavigate={handleNavigate} />
+              <AdminGate>
+                <SeoAdminPanel onNavigate={handleNavigate} />
+              </AdminGate>
             )}
             {pseoRoute.type === 'state' && pseoRoute.stateSlug && (
               <StateHubView stateSlug={pseoRoute.stateSlug} onNavigate={handleNavigate} />
