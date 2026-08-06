@@ -42,4 +42,38 @@ export interface VendorProspect {
   notes?: string;
 }
 
-export const VENDOR_PROSPECTS: VendorProspect[] = [];
+// Each entry below was researched, not guessed: verified by loading the business's own site and
+// finding a real <a href="mailto:..."> link in its markup, not by pattern-guessing an address from
+// a business name. Sources checked 2026-08-06:
+//   - Austin Roofers   -- https://austinroofer.com (footer mailto link)
+//   - Malco Electric   -- https://malcoelectric.com (footer mailto link)
+//   - The Chill Brothers -- https://thechillbrothers.com (footer mailto link)
+export const VENDOR_PROSPECTS: VendorProspect[] = [
+  {
+    id: 'prospect_austin_roofers',
+    businessName: 'Austin Roofers',
+    tradeCategory: 'Roof Inspection',
+    zipCode: '78701',
+    email: 'info@austinroofer.com',
+    status: 'not_contacted',
+    notes: 'Residential + commercial roofer, Austin TX 78701, serving since 2008. Site lists Roof Inspection, Repair, Replacement as residential services.',
+  },
+  {
+    id: 'prospect_malco_electric',
+    businessName: 'Malco Electric',
+    tradeCategory: 'Electrician',
+    zipCode: '78746',
+    email: 'info@malcoelectric.com',
+    status: 'not_contacted',
+    notes: 'Family-owned Austin electrician since 1983. Service area explicitly includes West Lake Hills (78746).',
+  },
+  {
+    id: 'prospect_chill_brothers',
+    businessName: 'The Chill Brothers',
+    tradeCategory: 'HVAC Inspection',
+    zipCode: '78704',
+    email: 'hello@thechillbrothers.com',
+    status: 'not_contacted',
+    notes: 'HVAC + air purification, residential-focused. Branded specifically around the Zilker/South Lamar (78704) area. Has an active Instagram -- also a Phase 4 playbook candidate.',
+  },
+];
