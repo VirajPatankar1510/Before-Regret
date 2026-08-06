@@ -1,7 +1,9 @@
-export type ViewState = 
-  | 'HOME' 
-  | 'RESEARCHING' 
-  | 'SUMMARY' 
+import type { InspectionPriority } from './engine/inspectionPriorities';
+
+export type ViewState =
+  | 'HOME'
+  | 'RESEARCHING'
+  | 'SUMMARY'
   | 'REPORT';
 
 export type ConfidenceLevel = 'CONFIRMED RECORD' | 'NO RECORD FOUND' | 'Confirmed Record' | 'No Record Found' | 'NOT YET VERIFIED';
@@ -32,6 +34,21 @@ export interface CanonicalFinding {
   // one generic slot for the whole report, which is what let paying vendors 2-20 in a ZIP never
   // actually appear anywhere.
   sponsoredVendor?: SponsoredVendor | null;
+}
+
+// The engine (engine/inspectionPriorities.ts) is deliberately vendor-agnostic -- it's building-
+// science judgment, not a monetization concern. Vendor matching is applied on top, server-side,
+// same pattern as CanonicalFinding.sponsoredVendor above (see PRIORITY_TRADE_CATEGORY in
+// sponsoredVendors.ts).
+export interface InspectionPriorityWithVendor extends InspectionPriority {
+  sponsoredVendor?: SponsoredVendor | null;
+}
+
+export interface InspectionPrioritiesReportData {
+  yearBuilt: number;
+  eraLabel: string;
+  regionLabel: string;
+  priorities: InspectionPriorityWithVendor[];
 }
 
 export interface SourceReferenceItem {
@@ -336,6 +353,12 @@ export interface PropertyReport {
 
   // Single Source of Truth
   canonicalFindings: CanonicalFinding[];
+
+  // Era-based inspection budget priorities (see engine/inspectionPriorities.ts), computed
+  // server-side from the requester-declared year built + county so vendor matches can be
+  // attached per item. Null/absent whenever no rule set covers this (year built, county) pair --
+  // renders nothing rather than generic filler, same as everywhere else this is used.
+  inspectionPriorities?: InspectionPrioritiesReportData | null;
 
   // Bottom Line Synthesis
   bottomLine: {

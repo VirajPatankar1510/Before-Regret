@@ -6,7 +6,8 @@ import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } f
 import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService.js";
 import { runAddressGate } from "./src/engine/geoValidationGate.js";
 import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
-import { getSponsoredVendorForZipAndTrade, FINDING_TRADE_CATEGORY, getSlotAvailability, TRADE_CATEGORIES } from "./src/data/sponsoredVendors.js";
+import { getInspectionPriorities } from "./src/engine/inspectionPriorities.js";
+import { getSponsoredVendorForZipAndTrade, FINDING_TRADE_CATEGORY, PRIORITY_TRADE_CATEGORY, getSlotAvailability, TRADE_CATEGORIES } from "./src/data/sponsoredVendors.js";
 
 dotenv.config();
 
@@ -420,7 +421,7 @@ export async function createApp() {
 
   // 2. Full AI Property Report Generation Endpoint (Gemini 3.6 Flash)
   app.post(["/api/property/generate-report", "/api/generate-report"], async (req, res) => {
-    const { address, city, state, zipCode, county, propertyType, usefulSourcesCount, price, declaredPropertyType, unitNumber } = req.body;
+    const { address, city, state, zipCode, county, propertyType, usefulSourcesCount, price, declaredPropertyType, unitNumber, yearBuilt } = req.body;
 
     const fullAddr = formattedAddress(address, city, state, zipCode);
 
@@ -761,6 +762,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
         let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding].filter(Boolean));
         cleanedReport = stripInternalMetadata(cleanedReport);
         attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
+        cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode);
 
         if (!cleanedReport.id) {
           cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -780,6 +782,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
     attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
+    cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode);
 
     if (!cleanedReport.id) {
       cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -1052,6 +1055,28 @@ function attachSponsoredVendors(report: any, zipCode: string) {
     finding.sponsoredVendor = tradeCategory ? getSponsoredVendorForZipAndTrade(zipCode, tradeCategory) : null;
   }
   return report;
+}
+
+// Computes the era-based inspection priorities (engine/inspectionPriorities.ts) for this
+// (year built, county) pair and attaches a per-item vendor match, same pattern as
+// attachSponsoredVendors above but for priority items instead of findings. yearBuilt is
+// requester-declared and unvalidated at this point -- coerced defensively; the engine itself
+// fails closed to null for anything implausible or for an uncovered region, which is the correct,
+// honest result for the overwhelming majority of addresses today (v1 covers one county).
+function buildInspectionPrioritiesForReport(rawYearBuilt: unknown, county: string, zipCode: string) {
+  const yearBuilt = typeof rawYearBuilt === 'number' ? rawYearBuilt : parseInt(String(rawYearBuilt ?? ''), 10);
+  const result = getInspectionPriorities(yearBuilt, county);
+  if (!result) return null;
+  return {
+    ...result,
+    priorities: result.priorities.map((item) => {
+      const tradeCategory = PRIORITY_TRADE_CATEGORY[item.id as keyof typeof PRIORITY_TRADE_CATEGORY];
+      return {
+        ...item,
+        sponsoredVendor: tradeCategory ? getSponsoredVendorForZipAndTrade(zipCode, tradeCategory) : null,
+      };
+    }),
+  };
 }
 
 function stripInternalMetadata(report: any) {

@@ -49,6 +49,25 @@ export const FINDING_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGOR
   f_seismic: 'Foundation Engineer',
 };
 
+// Same pattern as FINDING_TRADE_CATEGORY, for the era-based inspection priority items (see
+// engine/inspectionPriorities.ts). lead_paint_disclosure (a free, legally-required document
+// check, not a paid trade service) and asbestos_materials (no trade category fits well -- it's a
+// specialist consultant, not one of the ten listed trades) are deliberately left unmatched.
+export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGORIES[number]>> = {
+  knob_and_tube: 'Electrician',
+  electrical_aluminum_wiring: 'Electrician',
+  electrical_panel_brand: 'Electrician',
+  sewer_cast_iron: 'Sewer Scope',
+  galvanized_supply: 'Home Inspector',
+  polybutylene_supply: 'Home Inspector',
+  foundation_pre_posttension: 'Foundation Engineer',
+  foundation_posttension: 'Foundation Engineer',
+  pier_and_beam: 'Home Inspector',
+  eifs_stucco: 'Home Inspector',
+  systems_age: 'Home Inspector',
+  radon_test: 'Radon Testing',
+};
+
 export function getSponsoredVendorForZipAndTrade(
   zipCode: string | undefined | null,
   tradeCategory: string | undefined | null

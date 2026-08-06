@@ -10,6 +10,7 @@ import { LeadMarketplaceWidget } from './LeadMarketplaceWidget';
 import { SourceRegistryModal } from './SourceRegistryModal';
 import { ErrorReportingModal } from './ErrorReportingModal';
 import { SponsoredVendorCard } from './SponsoredVendorCard';
+import { InspectionPriorities } from './InspectionPriorities';
 
 interface PropertyReportViewProps {
   report: PropertyReport;
@@ -321,7 +322,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         {/* SECTION 1: SUMMARY & BOTTOM LINE SYNTHESIS */}
         <section id="section-summary" className="space-y-6">
           <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 1 OF 4</span>
+            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 1 OF {report.inspectionPriorities ? 5 : 4}</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Executive Summary &amp; Bottom Line Synthesis
             </h2>
@@ -421,7 +422,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         {/* SECTION 2: DETAILED FINDINGS */}
         <section id="section-findings" className="space-y-6">
           <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 2 OF 4</span>
+            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 2 OF {report.inspectionPriorities ? 5 : 4}</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Detailed Public Record Findings
             </h2>
@@ -504,10 +505,24 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           </div>
         </section>
 
-        {/* SECTION 3: YOUR ACTION LIST */}
+        {/* SECTION 3: INSPECTION BUDGET PRIORITIES -- renders nothing when no rule set covers
+            this (year built, county) pair, same as the free summary version. */}
+        {report.inspectionPriorities && (
+          <section id="section-inspection-priorities" className="space-y-6">
+            <div className="border-b border-slate-200 pb-2">
+              <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 3 OF 5</span>
+              <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
+                Inspection Budget Priorities
+              </h2>
+            </div>
+            <InspectionPriorities precomputed={report.inspectionPriorities} />
+          </section>
+        )}
+
+        {/* SECTION 4: YOUR ACTION LIST */}
         <section id="section-action-list" className="space-y-6">
           <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 3 OF 4</span>
+            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {report.inspectionPriorities ? 4 : 3} OF {report.inspectionPriorities ? 5 : 4}</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Your Action List
             </h2>
@@ -583,10 +598,10 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           </div>
         </section>
 
-        {/* SECTION 4: SOURCES & METHODOLOGY */}
+        {/* SECTION 5 (or 4 without inspection priorities): SOURCES & METHODOLOGY */}
         <section id="section-sources" className="space-y-6">
           <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 4 OF 4</span>
+            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {report.inspectionPriorities ? 5 : 4} OF {report.inspectionPriorities ? 5 : 4}</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Source Registry &amp; Methodology
             </h2>
