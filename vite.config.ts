@@ -6,13 +6,22 @@ import {defineConfig} from 'vite';
 export default defineConfig(() => {
   // Vercel's "Automatically expose System Environment Variables" setting mirrors its git
   // metadata (VERCEL_GIT_COMMIT_MESSAGE, _SHA, _AUTHOR_NAME, etc.) into VITE_-prefixed
-  // duplicates so framework tooling can read them -- which this blanket VITE_ passthrough was
-  // then shipping straight into the public client bundle. That meant every commit message
-  // (including ones describing security fixes) was readable by anyone via browser devtools.
-  // Nothing in src/ reads VITE_VERCEL_* today (see src/context/AuthContext.tsx's getEnv), so
-  // excluding the whole namespace is safe.
+  // duplicates so framework tooling can read them. Excluding VITE_VERCEL_ from the custom
+  // `envDefine` map below is NOT enough on its own -- Vite has its own built-in import.meta.env
+  // exposure that independently picks up every VITE_-prefixed process.env var regardless of
+  // this file's `define` block. That's the actual mechanism that shipped every commit message
+  // (including ones describing security fixes) into the public client bundle, readable by
+  // anyone via browser devtools. Deleting these from process.env here, before Vite's own env
+  // loading runs, is what actually keeps them out. Nothing in src/ reads VITE_VERCEL_* today
+  // (see src/context/AuthContext.tsx's getEnv), so removing the whole namespace is safe.
+  for (const key of Object.keys(process.env)) {
+    if (key.startsWith('VITE_VERCEL_')) {
+      delete process.env[key];
+    }
+  }
+
   const envDefine = Object.keys(process.env).reduce((acc, key) => {
-    if (key.startsWith('VITE_') && !key.startsWith('VITE_VERCEL_')) {
+    if (key.startsWith('VITE_')) {
       acc[`import.meta.env.${key}`] = JSON.stringify(process.env[key]);
     }
     return acc;
