@@ -7,6 +7,7 @@ import { SponsoredVendorCard } from './SponsoredVendorCard';
 interface InspectionPrioritiesProps {
   yearBuilt?: number | null;
   county?: string | null;
+  state?: string | null;
   // If provided, skip client-side computation and render this directly. Used by the paid report,
   // which computes server-side so it can attach a real, trade-matched vendor per item (vendor
   // data lives server-side only -- same reason CanonicalFinding.sponsoredVendor is set server-side
@@ -32,12 +33,12 @@ const PRIORITY_STYLES: Record<PriorityLevel, { label: string; chip: string; rail
   },
 };
 
-// Renders nothing at all when no rule set covers this (year built, county) pair -- which is the
-// honest answer for most US addresses today, since v1 covers one era in one county. Never falls
-// back to generic filler, same principle as SponsoredVendorCard rendering nothing without a real
-// paying vendor.
-export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ yearBuilt, county, precomputed }) => {
-  const result = precomputed !== undefined ? precomputed : getInspectionPriorities(yearBuilt, county);
+// Renders nothing at all when no rule applies -- in practice that now only happens for a missing
+// or implausible year built, since national rules (federal disclosure law, product recalls,
+// system age) cover every US county. Never falls back to generic filler, same principle as
+// SponsoredVendorCard rendering nothing without a real paying vendor.
+export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ yearBuilt, county, state, precomputed }) => {
+  const result = precomputed !== undefined ? precomputed : getInspectionPriorities(yearBuilt, county, state);
   if (!result) return null;
 
   return (

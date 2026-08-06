@@ -25,8 +25,10 @@
 // of what matters here is national building science with a real date range attached (lead paint
 // banned 1978, polybutylene installed ~1978-1995, aluminum branch wiring ~1965-1973), so bucketing
 // by decade would mean copying the same rule into several buckets and letting them drift apart.
-// A rule with no `counties` applies in every covered region; only genuinely local rules (soil,
-// foundation practice) name counties. That also makes adding a county mostly free.
+// A rule with no `counties` applies in every US county -- this covers the whole country by
+// default. Only genuinely local rules (expansive clay soil, foundation practice) name counties,
+// gated to EXPANSIVE_SOIL_REGIONS below, and adding a county to that list is cheap. Anywhere
+// outside that list gets foundation_type_general instead of a geology claim we can't back.
 
 export type PriorityLevel = 'high' | 'medium' | 'lower';
 
@@ -61,11 +63,55 @@ export interface InspectionPrioritiesResult {
   priorities: InspectionPriority[];
 }
 
-// Regions we claim coverage for. Anything outside this returns null rather than guessing --
-// the local foundation rules below are written for Central Texas geology specifically.
-const COVERED_REGIONS: Record<string, { label: string }> = {
+// Counties with well-documented expansive clay soil, used to gate the foundation-specific rules
+// below (never guessed at -- Texas Blackland Prairie and Gulf Coast clay geology is extensively
+// published by Texas A&M AgriLife Extension, TSBPE materials, and county soil surveys). This is
+// NOT a coverage gate for the whole engine: most rules below (federal disclosure law, national
+// product recalls, plumbing material timelines, system age) apply everywhere in the US and are
+// never filtered by this list. Only the three foundation/soil rules are region-specific, because
+// they make a geology claim ("this area has expansive clay") that isn't true everywhere.
+const EXPANSIVE_SOIL_REGIONS: Record<string, { label: string }> = {
+  // Austin metro
   'travis county': { label: 'Travis County, TX' },
+  'williamson county': { label: 'Williamson County, TX' },
+  'hays county': { label: 'Hays County, TX' },
+  // Dallas-Fort Worth metro
+  'dallas county': { label: 'Dallas County, TX' },
+  'tarrant county': { label: 'Tarrant County, TX' },
+  'collin county': { label: 'Collin County, TX' },
+  'denton county': { label: 'Denton County, TX' },
+  // San Antonio
+  'bexar county': { label: 'Bexar County, TX' },
+  // Houston / Gulf Coast
+  'harris county': { label: 'Harris County, TX' },
+  'fort bend county': { label: 'Fort Bend County, TX' },
+  'montgomery county': { label: 'Montgomery County, TX' },
+  // Waco (heart of the Blackland Prairie) and Killeen-Temple
+  'mclennan county': { label: 'McLennan County, TX' },
+  'bell county': { label: 'Bell County, TX' },
 };
+
+/** Title-cases a raw county string ("king county" -> "King County") for the fallback label. */
+function titleCaseCounty(county: string): string {
+  return county
+    .split(' ')
+    .map((word) => (word.length > 0 ? word[0].toUpperCase() + word.slice(1) : word))
+    .join(' ');
+}
+
+/**
+ * Region label shown in the UI when the county isn't one of the curated expansive-soil regions
+ * above. Falls back gracefully rather than guessing at soil geology: echoes back whatever
+ * county/state the requester gave us, or a generic "United States" label if neither is available.
+ */
+function buildFallbackRegionLabel(county: string | null | undefined, state: string | null | undefined): string {
+  const cleanCounty = (county || '').trim();
+  const cleanState = (state || '').trim();
+  if (cleanCounty && cleanState) return `${titleCaseCounty(cleanCounty)}, ${cleanState}`;
+  if (cleanCounty) return titleCaseCounty(cleanCounty);
+  if (cleanState) return cleanState;
+  return 'the United States';
+}
 
 const PRIORITY_RULES: PriorityRule[] = [
   // --- Federal disclosure: free, legally mandated, so it leads for anything pre-1978 ---
@@ -165,16 +211,18 @@ const PRIORITY_RULES: PriorityRule[] = [
       'Ask your inspector to check at the water heater and main shutoff. Polybutylene is flexible and usually gray, sometimes blue or black. If it is present, confirm insurability with your agent before your option period ends.',
   },
 
-  // --- Foundation: Central Texas geology, so county-scoped ---
+  // --- Foundation: expansive clay soil geology, scoped to the documented Texas counties in
+  // EXPANSIVE_SOIL_REGIONS above. Everywhere else gets the region-agnostic foundation_type_general
+  // rule near the bottom of this list instead of a geology claim we can't back. ---
   {
     id: 'foundation_pre_posttension',
     minYear: 1800,
     maxYear: 1979,
-    counties: ['travis county'],
+    counties: Object.keys(EXPANSIVE_SOIL_REGIONS),
     title: 'Get the foundation looked at by a structural engineer',
     priority: 'high',
     eraBasis:
-      'Central Texas has widespread expansive clay soils that shrink and swell with moisture. Foundations from this era generally predate post-tensioned slab construction, which became common in Texas residential building later.',
+      'This region sits within the Texas Blackland Prairie / Gulf Coast expansive clay soil belt, where soils shrink and swell significantly with moisture. Foundations from this era generally predate post-tensioned slab construction, which became common in Texas residential building later.',
     costToCheck: '$400 – $800 for a structural engineer evaluation',
     typicalRepairCost: 'Foundation repair $5,000 – $30,000+ depending on scope',
     howToCheck:
@@ -184,11 +232,11 @@ const PRIORITY_RULES: PriorityRule[] = [
     id: 'foundation_posttension',
     minYear: 1980,
     maxYear: CURRENT_YEAR,
-    counties: ['travis county'],
+    counties: Object.keys(EXPANSIVE_SOIL_REGIONS),
     title: 'Watch for signs of slab movement',
     priority: 'medium',
     eraBasis:
-      'Central Texas has widespread expansive clay soils that shrink and swell with moisture. Homes of this era are commonly built on post-tensioned slabs, which handle that movement better than older conventional slabs but cannot be cut or core-drilled without engineering review.',
+      'This region sits within the Texas Blackland Prairie / Gulf Coast expansive clay soil belt, where soils shrink and swell significantly with moisture. Homes of this era are commonly built on post-tensioned slabs, which handle that movement better than older conventional slabs but cannot be cut or core-drilled without engineering review.',
     costToCheck: 'Included in a general inspection; $400 – $800 for a structural engineer if signs are present',
     typicalRepairCost: 'Foundation repair $5,000 – $30,000+ depending on scope',
     howToCheck:
@@ -198,15 +246,33 @@ const PRIORITY_RULES: PriorityRule[] = [
     id: 'pier_and_beam',
     minYear: 1800,
     maxYear: 1965,
-    counties: ['travis county'],
+    counties: Object.keys(EXPANSIVE_SOIL_REGIONS),
     title: 'Have someone physically enter the crawlspace',
     priority: 'medium',
     eraBasis:
-      'Homes of this era in Central Texas were commonly built on pier-and-beam foundations rather than slabs. That makes the structure accessible for inspection, but also leaves joists, sills, and piers exposed to moisture and pest damage.',
+      'Homes of this era in this region were commonly built on pier-and-beam foundations rather than slabs. That makes the structure accessible for inspection, but also leaves joists, sills, and piers exposed to moisture and pest damage.',
     costToCheck: 'Usually included in a general inspection when the crawlspace is accessible',
     typicalRepairCost: 'Pier or beam repair and releveling $3,000 – $15,000+',
     howToCheck:
       'Ask your inspector to physically enter the crawlspace rather than looking in from the access hatch, and to report on moisture, rot, and pier condition.',
+  },
+  // Region-agnostic fallback for everywhere outside the expansive-soil counties above -- this
+  // doesn't assert a specific soil or foundation type, just that foundation issues are common,
+  // expensive, and worth a direct answer, which is true everywhere. Excluded in soil regions
+  // (see the soilRegion filter in getInspectionPriorities below) so a report never
+  // shows this alongside the more specific rule it would otherwise duplicate.
+  {
+    id: 'foundation_type_general',
+    minYear: 1800,
+    maxYear: CURRENT_YEAR,
+    title: 'Identify the foundation type and check for movement',
+    priority: 'medium',
+    eraBasis:
+      'Foundation type and condition vary widely by region, era, and local soil and drainage conditions. Settling, moisture intrusion, and structural movement are among the most expensive issues to discover after closing, and they are not always obvious during a casual walkthrough.',
+    costToCheck: 'Included in a general inspection',
+    typicalRepairCost: 'Varies widely by cause and severity — from minor crack sealing to $30,000+ for major structural repair',
+    howToCheck:
+      'Ask your inspector to identify the foundation type and note any signs of cracking, settling, or moisture intrusion. If anything is flagged, bring in a licensed structural engineer before your option period ends.',
   },
 
   // --- Envelope & materials ---
@@ -260,7 +326,7 @@ const PRIORITY_RULES: PriorityRule[] = [
     title: 'Radon test',
     priority: 'lower',
     eraBasis:
-      'Radon levels are driven by local geology rather than construction era, so this is not specific to a home of any particular vintage. Central Texas generally shows lower predicted indoor radon than much of the country.',
+      'Radon levels are driven by local geology rather than construction era, so this is not specific to a home of any particular vintage, and predicted levels vary significantly by county across the US.',
     costToCheck: '$150 – $300',
     typicalRepairCost: 'Mitigation system $800 – $2,500',
     howToCheck:
@@ -278,27 +344,40 @@ function getEraLabel(yearBuilt: number): string {
 }
 
 /**
- * Returns the inspection priorities for a (year built, county) pair, or null when the region
- * isn't covered or no rule applies. Null means callers render nothing -- never generic filler.
+ * Returns the inspection priorities for a (year built, county, state) pair, or null when no rule
+ * applies at all. Unlike the old version, this covers every US county: rules with no `counties`
+ * restriction (federal disclosure law, national product recalls, plumbing material timelines,
+ * system age) apply everywhere, and only the expansive-soil foundation rules are gated to the
+ * counties in EXPANSIVE_SOIL_REGIONS where that geology claim is actually documented. Null means
+ * callers render nothing -- never generic filler -- which in practice now only happens for an
+ * implausible or missing year built.
  */
 export function getInspectionPriorities(
   yearBuilt: number | null | undefined,
-  county: string | null | undefined
+  county: string | null | undefined,
+  state?: string | null
 ): InspectionPrioritiesResult | null {
   if (!yearBuilt || !Number.isFinite(yearBuilt)) return null;
   if (!isPlausibleYearBuilt(yearBuilt)) return null;
 
   const normalizedCounty = (county || '').toLowerCase().trim();
-  const region = COVERED_REGIONS[normalizedCounty];
-  if (!region) return null;
+  const soilRegion = EXPANSIVE_SOIL_REGIONS[normalizedCounty];
 
-  const matched = PRIORITY_RULES.filter(
+  let matched = PRIORITY_RULES.filter(
     (rule) =>
       yearBuilt >= rule.minYear &&
       yearBuilt <= rule.maxYear &&
       (!rule.counties || rule.counties.includes(normalizedCounty))
   );
+  // Outside expansive-soil counties, foundation_type_general is the fallback. Inside them, the
+  // more specific foundation_pre_posttension/foundation_posttension/pier_and_beam rules already
+  // cover the topic, so drop the generic one to avoid showing two foundation items side by side.
+  if (soilRegion) {
+    matched = matched.filter((rule) => rule.id !== 'foundation_type_general');
+  }
   if (matched.length === 0) return null;
+
+  const regionLabel = soilRegion?.label || buildFallbackRegionLabel(county, state);
 
   // Stable sort by priority band, preserving the declaration order above within each band.
   const priorities = [...matched]
@@ -308,7 +387,7 @@ export function getInspectionPriorities(
   return {
     yearBuilt,
     eraLabel: getEraLabel(yearBuilt),
-    regionLabel: region.label,
+    regionLabel,
     priorities,
   };
 }
