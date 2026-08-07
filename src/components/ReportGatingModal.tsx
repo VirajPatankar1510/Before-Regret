@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Mail, ShieldCheck, CheckCircle2, Lock, CreditCard, Sparkles, 
+import {
+  Mail, ShieldCheck, CheckCircle2, Lock, CreditCard, Sparkles,
   AlertCircle, ArrowRight, Loader2, KeyRound, MapPin, Check, UserCheck, Zap
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { PaymentProcessor } from './PaymentProcessor';
 
 interface ReportGatingModalProps {
   isOpen: boolean;
@@ -20,12 +21,8 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
 }) => {
   const { user, isClerkActive, triggerClerkSignIn, loginWithMockUser, setActiveRole } = useAuth();
 
-  const [step, setStep] = useState<'AUTH_REQUIRED' | 'CLAIM_FREE' | 'PAYMENT_INTERCEPT' | 'PROCESSING'>('CLAIM_FREE');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCvc, setCardCvc] = useState('');
+  const [step, setStep] = useState<'AUTH_REQUIRED' | 'CLAIM_FREE' | 'PAYMENT_INTERCEPT' | 'PROCESSING' | 'PAYMENT'>('CLAIM_FREE');
   const [errorMessage, setErrorMessage] = useState('');
-  const [simulatedFailure, setSimulatedFailure] = useState(false);
   const [isBypassing, setIsBypassing] = useState(false);
 
   // Sync step based on authentication status and report quota
@@ -87,22 +84,20 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
   const handleProcessPayment = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
+    setStep('PAYMENT');
+  };
 
-    if (simulatedFailure) {
-      setErrorMessage('Payment failed: Card declined by bank. Please verify your billing details or try a different card.');
-      return;
-    }
-
-    if (!cardNumber || cardNumber.length < 12) {
-      setErrorMessage('Please enter a valid credit card number.');
-      return;
-    }
-
+  const handlePaymentSuccess = (result: any) => {
     setStep('PROCESSING');
     setTimeout(() => {
       const activeEmail = user?.email || `${user?.uid}@beforeregret.com`;
       handleProceedGeneration(activeEmail, true);
     }, 1200);
+  };
+
+  const handlePaymentError = (error: string) => {
+    setErrorMessage(error);
+    setStep('PAYMENT_INTERCEPT');
   };
 
   const handleProceedGeneration = (email: string, isPaid: boolean) => {
@@ -283,70 +278,47 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
               </div>
             )}
 
-            {/* Card Inputs */}
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Card Number</label>
-                <div className="relative">
-                  <CreditCard className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-                  <input
-                    type="text"
-                    required
-                    placeholder="4242 •••• •••• 4242"
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(e.target.value)}
-                    className="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 font-mono focus:outline-none focus:border-blue-600"
-                  />
-                </div>
+            <div className="py-2">
+              <div className="text-xs text-slate-600 text-center mb-3 font-medium">
+                Secure Payment Processing
               </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Expiry (MM/YY)</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="12/28"
-                    value={cardExpiry}
-                    onChange={(e) => setCardExpiry(e.target.value)}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-xs text-slate-900 font-mono focus:outline-none focus:border-blue-600"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">CVC</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="123"
-                    value={cardCvc}
-                    onChange={(e) => setCardCvc(e.target.value)}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-xs text-slate-900 font-mono focus:outline-none focus:border-blue-600"
-                  />
-                </div>
-              </div>
+              <button
+                type="submit"
+                className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <CreditCard className="w-4 h-4" />
+                <span>Proceed to PayPal</span>
+              </button>
             </div>
-
-            {/* Edge Case Test Toggle */}
-            <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-              <label className="flex items-center gap-1.5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={simulatedFailure}
-                  onChange={(e) => setSimulatedFailure(e.target.checked)}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-0"
-                />
-                <span>Simulate Card Decline</span>
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <CreditCard className="w-4 h-4" />
-              <span>Pay $14.99 &amp; Generate Report</span>
-            </button>
           </form>
+        )}
+
+        {/* STEP C2: PAYPAL PAYMENT */}
+        {user && step === 'PAYMENT' && (
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-mono font-bold">
+                <CreditCard className="w-3.5 h-3.5" />
+                <span>Secure Payment</span>
+              </div>
+              <h3 className="font-serif text-2xl font-bold text-slate-900">
+                Complete Your Payment
+              </h3>
+            </div>
+
+            <PaymentProcessor
+              amount={14.99}
+              currency="USD"
+              type="report"
+              description={`Property Report for ${targetAddress}`}
+              propertyAddress={targetAddress}
+              userEmail={user.email || `${user.uid}@beforeregret.com`}
+              userId={user.uid}
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+              onClose={() => setStep('PAYMENT_INTERCEPT')}
+            />
+          </div>
         )}
 
         {/* STEP D: PROCESSING SPINNER */}
