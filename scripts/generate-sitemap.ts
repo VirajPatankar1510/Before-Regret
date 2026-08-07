@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } from '../src/utils/sitemapGenerator';

@@ -60,10 +60,10 @@ export async function generateChildSitemapXml(name: string): Promise<string> {
       const rows = await withDb((sql) => sql`
         SELECT slug, published_at FROM articles WHERE status = 'published' ORDER BY published_at DESC
       `);
-      (rows as unknown as Array<{ slug: string; published_at: string | null }>).forEach((g) => {
+      (rows as unknown as Array<{ slug: string; published_at: string | Date | null }>).forEach((g) => {
         entries.push({
           loc: `${BASE_URL}/guides/${g.slug}/`,
-          lastmod: g.published_at ? g.published_at.slice(0, 10) : today,
+          lastmod: g.published_at ? new Date(g.published_at).toISOString().slice(0, 10) : today,
           changefreq: 'monthly',
           priority: '0.7'
         });
