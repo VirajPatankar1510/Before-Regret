@@ -3,22 +3,16 @@ import {
   CheckCircle2, FileText, ArrowRight, ShieldCheck, Database, 
   MapPin, AlertCircle, Sparkles, Lock, Layers, HelpCircle
 } from 'lucide-react';
-import { ResearchSummaryData, PropertySearchResult } from '../types';
-import { InspectionPriorities } from './InspectionPriorities';
+import { ResearchSummaryData } from '../types';
 
 interface ResearchSummaryViewProps {
   summaryData: ResearchSummaryData;
   onGenerateReport: () => void;
-  // Passed separately rather than read off summaryData.address: the server rebuilds the address
-  // object in its response and drops the requester-declared fields, so year built only survives
-  // on the original client-side selection.
-  declaredProperty?: PropertySearchResult | null;
 }
 
 export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
   summaryData,
-  onGenerateReport,
-  declaredProperty
+  onGenerateReport
 }) => {
   const { address, totalSourcesSearched, usefulSourcesFound, price, priceRationale, publicSourcesList } = summaryData;
 
@@ -114,15 +108,6 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
         </div>
 
       </div>
-
-      {/* Era-based inspection budget priorities -- renders nothing unless a rule set covers this
-          (year built, county) pair. */}
-      <InspectionPriorities
-        yearBuilt={declaredProperty?.yearBuilt}
-        county={declaredProperty?.county || address?.county}
-        state={address?.state}
-      />
-
 
       {/* Public Data Sources Accordion / Preview */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
