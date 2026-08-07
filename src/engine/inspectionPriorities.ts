@@ -32,7 +32,7 @@
 
 export type PriorityLevel = 'high' | 'medium' | 'lower';
 
-const CURRENT_YEAR = new Date().getFullYear();
+export const CURRENT_YEAR = new Date().getFullYear();
 
 export interface InspectionPriority {
   id: string;
@@ -70,7 +70,7 @@ export interface InspectionPrioritiesResult {
 // product recalls, plumbing material timelines, system age) apply everywhere in the US and are
 // never filtered by this list. Only the three foundation/soil rules are region-specific, because
 // they make a geology claim ("this area has expansive clay") that isn't true everywhere.
-const EXPANSIVE_SOIL_REGIONS: Record<string, { label: string }> = {
+export const EXPANSIVE_SOIL_REGIONS: Record<string, { label: string }> = {
   // Austin metro
   'travis county': { label: 'Travis County, TX' },
   'williamson county': { label: 'Williamson County, TX' },
@@ -92,7 +92,7 @@ const EXPANSIVE_SOIL_REGIONS: Record<string, { label: string }> = {
 };
 
 /** Title-cases a raw county string ("king county" -> "King County") for the fallback label. */
-function titleCaseCounty(county: string): string {
+export function titleCaseCounty(county: string): string {
   return county
     .split(' ')
     .map((word) => (word.length > 0 ? word[0].toUpperCase() + word.slice(1) : word))
@@ -104,7 +104,7 @@ function titleCaseCounty(county: string): string {
  * above. Falls back gracefully rather than guessing at soil geology: echoes back whatever
  * county/state the requester gave us, or a generic "United States" label if neither is available.
  */
-function buildFallbackRegionLabel(county: string | null | undefined, state: string | null | undefined): string {
+export function buildFallbackRegionLabel(county: string | null | undefined, state: string | null | undefined): string {
   const cleanCounty = (county || '').trim();
   const cleanState = (state || '').trim();
   if (cleanCounty && cleanState) return `${titleCaseCounty(cleanCounty)}, ${cleanState}`;
@@ -336,7 +336,7 @@ const PRIORITY_RULES: PriorityRule[] = [
 
 const PRIORITY_ORDER: Record<PriorityLevel, number> = { high: 0, medium: 1, lower: 2 };
 
-function getEraLabel(yearBuilt: number): string {
+export function getEraLabel(yearBuilt: number): string {
   if (yearBuilt < 1950) return 'pre-1950 construction';
   if (yearBuilt >= 2020) return '2020s construction';
   const decade = Math.floor(yearBuilt / 10) * 10;
