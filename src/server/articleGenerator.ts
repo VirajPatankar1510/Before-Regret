@@ -1,0 +1,59 @@
+// Builds the prompt for AI-assisted article drafting (see the "Generate with AI" button in
+// SeoAdminPanel.tsx). Two things from the original ask are deliberately NOT implemented here,
+// and it's worth saying why up front:
+//
+// - "DSR" / competition score: there is no way for Gemini (or anything without a live crawl of
+//   the search results and a backlink index) to know a real keyword's difficulty. Any number it
+//   produced here would be invented, the same problem as the fabricated per-ZIP stats removed
+//   earlier this session. Instead of a fake score, the prompt encodes the *strategy* a real score
+//   would inform: pick one specific, long-tail angle rather than a broad head term, because
+//   long-tail is what a new, low-authority site can realistically rank for.
+// - Plagiarism checking: nothing here calls a plagiarism-detection API (none is wired up). The
+//   prompt instructs the model to write original analysis rather than paraphrase a source, but
+//   that's a writing instruction, not a guarantee -- there's no automated check behind it.
+
+export const ARTICLE_SYSTEM_INSTRUCTION = `You are an expert SEO content writer for BeforeRegret, a US property research platform that helps home buyers avoid regret after closing. You write articles that read as original work by an experienced researcher -- never as AI-generated boilerplate, a keyword-stuffed listicle, or a corporate brochure.
+
+HARD RULES -- breaking any of these makes the output unusable:
+1. Never invent a specific statistic, percentage, dollar figure, or study result. Only state facts that are well-established public record (e.g. "the federal lead-paint disclosure law took effect in 1978" is fine; a specific percentage of homes affected is not, unless you can name the real source it came from).
+2. Never make a claim about a specific property. Every statement is class-level: "homes built in this era commonly..." never "this house has...".
+3. Never state or imply personalized insurance, legal, or financial advice. Frame findings as "some insurers have documented declining coverage for X" -- never "you will/won't be covered."
+4. Every actionable recommendation routes to a licensed professional (inspector, structural engineer, plumber, electrician, insurance agent) as the next step. The article itself is never a substitute for one.
+5. Hedge appropriately -- "commonly," "often," "can," "may" -- never "always," "will," "guaranteed."
+6. Vary sentence length and structure like a real person writing. No "In today's fast-paced world," no "In conclusion," no listicle padding, no filler sentences added just to hit a word count.
+7. Write only original analysis and explanation in your own words. Do not paraphrase or lift structure from any specific existing article.`;
+
+const PILLAR_STRATEGY = `BeforeRegret's content strategy has six pillars. If no specific topic is given, pick the single best angle from these:
+1. Insurance blockers -- specific things (Federal Pacific/Zinsco panels, polybutylene pipe, aluminum wiring, knob-and-tube) that some insurers have documented declining or surcharging.
+2. Era guides -- what matters most for a home built in a specific decade (pairs with BeforeRegret's Inspection Budget Priorities feature).
+3. What a general inspection won't cover -- sewer scope, structural engineer review, asbestos sampling, EIFS moisture survey -- and why each needs a separate appointment.
+4. Seller question scripts -- specific questions a buyer should ask, by topic.
+5. Regret-native content -- what buyers commonly say they wish they'd checked before closing.
+6. Cost after closing -- property tax reassessment mechanics, insurance deductible structure, era-based utility costs.`;
+
+export function buildArticlePrompt(topicSeed: string): { systemInstruction: string; contents: string } {
+  const trimmedTopic = topicSeed.trim();
+
+  const topicInstruction = trimmedTopic
+    ? `Topic seed given by the writer: "${trimmedTopic}"\n\nRefine this into the single best specific, long-tail angle -- the exact question a worried buyer would actually type into Google -- rather than writing broadly about the general subject.`
+    : `No topic was given. ${PILLAR_STRATEGY}\n\nPick the single best long-tail angle within that pillar -- not the pillar name itself as a title.`;
+
+  const contents = `${topicInstruction}
+
+SEO approach for this article:
+- Target ONE specific, long-tail search query. Long-tail (specific, lower-competition, high buyer-intent) is what a newer site can realistically rank for -- not a broad head term.
+- Open with 1-2 sentences that state the real stakes -- what it costs someone to get this wrong -- before any background or definition. That's the hook.
+- Structure with markdown headers (## for sections) and short paragraphs (2-4 sentences) so it's scannable.
+- Target 1,200-1,800 words: long enough to fully and specifically answer the question, never padded to hit a number.
+- Demonstrate real expertise with specific mechanisms, eras, and regulations -- citing real named agencies or laws generically (EPA, CPSC, FEMA, local building codes) without inventing a specific report or figure from them.
+- End with one clear, concrete next step the reader can act on today.
+
+Return your response in EXACTLY this format, with nothing before or after it:
+
+TITLE: <specific, compelling headline, ideally under 65 characters>
+META: <one to two sentences, under 160 characters, written to make someone click through from a Google search result>
+---
+<the full article body in markdown, starting immediately after this line>`;
+
+  return { systemInstruction: ARTICLE_SYSTEM_INSTRUCTION, contents };
+}

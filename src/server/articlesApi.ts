@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
+import { buildArticlePrompt } from './articleGenerator.js';
 
 // Real read/write path for editorial articles, replacing the static EDITORIAL_GUIDES_DATASET
 // array and the fake SeoAdminPanel "publish" button that only ever changed local React state.
@@ -79,6 +80,56 @@ export function registerArticleRoutes(app: Express) {
     } catch (err: any) {
       console.error('[articles] create failed:', err);
       res.status(500).json({ success: false, error: 'Could not create the article.' });
+    }
+  });
+
+  // --- Admin: AI-assisted draft, streamed live into the editor ---------------------------------
+  // Streams raw text chunks as they arrive from Gemini (not full SSE framing -- there's only one
+  // event type here, so a plain streamed response body is enough; the client reads it with
+  // response.body.getReader()). See src/server/articleGenerator.ts for the prompt and the
+  // deliberate limits on what this can and can't do (no invented keyword-difficulty score, no
+  // plagiarism-checking guarantee).
+  app.post('/api/admin/articles/generate', requireAdmin, async (req: Request, res: Response) => {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      res.status(503).json({ success: false, error: 'AI generation is not configured on this server (missing GEMINI_API_KEY).' });
+      return;
+    }
+    const topic = typeof req.body?.topic === 'string' ? req.body.topic : '';
+
+    try {
+      const { GoogleGenAI } = await import('@google/genai');
+      const ai = new GoogleGenAI({
+        apiKey,
+        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
+      });
+      const { systemInstruction, contents } = buildArticlePrompt(topic);
+
+      const stream = await ai.models.generateContentStream({
+        model: 'gemini-3.6-flash',
+        contents,
+        config: {
+          systemInstruction,
+          temperature: 0.8,
+        },
+      });
+
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.flushHeaders?.();
+
+      for await (const chunk of stream) {
+        const text = chunk.text;
+        if (text) res.write(text);
+      }
+      res.end();
+    } catch (err: any) {
+      console.error('[articles] generate failed:', err);
+      if (!res.headersSent) {
+        res.status(500).json({ success: false, error: 'AI generation failed. Try again.' });
+      } else {
+        res.end();
+      }
     }
   });
 

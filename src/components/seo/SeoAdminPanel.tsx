@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Save, Send, Undo2, Trash2, AlertCircle
+  Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Save, Send, Undo2, Trash2, AlertCircle, Sparkles
 } from 'lucide-react';
 
 interface SeoAdminPanelProps {
@@ -27,9 +27,9 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [view, setView] = useState<'list' | 'edit'>('list');
   const [articles, setArticles] = useState<Article[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [activeId, setActiveId] = useState<number | null>(null);
   const [draft, setDraft] = useState<Article | null>(null);
   const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [savedNotice, setSavedNotice] = useState(false);
 
@@ -52,7 +52,6 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   }, []);
 
   const openEditor = (article: Article) => {
-    setActiveId(article.id);
     setDraft(article);
     setActionError(null);
     setView('edit');
@@ -75,6 +74,57 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       }
     } catch {
       setActionError('Could not reach the server.');
+    }
+  };
+
+  // Parses the model's streamed output -- "TITLE: ...\nMETA: ...\n---\n<body>" -- from the full
+  // accumulated text so far. Re-parsing the whole buffer on every chunk (rather than trying to
+  // diff incrementally) is simple and cheap at this size (a few KB for a full article).
+  const parseGeneratedText = (fullText: string): { title: string; metaDescription: string; bodyMarkdown: string } => {
+    const delimiterIndex = fullText.indexOf('\n---\n');
+    const headerBlock = delimiterIndex === -1 ? fullText : fullText.slice(0, delimiterIndex);
+    const body = delimiterIndex === -1 ? '' : fullText.slice(delimiterIndex + 5);
+    const titleMatch = headerBlock.match(/^TITLE:\s*(.+)$/m);
+    const metaMatch = headerBlock.match(/^META:\s*(.+)$/m);
+    // Fallback: if the model didn't follow the delimiter format at all, don't lose the output --
+    // show everything as the body rather than silently dropping it.
+    return {
+      title: titleMatch ? titleMatch[1].trim() : '',
+      metaDescription: metaMatch ? metaMatch[1].trim() : '',
+      bodyMarkdown: delimiterIndex === -1 ? fullText : body,
+    };
+  };
+
+  const generateWithAi = async () => {
+    if (!draft || generating) return;
+    setGenerating(true);
+    setActionError(null);
+    try {
+      const res = await fetch('/api/admin/articles/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic: draft.title }),
+      });
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => null);
+        setActionError(data?.error || 'AI generation failed. Try again.');
+        return;
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        fullText += decoder.decode(value, { stream: true });
+        const parsed = parseGeneratedText(fullText);
+        setDraft((prev) => (prev ? { ...prev, ...parsed } : prev));
+      }
+    } catch {
+      setActionError('Lost connection while generating. What was written so far is still here.');
+    } finally {
+      setGenerating(false);
     }
   };
 
@@ -281,14 +331,38 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           </div>
         )}
 
+        <div className="p-4 bg-indigo-950/40 border border-indigo-800/60 rounded-2xl space-y-3">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div className="text-sm font-bold text-white flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-indigo-400" />
+                <span>Write a first draft with AI</span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Type a rough topic in the title below (or leave it blank for a suggestion), then click Generate.
+                It fills in the title, description, and article live as it writes.
+              </p>
+            </div>
+            <button
+              onClick={generateWithAi}
+              disabled={generating}
+              className="shrink-0 flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer disabled:opacity-50"
+            >
+              {generating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+              <span>{generating ? 'Writing...' : 'Generate with AI'}</span>
+            </button>
+          </div>
+        </div>
+
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Title</label>
           <input
             type="text"
             value={draft.title}
             onChange={(e) => setDraft({ ...draft, title: e.target.value })}
-            placeholder="What's this article called?"
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-base font-bold placeholder:text-slate-600 focus:outline-none"
+            placeholder="What's this article called? Or type a rough topic and generate with AI below."
+            disabled={generating}
+            className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-base font-bold placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
           />
         </div>
 
@@ -302,7 +376,8 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             onChange={(e) => setDraft({ ...draft, metaDescription: e.target.value })}
             placeholder="One or two sentences summarizing the article..."
             rows={2}
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none resize-none"
+            disabled={generating}
+            className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none resize-none disabled:opacity-60"
           />
         </div>
 
@@ -311,9 +386,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           <textarea
             value={draft.bodyMarkdown}
             onChange={(e) => setDraft({ ...draft, bodyMarkdown: e.target.value })}
-            placeholder="Write the article here..."
+            placeholder="Write the article here, or click Generate with AI above."
             rows={20}
-            className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-sm leading-relaxed placeholder:text-slate-600 focus:outline-none resize-y font-mono"
+            disabled={generating}
+            className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-sm leading-relaxed placeholder:text-slate-600 focus:outline-none resize-y font-mono disabled:opacity-60"
           />
         </div>
 
