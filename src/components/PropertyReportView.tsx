@@ -105,11 +105,28 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   const hasInspectionPriorities = Boolean(report.inspectionPriorities);
   const hasSellerQuestions = Boolean(report.sellerQuestionsScript);
 
+  // Findings whose status is a real outcome -- we queried a live source and got an answer either
+  // way -- get a full card. 'NOT YET VERIFIED' ones are rendered as a compact list instead: they
+  // all say materially the same thing ("no live connection yet, check it here"), so six identical
+  // full-size cards made the report look padded rather than thorough.
+  const resolvedFindings = findings.filter(f => f.status !== 'NOT YET VERIFIED');
+
   const statusBadgeClasses = (status: string) => {
     if (status === 'CONFIRMED RECORD') return 'bg-emerald-50 text-emerald-800 border-emerald-200';
     if (status === 'NO RECORD FOUND') return 'bg-amber-50 text-amber-800 border-amber-200';
     return 'bg-slate-100 text-slate-600 border-slate-300';
   };
+
+  // Display-only labels. The underlying CanonicalStatus values are the wire/data contract (they
+  // come back from the server and drive the filters above), so they stay as-is -- only what the
+  // reader sees changes. 'NOT YET VERIFIED' in particular read as a system error rather than an
+  // instruction; 'Needs verification' says the same thing as a next step.
+  const STATUS_LABEL: Record<string, string> = {
+    'CONFIRMED RECORD': 'Confirmed',
+    'NO RECORD FOUND': 'No record found',
+    'NOT YET VERIFIED': 'Needs verification',
+  };
+  const statusLabel = (status: string) => STATUS_LABEL[status] || status;
 
   // Toggle checklist checkbox
   const toggleCheck = (id: string) => {
@@ -121,29 +138,32 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
       {/* Print / PDF Print Styles */}
       <style>{`
         @media print {
+          @page { margin: 14mm; }
           header { display: none !important; }
           footer { display: none !important; }
           body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; color: #0f172a !important; background: #ffffff !important; }
           main { max-width: 100% !important; padding: 0 !important; }
-          section { page-break-inside: avoid; margin-bottom: 24px !important; }
-          h1, h2, h3, h4 { word-spacing: normal !important; letter-spacing: normal !important; }
-          .shadow-xs, .shadow-md, .shadow-xl { box-shadow: none !important; }
+          h1, h2, h3, h4 { word-spacing: normal !important; letter-spacing: normal !important; break-after: avoid; }
+          .shadow-xs, .shadow-sm, .shadow-md, .shadow-xl { box-shadow: none !important; }
           a { text-decoration: underline !important; color: #2563eb !important; }
+          /* Keep each finding, priority, and question intact rather than letting one split across
+             a page boundary; sections themselves are allowed to break since they run long. */
+          section { margin-bottom: 20px !important; }
+          [data-print-block] { break-inside: avoid; page-break-inside: avoid; }
+          /* Status chips and priority rails carry meaning here, so keep their fills in print. */
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
       `}</style>
 
       {/* Header Bar */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-black flex items-center justify-center text-sm shadow-sm">
-              BR
-            </div>
-            <div>
-              <span className="font-serif font-black text-slate-900 text-base tracking-tight block">BeforeRegret</span>
-              <span className="text-[10px] font-medium text-slate-500 block uppercase tracking-wide">Property Insights</span>
-            </div>
-          </div>
+          {/* Just a label, not a second brand lockup -- the global Navbar directly above this
+              already carries the logo and wordmark, and stacking two of them read as chrome
+              rather than as a document. */}
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            Property Insights
+          </span>
 
           <div className="flex items-center gap-2">
             <button
@@ -171,8 +191,11 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xs">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
+              {/* The "what kind of document is this" line. The caveat it used to spell out in full
+                  caps now lives where it's actionable instead -- the Needs verification list below
+                  and the closing disclaimer -- rather than shouting it above the address. */}
               <span className={`text-xs font-semibold uppercase tracking-wide block ${mostlyUnverified ? 'text-slate-500' : 'text-blue-600'}`}>
-                {mostlyUnverified ? 'Records reference — not yet independently verified' : 'Verified public property research'}
+                {mostlyUnverified ? 'Public records reference' : 'Verified public property research'}
               </span>
               <h1 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight mt-1">
                 {formattedAddress}
@@ -181,22 +204,6 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             <span className="text-xs text-slate-400 shrink-0">
               {report.headerInfo?.reportDate || 'August 2026'}
             </span>
-          </div>
-
-          {/* Quick Metrics -- a stat line, not separate dashboard tiles */}
-          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2 pt-3 border-t border-slate-100 text-sm">
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-bold text-slate-900">{sourceCount}</span>
-              <span className="text-xs text-slate-500">public sources linked</span>
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-bold text-emerald-700">{verifiedFindings.length}</span>
-              <span className="text-xs text-slate-500">confirmed</span>
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-bold text-slate-600">{pendingFindings.length}</span>
-              <span className="text-xs text-slate-500">not yet verified</span>
-            </div>
           </div>
         </section>
 
@@ -212,49 +219,98 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </h2>
           </div>
 
-          <div className="space-y-4">
-            {findings.map((finding) => (
-              <div key={finding.id} className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 hover:border-slate-300 transition-colors">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <span className="text-[11px] text-slate-400 font-medium block">
-                      {finding.category} · {finding.sourceAgency || 'Public Source'}
+          {/* Real outcomes -- full cards. */}
+          {resolvedFindings.length > 0 && (
+            <div className="space-y-4">
+              {resolvedFindings.map((finding) => (
+                <div
+                  key={finding.id}
+                  data-print-block
+                  className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 hover:border-slate-300 transition-colors"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <span className="text-[11px] text-slate-400 font-medium block">
+                        {finding.category} · {finding.sourceAgency || 'Public Source'}
+                      </span>
+                      <h3 className="text-lg font-serif font-bold text-slate-900 mt-0.5">
+                        {finding.subject}
+                      </h3>
+                    </div>
+                    <span className={`shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full border ${statusBadgeClasses(finding.status)}`}>
+                      {statusLabel(finding.status)}
                     </span>
-                    <h3 className="text-lg font-serif font-bold text-slate-900 mt-0.5">
-                      {finding.subject}
-                    </h3>
                   </div>
-                  <span className={`shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full border ${statusBadgeClasses(finding.status)}`}>
-                    {finding.status}
-                  </span>
-                </div>
 
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  {finding.whatWeFound} {finding.whyItMatters} {finding.suggestedNextStep}
-                  {finding.sourceUrl && (
-                    <>
-                      {' '}
-                      <a
-                        href={finding.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold hover:underline"
-                      >
-                        <span>Check the official record</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    {finding.whatWeFound} {finding.whyItMatters} {finding.suggestedNextStep}
+                    {finding.sourceUrl && (
+                      <>
+                        {' '}
+                        <a
+                          href={finding.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+                        >
+                          <span>Check the official record</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </>
+                    )}
+                  </p>
+
+                  {/* Contextual vendor match for this specific finding's trade category, if a real
+                      vendor has paid for it in this ZIP -- renders nothing otherwise. */}
+                  {finding.sponsoredVendor && (
+                    <SponsoredVendorCard vendor={finding.sponsoredVendor} />
                   )}
-                </p>
+                </div>
+              ))}
+            </div>
+          )}
 
-                {/* Contextual vendor match for this specific finding's trade category, if a real
-                    vendor has paid for it in this ZIP -- renders nothing otherwise. */}
-                {finding.sponsoredVendor && (
-                  <SponsoredVendorCard vendor={finding.sponsoredVendor} />
-                )}
+          {/* Needs verification -- one dense list instead of N near-identical cards. */}
+          {pendingFindings.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                <h3 className="text-base font-bold text-slate-900">Needs verification</h3>
+                <span className="text-xs text-slate-500">
+                  {pendingFindings.length} {pendingFindings.length === 1 ? 'record' : 'records'} to confirm at the source
+                </span>
               </div>
-            ))}
-          </div>
+
+              <div className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100 overflow-hidden">
+                {pendingFindings.map((finding) => (
+                  <div key={finding.id} data-print-block className="p-5 space-y-2">
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                      <h4 className="text-sm font-bold text-slate-900 min-w-0">
+                        {finding.subject}
+                      </h4>
+                      {finding.sourceUrl && (
+                        <a
+                          href={finding.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+                        >
+                          <span>{finding.sourceAgency || 'Check record'}</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {finding.suggestedNextStep}
+                    </p>
+
+                    {finding.sponsoredVendor && (
+                      <SponsoredVendorCard vendor={finding.sponsoredVendor} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <p className="text-xs text-slate-500 leading-relaxed">
             Want to see every public source BeforeRegret checks, and which ones are live vs. reference-only?{' '}

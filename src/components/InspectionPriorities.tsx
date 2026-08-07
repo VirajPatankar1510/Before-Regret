@@ -61,7 +61,7 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
         {result.priorities.map((item) => {
           const styles = PRIORITY_STYLES[item.priority];
           return (
-            <div key={item.id} className="flex gap-3.5">
+            <div key={item.id} data-print-block className="flex gap-3.5">
               <div className={`w-1 rounded-full shrink-0 ${styles.rail}`} aria-hidden="true" />
               <div className="min-w-0 flex-1 space-y-2 py-0.5">
                 <div className="flex flex-wrap items-center gap-2">

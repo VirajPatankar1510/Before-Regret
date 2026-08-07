@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircleQuestion, ChevronDown, Info, Copy, Check } from 'lucide-react';
+import { MessageCircleQuestion, Info, Copy, Check } from 'lucide-react';
 import { getSellerQuestions, QuestionPriority, DeclaredPropertyType } from '../engine/sellerQuestions';
 import { SellerQuestionsReportData } from '../types';
 
@@ -14,17 +14,30 @@ interface SellerQuestionsProps {
   precomputed?: SellerQuestionsReportData | null;
 }
 
-const PRIORITY_CHIP: Record<QuestionPriority, string> = {
-  high: 'bg-blue-50 text-blue-700 border-blue-200',
-  medium: 'bg-slate-100 text-slate-700 border-slate-200',
-  lower: 'bg-slate-100 text-slate-500 border-slate-200',
+const PRIORITY_STYLES: Record<QuestionPriority, { label: string; chip: string; rail: string }> = {
+  high: {
+    label: 'Ask first',
+    chip: 'bg-blue-50 text-blue-700 border-blue-200',
+    rail: 'bg-blue-600',
+  },
+  medium: {
+    label: 'Ask',
+    chip: 'bg-slate-100 text-slate-700 border-slate-200',
+    rail: 'bg-slate-400',
+  },
+  lower: {
+    label: 'If relevant',
+    chip: 'bg-slate-100 text-slate-500 border-slate-200',
+    rail: 'bg-slate-300',
+  },
 };
 
-// Collapsed by default -- each question is one line until tapped. With up to 8 questions
-// possible for an older home in a soil-region county, showing why-asking + what-to-listen-for
-// for all of them at once would read as a wall of text rather than a short checklist you can
-// actually bring to a call with your agent. Renders nothing at all when no rule applies, same
-// principle as InspectionPriorities.
+// Every question renders fully expanded, matching InspectionPriorities' rail layout. This was
+// previously a tap-to-open accordion, which hid why-asking / what-to-listen-for behind an
+// interaction -- fine on screen, but it meant a printed or PDF-exported report lost that content
+// entirely (collapsed panels don't print), and the paid report is explicitly meant to be
+// PDF-friendly. Renders nothing at all when no rule applies, same principle as
+// InspectionPriorities.
 export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
   yearBuilt,
   county,
@@ -34,7 +47,6 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
 }) => {
   const result =
     precomputed !== undefined ? precomputed : getSellerQuestions(yearBuilt, county, state, declaredPropertyType);
-  const [openId, setOpenId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   if (!result) return null;
@@ -57,7 +69,7 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
           <button
             type="button"
             onClick={handleCopy}
-            className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
+            className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium cursor-pointer print:hidden"
           >
             {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? 'Copied!' : 'Copy questions'}</span>
@@ -68,41 +80,33 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
         </h2>
         <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
           Based on the year built you entered (<strong className="text-slate-900">{result.yearBuilt}</strong>) and this
-          property's era and area. Tap a question to see why it's worth asking and what to listen for in the answer.
+          property's era and area.
         </p>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         {result.questions.map((item) => {
-          const isOpen = openId === item.id;
+          const styles = PRIORITY_STYLES[item.priority];
           return (
-            <div key={item.id} className="border border-slate-200 rounded-2xl overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setOpenId(isOpen ? null : item.id)}
-                aria-expanded={isOpen}
-                className="w-full flex items-center gap-3 text-left px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <span
-                  className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${PRIORITY_CHIP[item.priority]}`}
-                >
-                  {item.priority === 'high' ? 'Ask first' : item.priority === 'medium' ? 'Ask' : 'If relevant'}
-                </span>
-                <span className="min-w-0 flex-1 text-sm font-semibold text-slate-900">{item.question}</span>
-                <ChevronDown
-                  className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                />
-              </button>
-
-              {isOpen && (
-                <div className="px-4 pb-4 pt-1 space-y-2 border-t border-slate-100">
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{item.whyAsking}</p>
-                  <p className="text-xs text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 leading-relaxed">
-                    <span className="font-bold text-slate-900">Listen for: </span>
-                    {item.whatToListenFor}
-                  </p>
+            <div key={item.id} data-print-block className="flex gap-3.5">
+              <div className={`w-1 rounded-full shrink-0 ${styles.rail}`} aria-hidden="true" />
+              <div className="min-w-0 flex-1 space-y-2 py-0.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h4 className="font-bold text-sm sm:text-base text-slate-900">{item.question}</h4>
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${styles.chip}`}
+                  >
+                    {styles.label}
+                  </span>
                 </div>
-              )}
+
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{item.whyAsking}</p>
+
+                <p className="text-xs text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 leading-relaxed">
+                  <span className="font-bold text-slate-900">Listen for: </span>
+                  {item.whatToListenFor}
+                </p>
+              </div>
             </div>
           );
         })}
