@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
-import { ChevronRight, Clock, Calendar, Loader2 } from 'lucide-react';
+import { ChevronRight, Clock, Calendar, Loader2, MessageCircleQuestion, ExternalLink } from 'lucide-react';
+import { renderArticleMarkdown } from '../../utils/renderArticleMarkdown';
+import { resolveKnownSource } from '../../data/knownSources';
 
 interface GuidePageViewProps {
   guideSlug: string;
@@ -13,6 +15,8 @@ interface Article {
   title: string;
   metaDescription: string;
   bodyMarkdown: string;
+  quickAnswer: string;
+  sources: string[];
   status: string;
   publishedAt: string | null;
 }
@@ -86,7 +90,23 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             { '@type': 'ListItem', 'position': 2, 'name': 'Editorial Guides', 'item': 'https://beforeregret.com/guides/' },
             { '@type': 'ListItem', 'position': 3, 'name': article.title, 'item': canonicalUrl }
           ]
-        }
+        },
+        // FAQPage schema using the title as the question and the Quick Answer as the accepted
+        // answer -- this is the structured-data version of the same Quick Answer box rendered on
+        // the page, giving search engines an explicit machine-readable target for a featured
+        // snippet instead of hoping they extract it correctly from prose.
+        ...(article.quickAnswer ? [{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          'mainEntity': [{
+            '@type': 'Question',
+            'name': article.title,
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': article.quickAnswer
+            }
+          }]
+        }] : [])
       ]
     });
   }, [article, canonicalUrl]);
@@ -159,12 +179,54 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           )}
         </div>
 
+        {/* Quick Answer -- a short, self-contained answer up top for skimmers and search
+            snippets, separate from the meta description above (that's written for the Google
+            results page; this is written to be read on the page itself). */}
+        {article.quickAnswer && (
+          <div className="bg-blue-50 border border-blue-200 rounded-3xl p-6 sm:p-8 space-y-2">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-blue-700">
+              <MessageCircleQuestion className="w-3.5 h-3.5" />
+              <span>Quick answer</span>
+            </div>
+            <p className="text-sm sm:text-base text-blue-950 leading-relaxed font-medium">
+              {article.quickAnswer}
+            </p>
+          </div>
+        )}
+
         {/* Article Body */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm text-xs sm:text-sm text-slate-800 leading-relaxed font-normal">
-          <div className="prose max-w-none space-y-4 whitespace-pre-line">
-            {article.bodyMarkdown}
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm text-sm">
+          <div className="max-w-none">
+            {renderArticleMarkdown(article.bodyMarkdown)}
           </div>
         </div>
+
+        {/* Sources -- resolved from a hand-verified lookup (src/data/knownSources.ts), never
+            from a URL the model wrote itself. See src/server/articleGenerator.ts for why. */}
+        {article.sources.length > 0 && (
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Sources</h2>
+            <ul className="space-y-2">
+              {article.sources.map((code) => {
+                const source = resolveKnownSource(code);
+                if (!source) return null;
+                return (
+                  <li key={code}>
+                    <a
+                      href={source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                    >
+                      <span>{source.name}</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
 
       </div>
     </div>

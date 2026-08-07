@@ -15,6 +15,8 @@ interface ArticleRow {
   title: string;
   meta_description: string;
   body_markdown: string;
+  quick_answer: string;
+  sources_json: string;
   status: string;
   created_at: string;
   updated_at: string;
@@ -22,12 +24,21 @@ interface ArticleRow {
 }
 
 function toApiShape(row: ArticleRow) {
+  let sources: string[] = [];
+  try {
+    const parsed = JSON.parse(row.sources_json || '[]');
+    if (Array.isArray(parsed)) sources = parsed.filter((s) => typeof s === 'string');
+  } catch {
+    sources = [];
+  }
   return {
     id: row.id,
     slug: row.slug,
     title: row.title,
     metaDescription: row.meta_description,
     bodyMarkdown: row.body_markdown,
+    quickAnswer: row.quick_answer,
+    sources,
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -35,13 +46,25 @@ function toApiShape(row: ArticleRow) {
   };
 }
 
+// SEO-friendly slugs are short and keyword-focused, not a verbatim copy of the headline --
+// stripping filler words keeps them concise. Falls back to the un-stripped word list if
+// stripping stopwords leaves too little to work with (e.g. a very short, mostly-generic title).
+const SLUG_STOPWORDS = new Set([
+  'a', 'an', 'the', 'and', 'or', 'for', 'to', 'in', 'on', 'of', 'with', 'is', 'are',
+  'your', 'you', 'how', 'what', 'why', 'can', 'do', 'does', 'this', 'that', 'it', 'its',
+]);
+
 function slugify(input: string): string {
-  return input
+  const words = input
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80) || 'article';
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
+  const stripped = words.filter((w) => !SLUG_STOPWORDS.has(w));
+  const chosen = stripped.length >= 3 ? stripped : words;
+  const slug = chosen.join('-').slice(0, 60).replace(/-+$/, '');
+  return slug || 'article';
 }
 
 // Server-unavailable response shared by every route below when DATABASE_URL isn't configured --
@@ -184,7 +207,7 @@ export function registerArticleRoutes(app: Express) {
     }
   });
 
-  // --- Admin: update title / meta description / body -------------------------------------------
+  // --- Admin: update title / meta description / body / quick answer / sources / web address ------
   app.put('/api/admin/articles/:id', requireAdmin, async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     const id = parseInt(req.params.id, 10);
@@ -195,23 +218,71 @@ export function registerArticleRoutes(app: Express) {
     const title = typeof req.body?.title === 'string' ? req.body.title : undefined;
     const metaDescription = typeof req.body?.metaDescription === 'string' ? req.body.metaDescription : undefined;
     const bodyMarkdown = typeof req.body?.bodyMarkdown === 'string' ? req.body.bodyMarkdown : undefined;
+    const quickAnswer = typeof req.body?.quickAnswer === 'string' ? req.body.quickAnswer : undefined;
+    const sourcesInput = Array.isArray(req.body?.sources)
+      ? req.body.sources.filter((s: unknown) => typeof s === 'string')
+      : undefined;
+    // Deliberately NOT normalized here yet -- normalizing (slugify()) on every save, even when
+    // the slug didn't change, risks a false "locked" error the moment SLUG_STOPWORDS is ever
+    // edited or against a slug set by an earlier version of this function: re-running slugify()
+    // on its own output isn't guaranteed to be a no-op forever. Only normalize once we know
+    // below that the raw value actually differs from what's stored.
+    const rawSlugInput = typeof req.body?.slug === 'string' ? req.body.slug : undefined;
+
     try {
-      const rows = await withDb((sql) => sql`
-        UPDATE articles
-        SET
-          title = COALESCE(${title ?? null}, title),
-          meta_description = COALESCE(${metaDescription ?? null}, meta_description),
-          body_markdown = COALESCE(${bodyMarkdown ?? null}, body_markdown),
-          updated_at = now()
-        WHERE id = ${id}
-        RETURNING *
-      `);
-      const row = (rows as unknown as ArticleRow[])[0];
-      if (!row) {
-        res.status(404).json({ success: false, error: 'Article not found.' });
+      const result = await withDb(async (sql) => {
+        const existingRows = await sql`SELECT * FROM articles WHERE id = ${id} LIMIT 1`;
+        const existing = existingRows[0] as ArticleRow | undefined;
+        if (!existing) return { error: 'not_found' as const };
+
+        // Web address changes only apply pre-publish -- once an article is live, its URL is a
+        // real link someone might have already shared or Google might already have crawled.
+        let finalSlug = existing.slug;
+        if (rawSlugInput !== undefined && rawSlugInput !== existing.slug) {
+          const requestedSlug = slugify(rawSlugInput);
+          if (requestedSlug !== existing.slug) {
+            if (existing.status === 'published') {
+              return { error: 'locked' as const };
+            }
+            let candidate = requestedSlug;
+            for (let attempt = 1; attempt <= 20; attempt++) {
+              const clash = await sql`SELECT id FROM articles WHERE slug = ${candidate} AND id != ${id} LIMIT 1`;
+              if (clash.length === 0) break;
+              candidate = `${requestedSlug}-${attempt + 1}`;
+            }
+            finalSlug = candidate;
+          }
+        }
+
+        const sourcesJson = sourcesInput !== undefined
+          ? JSON.stringify(sourcesInput)
+          : existing.sources_json;
+
+        const rows = await sql`
+          UPDATE articles
+          SET
+            title = COALESCE(${title ?? null}, title),
+            meta_description = COALESCE(${metaDescription ?? null}, meta_description),
+            body_markdown = COALESCE(${bodyMarkdown ?? null}, body_markdown),
+            quick_answer = COALESCE(${quickAnswer ?? null}, quick_answer),
+            sources_json = ${sourcesJson},
+            slug = ${finalSlug},
+            updated_at = now()
+          WHERE id = ${id}
+          RETURNING *
+        `;
+        return { row: rows[0] as ArticleRow };
+      });
+
+      if ('error' in result) {
+        if (result.error === 'not_found') {
+          res.status(404).json({ success: false, error: 'Article not found.' });
+        } else {
+          res.status(409).json({ success: false, error: "Can't change the web address of a published article. Unpublish it first if you need to change it." });
+        }
         return;
       }
-      res.json({ success: true, article: toApiShape(row) });
+      res.json({ success: true, article: toApiShape(result.row) });
     } catch (err: any) {
       console.error('[articles] update failed:', err);
       res.status(500).json({ success: false, error: 'Could not save changes.' });

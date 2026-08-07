@@ -23,7 +23,9 @@ function getSql() {
 
 // Idempotent -- safe to call on every cold start. Runs once per warm instance thanks to
 // schemaEnsured; CREATE TABLE IF NOT EXISTS makes repeat calls (e.g. after a redeploy that
-// creates a fresh instance) harmless either way.
+// creates a fresh instance) harmless either way. The two ALTER TABLE ... ADD COLUMN IF NOT
+// EXISTS statements are the migration path for columns added after the table already existed in
+// production -- CREATE TABLE IF NOT EXISTS alone would silently no-op against the old shape.
 export async function ensureArticlesSchema(): Promise<void> {
   if (schemaEnsured) return;
   const sql = getSql();
@@ -40,6 +42,8 @@ export async function ensureArticlesSchema(): Promise<void> {
       published_at TIMESTAMPTZ
     )
   `;
+  await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS quick_answer TEXT NOT NULL DEFAULT ''`;
+  await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS sources_json TEXT NOT NULL DEFAULT '[]'`;
   schemaEnsured = true;
 }
 
