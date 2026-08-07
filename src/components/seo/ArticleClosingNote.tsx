@@ -13,14 +13,14 @@ export const ArticleClosingNote: React.FC<ArticleClosingNoteProps> = ({ onNaviga
   return (
     <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8">
       <p className="text-sm text-slate-600 leading-relaxed">
-        BeforeRegret compiles this kind of research automatically for any US address, cross-referencing FEMA flood maps, municipal permit archives, EPA environmental data, and 20+ other public record sources into a single report before you make an offer.{' '}
+        BeforeRegret is a property research platform helping buyers uncover historical permits, zoning decisions, hazard classifications, and publicly available building records before making an offer.{' '}
         <button
           onClick={() => onNavigate('/')}
           className="text-blue-700 font-semibold hover:underline underline-offset-2 cursor-pointer"
         >
-          Search a property
+          Start a property search
         </button>{' '}
-        to see what's on record for a specific address.
+        to access property research and guides in your area.
       </p>
     </div>
   );

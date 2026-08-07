@@ -84,7 +84,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               </p>
               <ul className="list-disc pl-5 space-y-1.5">
                 <li>
-                  <strong>Consumer Property Insight Reports:</strong> Searchable, interactive property intelligence reports compiled from open-source government, municipal, and public datasets (e.g., FEMA flood maps, USGS radon data, FCC broadband registries, and municipal permit archives). Every consumer account is entitled to <strong>one free report</strong>; each additional report is a one-time purchase of <strong>$14.99 USD</strong>.
+                  <strong>Consumer Property Insight Reports:</strong> Property research and due diligence guides helping home buyers and renters uncover publicly available information about a property before making an offer or signing a lease. Every consumer account is entitled to <strong>one free report</strong>; each additional report is a one-time purchase of <strong>$14.99 USD</strong>.
                 </li>
                 <li>
                   <strong>Paid Business Vendor Subscriptions:</strong> A recurring monthly subscription service enabling local business vendors (contractors, licensed inspectors, structural engineers, environmental specialists) to display sponsored placements ("Need help inspecting this?" sections, clearly labeled "Sponsored") within designated zip codes and trade categories on consumer reports.

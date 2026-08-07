@@ -48,10 +48,10 @@ export const HowItWorksSection: React.FC = () => {
                 2
               </div>
               <h3 className="font-sans text-xl font-bold text-white">
-                We pull from 20+ government databases
+                Access property research and guides
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Our engine aggregates municipal building permit archives, FEMA flood layers, EPA environmental databases, FAA noise contours, and tax assessor records.
+                Explore expert guides on home inspection, insurance coverage, building systems, and common property issues that buyers should verify.
               </p>
             </div>
             <div className="pt-3 border-t border-slate-700/60 text-xs text-blue-400 font-medium flex items-center gap-1.5">
