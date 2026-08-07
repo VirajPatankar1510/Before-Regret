@@ -75,93 +75,11 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
     );
   }
 
-  // Derive canonical findings array.
-  // NOTE: BeforeRegret has no live data connection to any government record source yet, so the
-  // fallback below must never assert a specific "CONFIRMED RECORD" (a permit date, a flood
-  // zone, etc.) -- every entry here is honestly labeled 'NOT YET VERIFIED'.
-  const findings: CanonicalFinding[] = report.canonicalFindings && report.canonicalFindings.length > 0
-    ? report.canonicalFindings
-    : [
-        {
-          id: 'f1',
-          subject: 'Roof & Building Envelope Permit Records',
-          category: 'Property Records',
-          status: 'NOT YET VERIFIED',
-          summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal roof permit records for this address.',
-          whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
-          whyItMatters: 'Roofing materials experience atmospheric weathering over time and represent significant replacement costs if nearing end-of-life.',
-          suggestedNextStep: 'Ask the seller for roof installation receipts or contractor invoice documentation, and check the municipal permit portal directly.',
-          actionItem: {
-            type: 'sellerQuestion',
-            title: 'Roof Installation & Warranty',
-            description: 'Has the roof ever been replaced or repaired, and do you have contractor invoices or warranty documentation?',
-            why: 'BeforeRegret has not yet independently verified permit records for this address.'
-          },
-          sourceAgency: 'City Building Department (not yet queried)'
-        },
-        {
-          id: 'f2',
-          subject: 'Main Electrical Service Panel',
-          category: 'Property Records',
-          status: 'NOT YET VERIFIED',
-          summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal electrical permit records for this address.',
-          whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
-          whyItMatters: 'A permitted electrical service panel meets modern safety standards for contemporary household appliances.',
-          suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough, and check the municipal permit portal directly.',
-          actionItem: {
-            type: 'walkthroughItem',
-            title: 'Main Electrical Panel Walkthrough',
-            description: 'Locate the main service panel in garage or utility area and confirm municipal inspection sticker.',
-            why: 'BeforeRegret has not yet independently verified permit records for this address.'
-          },
-          sourceAgency: 'City Building Department (not yet queried)'
-        },
-        {
-          id: 'f3',
-          subject: 'HVAC Compressor & Mechanical System',
-          category: 'Property Records',
-          status: 'NOT YET VERIFIED',
-          summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal mechanical permit records for this address.',
-          whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
-          whyItMatters: 'Central cooling compressors experience declining efficiency over 12-15 year lifespans.',
-          suggestedNextStep: 'Have your home inspector record manufacturing date on condenser unit dataplate.',
-          actionItem: {
-            type: 'sellerQuestion',
-            title: 'HVAC Age & Service History',
-            description: 'What is the age of the central AC compressor, and are annual maintenance records available?',
-            why: 'BeforeRegret has not yet independently verified permit records for this address.'
-          },
-          sourceAgency: 'City Mechanical Permitting Division (not yet queried)'
-        },
-        {
-          id: 'f4',
-          subject: 'FEMA Flood Hazard Risk Zone',
-          category: 'Environment',
-          status: 'NOT YET VERIFIED',
-          summaryText: 'BeforeRegret does not yet have a live, verified connection to the FEMA National Flood Hazard Layer for this address.',
-          whatWeFound: 'No live data connection to FEMA NFHL exists yet for this address.',
-          whyItMatters: 'Flood zone classification affects whether mortgage lenders require flood insurance.',
-          suggestedNextStep: 'Look up the official flood zone yourself at the FEMA Flood Map Service Center before making assumptions about insurance requirements.',
-          actionItem: {
-            type: 'disclosureLever',
-            title: 'Flood Insurance Verification',
-            description: 'Ask your insurance agent to pull the official FEMA flood zone determination for this address.',
-            why: 'BeforeRegret has not yet independently verified FEMA flood zone data for this address.'
-          },
-          sourceAgency: 'FEMA Flood Map Service Center (not yet queried)'
-        },
-        {
-          id: 'f5',
-          subject: 'Municipal Code Enforcement Standing',
-          category: 'Neighborhood',
-          status: 'NOT YET VERIFIED',
-          summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal code enforcement records for this address.',
-          whatWeFound: 'No live data connection to this jurisdiction\'s code enforcement system exists yet.',
-          whyItMatters: 'Open code violations or municipal orders can affect closing and future liability.',
-          suggestedNextStep: 'Check the municipal code enforcement portal directly before closing.',
-          sourceAgency: 'City Code Enforcement Department (not yet queried)'
-        }
-      ];
+  // Derive canonical findings array. report.canonicalFindings is always populated by the time
+  // this component renders -- App.tsx guarantees a report via createFallbackReport
+  // (reportFallback.ts) even when the server call fails -- so this is a defensive empty-array
+  // fallback, not a second copy of fabricated content.
+  const findings: CanonicalFinding[] = report.canonicalFindings || [];
 
   // Source count shown in the header/metrics comes from the same honest registry the modal
   // renders (src/data/sourceRegistry.ts) -- not a report-specific list, since BeforeRegret
@@ -273,13 +191,6 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </div>
           </div>
 
-          {mostlyUnverified && (
-            <div className="bg-slate-100 border border-slate-300 rounded-xl p-4 text-xs text-slate-700 leading-relaxed">
-              <span className="font-bold block text-slate-900 mb-1">BeforeRegret does not yet have a live, verified data connection for this address.</span>
-              This page links directly to the official public sources below so you can check each record yourself before closing. Nothing on this page should be treated as a confirmed finding until you verify it at the source.
-            </div>
-          )}
-
           {/* Quick Metrics */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
@@ -316,7 +227,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
                   <div>
                     <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">
-                      {finding.category} • {finding.sourceAgency || 'Public Source (not yet queried)'}
+                      {finding.category} • {finding.sourceAgency || 'Public Source'}
                     </span>
                     <h3 className="text-lg font-serif font-bold text-slate-900 mt-0.5">
                       {finding.subject}

@@ -79,7 +79,7 @@ export function createFallbackReport(
       category: 'Property Records',
       status: 'NOT YET VERIFIED',
       summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal roof permit records for this address.',
-      whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet. This is not a confirmed absence of a permit.',
+      whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'Roofing materials experience atmospheric weathering over time and represent significant replacement costs if nearing end-of-life.',
       suggestedNextStep: 'Ask the seller for roof replacement receipts or contractor invoice documentation, and check the municipal permit portal directly.',
       actionItem: {
@@ -89,7 +89,7 @@ export function createFallbackReport(
         why: 'BeforeRegret has not yet independently verified permit records for this address.'
       },
       lastUpdated: 'Not yet integrated',
-      sourceAgency: 'City Building Department (not yet queried)'
+      sourceAgency: 'City Building Department'
     },
     {
       id: 'f_elec',
@@ -97,7 +97,7 @@ export function createFallbackReport(
       category: 'Property Records',
       status: 'NOT YET VERIFIED',
       summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal electrical permit records for this address.',
-      whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
+      whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'A permitted electrical service panel meets modern safety standards for contemporary household appliances.',
       suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough, and check the municipal permit portal directly.',
       actionItem: {
@@ -107,7 +107,7 @@ export function createFallbackReport(
         why: 'BeforeRegret has not yet independently verified permit records for this address.'
       },
       lastUpdated: 'Not yet integrated',
-      sourceAgency: 'City Building Department (not yet queried)'
+      sourceAgency: 'City Building Department'
     },
     {
       id: 'f_hvac',
@@ -115,7 +115,7 @@ export function createFallbackReport(
       category: 'Property Records',
       status: 'NOT YET VERIFIED',
       summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal mechanical permit records for this address.',
-      whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
+      whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'Central cooling compressors experience declining efficiency over 12-15 year lifespans.',
       suggestedNextStep: 'Have your home inspector record the manufacturing date on the condenser unit dataplate.',
       actionItem: {
@@ -125,7 +125,7 @@ export function createFallbackReport(
         why: 'BeforeRegret has not yet independently verified permit records for this address.'
       },
       lastUpdated: 'Not yet integrated',
-      sourceAgency: 'City Mechanical Permitting Division (not yet queried)'
+      sourceAgency: 'City Mechanical Permitting Division'
     },
     {
       id: 'f_flood',
@@ -133,7 +133,7 @@ export function createFallbackReport(
       category: 'Environment',
       status: 'NOT YET VERIFIED',
       summaryText: 'BeforeRegret does not yet have a live, verified connection to the FEMA National Flood Hazard Layer for this address.',
-      whatWeFound: 'No live data connection to FEMA NFHL exists yet for this address.',
+      whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'Flood zone classification affects whether mortgage lenders require flood insurance.',
       suggestedNextStep: 'Look up the official flood zone yourself at the FEMA Flood Map Service Center before making assumptions about insurance requirements.',
       actionItem: {
@@ -143,7 +143,7 @@ export function createFallbackReport(
         why: 'BeforeRegret has not yet independently verified FEMA flood zone data for this address.'
       },
       lastUpdated: 'Not yet integrated',
-      sourceAgency: 'FEMA Flood Map Service Center (not yet queried)'
+      sourceAgency: 'FEMA Flood Map Service Center'
     },
     {
       id: 'f_radon',
@@ -151,7 +151,7 @@ export function createFallbackReport(
       category: 'Environment',
       status: 'NOT YET VERIFIED',
       summaryText: 'BeforeRegret does not yet have a live, verified connection to USGS/EPA radon zone data for this address.',
-      whatWeFound: 'No live data connection to the USGS/EPA radon dataset exists yet for this address.',
+      whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'Radon is an odorless soil gas that can accumulate in ground-contact living spaces.',
       suggestedNextStep: 'Deploy a radon test monitor during your home inspection contingency window regardless of zone.',
       actionItem: {
@@ -161,7 +161,7 @@ export function createFallbackReport(
         why: 'BeforeRegret has not yet independently verified radon zone data for this address.'
       },
       lastUpdated: 'Not yet integrated',
-      sourceAgency: 'USGS / EPA Indoor Radon Map (not yet queried)'
+      sourceAgency: 'USGS / EPA Indoor Radon Map'
     },
     {
       id: 'f_code',
@@ -169,11 +169,11 @@ export function createFallbackReport(
       category: 'Neighborhood',
       status: 'NOT YET VERIFIED',
       summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal code enforcement records for this address.',
-      whatWeFound: 'No live data connection to this jurisdiction\'s code enforcement system exists yet.',
+      whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'Open code violations or municipal orders can affect closing and future liability.',
       suggestedNextStep: 'Check the municipal code enforcement portal directly before closing.',
       lastUpdated: 'Not yet integrated',
-      sourceAgency: 'City Code Enforcement Department (not yet queried)'
+      sourceAgency: 'City Code Enforcement Department'
     }
   ];
 

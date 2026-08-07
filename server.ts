@@ -1021,7 +1021,7 @@ function validateAndFixReportContradictions(report: any, liveFindings: any[] = [
         category: 'Property Records',
         status: 'NOT YET VERIFIED',
         summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal roof permit records for this address.',
-        whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
+        whatWeFound: 'Not yet independently verified for this address.',
         whyItMatters: 'Roofing materials experience atmospheric weathering over time and represent significant replacement costs if nearing end-of-life.',
         suggestedNextStep: 'Ask the seller for roof replacement receipts or contractor invoice documentation, and check the municipal permit portal directly.',
         actionItem: {
@@ -1037,7 +1037,7 @@ function validateAndFixReportContradictions(report: any, liveFindings: any[] = [
         category: 'Property Records',
         status: 'NOT YET VERIFIED',
         summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal electrical permit records for this address.',
-        whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
+        whatWeFound: 'Not yet independently verified for this address.',
         whyItMatters: 'A permitted electrical service panel meets modern safety standards for contemporary household appliances.',
         suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough, and check the municipal permit portal directly.',
         actionItem: {
@@ -1053,7 +1053,7 @@ function validateAndFixReportContradictions(report: any, liveFindings: any[] = [
         category: 'Property Records',
         status: 'NOT YET VERIFIED',
         summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal mechanical permit records for this address.',
-        whatWeFound: 'No live data connection to this jurisdiction\'s permit archive exists yet.',
+        whatWeFound: 'Not yet independently verified for this address.',
         whyItMatters: 'Central cooling compressors experience declining efficiency over 12-15 year lifespans.',
         suggestedNextStep: 'Have your home inspector record the manufacturing date on the condenser unit dataplate.',
         actionItem: {
@@ -1069,7 +1069,7 @@ function validateAndFixReportContradictions(report: any, liveFindings: any[] = [
         category: 'Environment',
         status: 'NOT YET VERIFIED',
         summaryText: 'BeforeRegret does not yet have a live, verified connection to the FEMA National Flood Hazard Layer for this address.',
-        whatWeFound: 'No live data connection to FEMA NFHL exists yet for this address.',
+        whatWeFound: 'Not yet independently verified for this address.',
         whyItMatters: 'Flood zone classification affects whether mortgage lenders require flood insurance.',
         suggestedNextStep: 'Look up the official flood zone yourself at the FEMA Flood Map Service Center before making assumptions about insurance requirements.',
         actionItem: {
@@ -1085,7 +1085,7 @@ function validateAndFixReportContradictions(report: any, liveFindings: any[] = [
         category: 'Neighborhood',
         status: 'NOT YET VERIFIED',
         summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal code enforcement records for this address.',
-        whatWeFound: 'No live data connection to this jurisdiction\'s code enforcement system exists yet.',
+        whatWeFound: 'Not yet independently verified for this address.',
         whyItMatters: 'Open code violations or municipal orders can affect closing and future liability.',
         suggestedNextStep: 'Check the municipal code enforcement portal directly before closing.'
       }
