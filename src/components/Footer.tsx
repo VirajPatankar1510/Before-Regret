@@ -1,5 +1,5 @@
-import React from 'react';
-import { ShieldCheck, ArrowRight, MapPin, BookOpen, Scale, Sparkles } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ShieldCheck, ArrowRight, BookOpen } from 'lucide-react';
 import { Logo } from './Logo';
 
 interface FooterProps {
@@ -7,7 +7,25 @@ interface FooterProps {
   onNavigate?: (path: string) => void;
 }
 
+interface GuideSummary {
+  slug: string;
+  title: string;
+}
+
 export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
+  const [guides, setGuides] = useState<GuideSummary[]>([]);
+
+  useEffect(() => {
+    fetch('/api/guides')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.articles)) {
+          setGuides(data.articles.slice(0, 4));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <footer className="bg-slate-950 text-white border-t border-slate-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -20,7 +38,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
               <span className="font-extrabold text-lg text-white tracking-tight">BeforeRegret</span>
             </div>
             <p className="text-xs text-slate-400 max-w-md">
-              Helping property buyers discover what they might regret overlooking before purchasing a property in the United States. Sourced directly from FEMA, USGS, and municipal records.
+              Expert property research guides and vendor marketplace for US home buyers. Uncover what matters before closing.
             </p>
           </div>
 
@@ -38,41 +56,22 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
 
         {/* Directory Links for pSEO & Legal */}
         {onNavigate && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-xs text-slate-400 pb-6 border-b border-slate-900">
-            <div className="space-y-2">
-              <div className="font-bold text-white flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-blue-400" />
-                <span>Texas Municipal Hubs</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs text-slate-400 pb-6 border-b border-slate-900">
+            {guides.length > 0 && (
+              <div className="space-y-2">
+                <div className="font-bold text-white flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Editorial Guides</span>
+                </div>
+                <ul className="space-y-1">
+                  {guides.map((guide) => (
+                    <li key={guide.slug}>
+                      <button onClick={() => onNavigate(`/guides/${guide.slug}/`)} className="hover:text-white cursor-pointer">{guide.title}</button>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-1">
-                <li><button onClick={() => onNavigate('/state/texas/austin/')} className="hover:text-white cursor-pointer">Austin TX Property Directory</button></li>
-                <li><button onClick={() => onNavigate('/state/texas/austin/78701/')} className="hover:text-white cursor-pointer">Zip 78701 (Downtown)</button></li>
-                <li><button onClick={() => onNavigate('/state/texas/austin/78704/')} className="hover:text-white cursor-pointer">Zip 78704 (South Lamar / Zilker)</button></li>
-                <li><button onClick={() => onNavigate('/state/texas/austin/78746/')} className="hover:text-white cursor-pointer">Zip 78746 (West Lake Hills)</button></li>
-              </ul>
-            </div>
-
-            <div className="space-y-2">
-              <div className="font-bold text-white flex items-center gap-1.5">
-                <BookOpen className="w-3.5 h-3.5 text-blue-400" />
-                <span>Editorial Guides</span>
-              </div>
-              <ul className="space-y-1">
-                <li><button onClick={() => onNavigate('/guides/moving-to-austin-tx-2026/')} className="hover:text-white cursor-pointer">Moving to Austin TX in 2026 Guide</button></li>
-                <li><button onClick={() => onNavigate('/guides/austin-flood-zones-explained/')} className="hover:text-white cursor-pointer">Austin Flood Zones Explained</button></li>
-              </ul>
-            </div>
-
-            <div className="space-y-2">
-              <div className="font-bold text-white flex items-center gap-1.5">
-                <Scale className="w-3.5 h-3.5 text-blue-400" />
-                <span>Zip Comparisons</span>
-              </div>
-              <ul className="space-y-1">
-                <li><button onClick={() => onNavigate('/compare/78701-vs-78704/')} className="hover:text-white cursor-pointer">78701 vs 78704 Data Comparison</button></li>
-                <li><button onClick={() => onNavigate('/compare/78704-vs-78746/')} className="hover:text-white cursor-pointer">78704 vs 78746 Data Comparison</button></li>
-              </ul>
-            </div>
+            )}
 
             <div className="space-y-2">
               <div className="font-bold text-white flex items-center gap-1.5">

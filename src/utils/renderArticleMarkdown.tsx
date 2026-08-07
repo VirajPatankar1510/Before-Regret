@@ -102,6 +102,13 @@ export function renderArticleMarkdown(markdown: string): React.ReactNode[] {
       continue;
     }
 
+    if (/^-{3,}$/.test(trimmed)) {
+      flushParagraph();
+      blocks.push(<hr key={blocks.length} className="my-6 border-slate-200" />);
+      i++;
+      continue;
+    }
+
     if (/^[*-]\s+/.test(trimmed)) {
       flushParagraph();
       const items: string[] = [];
