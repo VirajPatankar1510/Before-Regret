@@ -7,23 +7,19 @@ export const FaqSection: React.FC = () => {
   const faqs = [
     {
       q: 'Is BeforeRegret a substitute for a licensed home inspection?',
-      a: 'No. A physical home inspection evaluates the current physical and mechanical condition of a property (testing electrical outlets, inspecting roof shingles, testing HVAC operation, running plumbing faucets). BeforeRegret synthesizes historical public filings, municipal building permits, FEMA flood map layers, EPA environmental proximity hazards, and county tax assessor records. The two complement each other: BeforeRegret highlights historical permit gaps and environmental hazards so you know exactly what to tell your inspector to examine.'
+      a: 'No. A physical home inspection evaluates the current physical and mechanical condition of a property — testing outlets, inspecting shingles, running plumbing. BeforeRegret combines live verified data (like seismic hazard), cited public research on what matters for a home\'s era and region, and a plain-language summary. The two complement each other: BeforeRegret tells you exactly what to point your inspector at.'
     },
     {
-      q: 'How does BeforeRegret compare to free real estate listing sites?',
-      a: 'Free real estate portals display seller-provided marketing descriptions, agent photo galleries, and MLS listings designed to market the home. BeforeRegret independently aggregates municipal building permit departments, FEMA flood zone maps, EPA Superfund registries, FAA airport noise contours, and county clerk archives into an unbiased, buyer-focused report.'
-    },
-    {
-      q: 'How does BeforeRegret handle properties with limited digitized records or rural addresses?',
-      a: 'BeforeRegret automatically queries federal datasets (FEMA flood MSC, EPA Envirofacts, USGS radon, FCC broadband, FAA flight paths) and state DOT transportation plans for every US address. If a local municipality or rural township does not maintain a digitized online building permit archive, our engine explicitly flags those municipal systems as "Needs Verification" and provides exact questions for your inspector or seller to verify in person.'
+      q: 'How does BeforeRegret compare to real estate listing sites?',
+      a: 'Listing portals are built to help you find and fall in love with a home — seller photos, agent copy, MLS data. BeforeRegret is built the other way around: it starts from what a careful buyer or their inspector would actually want confirmed before signing, and is explicit about which parts are verified live versus still on you to check.'
     },
     {
       q: 'Does a BeforeRegret report constitute legal, financial, or engineering advice?',
-      a: 'No. BeforeRegret is a public-record research assistant tool. Reports do not constitute formal legal title searches, legal opinions, structural engineering evaluations, or licensed financial appraisals. BeforeRegret provides objective public record summaries and suggested questions to help buyers conduct thorough pre-purchase inquiries.'
+      a: 'No. BeforeRegret is a research assistant tool. Reports do not constitute formal legal title searches, legal opinions, structural engineering evaluations, or licensed financial appraisals. Every recommendation routes to a licensed professional as the next step — the report itself is never a substitute for one.'
     },
     {
       q: 'How quickly is the report generated?',
-      a: 'Reports are generated instantly in your browser (typically under 60 seconds) once you enter a property address. You get immediate access to the interactive web report at a permanent link you can revisit or share anytime.'
+      a: 'Reports are generated instantly in your browser (typically under 60 seconds) once you enter a property address. You get immediate access to the interactive web report at a permanent link you can revisit, share, or export as a PDF anytime.'
     },
     {
       q: 'Are there any recurring subscription fees or hidden costs?',

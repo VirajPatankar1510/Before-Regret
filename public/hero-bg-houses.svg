@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="skyGrad" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#2A3A6B"/>
+      <stop offset="35%" stop-color="#3E5289"/>
+      <stop offset="65%" stop-color="#DE8A5C"/>
+      <stop offset="100%" stop-color="#F4B183"/>
+    </linearGradient>
+
+    <radialGradient id="sunGlow" cx="0.72" cy="0.62" r="0.45">
+      <stop offset="0%" stop-color="#FFE7C2" stop-opacity="0.95"/>
+      <stop offset="35%" stop-color="#F7B978" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#F7B978" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="houseBack" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1B2547"/>
+      <stop offset="100%" stop-color="#141B38"/>
+    </linearGradient>
+
+    <linearGradient id="houseMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#141C39"/>
+      <stop offset="100%" stop-color="#0E1330"/>
+    </linearGradient>
+
+    <linearGradient id="houseFront" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0D1330"/>
+      <stop offset="100%" stop-color="#080B22"/>
+    </linearGradient>
+
+    <linearGradient id="windowGlow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFDFA3"/>
+      <stop offset="100%" stop-color="#FFB65C"/>
+    </linearGradient>
+
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0A0E24"/>
+      <stop offset="100%" stop-color="#05071A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect x="0" y="0" width="1920" height="1080" fill="url(#skyGrad)"/>
+  <circle cx="1382" cy="670" r="480" fill="url(#sunGlow)"/>
+  <circle cx="1382" cy="670" r="120" fill="#FFEFD2" opacity="0.9"/>
+
+  <!-- Soft clouds -->
+  <g opacity="0.28" fill="#FFFFFF">
+    <ellipse cx="260" cy="180" rx="150" ry="26"/>
+    <ellipse cx="360" cy="200" rx="110" ry="20"/>
+    <ellipse cx="1600" cy="140" rx="170" ry="24"/>
+    <ellipse cx="1720" cy="160" rx="100" ry="18"/>
+  </g>
+
+  <!-- Distant back row of rooftops (silhouette, smallest/furthest) -->
+  <g fill="url(#houseBack)" opacity="0.85">
+    <polygon points="0,760 90,700 180,760 180,800 0,800"/>
+    <polygon points="150,760 260,690 370,760 370,810 150,810"/>
+    <polygon points="330,780 410,730 490,780 490,820 330,820"/>
+    <polygon points="1440,780 1520,720 1610,780 1610,820 1440,820"/>
+    <polygon points="1580,760 1690,695 1800,760 1800,810 1580,810"/>
+    <polygon points="1760,770 1850,715 1920,760 1920,810 1760,810"/>
+  </g>
+
+  <!-- Mid row of houses -->
+  <g fill="url(#houseMid)">
+    <polygon points="60,860 200,760 340,860 340,930 60,930"/>
+    <polygon points="1580,860 1710,765 1840,860 1840,930 1580,930"/>
+  </g>
+  <g fill="url(#windowGlow)" opacity="0.85">
+    <rect x="110" y="860" width="34" height="40" rx="2"/>
+    <rect x="170" y="860" width="34" height="40" rx="2"/>
+    <rect x="260" y="860" width="34" height="40" rx="2"/>
+    <rect x="1630" y="860" width="34" height="40" rx="2"/>
+    <rect x="1690" y="860" width="34" height="40" rx="2"/>
+    <rect x="1760" y="860" width="34" height="40" rx="2"/>
+  </g>
+
+  <!-- Foreground skyline: clear, unmistakable house silhouettes with gabled roofs, chimneys, and
+       warm lit windows, the classic "real estate at dusk" motif. -->
+  <g fill="url(#houseFront)">
+    <!-- House 1 -->
+    <polygon points="80,1080 80,900 260,780 440,900 440,1080"/>
+    <rect x="248" y="800" width="26" height="70"/>
+    <!-- House 2 -->
+    <polygon points="420,1080 420,940 560,850 700,940 700,1080"/>
+    <!-- House 3 (largest, centered focal home) -->
+    <polygon points="680,1080 680,860 900,700 1120,860 1120,1080"/>
+    <rect x="1040" y="740" width="34" height="90"/>
+    <!-- House 4 -->
+    <polygon points="1100,1080 1100,940 1240,850 1380,940 1380,1080"/>
+    <!-- House 5 -->
+    <polygon points="1360,1080 1360,900 1540,780 1720,900 1720,1080"/>
+    <rect x="1600" y="800" width="26" height="70"/>
+    <!-- House 6 -->
+    <polygon points="1700,1080 1700,960 1810,880 1920,960 1920,1080"/>
+  </g>
+
+  <!-- Windows, warmly lit -->
+  <g fill="url(#windowGlow)">
+    <rect x="140" y="940" width="40" height="52" rx="3"/>
+    <rect x="200" y="940" width="40" height="52" rx="3"/>
+    <rect x="320" y="940" width="40" height="52" rx="3"/>
+    <rect x="500" y="990" width="36" height="46" rx="3"/>
+    <rect x="600" y="990" width="36" height="46" rx="3"/>
+    <rect x="760" y="900" width="46" height="60" rx="3"/>
+    <rect x="850" y="900" width="46" height="60" rx="3"/>
+    <rect x="945" y="900" width="46" height="60" rx="3"/>
+    <rect x="1160" y="990" width="36" height="46" rx="3"/>
+    <rect x="1260" y="990" width="36" height="46" rx="3"/>
+    <rect x="1420" y="940" width="40" height="52" rx="3"/>
+    <rect x="1480" y="940" width="40" height="52" rx="3"/>
+    <rect x="1600" y="940" width="40" height="52" rx="3"/>
+    <!-- Focal house front door -->
+    <rect x="875" y="960" width="50" height="120" rx="4" fill="#0A0E24" opacity="0.6"/>
+  </g>
+
+  <!-- Ground / foreground fade -->
+  <rect x="0" y="1040" width="1920" height="40" fill="url(#ground)"/>
+</svg>

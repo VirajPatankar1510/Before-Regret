@@ -3,7 +3,6 @@ import { AddressSearchBox } from './AddressSearchBox';
 import { PropertySearchResult } from '../types';
 import { ListingOmissionsSection } from './home/ListingOmissionsSection';
 import { HowItWorksSection } from './home/HowItWorksSection';
-import { SampleReportPreview } from './home/SampleReportPreview';
 import { PricingSection } from './home/PricingSection';
 import { FaqSection } from './home/FaqSection';
 import { ClosingCtaSection } from './home/ClosingCtaSection';
@@ -25,22 +24,33 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
 
   return (
     <div className="space-y-0 pb-16">
-      
+
       {/* 1. HERO SECTION (Address Search Container Untouched) */}
-      <section className="relative bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden rounded-b-[2.5rem] shadow-2xl">
-        
+      <section className="relative text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden rounded-b-[2.5rem] shadow-2xl">
+
+        {/* Background image -- real photograph of a suburban street at dusk (public/hero-bg.png,
+            2.28:1, replaces the earlier corrupted file). Sky is already near-black at the top
+            (where the headline sits) fading to warm amber at the horizon, so the overlay is
+            lightest up top and darkens toward the bottom where the search box and rooflines are,
+            to keep the search bar legible against the brighter band. */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/hero-bg.png')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/15 via-slate-950/40 to-slate-950/75" />
+
         {/* Ambient background lighting */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
-          
+
           {/* Main Risk-Framed Headline & Subhead */}
           <div className="space-y-4">
             <h1 className="font-sans text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
               Could you regret moving here?
             </h1>
             <p className="text-base sm:text-xl text-slate-300 font-sans font-normal max-w-2xl mx-auto leading-relaxed">
-              Search any US residential address. We cross-reference 20+ government databases and give you a plain-language report — flood risk, permits, noise, environment, broadband — before you make an offer or sign a lease.
+              Search any US residential address. Get the checks that actually matter for a home of its age and county, the exact questions to ask the seller, and a clear list of what to verify before you sign.
             </p>
           </div>
 
@@ -63,16 +73,13 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
       {/* 3. HOW IT WORKS & DATA SYNTHESIS WORKFLOW */}
       <HowItWorksSection />
 
-      {/* 4. SAMPLE REPORT PREVIEW (With Prominent Fictional Property Disclaimer) */}
-      <SampleReportPreview />
-
-      {/* 5. PLAIN, TRANSPARENT PRICING */}
+      {/* 4. PLAIN, TRANSPARENT PRICING */}
       <PricingSection onScrollToSearch={handleScrollToSearch} />
 
-      {/* 6. FREQUENTLY ASKED QUESTIONS */}
+      {/* 5. FREQUENTLY ASKED QUESTIONS */}
       <FaqSection />
 
-      {/* 7. CLOSING CALL TO ACTION */}
+      {/* 6. CLOSING CALL TO ACTION */}
       <ClosingCtaSection onScrollToSearch={handleScrollToSearch} />
 
     </div>
