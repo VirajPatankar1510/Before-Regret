@@ -53,7 +53,11 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
             <ul className="space-y-2.5 text-xs text-slate-700">
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-600 shrink-0" />
-                <span>Full 20+ public database synthesis</span>
+                <span>Live seismic hazard + address validation</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-blue-600 shrink-0" />
+                <span>Era & county-specific inspection priorities</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-600 shrink-0" />
@@ -92,7 +96,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
             <ul className="space-y-2.5 text-xs text-slate-300">
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>Full 20+ public database synthesis</span>
+                <span>Everything in the free report</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-400 shrink-0" />
@@ -100,7 +104,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>Permanent web link at /insights/</span>
+                <span>Instant Access.</span>
               </li>
             </ul>
           </div>

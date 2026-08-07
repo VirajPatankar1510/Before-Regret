@@ -15,7 +15,7 @@ export const ClosingCtaSection: React.FC<ClosingCtaSectionProps> = ({ onScrollTo
 
         <div className="relative z-10 max-w-3xl mx-auto space-y-4">
           <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
-            Check public records before signing
+            Know before you sign
           </h2>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
             One search tells you what the listing won't. Your first report is free.
