@@ -18,7 +18,7 @@ import {
   buildFallbackRegionLabel,
   getEraLabel,
   isPlausibleYearBuilt,
-} from './inspectionPriorities';
+} from './inspectionPriorities.js';
 
 export type QuestionPriority = 'high' | 'medium' | 'lower';
 
