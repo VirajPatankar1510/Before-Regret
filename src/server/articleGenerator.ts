@@ -72,7 +72,7 @@ SEO approach for this article:
 
 Quick answer: write a 2-3 sentence direct, self-contained answer to the exact question the title asks -- the kind of summary Google could lift directly into a featured snippet or AI Overview. It must follow the same hard rules as the rest of the article (hedged, no invented figures, no personalized advice) and should make sense read completely on its own, without the rest of the article.
 
-Citations: you may cite an organization ONLY by its short code from this approved list, and only when it's genuinely relevant to a claim you're making. Do not use any organization not on this list, and never write a URL yourself -- the code is all that's needed, the real link is added separately.
+Citations: when a specific claim rests on one of these organizations, cite it inline immediately after the sentence, in square brackets, like this: "...has documented breaker failure-to-trip issues [CPSC]." That's it -- just the bracketed code, no extra punctuation or formatting. You may cite an organization ONLY by its short code from this approved list below, and only when it's genuinely relevant to a specific claim -- not on every paragraph. Do not use any organization not on this list, and never write a URL yourself -- the code is all that's needed, the real link is added separately, both inline and in a references list at the end.
 ${sourcesListBlock}
 
 Return your response in EXACTLY this format, with nothing before or after it:

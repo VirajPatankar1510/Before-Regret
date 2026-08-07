@@ -1,17 +1,45 @@
 import React from 'react';
+import { resolveKnownSource } from '../data/knownSources';
 
 // Small, dependency-free renderer for exactly the markdown subset the AI generation prompt
-// produces (see src/server/articleGenerator.ts): ## / ### headers, **bold**, paragraphs, and
-// bullet/numbered lists. Not a general CommonMark implementation -- before this existed, the
-// article body was dumped as plain text with `whitespace-pre-line`, so a "## Heading" line
-// rendered as the literal characters "## Heading" instead of an actual heading. That's the bug
-// this fixes; it isn't meant to handle arbitrary markdown from anywhere else.
+// produces (see src/server/articleGenerator.ts): ## / ### headers, **bold**, paragraphs,
+// bullet/numbered lists, and [CODE] inline citations. Not a general CommonMark implementation --
+// before this existed, the article body was dumped as plain text with `whitespace-pre-line`, so
+// a "## Heading" line rendered as the literal characters "## Heading" instead of an actual
+// heading. That's the bug this fixes; it isn't meant to handle arbitrary markdown from anywhere
+// else.
 
-function parseInline(text: string): React.ReactNode[] {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+// Splits inline text on **bold** and [CODE] citation markers together so both can appear in the
+// same sentence. [CODE] only ever renders as a link if it resolves against the same hand-verified
+// list the prompt was given (src/data/knownSources.ts) -- an unresolved bracket (which shouldn't
+// happen, since the model is constrained to that list) just renders as plain text instead of a
+// broken link.
+// Exported for callers that only need one line of inline formatting rendered -- the Quick Answer
+// box in GuidePageView.tsx is a single paragraph, not multi-block markdown, so it uses this
+// directly rather than the full block-level renderArticleMarkdown below.
+export function parseInline(text: string): React.ReactNode[] {
+  const parts = text.split(/(\*\*[^*]+\*\*|\[[A-Z]+\])/g);
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
       return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    const citationMatch = part.match(/^\[([A-Z]+)\]$/);
+    if (citationMatch) {
+      const source = resolveKnownSource(citationMatch[1]);
+      if (source) {
+        return (
+          <a
+            key={i}
+            href={source.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={source.name}
+            className="text-blue-600 hover:text-blue-800 hover:underline font-medium text-[0.85em] align-super"
+          >
+            [{citationMatch[1]}]
+          </a>
+        );
+      }
     }
     return <React.Fragment key={i}>{part}</React.Fragment>;
   });
@@ -108,4 +136,11 @@ export function renderArticleMarkdown(markdown: string): React.ReactNode[] {
 
   flushParagraph();
   return blocks;
+}
+
+// For contexts that need plain text, not JSX -- e.g. the FAQPage JSON-LD schema's `text` field,
+// where a bracket citation marker would just look like a stray formatting artifact rather than
+// a clickable link (structured data has nowhere to put the link).
+export function stripCitationMarkers(text: string): string {
+  return text.replace(/\s*\[[A-Z]+\]/g, '');
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
 import { ChevronRight, Clock, Calendar, Loader2, MessageCircleQuestion, ExternalLink } from 'lucide-react';
-import { renderArticleMarkdown } from '../../utils/renderArticleMarkdown';
+import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../../utils/renderArticleMarkdown';
 import { resolveKnownSource } from '../../data/knownSources';
 
 interface GuidePageViewProps {
@@ -103,7 +103,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             'name': article.title,
             'acceptedAnswer': {
               '@type': 'Answer',
-              'text': article.quickAnswer
+              'text': stripCitationMarkers(article.quickAnswer)
             }
           }]
         }] : [])
@@ -189,7 +189,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
               <span>Quick answer</span>
             </div>
             <p className="text-sm sm:text-base text-blue-950 leading-relaxed font-medium">
-              {article.quickAnswer}
+              {parseInline(article.quickAnswer)}
             </p>
           </div>
         )}
