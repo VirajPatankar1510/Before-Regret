@@ -24,7 +24,7 @@ export function applyHeadSeo({
   canonicalUrl, 
   robotsDirective, 
   ogType = 'website',
-  ogImage = 'https://beforeregret.com/og-image.png',
+  ogImage = 'https://www.beforeregret.com/og-image.png',
   jsonLdSchema 
 }: HeadSeoOptions) {
   if (typeof document === 'undefined') return;

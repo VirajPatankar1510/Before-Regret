@@ -6,7 +6,7 @@ export interface IndexNowPayload {
 }
 
 export const INDEXNOW_KEY = 'beforeregret2026indexnowkey';
-export const INDEXNOW_HOST = 'beforeregret.com';
+export const INDEXNOW_HOST = 'www.beforeregret.com';
 
 export async function submitUrlsToIndexNow(urls: string[]): Promise<{ success: boolean; message: string; statusCode?: number }> {
   if (!urls || urls.length === 0) {

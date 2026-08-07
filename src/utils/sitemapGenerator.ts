@@ -1,6 +1,6 @@
 import { withDb, isDbConfigured } from '../server/db.js';
 
-const BASE_URL = 'https://beforeregret.com';
+const BASE_URL = 'https://www.beforeregret.com';
 
 // This previously also generated sitemap-states/cities/zips/topics/compare sections, driven by
 // the fabricated per-ZIP dataset removed from seoDataset.ts. Those URL groups (36 live pages)
@@ -117,6 +117,6 @@ Disallow: /api/
 Disallow: /state/
 Disallow: /compare/
 
-Sitemap: https://beforeregret.com/sitemap.xml
+Sitemap: https://www.beforeregret.com/sitemap.xml
 `;
 }
