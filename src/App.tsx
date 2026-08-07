@@ -305,7 +305,7 @@ export function App() {
         title: 'BeforeRegret Support & Property Research FAQ',
         description: 'Frequently asked questions regarding BeforeRegret public property record research, data sources, municipal permit checks, and report coverage.',
         canonicalUrl: 'https://beforeregret.com/support/',
-        robotsDirective: 'index, follow',
+        robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
@@ -344,7 +344,7 @@ export function App() {
         title: 'Terms of Service | BeforeRegret Property Intelligence',
         description: 'Terms of service and user agreement for BeforeRegret public record property research and automated synthesis tools.',
         canonicalUrl: 'https://beforeregret.com/terms/',
-        robotsDirective: 'index, follow',
+        robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
@@ -361,7 +361,7 @@ export function App() {
         title: 'Privacy Policy | BeforeRegret Property Intelligence',
         description: 'Privacy policy detailing data handling, user anonymity, and secure public record lookup protocols at BeforeRegret.',
         canonicalUrl: 'https://beforeregret.com/privacy/',
-        robotsDirective: 'index, follow',
+        robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
@@ -378,7 +378,7 @@ export function App() {
         title: 'Refund Policy & Satisfaction Guarantee | BeforeRegret',
         description: 'BeforeRegret refund policy and customer support commitments for property research report orders.',
         canonicalUrl: 'https://beforeregret.com/refunds/',
-        robotsDirective: 'index, follow',
+        robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
@@ -389,6 +389,13 @@ export function App() {
             ]
           }
         ]
+      });
+    } else if (pseoRoute.type === 'vendors') {
+      applyHeadSeo({
+        title: 'Local Business Placements | BeforeRegret',
+        description: 'Vendor marketplace for home inspectors, contractors, and specialists to reach property buyers.',
+        canonicalUrl: 'https://beforeregret.com/vendors/',
+        robotsDirective: 'noindex, nofollow'
       });
     } else if (currentStep === 'REPORT') {
       applyHeadSeo({
