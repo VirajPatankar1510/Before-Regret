@@ -30,6 +30,10 @@ import { TermsConditions } from './components/TermsConditions';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { RefundPolicy } from './components/RefundPolicy';
 
+// Payment Components
+import { PaymentSuccess } from './components/PaymentSuccess';
+import { PaymentCancelled } from './components/PaymentCancelled';
+
 export function App() {
   // Session state restoration to continue where left off after auth login/signup
   const [currentStep, setCurrentStep] = useState<'HOME' | 'RESEARCHING' | 'SUMMARY' | 'REPORT' | 'PSEO'>(() => {
@@ -105,7 +109,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guide' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'none';
+    type: 'admin' | 'guide' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'paymentSuccess' | 'paymentCancelled' | 'none';
     guideSlug?: string;
   }>({ type: 'none' });
 
@@ -145,6 +149,18 @@ export function App() {
 
     if (path === '/refunds/' || path.startsWith('/refunds') || path.startsWith('/refund-policy')) {
       setPseoRoute({ type: 'refunds' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    if (path === '/payment-success/' || path.startsWith('/payment-success')) {
+      setPseoRoute({ type: 'paymentSuccess' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    if (path === '/payment-cancelled/' || path.startsWith('/payment-cancelled')) {
+      setPseoRoute({ type: 'paymentCancelled' });
       setCurrentStep('PSEO');
       return true;
     }
@@ -667,6 +683,12 @@ export function App() {
             )}
             {pseoRoute.type === 'refunds' && (
               <RefundPolicy onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'paymentSuccess' && (
+              <PaymentSuccess />
+            )}
+            {pseoRoute.type === 'paymentCancelled' && (
+              <PaymentCancelled />
             )}
           </>
         )}

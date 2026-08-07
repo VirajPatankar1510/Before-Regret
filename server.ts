@@ -18,6 +18,18 @@ import {
   hasValidSession,
 } from "./src/server/adminAuth.js";
 import { registerArticleRoutes } from "./src/server/articlesApi.js";
+import {
+  isPayPalConfigured,
+  createPayPalOrder,
+  capturePayPalOrder,
+  getPayPalOrder
+} from "./src/server/paypalService.js";
+import {
+  createTransaction,
+  updateTransaction,
+  getTransaction,
+  isDbConfigured
+} from "./src/server/db.js";
 
 dotenv.config();
 
@@ -961,6 +973,196 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
         photoURL: photoURL || null
       }
     });
+  });
+
+  // --- PayPal Payment Processing ---------------------------------------------------------------
+  app.post("/api/paypal/orders", async (req, res) => {
+    if (!isPayPalConfigured()) {
+      res.status(503).json({
+        success: false,
+        error: 'PayPal payment processing is not configured on this server.',
+      });
+      return;
+    }
+
+    try {
+      const { amount, currency, type, description, propertyAddress, vendorId, userEmail, userId } = req.body;
+
+      if (!amount || !type || !userEmail || !userId) {
+        res.status(400).json({
+          success: false,
+          error: 'Missing required fields: amount, type, userEmail, userId',
+        });
+        return;
+      }
+
+      const appUrl = process.env.APP_URL || 'http://localhost:3000';
+      const returnUrl = `${appUrl}/payment-success`;
+      const cancelUrl = `${appUrl}/payment-cancelled`;
+
+      const paypalOrder = await createPayPalOrder({
+        amount: String(amount),
+        currency: currency || 'USD',
+        type: type as 'report' | 'vendor_subscription',
+        description: description || `BeforeRegret - ${type}`,
+        returnUrl,
+        cancelUrl,
+        userEmail,
+        propertyAddress,
+        vendorId,
+      });
+
+      if (isDbConfigured()) {
+        await createTransaction({
+          user_id: userId,
+          user_email: userEmail,
+          paypal_order_id: paypalOrder.orderId,
+          amount: String(amount),
+          currency: currency || 'USD',
+          type: type as 'report' | 'vendor_subscription',
+          status: 'pending',
+          property_address: propertyAddress,
+          vendor_id: vendorId,
+        });
+      }
+
+      res.json({
+        success: true,
+        orderId: paypalOrder.orderId,
+        approvalUrl: `https://www.${
+          process.env.PAYPAL_MODE === 'live' ? 'paypal.com' : 'sandbox.paypal.com'
+        }/cgi-bin/webscr?cmd=_express-checkout&token=${paypalOrder.orderId}`,
+      });
+    } catch (error: any) {
+      console.error('PayPal order creation error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to create PayPal order',
+      });
+    }
+  });
+
+  app.post("/api/paypal/orders/:orderId/capture", async (req, res) => {
+    if (!isPayPalConfigured()) {
+      res.status(503).json({
+        success: false,
+        error: 'PayPal payment processing is not configured.',
+      });
+      return;
+    }
+
+    try {
+      const { orderId } = req.params;
+      const { userId } = req.body;
+
+      if (!orderId || !userId) {
+        res.status(400).json({
+          success: false,
+          error: 'Missing required fields: orderId, userId',
+        });
+        return;
+      }
+
+      const captureResult = await capturePayPalOrder(orderId);
+
+      if (isDbConfigured()) {
+        await updateTransaction(orderId, {
+          status: 'completed',
+          paypal_capture_id: captureResult.captureId,
+          payer_name: captureResult.payerName,
+        });
+      }
+
+      res.json({
+        success: true,
+        orderId: captureResult.orderId,
+        status: captureResult.status,
+        captureId: captureResult.captureId,
+        amount: captureResult.amount,
+        currency: captureResult.currency,
+      });
+    } catch (error: any) {
+      console.error('PayPal order capture error:', error);
+
+      if (isDbConfigured()) {
+        try {
+          await updateTransaction(req.params.orderId, {
+            status: 'failed',
+            error_message: error.message,
+          });
+        } catch (dbError) {
+          console.error('Failed to update transaction status:', dbError);
+        }
+      }
+
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to capture PayPal order',
+      });
+    }
+  });
+
+  app.get("/api/paypal/orders/:orderId", async (req, res) => {
+    if (!isPayPalConfigured()) {
+      res.status(503).json({
+        success: false,
+        error: 'PayPal payment processing is not configured.',
+      });
+      return;
+    }
+
+    try {
+      const { orderId } = req.params;
+      const orderData = await getPayPalOrder(orderId);
+
+      res.json({
+        success: true,
+        orderId: orderData.orderId,
+        status: orderData.status,
+        amount: orderData.amount,
+        currency: orderData.currency,
+      });
+    } catch (error: any) {
+      console.error('PayPal order fetch error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to fetch PayPal order',
+      });
+    }
+  });
+
+  app.get("/api/paypal/transaction/:orderId", async (req, res) => {
+    if (!isDbConfigured()) {
+      res.status(503).json({
+        success: false,
+        error: 'Transaction database is not configured.',
+      });
+      return;
+    }
+
+    try {
+      const { orderId } = req.params;
+      const transaction = await getTransaction(orderId);
+
+      if (!transaction) {
+        res.status(404).json({
+          success: false,
+          error: 'Transaction not found',
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        transaction,
+      });
+    } catch (error: any) {
+      console.error('Transaction fetch error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to fetch transaction',
+      });
+    }
   });
 
   // Catch-all for unhandled /api endpoints to ensure JSON response instead of HTML SPA fallback
