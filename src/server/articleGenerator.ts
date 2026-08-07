@@ -66,11 +66,12 @@ export function buildArticlePrompt(
 SEO approach for this article:
 - Target ONE specific, long-tail search query. Long-tail (specific, lower-competition, high buyer-intent) is what a newer site can realistically rank for -- not a broad head term.
 - Structure with markdown headers (## for sections) and short paragraphs (2-4 sentences) so it's scannable.
+- For emphasis, use **double asterisks** only. Never use a single asterisk (*like this*) for italics or as a label -- it won't render correctly.
 - Target 1,200-1,800 words: long enough to fully and specifically answer the question, never padded to hit a number.
 - Demonstrate real expertise with specific mechanisms, eras, and regulations.
 - End with one clear, concrete next step the reader can act on today.
 
-Quick answer: write a 2-3 sentence direct, self-contained answer to the exact question the title asks -- the kind of summary Google could lift directly into a featured snippet or AI Overview. It must follow the same hard rules as the rest of the article (hedged, no invented figures, no personalized advice) and should make sense read completely on its own, without the rest of the article.
+Quick answer: write a 2-3 sentence direct, self-contained answer to the exact question the title asks -- the kind of summary Google could lift directly into a featured snippet or AI Overview. Lead with the concrete answer in the first few words -- "Yes, you can get homeowners insurance with polybutylene plumbing, but it's often difficult" not "Obtaining insurance can be difficult." Being concrete is about clarity, not certainty: still hedge the specifics in the rest of the sentence, but don't open with a vague qualifier when a direct answer is possible. It must follow the same hard rules as the rest of the article (hedged, no invented figures, no personalized advice) and should make sense read completely on its own, without the rest of the article.
 
 Citations: when a specific claim rests on one of these organizations, cite it inline immediately after the sentence, in square brackets, like this: "...has documented breaker failure-to-trip issues [CPSC]." That's it -- just the bracketed code, no extra punctuation or formatting. You may cite an organization ONLY by its short code from this approved list below, and only when it's genuinely relevant to a specific claim -- not on every paragraph. Do not use any organization not on this list, and never write a URL yourself -- the code is all that's needed, the real link is added separately, both inline and in a references list at the end.
 ${sourcesListBlock}

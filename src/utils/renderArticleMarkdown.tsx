@@ -9,19 +9,25 @@ import { resolveKnownSource } from '../data/knownSources';
 // heading. That's the bug this fixes; it isn't meant to handle arbitrary markdown from anywhere
 // else.
 
-// Splits inline text on **bold** and [CODE] citation markers together so both can appear in the
-// same sentence. [CODE] only ever renders as a link if it resolves against the same hand-verified
-// list the prompt was given (src/data/knownSources.ts) -- an unresolved bracket (which shouldn't
-// happen, since the model is constrained to that list) just renders as plain text instead of a
-// broken link.
+// Splits inline text on **bold**, single-asterisk *emphasis*, and [CODE] citation markers.
+// Single-asterisk emphasis is a defensive fallback, not something the prompt asks for (it now
+// explicitly tells the model to use **double asterisks** only) -- this just means any content
+// generated before that instruction existed still renders cleanly instead of showing literal
+// asterisk characters. [CODE] only ever renders as a link if it resolves against the same
+// hand-verified list the prompt was given (src/data/knownSources.ts) -- an unresolved bracket
+// (which shouldn't happen, since the model is constrained to that list) just renders as plain
+// text instead of a broken link.
 // Exported for callers that only need one line of inline formatting rendered -- the Quick Answer
 // box in GuidePageView.tsx is a single paragraph, not multi-block markdown, so it uses this
 // directly rather than the full block-level renderArticleMarkdown below.
 export function parseInline(text: string): React.ReactNode[] {
-  const parts = text.split(/(\*\*[^*]+\*\*|\[[A-Z]+\])/g);
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*|\[[A-Z]+\])/g);
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
       return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+      return <em key={i}>{part.slice(1, -1)}</em>;
     }
     const citationMatch = part.match(/^\[([A-Z]+)\]$/);
     if (citationMatch) {
