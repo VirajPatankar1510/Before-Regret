@@ -1,26 +1,32 @@
 import React from 'react';
+import { ArrowRight } from 'lucide-react';
 
 interface ArticleClosingNoteProps {
   onNavigate: (path: string) => void;
 }
 
-// A closing editorial note for guide articles -- the same pattern a publication uses for an
-// "About the newsroom" box at the end of a piece: one paragraph of real context about what the
-// organization does, ending in a single inline link. Deliberately not a banner, not a button in
-// brand-blue chrome, no "click here" language -- it reads as part of the article, not an ad slot
-// bolted onto it.
 export const ArticleClosingNote: React.FC<ArticleClosingNoteProps> = ({ onNavigate }) => {
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8">
-      <p className="text-sm text-slate-600 leading-relaxed">
-        BeforeRegret is a property research platform helping buyers uncover historical permits, zoning decisions, hazard classifications, and publicly available building records before making an offer.{' '}
-        <button
-          onClick={() => onNavigate('/')}
-          className="text-blue-700 font-semibold hover:underline underline-offset-2 cursor-pointer"
-        >
-          Start a property search
-        </button>{' '}
-        to access property research and guides in your area.
+    <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-3xl p-8 sm:p-12 space-y-6">
+      <div className="space-y-3">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+          Get Your Free Property Report
+        </h2>
+        <p className="text-sm sm:text-base text-blue-100 leading-relaxed max-w-2xl">
+          BeforeRegret synthesizes historical permits, zoning decisions, hazard classifications, and public records into one searchable report — all before you make an offer.
+        </p>
+      </div>
+
+      <button
+        onClick={() => onNavigate('/')}
+        className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white text-blue-700 font-bold text-sm sm:text-base rounded-xl hover:bg-blue-50 transition-colors cursor-pointer shadow-lg"
+      >
+        <span>Get Your First Report Free</span>
+        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+      </button>
+
+      <p className="text-xs sm:text-sm text-blue-100">
+        No credit card required. Additional reports are $14.99 each.
       </p>
     </div>
   );
