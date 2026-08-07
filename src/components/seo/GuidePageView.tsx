@@ -4,6 +4,7 @@ import { ChevronRight, Clock, Calendar, Loader2, MessageCircleQuestion, External
 import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../../utils/renderArticleMarkdown';
 import { resolveKnownSource } from '../../data/knownSources';
 import { ArticleClosingNote } from './ArticleClosingNote';
+import { AdSlot } from '../AdSlot';
 
 interface GuidePageViewProps {
   guideSlug: string;
@@ -195,12 +196,22 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           </div>
         )}
 
+        {/* Ad slot: below Quick Answer, above the article body -- reader already has the direct
+            answer, hasn't started the deep-dive yet. Renders nothing until AdSense credentials
+            are configured (see AdSlot.tsx). */}
+        <AdSlot slotEnvVar="VITE_ADSENSE_SLOT_IN_ARTICLE_TOP" />
+
         {/* Article Body */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm text-sm">
           <div className="max-w-none">
             {renderArticleMarkdown(article.bodyMarkdown)}
           </div>
         </div>
+
+        {/* Ad slot: below the article body, above our own closing CTA -- deliberately not
+            adjacent to/inside ArticleClosingNote below, so a Google ad never visually competes
+            with or gets mistaken for our own conversion element. */}
+        <AdSlot slotEnvVar="VITE_ADSENSE_SLOT_IN_ARTICLE_BOTTOM" />
 
         <ArticleClosingNote onNavigate={onNavigate} />
 
