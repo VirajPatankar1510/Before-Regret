@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Save, Send, Undo2, Trash2, AlertCircle, Sparkles
+  Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Save, Send, Undo2, Trash2, AlertCircle, Sparkles,
+  Link2, Lock, MessageCircleQuestion
 } from 'lucide-react';
+import { KNOWN_SOURCES } from '../../data/knownSources';
 
 interface SeoAdminPanelProps {
   onNavigate: (path: string) => void;
@@ -13,6 +15,8 @@ interface Article {
   title: string;
   metaDescription: string;
   bodyMarkdown: string;
+  quickAnswer: string;
+  sources: string[];
   status: 'draft' | 'published';
   createdAt: string;
   updatedAt: string;
@@ -51,6 +55,20 @@ function titleSimilarity(a: string, b: string): number {
   return shared / Math.min(wordsA.size, wordsB.size);
 }
 
+// Live preview only -- the server (src/server/articlesApi.ts) re-derives and owns the real slug
+// on save, including collision handling. This just needs to look right as you type.
+function previewSlug(title: string): string {
+  const words = title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
+  const stripped = words.filter((w) => !STOPWORDS.has(w));
+  const chosen = stripped.length >= 3 ? stripped : words;
+  return chosen.join('-').slice(0, 60).replace(/-+$/, '') || 'article';
+}
+
 // Real save/publish path against the Neon-backed /api/admin/articles routes (see
 // src/server/articlesApi.ts). Two screens on purpose: a list you can scan at a glance, and one
 // simple editor. No jargon, no keyword-volume dashboards, no fake pipeline stages -- title,
@@ -64,6 +82,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [generating, setGenerating] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [savedNotice, setSavedNotice] = useState(false);
+  // Tracks whether the admin has hand-edited the web address field -- once true, typing in the
+  // title or generating with AI stops auto-updating the slug, so a deliberate custom address
+  // never gets silently overwritten.
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   const loadArticles = () => {
     setLoadError(null);
@@ -86,6 +108,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const openEditor = (article: Article) => {
     setDraft(article);
     setActionError(null);
+    setSlugManuallyEdited(false);
     setView('edit');
   };
 
@@ -109,20 +132,31 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     }
   };
 
-  // Parses the model's streamed output -- "TITLE: ...\nMETA: ...\n---\n<body>" -- from the full
-  // accumulated text so far. Re-parsing the whole buffer on every chunk (rather than trying to
-  // diff incrementally) is simple and cheap at this size (a few KB for a full article).
-  const parseGeneratedText = (fullText: string): { title: string; metaDescription: string; bodyMarkdown: string } => {
+  // Parses the model's streamed output -- "TITLE: ...\nMETA: ...\nQUICK_ANSWER: ...\nSOURCES:
+  // ...\n---\n<body>" -- from the full accumulated text so far. Re-parsing the whole buffer on
+  // every chunk (rather than trying to diff incrementally) is simple and cheap at this size (a
+  // few KB for a full article).
+  const parseGeneratedText = (
+    fullText: string
+  ): { title: string; metaDescription: string; quickAnswer: string; sources: string[]; bodyMarkdown: string } => {
     const delimiterIndex = fullText.indexOf('\n---\n');
     const headerBlock = delimiterIndex === -1 ? fullText : fullText.slice(0, delimiterIndex);
     const body = delimiterIndex === -1 ? '' : fullText.slice(delimiterIndex + 5);
     const titleMatch = headerBlock.match(/^TITLE:\s*(.+)$/m);
     const metaMatch = headerBlock.match(/^META:\s*(.+)$/m);
+    const quickAnswerMatch = headerBlock.match(/^QUICK_ANSWER:\s*(.+)$/m);
+    const sourcesMatch = headerBlock.match(/^SOURCES:\s*(.+)$/m);
+    const knownKeys = new Set(KNOWN_SOURCES.map((s) => s.key));
+    const sources = sourcesMatch
+      ? sourcesMatch[1].split(',').map((s) => s.trim().toUpperCase()).filter((s) => knownKeys.has(s))
+      : [];
     // Fallback: if the model didn't follow the delimiter format at all, don't lose the output --
     // show everything as the body rather than silently dropping it.
     return {
       title: titleMatch ? titleMatch[1].trim() : '',
       metaDescription: metaMatch ? metaMatch[1].trim() : '',
+      quickAnswer: quickAnswerMatch ? quickAnswerMatch[1].trim() : '',
+      sources,
       bodyMarkdown: delimiterIndex === -1 ? fullText : body,
     };
   };
@@ -151,7 +185,14 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
         if (done) break;
         fullText += decoder.decode(value, { stream: true });
         const parsed = parseGeneratedText(fullText);
-        setDraft((prev) => (prev ? { ...prev, ...parsed } : prev));
+        setDraft((prev) => {
+          if (!prev) return prev;
+          const next = { ...prev, ...parsed };
+          if (!slugManuallyEdited && parsed.title && prev.status !== 'published') {
+            next.slug = previewSlug(parsed.title);
+          }
+          return next;
+        });
       }
     } catch {
       setActionError('Lost connection while generating. What was written so far is still here.');
@@ -172,6 +213,9 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           title: draft.title,
           metaDescription: draft.metaDescription,
           bodyMarkdown: draft.bodyMarkdown,
+          quickAnswer: draft.quickAnswer,
+          sources: draft.sources,
+          slug: draft.slug,
         }),
       });
       const data = await res.json();
@@ -411,11 +455,54 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           <input
             type="text"
             value={draft.title}
-            onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+            onChange={(e) => {
+              const title = e.target.value;
+              setDraft((prev) => {
+                if (!prev) return prev;
+                const next = { ...prev, title };
+                if (!slugManuallyEdited && prev.status !== 'published') {
+                  next.slug = title.trim() ? previewSlug(title) : prev.slug;
+                }
+                return next;
+              });
+            }}
             placeholder="What's this article called? Or type a rough topic and generate with AI below."
             disabled={generating}
             className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-base font-bold placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
           />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
+            <Link2 className="w-3.5 h-3.5" />
+            <span>Web address</span>
+          </label>
+          {draft.status === 'published' ? (
+            <div className="flex items-center gap-2 px-4 py-3 bg-slate-900/60 border border-slate-800 rounded-xl text-sm text-slate-400">
+              <Lock className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">beforeregret.com/guides/{draft.slug}/</span>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center rounded-xl border border-slate-800 focus-within:border-blue-500 bg-slate-900 overflow-hidden">
+                <span className="pl-4 text-sm text-slate-500 shrink-0">beforeregret.com/guides/</span>
+                <input
+                  type="text"
+                  value={draft.slug}
+                  onChange={(e) => {
+                    setSlugManuallyEdited(true);
+                    setDraft({ ...draft, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') });
+                  }}
+                  disabled={generating}
+                  className="flex-1 min-w-0 px-1.5 py-3 bg-transparent text-white text-sm focus:outline-none disabled:opacity-60"
+                />
+                <span className="pr-4 text-sm text-slate-500 shrink-0">/</span>
+              </div>
+              <p className="text-xs text-slate-500">
+                Auto-fills from the title. Keep it short and specific -- this locks once you publish.
+              </p>
+            </>
+          )}
         </div>
 
         <div className="space-y-1.5">
@@ -432,6 +519,38 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none resize-none disabled:opacity-60"
           />
         </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
+            <MessageCircleQuestion className="w-3.5 h-3.5" />
+            <span>Quick answer</span>
+          </label>
+          <p className="text-xs text-slate-500">A short, direct answer shown right on the page -- this is what Google tends to pull into a featured snippet.</p>
+          <textarea
+            value={draft.quickAnswer}
+            onChange={(e) => setDraft({ ...draft, quickAnswer: e.target.value })}
+            placeholder="The direct 2-3 sentence answer to the article's main question..."
+            rows={3}
+            disabled={generating}
+            className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none resize-none disabled:opacity-60"
+          />
+        </div>
+
+        {draft.sources.length > 0 && (
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Sources cited</label>
+            <div className="flex flex-wrap gap-1.5">
+              {draft.sources.map((code) => {
+                const source = KNOWN_SOURCES.find((s) => s.key === code);
+                return (
+                  <span key={code} className="px-2.5 py-1 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-300">
+                    {source?.name || code}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Article</label>
