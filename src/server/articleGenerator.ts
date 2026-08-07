@@ -31,14 +31,25 @@ const PILLAR_STRATEGY = `BeforeRegret's content strategy has six pillars. If no 
 5. Regret-native content -- what buyers commonly say they wish they'd checked before closing.
 6. Cost after closing -- property tax reassessment mechanics, insurance deductible structure, era-based utility costs.`;
 
-export function buildArticlePrompt(topicSeed: string): { systemInstruction: string; contents: string } {
+export function buildArticlePrompt(
+  topicSeed: string,
+  existingTitles: string[] = []
+): { systemInstruction: string; contents: string } {
   const trimmedTopic = topicSeed.trim();
 
   const topicInstruction = trimmedTopic
     ? `Topic seed given by the writer: "${trimmedTopic}"\n\nRefine this into the single best specific, long-tail angle -- the exact question a worried buyer would actually type into Google -- rather than writing broadly about the general subject.`
     : `No topic was given. ${PILLAR_STRATEGY}\n\nPick the single best long-tail angle within that pillar -- not the pillar name itself as a title.`;
 
-  const contents = `${topicInstruction}
+  // Duplicate-content guard: without this, nothing stops the same topic being generated twice
+  // under a different headline. The model is the only thing that can judge topical overlap here
+  // (there's no embedding search or similarity index in this app) -- so it just gets told
+  // directly what already exists and instructed to route around it.
+  const existingTitlesBlock = existingTitles.length > 0
+    ? `\n\nArticles that already exist on this site (published or in draft) -- do not write about the same specific angle as any of these. Pick a genuinely different angle, a different pillar, or a different specific question if the given topic seed overlaps with one of them:\n${existingTitles.map((t) => `- ${t}`).join('\n')}`
+    : '';
+
+  const contents = `${topicInstruction}${existingTitlesBlock}
 
 SEO approach for this article:
 - Target ONE specific, long-tail search query. Long-tail (specific, lower-competition, high buyer-intent) is what a newer site can realistically rank for -- not a broad head term.
