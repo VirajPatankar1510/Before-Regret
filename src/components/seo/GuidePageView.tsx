@@ -3,6 +3,7 @@ import { applyHeadSeo } from '../../utils/headSeo';
 import { ChevronRight, Clock, Calendar, Loader2, MessageCircleQuestion, ExternalLink } from 'lucide-react';
 import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../../utils/renderArticleMarkdown';
 import { resolveKnownSource } from '../../data/knownSources';
+import { ArticleClosingNote } from './ArticleClosingNote';
 
 interface GuidePageViewProps {
   guideSlug: string;
@@ -200,6 +201,8 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             {renderArticleMarkdown(article.bodyMarkdown)}
           </div>
         </div>
+
+        <ArticleClosingNote onNavigate={onNavigate} />
 
         {/* Sources -- resolved from a hand-verified lookup (src/data/knownSources.ts), never
             from a URL the model wrote itself. See src/server/articleGenerator.ts for why. */}
