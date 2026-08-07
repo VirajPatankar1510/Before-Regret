@@ -16,9 +16,9 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div className="min-w-0 space-y-1">
-        <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
+        <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
           <Megaphone className="w-3 h-3" />
-          <span>Sponsored -- {vendor.tradeCategory}</span>
+          <span>Sponsored · {vendor.tradeCategory}</span>
         </div>
         <h3 className="font-bold text-slate-900 text-base sm:text-lg">{vendor.businessName}</h3>
         {vendor.tagline && (

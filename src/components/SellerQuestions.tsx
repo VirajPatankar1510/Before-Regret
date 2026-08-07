@@ -49,10 +49,10 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
   return (
     <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
       <div className="space-y-2">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-start justify-between gap-3">
           <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
             <MessageCircleQuestion className="w-3.5 h-3.5" />
-            <span>Questions to ask the seller or listing agent</span>
+            <span>Questions for seller</span>
           </div>
           <button
             type="button"
@@ -63,6 +63,9 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
             <span>{copied ? 'Copied!' : 'Copy questions'}</span>
           </button>
         </div>
+        <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
+          Questions to ask the seller or listing agent
+        </h2>
         <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
           Based on the year built you entered (<strong className="text-slate-900">{result.yearBuilt}</strong>) and this
           property's era and area. Tap a question to see why it's worth asking and what to listen for in the answer.
