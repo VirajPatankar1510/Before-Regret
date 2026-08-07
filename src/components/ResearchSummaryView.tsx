@@ -142,7 +142,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
                 </span>
               ) : (
                 <span className="px-2 py-0.5 bg-slate-200 text-slate-500 font-medium rounded text-[10px] shrink-0">
-                  Not Yet Verified
+                  Needs verification
                 </span>
               )}
             </div>
