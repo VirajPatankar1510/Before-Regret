@@ -23,7 +23,8 @@ async function runSitemapGenerator() {
 
   const childNames = Array.from(indexXml.matchAll(/\/sitemaps\/([\w-]+\.xml)/g)).map(m => m[1]);
   for (const name of childNames) {
-    fs.writeFileSync(path.join(sitemapsDir, name), generateChildSitemapXml(name), "utf8");
+    const xml = await generateChildSitemapXml(name);
+    fs.writeFileSync(path.join(sitemapsDir, name), xml, "utf8");
   }
 
   fs.writeFileSync(path.join(publicDir, "robots.txt"), generateRobotsTxt(), "utf8");
