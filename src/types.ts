@@ -1,4 +1,5 @@
 import type { InspectionPriority } from './engine/inspectionPriorities';
+import type { SellerQuestion } from './engine/sellerQuestions';
 
 export type ViewState =
   | 'HOME'
@@ -55,6 +56,18 @@ export interface InspectionPrioritiesReportData {
   eraLabel: string;
   regionLabel: string;
   priorities: InspectionPriorityWithVendor[];
+}
+
+// Computed server-side from the same (year built, county, state) triple as
+// InspectionPrioritiesReportData, plus the requester-declared property type (see
+// engine/sellerQuestions.ts). No vendor matching here -- these are questions to ask a seller,
+// not a licensed-trade referral surface -- so unlike InspectionPriorityWithVendor above, this
+// carries the engine's SellerQuestion shape unmodified.
+export interface SellerQuestionsReportData {
+  yearBuilt: number;
+  eraLabel: string;
+  regionLabel: string;
+  questions: SellerQuestion[];
 }
 
 
@@ -355,6 +368,13 @@ export interface PropertyReport {
   // attached per item. Null/absent whenever no rule set covers this (year built, county) pair --
   // renders nothing rather than generic filler, same as everywhere else this is used.
   inspectionPriorities?: InspectionPrioritiesReportData | null;
+
+  // Seller-question script (see engine/sellerQuestions.ts), computed the same way and same
+  // timing as inspectionPriorities above. Distinct from the older, unused `sellerQuestions`
+  // Gemini-authored field below -- that one asks the model to invent questions from nothing;
+  // this one is deterministic and grounded in the same era/region/property-type rules as the
+  // Inspection Priorities section.
+  sellerQuestionsScript?: SellerQuestionsReportData | null;
 
   // Bottom Line Synthesis
   bottomLine: {

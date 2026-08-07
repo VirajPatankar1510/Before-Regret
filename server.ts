@@ -7,6 +7,7 @@ import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService.
 import { runAddressGate } from "./src/engine/geoValidationGate.js";
 import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
 import { getInspectionPriorities } from "./src/engine/inspectionPriorities.js";
+import { getSellerQuestions } from "./src/engine/sellerQuestions.js";
 import { getSponsoredVendorForZipAndTrade, FINDING_TRADE_CATEGORY, PRIORITY_TRADE_CATEGORY, getSlotAvailability, TRADE_CATEGORIES } from "./src/data/sponsoredVendors.js";
 import {
   isAdminConfigured,
@@ -836,6 +837,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
         attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
         attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
         cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode, resolvedMeta.state);
+        cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType);
 
         if (!cleanedReport.id) {
           cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -857,6 +859,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
     attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
     cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode, resolvedMeta.state);
+    cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType);
 
     if (!cleanedReport.id) {
       cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -1182,6 +1185,20 @@ function buildInspectionPrioritiesForReport(rawYearBuilt: unknown, county: strin
       };
     }),
   };
+}
+
+// Companion to buildInspectionPrioritiesForReport above, same (year built, county, state) inputs
+// plus the requester-declared property type. No vendor attachment step here -- unlike inspection
+// priorities, seller questions have no per-item trade category to match a sponsored vendor
+// against. declaredPropertyType is requester-declared and unvalidated at this point, same as
+// rawYearBuilt; narrowed to the engine's exact union or null rather than trusted as-is.
+function buildSellerQuestionsForReport(rawYearBuilt: unknown, county: string, state: string, rawDeclaredPropertyType: unknown) {
+  const yearBuilt = typeof rawYearBuilt === 'number' ? rawYearBuilt : parseInt(String(rawYearBuilt ?? ''), 10);
+  const declaredPropertyType =
+    rawDeclaredPropertyType === 'single_family' || rawDeclaredPropertyType === 'condo_or_multifamily' || rawDeclaredPropertyType === 'other'
+      ? rawDeclaredPropertyType
+      : null;
+  return getSellerQuestions(yearBuilt, county, state, declaredPropertyType);
 }
 
 function stripInternalMetadata(report: any) {

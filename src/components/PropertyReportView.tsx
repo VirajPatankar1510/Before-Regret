@@ -3,7 +3,7 @@ import {
   MapPin, ExternalLink,
   Check, Clock, CheckSquare, Square,
   FileCheck, AlertCircle, Download, Building, Layers,
-  BarChart3, Calendar, Database, Sparkles, Filter, FileText, ArrowRight
+  BarChart3, Calendar, Database, Sparkles, Filter, ArrowRight
 } from 'lucide-react';
 import { PropertyReport, CanonicalFinding } from '../types';
 import { LeadMarketplaceWidget } from './LeadMarketplaceWidget';
@@ -12,6 +12,7 @@ import { OFFICIAL_SOURCE_REGISTRY } from '../data/sourceRegistry';
 import { ErrorReportingModal } from './ErrorReportingModal';
 import { SponsoredVendorCard } from './SponsoredVendorCard';
 import { InspectionPriorities } from './InspectionPriorities';
+import { SellerQuestions } from './SellerQuestions';
 
 interface PropertyReportViewProps {
   report: PropertyReport;
@@ -22,7 +23,6 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-  const [copiedSection, setCopiedSection] = useState<string | null>(null);
 
   // Address formatting helper ensuring proper spacing after commas
   const formattedAddress = (report.headerInfo?.address || report.propertyInfo?.address || '')
@@ -181,6 +181,18 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   // reference-checklist framing regardless of exactly how many sources are still pending.
   const mostlyUnverified = findings.length === 0 || verifiedFindings.length < findings.length / 2;
 
+  // Section numbering: Detailed Findings and Your Action List always render; Inspection Budget
+  // Priorities and Questions for Seller are each optional and independent of one another (a
+  // property can match one rule set but not the other), so the total and each section's ordinal
+  // depend on which are actually present rather than a fixed count.
+  const hasInspectionPriorities = Boolean(report.inspectionPriorities);
+  const hasSellerQuestions = Boolean(report.sellerQuestionsScript);
+  const totalSections = 2 + (hasInspectionPriorities ? 1 : 0) + (hasSellerQuestions ? 1 : 0);
+  const findingsSectionNumber = 1;
+  const inspectionPrioritiesSectionNumber = findingsSectionNumber + 1;
+  const sellerQuestionsSectionNumber = inspectionPrioritiesSectionNumber + (hasInspectionPriorities ? 1 : 0);
+  const actionListSectionNumber = totalSections;
+
   const statusBadgeClasses = (status: string) => {
     if (status === 'CONFIRMED RECORD') return 'bg-emerald-50 text-emerald-800 border-emerald-200';
     if (status === 'NO RECORD FOUND') return 'bg-amber-50 text-amber-800 border-amber-200';
@@ -190,13 +202,6 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   // Toggle checklist checkbox
   const toggleCheck = (id: string) => {
     setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  // Copy helper
-  const copyText = (text: string, sectionId: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedSection(sectionId);
-    setTimeout(() => setCopiedSection(null), 2000);
   };
 
   return (
@@ -299,7 +304,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         {/* SECTION 1: DETAILED FINDINGS */}
         <section id="section-findings" className="space-y-6">
           <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 1 OF {report.inspectionPriorities ? 3 : 2}</span>
+            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {findingsSectionNumber} OF {totalSections}</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Detailed Public Record Findings
             </h2>
@@ -370,12 +375,12 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           </p>
         </section>
 
-        {/* SECTION 2: INSPECTION BUDGET PRIORITIES -- renders nothing when no rule set covers
+        {/* SECTION: INSPECTION BUDGET PRIORITIES -- renders nothing when no rule set covers
             this (year built, county) pair, same as the free summary version. */}
-        {report.inspectionPriorities && (
+        {hasInspectionPriorities && (
           <section id="section-inspection-priorities" className="space-y-6">
             <div className="border-b border-slate-200 pb-2">
-              <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION 2 OF 3</span>
+              <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {inspectionPrioritiesSectionNumber} OF {totalSections}</span>
               <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
                 Inspection Budget Priorities
               </h2>
@@ -384,45 +389,31 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           </section>
         )}
 
-        {/* SECTION 3 (or 2 without inspection priorities): YOUR ACTION LIST */}
+        {/* SECTION: QUESTIONS FOR SELLER -- same render-nothing-when-no-rule-applies principle.
+            Replaces the old per-finding actionItem-derived mini card, which pulled from a fixed,
+            non-era-aware Gemini/fallback list rather than this deterministic engine. */}
+        {hasSellerQuestions && (
+          <section id="section-seller-questions" className="space-y-6">
+            <div className="border-b border-slate-200 pb-2">
+              <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {sellerQuestionsSectionNumber} OF {totalSections}</span>
+              <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
+                Questions for Seller
+              </h2>
+            </div>
+            <SellerQuestions precomputed={report.sellerQuestionsScript} />
+          </section>
+        )}
+
+        {/* SECTION: YOUR ACTION LIST */}
         <section id="section-action-list" className="space-y-6">
           <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {report.inspectionPriorities ? 3 : 2} OF {report.inspectionPriorities ? 3 : 2}</span>
+            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {actionListSectionNumber} OF {totalSections}</span>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Your Action List
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Seller Questions */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 className="text-lg font-serif font-bold text-slate-900 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-blue-600" />
-                  <span>Questions for Seller / Agent</span>
-                </h3>
-                <button
-                  onClick={() => copyText(
-                    findings.filter(f => f.actionItem?.type === 'sellerQuestion').map(f => f.actionItem?.description).join('\n\n'),
-                    'seller-questions'
-                  )}
-                  className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 cursor-pointer"
-                >
-                  {copiedSection === 'seller-questions' ? 'Copied!' : 'Copy Questions'}
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                {findings.filter(f => f.actionItem?.type === 'sellerQuestion').map((f, idx) => (
-                  <div key={`sq-${idx}`} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1 text-xs">
-                    <span className="font-bold text-slate-900 block">{f.actionItem?.title || f.subject}</span>
-                    <p className="text-slate-700 leading-relaxed font-medium">"{f.actionItem?.description}"</p>
-                    <span className="text-[10px] text-slate-400 font-mono block pt-1">Reason: {f.actionItem?.why}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
+          <div className="grid grid-cols-1 gap-6">
             {/* Walkthrough Checklist */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
               <div className="border-b border-slate-100 pb-3">
