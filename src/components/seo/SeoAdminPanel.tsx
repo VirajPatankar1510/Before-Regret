@@ -19,6 +19,38 @@ interface Article {
   publishedAt: string | null;
 }
 
+const STOPWORDS = new Set([
+  'the', 'a', 'an', 'and', 'or', 'for', 'to', 'in', 'on', 'of', 'with', 'is', 'are',
+  'your', 'you', 'how', 'what', 'why', 'can', 'do', 'does', 'this', 'that', 'it', 'its',
+]);
+
+function significantWords(text: string): Set<string> {
+  return new Set(
+    text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length > 2 && !STOPWORDS.has(w))
+  );
+}
+
+// Rough client-side heuristic so a title that clearly overlaps with an existing article gets
+// flagged the moment you type it, before you even click Generate -- not a semantic/embedding
+// comparison, just shared significant words as a fraction of the shorter title's word count.
+// The server-side duplicate guard (existing titles fed into the Gemini prompt, see
+// src/server/articleGenerator.ts) is the one actually steering what gets written; this is just an
+// instant heads-up in the UI.
+function titleSimilarity(a: string, b: string): number {
+  const wordsA = significantWords(a);
+  const wordsB = significantWords(b);
+  if (wordsA.size === 0 || wordsB.size === 0) return 0;
+  let shared = 0;
+  wordsA.forEach((w) => {
+    if (wordsB.has(w)) shared++;
+  });
+  return shared / Math.min(wordsA.size, wordsB.size);
+}
+
 // Real save/publish path against the Neon-backed /api/admin/articles routes (see
 // src/server/articlesApi.ts). Two screens on purpose: a list you can scan at a glance, and one
 // simple editor. No jargon, no keyword-volume dashboards, no fake pipeline stages -- title,
@@ -103,7 +135,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       const res = await fetch('/api/admin/articles/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: draft.title }),
+        body: JSON.stringify({ topic: draft.title, currentArticleId: draft.id }),
       });
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => null);
@@ -274,6 +306,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // --- Editor view -----------------------------------------------------------------------------
   if (!draft) return null;
 
+  const similarExisting = draft.title.trim() && articles
+    ? articles.find((a) => a.id !== draft.id && titleSimilarity(a.title, draft.title) > 0.5)
+    : undefined;
+
   return (
     <div className="bg-slate-950 text-white min-h-screen font-sans">
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
@@ -328,6 +364,22 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           <div className="p-4 bg-rose-950/60 border border-rose-800 rounded-xl text-sm text-rose-200 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{actionError}</span>
+          </div>
+        )}
+
+        {similarExisting && (
+          <div className="p-4 bg-amber-950/40 border border-amber-800/60 rounded-xl text-sm text-amber-200 flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <div>
+              <span>This looks similar to an existing article: </span>
+              <button
+                onClick={() => openEditor(similarExisting)}
+                className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
+              >
+                "{similarExisting.title}"
+              </button>
+              <span> ({similarExisting.status === 'published' ? 'live' : 'draft'}). Consider a different angle, or open it to edit instead.</span>
+            </div>
           </div>
         )}
 

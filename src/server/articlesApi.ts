@@ -96,6 +96,23 @@ export function registerArticleRoutes(app: Express) {
       return;
     }
     const topic = typeof req.body?.topic === 'string' ? req.body.topic : '';
+    const currentArticleId = Number.isFinite(parseInt(req.body?.currentArticleId, 10))
+      ? parseInt(req.body.currentArticleId, 10)
+      : null;
+
+    // Best-effort: if the DB read fails for any reason, generation still proceeds without the
+    // duplicate-content guard rather than blocking the whole feature on it.
+    let existingTitles: string[] = [];
+    if (isDbConfigured()) {
+      try {
+        const rows = await withDb((sql) => sql`SELECT id, title FROM articles`);
+        existingTitles = (rows as unknown as Array<{ id: number; title: string }>)
+          .filter((r) => r.id !== currentArticleId && r.title && r.title !== 'Untitled article')
+          .map((r) => r.title);
+      } catch (err) {
+        console.error('[articles] failed to load existing titles for duplicate check:', err);
+      }
+    }
 
     try {
       const { GoogleGenAI } = await import('@google/genai');
@@ -103,7 +120,7 @@ export function registerArticleRoutes(app: Express) {
         apiKey,
         httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
       });
-      const { systemInstruction, contents } = buildArticlePrompt(topic);
+      const { systemInstruction, contents } = buildArticlePrompt(topic, existingTitles);
 
       const stream = await ai.models.generateContentStream({
         model: 'gemini-3.6-flash',
