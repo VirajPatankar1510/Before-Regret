@@ -99,17 +99,11 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   // reference-checklist framing regardless of exactly how many sources are still pending.
   const mostlyUnverified = findings.length === 0 || verifiedFindings.length < findings.length / 2;
 
-  // Section numbering: Detailed Findings and Your Action List always render; Inspection Budget
-  // Priorities and Questions for Seller are each optional and independent of one another (a
-  // property can match one rule set but not the other), so the total and each section's ordinal
-  // depend on which are actually present rather than a fixed count.
+  // Inspection Budget Priorities and Questions for Seller are each optional and independent of
+  // one another (a property can match one rule set but not the other) -- both sub-components own
+  // their full heading now, so no section-numbering scheme is needed here.
   const hasInspectionPriorities = Boolean(report.inspectionPriorities);
   const hasSellerQuestions = Boolean(report.sellerQuestionsScript);
-  const totalSections = 2 + (hasInspectionPriorities ? 1 : 0) + (hasSellerQuestions ? 1 : 0);
-  const findingsSectionNumber = 1;
-  const inspectionPrioritiesSectionNumber = findingsSectionNumber + 1;
-  const sellerQuestionsSectionNumber = inspectionPrioritiesSectionNumber + (hasInspectionPriorities ? 1 : 0);
-  const actionListSectionNumber = totalSections;
 
   const statusBadgeClasses = (status: string) => {
     if (status === 'CONFIRMED RECORD') return 'bg-emerald-50 text-emerald-800 border-emerald-200';
@@ -147,7 +141,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </div>
             <div>
               <span className="font-serif font-black text-slate-900 text-base tracking-tight block">BeforeRegret</span>
-              <span className="text-[10px] font-mono text-slate-500 block uppercase tracking-wider">Property Insights</span>
+              <span className="text-[10px] font-medium text-slate-500 block uppercase tracking-wide">Property Insights</span>
             </div>
           </div>
 
@@ -175,96 +169,83 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
 
         {/* Document Header Panel */}
         <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xs">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
+          <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <span className={`text-[11px] font-mono font-bold uppercase tracking-widest block ${mostlyUnverified ? 'text-slate-500' : 'text-blue-600'}`}>
-                {mostlyUnverified ? 'RECORDS REFERENCE — NOT YET INDEPENDENTLY VERIFIED' : 'VERIFIED PUBLIC PROPERTY RESEARCH'}
+              <span className={`text-xs font-semibold uppercase tracking-wide block ${mostlyUnverified ? 'text-slate-500' : 'text-blue-600'}`}>
+                {mostlyUnverified ? 'Records reference — not yet independently verified' : 'Verified public property research'}
               </span>
               <h1 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight mt-1">
                 {formattedAddress}
               </h1>
             </div>
-            <div className="text-right">
-              <span className="text-[10px] font-mono text-slate-400 block">
-                Report Date: {report.headerInfo?.reportDate || 'August 2026'}
-              </span>
-            </div>
+            <span className="text-xs text-slate-400 shrink-0">
+              {report.headerInfo?.reportDate || 'August 2026'}
+            </span>
           </div>
 
-          {/* Quick Metrics */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <span className="text-[10px] font-mono text-slate-500 uppercase block">Public Sources</span>
-              <span className="text-base font-bold text-slate-900 block mt-0.5">{sourceCount} Linked</span>
+          {/* Quick Metrics -- a stat line, not separate dashboard tiles */}
+          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2 pt-3 border-t border-slate-100 text-sm">
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-bold text-slate-900">{sourceCount}</span>
+              <span className="text-xs text-slate-500">public sources linked</span>
             </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <span className="text-[10px] font-mono text-slate-500 uppercase block">Confirmed Records</span>
-              <span className="text-base font-bold text-emerald-700 block mt-0.5">{verifiedFindings.length} Items</span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-bold text-emerald-700">{verifiedFindings.length}</span>
+              <span className="text-xs text-slate-500">confirmed</span>
             </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <span className="text-[10px] font-mono text-slate-500 uppercase block">Not Yet Verified</span>
-              <span className="text-base font-bold text-slate-600 block mt-0.5">{pendingFindings.length} Items</span>
-            </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <span className="text-[10px] font-mono text-slate-500 uppercase block">Research Type</span>
-              <span className="text-base font-bold text-slate-900 block mt-0.5">{mostlyUnverified ? 'Reference Checklist' : 'Full Public Audit'}</span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-bold text-slate-600">{pendingFindings.length}</span>
+              <span className="text-xs text-slate-500">not yet verified</span>
             </div>
           </div>
         </section>
 
-        {/* SECTION 1: DETAILED FINDINGS */}
+        {/* SECTION: DETAILED FINDINGS */}
         <section id="section-findings" className="space-y-6">
-          <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {findingsSectionNumber} OF {totalSections}</span>
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
+              <FileCheck className="w-3.5 h-3.5" />
+              <span>Public record findings</span>
+            </div>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-              Detailed Public Record Findings
+              What We Checked
             </h2>
           </div>
 
           <div className="space-y-4">
             {findings.map((finding) => (
-              <div key={finding.id} className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs hover:border-slate-300 transition-all">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                  <div>
-                    <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">
-                      {finding.category} • {finding.sourceAgency || 'Public Source'}
+              <div key={finding.id} className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 hover:border-slate-300 transition-colors">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="text-[11px] text-slate-400 font-medium block">
+                      {finding.category} · {finding.sourceAgency || 'Public Source'}
                     </span>
                     <h3 className="text-lg font-serif font-bold text-slate-900 mt-0.5">
                       {finding.subject}
                     </h3>
                   </div>
-                  <span className={`text-xs font-mono font-bold px-3 py-1 rounded-full border ${statusBadgeClasses(finding.status)}`}>
+                  <span className={`shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full border ${statusBadgeClasses(finding.status)}`}>
                     {finding.status}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                  <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 space-y-1">
-                    <span className="font-mono font-bold text-slate-500 uppercase text-[10px] block">1. What We Found</span>
-                    <p className="text-slate-800 font-medium leading-relaxed">{finding.whatWeFound}</p>
-                  </div>
-
-                  <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 space-y-1">
-                    <span className="font-mono font-bold text-slate-500 uppercase text-[10px] block">2. Why It Matters</span>
-                    <p className="text-slate-800 font-medium leading-relaxed">{finding.whyItMatters}</p>
-                  </div>
-
-                  <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 space-y-1">
-                    <span className="font-mono font-bold text-blue-600 uppercase text-[10px] block">3. Suggested Next Step</span>
-                    <p className="text-blue-950 font-semibold leading-relaxed">{finding.suggestedNextStep}</p>
-                    {finding.sourceUrl && (
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  {finding.whatWeFound} {finding.whyItMatters} {finding.suggestedNextStep}
+                  {finding.sourceUrl && (
+                    <>
+                      {' '}
                       <a
                         href={finding.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-blue-700 hover:text-blue-900 font-bold pt-1 hover:underline"
+                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold hover:underline"
                       >
                         <span>Check the official record</span>
                         <ExternalLink className="w-3 h-3" />
                       </a>
-                    )}
-                  </div>
-                </div>
+                    </>
+                  )}
+                </p>
 
                 {/* Contextual vendor match for this specific finding's trade category, if a real
                     vendor has paid for it in this ZIP -- renders nothing otherwise. */}
@@ -279,7 +260,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             Want to see every public source BeforeRegret checks, and which ones are live vs. reference-only?{' '}
             <button
               onClick={() => setIsSourceModalOpen(true)}
-              className="text-blue-600 hover:text-blue-800 font-bold hover:underline cursor-pointer"
+              className="text-blue-600 hover:text-blue-800 font-semibold hover:underline cursor-pointer"
             >
               Open the full Source Registry
             </button>.
@@ -287,38 +268,31 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         </section>
 
         {/* SECTION: INSPECTION BUDGET PRIORITIES -- renders nothing when no rule set covers
-            this (year built, county) pair, same as the free summary version. */}
+            this (year built, county) pair, same as the free summary version. Owns its own full
+            heading now (see InspectionPriorities.tsx), so no outer wrapper heading here. */}
         {hasInspectionPriorities && (
-          <section id="section-inspection-priorities" className="space-y-6">
-            <div className="border-b border-slate-200 pb-2">
-              <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {inspectionPrioritiesSectionNumber} OF {totalSections}</span>
-              <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-                Inspection Budget Priorities
-              </h2>
-            </div>
+          <section id="section-inspection-priorities">
             <InspectionPriorities precomputed={report.inspectionPriorities} />
           </section>
         )}
 
         {/* SECTION: QUESTIONS FOR SELLER -- same render-nothing-when-no-rule-applies principle.
             Replaces the old per-finding actionItem-derived mini card, which pulled from a fixed,
-            non-era-aware Gemini/fallback list rather than this deterministic engine. */}
+            non-era-aware Gemini/fallback list rather than this deterministic engine. Owns its
+            own full heading now (see SellerQuestions.tsx). */}
         {hasSellerQuestions && (
-          <section id="section-seller-questions" className="space-y-6">
-            <div className="border-b border-slate-200 pb-2">
-              <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {sellerQuestionsSectionNumber} OF {totalSections}</span>
-              <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-                Questions for Seller
-              </h2>
-            </div>
+          <section id="section-seller-questions">
             <SellerQuestions precomputed={report.sellerQuestionsScript} />
           </section>
         )}
 
         {/* SECTION: YOUR ACTION LIST */}
         <section id="section-action-list" className="space-y-6">
-          <div className="border-b border-slate-200 pb-2">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest">SECTION {actionListSectionNumber} OF {totalSections}</span>
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
+              <CheckSquare className="w-3.5 h-3.5" />
+              <span>Before your walkthrough</span>
+            </div>
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
               Your Action List
             </h2>
@@ -328,8 +302,8 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             {/* Walkthrough Checklist */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
               <div className="border-b border-slate-100 pb-3">
-                <h3 className="text-lg font-serif font-bold text-slate-900 flex items-center gap-2">
-                  <CheckSquare className="w-5 h-5 text-blue-600" />
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <CheckSquare className="w-4 h-4 text-blue-600" />
                   <span>Walkthrough Checklist</span>
                 </h3>
               </div>
