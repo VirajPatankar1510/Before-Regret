@@ -1,4 +1,4 @@
-import { EDITORIAL_GUIDES_DATASET } from '../data/seoDataset.js';
+import { withDb, isDbConfigured } from '../server/db.js';
 
 const BASE_URL = 'https://beforeregret.com';
 
@@ -41,7 +41,7 @@ export function generateSitemapIndexXml(): string {
 }
 
 // 2. Child Sitemap Generator (/sitemaps/:name.xml)
-export function generateChildSitemapXml(name: string): string {
+export async function generateChildSitemapXml(name: string): Promise<string> {
   const cleanName = name.replace(/\.xml$/, '');
   let entries: SitemapUrlEntry[] = [];
 
@@ -55,17 +55,22 @@ export function generateChildSitemapXml(name: string): string {
       { loc: `${BASE_URL}/privacy/`, lastmod: '2026-06-01', changefreq: 'monthly', priority: '0.5' },
       { loc: `${BASE_URL}/refunds/`, lastmod: '2026-06-01', changefreq: 'monthly', priority: '0.5' },
     ];
-  } else if (cleanName === 'sitemap-guides') {
-    EDITORIAL_GUIDES_DATASET.forEach(g => {
-      if (g.isPublished && g.robotsDirective.includes('index')) {
+  } else if (cleanName === 'sitemap-guides' && isDbConfigured()) {
+    try {
+      const rows = await withDb((sql) => sql`
+        SELECT slug, published_at FROM articles WHERE status = 'published' ORDER BY published_at DESC
+      `);
+      (rows as unknown as Array<{ slug: string; published_at: string | null }>).forEach((g) => {
         entries.push({
           loc: `${BASE_URL}/guides/${g.slug}/`,
-          lastmod: g.publishDate || today,
+          lastmod: g.published_at ? g.published_at.slice(0, 10) : today,
           changefreq: 'monthly',
           priority: '0.7'
         });
-      }
-    });
+      });
+    } catch (err) {
+      console.error('[sitemap] failed to load published guides:', err);
+    }
   }
 
   return buildUrlsetXml(entries);

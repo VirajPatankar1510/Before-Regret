@@ -16,6 +16,7 @@ import {
   clearSessionCookie,
   hasValidSession,
 } from "./src/server/adminAuth.js";
+import { registerArticleRoutes } from "./src/server/articlesApi.js";
 
 dotenv.config();
 
@@ -89,6 +90,11 @@ export async function createApp() {
     });
   });
 
+  // --- Articles (Neon-backed) ---------------------------------------------------------------
+  // Admin create/edit/publish routes plus the public /api/guides read routes GuidePageView and
+  // the sitemap generator use. See src/server/articlesApi.ts and src/server/db.ts.
+  registerArticleRoutes(app);
+
   // Master Sitemap Index Endpoint (/sitemap.xml and /sitemaps/sitemap-index.xml)
   app.get(["/sitemap.xml", "/sitemaps/sitemap-index.xml"], (req, res) => {
     res.setHeader("Content-Type", "application/xml; charset=utf-8");
@@ -96,12 +102,12 @@ export async function createApp() {
     res.send(generateSitemapIndexXml());
   });
 
-  // Child Modular Sitemap Endpoints (/sitemaps/sitemap-pages.xml, /sitemaps/sitemap-zips-1.xml, etc.)
-  app.get("/sitemaps/:sitemapName", (req, res) => {
+  // Child Modular Sitemap Endpoints (/sitemaps/sitemap-pages.xml, /sitemaps/sitemap-guides.xml)
+  app.get("/sitemaps/:sitemapName", async (req, res) => {
     const { sitemapName } = req.params;
     res.setHeader("Content-Type", "application/xml; charset=utf-8");
     res.setHeader("Cache-Control", "public, max-age=3600");
-    res.send(generateChildSitemapXml(sitemapName));
+    res.send(await generateChildSitemapXml(sitemapName));
   });
 
   // Robots.txt Endpoint
@@ -1203,8 +1209,8 @@ function simpleHash(str: string): number {
 }
 
 // Local government portals genuinely differ by jurisdiction. This app currently only targets
-// Travis (Austin), Harris (Houston), and Dallas counties (see seoDataset.ts) -- those are the
-// only three with real, individually-verified URLs below. Every address outside them falls
+// Travis (Austin), Harris (Houston), and Dallas counties -- those are the only three with real,
+// individually-verified URLs below. Every address outside them falls
 // through to the same honest generic directory sourceRegistry.ts already uses for these
 // categories, rather than silently pointing every address in the country at Austin's portal
 // regardless of where the property actually is.
