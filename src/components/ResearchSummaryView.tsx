@@ -5,7 +5,6 @@ import {
 } from 'lucide-react';
 import { ResearchSummaryData, PropertySearchResult } from '../types';
 import { InspectionPriorities } from './InspectionPriorities';
-import { SellerQuestions } from './SellerQuestions';
 
 interface ResearchSummaryViewProps {
   summaryData: ResearchSummaryData;
@@ -124,17 +123,6 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
         state={address?.state}
       />
 
-      {/* Seller-question script -- same engine, same era/region/property-type gating, shown in
-          full here just like Inspection Priorities above. Pricing here is per-address (first
-          report free, $14.99 for each additional address), not per content depth, so there's no
-          reason to hold back content on the free summary -- a paying-for-a-second-address user
-          gets the same report content as their free first one, just for a different property. */}
-      <SellerQuestions
-        yearBuilt={declaredProperty?.yearBuilt}
-        county={declaredProperty?.county || address?.county}
-        state={address?.state}
-        declaredPropertyType={declaredProperty?.declaredPropertyType}
-      />
 
       {/* Public Data Sources Accordion / Preview */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
