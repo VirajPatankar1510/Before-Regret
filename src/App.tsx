@@ -286,15 +286,15 @@ export function App() {
       applyHeadSeo({
         title: 'BeforeRegret — Property Research from 20+ Public Records',
         description: 'Free, address-based public record synthesis for US homebuyers and renters. Uncover FEMA flood zones, municipal permits, radon levels, noise, and broadband.',
-        canonicalUrl: 'https://beforeregret.com/',
+        canonicalUrl: 'https://www.beforeregret.com/',
         robotsDirective: 'index, follow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
             '@type': 'Organization',
             'name': 'Before Regret',
-            'url': 'https://beforeregret.com',
-            'logo': 'https://beforeregret.com/favicon.svg',
+            'url': 'https://www.beforeregret.com',
+            'logo': 'https://www.beforeregret.com/favicon.svg',
             'parentOrganization': {
               '@type': 'Organization',
               'name': 'Atmostellar'
@@ -304,12 +304,12 @@ export function App() {
             '@context': 'https://schema.org',
             '@type': 'WebSite',
             'name': 'BeforeRegret',
-            'url': 'https://beforeregret.com',
+            'url': 'https://www.beforeregret.com',
             'potentialAction': {
               '@type': 'SearchAction',
               'target': {
                 '@type': 'EntryPoint',
-                'urlTemplate': 'https://beforeregret.com/?address={search_term_string}'
+                'urlTemplate': 'https://www.beforeregret.com/?address={search_term_string}'
               },
               'query-input': 'required name=search_term_string'
             }
@@ -320,7 +320,7 @@ export function App() {
       applyHeadSeo({
         title: 'BeforeRegret Support & Property Research FAQ',
         description: 'Frequently asked questions regarding BeforeRegret public property record research, data sources, municipal permit checks, and report coverage.',
-        canonicalUrl: 'https://beforeregret.com/support/',
+        canonicalUrl: 'https://www.beforeregret.com/support/',
         robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
           {
@@ -349,8 +349,8 @@ export function App() {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
-              { '@type': 'ListItem', 'position': 2, 'name': 'Support & FAQ', 'item': 'https://beforeregret.com/support/' }
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Support & FAQ', 'item': 'https://www.beforeregret.com/support/' }
             ]
           }
         ]
@@ -359,15 +359,15 @@ export function App() {
       applyHeadSeo({
         title: 'Terms of Service | BeforeRegret Property Intelligence',
         description: 'Terms of service and user agreement for BeforeRegret public record property research and automated synthesis tools.',
-        canonicalUrl: 'https://beforeregret.com/terms/',
+        canonicalUrl: 'https://www.beforeregret.com/terms/',
         robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
-              { '@type': 'ListItem', 'position': 2, 'name': 'Terms of Service', 'item': 'https://beforeregret.com/terms/' }
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Terms of Service', 'item': 'https://www.beforeregret.com/terms/' }
             ]
           }
         ]
@@ -376,15 +376,15 @@ export function App() {
       applyHeadSeo({
         title: 'Privacy Policy | BeforeRegret Property Intelligence',
         description: 'Privacy policy detailing data handling, user anonymity, and secure public record lookup protocols at BeforeRegret.',
-        canonicalUrl: 'https://beforeregret.com/privacy/',
+        canonicalUrl: 'https://www.beforeregret.com/privacy/',
         robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
-              { '@type': 'ListItem', 'position': 2, 'name': 'Privacy Policy', 'item': 'https://beforeregret.com/privacy/' }
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Privacy Policy', 'item': 'https://www.beforeregret.com/privacy/' }
             ]
           }
         ]
@@ -393,15 +393,15 @@ export function App() {
       applyHeadSeo({
         title: 'Refund Policy & Satisfaction Guarantee | BeforeRegret',
         description: 'BeforeRegret refund policy and customer support commitments for property research report orders.',
-        canonicalUrl: 'https://beforeregret.com/refunds/',
+        canonicalUrl: 'https://www.beforeregret.com/refunds/',
         robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
-              { '@type': 'ListItem', 'position': 2, 'name': 'Refund Policy', 'item': 'https://beforeregret.com/refunds/' }
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Refund Policy', 'item': 'https://www.beforeregret.com/refunds/' }
             ]
           }
         ]
@@ -410,21 +410,21 @@ export function App() {
       applyHeadSeo({
         title: 'Local Business Placements | BeforeRegret',
         description: 'Vendor marketplace for home inspectors, contractors, and specialists to reach property buyers.',
-        canonicalUrl: 'https://beforeregret.com/vendors/',
+        canonicalUrl: 'https://www.beforeregret.com/vendors/',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (currentStep === 'REPORT') {
       applyHeadSeo({
         title: `Property Insights | ${report?.propertyInfo?.address || 'Subject Property'}`,
         description: 'Private multi-hazard public record research synthesis for subject property.',
-        canonicalUrl: `https://beforeregret.com/report/${report?.id || 'private'}`,
+        canonicalUrl: `https://www.beforeregret.com/report/${report?.id || 'private'}`,
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'admin') {
       applyHeadSeo({
         title: 'PSEO Operations & Indexing Control Panel | BeforeRegret',
         description: 'Internal administration interface for pSEO dataset management, indexation monitoring, and Search Console integration.',
-        canonicalUrl: 'https://beforeregret.com/admin/seo',
+        canonicalUrl: 'https://www.beforeregret.com/admin/seo',
         robotsDirective: 'noindex, nofollow'
       });
     }

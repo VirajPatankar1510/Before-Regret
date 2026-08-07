@@ -62,7 +62,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
     };
   }, [guideSlug]);
 
-  const canonicalUrl = `https://beforeregret.com/guides/${guideSlug}/`;
+  const canonicalUrl = `https://www.beforeregret.com/guides/${guideSlug}/`;
 
   useEffect(() => {
     if (!article) return;
@@ -77,7 +77,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           '@type': 'Article',
           'headline': article.title,
           'description': article.metaDescription,
-          'image': 'https://beforeregret.com/hero-bg.png',
+          'image': 'https://www.beforeregret.com/hero-bg.png',
           'datePublished': article.publishedAt,
           'author': {
             '@type': 'Organization',
@@ -88,8 +88,8 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           '@context': 'https://schema.org',
           '@type': 'BreadcrumbList',
           'itemListElement': [
-            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://beforeregret.com/' },
-            { '@type': 'ListItem', 'position': 2, 'name': 'Editorial Guides', 'item': 'https://beforeregret.com/guides/' },
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'Editorial Guides', 'item': 'https://www.beforeregret.com/guides/' },
             { '@type': 'ListItem', 'position': 3, 'name': article.title, 'item': canonicalUrl }
           ]
         },
