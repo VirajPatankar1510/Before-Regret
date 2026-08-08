@@ -357,7 +357,7 @@ export function App() {
                 'name': 'Where does BeforeRegret source its property hazard data?',
                 'acceptedAnswer': {
                   '@type': 'Answer',
-                  'text': 'BeforeRegret synthesizes records directly from 25+ government portals including FEMA, EPA, USGS, USDA, U.S. DOT, FCC, and local municipal building departments.'
+                  'text': 'BeforeRegret runs a live USGS seismic hazard check and validates your address against U.S. Census records automatically. The rest of the report is a curated, address-specific checklist linking directly to the real FEMA, EPA, USDA, U.S. DOT, FCC, and local municipal sources you would otherwise have to track down yourself -- clearly labeled as not yet independently verified until you check them.'
                 }
               },
               {
@@ -654,7 +654,7 @@ export function App() {
               Synthesizing Executive Report
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Cross-referencing 25+ government, environmental, and public record databases...
+              Checking live seismic hazard data and validating this address against U.S. Census records...
             </p>
           </div>
         </div>
