@@ -622,6 +622,7 @@ export function App() {
     setSummaryData(null);
     setReport(null);
     setCurrentStep('HOME');
+    setPseoRoute({ type: 'none' });
     try {
       sessionStorage.removeItem('beforeregret_session_state');
       sessionStorage.removeItem('beforeregret_map_draft');
