@@ -17,9 +17,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     user,
     logout,
     triggerClerkSignIn,
-    triggerClerkSignUp,
-    activeRole,
-    setActiveRole
+    triggerClerkSignUp
   } = useAuth();
 
   if (!isOpen) return null;
@@ -56,35 +54,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-xs font-mono font-bold">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Signed In</span>
-              </div>
-            </div>
-
-            {/* Role Switcher */}
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
-              <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
-                Active Session Role
-              </span>
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <button
-                  onClick={() => setActiveRole('buyer')}
-                  className={`px-3 py-2 text-xs font-bold rounded-xl transition-all border cursor-pointer ${
-                    activeRole === 'buyer'
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  Property Buyer
-                </button>
-                <button
-                  onClick={() => setActiveRole('expert')}
-                  className={`px-3 py-2 text-xs font-bold rounded-xl transition-all border cursor-pointer ${
-                    activeRole === 'expert'
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  Resident Contributor
-                </button>
               </div>
             </div>
 
