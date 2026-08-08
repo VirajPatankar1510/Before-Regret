@@ -87,6 +87,22 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // never gets silently overwritten.
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
+  // Two separate generation inputs, deliberately not the same field as draft.title. The old
+  // version fed whatever was typed into the title box straight into the "refine this into the
+  // best angle" prompt, so even an already-specific title got rewritten -- e.g. "Buying a house
+  // with Zinsco panel" always came back as an insurance-framed question, because that's the
+  // model's strongest pattern match for that topic. topicInput asks the model to pick the best
+  // SEO title; exactTitleInput is used verbatim, unchanged. Only one is meant to be filled in at
+  // a time -- exactTitleInput wins if both are.
+  const [topicInput, setTopicInput] = useState('');
+  const [exactTitleInput, setExactTitleInput] = useState('');
+  // Titles generated for this draft earlier in the current editing session, before Save was ever
+  // clicked. Passed to the server alongside the DB-backed duplicate list so clicking "Generate"
+  // twice in a row for the same topic doesn't produce the same (or near-same) title/angle twice --
+  // previously nothing remembered an unsaved attempt, so regenerating looked identical to the
+  // model every time.
+  const [previousAttempts, setPreviousAttempts] = useState<string[]>([]);
+
   const loadArticles = () => {
     setLoadError(null);
     fetch('/api/admin/articles')
@@ -109,6 +125,9 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     setDraft(article);
     setActionError(null);
     setSlugManuallyEdited(false);
+    setTopicInput('');
+    setExactTitleInput('');
+    setPreviousAttempts([]);
     setView('edit');
   };
 
@@ -163,13 +182,21 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
 
   const generateWithAi = async () => {
     if (!draft || generating) return;
+    const trimmedExactTitle = exactTitleInput.trim();
+    const trimmedTopic = topicInput.trim();
     setGenerating(true);
     setActionError(null);
     try {
       const res = await fetch('/api/admin/articles/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: draft.title, currentArticleId: draft.id }),
+        body: JSON.stringify({
+          // Exact title wins if somehow both are filled in -- it's the more specific instruction.
+          topic: trimmedExactTitle ? '' : trimmedTopic,
+          exactTitle: trimmedExactTitle,
+          currentArticleId: draft.id,
+          previousAttempts,
+        }),
       });
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => null);
@@ -193,6 +220,13 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           }
           return next;
         });
+      }
+      // Record the final title so a follow-up Generate click for the same topic (before Save is
+      // ever clicked) still gets told what was already tried, instead of starting from a blank
+      // duplicate-guard every time.
+      const finalTitle = parseGeneratedText(fullText).title;
+      if (finalTitle) {
+        setPreviousAttempts((prev) => (prev.includes(finalTitle) ? prev : [...prev, finalTitle]));
       }
     } catch {
       setActionError('Lost connection while generating. What was written so far is still here.');
@@ -428,26 +462,62 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
         )}
 
         <div className="p-4 bg-indigo-950/40 border border-indigo-800/60 rounded-2xl space-y-3">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <div className="text-sm font-bold text-white flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-indigo-400" />
-                <span>Write a first draft with AI</span>
-              </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Type a rough topic in the title below (or leave it blank for a suggestion), then click Generate.
-                It fills in the title, description, and article live as it writes.
-              </p>
-            </div>
-            <button
-              onClick={generateWithAi}
-              disabled={generating}
-              className="shrink-0 flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer disabled:opacity-50"
-            >
-              {generating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-              <span>{generating ? 'Writing...' : 'Generate with AI'}</span>
-            </button>
+          <div className="text-sm font-bold text-white flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-indigo-400" />
+            <span>Write a first draft with AI</span>
           </div>
+          <p className="text-xs text-slate-400">
+            Fill in one of the two fields below, not both -- exact title wins if you do.
+          </p>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+              Topic <span className="text-slate-500 font-normal normal-case">— AI picks the best SEO title</span>
+            </label>
+            <input
+              type="text"
+              value={topicInput}
+              onChange={(e) => setTopicInput(e.target.value)}
+              placeholder="e.g. Zinsco electrical panels — leave blank for a pillar-based suggestion"
+              disabled={generating}
+              className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600 uppercase tracking-wide">
+            <div className="flex-1 h-px bg-slate-800" />
+            <span>Or</span>
+            <div className="flex-1 h-px bg-slate-800" />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+              Exact title <span className="text-slate-500 font-normal normal-case">— used word-for-word, never rephrased</span>
+            </label>
+            <input
+              type="text"
+              value={exactTitleInput}
+              onChange={(e) => setExactTitleInput(e.target.value)}
+              placeholder="e.g. Buying a House With a Zinsco Panel"
+              disabled={generating}
+              className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
+            />
+          </div>
+
+          <button
+            onClick={generateWithAi}
+            disabled={generating}
+            className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer disabled:opacity-50"
+          >
+            {generating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+            <span>{generating ? 'Writing...' : 'Generate with AI'}</span>
+          </button>
+
+          {previousAttempts.length > 0 && (
+            <p className="text-[11px] text-slate-500">
+              {previousAttempts.length} earlier {previousAttempts.length === 1 ? 'attempt' : 'attempts'} this session will be avoided on the next generate.
+            </p>
+          )}
         </div>
 
         <div className="space-y-1.5">
@@ -466,7 +536,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 return next;
               });
             }}
-            placeholder="What's this article called? Or type a rough topic and generate with AI below."
+            placeholder="What's this article called? Or generate with AI above and this fills in."
             disabled={generating}
             className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-base font-bold placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
           />
