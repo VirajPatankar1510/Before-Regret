@@ -1,31 +1,35 @@
 import React, { useState } from 'react';
 import { ChevronDown, HelpCircle, ShieldAlert, CheckCircle2, FileText } from 'lucide-react';
 
+// Exported so the build-time homepage prerenderer (scripts/prerender-homepage.tsx) can render the
+// exact same Q&A text into static HTML, fully expanded, instead of duplicating it there and
+// risking drift between what a crawler sees and what a real visitor sees post-hydration.
+export const HOMEPAGE_FAQS: { q: string; a: string }[] = [
+  {
+    q: 'Is BeforeRegret a substitute for a licensed home inspection?',
+    a: 'No. A physical home inspection evaluates the current physical and mechanical condition of a property — testing outlets, inspecting shingles, running plumbing. BeforeRegret combines live verified data (like seismic hazard), cited public research on what matters for a home\'s era and region, and a plain-language summary. The two complement each other: BeforeRegret tells you exactly what to point your inspector at.'
+  },
+  {
+    q: 'How does BeforeRegret compare to real estate listing sites?',
+    a: 'Listing portals are built to help you find and fall in love with a home — seller photos, agent copy, MLS data. BeforeRegret is built the other way around: it starts from what a careful buyer or their inspector would actually want confirmed before signing, and is explicit about which parts are verified live versus still on you to check.'
+  },
+  {
+    q: 'Does a BeforeRegret report constitute legal, financial, or engineering advice?',
+    a: 'No. BeforeRegret is a research assistant tool. Reports do not constitute formal legal title searches, legal opinions, structural engineering evaluations, or licensed financial appraisals. Every recommendation routes to a licensed professional as the next step — the report itself is never a substitute for one.'
+  },
+  {
+    q: 'How quickly is the report generated?',
+    a: 'Reports are generated instantly in your browser (typically under 60 seconds) once you enter a property address. You get immediate access to the interactive web report at a permanent link you can revisit, share, or export as a PDF anytime.'
+  },
+  {
+    q: 'Are there any recurring subscription fees or hidden costs?',
+    a: 'None. Your first report is 100% free with no credit card required. Additional reports are $14.99 each. No subscription, no auto-renewal, and no hidden charges ever.'
+  }
+];
+
 export const FaqSection: React.FC = () => {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
-
-  const faqs = [
-    {
-      q: 'Is BeforeRegret a substitute for a licensed home inspection?',
-      a: 'No. A physical home inspection evaluates the current physical and mechanical condition of a property — testing outlets, inspecting shingles, running plumbing. BeforeRegret combines live verified data (like seismic hazard), cited public research on what matters for a home\'s era and region, and a plain-language summary. The two complement each other: BeforeRegret tells you exactly what to point your inspector at.'
-    },
-    {
-      q: 'How does BeforeRegret compare to real estate listing sites?',
-      a: 'Listing portals are built to help you find and fall in love with a home — seller photos, agent copy, MLS data. BeforeRegret is built the other way around: it starts from what a careful buyer or their inspector would actually want confirmed before signing, and is explicit about which parts are verified live versus still on you to check.'
-    },
-    {
-      q: 'Does a BeforeRegret report constitute legal, financial, or engineering advice?',
-      a: 'No. BeforeRegret is a research assistant tool. Reports do not constitute formal legal title searches, legal opinions, structural engineering evaluations, or licensed financial appraisals. Every recommendation routes to a licensed professional as the next step — the report itself is never a substitute for one.'
-    },
-    {
-      q: 'How quickly is the report generated?',
-      a: 'Reports are generated instantly in your browser (typically under 60 seconds) once you enter a property address. You get immediate access to the interactive web report at a permanent link you can revisit, share, or export as a PDF anytime.'
-    },
-    {
-      q: 'Are there any recurring subscription fees or hidden costs?',
-      a: 'None. Your first report is 100% free with no credit card required. Additional reports are $14.99 each. No subscription, no auto-renewal, and no hidden charges ever.'
-    }
-  ];
+  const faqs = HOMEPAGE_FAQS;
 
   return (
     <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 border-t border-slate-200/80">

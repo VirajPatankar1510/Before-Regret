@@ -1105,6 +1105,21 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     // falls through to the catch-all below exactly as before. This only matters for local
     // `npm start` / non-Vercel hosts -- on Vercel this Express branch's static serving is never
     // reached at all (see vercel.json's rewrites), so this has no bearing on the live deployment.
+    // Mirrors vercel.json's `{"source": "/", "destination": "/home.html"}` rewrite for local
+    // parity -- express.static's own index resolution only ever looks for 'index.html', so
+    // without this, '/' would keep serving the empty SPA shell locally even though Vercel serves
+    // the real prerendered homepage (scripts/prerender-homepage.tsx). Checked before
+    // express.static so it takes priority for the exact root path only.
+    app.get('/', (req, res) => {
+      const homePath = path.join(distPath, 'home.html');
+      const indexPath = path.join(distPath, 'index.html');
+      const target = fs.existsSync(homePath) ? homePath : indexPath;
+      if (fs.existsSync(target)) {
+        res.send(fs.readFileSync(target, 'utf8'));
+      } else {
+        res.status(404).send('Not found');
+      }
+    });
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
       const indexPath = path.join(distPath, 'index.html');
