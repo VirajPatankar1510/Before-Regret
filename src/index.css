@@ -60,11 +60,21 @@
     print-color-adjust: exact !important;
   }
 
-  /* Hide interactive UI elements */
+  /* Hide interactive UI elements.
+     Exception: .print-keep marks buttons that are meaningful as printed marks rather than as
+     controls -- specifically the walkthrough checklist's checkbox squares. That checklist exists
+     to be printed and physically ticked off during a walkthrough, so hiding its boxes (which the
+     blanket `button` rule below did) removed the entire point of the section in the exported PDF. */
   .print\:hidden,
-  button,
+  button:not(.print-keep),
   .quick-jump-bar {
     display: none !important;
+  }
+
+  /* Checklist boxes stay visible and keep their outline in print. */
+  button.print-keep {
+    display: inline-flex !important;
+    color: #334155 !important;
   }
 
   /* Full-width print layout */

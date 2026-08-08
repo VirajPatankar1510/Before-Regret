@@ -30,6 +30,8 @@
 // gated to EXPANSIVE_SOIL_REGIONS below, and adding a county to that list is cheap. Anywhere
 // outside that list gets foundation_type_general instead of a geology claim we can't back.
 
+import { normalizeCountyKey } from '../utils/normalizeCounty.js';
+
 export type PriorityLevel = 'high' | 'medium' | 'lower';
 
 export const CURRENT_YEAR = new Date().getFullYear();
@@ -360,7 +362,12 @@ export function getInspectionPriorities(
   if (!yearBuilt || !Number.isFinite(yearBuilt)) return null;
   if (!isPlausibleYearBuilt(yearBuilt)) return null;
 
-  const normalizedCounty = (county || '').toLowerCase().trim();
+  // normalizeCountyKey, not a bare toLowerCase().trim() -- a geocoder returning "Travis" instead
+  // of "Travis County" used to silently miss every county-gated rule below and quietly downgrade
+  // the report to its generic form. See src/utils/normalizeCounty.ts for the measured impact.
+  // Only the LOOKUP is normalized; buildFallbackRegionLabel below still receives the raw string so
+  // a parish or borough is still displayed by its real name.
+  const normalizedCounty = normalizeCountyKey(county);
   const soilRegion = EXPANSIVE_SOIL_REGIONS[normalizedCounty];
 
   let matched = PRIORITY_RULES.filter(
