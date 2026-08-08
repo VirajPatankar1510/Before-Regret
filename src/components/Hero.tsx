@@ -32,7 +32,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
           short section only ever windows into a narrow, arbitrary slice of the fixed image, and
           there's no scroll distance left to actually feel the parallax. flex centering keeps the
           content vertically centered now that the section is taller than its content. */}
-      <section className="relative min-h-[85vh] flex flex-col justify-center text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden rounded-b-[2.5rem] shadow-2xl">
+      <section className="relative min-h-[85vh] flex flex-col justify-center text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden shadow-2xl">
 
         {/* Background image -- real photograph of a suburban street at dusk (public/hero-bg.png,
             2.28:1, replaces the earlier corrupted file). Sky is already near-black at the top
