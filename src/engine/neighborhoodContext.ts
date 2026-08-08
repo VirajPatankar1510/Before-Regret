@@ -1,4 +1,4 @@
-import type { CanonicalFinding } from '../types.js';
+import type { CanonicalFinding, FindingMetric } from '../types.js';
 
 // BeforeRegret's second genuinely live, confirmed data source, after seismicHazard.ts.
 //
@@ -141,7 +141,7 @@ function money(n: number): string {
 // Builds the heating-system sentence, which is the one part of this finding that changes what a
 // buyer should actually have inspected rather than just contextualizing cost. Returns null when
 // no fuel type is clearly dominant, rather than reporting a muddled split as if it were a signal.
-function describeHeating(tract: HousingProfile): { sentence: string; nextStep: string } | null {
+function describeHeating(tract: HousingProfile): { metricValue: string; nextStep: string } | null {
   const { heatingTotal, heatingGas, heatingElectric, heatingFuelOil } = tract;
   if (!heatingTotal) return null;
 
@@ -154,19 +154,19 @@ function describeHeating(tract: HousingProfile): { sentence: string; nextStep: s
   // does not cover.
   if (oilShare >= 10) {
     return {
-      sentence: `About ${oilShare}% of occupied homes in this tract heat with fuel oil.`,
+      metricValue: `${oilShare}% fuel oil`,
       nextStep: 'Ask the seller directly whether the property has, or ever had, an oil storage tank -- above ground or buried. Buried tanks are a common and expensive remediation surprise, and a standard home inspection generally does not look for them.',
     };
   }
   if (electricShare >= 60) {
     return {
-      sentence: `About ${electricShare}% of occupied homes in this tract heat with electricity, so a heat pump or electric furnace is the more likely setup here than a gas furnace.`,
-      nextStep: 'If this home has a heat pump, ask its age -- heat pumps typically run 12-16 years, shorter than a gas furnace, and replacement is a four-figure cost. Also ask what the highest winter electricity bill has been.',
+      metricValue: `${electricShare}% electric`,
+      nextStep: 'A heat pump or electric furnace is the more likely setup here than a gas furnace. If this home has a heat pump, ask its age -- they typically run 12-16 years, shorter than a gas furnace, and replacement is a four-figure cost. Also ask what the highest winter electricity bill has been.',
     };
   }
   if (gasShare >= 60) {
     return {
-      sentence: `About ${gasShare}% of occupied homes in this tract heat with natural gas.`,
+      metricValue: `${gasShare}% natural gas`,
       nextStep: 'Ask the age of the furnace and when the flue and gas lines were last inspected. On older gas systems the flue liner and heat exchanger are the two items worth confirming specifically, since a cracked heat exchanger is both a safety issue and a full-replacement trigger.',
     };
   }
@@ -200,100 +200,126 @@ export async function fetchNeighborhoodContextFinding(
     ]);
     if (!tract || !county) return null;
 
-    // Every sentence below is a comparison or a derived figure. A bare tract number with no county
-    // baseline to sit against is exactly the "here's a statistic" problem this module exists to
-    // avoid, so anything without both sides available is simply skipped.
-    const findings: string[] = [];
+    // Output is split three ways rather than accumulated into one prose blob:
+    //   metrics    -- the scannable number grid (label / value / comparison)
+    //   headline   -- the single most decision-relevant sentence, used as the card's lead
+    //   nextSteps  -- only the genuinely actionable consequences
+    // Previously all seven comparisons were joined into a ~130-word paragraph, then concatenated
+    // again with whyItMatters and suggestedNextStep at render time, producing a wall of text on a
+    // report someone paid for. Same data, same honesty, structured so it can be skimmed.
+    const metrics: FindingMetric[] = [];
     const nextSteps: string[] = [];
+    let headline = '';
 
     if (tract.medianYearBuilt && county.medianYearBuilt) {
       const delta = tract.medianYearBuilt - county.medianYearBuilt;
-      if (Math.abs(delta) >= 5) {
-        findings.push(
-          `The typical home in this immediate neighborhood was built around ${tract.medianYearBuilt}, roughly ${Math.abs(delta)} years ${delta > 0 ? 'newer' : 'older'} than the county median of ${county.medianYearBuilt}.`
-        );
-      } else {
-        findings.push(`The typical home in this immediate neighborhood was built around ${tract.medianYearBuilt}, close to the county median of ${county.medianYearBuilt}.`);
-      }
+      metrics.push({
+        label: 'Typical home age here',
+        value: `Built ~${tract.medianYearBuilt}`,
+        comparison:
+          Math.abs(delta) >= 5
+            ? `${Math.abs(delta)} yrs ${delta > 0 ? 'newer' : 'older'} than county (${county.medianYearBuilt})`
+            : `In line with county (${county.medianYearBuilt})`,
+      });
 
       // The most decision-relevant comparison available here: how this specific home sits against
       // its own block, which reframes every age-driven inspection priority in the rest of the report.
       if (subjectYearBuilt && Number.isFinite(subjectYearBuilt)) {
         const subjectDelta = tract.medianYearBuilt - subjectYearBuilt;
         if (subjectDelta >= 15) {
-          findings.push(
-            `This property, built in ${subjectYearBuilt}, is about ${subjectDelta} years older than the typical home on its own block.`
-          );
+          metrics.push({
+            label: 'This home vs. its block',
+            value: `Built ${subjectYearBuilt}`,
+            comparison: `${subjectDelta} yrs older than typical here`,
+          });
+          headline = `This home was built in ${subjectYearBuilt} -- about ${subjectDelta} years older than the typical home on its own block.`;
           nextSteps.push(
             'Because this home is materially older than its neighbors, comparable sales nearby may be newer properties. Ask your agent whether the comps used were age-adjusted, and expect original-era systems here even where surrounding homes have been rebuilt.'
           );
         } else if (subjectDelta <= -15) {
-          findings.push(
-            `This property, built in ${subjectYearBuilt}, is about ${Math.abs(subjectDelta)} years newer than the typical home on its own block.`
-          );
+          metrics.push({
+            label: 'This home vs. its block',
+            value: `Built ${subjectYearBuilt}`,
+            comparison: `${Math.abs(subjectDelta)} yrs newer than typical here`,
+          });
+          headline = `This home was built in ${subjectYearBuilt} -- about ${Math.abs(subjectDelta)} years newer than the typical home on its own block.`;
         }
       }
     }
 
     if (tract.medianOwnerCostWithMortgage && county.medianOwnerCostWithMortgage) {
       const delta = tract.medianOwnerCostWithMortgage - county.medianOwnerCostWithMortgage;
-      const direction = delta > 0 ? 'above' : 'below';
-      findings.push(
-        `Median monthly ownership cost for mortgaged homes here is ${money(tract.medianOwnerCostWithMortgage)} -- ${money(Math.abs(delta))} ${direction} the county median of ${money(county.medianOwnerCostWithMortgage)}. That figure covers mortgage, taxes, insurance and utilities together, not the mortgage payment alone.`
-      );
+      metrics.push({
+        label: 'Median monthly cost to own',
+        value: `${money(tract.medianOwnerCostWithMortgage)}/mo`,
+        comparison: `${money(Math.abs(delta))} ${delta > 0 ? 'above' : 'below'} county median`,
+      });
+      if (!headline) {
+        headline = `Median monthly ownership cost in this neighborhood is ${money(tract.medianOwnerCostWithMortgage)} -- ${money(Math.abs(delta))} ${delta > 0 ? 'above' : 'below'} the county median.`;
+      }
       nextSteps.push(
-        `Budget against the ${money(tract.medianOwnerCostWithMortgage)} all-in figure rather than a mortgage quote on its own, and ask the seller for twelve months of actual tax and insurance bills for this specific property.`
+        `Budget against the ${money(tract.medianOwnerCostWithMortgage)} all-in figure rather than a mortgage quote on its own -- it includes taxes, insurance and utilities, not just the loan payment. Ask the seller for twelve months of actual tax and insurance bills for this specific property.`
       );
     }
 
     if (tract.medianHomeValue && county.medianHomeValue) {
       const ratio = Math.round((tract.medianHomeValue / county.medianHomeValue) * 100) - 100;
-      if (Math.abs(ratio) >= 5) {
-        findings.push(
-          `Median home value in this tract is ${money(tract.medianHomeValue)}, about ${Math.abs(ratio)}% ${ratio > 0 ? 'above' : 'below'} the county median of ${money(county.medianHomeValue)}.`
-        );
-      }
+      metrics.push({
+        label: 'Median home value',
+        value: money(tract.medianHomeValue),
+        comparison:
+          Math.abs(ratio) >= 5
+            ? `${Math.abs(ratio)}% ${ratio > 0 ? 'above' : 'below'} county median`
+            : 'In line with county median',
+      });
     }
 
     if (tract.ownerOccupied && tract.totalOccupied) {
       const share = pct(tract.ownerOccupied, tract.totalOccupied);
-      findings.push(`${share}% of occupied homes in this tract are owner-occupied rather than rented.`);
+      metrics.push({
+        label: 'Owner-occupied',
+        value: `${share}%`,
+        comparison: `${100 - share}% rented`,
+      });
     }
 
     if (tract.meanCommuteMinutes && county.meanCommuteMinutes) {
       const delta = Math.round((tract.meanCommuteMinutes - county.meanCommuteMinutes) * 10) / 10;
-      if (Math.abs(delta) >= 2) {
-        findings.push(
-          `Workers living in this tract report a mean commute of ${tract.meanCommuteMinutes} minutes, ${Math.abs(delta)} minutes ${delta > 0 ? 'longer' : 'shorter'} than the county average of ${county.meanCommuteMinutes}.`
-        );
-      } else {
-        findings.push(`Workers living in this tract report a mean commute of ${tract.meanCommuteMinutes} minutes, close to the county average.`);
-      }
+      metrics.push({
+        label: 'Mean commute',
+        value: `${tract.meanCommuteMinutes} min`,
+        comparison:
+          Math.abs(delta) >= 2
+            ? `${Math.abs(delta)} min ${delta > 0 ? 'longer' : 'shorter'} than county`
+            : 'About the county average',
+      });
     }
 
     const heating = describeHeating(tract);
     if (heating) {
-      findings.push(heating.sentence);
+      metrics.push({ label: 'Primary heating fuel', value: heating.metricValue, comparison: 'of homes in this tract' });
       nextSteps.push(heating.nextStep);
     }
 
     // A finding with nothing computed in it isn't worth showing. Better to omit the section than
     // to print a header over an empty observation.
-    if (findings.length < 2) return null;
+    if (metrics.length < 2) return null;
+    if (!headline) headline = 'Census figures for this address\'s immediate neighborhood, compared against the surrounding county.';
 
     return {
       id: 'f_neighborhood_context',
       subject: 'Neighborhood Profile (U.S. Census)',
       category: 'Neighborhood',
       status: 'CONFIRMED RECORD',
-      summaryText: findings[0],
-      whatWeFound: findings.join(' '),
+      summaryText: headline,
+      whatWeFound: headline,
+      metrics,
       whyItMatters:
-        'These figures describe the census tract this address sits in -- roughly a neighborhood, not the whole county -- so they reflect the immediate area far more closely than county-wide numbers do. Housing age drives which defects are plausible here, and the ownership-cost figure is the one most commonly underestimated by buyers who budget from a mortgage quote alone.',
+        'These figures cover the census tract this address sits in -- roughly a neighborhood, not the whole county -- so they track the immediate area much more closely than county-wide numbers. Housing age drives which defects are plausible here, and the monthly ownership cost is the figure buyers most often underestimate when budgeting from a mortgage quote alone.',
       suggestedNextStep:
         nextSteps.length > 0
           ? nextSteps.join(' ')
-          : 'Use these neighborhood figures as the baseline when judging whether this property is priced and configured typically for its immediate area.',
+          : 'Use these figures as the baseline when judging whether this property is priced and configured typically for its immediate area.',
       sourceAgency: 'U.S. Census Bureau, American Community Survey (5-Year Estimates)',
       lastUpdated: 'ACS 2023 5-year estimates (live query)',
     };

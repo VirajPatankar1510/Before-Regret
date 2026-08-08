@@ -17,6 +17,22 @@ export interface ActionItem {
   why: string;
 }
 
+/**
+ * A single scannable data point on a finding card. Optional -- a finding that has no clean
+ * numeric breakdown simply omits it and renders as prose only.
+ *
+ * Exists because the neighborhood finding was emitting seven distinct comparisons as one
+ * ~130-word run-on paragraph. Everything in it was genuinely useful, but a reader scanning a
+ * report they paid for shouldn't have to parse prose to find "what does this cost per month."
+ * `value` is the headline number; `comparison` is the part that makes it a finding rather than
+ * a statistic (e.g. "$1,151 above county median").
+ */
+export interface FindingMetric {
+  label: string;
+  value: string;
+  comparison?: string;
+}
+
 export interface CanonicalFinding {
   id: string;
   subject: string;
@@ -26,6 +42,8 @@ export interface CanonicalFinding {
   whatWeFound: string;
   whyItMatters: string;
   suggestedNextStep: string;
+  /** Scannable numeric breakdown rendered as a grid above the prose. See FindingMetric. */
+  metrics?: FindingMetric[];
   actionItem?: ActionItem;
   lastUpdated?: string;
   sourceAgency?: string;
