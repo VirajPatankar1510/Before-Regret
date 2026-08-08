@@ -6,6 +6,7 @@ import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } f
 import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService.js";
 import { runAddressGate } from "./src/engine/geoValidationGate.js";
 import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
+import { fetchNeighborhoodContextFinding } from "./src/engine/neighborhoodContext.js";
 import { getInspectionPriorities } from "./src/engine/inspectionPriorities.js";
 import { getSellerQuestions } from "./src/engine/sellerQuestions.js";
 import { getSponsoredVendorForZipAndTrade, FINDING_TRADE_CATEGORY, PRIORITY_TRADE_CATEGORY, getSlotAvailability, TRADE_CATEGORIES } from "./src/data/sponsoredVendors.js";
@@ -542,7 +543,18 @@ export async function createApp() {
     // once here, against the Census-verified coordinate from the gate itself (not whatever the
     // frontend happened to send), then threaded through to validateAndFixReportContradictions
     // below so it survives regardless of whether Gemini-based content generation succeeds.
-    const liveSeismicFinding = await fetchSeismicHazardFinding(gateResult.layer1.lat as number, gateResult.layer1.lon as number);
+    // Both live sources are queried against the Census-verified coordinate from the gate itself
+    // (not whatever the frontend sent), in parallel since neither depends on the other. Each
+    // returns null rather than throwing on failure, so one being unavailable never blocks the
+    // report or the other finding.
+    const [liveSeismicFinding, liveNeighborhoodFinding] = await Promise.all([
+      fetchSeismicHazardFinding(gateResult.layer1.lat as number, gateResult.layer1.lon as number),
+      fetchNeighborhoodContextFinding(
+        gateResult.layer1.lat as number,
+        gateResult.layer1.lon as number,
+        typeof yearBuilt === 'number' ? yearBuilt : parseInt(String(yearBuilt ?? ''), 10) || null
+      ),
+    ]);
 
     const fallbackReport = generateStructuredPropertyReport(
       resolvedMeta.formattedAddress,
@@ -850,7 +862,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
           disclosureLevers: Array.isArray(parsedReport.disclosureLevers) && parsedReport.disclosureLevers.length > 0 ? parsedReport.disclosureLevers : fallbackReport.disclosureLevers
         };
 
-        let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding].filter(Boolean));
+        let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
         cleanedReport = stripInternalMetadata(cleanedReport);
         attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
         attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
@@ -872,7 +884,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
       }
     }
 
-    let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding].filter(Boolean));
+    let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
     attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
     attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
@@ -1280,6 +1292,7 @@ const FINDING_SOURCE_LOOKUP_KEY: Record<string, string> = {
   f_flood: 'fema_nfhl',
   f_code: 'city_code',
   f_seismic: 'usgs_seismic',
+  f_neighborhood_context: 'census_acs',
 };
 
 // Attaches a real, jurisdiction-correct link to each finding, replacing the old flat 21-item
@@ -1424,6 +1437,7 @@ function getPublicSourceUrl(id: string, county?: string): string {
     epa_sdwis: 'https://www.epa.gov/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting',
     usda_soil: 'https://websoilsurvey.nrcs.usda.gov',
     usgs_seismic: 'https://earthquake.usgs.gov/hazards/hazmaps/',
+    census_acs: 'https://data.census.gov/',
     eia_grid: 'https://www.eia.gov/electricity/gridmonitor/',
     fra_rail: 'https://railroads.dot.gov/railroad-safety/accident-incident-reporting/emergency-notification-system-ens/ens',
     us_dot_transit: 'https://www.transit.dot.gov',
