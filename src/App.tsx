@@ -20,6 +20,7 @@ import { createFallbackSummary, createFallbackReport } from './utils/reportFallb
 // pSEO Components -- the fabricated-stats ZIP/city/state/topic/compare surface (36 live URLs)
 // was fully removed; only the hand-written editorial guides remain.
 import { GuidePageView } from './components/seo/GuidePageView';
+import { CountyPageView } from './components/seo/CountyPageView';
 import { SeoAdminPanel } from './components/seo/SeoAdminPanel';
 import { AdminGate } from './components/admin/AdminGate';
 import { applyHeadSeo } from './utils/headSeo';
@@ -109,8 +110,9 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guide' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'guide' | 'county' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
+    countySlug?: string;
   }>({ type: 'none' });
 
   // Function to resolve current URL path to route
@@ -175,6 +177,15 @@ export function App() {
       const parts = path.split('/').filter(Boolean);
       if (parts.length >= 2) {
         setPseoRoute({ type: 'guide', guideSlug: parts[1] });
+        setCurrentStep('PSEO');
+        return true;
+      }
+    }
+
+    if (path.startsWith('/county/')) {
+      const parts = path.split('/').filter(Boolean);
+      if (parts.length >= 2) {
+        setPseoRoute({ type: 'county', countySlug: parts[1] });
         setCurrentStep('PSEO');
         return true;
       }
@@ -704,6 +715,9 @@ export function App() {
             )}
             {pseoRoute.type === 'guide' && pseoRoute.guideSlug && (
               <GuidePageView guideSlug={pseoRoute.guideSlug} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'county' && pseoRoute.countySlug && (
+              <CountyPageView countySlug={pseoRoute.countySlug} onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'support' && (
               <ContactUs onBackToHome={handleNewSearch} onNavigate={handleNavigate} />

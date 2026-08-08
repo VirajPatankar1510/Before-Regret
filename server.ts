@@ -18,6 +18,7 @@ import {
   hasValidSession,
 } from "./src/server/adminAuth.js";
 import { registerArticleRoutes } from "./src/server/articlesApi.js";
+import { registerCountyRoutes } from "./src/server/countiesApi.js";
 import {
   isPayPalConfigured,
   createPayPalOrder,
@@ -107,6 +108,11 @@ export async function createApp() {
   // Admin create/edit/publish routes plus the public /api/guides read routes GuidePageView and
   // the sitemap generator use. See src/server/articlesApi.ts and src/server/db.ts.
   registerArticleRoutes(app);
+
+  // --- County research pages (Neon-backed) --------------------------------------------------
+  // Public /api/counties/:slug read route only, no admin routes -- these rows are populated by
+  // scripts/fetch-county-data.ts, not through an admin editor. See src/server/countiesApi.ts.
+  registerCountyRoutes(app);
 
   // Master Sitemap Index Endpoint (/sitemap.xml and /sitemaps/sitemap-index.xml)
   app.get(["/sitemap.xml", "/sitemaps/sitemap-index.xml"], (req, res) => {

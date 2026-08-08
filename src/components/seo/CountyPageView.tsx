@@ -1,0 +1,331 @@
+import React, { useEffect, useState } from 'react';
+import { applyHeadSeo } from '../../utils/headSeo';
+import { ChevronRight, Loader2, MapPin, Home, Flame, CloudRain, ExternalLink } from 'lucide-react';
+import { ArticleClosingNote } from './ArticleClosingNote';
+
+interface CountyPageViewProps {
+  countySlug: string;
+  onNavigate: (path: string) => void;
+}
+
+interface CountyData {
+  slug: string;
+  countyName: string;
+  stateName: string;
+  stateAbbrev: string;
+  population: number | null;
+  radonZone: number | null;
+  censusTotalUnits: number | null;
+  censusYearBuiltBuckets: Record<string, number>;
+  femaRiskRating: string | null;
+  femaRiskScore: number | null;
+  femaHazards: Record<string, { rating: string; score: number | null }>;
+  noaaEventCounts: Record<string, number>;
+  noaaYearsCovered: string | null;
+  fetchedAt: string;
+}
+
+// Labels/order for the Census B25034 buckets this page renders -- oldest first, matching how
+// FaqSection.tsx-style honesty framing expects a reader to scan (recent construction first would
+// bury the "does this county have a lot of pre-1960s housing" signal a buyer actually wants).
+const YEAR_BUILT_LABELS: Array<[key: string, label: string]> = [
+  ['built2020OrLater', '2020 or later'],
+  ['built2010to2019', '2010-2019'],
+  ['built2000to2009', '2000-2009'],
+  ['built1990to1999', '1990-1999'],
+  ['built1980to1989', '1980-1989'],
+  ['built1970to1979', '1970-1979'],
+  ['built1960to1969', '1960-1969'],
+  ['built1950to1959', '1950-1959'],
+  ['built1940to1949', '1940-1949'],
+  ['built1939OrEarlier', '1939 or earlier'],
+];
+
+// FEMA's own short codes -> human labels, kept here rather than in the fetcher (see
+// src/server/countyDataFetcher.ts) so that module stays a faithful pass-through of the API.
+const FEMA_HAZARD_LABELS: Record<string, string> = {
+  AVLN: 'Avalanche', CFLD: 'Coastal Flooding', CWAV: 'Cold Wave', DRGT: 'Drought',
+  ERQK: 'Earthquake', HAIL: 'Hail', HWAV: 'Heat Wave', HRCN: 'Hurricane',
+  ISTM: 'Ice Storm', LNDS: 'Landslide', LTNG: 'Lightning', IFLD: 'Inland Flooding',
+  SWND: 'Strong Wind', TRND: 'Tornado', TSUN: 'Tsunami', VLCN: 'Volcanic Activity',
+  WFIR: 'Wildfire', WNTW: 'Winter Weather',
+};
+
+const RADON_ZONE_TEXT: Record<number, string> = {
+  1: 'Zone 1 -- highest potential. EPA predicts an average indoor radon screening level greater than 4 pCi/L for this county.',
+  2: 'Zone 2 -- moderate potential. EPA predicts an average indoor radon screening level between 2 and 4 pCi/L for this county.',
+  3: 'Zone 3 -- low potential. EPA predicts an average indoor radon screening level below 2 pCi/L for this county.',
+};
+
+// The API returns countyName in the all-caps form FEMA/NOAA/Census use internally for matching
+// (e.g. "TRAVIS") -- fine for those lookups, not for a reader-facing page. Title-cased once here
+// rather than at every display site below.
+function titleCase(value: string): string {
+  return value
+    .toLowerCase()
+    .split(' ')
+    .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
+    .join(' ');
+}
+
+export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNavigate }) => {
+  const [county, setCounty] = useState<CountyData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setNotFound(false);
+    setCounty(null);
+
+    fetch(`/api/counties/${encodeURIComponent(countySlug)}`)
+      .then((res) => {
+        if (!res.ok) throw new Error('not found');
+        return res.json();
+      })
+      .then((data) => {
+        if (cancelled) return;
+        if (data?.success && data.county) {
+          setCounty({ ...data.county, countyName: titleCase(data.county.countyName) });
+        } else {
+          setNotFound(true);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setNotFound(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [countySlug]);
+
+  const canonicalUrl = `https://www.beforeregret.com/county/${countySlug}/`;
+
+  useEffect(() => {
+    if (!county) return;
+    const title = `${county.countyName} County, ${county.stateAbbrev} Property Research | BeforeRegret`;
+    const description = `Real, sourced data for ${county.countyName} County, ${county.stateAbbrev}: EPA radon zone, Census housing-age distribution, FEMA natural hazard risk, and recorded NOAA storm history.`;
+    applyHeadSeo({
+      title,
+      description,
+      canonicalUrl,
+      robotsDirective: 'index, follow',
+      jsonLdSchema: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: title,
+          description,
+          image: 'https://www.beforeregret.com/hero-bg.png',
+          author: { '@type': 'Organization', name: 'BeforeRegret' },
+        },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+            { '@type': 'ListItem', position: 2, name: `${county.countyName} County, ${county.stateAbbrev}`, item: canonicalUrl },
+          ],
+        },
+      ],
+    });
+  }, [county, canonicalUrl]);
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-24 flex items-center justify-center">
+        <Loader2 className="w-6 h-6 text-slate-400 animate-spin" />
+      </div>
+    );
+  }
+
+  if (notFound || !county) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
+        <h1 className="text-xl font-bold text-slate-900">County Not Found</h1>
+        <p className="text-xs text-slate-600">This county doesn't have a verified research page yet.</p>
+        <button onClick={() => onNavigate('/')} className="px-4 py-2 bg-blue-600 text-white rounded text-xs font-bold">
+          Return Home
+        </button>
+      </div>
+    );
+  }
+
+  const femaHazardEntries = Object.entries(county.femaHazards) as [string, { rating: string; score: number | null }][];
+  const topHazards = femaHazardEntries
+    .sort((a, b) => (b[1].score ?? 0) - (a[1].score ?? 0))
+    .slice(0, 5);
+
+  const noaaEventEntries = Object.entries(county.noaaEventCounts) as [string, number][];
+  const topStormEvents = noaaEventEntries
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+  const totalStormEvents = noaaEventEntries.reduce((sum, [, count]) => sum + count, 0);
+
+  const oldHousingShare = county.censusTotalUnits
+    ? Math.round(
+        (((county.censusYearBuiltBuckets.built1939OrEarlier || 0) +
+          (county.censusYearBuiltBuckets.built1940to1949 || 0) +
+          (county.censusYearBuiltBuckets.built1950to1959 || 0) +
+          (county.censusYearBuiltBuckets.built1960to1969 || 0)) /
+          county.censusTotalUnits) *
+          100
+      )
+    : null;
+
+  return (
+    <div className="bg-slate-50 min-h-screen pb-16">
+      <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
+          <button onClick={() => onNavigate('/')} className="hover:text-blue-600">Home</button>
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+          <span className="text-slate-900 font-bold truncate">{county.countyName} County, {county.stateAbbrev}</span>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <MapPin className="w-3.5 h-3.5 text-slate-400" />
+            <span>{county.stateName}{county.population ? ` -- population ${county.population.toLocaleString()}` : ''}</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+            {county.countyName} County, {county.stateAbbrev} Property Research
+          </h1>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Real data from four public sources, not an internal estimate: the EPA's radon zone classification, Census housing-age records, FEMA's natural hazard risk index, and NOAA's recorded storm history for this county. Every figure below links to where it actually comes from.
+          </p>
+        </div>
+
+        {county.radonZone && (
+          <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Flame className="w-4 h-4 text-blue-600" />
+              Radon Risk
+            </h2>
+            <p className="text-sm text-slate-700 leading-relaxed">{RADON_ZONE_TEXT[county.radonZone]}</p>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              This is a county-wide prediction from geology and soil data, not a measurement of any specific home -- EPA recommends testing every home regardless of zone.{' '}
+              <button onClick={() => onNavigate('/guides/negotiate-radon-mitigation-after-inspection/')} className="text-blue-600 hover:underline font-medium">
+                See our guide on negotiating radon mitigation after inspection
+              </button>.
+            </p>
+            <a
+              href="https://www.epa.gov/radon/epa-maps-radon-zones-and-supporting-documents-state"
+              target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:underline font-medium"
+            >
+              <span>Source: EPA Map of Radon Zones</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </section>
+        )}
+
+        {county.censusTotalUnits != null && (
+          <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Home className="w-4 h-4 text-blue-600" />
+              Housing Age
+            </h2>
+            <p className="text-sm text-slate-700 leading-relaxed">
+              {county.countyName} County has {county.censusTotalUnits.toLocaleString()} housing units.
+              {oldHousingShare != null && oldHousingShare > 0 && (
+                <> About {oldHousingShare}% were built in 1969 or earlier -- old enough that knob-and-tube wiring, lead-based paint, and galvanized supply lines are all realistic possibilities worth checking for, not just a general inspection line item.</>
+              )}
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+              {YEAR_BUILT_LABELS.map(([key, label]) => (
+                <div key={key} className="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                  <div className="text-slate-500">{label}</div>
+                  <div className="font-bold text-slate-900">{(county.censusYearBuiltBuckets[key] || 0).toLocaleString()}</div>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-slate-500">
+              <button onClick={() => onNavigate('/guides/knob-tube-wiring-have-be-replaced-before-closing/')} className="text-blue-600 hover:underline font-medium">
+                Does knob-and-tube wiring have to be replaced before closing?
+              </button>
+            </p>
+            <a
+              href="https://data.census.gov/table/ACSDT5Y2023.B25034"
+              target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:underline font-medium"
+            >
+              <span>Source: U.S. Census Bureau, ACS 5-Year Estimates, Table B25034</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </section>
+        )}
+
+        {county.femaRiskRating && (
+          <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <CloudRain className="w-4 h-4 text-blue-600" />
+              Natural Hazard Risk
+            </h2>
+            <p className="text-sm text-slate-700 leading-relaxed">
+              FEMA rates {county.countyName} County's overall natural hazard risk as <strong>{county.femaRiskRating}</strong>, relative to the rest of the country.
+            </p>
+            {topHazards.length > 0 && (
+              <div className="space-y-1.5">
+                {topHazards.map(([code, h]) => (
+                  <div key={code} className="flex items-center justify-between text-xs bg-slate-50 rounded-lg px-3 py-2 border border-slate-100">
+                    <span className="text-slate-700 font-medium">{FEMA_HAZARD_LABELS[code] || code}</span>
+                    <span className="text-slate-900 font-bold">{h.rating}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <a
+              href="https://hazards.fema.gov/nri/"
+              target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:underline font-medium"
+            >
+              <span>Source: FEMA National Risk Index</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </section>
+        )}
+
+        {totalStormEvents > 0 && county.noaaYearsCovered && (
+          <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <CloudRain className="w-4 h-4 text-blue-600" />
+              Recorded Storm History ({county.noaaYearsCovered})
+            </h2>
+            <p className="text-sm text-slate-700 leading-relaxed">
+              NOAA recorded {totalStormEvents.toLocaleString()} storm events in {county.countyName} County between {county.noaaYearsCovered.replace('-', ' and ')}. This is actual event history, not a risk model -- the counts below are individually logged storms, not a prediction.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              {topStormEvents.map(([type, count]) => (
+                <div key={type} className="bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                  <div className="text-slate-500">{type}</div>
+                  <div className="font-bold text-slate-900">{count.toLocaleString()}</div>
+                </div>
+              ))}
+            </div>
+            <a
+              href="https://www.ncei.noaa.gov/stormevents/"
+              target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:underline font-medium"
+            >
+              <span>Source: NOAA National Centers for Environmental Information, Storm Events Database</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </section>
+        )}
+
+        <ArticleClosingNote onNavigate={onNavigate} />
+
+        <p className="text-xs text-slate-400 leading-relaxed">
+          This page reports what these four public agencies have published for {county.countyName} County as a whole -- it is not an assessment of any specific address or property, and does not replace a licensed home inspection, radon test, or insurance review for a specific home. Data last checked {new Date(county.fetchedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.
+        </p>
+      </div>
+    </div>
+  );
+};

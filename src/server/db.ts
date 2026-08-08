@@ -81,6 +81,36 @@ export async function ensureArticlesSchema(): Promise<void> {
   await sql`CREATE INDEX IF NOT EXISTS idx_transactions_paypal_order_id ON transactions(paypal_order_id)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status)`;
 
+  // County research pages (see scripts/fetch-county-data.ts and src/server/countiesApi.ts).
+  // data_complete is the enforcement point for the "no data, no page" rule: it's only ever set
+  // true by the fetch script, and only when all four real data sources (EPA radon zone, Census
+  // ACS housing age, FEMA National Risk Index, NOAA Storm Events) returned genuine data for that
+  // county -- never a partial/best-effort record. The public read route in countiesApi.ts treats
+  // data_complete = false exactly like a missing row (404), so an incomplete county is never
+  // reachable by its URL, the same fail-closed posture as isDbConfigured() elsewhere in this file.
+  await sql`
+    CREATE TABLE IF NOT EXISTS county_data (
+      id SERIAL PRIMARY KEY,
+      slug TEXT UNIQUE NOT NULL,
+      county_name TEXT NOT NULL,
+      state_name TEXT NOT NULL,
+      state_abbrev TEXT NOT NULL,
+      population INTEGER,
+      radon_zone INTEGER,
+      census_total_units INTEGER,
+      census_year_built_json TEXT NOT NULL DEFAULT '{}',
+      fema_risk_rating TEXT,
+      fema_risk_score DOUBLE PRECISION,
+      fema_hazards_json TEXT NOT NULL DEFAULT '{}',
+      noaa_event_counts_json TEXT NOT NULL DEFAULT '{}',
+      noaa_years_covered TEXT,
+      data_complete BOOLEAN NOT NULL DEFAULT FALSE,
+      fetched_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+
   schemaEnsured = true;
 }
 
