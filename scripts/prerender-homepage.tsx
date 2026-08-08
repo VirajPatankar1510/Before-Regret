@@ -8,16 +8,18 @@ import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
 import { HOMEPAGE_FAQS } from '../src/components/home/FaqSection';
 
 // Static HTML generator for the homepage, run after `vite build` alongside
-// scripts/prerender-guides.tsx. Writes to dist/home.html -- deliberately NOT dist/index.html.
+// scripts/prerender-guides.tsx.
 //
-// dist/index.html is also what vercel.json's catch-all rewrite serves for every *unmatched*
-// path, including dead URLs that the client-side 404 fix (src/App.tsx) now handles at the JS
-// layer. If real homepage content were baked into that same shared file, a crawler hitting a
-// dead URL without executing JS would see real homepage content again -- reintroducing the exact
-// soft-404 problem that fix addresses, at the static layer instead of the JS layer. Writing to a
-// separate file and adding a dedicated `{"source": "/", "destination": "/home.html"}` rewrite
-// (checked before the catch-all in vercel.json) gives the real homepage a real static file
-// without touching what dead paths resolve to.
+// Overwrites dist/index.html in place with real content, and preserves the original empty-#root
+// shell as dist/shell.html for dead URLs. This is the opposite of the first version of this
+// script, which wrote to a separate dist/home.html and added a `{"source": "/", "destination":
+// "/home.html"}` rewrite in vercel.json -- that rewrite never fired in production, because Vercel
+// resolves the exact path '/' to an existing static file (dist/index.html) via filesystem
+// priority *before* consulting `rewrites` at all (confirmed live). Since dist/index.html already
+// exists and always will, the only way to put real content at '/' is to put it in that literal
+// file. vercel.json's catch-all was changed to point unmatched paths at the new dist/shell.html
+// instead, so dead URLs (which the client-side 404 fix in src/App.tsx handles at the JS layer)
+// keep getting an empty, non-homepage shell rather than the real homepage content injected here.
 //
 // Deliberately skips AddressSearchBox (the actual interactive search UI) -- it's a heavy,
 // browser-dependent component (geocoding calls, map tiles, etc.) with no reason to exist in a
@@ -101,7 +103,16 @@ async function run() {
     console.error('[prerender-homepage] dist/index.html not found -- run `vite build` first.');
     process.exit(1);
   }
+  // dist/index.html at this point is still the pristine, empty-#root file vite build produced --
+  // scripts/prerender-guides.tsx (which runs before this script) only reads it as a template, it
+  // never writes to it. Preserve that pristine copy as dist/shell.html *before* overwriting
+  // dist/index.html below: Vercel resolves the exact path '/' to dist/index.html via its own
+  // filesystem-priority static serving, before rewrites are even consulted (confirmed live -- a
+  // `{"source": "/", "destination": "/home.html"}` rewrite never fired, because a real file
+  // already existed at '/'). So the real content has to live at dist/index.html itself, and the
+  // dead-URL catch-all needs a *different* file to point to instead -- see vercel.json.
   const template = fs.readFileSync(templatePath, 'utf8');
+  fs.writeFileSync(path.join(distPath, 'shell.html'), template, 'utf8');
 
   const bodyHtml = renderToStaticMarkup(<HomeStaticBody />);
   const faqScript = `<script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(buildFaqJsonLd())}</script>`;
@@ -110,8 +121,8 @@ async function run() {
     .replace('</head>', `${faqScript}\n  </head>`)
     .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`);
 
-  fs.writeFileSync(path.join(distPath, 'home.html'), html, 'utf8');
-  console.log('[prerender-homepage] Wrote dist/home.html');
+  fs.writeFileSync(templatePath, html, 'utf8');
+  console.log('[prerender-homepage] Wrote dist/shell.html (empty, for dead-URL fallback) and overwrote dist/index.html with real homepage content');
 }
 
 run().catch((err) => {
