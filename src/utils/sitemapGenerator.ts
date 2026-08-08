@@ -22,6 +22,7 @@ export function generateSitemapIndexXml(): string {
   const sitemaps = [
     { loc: `${BASE_URL}/sitemaps/sitemap-pages.xml`, lastmod: today },
     { loc: `${BASE_URL}/sitemaps/sitemap-guides.xml`, lastmod: today },
+    { loc: `${BASE_URL}/sitemaps/sitemap-counties.xml`, lastmod: today },
   ];
 
   const xmlLines = [
@@ -70,6 +71,22 @@ export async function generateChildSitemapXml(name: string): Promise<string> {
       });
     } catch (err) {
       console.error('[sitemap] failed to load published guides:', err);
+    }
+  } else if (cleanName === 'sitemap-counties' && isDbConfigured()) {
+    try {
+      const rows = await withDb((sql) => sql`
+        SELECT slug, fetched_at FROM county_data WHERE data_complete = true ORDER BY fetched_at DESC
+      `);
+      (rows as unknown as Array<{ slug: string; fetched_at: string | Date | null }>).forEach((c) => {
+        entries.push({
+          loc: `${BASE_URL}/county/${c.slug}/`,
+          lastmod: c.fetched_at ? new Date(c.fetched_at).toISOString().slice(0, 10) : today,
+          changefreq: 'monthly',
+          priority: '0.6'
+        });
+      });
+    } catch (err) {
+      console.error('[sitemap] failed to load verified counties:', err);
     }
   }
 

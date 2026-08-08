@@ -8,3 +8,4 @@ coverage/
 !.env.example
 scripts/outreach-log.json
 scripts/draft-topics-log.json
+.cache/
