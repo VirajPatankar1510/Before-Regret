@@ -43,20 +43,35 @@ const PILLAR_STRATEGY = `BeforeRegret's content strategy has six pillars. If no 
 
 export function buildArticlePrompt(
   topicSeed: string,
-  existingTitles: string[] = []
+  existingTitles: string[] = [],
+  exactTitle: string = ''
 ): { systemInstruction: string; contents: string } {
   const trimmedTopic = topicSeed.trim();
+  const trimmedExactTitle = exactTitle.trim();
 
-  const topicInstruction = trimmedTopic
+  // Two distinct modes, not one input doing double duty. The original version always told the
+  // model to "refine" whatever was typed into the single title/topic field -- so an already-
+  // specific, already-good title like "Buying a house with Zinsco panel" still got rewritten into
+  // whatever angle the model's pillar bias favored (almost always the insurance-blocker framing,
+  // since that pillar's examples name Zinsco/FPE panels directly). Exact-title mode below is the
+  // fix: when the writer already knows the exact headline they want, the model is told to use it
+  // verbatim and write the rest of the article for that specific question -- not to "improve" it.
+  const topicInstruction = trimmedExactTitle
+    ? `The exact title for this article is: "${trimmedExactTitle}"\n\nUse this exact wording as the title -- verbatim, character for character. Do not rephrase it, generalize it, "optimize" it, or reframe it into a different question or a different angle (e.g. don't turn a wiring-type question into an insurance or mortgage question unless the given title already says insurance or mortgage). Your TITLE: line in the output must match this text exactly. Write the META, QUICK_ANSWER, and full article body specifically and only for this exact title.`
+    : trimmedTopic
     ? `Topic seed given by the writer: "${trimmedTopic}"\n\nRefine this into the single best specific, long-tail angle -- the exact question a worried buyer would actually type into Google -- rather than writing broadly about the general subject.`
     : `No topic was given. ${PILLAR_STRATEGY}\n\nPick the single best long-tail angle within that pillar -- not the pillar name itself as a title.`;
 
   // Duplicate-content guard: without this, nothing stops the same topic being generated twice
   // under a different headline. The model is the only thing that can judge topical overlap here
   // (there's no embedding search or similarity index in this app) -- so it just gets told
-  // directly what already exists and instructed to route around it.
+  // directly what already exists and instructed to route around it. In exact-title mode the
+  // title itself is fixed above, so "pick a different angle" would directly contradict that --
+  // the instruction there is about keeping the *body* original, not the headline.
   const existingTitlesBlock = existingTitles.length > 0
-    ? `\n\nArticles that already exist on this site (published or in draft) -- do not write about the same specific angle as any of these. Pick a genuinely different angle, a different pillar, or a different specific question if the given topic seed overlaps with one of them:\n${existingTitles.map((t) => `- ${t}`).join('\n')}`
+    ? trimmedExactTitle
+      ? `\n\nArticles that already exist on this site (published or in draft), including anything you or a previous attempt already wrote for this exact title -- do not reuse their specific examples, structure, or wording. The title above is fixed regardless; write genuinely original analysis for it even if a similar piece exists:\n${existingTitles.map((t) => `- ${t}`).join('\n')}`
+      : `\n\nArticles that already exist on this site (published or in draft), including anything a previous attempt at this same topic already produced -- do not write about the same specific angle as any of these. Pick a genuinely different angle, a different pillar, or a different specific question if the given topic seed overlaps with one of them:\n${existingTitles.map((t) => `- ${t}`).join('\n')}`
     : '';
 
   const sourcesListBlock = KNOWN_SOURCES.map((s) => `${s.key} = ${s.name}`).join('\n');
