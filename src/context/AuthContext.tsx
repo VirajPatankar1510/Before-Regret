@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ClerkProvider, useUser, useClerk } from '@clerk/clerk-react';
-import { ExpertProfile } from '../types';
 
 export interface User {
   uid: string;
@@ -12,14 +11,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  activeRole: 'guest' | 'buyer' | 'expert';
-  setActiveRole: (role: 'guest' | 'buyer' | 'expert') => void;
-  expertProfile: ExpertProfile | null;
-  setExpertProfile: (profile: ExpertProfile | null) => void;
-  userExperts: ExpertProfile[];
-  setUserExperts: (profiles: ExpertProfile[]) => void;
   logout: () => Promise<void>;
-  refreshExpertProfile: (uid: string) => Promise<void>;
   isClerkActive: boolean;
   triggerClerkSignIn: (redirectUrl?: string) => void;
   triggerClerkSignUp: (redirectUrl?: string) => void;
@@ -72,9 +64,6 @@ export const getClerkPublishableKey = (): string => {
 const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [activeRole, setActiveRole] = useState<'guest' | 'buyer' | 'expert'>('guest');
-  const [expertProfile, setExpertProfile] = useState<ExpertProfile | null>(null);
-  const [userExperts, setUserExperts] = useState<ExpertProfile[]>([]);
 
   const clerkPublishableKey = getClerkPublishableKey();
   const isClerkActive = !!clerkPublishableKey;
@@ -97,66 +86,6 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }
 
-  const refreshExpertProfile = async (uid: string) => {
-    try {
-      const res = await fetch('/api/experts');
-      const contentType = res.headers.get('content-type') || '';
-      if (res.ok && contentType.includes('application/json')) {
-        const allExperts = await res.json();
-        if (Array.isArray(allExperts)) {
-          const matched = allExperts.filter((e: any) => e.userId === uid);
-          setUserExperts(matched);
-          if (matched.length > 0) {
-            setExpertProfile((prev) => {
-              if (prev && matched.some((e: any) => e.id === prev.id)) {
-                return matched.find((e: any) => e.id === prev.id) || matched[0];
-              }
-              return matched[0];
-            });
-            setActiveRole('expert');
-            return;
-          }
-        }
-      }
-      
-      // Fallback local storage lookup
-      const expertsRaw = localStorage.getItem('br_experts');
-      const allExpertsLocal = expertsRaw ? JSON.parse(expertsRaw) : [];
-      const matchedLocal = allExpertsLocal.filter((e: any) => e.userId === uid);
-      setUserExperts(matchedLocal);
-      if (matchedLocal.length > 0) {
-        setExpertProfile((prev) => {
-          if (prev && matchedLocal.some((e: any) => e.id === prev.id)) {
-            return matchedLocal.find((e: any) => e.id === prev.id) || matchedLocal[0];
-          }
-          return matchedLocal[0];
-        });
-        setActiveRole('expert');
-      } else {
-        setExpertProfile(null);
-        setActiveRole('buyer');
-      }
-    } catch (err) {
-      // Fallback local storage lookup on fetch failure or invalid JSON
-      try {
-        const expertsRaw = localStorage.getItem('br_experts');
-        const allExpertsLocal = expertsRaw ? JSON.parse(expertsRaw) : [];
-        const matchedLocal = allExpertsLocal.filter((e: any) => e.userId === uid);
-        setUserExperts(matchedLocal);
-        if (matchedLocal.length > 0) {
-          setExpertProfile(matchedLocal[0]);
-          setActiveRole('expert');
-          return;
-        }
-      } catch (localErr) {
-        // Ignore local parse errors
-      }
-      setExpertProfile(null);
-      setUserExperts([]);
-      setActiveRole('buyer');
-    }
-  };
-
   // Sync state from Clerk -- Clerk is the sole source of truth for who's signed in. No local
   // session is ever created independently of it, so there's nothing to "restore" from
   // localStorage on its own; br_current_user is only ever a cache of what Clerk already reported.
@@ -165,8 +94,6 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       // Missing/invalid publishable key -- a real misconfiguration, not a state to fall back
       // from. Nobody is signed in until it's fixed.
       setUser(null);
-      setExpertProfile(null);
-      setActiveRole('guest');
       setLoading(false);
       return;
     }
@@ -181,13 +108,9 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       };
       setUser(mappedUser);
       localStorage.setItem('br_current_user', JSON.stringify(mappedUser));
-      refreshExpertProfile(clerkUser.id).then(() => {
-        setLoading(false);
-      });
+      setLoading(false);
     } else {
       setUser(null);
-      setExpertProfile(null);
-      setActiveRole('guest');
       localStorage.removeItem('br_current_user');
       setLoading(false);
     }
@@ -228,11 +151,6 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const getTargetRedirectUrl = () => {
     if (typeof window !== 'undefined') {
-      const path = window.location.pathname;
-      const isContributor = path.startsWith('/contributor') || path.startsWith('/become-expert') || path.startsWith('/contributor-registration');
-      if (isContributor) {
-        return `${window.location.origin}/contributor-registration`;
-      }
       return window.location.href;
     }
     return '/';
@@ -246,8 +164,6 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
       localStorage.removeItem('br_current_user');
       setUser(null);
-      setExpertProfile(null);
-      setActiveRole('guest');
     } finally {
       setLoading(false);
     }
@@ -257,14 +173,7 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     <AuthContext.Provider value={{
       user,
       loading,
-      activeRole,
-      setActiveRole,
-      expertProfile,
-      setExpertProfile,
-      userExperts,
-      setUserExperts,
       logout,
-      refreshExpertProfile,
       isClerkActive,
       triggerClerkSignIn,
       triggerClerkSignUp
