@@ -935,45 +935,10 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     res.json({ success: true });
   });
 
-  // Auth API Endpoints
-  app.post("/api/auth/signup", (req, res) => {
-    const { email, displayName } = req.body || {};
-    res.json({
-      success: true,
-      user: {
-        uid: `user_${Date.now()}`,
-        email: email || 'user@example.com',
-        displayName: displayName || 'User',
-        photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(displayName || 'User')}`
-      }
-    });
-  });
-
-  app.post("/api/auth/signin", (req, res) => {
-    const { email } = req.body || {};
-    res.json({
-      success: true,
-      user: {
-        uid: `user_${Date.now()}`,
-        email: email || 'user@example.com',
-        displayName: email ? email.split('@')[0] : 'User',
-        photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(email || 'User')}`
-      }
-    });
-  });
-
-  app.post("/api/auth/mock", (req, res) => {
-    const { uid, displayName, email, photoURL } = req.body || {};
-    res.json({
-      success: true,
-      user: {
-        uid: uid || `mock_${Date.now()}`,
-        displayName: displayName || 'Demo User',
-        email: email || 'demo@example.com',
-        photoURL: photoURL || null
-      }
-    });
-  });
+  // Auth is handled entirely by Clerk client-side (see src/context/AuthContext.tsx). These
+  // endpoints used to back a demo/mock sign-in path that accepted any email/name with no
+  // verification and echoed back a fabricated "authenticated" user -- removed for production;
+  // there is no legitimate server-side auth surface left to expose here.
 
   // --- PayPal Payment Processing ---------------------------------------------------------------
   app.post("/api/paypal/orders", async (req, res) => {

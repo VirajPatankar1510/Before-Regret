@@ -160,7 +160,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
   onAddExpert,
   setView,
 }) => {
-  const { user, loginWithMockUser, isClerkActive, triggerClerkSignIn, userExperts } = useAuth();
+  const { user, triggerClerkSignIn, userExperts } = useAuth();
   const [showLanding, setShowLanding] = useState(true);
   const [calcTextCount, setCalcTextCount] = useState(5);
   const [calcChatCount, setCalcChatCount] = useState(2);
@@ -994,18 +994,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
           </p>
           <button
             type="button"
-            onClick={() => {
-              if (isClerkActive) {
-                triggerClerkSignIn();
-              } else {
-                loginWithMockUser({
-                  uid: 'user_rahul',
-                  displayName: 'Rahul K.',
-                  email: 'rahul.expert@beforeregret.com',
-                  photoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100'
-                });
-              }
-            }}
+            onClick={() => triggerClerkSignIn()}
             className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-xs active:scale-98"
           >
             Sign In to Continue

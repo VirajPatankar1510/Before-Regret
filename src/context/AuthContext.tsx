@@ -18,10 +18,6 @@ interface AuthContextType {
   setExpertProfile: (profile: ExpertProfile | null) => void;
   userExperts: ExpertProfile[];
   setUserExperts: (profiles: ExpertProfile[]) => void;
-  signUpWithEmail: (email: string, pass: string, name: string) => Promise<User | null>;
-  signInWithEmail: (email: string, pass: string) => Promise<User | null>;
-  signInWithGoogle: () => Promise<User | null>;
-  loginWithMockUser: (mockUserObj: { uid: string; displayName: string; email: string; photoURL?: string }) => Promise<User | null>;
   logout: () => Promise<void>;
   refreshExpertProfile: (uid: string) => Promise<void>;
   isClerkActive: boolean;
@@ -161,65 +157,38 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  // Sync state between Clerk and local session variables
+  // Sync state from Clerk -- Clerk is the sole source of truth for who's signed in. No local
+  // session is ever created independently of it, so there's nothing to "restore" from
+  // localStorage on its own; br_current_user is only ever a cache of what Clerk already reported.
   useEffect(() => {
-    if (isClerkActive) {
-      if (isClerkLoaded) {
-        if (isClerkSignedIn && clerkUser) {
-          const mappedUser: User = {
-            uid: clerkUser.id,
-            email: clerkUser.primaryEmailAddress?.emailAddress || null,
-            displayName: clerkUser.fullName || clerkUser.firstName || 'Clerk User',
-            photoURL: clerkUser.imageUrl || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(clerkUser.id)}`
-          };
-          setUser(mappedUser);
-          localStorage.setItem('br_current_user', JSON.stringify(mappedUser));
-          refreshExpertProfile(clerkUser.id).then(() => {
-            setLoading(false);
-          });
-        } else {
-          // If Clerk is signed out, check if a mock/demo bypass session exists
-          const storedUser = localStorage.getItem('br_current_user');
-          if (storedUser) {
-            try {
-              const parsed = JSON.parse(storedUser);
-              if (parsed && parsed.uid && (parsed.uid.startsWith('mock_') || parsed.uid.startsWith('demo_'))) {
-                setUser(parsed);
-                refreshExpertProfile(parsed.uid).then(() => {
-                  setLoading(false);
-                });
-                return;
-              } else {
-                setUser(null);
-                setExpertProfile(null);
-                setActiveRole('guest');
-                localStorage.removeItem('br_current_user');
-              }
-            } catch (e) {
-              setUser(null);
-            }
-          } else {
-            setUser(null);
-            setExpertProfile(null);
-            setActiveRole('guest');
-          }
-          setLoading(false);
-        }
-      }
+    if (!isClerkActive) {
+      // Missing/invalid publishable key -- a real misconfiguration, not a state to fall back
+      // from. Nobody is signed in until it's fixed.
+      setUser(null);
+      setExpertProfile(null);
+      setActiveRole('guest');
+      setLoading(false);
+      return;
+    }
+    if (!isClerkLoaded) return;
+
+    if (isClerkSignedIn && clerkUser) {
+      const mappedUser: User = {
+        uid: clerkUser.id,
+        email: clerkUser.primaryEmailAddress?.emailAddress || null,
+        displayName: clerkUser.fullName || clerkUser.firstName || 'Account',
+        photoURL: clerkUser.imageUrl || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(clerkUser.id)}`
+      };
+      setUser(mappedUser);
+      localStorage.setItem('br_current_user', JSON.stringify(mappedUser));
+      refreshExpertProfile(clerkUser.id).then(() => {
+        setLoading(false);
+      });
     } else {
-      // Mock Auth Fallback Mode - Restore session from localStorage
-      const storedUser = localStorage.getItem('br_current_user');
-      if (storedUser) {
-        try {
-          const parsed = JSON.parse(storedUser);
-          if (parsed && parsed.uid) {
-            setUser(parsed);
-            refreshExpertProfile(parsed.uid);
-          }
-        } catch (e) {
-          // ignore
-        }
-      }
+      setUser(null);
+      setExpertProfile(null);
+      setActiveRole('guest');
+      localStorage.removeItem('br_current_user');
       setLoading(false);
     }
   }, [isClerkActive, isClerkLoaded, isClerkSignedIn, clerkUser]);
@@ -269,119 +238,6 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return '/';
   };
 
-  const signUpWithEmail = async (email: string, pass: string, name: string) => {
-    if (isClerkActive) {
-      triggerClerkSignUp(getTargetRedirectUrl());
-      return null;
-    }
-
-    setLoading(true);
-    try {
-      const res = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: pass, displayName: name })
-      });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        const error = new Error(errData.error || 'Signup failed.');
-        if (errData.error?.includes('email is already in use')) {
-          (error as any).code = 'auth/email-already-in-use';
-        }
-        throw error;
-      }
-
-      const { user: newUser } = await res.json();
-      localStorage.setItem('br_current_user', JSON.stringify(newUser));
-      setUser(newUser);
-      await refreshExpertProfile(newUser.uid);
-      return newUser;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const signInWithEmail = async (email: string, pass: string) => {
-    if (isClerkActive) {
-      triggerClerkSignIn(getTargetRedirectUrl());
-      return null;
-    }
-
-    setLoading(true);
-    try {
-      const res = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: pass })
-      });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        const error = new Error(errData.error || 'Incorrect email or password.');
-        (error as any).code = 'auth/invalid-credential';
-        throw error;
-      }
-
-      const { user: loggedUser } = await res.json();
-      localStorage.setItem('br_current_user', JSON.stringify(loggedUser));
-      setUser(loggedUser);
-      await refreshExpertProfile(loggedUser.uid);
-      return loggedUser;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const signInWithGoogle = async () => {
-    if (isClerkActive) {
-      triggerClerkSignIn(getTargetRedirectUrl());
-      return null;
-    }
-
-    // Fallback Mock Sign-In
-    const mockName = 'Google User';
-    const mockEmail = 'google.user@example.com';
-    const mockUid = `mock_google_${Date.now()}`;
-    const mockUser = {
-      uid: mockUid,
-      displayName: mockName,
-      email: mockEmail,
-      photoURL: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(mockName)}`
-    };
-
-    return loginWithMockUser(mockUser);
-  };
-
-  const loginWithMockUser = async (mockUserObj: { uid: string; displayName: string; email: string; photoURL?: string }) => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/auth/mock', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          uid: mockUserObj.uid,
-          displayName: mockUserObj.displayName,
-          email: mockUserObj.email,
-          photoURL: mockUserObj.photoURL || null
-        })
-      });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Failed mock registration');
-      }
-
-      const { user: standardUser } = await res.json();
-      localStorage.setItem('br_current_user', JSON.stringify(standardUser));
-      setUser(standardUser);
-      await refreshExpertProfile(standardUser.uid);
-      return standardUser;
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const logout = async () => {
     setLoading(true);
     try {
@@ -407,10 +263,6 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setExpertProfile,
       userExperts,
       setUserExperts,
-      signUpWithEmail,
-      signInWithEmail,
-      signInWithGoogle,
-      loginWithMockUser,
       logout,
       refreshExpertProfile,
       isClerkActive,

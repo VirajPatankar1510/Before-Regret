@@ -15,7 +15,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentStep,
   selectedAddress
 }) => {
-  const { user, isClerkActive, triggerClerkSignIn } = useAuth();
+  const { user } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   return (
@@ -74,9 +74,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   )}
                 </div>
                 <span className="max-w-[100px] sm:max-w-[140px] truncate font-bold">{user.displayName || 'Account'}</span>
-                <span className="text-[9px] font-mono font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded hidden sm:inline-block">
-                  {user.uid.startsWith('demo_') || user.uid.startsWith('mock_') ? 'DEMO' : 'CLERK'}
-                </span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
             ) : (
@@ -93,7 +90,6 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </header>
 
-      {/* Auth Modal with Clerk & Demo Bypass */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}

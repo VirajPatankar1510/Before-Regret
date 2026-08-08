@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Mail, ShieldCheck, CheckCircle2, Lock, CreditCard, Sparkles,
-  AlertCircle, ArrowRight, Loader2, KeyRound, MapPin, Check, UserCheck, Zap
+  ShieldCheck, CheckCircle2, Lock, CreditCard, Sparkles,
+  AlertCircle, ArrowRight, Loader2, MapPin
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { PaymentProcessor } from './PaymentProcessor';
@@ -13,36 +13,40 @@ interface ReportGatingModalProps {
   onConfirmAndGenerate: (userEmail: string, isPaid: boolean) => void;
 }
 
+// Internal testing account -- always gets the free-claim step regardless of report count, so
+// whoever's verifying report generation end-to-end doesn't hit the $14.99 paywall on every
+// second attempt. Deliberately a single real, Clerk-authenticated email rather than a
+// separate demo/mock login path -- there's no way to reach this state without actually signing
+// in through Clerk first.
+const UNLIMITED_ACCESS_EMAIL = 'hello@beforeregret.com';
+
 export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
   isOpen,
   onClose,
   targetAddress,
   onConfirmAndGenerate
 }) => {
-  const { user, isClerkActive, triggerClerkSignIn, loginWithMockUser, setActiveRole } = useAuth();
+  const { user, triggerClerkSignIn } = useAuth();
 
   const [step, setStep] = useState<'AUTH_REQUIRED' | 'CLAIM_FREE' | 'PAYMENT_INTERCEPT' | 'PROCESSING' | 'PAYMENT'>('CLAIM_FREE');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isBypassing, setIsBypassing] = useState(false);
 
   // Sync step based on authentication status and report quota
   useEffect(() => {
     if (!user) {
       setStep('AUTH_REQUIRED');
-    } else if (user.uid.startsWith('demo_') || user.uid.startsWith('mock_')) {
-      // Demo/mock sessions always use the same fixed email (buyer.demo@beforeregret.com), so the
-      // per-email free-report cap below would otherwise hit the simulated $14.99 card form on the
-      // second and every later click -- defeating the entire point of a button whose job is
-      // letting someone test the flow repeatedly. Demo sessions skip the paywall entirely instead.
+      return;
+    }
+    const activeEmail = user.email || `${user.uid}@beforeregret.com`;
+    if (activeEmail.toLowerCase().trim() === UNLIMITED_ACCESS_EMAIL) {
       setStep('CLAIM_FREE');
+      return;
+    }
+    const count = getReportCount(activeEmail);
+    if (count >= 1) {
+      setStep('PAYMENT_INTERCEPT');
     } else {
-      const activeEmail = user.email || `${user.uid}@beforeregret.com`;
-      const count = getReportCount(activeEmail);
-      if (count >= 1) {
-        setStep('PAYMENT_INTERCEPT');
-      } else {
-        setStep('CLAIM_FREE');
-      }
+      setStep('CLAIM_FREE');
     }
   }, [user]);
 
@@ -52,24 +56,6 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
     const counts: Record<string, number> = JSON.parse(localStorage.getItem('beforeregret_email_report_counts') || '{}');
     return counts[email.toLowerCase().trim()] || 0;
   }
-
-  const handleDemoBypass = async () => {
-    setIsBypassing(true);
-    try {
-      const mockUid = `demo_user_${Date.now()}`;
-      await loginWithMockUser({
-        uid: mockUid,
-        displayName: 'Demo Homebuyer',
-        email: 'buyer.demo@beforeregret.com',
-        photoURL: 'https://api.dicebear.com/7.x/adventurer/svg?seed=BuyerSeed'
-      });
-      setActiveRole('buyer');
-      setIsBypassing(false);
-    } catch (err) {
-      console.error(err);
-      setIsBypassing(false);
-    }
-  };
 
   const handleClaimFreeReport = (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,13 +112,13 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
             <div className="space-y-2 text-center">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-mono font-bold border border-blue-100">
                 <Lock className="w-3.5 h-3.5 text-blue-600" />
-                <span>Clerk Authentication Mandatory</span>
+                <span>Sign-In Required</span>
               </div>
               <h3 className="font-serif text-2xl font-bold text-slate-900">
                 Sign In to Unlock Property Report
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
-                Authentication through Clerk is required to generate and save your report. No manual email typing required.
+                Sign in to generate and save your report. No manual email typing required.
               </p>
             </div>
 
@@ -148,32 +134,13 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
                 className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Lock className="w-4 h-4 text-blue-200" />
-                <span>Sign In / Sign Up with Clerk</span>
+                <span>Sign In / Sign Up</span>
                 <ArrowRight className="w-4 h-4 ml-1" />
-              </button>
-
-              <div className="relative my-3">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-200"></div>
-                </div>
-                <div className="relative flex justify-center text-[10px] font-mono uppercase">
-                  <span className="bg-white px-3 text-slate-400 font-bold">OR TESTING BYPASS</span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleDemoBypass}
-                disabled={isBypassing}
-                className="w-full py-3 bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs rounded-xl border border-amber-200 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                <Zap className="w-4 h-4 text-amber-600" />
-                <span>{isBypassing ? 'Initializing Demo Session...' : 'Instant Demo Bypass (Testing Mode)'}</span>
               </button>
             </div>
 
             <p className="text-[11px] text-slate-400 text-center font-mono">
-              Your first report is 100% free upon Clerk authentication.
+              Your first report is 100% free after signing in.
             </p>
           </div>
         )}
@@ -209,7 +176,7 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
                     {user.email || user.displayName || 'Authenticated User'}
                   </div>
                   <div className="text-[10px] text-emerald-700 font-medium">
-                    {user.uid.startsWith('demo_') || user.uid.startsWith('mock_') ? 'Verified Demo Account' : 'Verified Clerk Account'}
+                    Verified Account
                   </div>
                 </div>
               </div>
