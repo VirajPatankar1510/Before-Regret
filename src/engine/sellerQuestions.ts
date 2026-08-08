@@ -19,6 +19,7 @@ import {
   getEraLabel,
   isPlausibleYearBuilt,
 } from './inspectionPriorities.js';
+import { normalizeCountyKey } from '../utils/normalizeCounty.js';
 
 export type QuestionPriority = 'high' | 'medium' | 'lower';
 
@@ -195,7 +196,9 @@ export function getSellerQuestions(
   if (!yearBuilt || !Number.isFinite(yearBuilt)) return null;
   if (!isPlausibleYearBuilt(yearBuilt)) return null;
 
-  const normalizedCounty = (county || '').toLowerCase().trim();
+  // Same normalization as inspectionPriorities.ts -- these two must gate on identical county keys
+  // or the foundation question and the foundation priority items drift apart.
+  const normalizedCounty = normalizeCountyKey(county);
   const soilRegion = EXPANSIVE_SOIL_REGIONS[normalizedCounty];
 
   const matched = QUESTION_RULES.filter(

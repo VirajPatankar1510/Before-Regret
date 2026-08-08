@@ -20,6 +20,7 @@ import {
 } from "./src/server/adminAuth.js";
 import { registerArticleRoutes } from "./src/server/articlesApi.js";
 import { registerCountyRoutes } from "./src/server/countiesApi.js";
+import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import {
   isPayPalConfigured,
   createPayPalOrder,
@@ -1380,15 +1381,30 @@ function simpleHash(str: string): number {
 // regardless of where the property actually is.
 type LocalSourceId = 'county_assessor' | 'county_recorder' | 'muni_permits' | 'muni_zoning' | 'county_planning' | 'county_water' | 'city_code';
 
+// Every URL below was checked for a real 200 before being added or kept. A link audit run over the
+// previously-shipped entries found four that had rotted since they were written -- Austin's permit
+// portal deep path, its development-services page, and its water-utility page all 404'd, meaning
+// Travis County buyers (the single best-covered jurisdiction) were being sent to dead pages for
+// roof, electrical, HVAC and code-enforcement lookups. Those are corrected here.
+//
+// Sites that could not be verified reachable are deliberately omitted rather than guessed at, so
+// they fall through to GENERIC_LOCAL_GOVERNMENT_DIRECTORY below -- a generic-but-working link beats
+// a specific-but-broken one. Los Angeles is the notable absence: ladbs.org returned "Service
+// unavailable" in a real browser (not merely a bot block) at the time of writing, so LA County has
+// no entry. Some government sites 403 automated requests while working fine for real users; those
+// were confirmed in an actual browser before being trusted either way.
 const LOCAL_JURISDICTION_SOURCES: Record<string, Partial<Record<LocalSourceId, string>>> = {
   'travis county': {
     county_assessor: 'https://traviscad.org/propertysearch',
     county_recorder: 'https://www.traviscountyclerk.org',
-    muni_permits: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search',
-    city_code: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search',
-    muni_zoning: 'https://abc.austintexas.gov/web/user/guest/interactive-citizen-search',
-    county_planning: 'https://www.austintexas.gov/department/development-services',
-    county_water: 'https://www.austintexas.gov/department/austin-water',
+    // Root portal, not a deep path: the previous /web/user/guest/interactive-citizen-search URL
+    // 404s, and the portal is an Angular SPA whose internal routes don't resolve on their own.
+    // The root page carries the "Public Search -- no log-in required" entry point.
+    muni_permits: 'https://abc.austintexas.gov',
+    city_code: 'https://abc.austintexas.gov',
+    muni_zoning: 'https://abc.austintexas.gov',
+    county_planning: 'https://www.austintexas.gov/dsd',
+    county_water: 'https://www.austinwater.org',
   },
   'harris county': {
     county_assessor: 'https://hcad.org',
@@ -1411,6 +1427,66 @@ const LOCAL_JURISDICTION_SOURCES: Record<string, Partial<Record<LocalSourceId, s
     county_planning: 'https://dallascityhall.com',
     county_water: 'https://dallascityhall.com',
   },
+
+  // --- Beyond Texas -------------------------------------------------------------------------
+  // Coverage was Texas-only until now, which meant every finding in the report's "needs
+  // verification" list pointed at the generic usa.gov directory for a buyer anywhere else in the
+  // country -- the large majority of the addressable market. These are the largest metros whose
+  // permit/code portals verified reachable.
+  'maricopa county': {
+    county_assessor: 'https://mcassessor.maricopa.gov',
+    muni_permits: 'https://phoenix.gov/pdd',
+    city_code: 'https://phoenix.gov/pdd',
+    muni_zoning: 'https://phoenix.gov/pdd',
+  },
+  'clark county': {
+    county_assessor: 'https://www.clarkcountynv.gov/government/assessor/index.php',
+    muni_permits: 'https://www.clarkcountynv.gov/government/departments/building___fire_prevention/index.php',
+    city_code: 'https://www.clarkcountynv.gov/government/departments/building___fire_prevention/index.php',
+    muni_zoning: 'https://www.clarkcountynv.gov/government/departments/building___fire_prevention/index.php',
+  },
+  'king county': {
+    county_assessor: 'https://kingcounty.gov/en/dept/assessor',
+    muni_permits: 'https://www.seattle.gov/sdci',
+    city_code: 'https://www.seattle.gov/sdci',
+    muni_zoning: 'https://www.seattle.gov/sdci',
+  },
+  'cook county': {
+    // Cook County Assessor 403s automated requests; the Clerk's site verified cleanly, so the
+    // recorder entry is the one used here rather than guessing the assessor URL still resolves.
+    county_recorder: 'https://www.cookcountyclerk.com',
+    muni_permits: 'https://www.chicago.gov/city/en/depts/bldgs.html',
+    city_code: 'https://www.chicago.gov/city/en/depts/bldgs.html',
+    muni_zoning: 'https://www.chicago.gov/city/en/depts/bldgs.html',
+  },
+  'miami-dade county': {
+    muni_permits: 'https://www.miamidade.gov/global/economy/building/home.page',
+    city_code: 'https://www.miamidade.gov/global/economy/building/home.page',
+    muni_zoning: 'https://www.miamidade.gov/global/economy/building/home.page',
+  },
+  'denver county': {
+    muni_permits: 'https://www.denvergov.org/Government/Agencies-Departments-Offices/Agencies-Departments-Offices-Directory/Community-Planning-and-Development',
+    city_code: 'https://www.denvergov.org/Government/Agencies-Departments-Offices/Agencies-Departments-Offices-Directory/Community-Planning-and-Development',
+    muni_zoning: 'https://www.denvergov.org/Government/Agencies-Departments-Offices/Agencies-Departments-Offices-Directory/Community-Planning-and-Development',
+  },
+  'san diego county': {
+    muni_permits: 'https://www.sandiego.gov/development-services',
+    city_code: 'https://www.sandiego.gov/development-services',
+    muni_zoning: 'https://www.sandiego.gov/development-services',
+  },
+  'philadelphia county': {
+    muni_permits: 'https://www.phila.gov/departments/department-of-licenses-and-inspections/',
+    city_code: 'https://www.phila.gov/departments/department-of-licenses-and-inspections/',
+    muni_zoning: 'https://www.phila.gov/departments/department-of-licenses-and-inspections/',
+  },
+  // NYC's five boroughs are each their own county, but a single agency (Department of Buildings)
+  // covers all of them -- so all five map to the same portal rather than one borough getting
+  // coverage and the other four silently falling through to the generic directory.
+  'new york county': { muni_permits: 'https://www.nyc.gov/site/buildings/index.page', city_code: 'https://www.nyc.gov/site/buildings/index.page', muni_zoning: 'https://www.nyc.gov/site/buildings/index.page' },
+  'kings county': { muni_permits: 'https://www.nyc.gov/site/buildings/index.page', city_code: 'https://www.nyc.gov/site/buildings/index.page', muni_zoning: 'https://www.nyc.gov/site/buildings/index.page' },
+  'queens county': { muni_permits: 'https://www.nyc.gov/site/buildings/index.page', city_code: 'https://www.nyc.gov/site/buildings/index.page', muni_zoning: 'https://www.nyc.gov/site/buildings/index.page' },
+  'bronx county': { muni_permits: 'https://www.nyc.gov/site/buildings/index.page', city_code: 'https://www.nyc.gov/site/buildings/index.page', muni_zoning: 'https://www.nyc.gov/site/buildings/index.page' },
+  'richmond county': { muni_permits: 'https://www.nyc.gov/site/buildings/index.page', city_code: 'https://www.nyc.gov/site/buildings/index.page', muni_zoning: 'https://www.nyc.gov/site/buildings/index.page' },
 };
 
 const GENERIC_LOCAL_GOVERNMENT_DIRECTORY = 'https://www.usa.gov/local-governments';
@@ -1419,7 +1495,10 @@ const LOCAL_SOURCE_IDS: LocalSourceId[] = ['county_assessor', 'county_recorder',
 
 function getPublicSourceUrl(id: string, county?: string): string {
   if ((LOCAL_SOURCE_IDS as string[]).includes(id)) {
-    const jurisdiction = LOCAL_JURISDICTION_SOURCES[(county || '').toLowerCase().trim()];
+    // normalizeCountyKey, not a bare toLowerCase().trim() -- "Travis" vs "Travis County" used to
+    // decide whether this returned the real Austin permit portal or the generic usa.gov directory,
+    // with nothing in the output indicating which one you got. See src/utils/normalizeCounty.ts.
+    const jurisdiction = LOCAL_JURISDICTION_SOURCES[normalizeCountyKey(county)];
     return jurisdiction?.[id as LocalSourceId] || GENERIC_LOCAL_GOVERNMENT_DIRECTORY;
   }
 

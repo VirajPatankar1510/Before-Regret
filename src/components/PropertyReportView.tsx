@@ -105,6 +105,33 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   const hasInspectionPriorities = Boolean(report.inspectionPriorities);
   const hasSellerQuestions = Boolean(report.sellerQuestionsScript);
 
+  // The action list used to be built only from findings carrying actionItem.type ===
+  // 'walkthroughItem'. Exactly one of the fallback findings (f_elec) is tagged that way and the
+  // live findings carry no actionItem at all, so "Your Action List" was a titled section that
+  // always rendered a single checkbox regardless of the property.
+  //
+  // Each inspection priority already ends in howToCheck -- an imperative, era- and county-specific
+  // next action ("Book a sewer scope with a licensed plumber...", "Ask your inspector to confirm in
+  // writing whether any knob-and-tube is still energized..."). Those are precisely what belongs on
+  // a pre-walkthrough action list, and there are 8-9 of them. Reusing them here is not padding:
+  // the priorities section explains *why* each matters, this section is the carryable tick-list of
+  // *what to do*, which is a different job for the same content.
+  const priorityActions = (report.inspectionPriorities?.priorities || []).map((p) => ({
+    title: p.title,
+    description: p.howToCheck,
+  }));
+  const findingActions = findings
+    .filter((f) => f.actionItem?.type === 'walkthroughItem')
+    .map((f) => ({
+      title: f.actionItem?.title || f.subject,
+      description: f.actionItem?.description || '',
+    }));
+  // Findings first (they're address-specific), then the era/county priorities. De-duplicated on
+  // title so a finding and a priority covering the same ground don't both appear.
+  const actionListItems = [...findingActions, ...priorityActions].filter(
+    (item, idx, all) => all.findIndex((o) => o.title === item.title) === idx
+  );
+
   // Findings whose status is a real outcome -- we queried a live source and got an answer either
   // way -- get a full card. 'NOT YET VERIFIED' ones are rendered as a compact list instead: they
   // all say materially the same thing ("no live connection yet, check it here"), so six identical
@@ -312,7 +339,10 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </div>
           )}
 
-          <p className="text-xs text-slate-500 leading-relaxed">
+          {/* print:hidden on the whole paragraph, not just the button -- the button alone was
+              already hidden in print, which left the sentence dangling as "...reference-only? ."
+              in the exported PDF. A modal-opening CTA has no meaning on paper anyway. */}
+          <p className="print:hidden text-xs text-slate-500 leading-relaxed">
             Want to see every public source BeforeRegret checks, and which ones are live vs. reference-only?{' '}
             <button
               onClick={() => setIsSourceModalOpen(true)}
@@ -365,7 +395,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
               </div>
 
               <div className="space-y-3">
-                {findings.filter(f => f.actionItem?.type === 'walkthroughItem').map((f, idx) => {
+                {actionListItems.map((item, idx) => {
                   const checkId = `wt-${idx}`;
                   const isChecked = checkedItems[checkId] || false;
                   return (
@@ -378,14 +408,16 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                           : 'bg-slate-50 border-slate-200 text-slate-900 hover:border-slate-300'
                       }`}
                     >
-                      <button className="mt-0.5 text-blue-600 shrink-0">
+                      {/* print-keep: this box has to survive into the exported PDF -- the whole
+                          point of a walkthrough checklist is carrying it and ticking items off. */}
+                      <button className="print-keep mt-0.5 text-blue-600 shrink-0">
                         {isChecked ? <CheckSquare className="w-4 h-4 text-emerald-600" /> : <Square className="w-4 h-4 text-slate-400" />}
                       </button>
                       <div className="space-y-0.5">
                         <span className={`font-bold block ${isChecked ? 'line-through text-emerald-900' : 'text-slate-900'}`}>
-                          {f.actionItem?.title || f.subject}
+                          {item.title}
                         </span>
-                        <p className="text-slate-600 leading-relaxed">{f.actionItem?.description}</p>
+                        <p className="text-slate-600 leading-relaxed">{item.description}</p>
                       </div>
                     </div>
                   );
