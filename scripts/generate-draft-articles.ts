@@ -4,6 +4,7 @@ import path from 'path';
 import { withDb, isDbConfigured } from '../src/server/db.js';
 import { buildArticlePrompt } from '../src/server/articleGenerator.js';
 import { KNOWN_SOURCES } from '../src/data/knownSources.js';
+import { GEMINI_MODEL } from '../src/server/geminiModel.js';
 
 // Batch draft generator for scaling the guide library (12 -> 150 target). Reuses the exact same
 // prompt and duplicate-title guard as the "Generate with AI" button in SeoAdminPanel.tsx
@@ -157,7 +158,7 @@ async function run() {
     try {
       const { systemInstruction, contents } = buildArticlePrompt(seed, existingTitles, '');
       const response = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
+        model: GEMINI_MODEL,
         contents,
         config: { systemInstruction, temperature: 0.8 },
       });

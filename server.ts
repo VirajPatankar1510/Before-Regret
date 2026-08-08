@@ -21,6 +21,7 @@ import {
 import { registerArticleRoutes } from "./src/server/articlesApi.js";
 import { registerCountyRoutes } from "./src/server/countiesApi.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
+import { GEMINI_MODEL } from "./src/server/geminiModel.js";
 import {
   isPayPalConfigured,
   createPayPalOrder,
@@ -629,7 +630,7 @@ Maintain a non-diagnostic stance:
 `;
 
         const response = await ai.models.generateContent({
-          model: "gemini-3.6-flash",
+          model: GEMINI_MODEL,
           contents: prompt,
           config: {
             systemInstruction: `You are the executive property research engine at BeforeRegret (beforeregret.com).
