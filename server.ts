@@ -885,56 +885,6 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     });
   });
 
-  // 3. Resident Questionnaire AI Report Generator Endpoint
-  app.post('/api/reports/generate', async (req, res) => {
-    const { societyName, locality, city, residentType, yearsLiving, topicsData } = req.body;
-
-    if (!societyName && (!topicsData || topicsData.length === 0)) {
-      res.status(400).json({ success: false, error: 'Society name and topic Q&A data are required.' });
-      return;
-    }
-
-    const socName = societyName || 'Residential Society';
-    const locName = locality || city || 'Metropolitan Region';
-    const resType = residentType || 'Resident';
-    const years = yearsLiving || 3;
-
-    // Generate strict 6-section structure per topic
-    const sections = (topicsData || []).map((t: any) => {
-      const title = t.topicTitle || 'Residential Experience';
-      const qas = t.qaList || [];
-      const qaText = qas.map((q: any) => `Q: ${q.question}\nA: ${q.answer}`).join('\n');
-
-      return {
-        topicId: t.topicId,
-        topicTitle: title,
-        overallSummary: `Based on verified input from an active ${resType.toLowerCase()} residing for ${years} years at ${socName} in ${locName}, key insights regarding ${title.toLowerCase()} have been recorded.`,
-        everydayLifeImpact: `Day-to-day living conditions regarding ${title.toLowerCase()} directly influence routine convenience and household planning. Residents report actionable observations that reflect real living conditions.`,
-        thingsToKeepInMind: `When evaluating ${socName}, prospective buyers and tenants should take note of seasonal fluctuations, operational maintenance routines, and specific community guidelines related to ${title.toLowerCase()}.`,
-        positiveAspects: `Strengths highlighted by residents include predictable service availability, responsive maintenance support, and clear communication from community management.`,
-        questionsToClarify: `You may want to ask society management or the property owner: 1) What are the exact maintenance schedules or billing procedures for ${title.toLowerCase()}? 2) Are there any planned infrastructure upgrades in the coming year?`,
-        finalAssessment: `In summary, the observations regarding ${title.toLowerCase()} at ${socName} offer a clear, unvarnished look at daily living standards. Prospective occupants can use these points during physical site visits.`
-      };
-    });
-
-    res.json({
-      success: true,
-      report: {
-        overallSummary: `Resident Intelligence Report for ${socName}, ${locName}. Compiled from first-hand resident feedback covering ${sections.length} core living topics.`,
-        sections
-      }
-    });
-  });
-
-  // Experts API Endpoints
-  app.get("/api/experts", (req, res) => {
-    res.json([]);
-  });
-
-  app.post(["/api/experts/update", "/api/experts/payout-setup", "/api/experts/simulate-verification"], (req, res) => {
-    res.json({ success: true });
-  });
-
   // Auth is handled entirely by Clerk client-side (see src/context/AuthContext.tsx). These
   // endpoints used to back a demo/mock sign-in path that accepted any email/name with no
   // verification and echoed back a fabricated "authenticated" user -- removed for production;
@@ -1612,11 +1562,9 @@ function resolvePropertyMetadata(
     propTypeLower.includes('condo') ||
     propTypeLower.includes('multi-family') ||
     propTypeLower.includes('complex') ||
-    propTypeLower.includes('society') ||
     propTypeLower.includes('townhouse') ||
     addrLower.includes('apartment') ||
     addrLower.includes('condo') ||
-    addrLower.includes('society') ||
     addrLower.includes('tower') ||
     addrLower.includes('enclave') ||
     addrLower.includes('willow & maple') ||

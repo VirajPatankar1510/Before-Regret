@@ -83,7 +83,7 @@ export interface PropertySearchResult {
   country: string;
   lat: number;
   lon: number;
-  propertyType: 'Single Family Home' | 'Condo / Townhouse' | 'Apartment Complex' | 'Commercial / Mixed' | 'Residential Land' | 'Residential Society / Complex' | 'Condo / Townhouse Complex' | 'Apartment / Condo Complex' | 'Single Family Residential';
+  propertyType: 'Single Family Home' | 'Condo / Townhouse' | 'Apartment Complex' | 'Commercial / Mixed' | 'Residential Land' | 'Multi-Unit Residential Complex' | 'Condo / Townhouse Complex' | 'Apartment / Condo Complex' | 'Single Family Residential';
   displayName: string;
   isPublicFacility?: boolean;
   facilityCategory?: string;
@@ -413,17 +413,3 @@ export interface PropertyReport {
   directSourceLinks?: DirectSourceLink[];
 }
 
-// Compatibility stubs for clean build resolution
-export interface StructuredQA { [key: string]: any }
-export interface TopicKnowledge { [key: string]: any }
-export interface ResidentKnowledgeProfile { [key: string]: any }
-export interface Society { [key: string]: any }
-export interface UnlockedPurchase { [key: string]: any }
-export interface ContributorQuestion { [key: string]: any }
-export interface Neighborhood { [key: string]: any }
-export interface DayAvailability { [key: string]: any }
-export interface ExpertProfile { [key: string]: any }
-export interface DirectQuery { [key: string]: any }
-export interface Review { [key: string]: any }
-export interface Wallet { [key: string]: any }
-export interface PricingPlan { [key: string]: any }

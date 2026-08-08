@@ -292,7 +292,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         const road = addr.road || addr.street || addr.pedestrian || addr.footway || '';
         const street = [houseNumber, road].filter(Boolean).join(' ');
 
-        let pType: PropertySearchResult['propertyType'] = 'Residential Society / Complex';
+        let pType: PropertySearchResult['propertyType'] = 'Multi-Unit Residential Complex';
         const itemTypeLower = (item.type || '').toLowerCase();
         const displayNameLower = (item.display_name || '').toLowerCase();
 
@@ -300,8 +300,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           pType = 'Condo / Townhouse Complex';
         } else if (itemTypeLower === 'apartments' || displayNameLower.includes('apartment') || displayNameLower.includes('complex') || displayNameLower.includes('tower')) {
           pType = 'Apartment / Condo Complex';
-        } else if (displayNameLower.includes('society') || displayNameLower.includes('residence') || displayNameLower.includes('enclave') || displayNameLower.includes('heights') || displayNameLower.includes('villas')) {
-          pType = 'Residential Society / Complex';
+        } else if (displayNameLower.includes('residence') || displayNameLower.includes('enclave') || displayNameLower.includes('heights') || displayNameLower.includes('villas')) {
+          pType = 'Multi-Unit Residential Complex';
         } else {
           pType = 'Single Family Residential';
         }
@@ -356,7 +356,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         const houseNumber = addr.house_number || '';
         const road = addr.road || addr.street || addr.pedestrian || addr.footway || '';
 
-        let pType: PropertySearchResult['propertyType'] = 'Residential Society / Complex';
+        let pType: PropertySearchResult['propertyType'] = 'Multi-Unit Residential Complex';
         const itemTypeLower = (item.type || '').toLowerCase();
         const displayNameLower = (item.display_name || '').toLowerCase();
 
@@ -364,8 +364,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           pType = 'Condo / Townhouse Complex';
         } else if (itemTypeLower === 'apartments' || displayNameLower.includes('apartment') || displayNameLower.includes('complex') || displayNameLower.includes('tower')) {
           pType = 'Apartment / Condo Complex';
-        } else if (displayNameLower.includes('society') || displayNameLower.includes('residence') || displayNameLower.includes('enclave') || displayNameLower.includes('heights') || displayNameLower.includes('villas')) {
-          pType = 'Residential Society / Complex';
+        } else if (displayNameLower.includes('residence') || displayNameLower.includes('enclave') || displayNameLower.includes('heights') || displayNameLower.includes('villas')) {
+          pType = 'Multi-Unit Residential Complex';
         } else {
           pType = 'Single Family Residential';
         }
