@@ -47,8 +47,7 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
   // Filter reviews matching current expert
   const expertReviews = reviews.filter((rev) => rev.expertId === expert.id);
 
-  // Auth context for seamless 1-click test sign-in
-  const { user, loginWithMockUser, isClerkActive, triggerClerkSignIn } = useAuth();
+  const { user, triggerClerkSignIn } = useAuth();
 
   // Booking Flow Steps States
   const [bookingStep, setBookingStep] = useState<'datetime' | 'review' | 'payment' | 'confirmed'>('datetime');
@@ -117,15 +116,7 @@ export const ResidentProfile: React.FC<ResidentProfileProps> = ({
   const handleFrictionlessSignIn = async () => {
     setIsProcessing(true);
     try {
-      if (isClerkActive) {
-        triggerClerkSignIn();
-      } else {
-        await loginWithMockUser({
-          uid: 'user_mock_buyer',
-          displayName: 'Amit Kumar',
-          email: 'amit@example.com'
-        });
-      }
+      triggerClerkSignIn();
     } catch (err) {
       console.error(err);
     } finally {
