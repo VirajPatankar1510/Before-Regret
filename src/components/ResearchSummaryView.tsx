@@ -1,8 +1,5 @@
 import React from 'react';
-import { 
-  CheckCircle2, FileText, ArrowRight, ShieldCheck, Database, 
-  MapPin, AlertCircle, Sparkles, Lock, Layers, HelpCircle
-} from 'lucide-react';
+import { CheckCircle2, FileText, ArrowRight, MapPin } from 'lucide-react';
 import { ResearchSummaryData } from '../types';
 
 interface ResearchSummaryViewProps {
@@ -14,7 +11,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
   summaryData,
   onGenerateReport
 }) => {
-  const { address, totalSourcesSearched, usefulSourcesFound, price, priceRationale, publicSourcesList } = summaryData;
+  const { address, priceRationale } = summaryData;
 
   const includedItems = [
     'Flood & environmental risks',
@@ -107,47 +104,6 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
           </button>
         </div>
 
-      </div>
-
-      {/* Public Data Sources Accordion / Preview */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Database className="w-4 h-4 text-blue-600" />
-            <span>Public Data Sources Linked ({totalSourcesSearched})</span>
-          </h3>
-          <span className="text-xs font-semibold text-slate-500">
-            {usefulSourcesFound} Independently Verified
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
-          {publicSourcesList.map((src) => (
-            <div
-              key={src.id}
-              className={`p-3 rounded-xl border text-xs flex items-center justify-between gap-2 ${
-                src.foundInfo
-                  ? 'bg-emerald-50/60 border-emerald-200/80 text-emerald-950'
-                  : 'bg-slate-50 border-slate-200 text-slate-400'
-              }`}
-            >
-              <div className="min-w-0 flex-1">
-                <div className="font-bold truncate">{src.name}</div>
-                <div className="text-[10px] opacity-75">{src.category}</div>
-              </div>
-
-              {src.foundInfo ? (
-                <span className="px-2 py-0.5 bg-emerald-600 text-white font-bold rounded text-[10px] shrink-0">
-                  Verified
-                </span>
-              ) : (
-                <span className="px-2 py-0.5 bg-slate-200 text-slate-500 font-medium rounded text-[10px] shrink-0">
-                  Needs verification
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
       </div>
 
     </div>
