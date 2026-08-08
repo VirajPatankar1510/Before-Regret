@@ -1098,7 +1098,14 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath, { index: false }));
+    // `index` defaults to 'index.html', which is what we want now: build-time prerendering
+    // (scripts/prerender-guides.tsx) writes real static pages to dist/guides/<slug>/index.html,
+    // and this lets express.static serve those directly for a request to /guides/<slug>/. It only
+    // fires when that exact file exists on disk; every other path (including plain '/') still
+    // falls through to the catch-all below exactly as before. This only matters for local
+    // `npm start` / non-Vercel hosts -- on Vercel this Express branch's static serving is never
+    // reached at all (see vercel.json's rewrites), so this has no bearing on the live deployment.
+    app.use(express.static(distPath));
     app.get('*', (req, res) => {
       const indexPath = path.join(distPath, 'index.html');
       if (fs.existsSync(indexPath)) {
