@@ -9,12 +9,8 @@
       "destination": "/api/index"
     },
     {
-      "source": "/",
-      "destination": "/home.html"
-    },
-    {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/shell.html"
     }
   ]
 }

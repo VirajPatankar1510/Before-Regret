@@ -1098,33 +1098,22 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    // `index` defaults to 'index.html', which is what we want now: build-time prerendering
-    // (scripts/prerender-guides.tsx) writes real static pages to dist/guides/<slug>/index.html,
-    // and this lets express.static serve those directly for a request to /guides/<slug>/. It only
-    // fires when that exact file exists on disk; every other path (including plain '/') still
-    // falls through to the catch-all below exactly as before. This only matters for local
-    // `npm start` / non-Vercel hosts -- on Vercel this Express branch's static serving is never
-    // reached at all (see vercel.json's rewrites), so this has no bearing on the live deployment.
-    // Mirrors vercel.json's `{"source": "/", "destination": "/home.html"}` rewrite for local
-    // parity -- express.static's own index resolution only ever looks for 'index.html', so
-    // without this, '/' would keep serving the empty SPA shell locally even though Vercel serves
-    // the real prerendered homepage (scripts/prerender-homepage.tsx). Checked before
-    // express.static so it takes priority for the exact root path only.
-    app.get('/', (req, res) => {
-      const homePath = path.join(distPath, 'home.html');
-      const indexPath = path.join(distPath, 'index.html');
-      const target = fs.existsSync(homePath) ? homePath : indexPath;
-      if (fs.existsSync(target)) {
-        res.send(fs.readFileSync(target, 'utf8'));
-      } else {
-        res.status(404).send('Not found');
-      }
-    });
+    // `index` defaults to 'index.html', which is what we want: build-time prerendering
+    // (scripts/prerender-guides.tsx, scripts/prerender-homepage.tsx) writes real static pages to
+    // dist/index.html (homepage) and dist/guides/<slug>/index.html (each guide), and this lets
+    // express.static serve those directly. Every other path -- including genuinely dead ones --
+    // falls through to the catch-all below, which now reads dist/shell.html (the pristine empty
+    // shell preserved by prerender-homepage.tsx) rather than dist/index.html, mirroring
+    // vercel.json's catch-all. This only matters for local `npm start` / non-Vercel hosts -- on
+    // Vercel this Express branch's static serving is never reached at all (see vercel.json's
+    // rewrites), so this has no bearing on the live deployment.
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
+      const shellPath = path.join(distPath, 'shell.html');
       const indexPath = path.join(distPath, 'index.html');
-      if (fs.existsSync(indexPath)) {
-        let html = fs.readFileSync(indexPath, 'utf8');
+      const target = fs.existsSync(shellPath) ? shellPath : indexPath;
+      if (fs.existsSync(target)) {
+        let html = fs.readFileSync(target, 'utf8');
         res.send(html);
       } else {
         res.status(404).send('Not found');
