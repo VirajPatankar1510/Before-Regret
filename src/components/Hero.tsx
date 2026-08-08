@@ -43,9 +43,14 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
             it doesn't depend on this overlay for contrast. bg-fixed anchors the image
             to the viewport rather than this section, so it stays put while the section's own
             content scrolls over it -- the section's overflow-hidden + rounded corners clip it to
-            a fixed "window," giving a parallax feel without a scroll-listener. */}
+            a fixed "window," giving a parallax feel without a scroll-listener. Mobile browsers
+            (especially iOS Safari) are notoriously unreliable with background-attachment: fixed
+            on a non-body element inside an overflow-hidden container -- rather than degrading to
+            a normal static background, several of them fail to paint it at all. bg-scroll below
+            md is the safe default there; the parallax only kicks in from md up, where desktop
+            browsers handle it correctly. */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-fixed"
+          className="absolute inset-0 bg-cover bg-center bg-scroll md:bg-fixed"
           style={{ backgroundImage: "url('/hero-bg.png')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/10 via-slate-950/25 to-slate-950/50" />
