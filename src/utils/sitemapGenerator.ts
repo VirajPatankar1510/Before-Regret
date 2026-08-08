@@ -114,8 +114,6 @@ Allow: /refunds
 Disallow: /report/
 Disallow: /admin
 Disallow: /api/
-Disallow: /state/
-Disallow: /compare/
 
 Sitemap: https://www.beforeregret.com/sitemap.xml
 `;
