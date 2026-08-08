@@ -113,12 +113,32 @@
     padding-bottom: 8px !important;
   }
 
-  /* Display URLs as visible text in PDF export for Source Registry and references */
+  /* Display URLs as visible text in PDF export -- a printed link is useless without it.
+     break-all matters more than it looks: some jurisdiction portal URLs are extremely long
+     (Denver's planning department is ~140 characters), and without this they overflow the page
+     box instead of wrapping. */
   a[href]::after {
     content: " (" attr(href) ")" !important;
-    font-size: 80% !important;
+    font-size: 75% !important;
     color: #475569 !important;
     font-weight: normal !important;
+    word-break: break-all !important;
+  }
+
+  /* Forcing each major section onto a fresh page (break-before: page) was tried and reverted --
+     measured on a real 10-page export it produced three near-empty pages (2%, 0% and 1% ink),
+     because a section ending two lines into a page still consumed the rest of it. The structure
+     now comes from the card and heading treatment instead, which costs no pages. Keep section
+     headings attached to the content they introduce rather than stranding them at a page foot. */
+  section > div:first-child {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* Keep a metric tile intact rather than splitting its label from its number across pages. */
+  [data-print-block] .grid > div {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   a {

@@ -239,11 +239,18 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           <div className="space-y-1">
             <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
               <FileCheck className="w-3.5 h-3.5" />
-              <span>Public record findings</span>
+              <span>Confirmed for this address</span>
             </div>
+            {/* Was "What We Checked" covering both confirmed findings and the pending list. Those
+                are two different things to a buyer -- what we actually found vs. what they still
+                have to go look up -- so the pending list now has its own section near the end and
+                this one leads with the real results. */}
             <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-              What We Checked
+              What We Found
             </h2>
+            <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">
+              Live lookups run against public data for this specific address.
+            </p>
           </div>
 
           {/* Real outcomes -- full cards. */}
@@ -269,23 +276,56 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                     </span>
                   </div>
 
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    {finding.whatWeFound} {finding.whyItMatters} {finding.suggestedNextStep}
-                    {finding.sourceUrl && (
-                      <>
-                        {' '}
-                        <a
-                          href={finding.sourceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold hover:underline"
-                        >
-                          <span>Check the official record</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      </>
-                    )}
+                  {/* whatWeFound / whyItMatters / suggestedNextStep used to be concatenated into a
+                      single paragraph, which on the Census finding produced a ~130-word block of
+                      run-on prose. They answer three different questions, so they're rendered as
+                      three separately-labeled blocks, with the numbers pulled out above as a grid. */}
+                  <p className="text-sm text-slate-800 leading-relaxed font-medium">
+                    {finding.whatWeFound}
                   </p>
+
+                  {finding.metrics && finding.metrics.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {finding.metrics.map((m) => (
+                        <div key={m.label} className="bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
+                          <div className="text-[10px] uppercase tracking-wide text-slate-500 font-semibold leading-tight">
+                            {m.label}
+                          </div>
+                          <div className="text-sm font-bold text-slate-900 mt-0.5 leading-tight">{m.value}</div>
+                          {m.comparison && (
+                            <div className="text-[11px] text-slate-500 leading-snug mt-0.5">{m.comparison}</div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="space-y-2 pt-1">
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Why it matters</span>
+                      <p className="text-sm text-slate-600 leading-relaxed mt-0.5">{finding.whyItMatters}</p>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wide text-slate-500 font-bold">What to do next</span>
+                      <p className="text-sm text-slate-600 leading-relaxed mt-0.5">
+                        {finding.suggestedNextStep}
+                        {finding.sourceUrl && (
+                          <>
+                            {' '}
+                            <a
+                              href={finding.sourceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+                            >
+                              <span>Check the official record</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  </div>
 
                   {/* Contextual vendor match for this specific finding's trade category, if a real
                       vendor has paid for it in this ZIP -- renders nothing otherwise. */}
@@ -294,48 +334,6 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                   )}
                 </div>
               ))}
-            </div>
-          )}
-
-          {/* Needs verification -- one dense list instead of N near-identical cards. */}
-          {pendingFindings.length > 0 && (
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                <h3 className="text-base font-bold text-slate-900">Needs verification</h3>
-                <span className="text-xs text-slate-500">
-                  {pendingFindings.length} {pendingFindings.length === 1 ? 'record' : 'records'} to confirm at the source
-                </span>
-              </div>
-
-              <div className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100 overflow-hidden">
-                {pendingFindings.map((finding) => (
-                  <div key={finding.id} data-print-block className="p-5 space-y-2">
-                    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                      <h4 className="text-sm font-bold text-slate-900 min-w-0">
-                        {finding.subject}
-                      </h4>
-                      {finding.sourceUrl && (
-                        <a
-                          href={finding.sourceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold hover:underline"
-                        >
-                          <span>{finding.sourceAgency || 'Check record'}</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      {finding.suggestedNextStep}
-                    </p>
-
-                    {finding.sponsoredVendor && (
-                      <SponsoredVendorCard vendor={finding.sponsoredVendor} />
-                    )}
-                  </div>
-                ))}
-              </div>
             </div>
           )}
 
@@ -426,6 +424,59 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </div>
           </div>
         </section>
+
+        {/* SECTION: STILL NEEDS VERIFICATION -- deliberately last of the content sections.
+            This used to sit on page 1, directly under the two confirmed findings, which meant a
+            paying reader hit five "go look this up yourself" items before reaching the inspection
+            priorities and seller questions -- the material that actually justifies the price. The
+            list is still here in full and still honestly labeled; it just no longer leads. */}
+        {pendingFindings.length > 0 && (
+          <section id="section-needs-verification" className="space-y-4">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                <FileCheck className="w-3.5 h-3.5" />
+                <span>Not yet connected</span>
+              </div>
+              <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
+                Records You Still Need to Pull
+              </h2>
+              <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">
+                BeforeRegret has no live feed for these {pendingFindings.length} sources yet, so we haven't checked them for
+                this address. Each one links straight to the office that holds the record.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100 overflow-hidden">
+              {pendingFindings.map((finding) => (
+                <div key={finding.id} data-print-block className="p-5 space-y-2">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <h4 className="text-sm font-bold text-slate-900 min-w-0">
+                      {finding.subject}
+                    </h4>
+                    {finding.sourceUrl && (
+                      <a
+                        href={finding.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+                      >
+                        <span>{finding.sourceAgency || 'Check record'}</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {finding.suggestedNextStep}
+                  </p>
+
+                  {finding.sponsoredVendor && (
+                    <SponsoredVendorCard vendor={finding.sponsoredVendor} />
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Legal Disclaimer -- kept short and at the bottom, not a full page section, but the
             substance (no physical inspection, no title search, no valuation, verify at source)
