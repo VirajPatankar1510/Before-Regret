@@ -26,18 +26,29 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
     <div className="space-y-0 pb-16">
 
       {/* 1. HERO SECTION (Address Search Container Untouched) */}
-      <section className="relative text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden rounded-b-[2.5rem] shadow-2xl">
+      {/* min-h-[85vh]: background-attachment: fixed positions relative to the viewport, not this
+          section, so the section needs to be close to viewport height for bg-center's cover-fit
+          math to land the image the way it would in a normal (non-fixed) section -- otherwise a
+          short section only ever windows into a narrow, arbitrary slice of the fixed image, and
+          there's no scroll distance left to actually feel the parallax. flex centering keeps the
+          content vertically centered now that the section is taller than its content. */}
+      <section className="relative min-h-[85vh] flex flex-col justify-center text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden rounded-b-[2.5rem] shadow-2xl">
 
         {/* Background image -- real photograph of a suburban street at dusk (public/hero-bg.png,
             2.28:1, replaces the earlier corrupted file). Sky is already near-black at the top
-            (where the headline sits) fading to warm amber at the horizon, so the overlay is
-            lightest up top and darkens toward the bottom where the search box and rooflines are,
-            to keep the search bar legible against the brighter band. */}
+            (where the headline sits), so the overlay is kept light there and only slightly
+            heavier toward the bottom -- just enough for the free-report subtext to stay
+            readable, while letting the house row show through clearly rather than washing it
+            out. The search bar has its own solid card background (see AddressSearchBox.tsx), so
+            it doesn't depend on this overlay for contrast. bg-fixed anchors the image
+            to the viewport rather than this section, so it stays put while the section's own
+            content scrolls over it -- the section's overflow-hidden + rounded corners clip it to
+            a fixed "window," giving a parallax feel without a scroll-listener. */}
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-cover bg-center bg-fixed"
           style={{ backgroundImage: "url('/hero-bg.png')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/15 via-slate-950/40 to-slate-950/75" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/10 via-slate-950/25 to-slate-950/50" />
 
         {/* Ambient background lighting */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
