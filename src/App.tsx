@@ -109,7 +109,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guide' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'paymentSuccess' | 'paymentCancelled' | 'none';
+    type: 'admin' | 'guide' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
   }>({ type: 'none' });
 
@@ -198,6 +198,9 @@ export function App() {
       if (targetPath === '/') {
         setCurrentStep('HOME');
         setPseoRoute({ type: 'none' });
+      } else if (!targetPath.startsWith('/insights/') && !targetPath.startsWith('/report/')) {
+        setPseoRoute({ type: 'notFound' });
+        setCurrentStep('PSEO');
       }
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -216,9 +219,21 @@ export function App() {
     // No pSEO route matched -- if we're sitting at the root path, make sure we actually land on
     // the homepage rather than a stale non-HOME step restored from a prior page's sessionStorage
     // (e.g. the user was on /vendors, then hard-navigated straight to the bare domain).
-    if (pathname === '/') {
-      setCurrentStep('HOME');
+    const isRoot = pathname === '/';
+    if (isRoot) {
       setPseoRoute({ type: 'none' });
+      // Clerk sign-in does a full page reload back to this path, so whatever research the user had
+      // in flight is restored from sessionStorage by the useState initializers above and must
+      // survive. Only drop steps that can't actually render here: 'PSEO' (pseoRoute isn't persisted
+      // alongside currentStep, so it would paint a blank page) and any step whose backing data is
+      // missing. 'RESEARCHING' collapses to 'SUMMARY' because the progress animation that would
+      // have advanced it isn't running after a reload.
+      setCurrentStep((prev) => {
+        if (prev === 'PSEO') return 'HOME';
+        if (prev === 'REPORT') return report ? 'REPORT' : 'HOME';
+        if (prev === 'RESEARCHING' || prev === 'SUMMARY') return summaryData ? 'SUMMARY' : 'HOME';
+        return prev;
+      });
     }
 
     let reportIdFromUrl: string | null = null;
@@ -265,14 +280,24 @@ export function App() {
           setCurrentStep('REPORT');
         })
         .finally(() => setIsLoading(false));
+    } else if (!isRoot) {
+      // No pSEO route matched, not the homepage, and no report permalink found here -- this is a
+      // genuinely unrecognized URL. Render an honest 404 instead of silently falling back to the
+      // homepage (a "soft 404" that used to leave dead/removed URLs indexable under `index, follow`).
+      setPseoRoute({ type: 'notFound' });
+      setCurrentStep('PSEO');
     }
 
     // Handle browser popstate
     const handlePopState = () => {
-      if (!resolveRouteFromPath(window.location.pathname)) {
-        if (window.location.pathname === '/') {
+      const popPathname = window.location.pathname;
+      if (!resolveRouteFromPath(popPathname)) {
+        if (popPathname === '/') {
           setCurrentStep('HOME');
           setPseoRoute({ type: 'none' });
+        } else if (!popPathname.startsWith('/insights/') && !popPathname.startsWith('/report/')) {
+          setPseoRoute({ type: 'notFound' });
+          setCurrentStep('PSEO');
         }
       }
     };
@@ -425,6 +450,13 @@ export function App() {
         title: 'PSEO Operations & Indexing Control Panel | BeforeRegret',
         description: 'Internal administration interface for pSEO dataset management, indexation monitoring, and Search Console integration.',
         canonicalUrl: 'https://www.beforeregret.com/admin/seo',
+        robotsDirective: 'noindex, nofollow'
+      });
+    } else if (pseoRoute.type === 'notFound') {
+      applyHeadSeo({
+        title: 'Page Not Found | BeforeRegret',
+        description: 'The page you requested does not exist or may have been moved.',
+        canonicalUrl: 'https://www.beforeregret.com/',
         robotsDirective: 'noindex, nofollow'
       });
     }
@@ -689,6 +721,20 @@ export function App() {
             )}
             {pseoRoute.type === 'paymentCancelled' && (
               <PaymentCancelled />
+            )}
+            {pseoRoute.type === 'notFound' && (
+              <div className="max-w-2xl mx-auto px-6 py-24 text-center">
+                <h1 className="text-4xl font-bold text-slate-900 mb-4">404 — Page Not Found</h1>
+                <p className="text-slate-600 mb-8">
+                  The page you're looking for doesn't exist or may have been moved.
+                </p>
+                <button
+                  onClick={() => handleNavigate('/')}
+                  className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Back to Home
+                </button>
+              </div>
             )}
           </>
         )}
