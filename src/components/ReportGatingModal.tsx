@@ -230,7 +230,7 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
             <div className="bg-blue-50/60 border border-blue-200/80 rounded-2xl p-4 flex items-center justify-between">
               <div>
                 <div className="text-xs font-bold text-blue-900">One-Time Property Report</div>
-                <div className="text-[11px] text-blue-700">Full 20+ public dataset synthesis</div>
+                <div className="text-[11px] text-blue-700">Live hazard check + full research checklist</div>
               </div>
               <div className="text-right">
                 <div className="text-2xl font-black text-slate-900">$14.99</div>
