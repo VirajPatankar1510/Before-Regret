@@ -40,7 +40,7 @@ export const ListingOmissionsSection: React.FC = () => {
   ];
 
   return (
-    <section className="bg-slate-50 border-y border-slate-200/80 py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+    <section className="bg-slate-50 border-y border-slate-200/80 rounded-t-[2.5rem] py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-12">
 
         {/* Section Header */}
