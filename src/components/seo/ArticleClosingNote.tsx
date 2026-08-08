@@ -13,7 +13,7 @@ export const ArticleClosingNote: React.FC<ArticleClosingNoteProps> = ({ onNaviga
           Get Your Free Property Report
         </h2>
         <p className="text-sm sm:text-base text-blue-100 leading-relaxed max-w-2xl">
-          BeforeRegret synthesizes historical permits, zoning decisions, hazard classifications, and public records into one searchable report — all before you make an offer.
+          BeforeRegret pulls live seismic hazard data, validates the address, and builds era- and county-specific inspection priorities and seller questions into one report — with anything not yet independently verified clearly labeled, not guessed at.
         </p>
       </div>
 
