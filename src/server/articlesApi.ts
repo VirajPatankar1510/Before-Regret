@@ -2,6 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
 import { buildArticlePrompt } from './articleGenerator.js';
+import { GEMINI_MODEL, isQuotaError } from './geminiModel.js';
 
 // Real read/write path for editorial articles, replacing the static EDITORIAL_GUIDES_DATASET
 // array and the fake SeoAdminPanel "publish" button that only ever changed local React state.
@@ -156,7 +157,7 @@ export function registerArticleRoutes(app: Express) {
       const { systemInstruction, contents } = buildArticlePrompt(topic, existingTitles, exactTitle);
 
       const stream = await ai.models.generateContentStream({
-        model: 'gemini-3.6-flash',
+        model: GEMINI_MODEL,
         contents,
         config: {
           systemInstruction,
@@ -176,7 +177,17 @@ export function registerArticleRoutes(app: Express) {
     } catch (err: any) {
       console.error('[articles] generate failed:', err);
       if (!res.headersSent) {
-        res.status(500).json({ success: false, error: 'AI generation failed. Try again.' });
+        // A quota 429 and a transient fault need opposite advice, and the old blanket
+        // "AI generation failed. Try again." told someone to do the one thing that cannot work --
+        // the free-tier cap is per day, so retrying just fails again with no explanation why.
+        if (isQuotaError(err)) {
+          res.status(429).json({
+            success: false,
+            error: `Gemini's daily quota for ${GEMINI_MODEL} is used up, so retrying won't help until it resets. Quota is per model, so setting GEMINI_MODEL to another one (e.g. gemini-3.5-flash) works around it; enabling billing on the Gemini API project removes the cap entirely.`,
+          });
+        } else {
+          res.status(500).json({ success: false, error: 'AI generation failed. Try again.' });
+        }
       } else {
         res.end();
       }
