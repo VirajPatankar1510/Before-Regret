@@ -6,6 +6,7 @@ import { withDb, isDbConfigured } from '../src/server/db.js';
 import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../src/utils/renderArticleMarkdown';
 import { resolveKnownSource } from '../src/data/knownSources';
 import { ArticleClosingNote } from '../src/components/seo/ArticleClosingNote';
+import { pickRelatedGuides, GuideSummary } from '../src/utils/relatedGuides';
 
 // Static HTML generator for published guide articles, run once after `vite build` as part of
 // `npm run build`. The live app is a pure client-render SPA (createRoot, not hydrateRoot -- see
@@ -120,7 +121,7 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
 // that only work inside Vite's own transform, not this standalone script) and minus the
 // onNavigate-driven breadcrumb buttons, swapped here for real <a href> links so the static page
 // is still navigable without JS.
-function GuideStaticBody({ article }: { article: Article }) {
+function GuideStaticBody({ article, relatedGuides }: { article: Article; relatedGuides: GuideSummary[] }) {
   const wordCount = article.bodyMarkdown.trim().split(/\s+/).filter(Boolean).length;
   const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 220));
   const noNav = () => {};
@@ -170,6 +171,23 @@ function GuideStaticBody({ article }: { article: Article }) {
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm text-sm">
           <div className="max-w-none">{renderArticleMarkdown(article.bodyMarkdown)}</div>
         </div>
+
+        {relatedGuides.length > 0 && (
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Related Guides</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {relatedGuides.map((g) => (
+                <a
+                  key={g.slug}
+                  href={`/guides/${g.slug}/`}
+                  className="flex items-center justify-between gap-2 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-800"
+                >
+                  <span>{g.title}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         <ArticleClosingNote onNavigate={noNav} />
 
@@ -241,12 +259,19 @@ async function run() {
     FROM articles WHERE status = 'published' ORDER BY published_at DESC
   `)) as unknown as ArticleRow[];
 
+  const allGuideSummaries: GuideSummary[] = rows.map((r) => ({
+    slug: r.slug,
+    title: r.title,
+    publishedAt: r.published_at,
+  }));
+
   let written = 0;
   const llmsTxtLines: string[] = [];
   for (const row of rows) {
     const article = toArticle(row);
     const canonicalUrl = `https://www.beforeregret.com/guides/${article.slug}/`;
-    const bodyHtml = renderToStaticMarkup(<GuideStaticBody article={article} />);
+    const relatedGuides = pickRelatedGuides(article.slug, article.title, allGuideSummaries);
+    const bodyHtml = renderToStaticMarkup(<GuideStaticBody article={article} relatedGuides={relatedGuides} />);
 
     const html = applyHeadReplacements(template, {
       title: `${article.title} | BeforeRegret Guides`,

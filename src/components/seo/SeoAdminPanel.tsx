@@ -4,6 +4,7 @@ import {
   Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
+import { titleSimilarity, STOPWORDS } from '../../utils/relatedGuides';
 
 interface SeoAdminPanelProps {
   onNavigate: (path: string) => void;
@@ -34,37 +35,14 @@ interface GeminiUsageSummary {
   recent: Array<{ created_at: string; source: string; model: string; total_tokens: number; estimated_cost_usd: number | null }>;
 }
 
-const STOPWORDS = new Set([
-  'the', 'a', 'an', 'and', 'or', 'for', 'to', 'in', 'on', 'of', 'with', 'is', 'are',
-  'your', 'you', 'how', 'what', 'why', 'can', 'do', 'does', 'this', 'that', 'it', 'its',
-]);
-
-function significantWords(text: string): Set<string> {
-  return new Set(
-    text
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, ' ')
-      .split(/\s+/)
-      .filter((w) => w.length > 2 && !STOPWORDS.has(w))
-  );
-}
-
-// Rough client-side heuristic so a title that clearly overlaps with an existing article gets
-// flagged the moment you type it, before you even click Generate -- not a semantic/embedding
-// comparison, just shared significant words as a fraction of the shorter title's word count.
-// The server-side duplicate guard (existing titles fed into the Gemini prompt, see
-// src/server/articleGenerator.ts) is the one actually steering what gets written; this is just an
-// instant heads-up in the UI.
-function titleSimilarity(a: string, b: string): number {
-  const wordsA = significantWords(a);
-  const wordsB = significantWords(b);
-  if (wordsA.size === 0 || wordsB.size === 0) return 0;
-  let shared = 0;
-  wordsA.forEach((w) => {
-    if (wordsB.has(w)) shared++;
-  });
-  return shared / Math.min(wordsA.size, wordsB.size);
-}
+// titleSimilarity (imported above, from src/utils/relatedGuides.ts) flags a title that clearly
+// overlaps with an existing article the moment you type it, before you even click Generate -- not
+// a semantic/embedding comparison, just shared significant words as a fraction of the shorter
+// title's word count. The server-side duplicate guard (existing titles fed into the Gemini
+// prompt, see src/server/articleGenerator.ts) is the one actually steering what gets written; this
+// is just an instant heads-up in the UI. The same function also ranks "Related Guides" links on
+// each published guide page (see GuidePageView.tsx and scripts/prerender-guides.tsx) -- one
+// implementation, two different uses of the same "how much title vocabulary overlaps" signal.
 
 // Live preview only -- the server (src/server/articlesApi.ts) re-derives and owns the real slug
 // on save, including collision handling. This just needs to look right as you type.

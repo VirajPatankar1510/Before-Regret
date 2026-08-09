@@ -5,6 +5,7 @@ import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../../
 import { resolveKnownSource } from '../../data/knownSources';
 import { ArticleClosingNote } from './ArticleClosingNote';
 import { GuideAdSlot } from '../GuideAdSlot';
+import { pickRelatedGuides, GuideSummary } from '../../utils/relatedGuides';
 
 interface GuidePageViewProps {
   guideSlug: string;
@@ -30,6 +31,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [allGuides, setAllGuides] = useState<GuideSummary[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,6 +63,25 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
       cancelled = true;
     };
   }, [guideSlug]);
+
+  // Full list fetched once (not scoped to guideSlug) purely to rank "Related Guides" -- same list
+  // Footer.tsx already fetches independently for its own "Editorial Guides" links.
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/guides')
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data?.success && Array.isArray(data.articles)) {
+          setAllGuides(data.articles);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const relatedGuides = article ? pickRelatedGuides(article.slug, article.title, allGuides) : [];
 
   const canonicalUrl = `https://www.beforeregret.com/guides/${guideSlug}/`;
 
@@ -208,6 +229,28 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             {renderArticleMarkdown(article.bodyMarkdown)}
           </div>
         </div>
+
+        {/* Related Guides: placed immediately after the body, before the reader has a reason to
+            bounce, rather than at the very bottom of the page below the ad slot and closing CTA.
+            Also the fix for every guide's biggest internal-linking gap -- see
+            src/utils/relatedGuides.ts. */}
+        {relatedGuides.length > 0 && (
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Related Guides</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {relatedGuides.map((g) => (
+                <button
+                  key={g.slug}
+                  onClick={() => onNavigate(`/guides/${g.slug}/`)}
+                  className="flex items-center justify-between gap-2 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-left transition-colors cursor-pointer group"
+                >
+                  <span className="text-sm font-semibold text-slate-800 group-hover:text-blue-700">{g.title}</span>
+                  <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 group-hover:text-blue-600" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Vendor ad slot: below the article body, above our own closing CTA -- deliberately not
             adjacent to/inside ArticleClosingNote below, so a vendor ad never visually competes
