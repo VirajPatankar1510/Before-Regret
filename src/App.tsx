@@ -7,6 +7,7 @@ import { PropertyReportView } from './components/PropertyReportView';
 import { Vendors } from './components/Vendors';
 import { GuideAdsCheckout } from './components/GuideAdsCheckout';
 import { GuideAdsCheckoutSuccess } from './components/GuideAdsCheckoutSuccess';
+import { ZipAdsCheckoutSuccess } from './components/ZipAdsCheckoutSuccess';
 import { ReportGatingModal } from './components/ReportGatingModal';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from './components/ErrorBoundary';
@@ -112,7 +113,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guide' | 'county' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'guideAds' | 'guideAdsSuccess' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'guide' | 'county' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
     countySlug?: string;
   }>({ type: 'none' });
@@ -122,6 +123,13 @@ export function App() {
     // Normalize path trailing slash
     const path = pathname.endsWith('/') ? pathname : `${pathname}/`;
 
+    // Checked before the generic /vendors match below, same reasoning as /guide-ads/success
+    // above -- PayPal's return redirect must land on the capture page, not the checkout form.
+    if (path === '/vendors/success/' || path.startsWith('/vendors/success')) {
+      setPseoRoute({ type: 'vendorsSuccess' });
+      setCurrentStep('PSEO');
+      return true;
+    }
     if (path === '/vendors/' || path.startsWith('/vendors')) {
       setPseoRoute({ type: 'vendors' });
       setCurrentStep('PSEO');
@@ -466,6 +474,13 @@ export function App() {
         canonicalUrl: 'https://www.beforeregret.com/vendors/',
         robotsDirective: 'noindex, nofollow'
       });
+    } else if (pseoRoute.type === 'vendorsSuccess') {
+      applyHeadSeo({
+        title: 'Payment Confirmation | BeforeRegret',
+        description: 'ZIP-targeted vendor ad slot payment confirmation.',
+        canonicalUrl: 'https://www.beforeregret.com/vendors/success/',
+        robotsDirective: 'noindex, nofollow'
+      });
     } else if (pseoRoute.type === 'guideAds') {
       applyHeadSeo({
         title: 'Advertise on Guides | BeforeRegret',
@@ -738,6 +753,9 @@ export function App() {
           <>
             {pseoRoute.type === 'vendors' && (
               <Vendors onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'vendorsSuccess' && (
+              <ZipAdsCheckoutSuccess onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'guideAds' && (
               <GuideAdsCheckout onNavigate={handleNavigate} />
