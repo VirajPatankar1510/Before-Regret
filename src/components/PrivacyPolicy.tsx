@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Shield, ArrowLeft, Lock, Eye, Database, FileText, CheckCircle2, Building2 } from 'lucide-react';
+import { ArrowLeft, Lock, Eye, Database, FileText, CheckCircle2, Building2 } from 'lucide-react';
 
 interface PrivacyPolicyProps {
   onBackToHome: () => void;
@@ -36,10 +36,9 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
           
           {/* Header */}
           <div className="border-b border-slate-200 pb-6 space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold font-mono">
-              <Shield className="w-3.5 h-3.5" />
-              <span>Data Protection & Privacy</span>
-            </div>
+            <p className="text-xs font-medium text-slate-400">
+              Expert property research guides and vendor marketplace for US home buyers. Uncover what matters before closing.
+            </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Privacy Policy
             </h1>

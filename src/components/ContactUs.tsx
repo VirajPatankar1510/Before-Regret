@@ -68,10 +68,9 @@ ${message}`;
         {/* Hero Banner */}
         <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl space-y-4 relative overflow-hidden">
           <div className="relative z-10 max-w-2xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-400/30 rounded-full text-xs font-bold tracking-wide uppercase">
-              <Mail className="w-3.5 h-3.5" />
-              <span>Customer Support Portal</span>
-            </div>
+            <p className="text-xs font-medium text-slate-400">
+              Expert property research guides and vendor marketplace for US home buyers. Uncover what matters before closing.
+            </p>
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
               How Can We Help You?
             </h1>

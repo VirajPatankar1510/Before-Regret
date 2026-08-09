@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { RefreshCw, ArrowLeft, CheckCircle2, AlertTriangle, ShieldCheck, CreditCard, Building2, HelpCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, AlertTriangle, ShieldCheck, CreditCard, Building2, HelpCircle } from 'lucide-react';
 
 interface RefundPolicyProps {
   onBackToHome: () => void;
@@ -36,10 +36,9 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
           
           {/* Document Header */}
           <div className="border-b border-slate-200 pb-6 space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold font-mono">
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Financial Policy</span>
-            </div>
+            <p className="text-xs font-medium text-slate-400">
+              Expert property research guides and vendor marketplace for US home buyers. Uncover what matters before closing.
+            </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Cancellation & Refund Policy
             </h1>
