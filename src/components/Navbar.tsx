@@ -8,12 +8,14 @@ interface NavbarProps {
   onNewSearch: () => void;
   currentStep: 'HOME' | 'RESEARCHING' | 'SUMMARY' | 'REPORT';
   selectedAddress?: string;
+  onNavigate?: (path: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   onNewSearch,
   currentStep,
-  selectedAddress
+  selectedAddress,
+  onNavigate
 }) => {
   const { user } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -49,6 +51,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {onNavigate && (
+              <button
+                onClick={() => onNavigate('/guides/')}
+                className="hidden sm:inline px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-700 rounded-lg transition-colors cursor-pointer"
+              >
+                Guides
+              </button>
+            )}
             {currentStep !== 'HOME' && (
               <button
                 onClick={onNewSearch}

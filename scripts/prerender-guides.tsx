@@ -214,6 +214,49 @@ function GuideStaticBody({ article, relatedGuides }: { article: Article; related
   );
 }
 
+// Mirrors GuidesIndexView.tsx -- the hub every guide should be reachable from with one click,
+// baked to real HTML at dist/guides/index.html so a crawler that doesn't run JS sees the same
+// list and the same real <a href> links to all 27 (now more) guides that a browser would.
+function GuidesIndexStaticBody({ guides }: { guides: GuideSummary[] }) {
+  return (
+    <div className="bg-slate-50 min-h-screen pb-16">
+      <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium">
+          <a href="/" className="hover:text-blue-600">Home</a>
+          <span>/</span>
+          <span className="text-slate-900 font-bold">Editorial Guides</span>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <div className="space-y-2">
+          <div className="text-xs font-bold uppercase tracking-wide text-blue-700 bg-blue-50 inline-block px-2.5 py-1 rounded-full">
+            Editorial Guides
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+            What to check before you sign
+          </h1>
+          <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
+            Every research guide we've published, in one place -- what a specific era, system, or record actually means for a home you're buying, cited back to the government or industry source behind it.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {guides.map((g) => (
+            <a
+              key={g.slug}
+              href={`/guides/${g.slug}/`}
+              className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 block"
+            >
+              <h2 className="text-sm font-bold text-slate-900 leading-snug">{g.title}</h2>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function applyHeadReplacements(template: string, opts: {
   title: string;
   description: string;
@@ -289,6 +332,40 @@ async function run() {
   }
 
   console.log(`[prerender-guides] Wrote static HTML for ${written} published guide(s) to dist/guides/<slug>/index.html`);
+
+  // The hub page (dist/guides/index.html) -- see GuidesIndexView.tsx for the client-rendered twin.
+  const indexCanonicalUrl = 'https://www.beforeregret.com/guides/';
+  const indexBodyHtml = renderToStaticMarkup(<GuidesIndexStaticBody guides={allGuideSummaries} />);
+  const indexJsonLd: Record<string, any>[] = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+        { '@type': 'ListItem', position: 2, name: 'Editorial Guides', item: indexCanonicalUrl },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: allGuideSummaries.map((g, idx) => ({
+        '@type': 'ListItem',
+        position: idx + 1,
+        url: `https://www.beforeregret.com/guides/${g.slug}/`,
+        name: g.title,
+      })),
+    },
+  ];
+  const indexHtml = applyHeadReplacements(template, {
+    title: 'Editorial Guides | BeforeRegret',
+    description: "Every BeforeRegret research guide in one place -- what to check for a home's age, permit history, insurance eligibility, and inspection blind spots before you sign.",
+    canonicalUrl: indexCanonicalUrl,
+    jsonLd: indexJsonLd,
+  }).replace('<div id="root"></div>', `<div id="root">${indexBodyHtml}</div>`);
+  const indexOutDir = path.join(distPath, 'guides');
+  fs.mkdirSync(indexOutDir, { recursive: true });
+  fs.writeFileSync(path.join(indexOutDir, 'index.html'), indexHtml, 'utf8');
+  console.log('[prerender-guides] Wrote static HTML for the guides hub to dist/guides/index.html');
 
   // llms.txt -- an emerging, unofficial convention some AI answer engines check for a plain-text
   // summary of a site and a curated list of its real content, since crawling arbitrary HTML for
