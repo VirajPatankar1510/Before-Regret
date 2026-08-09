@@ -10,7 +10,8 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "outreach:dry-run": "tsx scripts/send-vendor-outreach.ts",
-    "outreach:send": "SEND=true tsx scripts/send-vendor-outreach.ts"
+    "outreach:send": "SEND=true tsx scripts/send-vendor-outreach.ts",
+    "admin:generate-totp-secret": "tsx scripts/generate-admin-totp-secret.ts"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.3",
