@@ -212,14 +212,15 @@ export async function fetchNeighborhoodContextFinding(
     let headline = '';
 
     if (tract.medianYearBuilt && county.medianYearBuilt) {
-      const delta = tract.medianYearBuilt - county.medianYearBuilt;
       metrics.push({
-        label: 'Typical home age here',
-        value: `Built ~${tract.medianYearBuilt}`,
-        comparison:
-          Math.abs(delta) >= 5
-            ? `${Math.abs(delta)} yrs ${delta > 0 ? 'newer' : 'older'} than county (${county.medianYearBuilt})`
-            : `In line with county (${county.medianYearBuilt})`,
+        // Was "Typical home age here" / "24 yrs older than county (1997)" -- a computed delta
+        // packed into one clause forces the reader to decode direction, magnitude, and reference
+        // point all at once, and "here" is ambiguous about whether it means the tract or the
+        // subject home. Two plain absolute numbers (tract's real value, county's real value) let
+        // the reader compare them directly with no arithmetic or reverse-engineering required.
+        label: 'Typical Nearby Home',
+        value: `Built around ${tract.medianYearBuilt}`,
+        comparison: `County average: built around ${county.medianYearBuilt}`,
       });
 
       // The most decision-relevant comparison available here: how this specific home sits against
@@ -265,9 +266,11 @@ export async function fetchNeighborhoodContextFinding(
     if (tract.medianOwnerCostWithMortgage && county.medianOwnerCostWithMortgage) {
       const delta = tract.medianOwnerCostWithMortgage - county.medianOwnerCostWithMortgage;
       metrics.push({
+        // Same fix as the age tile above: show the county's real number, not just a delta with
+        // no reference point visible anywhere on the tile itself.
         label: 'Median monthly cost to own',
         value: `${money(tract.medianOwnerCostWithMortgage)}/mo`,
-        comparison: `${money(Math.abs(delta))} ${delta > 0 ? 'above' : 'below'} county median`,
+        comparison: `County average: ${money(county.medianOwnerCostWithMortgage)}/mo`,
       });
       if (!headline) {
         headline = `Median monthly ownership cost in this neighborhood is ${money(tract.medianOwnerCostWithMortgage)} -- ${money(Math.abs(delta))} ${delta > 0 ? 'above' : 'below'} the county median.`;
@@ -278,14 +281,10 @@ export async function fetchNeighborhoodContextFinding(
     }
 
     if (tract.medianHomeValue && county.medianHomeValue) {
-      const ratio = Math.round((tract.medianHomeValue / county.medianHomeValue) * 100) - 100;
       metrics.push({
         label: 'Median home value',
         value: money(tract.medianHomeValue),
-        comparison:
-          Math.abs(ratio) >= 5
-            ? `${Math.abs(ratio)}% ${ratio > 0 ? 'above' : 'below'} county median`
-            : 'In line with county median',
+        comparison: `County average: ${money(county.medianHomeValue)}`,
       });
     }
 
@@ -299,14 +298,10 @@ export async function fetchNeighborhoodContextFinding(
     }
 
     if (tract.meanCommuteMinutes && county.meanCommuteMinutes) {
-      const delta = Math.round((tract.meanCommuteMinutes - county.meanCommuteMinutes) * 10) / 10;
       metrics.push({
         label: 'Mean commute',
         value: `${tract.meanCommuteMinutes} min`,
-        comparison:
-          Math.abs(delta) >= 2
-            ? `${Math.abs(delta)} min ${delta > 0 ? 'longer' : 'shorter'} than county`
-            : 'About the county average',
+        comparison: `County average: ${county.meanCommuteMinutes} min`,
       });
     }
 
