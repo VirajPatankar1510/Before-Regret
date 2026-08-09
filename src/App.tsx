@@ -359,7 +359,17 @@ export function App() {
 
   // Set SEO metadata for top-level non-pSEO routes (Homepage, Support, Legal, Report, Admin)
   useEffect(() => {
-    if (currentStep === 'HOME' && pseoRoute.type === 'none') {
+    // window.location.pathname === '/' is not redundant with the state check below -- on the very
+    // first render of ANY deep link (e.g. /guides/some-slug/), currentStep/pseoRoute still hold
+    // their default HOME/'none' values, because the mount effect above that corrects them (via
+    // resolveRouteFromPath) runs in the same commit but schedules its setState calls for the NEXT
+    // render, not this one. Without this guard, this effect fires once on that first render and
+    // overwrites the correct, statically-prerendered canonical/title (see
+    // scripts/prerender-guides.tsx) with the homepage's, for every single deep-linked page --
+    // invisible to a plain curl (no JS involved) but very much what Google's JS-rendering
+    // pipeline sees, which is exactly the "user-declared canonical: homepage" Search Console was
+    // reporting for guide URLs.
+    if (currentStep === 'HOME' && pseoRoute.type === 'none' && window.location.pathname === '/') {
       applyHeadSeo({
         // Kept in sync with dist/index.html's own static <title>/<meta description> (see
         // scripts/prerender-homepage.tsx) -- this client-side call was still overwriting that
