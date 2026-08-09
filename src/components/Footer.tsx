@@ -89,21 +89,8 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} BeforeRegret. Brand operated by Atmostellar (Mumbai, MH, India). All rights reserved.</p>
-          <div className="flex items-center gap-4 text-slate-400">
-            {onNavigate && (
-              <>
-                <button onClick={() => onNavigate('/support')} className="hover:text-white cursor-pointer">Support</button>
-                <span>•</span>
-                <button onClick={() => onNavigate('/terms')} className="hover:text-white cursor-pointer">Terms</button>
-                <span>•</span>
-                <button onClick={() => onNavigate('/privacy')} className="hover:text-white cursor-pointer">Privacy</button>
-                <span>•</span>
-                <button onClick={() => onNavigate('/refunds')} className="hover:text-white cursor-pointer">Refunds</button>
-              </>
-            )}
-          </div>
+        <div className="text-xs text-slate-500">
+          <p>© {new Date().getFullYear()} BeforeRegret. All rights reserved.</p>
         </div>
 
       </div>
