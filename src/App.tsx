@@ -24,6 +24,7 @@ import { createFallbackSummary, createFallbackReport } from './utils/reportFallb
 // pSEO Components -- the fabricated-stats ZIP/city/state/topic/compare surface (36 live URLs)
 // was fully removed; only the hand-written editorial guides remain.
 import { GuidePageView } from './components/seo/GuidePageView';
+import { GuidesIndexView } from './components/seo/GuidesIndexView';
 import { CountyPageView } from './components/seo/CountyPageView';
 import { SeoAdminPanel } from './components/seo/SeoAdminPanel';
 import { AdminGate } from './components/admin/AdminGate';
@@ -114,7 +115,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guide' | 'county' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'guidesIndex' | 'guide' | 'county' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
     countySlug?: string;
   }>({ type: 'none' });
@@ -209,6 +210,11 @@ export function App() {
         setCurrentStep('PSEO');
         return true;
       }
+      // Exact /guides/ (no slug) -- the hub every guide should be reachable from. Checked after
+      // the slug case above only for readability; parts.length distinguishes them unambiguously.
+      setPseoRoute({ type: 'guidesIndex' });
+      setCurrentStep('PSEO');
+      return true;
     }
 
     if (path.startsWith('/county/')) {
@@ -723,6 +729,7 @@ export function App() {
         onNewSearch={handleNewSearch}
         currentStep={currentStep}
         selectedAddress={selectedProperty?.displayName || selectedProperty?.formattedAddress}
+        onNavigate={handleNavigate}
       />
 
       {isLoading && (
@@ -794,6 +801,9 @@ export function App() {
               <AdminGate>
                 <SeoAdminPanel onNavigate={handleNavigate} />
               </AdminGate>
+            )}
+            {pseoRoute.type === 'guidesIndex' && (
+              <GuidesIndexView onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'guide' && pseoRoute.guideSlug && (
               <GuidePageView guideSlug={pseoRoute.guideSlug} onNavigate={handleNavigate} />

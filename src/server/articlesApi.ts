@@ -5,6 +5,7 @@ import { buildArticlePrompt } from './articleGenerator.js';
 import { GEMINI_MODEL, isQuotaError } from './geminiModel.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
 import type { GenerateContentResponseUsageMetadata } from '@google/genai';
+import { submitUrlsToIndexNow } from '../utils/indexNowService.js';
 
 // Real read/write path for editorial articles, replacing the static EDITORIAL_GUIDES_DATASET
 // array and the fake SeoAdminPanel "publish" button that only ever changed local React state.
@@ -380,6 +381,18 @@ export function registerArticleRoutes(app: Express) {
         return;
       }
       res.json({ success: true, article: toApiShape(row) });
+
+      // Fire-and-forget: the response above already went out, and submitUrlsToIndexNow never
+      // throws (it catches its own network errors and returns a simulated-success result -- see
+      // src/utils/indexNowService.ts), so there's nothing here that could fail the publish action
+      // itself. Previously this only ran if someone manually POSTed to /api/seo/indexnow after the
+      // fact, which nothing in the admin UI ever did -- every published guide before this sat
+      // waiting for organic crawl discovery instead of announcing itself.
+      submitUrlsToIndexNow([`https://www.beforeregret.com/guides/${row.slug}/`]).then((result) => {
+        if (!result.success) {
+          console.warn('[articles] IndexNow submission on publish failed:', result.message);
+        }
+      });
     } catch (err: any) {
       console.error('[articles] publish failed:', err);
       res.status(500).json({ success: false, error: 'Could not publish the article.' });
