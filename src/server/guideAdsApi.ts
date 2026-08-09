@@ -176,8 +176,8 @@ export function registerGuideAdsRoutes(app: Express) {
         currency: 'USD',
         type: 'vendor_subscription',
         description: `BeforeRegret guide ad -- ${slots.length} slot${slots.length === 1 ? '' : 's'} x 30 days`,
-        returnUrl: `${appUrl}/advertise/success`,
-        cancelUrl: `${appUrl}/advertise`,
+        returnUrl: `${appUrl}/topic-ads/success`,
+        cancelUrl: `${appUrl}/topic-ads`,
         userEmail: contactEmail,
       });
 

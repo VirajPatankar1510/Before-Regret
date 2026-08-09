@@ -124,37 +124,37 @@ export function App() {
     // Normalize path trailing slash
     const path = pathname.endsWith('/') ? pathname : `${pathname}/`;
 
-    // Checked before the generic /vendors match below, same reasoning as /guide-ads/success
+    // Checked before the generic /report-ads match below, same reasoning as /topic-ads/success
     // above -- PayPal's return redirect must land on the capture page, not the checkout form.
-    if (path === '/vendors/success/' || path.startsWith('/vendors/success')) {
+    if (path === '/report-ads/success/' || path.startsWith('/report-ads/success')) {
       setPseoRoute({ type: 'vendorsSuccess' });
       setCurrentStep('PSEO');
       return true;
     }
-    if (path === '/vendors/' || path.startsWith('/vendors')) {
+    if (path === '/report-ads/' || path.startsWith('/report-ads')) {
       setPseoRoute({ type: 'vendors' });
       setCurrentStep('PSEO');
       return true;
     }
 
-    // /vendors and /guide-ads are two structurally different products (per-ZIP-and-trade slots
+    // /report-ads and /topic-ads are two structurally different products (per-ZIP-and-trade slots
     // vs. per-guide-page slots) with their own checkout flows -- kept as separate routes so
     // neither page has to explain the other. /advertise is deliberately neither: it's the shared
     // funnel entry point (linked from GuideAdSlot.tsx's recruitment CTA and from outside links)
     // that compares both before sending the vendor to whichever checkout fits. Checked before the
-    // two checkout routes below since /advertise no longer aliases straight to guide-ads.
+    // two checkout routes below since /advertise no longer aliases straight to topic-ads.
     if (path === '/advertise/' || path.startsWith('/advertise')) {
       setPseoRoute({ type: 'advertiseCompare' });
       setCurrentStep('PSEO');
       return true;
     }
 
-    if (path === '/guide-ads/success/' || path.startsWith('/guide-ads/success')) {
+    if (path === '/topic-ads/success/' || path.startsWith('/topic-ads/success')) {
       setPseoRoute({ type: 'guideAdsSuccess' });
       setCurrentStep('PSEO');
       return true;
     }
-    if (path === '/guide-ads/' || path.startsWith('/guide-ads')) {
+    if (path === '/topic-ads/' || path.startsWith('/topic-ads')) {
       setPseoRoute({ type: 'guideAds' });
       setCurrentStep('PSEO');
       return true;
@@ -477,22 +477,22 @@ export function App() {
       });
     } else if (pseoRoute.type === 'vendors') {
       applyHeadSeo({
-        title: 'Local Business Placements | BeforeRegret',
+        title: 'Report Ads | BeforeRegret',
         description: 'Vendor marketplace for home inspectors, contractors, and specialists to reach property buyers.',
-        canonicalUrl: 'https://www.beforeregret.com/vendors/',
+        canonicalUrl: 'https://www.beforeregret.com/report-ads/',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'vendorsSuccess') {
       applyHeadSeo({
         title: 'Payment Confirmation | BeforeRegret',
         description: 'ZIP-targeted vendor ad slot payment confirmation.',
-        canonicalUrl: 'https://www.beforeregret.com/vendors/success/',
+        canonicalUrl: 'https://www.beforeregret.com/report-ads/success/',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'advertiseCompare') {
       applyHeadSeo({
         title: 'Advertise With Us | BeforeRegret',
-        description: 'Compare Topic Ads and ZIP-Targeted Report Ads to find the right fit for your business.',
+        description: 'Compare Topic Ads and Report Ads to find the right fit for your business.',
         canonicalUrl: 'https://www.beforeregret.com/advertise/',
         robotsDirective: 'noindex, nofollow'
       });
@@ -500,14 +500,14 @@ export function App() {
       applyHeadSeo({
         title: 'Topic Ads | BeforeRegret',
         description: 'Self-serve topic-based ad placements on BeforeRegret -- $7.99 per slot, 30 days, open to any business.',
-        canonicalUrl: 'https://www.beforeregret.com/guide-ads/',
+        canonicalUrl: 'https://www.beforeregret.com/topic-ads/',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'guideAdsSuccess') {
       applyHeadSeo({
         title: 'Payment Confirmation | BeforeRegret',
         description: 'Guide ad slot payment confirmation.',
-        canonicalUrl: 'https://www.beforeregret.com/guide-ads/success/',
+        canonicalUrl: 'https://www.beforeregret.com/topic-ads/success/',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (currentStep === 'REPORT') {

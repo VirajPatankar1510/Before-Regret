@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Loader2, AlertCircle, CheckSquare, Square } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertCircle, CheckSquare, Square, Lock } from 'lucide-react';
 import { TRADE_CATEGORIES } from '../data/sponsoredVendors';
+import { useAuth } from '../context/AuthContext';
 
 interface GuideRow {
   articleId: number;
@@ -30,6 +31,8 @@ interface GuideAdsCheckoutProps {
 // payment happens there) -- this one takes real payment immediately, and mixing the two very
 // different flows on one page would confuse both.
 export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }) => {
+  const { user, triggerClerkSignIn } = useAuth();
+
   const [guides, setGuides] = useState<GuideRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pricePerSlot, setPricePerSlot] = useState(7.99);
@@ -41,7 +44,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
   const [tagline, setTagline] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -84,11 +86,13 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
+    if (!user) return setSubmitError('Please sign in first.');
     if (!businessName.trim()) return setSubmitError('Enter your business name.');
     if (!tradeCategory) return setSubmitError('Choose a business type.');
     if (!phone.trim()) return setSubmitError('Enter a phone number for readers to call.');
-    if (!contactEmail.trim()) return setSubmitError('Enter a contact email for the receipt.');
     if (selectedSlots.length === 0) return setSubmitError('Select at least one ad slot below.');
+
+    const contactEmail = user.email || `${user.uid}@beforeregret.com`;
 
     setSubmitting(true);
     try {
@@ -101,7 +105,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           phone: phone.trim(),
           website: website.trim() || undefined,
           tagline: tagline.trim() || undefined,
-          contactEmail: contactEmail.trim(),
+          contactEmail,
           slots: selectedSlots,
         }),
       });
@@ -149,9 +153,34 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           </p>
         </div>
 
+        {!user && (
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 text-center space-y-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-mono font-bold border border-blue-100">
+              <Lock className="w-3.5 h-3.5 text-blue-600" />
+              <span>Sign-In Required</span>
+            </div>
+            <h2 className="font-serif text-xl font-bold text-slate-900">Sign in to buy a placement</h2>
+            <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
+              We use your account email for your receipt and to manage your placements -- no separate email field needed.
+            </p>
+            <button
+              type="button"
+              onClick={() => triggerClerkSignIn()}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition-all cursor-pointer"
+            >
+              <Lock className="w-4 h-4" />
+              <span>Sign In / Sign Up</span>
+            </button>
+          </div>
+        )}
+
+        {user && (
         <form onSubmit={handleCheckout} className="space-y-6">
           <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
-            <h2 className="text-sm font-bold text-slate-900">Your business</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-slate-900">Your business</h2>
+              <span className="text-xs text-slate-500">Signed in as <span className="font-semibold text-slate-700">{user.email || user.displayName}</span></span>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input
                 type="text" placeholder="Business name" value={businessName}
@@ -170,12 +199,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
               <input
                 type="tel" placeholder="Phone number readers will call" value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm"
-              />
-              <input
-                type="email" placeholder="Contact email (for your receipt)" value={contactEmail}
-                onChange={(e) => setContactEmail(e.target.value)}
-                className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm"
+                className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm sm:col-span-2"
               />
               <input
                 type="url" placeholder="Website (optional)" value={website}
@@ -269,6 +293,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             </div>
           )}
         </form>
+        )}
       </div>
     </div>
   );

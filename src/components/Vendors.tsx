@@ -34,6 +34,9 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
             <ArrowLeft className="w-4 h-4 text-slate-500" />
             <span>Back to Comparison</span>
           </button>
+          <span className="text-xs font-mono font-bold text-slate-500 bg-slate-200/80 px-3 py-1 rounded-full">
+            Report Ads
+          </span>
         </div>
 
         {/* Hero Banner */}
