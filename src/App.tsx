@@ -243,7 +243,13 @@ export function App() {
         setCurrentStep('PSEO');
       }
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Instant, not smooth -- a route change can swap in a page of very different height (e.g. a
+    // long guide article collapsing to the much shorter homepage). A smooth scroll animates
+    // toward 0 over several hundred ms; if React commits the new, shorter page mid-animation, the
+    // browser clamps the in-flight scroll position against the new page's (smaller) max scroll
+    // instead of reaching 0, landing the reader somewhere in the middle of the new page instead of
+    // at the top.
+    window.scrollTo(0, 0);
   };
 
   // Check URL on mount for standalone report permalinks & pSEO routes
@@ -702,7 +708,10 @@ export function App() {
     } catch (e) {
       // Ignore if iframe location is restricted
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Instant, not smooth -- same reasoning as handleNavigate above: this can also land on HOME
+    // from a much taller page (a report or guide article), and a smooth scroll risks getting
+    // clamped mid-animation once React commits the shorter page.
+    window.scrollTo(0, 0);
   };
 
   const activeSummaryData = summaryData || createFallbackSummary(selectedProperty);
