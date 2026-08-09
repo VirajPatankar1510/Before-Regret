@@ -86,7 +86,7 @@ export const GuideAdsCheckoutSuccess: React.FC<GuideAdsCheckoutSuccessProps> = (
               <p className="text-sm text-red-900">{errorMessage}</p>
             </div>
             <button
-              onClick={() => onNavigate('/guide-ads')}
+              onClick={() => onNavigate('/topic-ads')}
               className="w-full py-3 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors"
             >
               Back to Ad Selection

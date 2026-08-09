@@ -149,8 +149,8 @@ export function registerZipAdsRoutes(app: Express) {
         currency: 'USD',
         type: 'vendor_subscription',
         description: `BeforeRegret ZIP ad -- ${tradeCategory} in ${zipCode} x 30 days`,
-        returnUrl: `${appUrl}/vendors/success`,
-        cancelUrl: `${appUrl}/vendors`,
+        returnUrl: `${appUrl}/report-ads/success`,
+        cancelUrl: `${appUrl}/report-ads`,
         userEmail: contactEmail,
       });
 

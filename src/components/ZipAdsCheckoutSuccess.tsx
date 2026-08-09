@@ -78,7 +78,7 @@ export const ZipAdsCheckoutSuccess: React.FC<ZipAdsCheckoutSuccessProps> = ({ on
               Contact support for a refund.
             </div>
             <button
-              onClick={() => onNavigate('/vendors')}
+              onClick={() => onNavigate('/report-ads')}
               className="w-full py-3 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors"
             >
               Back to Vendor Signup
@@ -94,7 +94,7 @@ export const ZipAdsCheckoutSuccess: React.FC<ZipAdsCheckoutSuccessProps> = ({ on
               <p className="text-sm text-red-900">{errorMessage}</p>
             </div>
             <button
-              onClick={() => onNavigate('/vendors')}
+              onClick={() => onNavigate('/report-ads')}
               className="w-full py-3 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors"
             >
               Back to Vendor Signup

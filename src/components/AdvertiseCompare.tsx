@@ -129,7 +129,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               </li>
             </ul>
             <button
-              onClick={() => onNavigate('/guide-ads')}
+              onClick={() => onNavigate('/topic-ads')}
               className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all cursor-pointer"
             >
               <span>Advertise by Topic</span>
@@ -137,7 +137,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             </button>
           </div>
 
-          {/* ZIP-Targeted Report Ads */}
+          {/* Report Ads */}
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-5 shadow-xs flex flex-col">
             <div className="flex items-center justify-between">
               <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -148,7 +148,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               </span>
             </div>
             <div className="space-y-1">
-              <h2 className="font-serif text-xl font-bold text-slate-900">ZIP-Targeted Report Ads</h2>
+              <h2 className="font-serif text-xl font-bold text-slate-900">Report Ads</h2>
               <p className="text-xs text-slate-500">Best for businesses with a specific local service area</p>
             </div>
             <div className="text-3xl font-black text-slate-900">
@@ -187,7 +187,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               </li>
             </ul>
             <button
-              onClick={() => onNavigate('/vendors')}
+              onClick={() => onNavigate('/report-ads')}
               className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-all cursor-pointer"
             >
               <span>Advertise by ZIP Code</span>
@@ -205,7 +205,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
                 <tr className="text-left text-slate-400 uppercase text-[10px] tracking-wider">
                   <th className="py-2 px-2 font-semibold"> </th>
                   <th className="py-2 px-2 font-semibold text-blue-700">Topic Ads</th>
-                  <th className="py-2 px-2 font-semibold text-emerald-700">ZIP-Targeted Report Ads</th>
+                  <th className="py-2 px-2 font-semibold text-emerald-700">Report Ads</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -242,7 +242,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
         <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 text-xs sm:text-sm text-slate-600">
           <span className="font-bold text-slate-900">Not sure which one? </span>
           If you'd take a customer from anywhere, Topic Ads reach more people for less per slot.
-          If you only serve one town or ZIP code, ZIP-Targeted Report Ads put you in front of someone
+          If you only serve one town or ZIP code, Report Ads put you in front of someone
           researching that exact address instead of a general topic -- worth the higher price for that
           precision. Nothing stops you from buying both.
         </div>

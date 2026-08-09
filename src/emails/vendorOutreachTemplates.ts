@@ -53,7 +53,7 @@ On every report for ${prospect.zipCode}, we show ${placementContext}. Right belo
 
 The terms are simple: $29/month, flat rate, for exclusive placement in ${prospect.zipCode} under ${prospect.tradeCategory}. We only allow 2 businesses per ZIP/category, first come first served, and either side can cancel anytime -- no long-term contract.
 
-If that's of interest, just reply to this email or take a look at beforeregret.com/vendors. Happy to answer questions either way.
+If that's of interest, just reply to this email or take a look at beforeregret.com/report-ads. Happy to answer questions either way.
 
 Viraj
 Atmostellar (operating BeforeRegret)
@@ -67,7 +67,7 @@ ${SENDER_ADDRESS}`;
   <p>I run <a href="https://www.beforeregret.com" style="color:#2563eb;">BeforeRegret</a>, a property research tool homebuyers use during their option period &mdash; checking flood zones, permit history, and similar records before closing.</p>
   <p>On every report for <strong>${prospect.zipCode}</strong>, we show ${placementContext}. Right below it, we place a spot for <strong>one local ${prospect.tradeCategory} business</strong> &mdash; your name, phone number, and a one-line tagline, shown at the exact moment someone is reading about the issue you'd be called in for.</p>
   <p>The terms are simple: <strong>$29/month</strong>, flat rate, for exclusive placement in ${prospect.zipCode} under ${prospect.tradeCategory}. We only allow 2 businesses per ZIP/category, first come first served, and either side can cancel anytime &mdash; no long-term contract.</p>
-  <p>If that's of interest, just reply to this email or take a look at <a href="https://www.beforeregret.com/vendors" style="color:#2563eb;">beforeregret.com/vendors</a>. Happy to answer questions either way.</p>
+  <p>If that's of interest, just reply to this email or take a look at <a href="https://www.beforeregret.com/report-ads" style="color:#2563eb;">beforeregret.com/report-ads</a>. Happy to answer questions either way.</p>
   <p>Viraj<br/>Atmostellar (operating BeforeRegret)</p>
   <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;"/>
   <p style="font-size:11px;color:#64748b;">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Search, Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle } from 'lucide-react';
+import { Search, Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle, Lock } from 'lucide-react';
 import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
+import { useAuth } from '../context/AuthContext';
 
 type Stage = 'checking-form' | 'checking' | 'available' | 'full' | 'submitting';
 
@@ -18,6 +19,8 @@ interface SlotAvailability {
 // Replaces the old interest-capture-only version of this form, which only logged a submission to
 // console and asked a human to follow up manually -- no payment ever happened there.
 export const VendorSignupForm: React.FC = () => {
+  const { user, triggerClerkSignIn } = useAuth();
+
   const [stage, setStage] = useState<Stage>('checking-form');
   const [tradeCategory, setTradeCategory] = useState('');
   const [zipCode, setZipCode] = useState('');
@@ -26,7 +29,6 @@ export const VendorSignupForm: React.FC = () => {
 
   const [businessName, setBusinessName] = useState('');
   const [phone, setPhone] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [tagline, setTagline] = useState('');
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
@@ -58,9 +60,11 @@ export const VendorSignupForm: React.FC = () => {
   const startCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitErrors([]);
+    if (!user) return setSubmitErrors(['Please sign in first.']);
     if (!businessName.trim()) return setSubmitErrors(['Enter your business name.']);
     if (!phone.trim()) return setSubmitErrors(['Enter a phone number for readers to call.']);
-    if (!contactEmail.trim()) return setSubmitErrors(['Enter a contact email for your receipt.']);
+
+    const contactEmail = user.email || `${user.uid}@beforeregret.com`;
 
     setStage('submitting');
     try {
@@ -74,7 +78,7 @@ export const VendorSignupForm: React.FC = () => {
           phone: phone.trim(),
           website: website.trim() || undefined,
           tagline: tagline.trim() || undefined,
-          contactEmail: contactEmail.trim(),
+          contactEmail,
         }),
       });
       const data = await res.json();
@@ -154,11 +158,36 @@ export const VendorSignupForm: React.FC = () => {
         </div>
       )}
 
-      {(stage === 'available' || stage === 'submitting') && availability && (
+      {(stage === 'available' || stage === 'submitting') && availability && !user && (
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 text-center space-y-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-mono font-bold border border-blue-100">
+            <Lock className="w-3.5 h-3.5 text-blue-600" />
+            <span>Sign-In Required</span>
+          </div>
+          <h2 className="font-serif text-xl font-bold text-slate-900">Sign in to buy this slot</h2>
+          <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
+            We use your account email for your receipt and to manage your placement -- no separate email field needed.
+          </p>
+          <button
+            type="button"
+            onClick={() => triggerClerkSignIn()}
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition-all cursor-pointer"
+          >
+            <Lock className="w-4 h-4" />
+            <span>Sign In / Sign Up</span>
+          </button>
+        </div>
+      )}
+
+      {(stage === 'available' || stage === 'submitting') && availability && user && (
         <div className="space-y-5">
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-2 text-emerald-800 text-sm font-bold">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
             <span>{availability.slotsRemaining} of {availability.slotsTotal} slots open for {tradeCategory} in ZIP {zipCode}</span>
+          </div>
+
+          <div className="flex items-center justify-end text-xs text-slate-500">
+            <span>Signed in as <span className="font-semibold text-slate-700">{user.email || user.displayName}</span></span>
           </div>
 
           <form onSubmit={startCheckout} className="space-y-3">
@@ -167,18 +196,11 @@ export const VendorSignupForm: React.FC = () => {
               onChange={(e) => setBusinessName(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
             />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input
-                type="tel" required placeholder="Phone readers will call" value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-              />
-              <input
-                type="email" required placeholder="Contact email (for your receipt)" value={contactEmail}
-                onChange={(e) => setContactEmail(e.target.value)}
-                className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-              />
-            </div>
+            <input
+              type="tel" required placeholder="Phone readers will call" value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
+            />
             <input
               type="url" placeholder="Website (optional)" value={website}
               onChange={(e) => setWebsite(e.target.value)}
