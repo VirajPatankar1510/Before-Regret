@@ -34,7 +34,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
           
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Logo className="w-8 h-8 shrink-0" color="#3B82F6" />
+              <Logo className="w-8 h-8 shrink-0" />
               <div>
                 <span className="font-extrabold text-lg text-white tracking-tight block">Before Regret</span>
                 <span className="text-[10px] font-medium text-slate-500">Check it before you sign it.</span>
