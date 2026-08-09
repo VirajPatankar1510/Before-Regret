@@ -55,7 +55,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           if (typeof data.pricePerSlotUsd === 'number') setPricePerSlot(data.pricePerSlotUsd);
           if (typeof data.slotDurationDays === 'number') setSlotDurationDays(data.slotDurationDays);
         } else {
-          setLoadError(data?.error || 'Could not load guide pages.');
+          setLoadError(data?.error || 'Could not load available placements.');
         }
       })
       .catch(() => setLoadError('Could not reach the server.'));
@@ -134,7 +134,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             <span>Return to Home</span>
           </button>
           <span className="text-xs font-mono font-bold text-slate-500 bg-slate-200/80 px-3 py-1 rounded-full">
-            Advertise on Guides
+            National Ads
           </span>
         </div>
 
@@ -147,12 +147,12 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
 
         <div className="space-y-2">
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            Get your phone number in front of buyers researching this exact problem
+            Get your phone number in front of people researching this exact problem
           </h1>
           <p className="text-sm text-slate-600 leading-relaxed">
             ${pricePerSlot.toFixed(2)} per slot, {slotDurationDays} days, no subscription and no auto-renewal --
-            pick as many guide pages as you want below, pay once, and your business shows up in that spot until it expires.
-            Any business can advertise on any guide.
+            pick as many placements as you want below, pay once, and your business shows up there until it expires.
+            Any business can advertise on any page.
           </p>
         </div>
 
@@ -198,7 +198,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-3">
-            <h2 className="text-sm font-bold text-slate-900">Choose guide pages</h2>
+            <h2 className="text-sm font-bold text-slate-900">Choose where you appear</h2>
 
             {loadError && (
               <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-center gap-2">
@@ -213,7 +213,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             )}
 
             {guides && guides.length === 0 && (
-              <p className="text-xs text-slate-500 py-4">No published guides yet -- check back soon.</p>
+              <p className="text-xs text-slate-500 py-4">No placements available yet -- check back soon.</p>
             )}
 
             {guides && guides.length > 0 && (
