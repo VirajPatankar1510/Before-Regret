@@ -44,7 +44,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               Cancellation & Refund Policy
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              This Cancellation & Refund Policy outlines the terms governing consumer property insight report purchases and paid local business vendor subscriptions for <strong>Before Regret</strong>, owned and operated by <strong>Atmostellar</strong>. Registered Office: Atmostellar, Mumbai, Maharashtra, India. Contact: <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>.
+              This Cancellation & Refund Policy outlines the terms governing consumer property insight report purchases and paid local business vendor placements for <strong>Before Regret</strong>, owned and operated by <strong>Atmostellar</strong>. Registered Office: Atmostellar, Mumbai, Maharashtra, India. Contact: <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>.
             </p>
           </div>
 
@@ -81,20 +81,27 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
             {/* Section 2 */}
             <section className="space-y-3">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
-                2. Business Vendor Subscriptions Overview
+                2. Business Vendor Placements Overview
               </h2>
               <p>
-                Atmostellar offers a paid monthly subscription service for local business vendors (contractors, licensed home inspectors, structural engineers, environmental remediation specialists) to display a sponsored placement ("Need help inspecting this?" section) in one specific zip code and trade category on free consumer reports.
+                Atmostellar offers two self-serve, one-time-payment placement products for local business vendors (contractors, licensed home inspectors, structural engineers, environmental remediation specialists): a <strong>Topic Ad</strong>, shown on educational guide articles across the site, and a <strong>Report Ad</strong>, shown as a sponsored placement ("Need help verifying this?" section) inside property reports for one specific zip code and trade category. Neither is a subscription -- each is a single, one-time charge for a fixed 30-day placement window, with no automatic renewal or re-billing of any kind.
               </p>
-              <p>Vendor pricing is a single flat rate, with no tiers or bundles:</p>
+              <p>Pricing is a flat rate per slot, with no tiers or bundles:</p>
 
-              <div className="max-w-xs mx-auto p-4 bg-blue-50 border border-blue-200 rounded-2xl text-center space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Per Zip Code, Per Trade Category</span>
-                <div className="text-lg font-black text-blue-900">$29 <span className="text-xs font-normal text-blue-600">/ mo</span></div>
-                <p className="text-xs text-blue-800 font-medium">Recurring monthly charge, auto-renews until cancelled</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto">
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl text-center space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Topic Ad, Per Slot</span>
+                  <div className="text-lg font-black text-blue-900">$7.99 <span className="text-xs font-normal text-blue-600">/ 30 days</span></div>
+                  <p className="text-xs text-blue-800 font-medium">One-time charge, no auto-renewal</p>
+                </div>
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Report Ad, Per Zip + Trade</span>
+                  <div className="text-lg font-black text-emerald-900">$29 <span className="text-xs font-normal text-emerald-600">/ 30 days</span></div>
+                  <p className="text-xs text-emerald-800 font-medium">One-time charge, no auto-renewal</p>
+                </div>
               </div>
               <p className="text-xs text-slate-500">
-                A separate subscription, billed separately at the same flat rate, is required for each additional zip code and/or trade category combination.
+                A separate one-time purchase, charged separately at the same flat rate, is required for each additional slot a vendor wishes to appear in. To keep a placement active beyond its 30-day window, the vendor must return and purchase another window -- nothing renews automatically.
               </p>
               <div className="flex items-start gap-2 text-xs text-slate-500 pt-1">
                 <CreditCard className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
@@ -105,17 +112,20 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
             {/* Section 3 */}
             <section className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-200 pb-2">
-                3. Vendor Cancellation Terms
+                3. Placement Expiration & Early Removal
               </h2>
               <ul className="space-y-2 text-xs text-slate-600">
                 <li>
-                  <strong>Cancellation Anytime:</strong> Subscribed vendors may cancel their subscription at any time by sending an email to <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>.
+                  <strong>Automatic Expiration:</strong> A placement runs for the fixed 30-day window it was purchased for, then expires automatically. There is no subscription to cancel and no recurring payment of any kind -- the full charge was collected once, upfront, at checkout.
                 </li>
                 <li>
-                  <strong>Effective Date of Cancellation & Slot Release:</strong> Upon cancellation, or upon a failed or declined renewal payment, the vendor's sponsored placement is removed and the zip code/trade category slot immediately becomes available to other vendors on a first-come, first-served basis.
+                  <strong>Early Removal on Request:</strong> A vendor may have an active placement removed before it expires at any time by emailing <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>.
                 </li>
                 <li>
-                  <strong>No Refunds for Vendor Self-Cancellation:</strong> Vendor subscriptions are billed in advance on a monthly, auto-renewing basis. <strong>No refunds, partial refunds, or credits are issued</strong> for any unused or remaining portion of a billing period, regardless of when during the cycle the vendor cancels.
+                  <strong>Slot Release:</strong> Upon expiration, or upon early removal at the vendor's request, the slot immediately becomes available to other vendors on a first-come, first-served basis.
+                </li>
+                <li>
+                  <strong>No Refunds for Early Removal:</strong> Placements are paid in full, upfront, for a fixed 30-day window. <strong>No refunds, partial refunds, or credits are issued</strong> for any unused or remaining portion of that window, regardless of when during the window the vendor requests removal.
                 </li>
               </ul>
             </section>
@@ -136,7 +146,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                     <span>Removal for Vendor Policy Violation or Breach (NO REFUND)</span>
                   </h3>
                   <p className="text-amber-900 leading-relaxed">
-                    If Atmostellar suspends or removes a vendor's sponsored placement due to expired or revoked trade licensure, fraudulent business practices, unresolved consumer complaints, or breach of our Terms of Service, <strong>no refund or credit will be issued</strong> for the remaining portion of the billing cycle. The removal is a direct consequence of vendor non-compliance.
+                    If Atmostellar suspends or removes a vendor's sponsored placement due to expired or revoked trade licensure, fraudulent business practices, unresolved consumer complaints, or breach of our Terms of Service, <strong>no refund or credit will be issued</strong> for the remaining portion of the 30-day placement window. The removal is a direct consequence of vendor non-compliance.
                   </p>
                 </div>
 
@@ -146,7 +156,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                     <span>Removal for Atmostellar Administrative Reasons (NO REFUND)</span>
                   </h3>
                   <p className="text-blue-900 leading-relaxed">
-                    If Atmostellar removes or terminates a vendor's sponsored placement prior to the end of a billing cycle for internal administrative, technical, or business restructuring reasons not attributable to any fault of the vendor, the placement is discontinued for the remainder of that cycle. Consistent with our all-sales-final billing policy, <strong>no refund or credit is issued</strong> in this case either.
+                    If Atmostellar removes or terminates a vendor's sponsored placement prior to the end of its 30-day window for internal administrative, technical, or business restructuring reasons not attributable to any fault of the vendor, the placement is discontinued for the remainder of that window. Consistent with our all-sales-final billing policy, <strong>no refund or credit is issued</strong> in this case either.
                   </p>
                 </div>
               </div>
@@ -163,7 +173,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                   <thead>
                     <tr className="bg-slate-100 text-slate-900 border-b border-slate-200 font-bold">
                       <th className="p-3">User / Event Scenario</th>
-                      <th className="p-3">Cancellation Timing</th>
+                      <th className="p-3">Timing</th>
                       <th className="p-3">Refund Status</th>
                     </tr>
                   </thead>
@@ -179,12 +189,12 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                       <td className="p-3 text-rose-700 font-bold">No refund</td>
                     </tr>
                     <tr>
-                      <td className="p-3 font-semibold text-slate-900">Vendor Self-Cancellation</td>
-                      <td className="p-3">Immediate — slot released to other vendors</td>
-                      <td className="p-3 text-rose-700 font-bold">No refund</td>
+                      <td className="p-3 font-semibold text-slate-900">Vendor Placement Expiration (Topic Ad / Report Ad, 30 Days Elapsed)</td>
+                      <td className="p-3">N/A — runs its full paid term, then expires</td>
+                      <td className="p-3 text-emerald-700 font-bold">N/A (No charge was pending)</td>
                     </tr>
                     <tr>
-                      <td className="p-3 font-semibold text-slate-900">Declined / Failed Renewal Payment</td>
+                      <td className="p-3 font-semibold text-slate-900">Vendor Early Removal Request</td>
                       <td className="p-3">Immediate — slot released to other vendors</td>
                       <td className="p-3 text-rose-700 font-bold">No refund</td>
                     </tr>
@@ -209,7 +219,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                 6. Billing Support & Inquiries
               </h2>
               <p>
-                If you have questions regarding a report purchase, a vendor subscription invoice, or billing status, please contact our support team:
+                If you have questions regarding a report purchase, a vendor placement receipt, or billing status, please contact our support team:
               </p>
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-1">
                 <p className="font-bold text-slate-900">Atmostellar Support Desk</p>
