@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Loader2, AlertCircle } from 'lucide-react';
+import { Lock, Loader2, AlertCircle, ShieldCheck } from 'lucide-react';
 
 interface AdminGateProps {
   children: React.ReactNode;
@@ -9,6 +9,7 @@ type GateState =
   | { status: 'checking' }
   | { status: 'not_configured' }
   | { status: 'signed_out' }
+  | { status: 'awaiting_totp'; ticket: string }
   | { status: 'signed_in' };
 
 // Wraps every admin screen. The real enforcement is server-side (see src/server/adminAuth.ts and
@@ -18,6 +19,7 @@ type GateState =
 export const AdminGate: React.FC<AdminGateProps> = ({ children }) => {
   const [gate, setGate] = useState<GateState>({ status: 'checking' });
   const [password, setPassword] = useState('');
+  const [totpCode, setTotpCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -50,8 +52,33 @@ export const AdminGate: React.FC<AdminGateProps> = ({ children }) => {
         body: JSON.stringify({ password }),
       });
       const data = await res.json();
-      if (data?.success) {
+      if (data?.success && data?.requiresTotp && data?.ticket) {
         setPassword('');
+        setGate({ status: 'awaiting_totp', ticket: data.ticket });
+      } else {
+        setError(data?.error || 'Something went wrong. Please try again.');
+      }
+    } catch {
+      setError('Could not reach the server. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleVerifyTotp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (gate.status !== 'awaiting_totp') return;
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/admin/login/verify-totp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticket: gate.ticket, code: totpCode }),
+      });
+      const data = await res.json();
+      if (data?.success) {
+        setTotpCode('');
         setGate({ status: 'signed_in' });
       } else {
         setError(data?.error || 'Something went wrong. Please try again.');
@@ -91,10 +118,19 @@ export const AdminGate: React.FC<AdminGateProps> = ({ children }) => {
               <code className="text-blue-300 font-mono text-xs">ADMIN_SESSION_SECRET</code>
               <span className="block text-xs text-slate-500 mt-0.5">Any long random string. Keeps your sign-in secure.</span>
             </li>
+            <li>
+              <code className="text-blue-300 font-mono text-xs">ADMIN_TOTP_SECRET</code>
+              <span className="block text-xs text-slate-500 mt-0.5">
+                The 2FA key for your authenticator app (Google Authenticator, Authy, etc). Run
+                <code className="text-blue-300 font-mono"> npm run admin:generate-totp-secret</code> locally
+                to generate one and get setup instructions.
+              </span>
+            </li>
           </ul>
           <p className="text-xs text-slate-500 leading-relaxed">
-            Until both are set, this area stays locked for everyone — including you. That's
-            deliberate: a missing setting should never leave the page open.
+            Until all three are set, this area stays locked for everyone — including you. That's
+            deliberate: a missing setting should never leave the page open, or leave it protected
+            by only one factor.
           </p>
         </div>
       </div>
@@ -148,6 +184,71 @@ export const AdminGate: React.FC<AdminGateProps> = ({ children }) => {
           >
             {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
             <span>{isSubmitting ? 'Signing in…' : 'Sign in'}</span>
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  if (gate.status === 'awaiting_totp') {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
+        <form
+          onSubmit={handleVerifyTotp}
+          className="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-5"
+        >
+          <div className="space-y-3">
+            <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">Enter your code</h1>
+              <p className="text-sm text-slate-400 mt-1">
+                Open your authenticator app and enter the current 6-digit code.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="admin-totp" className="block text-xs font-bold text-slate-300">
+              Authentication code
+            </label>
+            <input
+              id="admin-totp"
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={totpCode}
+              onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              autoFocus
+              maxLength={6}
+              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl text-lg tracking-[0.3em] text-center font-mono text-white placeholder:text-slate-600 focus:outline-none transition-colors"
+              placeholder="000000"
+            />
+          </div>
+
+          {error && (
+            <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting || totpCode.length !== 6}
+            className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+            <span>{isSubmitting ? 'Verifying…' : 'Verify'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => { setGate({ status: 'signed_out' }); setTotpCode(''); setError(null); }}
+            className="w-full text-xs text-slate-500 hover:text-slate-300 cursor-pointer"
+          >
+            Use a different password
           </button>
         </form>
       </div>

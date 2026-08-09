@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type Request } from "express";
 import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
@@ -17,6 +17,9 @@ import {
   setSessionCookie,
   clearSessionCookie,
   hasValidSession,
+  createPendingTotpTicket,
+  isValidPendingTotpTicket,
+  verifyTotpCode,
 } from "./src/server/adminAuth.js";
 import { registerArticleRoutes } from "./src/server/articlesApi.js";
 import { registerCountyRoutes } from "./src/server/countiesApi.js";
@@ -62,9 +65,32 @@ export async function createApp() {
   // raises the cost of guessing without pretending to be airtight. A proper implementation needs
   // the shared datastore that's coming with the CMS work.
   const loginAttempts = new Map<string, { count: number; firstAttemptAt: number }>();
+  const totpAttempts = new Map<string, { count: number; firstAttemptAt: number }>();
   const LOGIN_WINDOW_MS = 15 * 60 * 1000;
   const MAX_LOGIN_ATTEMPTS = 10;
+  const MAX_TOTP_ATTEMPTS = 10;
 
+  function checkAndRecordAttempt(store: Map<string, { count: number; firstAttemptAt: number }>, ip: string): boolean {
+    const now = Date.now();
+    const record = store.get(ip);
+    if (record && now - record.firstAttemptAt < LOGIN_WINDOW_MS && record.count >= MAX_LOGIN_ATTEMPTS) {
+      return false;
+    }
+    if (!record || now - record.firstAttemptAt >= LOGIN_WINDOW_MS) {
+      store.set(ip, { count: 1, firstAttemptAt: now });
+    } else {
+      record.count += 1;
+    }
+    return true;
+  }
+
+  function requestIp(req: Request): string {
+    return String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim();
+  }
+
+  // Step 1 of 2: password only. Deliberately does NOT set the real session cookie -- a correct
+  // password returns a short-lived "pending" ticket instead, so the second factor below is a real
+  // gate rather than a client-side-only formality that the server would honor even if skipped.
   app.post("/api/admin/login", (req, res) => {
     if (!isAdminConfigured()) {
       res.status(503).json({
@@ -74,25 +100,50 @@ export async function createApp() {
       return;
     }
 
-    const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim();
-    const now = Date.now();
-    const record = loginAttempts.get(ip);
-    if (record && now - record.firstAttemptAt < LOGIN_WINDOW_MS && record.count >= MAX_LOGIN_ATTEMPTS) {
+    const ip = requestIp(req);
+    if (!checkAndRecordAttempt(loginAttempts, ip)) {
       res.status(429).json({ success: false, error: 'Too many attempts. Try again in a few minutes.' });
       return;
     }
 
     if (!verifyPassword(req.body?.password)) {
-      if (!record || now - record.firstAttemptAt >= LOGIN_WINDOW_MS) {
-        loginAttempts.set(ip, { count: 1, firstAttemptAt: now });
-      } else {
-        record.count += 1;
-      }
       res.status(401).json({ success: false, error: 'That password is not correct.' });
       return;
     }
 
     loginAttempts.delete(ip);
+    res.json({ success: true, requiresTotp: true, ticket: createPendingTotpTicket() });
+  });
+
+  // Step 2 of 2: the 6-digit authenticator code. Only this step ever sets the real session
+  // cookie. Rate-limited separately from the password step -- a 6-digit code is a much smaller
+  // search space, so it needs its own throttle rather than sharing a budget with password guesses.
+  app.post("/api/admin/login/verify-totp", (req, res) => {
+    if (!isAdminConfigured()) {
+      res.status(503).json({
+        success: false,
+        error: 'Admin access is not set up on this server yet.',
+      });
+      return;
+    }
+
+    const ip = requestIp(req);
+    if (!checkAndRecordAttempt(totpAttempts, ip)) {
+      res.status(429).json({ success: false, error: 'Too many attempts. Try again in a few minutes.' });
+      return;
+    }
+
+    if (!isValidPendingTotpTicket(req.body?.ticket)) {
+      res.status(401).json({ success: false, error: 'Your sign-in attempt expired. Please enter your password again.' });
+      return;
+    }
+
+    if (!verifyTotpCode(process.env.ADMIN_TOTP_SECRET as string, req.body?.code)) {
+      res.status(401).json({ success: false, error: 'That code is not correct.' });
+      return;
+    }
+
+    totpAttempts.delete(ip);
     setSessionCookie(res, createSessionToken());
     res.json({ success: true });
   });
