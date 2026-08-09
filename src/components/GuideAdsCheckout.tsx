@@ -138,6 +138,13 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           </span>
         </div>
 
+        <button
+          onClick={() => onNavigate('/advertise')}
+          className="text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer"
+        >
+          Only serve one local area? Compare this against ZIP-targeted report ads →
+        </button>
+
         <div className="space-y-2">
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             Get your phone number in front of buyers researching this exact problem
