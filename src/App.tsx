@@ -8,6 +8,7 @@ import { Vendors } from './components/Vendors';
 import { GuideAdsCheckout } from './components/GuideAdsCheckout';
 import { GuideAdsCheckoutSuccess } from './components/GuideAdsCheckoutSuccess';
 import { ZipAdsCheckoutSuccess } from './components/ZipAdsCheckoutSuccess';
+import { AdvertiseCompare } from './components/AdvertiseCompare';
 import { ReportGatingModal } from './components/ReportGatingModal';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from './components/ErrorBoundary';
@@ -113,7 +114,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guide' | 'county' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'guide' | 'county' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
     countySlug?: string;
   }>({ type: 'none' });
@@ -136,17 +137,24 @@ export function App() {
       return true;
     }
 
-    // Separate from /vendors on purpose: that's an older, interest-capture-only flow (a human
-    // follows up manually, no payment happens there). This one takes real payment immediately
-    // for a structurally different product (per-guide-page ad slots, not per-ZIP), and mixing the
-    // two very different flows into one page/route would confuse both. /advertise used to alias
-    // to /vendors -- it now points here instead, since this is what "advertise" actually means now.
+    // /vendors and /guide-ads are two structurally different products (per-ZIP-and-trade slots
+    // vs. per-guide-page slots) with their own checkout flows -- kept as separate routes so
+    // neither page has to explain the other. /advertise is deliberately neither: it's the shared
+    // funnel entry point (linked from GuideAdSlot.tsx's recruitment CTA and from outside links)
+    // that compares both before sending the vendor to whichever checkout fits. Checked before the
+    // two checkout routes below since /advertise no longer aliases straight to guide-ads.
+    if (path === '/advertise/' || path.startsWith('/advertise')) {
+      setPseoRoute({ type: 'advertiseCompare' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
     if (path === '/guide-ads/success/' || path.startsWith('/guide-ads/success')) {
       setPseoRoute({ type: 'guideAdsSuccess' });
       setCurrentStep('PSEO');
       return true;
     }
-    if (path === '/guide-ads/' || path.startsWith('/guide-ads') || path.startsWith('/advertise')) {
+    if (path === '/guide-ads/' || path.startsWith('/guide-ads')) {
       setPseoRoute({ type: 'guideAds' });
       setCurrentStep('PSEO');
       return true;
@@ -481,6 +489,13 @@ export function App() {
         canonicalUrl: 'https://www.beforeregret.com/vendors/success/',
         robotsDirective: 'noindex, nofollow'
       });
+    } else if (pseoRoute.type === 'advertiseCompare') {
+      applyHeadSeo({
+        title: 'Advertise With Us | BeforeRegret',
+        description: 'Compare guide-page ads and ZIP-targeted report ads to find the right fit for your business.',
+        canonicalUrl: 'https://www.beforeregret.com/advertise/',
+        robotsDirective: 'noindex, nofollow'
+      });
     } else if (pseoRoute.type === 'guideAds') {
       applyHeadSeo({
         title: 'Advertise on Guides | BeforeRegret',
@@ -756,6 +771,9 @@ export function App() {
             )}
             {pseoRoute.type === 'vendorsSuccess' && (
               <ZipAdsCheckoutSuccess onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'advertiseCompare' && (
+              <AdvertiseCompare onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'guideAds' && (
               <GuideAdsCheckout onNavigate={handleNavigate} />

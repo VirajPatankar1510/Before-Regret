@@ -40,6 +40,13 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
           </span>
         </div>
 
+        <button
+          onClick={() => (onNavigate ? onNavigate('/advertise') : undefined)}
+          className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 cursor-pointer"
+        >
+          Serve a wide area instead of one ZIP? Compare this against guide-page ads →
+        </button>
+
         {/* Hero Banner */}
         <div className="bg-slate-900 text-white border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 relative overflow-hidden">
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />

@@ -311,11 +311,6 @@ export async function createApp() {
     res.json({ success: true, report });
   });
 
-  // 301 Redirect /advertise -> /vendors
-  app.get(["/advertise", "/advertise/"], (req, res) => {
-    res.redirect(301, "/vendors");
-  });
-
   // 301 Redirect /report/:id -> /insights/:id
   app.get(["/report/:reportId", "/reports/:reportId"], (req, res) => {
     const { reportId } = req.params;
