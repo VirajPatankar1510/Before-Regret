@@ -31,10 +31,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Logo className="w-9 h-9 shrink-0 transition-transform group-hover:scale-105" color="#1A6CFF" />
             <div>
               <div className="font-extrabold text-base tracking-tight text-slate-900 flex items-center gap-1.5">
-                <span>BeforeRegret</span>
+                <span>Before Regret</span>
               </div>
               <div className="text-[10px] font-medium text-slate-500 hidden sm:block">
-                Property Research Assistant
+                Check it before you sign it.
               </div>
             </div>
           </button>

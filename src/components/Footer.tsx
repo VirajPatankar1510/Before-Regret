@@ -35,7 +35,10 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Logo className="w-8 h-8 shrink-0" color="#3B82F6" />
-              <span className="font-extrabold text-lg text-white tracking-tight">BeforeRegret</span>
+              <div>
+                <span className="font-extrabold text-lg text-white tracking-tight block">Before Regret</span>
+                <span className="text-[10px] font-medium text-slate-500">Check it before you sign it.</span>
+              </div>
             </div>
             <p className="text-xs text-slate-400 max-w-md">
               Expert property research guides and vendor marketplace for US home buyers. Uncover what matters before closing.
@@ -90,7 +93,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
         )}
 
         <div className="text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} BeforeRegret. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Before Regret. All rights reserved.</p>
         </div>
 
       </div>
