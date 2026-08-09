@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Save, Send, Undo2, Trash2, AlertCircle, Sparkles,
-  Link2, Lock, MessageCircleQuestion
+  Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
 
@@ -21,6 +21,17 @@ interface Article {
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
+}
+
+// Shape returned by GET /api/admin/gemini-usage (see src/server/articlesApi.ts). costUsd is
+// null, not 0, whenever GEMINI_MODEL has no verified pricing entry in geminiUsageTracker.ts --
+// the UI renders that as "cost unknown" rather than a fabricated "$0.00".
+interface GeminiUsageSummary {
+  today: { tokens: number; costUsd: number | null; calls: number };
+  month: { tokens: number; costUsd: number | null };
+  allTime: { tokens: number; costUsd: number | null; calls: number };
+  model: string;
+  recent: Array<{ created_at: string; source: string; model: string; total_tokens: number; estimated_cost_usd: number | null }>;
 }
 
 const STOPWORDS = new Set([
@@ -69,6 +80,21 @@ function previewSlug(title: string): string {
   return chosen.join('-').slice(0, 60).replace(/-+$/, '') || 'article';
 }
 
+function formatTokens(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
+}
+
+// costUsd is null (not 0) when the current GEMINI_MODEL has no verified pricing entry -- see
+// hasKnownPricing() in geminiUsageTracker.ts. Rendered honestly as "cost unknown" rather than a
+// fabricated $0.00, since a $0.00 would read as "this model is free," which may not be true.
+function formatCost(usd: number | null): string {
+  if (usd === null) return 'cost unknown';
+  if (usd < 0.01) return `$${usd.toFixed(4)}`;
+  return `$${usd.toFixed(2)}`;
+}
+
 // Real save/publish path against the Neon-backed /api/admin/articles routes (see
 // src/server/articlesApi.ts). Two screens on purpose: a list you can scan at a glance, and one
 // simple editor. No jargon, no keyword-volume dashboards, no fake pipeline stages -- title,
@@ -103,6 +129,14 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // model every time.
   const [previousAttempts, setPreviousAttempts] = useState<string[]>([]);
 
+  // Gemini token/cost counter (see src/server/geminiUsageTracker.ts). "Real time" here means
+  // polled every 20s while this screen is open, not a websocket push -- a cost dashboard doesn't
+  // need sub-second latency, and polling is the whole mechanism, not a placeholder for something
+  // fancier later.
+  const [geminiUsage, setGeminiUsage] = useState<GeminiUsageSummary | null>(null);
+  const [geminiUsageError, setGeminiUsageError] = useState<string | null>(null);
+  const [usageDetailOpen, setUsageDetailOpen] = useState(false);
+
   const loadArticles = () => {
     setLoadError(null);
     fetch('/api/admin/articles')
@@ -119,6 +153,32 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
 
   useEffect(() => {
     loadArticles();
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadUsage = () => {
+      fetch('/api/admin/gemini-usage')
+        .then((res) => res.json())
+        .then((data) => {
+          if (cancelled) return;
+          if (data?.success) {
+            setGeminiUsage(data.usage);
+            setGeminiUsageError(null);
+          } else {
+            setGeminiUsageError(data?.error || 'Could not load usage data.');
+          }
+        })
+        .catch(() => {
+          if (!cancelled) setGeminiUsageError('Could not reach the server.');
+        });
+    };
+    loadUsage();
+    const interval = setInterval(loadUsage, 20000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, []);
 
   const openEditor = (article: Article) => {
@@ -326,6 +386,88 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               <Plus className="w-4 h-4" />
               <span>New article</span>
             </button>
+          </div>
+
+          {/* Gemini token/cost counter -- see src/server/geminiUsageTracker.ts. Polls every 20s
+              (see the effect above); "real time" here means that, not a websocket push. Covers
+              every Gemini call the app makes: property reports, this panel's own "Generate with
+              AI", and the batch draft-article script -- one shared log, not three separate ones. */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div className="p-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+                <Gauge className="w-3.5 h-3.5" />
+                <span>Gemini usage{geminiUsage?.model ? ` (${geminiUsage.model})` : ''}</span>
+              </div>
+              {geminiUsage && (
+                <button
+                  onClick={() => setUsageDetailOpen((v) => !v)}
+                  className="text-xs text-slate-500 hover:text-slate-300 flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Recent calls</span>
+                  {usageDetailOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </button>
+              )}
+            </div>
+
+            {geminiUsageError && !geminiUsage && (
+              <div className="px-4 pb-4 text-xs text-rose-400">{geminiUsageError}</div>
+            )}
+
+            {!geminiUsage && !geminiUsageError && (
+              <div className="px-4 pb-4 flex items-center gap-2 text-xs text-slate-500">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Loading usage…</span>
+              </div>
+            )}
+
+            {geminiUsage && (
+              <>
+                <div className="grid grid-cols-3 divide-x divide-slate-800 border-t border-slate-800">
+                  {[
+                    { label: 'Today', tokens: geminiUsage.today.tokens, cost: geminiUsage.today.costUsd, sub: `${geminiUsage.today.calls} call${geminiUsage.today.calls === 1 ? '' : 's'}` },
+                    { label: 'This month', tokens: geminiUsage.month.tokens, cost: geminiUsage.month.costUsd },
+                    { label: 'All time', tokens: geminiUsage.allTime.tokens, cost: geminiUsage.allTime.costUsd, sub: `${geminiUsage.allTime.calls} call${geminiUsage.allTime.calls === 1 ? '' : 's'}` },
+                  ].map((col) => (
+                    <div key={col.label} className="p-4">
+                      <div className="text-[10px] uppercase tracking-wide text-slate-500 font-semibold">{col.label}</div>
+                      <div className="text-lg font-bold text-white mt-1">{formatTokens(col.tokens)} <span className="text-xs font-normal text-slate-500">tokens</span></div>
+                      <div className={`text-sm font-semibold mt-0.5 ${col.cost === null ? 'text-slate-500 italic' : 'text-emerald-400'}`}>
+                        {formatCost(col.cost)}
+                      </div>
+                      {col.sub && <div className="text-[11px] text-slate-500 mt-1">{col.sub}</div>}
+                    </div>
+                  ))}
+                </div>
+
+                {usageDetailOpen && (
+                  <div className="border-t border-slate-800 divide-y divide-slate-800/60 max-h-64 overflow-y-auto">
+                    {geminiUsage.recent.length === 0 && (
+                      <div className="p-4 text-xs text-slate-500">No calls logged yet.</div>
+                    )}
+                    {geminiUsage.recent.map((r, i) => (
+                      <div key={i} className="px-4 py-2 flex items-center justify-between gap-3 text-xs">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-slate-500 shrink-0">
+                            {new Date(r.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                          </span>
+                          <span className="text-slate-300 truncate">
+                            {r.source === 'report_generation' ? 'Property report' : r.source === 'article_generation' ? 'Article (admin)' : 'Batch draft'}
+                          </span>
+                          <span className="text-slate-600">·</span>
+                          <span className="text-slate-500 truncate">{r.model}</span>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="text-slate-400">{formatTokens(r.total_tokens)}</span>
+                          <span className={r.estimated_cost_usd === null ? 'text-slate-500 italic' : 'text-emerald-400'}>
+                            {formatCost(r.estimated_cost_usd)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           {loadError && (

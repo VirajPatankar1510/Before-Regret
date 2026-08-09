@@ -111,6 +111,27 @@ export async function ensureArticlesSchema(): Promise<void> {
     )
   `;
 
+  // Gemini token/cost tracking (see src/server/geminiUsageTracker.ts). Persisted here rather than
+  // kept in memory for the same reason property reports shouldn't be in-memory either: a
+  // serverless instance can vanish or a request can land on a different one at any time, and a
+  // cost counter that silently resets on that boundary would be misleading rather than merely
+  // imprecise. estimated_cost_usd can be NULL -- deliberately, for a model with no verified
+  // pricing entry, rather than a fabricated number.
+  await sql`
+    CREATE TABLE IF NOT EXISTS gemini_usage_log (
+      id SERIAL PRIMARY KEY,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      source TEXT NOT NULL,
+      model TEXT NOT NULL,
+      prompt_tokens INTEGER NOT NULL DEFAULT 0,
+      output_tokens INTEGER NOT NULL DEFAULT 0,
+      thinking_tokens INTEGER NOT NULL DEFAULT 0,
+      total_tokens INTEGER NOT NULL DEFAULT 0,
+      estimated_cost_usd DOUBLE PRECISION
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_gemini_usage_created_at ON gemini_usage_log(created_at)`;
+
   schemaEnsured = true;
 }
 
