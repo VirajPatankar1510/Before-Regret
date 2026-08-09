@@ -320,8 +320,12 @@ export function App() {
   useEffect(() => {
     if (currentStep === 'HOME' && pseoRoute.type === 'none') {
       applyHeadSeo({
-        title: 'BeforeRegret — Property Research from 20+ Public Records',
-        description: 'Free, address-based public record synthesis for US homebuyers and renters. Uncover FEMA flood zones, municipal permits, radon levels, noise, and broadband.',
+        // Kept in sync with dist/index.html's own static <title>/<meta description> (see
+        // scripts/prerender-homepage.tsx) -- this client-side call was still overwriting that
+        // honest static copy back to the old "20+ Public Records" overclaim on every real visit,
+        // since it runs on mount regardless of what the static HTML already says.
+        title: 'BeforeRegret — Know What to Check Before You Sign',
+        description: 'Free property research for US homebuyers. Live seismic hazard data, address validation, and era- and county-specific inspection priorities and seller questions -- honestly labeled, nothing fabricated.',
         canonicalUrl: 'https://www.beforeregret.com/',
         robotsDirective: 'index, follow',
         jsonLdSchema: [
