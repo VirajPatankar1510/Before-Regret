@@ -46,11 +46,6 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-32 -left-16 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-xs font-mono font-bold text-blue-300">
-            <Megaphone className="w-3.5 h-3.5" />
-            <span>Self-Serve Vendor Advertising</span>
-          </div>
-
           <div className="space-y-4 max-w-2xl">
             <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-white tracking-tight leading-tight">
               Two ways to put your business in front of people researching a property
@@ -80,7 +75,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
 
         {/* Two products */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* National Ads */}
+          {/* Topic Ads */}
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-5 shadow-xs flex flex-col">
             <div className="flex items-center justify-between">
               <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -91,7 +86,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               </span>
             </div>
             <div className="space-y-1">
-              <h2 className="font-serif text-xl font-bold text-slate-900">National Ads</h2>
+              <h2 className="font-serif text-xl font-bold text-slate-900">Topic Ads</h2>
               <p className="text-xs text-slate-500">Best for businesses with broad or multi-market reach</p>
             </div>
             <div className="text-3xl font-black text-slate-900">
@@ -137,7 +132,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               onClick={() => onNavigate('/guide-ads')}
               className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all cursor-pointer"
             >
-              <span>Advertise Nationally</span>
+              <span>Advertise by Topic</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -209,7 +204,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               <thead>
                 <tr className="text-left text-slate-400 uppercase text-[10px] tracking-wider">
                   <th className="py-2 px-2 font-semibold"> </th>
-                  <th className="py-2 px-2 font-semibold text-blue-700">National Ads</th>
+                  <th className="py-2 px-2 font-semibold text-blue-700">Topic Ads</th>
                   <th className="py-2 px-2 font-semibold text-emerald-700">ZIP-Targeted Report Ads</th>
                 </tr>
               </thead>
@@ -246,7 +241,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
 
         <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 text-xs sm:text-sm text-slate-600">
           <span className="font-bold text-slate-900">Not sure which one? </span>
-          If you'd take a customer from anywhere, National Ads reach more people for less per slot.
+          If you'd take a customer from anywhere, Topic Ads reach more people for less per slot.
           If you only serve one town or ZIP code, ZIP-Targeted Report Ads put you in front of someone
           researching that exact address instead of a general topic -- worth the higher price for that
           precision. Nothing stops you from buying both.
