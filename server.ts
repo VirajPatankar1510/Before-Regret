@@ -20,6 +20,7 @@ import {
 } from "./src/server/adminAuth.js";
 import { registerArticleRoutes } from "./src/server/articlesApi.js";
 import { registerCountyRoutes } from "./src/server/countiesApi.js";
+import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import { GEMINI_MODEL } from "./src/server/geminiModel.js";
 import { logGeminiUsage } from "./src/server/geminiUsageTracker.js";
@@ -117,6 +118,10 @@ export async function createApp() {
   // Public /api/counties/:slug read route only, no admin routes -- these rows are populated by
   // scripts/fetch-county-data.ts, not through an admin editor. See src/server/countiesApi.ts.
   registerCountyRoutes(app);
+
+  // --- Vendor ad slots on guide pages (Neon-backed, PayPal-billed) --------------------------
+  // Self-serve, open-market, no vendor login. See src/server/guideAdsApi.ts.
+  registerGuideAdsRoutes(app);
 
   // Master Sitemap Index Endpoint (/sitemap.xml and /sitemaps/sitemap-index.xml)
   app.get(["/sitemap.xml", "/sitemaps/sitemap-index.xml"], (req, res) => {

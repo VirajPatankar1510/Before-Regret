@@ -4,7 +4,7 @@ import { ChevronRight, Clock, Calendar, Loader2, MessageCircleQuestion, External
 import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../../utils/renderArticleMarkdown';
 import { resolveKnownSource } from '../../data/knownSources';
 import { ArticleClosingNote } from './ArticleClosingNote';
-import { AdSlot } from '../AdSlot';
+import { GuideAdSlot } from '../GuideAdSlot';
 
 interface GuidePageViewProps {
   guideSlug: string;
@@ -196,10 +196,11 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           </div>
         )}
 
-        {/* Ad slot: below Quick Answer, above the article body -- reader already has the direct
-            answer, hasn't started the deep-dive yet. Renders nothing until AdSense credentials
-            are configured (see AdSlot.tsx). */}
-        <AdSlot slotEnvVar="VITE_ADSENSE_SLOT_IN_ARTICLE_TOP" />
+        {/* Vendor ad slot: below Quick Answer, above the article body -- reader already has the
+            direct answer, hasn't started the deep-dive yet. Always renders something: the paying
+            vendor currently occupying this slot, or a recruitment CTA if it's unsold. See
+            src/server/guideAdsApi.ts and GuideAdSlot.tsx. */}
+        <GuideAdSlot articleId={article.id} position="top" guideTitle={article.title} />
 
         {/* Article Body */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm text-sm">
@@ -208,10 +209,10 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           </div>
         </div>
 
-        {/* Ad slot: below the article body, above our own closing CTA -- deliberately not
-            adjacent to/inside ArticleClosingNote below, so a Google ad never visually competes
+        {/* Vendor ad slot: below the article body, above our own closing CTA -- deliberately not
+            adjacent to/inside ArticleClosingNote below, so a vendor ad never visually competes
             with or gets mistaken for our own conversion element. */}
-        <AdSlot slotEnvVar="VITE_ADSENSE_SLOT_IN_ARTICLE_BOTTOM" />
+        <GuideAdSlot articleId={article.id} position="bottom" guideTitle={article.title} />
 
         <ArticleClosingNote onNavigate={onNavigate} />
 
