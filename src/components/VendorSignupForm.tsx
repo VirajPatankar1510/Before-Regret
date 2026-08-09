@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
-import { Search, Loader2, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
+import { Search, Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle } from 'lucide-react';
 import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
 
-type Stage = 'checking-form' | 'checking' | 'available' | 'full' | 'submitting' | 'success' | 'error';
+type Stage = 'checking-form' | 'checking' | 'available' | 'full' | 'submitting';
 
 interface SlotAvailability {
   slotsTotal: number;
   slotsTaken: number;
   slotsRemaining: number;
   available: boolean;
+  pricePerSlotUsd: number;
+  slotDurationDays: number;
 }
 
-// No self-serve payment yet -- v1 is a real, honest interest-capture form: check live slot
-// availability for a (ZIP, trade) pair, and if open, collect contact info. A human follows up
-// to complete billing manually. See /api/vendor-slots and /api/vendor-interest in server.ts.
+// Real self-serve checkout: check live slot availability for a (ZIP, trade) pair, collect
+// business details, then redirect to PayPal for actual payment. See src/server/zipAdsApi.ts.
+// Replaces the old interest-capture-only version of this form, which only logged a submission to
+// console and asked a human to follow up manually -- no payment ever happened there.
 export const VendorSignupForm: React.FC = () => {
   const [stage, setStage] = useState<Stage>('checking-form');
   const [tradeCategory, setTradeCategory] = useState('');
@@ -23,11 +26,10 @@ export const VendorSignupForm: React.FC = () => {
 
   const [businessName, setBusinessName] = useState('');
   const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [tagline, setTagline] = useState('');
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
-  const [successMessage, setSuccessMessage] = useState('');
 
   const checkAvailability = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,41 +40,52 @@ export const VendorSignupForm: React.FC = () => {
     setCheckError(null);
     setStage('checking');
     try {
-      const res = await fetch(`/api/vendor-slots?zip=${encodeURIComponent(zipCode)}&tradeCategory=${encodeURIComponent(tradeCategory)}`);
+      const res = await fetch(`/api/zip-ads/slots?zip=${encodeURIComponent(zipCode)}&tradeCategory=${encodeURIComponent(tradeCategory)}`);
       const data = await res.json();
-      if (!res.ok) {
+      if (!res.ok || !data.success) {
         setCheckError(data?.error || 'Could not check availability. Please try again.');
         setStage('checking-form');
         return;
       }
       setAvailability(data);
       setStage(data.available ? 'available' : 'full');
-    } catch (err) {
+    } catch {
       setCheckError('Could not check availability. Please try again.');
       setStage('checking-form');
     }
   };
 
-  const submitInterest = async (e: React.FormEvent) => {
+  const startCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitErrors([]);
+    if (!businessName.trim()) return setSubmitErrors(['Enter your business name.']);
+    if (!phone.trim()) return setSubmitErrors(['Enter a phone number for readers to call.']);
+    if (!contactEmail.trim()) return setSubmitErrors(['Enter a contact email for your receipt.']);
+
     setStage('submitting');
     try {
-      const res = await fetch('/api/vendor-interest', {
+      const res = await fetch('/api/zip-ads/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ businessName, tradeCategory, zipCode, phone, email, website, tagline }),
+        body: JSON.stringify({
+          businessName: businessName.trim(),
+          tradeCategory,
+          zipCode,
+          phone: phone.trim(),
+          website: website.trim() || undefined,
+          tagline: tagline.trim() || undefined,
+          contactEmail: contactEmail.trim(),
+        }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        setSubmitErrors(data?.errors || ['Something went wrong. Please try again.']);
-        setStage(data?.available === false ? 'full' : 'available');
+        setSubmitErrors(data?.errors || [data?.error || 'Could not start checkout. Please try again.']);
+        setStage('available');
         return;
       }
-      setSuccessMessage(data.message);
-      setStage('success');
-    } catch (err) {
-      setSubmitErrors(['Something went wrong. Please try again.']);
+      window.location.href = data.approvalUrl;
+    } catch {
+      setSubmitErrors(['Could not reach the server. Please try again.']);
       setStage('available');
     }
   };
@@ -148,7 +161,7 @@ export const VendorSignupForm: React.FC = () => {
             <span>{availability.slotsRemaining} of {availability.slotsTotal} slots open for {tradeCategory} in ZIP {zipCode}</span>
           </div>
 
-          <form onSubmit={submitInterest} className="space-y-3">
+          <form onSubmit={startCheckout} className="space-y-3">
             <input
               type="text" required placeholder="Business name" value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
@@ -156,13 +169,13 @@ export const VendorSignupForm: React.FC = () => {
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input
-                type="tel" required placeholder="Phone" value={phone}
+                type="tel" required placeholder="Phone readers will call" value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
               />
               <input
-                type="email" required placeholder="Email" value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="email" required placeholder="Contact email (for your receipt)" value={contactEmail}
+                onChange={(e) => setContactEmail(e.target.value)}
                 className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -178,8 +191,13 @@ export const VendorSignupForm: React.FC = () => {
             />
 
             {submitErrors.length > 0 && (
-              <ul className="text-xs text-red-600 font-medium space-y-0.5">
-                {submitErrors.map((err, idx) => <li key={idx}>{err}</li>)}
+              <ul className="text-xs text-red-600 font-medium space-y-0.5 flex flex-col">
+                {submitErrors.map((err, idx) => (
+                  <li key={idx} className="flex items-start gap-1.5">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    <span>{err}</span>
+                  </li>
+                ))}
               </ul>
             )}
 
@@ -189,19 +207,12 @@ export const VendorSignupForm: React.FC = () => {
               className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-60"
             >
               {stage === 'submitting' ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
-              <span>Reserve This Slot</span>
+              <span>Continue to PayPal -- ${availability.pricePerSlotUsd.toFixed(0)}</span>
             </button>
             <p className="text-[11px] text-slate-500 text-center">
-              No payment yet -- we'll reach out within 24 hours to complete setup. $29/month, less than $1/day. First come, first served; no refunds once billing starts.
+              ${availability.pricePerSlotUsd.toFixed(0)} flat for {availability.slotDurationDays} days, no subscription and no auto-renewal. First come, first served; slot reopens automatically once it expires unless you buy another {availability.slotDurationDays}-day window.
             </p>
           </form>
-        </div>
-      )}
-
-      {stage === 'success' && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center space-y-2">
-          <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
-          <p className="text-sm font-bold text-emerald-900">{successMessage}</p>
         </div>
       )}
     </div>

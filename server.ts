@@ -9,7 +9,7 @@ import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
 import { fetchNeighborhoodContextFinding } from "./src/engine/neighborhoodContext.js";
 import { getInspectionPriorities } from "./src/engine/inspectionPriorities.js";
 import { getSellerQuestions } from "./src/engine/sellerQuestions.js";
-import { getSponsoredVendorForZipAndTrade, FINDING_TRADE_CATEGORY, PRIORITY_TRADE_CATEGORY, getSlotAvailability, TRADE_CATEGORIES } from "./src/data/sponsoredVendors.js";
+import { FINDING_TRADE_CATEGORY, PRIORITY_TRADE_CATEGORY } from "./src/data/sponsoredVendors.js";
 import {
   isAdminConfigured,
   verifyPassword,
@@ -21,6 +21,7 @@ import {
 import { registerArticleRoutes } from "./src/server/articlesApi.js";
 import { registerCountyRoutes } from "./src/server/countiesApi.js";
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
+import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import { GEMINI_MODEL } from "./src/server/geminiModel.js";
 import { logGeminiUsage } from "./src/server/geminiUsageTracker.js";
@@ -122,6 +123,12 @@ export async function createApp() {
   // --- Vendor ad slots on guide pages (Neon-backed, PayPal-billed) --------------------------
   // Self-serve, open-market, no vendor login. See src/server/guideAdsApi.ts.
   registerGuideAdsRoutes(app);
+
+  // --- ZIP-targeted vendor ad slots inside reports (Neon-backed, PayPal-billed) --------------
+  // Self-serve, per-(zip, trade category) checkout, no vendor login. Replaces the old
+  // interest-capture-only /api/vendor-slots and /api/vendor-interest routes. See
+  // src/server/zipAdsApi.ts.
+  registerZipAdsRoutes(app);
 
   // Master Sitemap Index Endpoint (/sitemap.xml and /sitemaps/sitemap-index.xml)
   app.get(["/sitemap.xml", "/sitemaps/sitemap-index.xml"], (req, res) => {
@@ -278,74 +285,6 @@ export async function createApp() {
       console.error("[LocationIQ Tile Proxy Error]:", err);
       res.status(502).send("Tile fetch failed");
     }
-  });
-
-  // Vendor Slot Availability Check -- first come, first served, at most MAX_SLOTS_PER_ZIP_TRADE
-  // active sponsors per (ZIP, trade category) pair. Read-only; used by the signup form before it
-  // reveals the rest of the fields, and re-checked authoritatively again on actual submission
-  // below (never trust the client's own idea of whether a slot is still open).
-  app.get("/api/vendor-slots", (req, res) => {
-    const zipCode = typeof req.query.zip === 'string' ? req.query.zip.trim() : '';
-    const tradeCategory = typeof req.query.tradeCategory === 'string' ? req.query.tradeCategory.trim() : '';
-
-    if (!/^\d{5}$/.test(zipCode)) {
-      res.status(400).json({ error: "A valid 5-digit ZIP code is required." });
-      return;
-    }
-    if (!TRADE_CATEGORIES.includes(tradeCategory as any)) {
-      res.status(400).json({ error: "tradeCategory must be one of the supported categories." });
-      return;
-    }
-
-    res.json({ success: true, ...getSlotAvailability(zipCode, tradeCategory) });
-  });
-
-  // Vendor Interest Submission -- v1 has no self-serve payment or persistent vendor database yet
-  // (that's a separate, larger piece: Stripe subscriptions, webhooks, a real DB). This endpoint
-  // re-validates slot availability server-side and logs the structured submission so it's visible
-  // in Vercel's Runtime Logs; a human follows up manually to complete payment and add the vendor
-  // to sponsoredVendors.ts. Never writes to SPONSORED_VENDORS itself -- that stays a deliberate,
-  // manual step so a report never shows a sponsor who hasn't actually paid.
-  app.post("/api/vendor-interest", (req, res) => {
-    const { businessName, tradeCategory, zipCode, phone, email, website, tagline } = req.body || {};
-
-    const errors: string[] = [];
-    if (typeof businessName !== 'string' || !businessName.trim()) errors.push("businessName is required.");
-    if (typeof tradeCategory !== 'string' || !TRADE_CATEGORIES.includes(tradeCategory as any)) errors.push("tradeCategory must be one of the supported categories.");
-    if (typeof zipCode !== 'string' || !/^\d{5}$/.test(zipCode)) errors.push("A valid 5-digit zipCode is required.");
-    if (typeof phone !== 'string' || phone.trim().length < 7) errors.push("A valid phone is required.");
-    if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push("A valid email is required.");
-    if (errors.length > 0) {
-      res.status(400).json({ success: false, errors });
-      return;
-    }
-
-    const availability = getSlotAvailability(zipCode, tradeCategory);
-    if (!availability.available) {
-      res.status(409).json({
-        success: false,
-        errors: [`Both slots for ${tradeCategory} in ZIP ${zipCode} are already taken.`],
-        ...availability,
-      });
-      return;
-    }
-
-    console.log("[Vendor Interest Submission]", JSON.stringify({
-      businessName: businessName.trim(),
-      tradeCategory,
-      zipCode,
-      phone: phone.trim(),
-      email: email.trim(),
-      website: typeof website === 'string' ? website.trim() : undefined,
-      tagline: typeof tagline === 'string' ? tagline.trim() : undefined,
-      slotsRemainingBeforeThisRequest: availability.slotsRemaining,
-      submittedAt: new Date().toISOString(),
-    }));
-
-    res.json({
-      success: true,
-      message: "Thanks -- we've received your request and will reach out within 24 hours to complete setup.",
-    });
   });
 
   // GET Standalone Report by Unique ID
@@ -555,13 +494,18 @@ export async function createApp() {
     // (not whatever the frontend sent), in parallel since neither depends on the other. Each
     // returns null rather than throwing on failure, so one being unavailable never blocks the
     // report or the other finding.
-    const [liveSeismicFinding, liveNeighborhoodFinding] = await Promise.all([
+    // zipVendorMap is fetched once here (single query for every active vendor in this ZIP) and
+    // threaded through to both attachSponsoredVendors and buildInspectionPrioritiesForReport below
+    // -- avoids querying per finding / per inspection-priority item (up to ~14 round trips
+    // otherwise). See fetchActiveZipVendors in src/server/zipAdsApi.ts.
+    const [liveSeismicFinding, liveNeighborhoodFinding, zipVendorMap] = await Promise.all([
       fetchSeismicHazardFinding(gateResult.layer1.lat as number, gateResult.layer1.lon as number),
       fetchNeighborhoodContextFinding(
         gateResult.layer1.lat as number,
         gateResult.layer1.lon as number,
         typeof yearBuilt === 'number' ? yearBuilt : parseInt(String(yearBuilt ?? ''), 10) || null
       ),
+      fetchActiveZipVendors(resolvedMeta.zipCode),
     ]);
 
     const fallbackReport = generateStructuredPropertyReport(
@@ -875,9 +819,9 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
 
         let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
         cleanedReport = stripInternalMetadata(cleanedReport);
-        attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
+        attachSponsoredVendors(cleanedReport, zipVendorMap);
         attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
-        cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode, resolvedMeta.state);
+        cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, zipVendorMap);
         cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType);
 
         if (!cleanedReport.id) {
@@ -897,9 +841,9 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
 
     let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
-    attachSponsoredVendors(cleanedReport, resolvedMeta.zipCode);
+    attachSponsoredVendors(cleanedReport, zipVendorMap);
     attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
-    cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.zipCode, resolvedMeta.state);
+    cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, zipVendorMap);
     cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType);
 
     if (!cleanedReport.id) {
@@ -1277,16 +1221,15 @@ function validateAndFixReportContradictions(report: any, liveFindings: any[] = [
 }
 
 // Attaches a real, paying vendor to each finding whose trade category matches, for this specific
-// ZIP -- contextual, per-finding placement instead of one generic report-level slot. Replaces the
-// old getSponsoredVendorForZip(zip) call, which matched on ZIP alone and could only ever surface
-// one vendor per report regardless of how many paying vendors actually cover that ZIP across
-// different trades. Mutates report.canonicalFindings in place; safe to call after
-// validateAndFixReportContradictions has populated that array.
-function attachSponsoredVendors(report: any, zipCode: string) {
+// ZIP -- contextual, per-finding placement instead of one generic report-level slot. zipVendorMap
+// is fetched once per report (see fetchActiveZipVendors in src/server/zipAdsApi.ts) rather than
+// queried here per finding, keyed by trade category. Mutates report.canonicalFindings in place;
+// safe to call after validateAndFixReportContradictions has populated that array.
+function attachSponsoredVendors(report: any, zipVendorMap: Map<string, any>) {
   if (!report || !Array.isArray(report.canonicalFindings)) return report;
   for (const finding of report.canonicalFindings) {
     const tradeCategory = FINDING_TRADE_CATEGORY[finding.id as keyof typeof FINDING_TRADE_CATEGORY];
-    finding.sponsoredVendor = tradeCategory ? getSponsoredVendorForZipAndTrade(zipCode, tradeCategory) : null;
+    finding.sponsoredVendor = tradeCategory ? zipVendorMap.get(tradeCategory) || null : null;
   }
   return report;
 }
@@ -1325,11 +1268,12 @@ function attachFindingSourceUrls(report: any, county: string) {
 
 // Computes the era-based inspection priorities (engine/inspectionPriorities.ts) for this
 // (year built, county) pair and attaches a per-item vendor match, same pattern as
-// attachSponsoredVendors above but for priority items instead of findings. yearBuilt is
-// requester-declared and unvalidated at this point -- coerced defensively; the engine itself
-// fails closed to null only for a missing/implausible year built, since national rules now cover
-// every US county (see src/engine/inspectionPriorities.ts).
-function buildInspectionPrioritiesForReport(rawYearBuilt: unknown, county: string, zipCode: string, state: string) {
+// attachSponsoredVendors above but for priority items instead of findings, consulting the same
+// pre-fetched zipVendorMap rather than querying per item. yearBuilt is requester-declared and
+// unvalidated at this point -- coerced defensively; the engine itself fails closed to null only
+// for a missing/implausible year built, since national rules now cover every US county (see
+// src/engine/inspectionPriorities.ts).
+function buildInspectionPrioritiesForReport(rawYearBuilt: unknown, county: string, state: string, zipVendorMap: Map<string, any>) {
   const yearBuilt = typeof rawYearBuilt === 'number' ? rawYearBuilt : parseInt(String(rawYearBuilt ?? ''), 10);
   const result = getInspectionPriorities(yearBuilt, county, state);
   if (!result) return null;
@@ -1339,7 +1283,7 @@ function buildInspectionPrioritiesForReport(rawYearBuilt: unknown, county: strin
       const tradeCategory = PRIORITY_TRADE_CATEGORY[item.id as keyof typeof PRIORITY_TRADE_CATEGORY];
       return {
         ...item,
-        sponsoredVendor: tradeCategory ? getSponsoredVendorForZipAndTrade(zipCode, tradeCategory) : null,
+        sponsoredVendor: tradeCategory ? zipVendorMap.get(tradeCategory) || null : null,
       };
     }),
   };

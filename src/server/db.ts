@@ -183,6 +183,50 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_guide_ad_purchases_slot ON guide_ad_purchases(article_id, position)`;
 
+  // zip_ad_orders / zip_ad_purchases: same split as guide_ad_orders/guide_ad_purchases above and
+  // for the same reason (order = checkout attempt, purchase = actually-sold inventory, "who's
+  // active right now" is always a live query never a status flag). One selection per order here
+  // (zip_code + trade_category), not a cart of many, because this product is inherently
+  // one-ZIP-one-trade per vendor rather than "pick as many as you want" -- MAX_SLOTS_PER_ZIP_TRADE
+  // (2) caps how many vendors can be active per (zip, trade) pair at once, enforced by checking
+  // COUNT(*) of active, unexpired purchases rather than a unique constraint, since a slot reopens
+  // automatically once paid_through passes with no renewal action needed.
+  await sql`
+    CREATE TABLE IF NOT EXISTS zip_ad_orders (
+      id SERIAL PRIMARY KEY,
+      paypal_order_id TEXT UNIQUE NOT NULL,
+      business_name TEXT NOT NULL,
+      trade_category TEXT NOT NULL,
+      zip_code TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      website TEXT,
+      tagline TEXT,
+      contact_email TEXT NOT NULL,
+      amount_usd NUMERIC(10,2) NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      paypal_capture_id TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS zip_ad_purchases (
+      id SERIAL PRIMARY KEY,
+      order_id INTEGER NOT NULL REFERENCES zip_ad_orders(id),
+      zip_code TEXT NOT NULL,
+      trade_category TEXT NOT NULL,
+      business_name TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      website TEXT,
+      tagline TEXT,
+      paid_through TIMESTAMPTZ NOT NULL,
+      active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_zip_ad_purchases_slot ON zip_ad_purchases(zip_code, trade_category)`;
+
   schemaEnsured = true;
 }
 
