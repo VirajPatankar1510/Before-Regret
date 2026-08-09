@@ -87,7 +87,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                   <strong>Consumer Property Insight Reports:</strong> Property research and due diligence guides helping home buyers and renters uncover publicly available information about a property before making an offer or signing a lease. Every consumer account is entitled to <strong>one free report</strong>; each additional report is a one-time purchase of <strong>$14.99 USD</strong>.
                 </li>
                 <li>
-                  <strong>Paid Business Vendor Subscriptions:</strong> A recurring monthly subscription service enabling local business vendors (contractors, licensed inspectors, structural engineers, environmental specialists) to display sponsored placements ("Need help inspecting this?" sections, clearly labeled "Sponsored") within designated zip codes and trade categories on consumer reports.
+                  <strong>Paid Business Vendor Placements:</strong> Two self-serve, one-time-payment advertising products for local business vendors (contractors, licensed inspectors, structural engineers, environmental specialists): a <strong>Topic Ad</strong> shown on educational guide articles across the site, and a <strong>Report Ad</strong> shown as a sponsored placement ("Need help verifying this?" section, clearly labeled "Sponsored") within a designated zip code and trade category on consumer reports. Both are flat, one-time charges for a fixed 30-day placement window -- neither is a subscription, and neither renews automatically.
                 </li>
               </ul>
             </section>
@@ -120,15 +120,15 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               </h2>
               <div className="space-y-2.5 text-xs text-slate-600">
                 <p>
-                  <strong>4.1 Subscription Service & Pricing:</strong> Local business vendors may subscribe to display a sponsored placement on property reports for one specific zip code and trade category combination, at a flat rate of <strong>$29.00 USD per month</strong>. This is a recurring subscription that <strong>automatically renews and re-bills every month</strong> until cancelled by the vendor or terminated by Atmostellar as described below. A separate subscription, billed separately, is required for each additional zip code and/or trade category combination a vendor wishes to appear in.
+                  <strong>4.1 Placement Pricing & Payment:</strong> Local business vendors may purchase one of two self-serve placement products, each a <strong>single, one-time, non-recurring charge</strong> for a fixed 30-day placement window: a <strong>Topic Ad</strong> at a flat rate of <strong>$7.99 USD</strong> per (guide article, position) slot, or a <strong>Report Ad</strong> at a flat rate of <strong>$29.00 USD</strong> per (zip code, trade category) slot. Neither product is a subscription; there is <strong>no automatic renewal or re-billing of any kind</strong>. To keep a placement active beyond its 30-day window, the vendor must return and purchase another window -- if they do not, the slot automatically becomes available to other vendors. A separate purchase, charged separately, is required for each additional slot a vendor wishes to appear in.
                 </p>
 
                 <p>
-                  <strong>4.2 First-Come, First-Served Slot Allocation:</strong> Vendor placements are bound to the specific zip code and trade category (e.g., Roof Inspection, Electrician, Home Inspector) selected during enrollment. To maintain report clarity, placements are capped at a maximum of <strong>two (2) active vendors per trade category within any individual zip code</strong>. Available slots are allocated strictly on a first-come, first-served basis at the time payment is successfully completed; selecting a zip code and trade category does not reserve a slot until payment succeeds.
+                  <strong>4.2 First-Come, First-Served Slot Allocation:</strong> Report Ad placements are bound to the specific zip code and trade category (e.g., Roof Inspection, Electrician, Home Inspector) selected at checkout, capped at a maximum of <strong>two (2) active vendors per trade category within any individual zip code</strong>. Topic Ad placements are bound to the specific guide article and position selected at checkout, with one vendor per position. Available slots are allocated strictly on a first-come, first-served basis at the time payment is successfully completed; selecting a slot does not reserve it until payment succeeds.
                 </p>
 
                 <p>
-                  <strong>4.3 Vendor Cancellation, Non-Payment & Slot Release:</strong> Vendors may cancel their recurring subscription at any time by contacting <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>. If a scheduled renewal payment is declined, fails, or is not completed for any reason, or if a vendor cancels, that vendor's placement is removed and the slot becomes immediately available to other vendors on a first-come, first-served basis. <strong>All payments are final. No refunds, partial refunds, or credits are issued under any circumstance</strong>, including self-cancellation, non-payment, or removal by Atmostellar as described in Section 4.4. See our Cancellation & Refund Policy for full detail.
+                  <strong>4.3 Placement Expiration & Early Removal:</strong> A placement runs for the fixed 30-day window it was purchased for and then expires automatically -- there is no recurring payment to cancel. A vendor may also have an active placement removed before it expires at any time by contacting <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>. Upon expiration, or upon early removal at the vendor's request, the slot becomes immediately available to other vendors on a first-come, first-served basis. <strong>All payments are final. No refunds, partial refunds, or credits are issued under any circumstance</strong>, including early removal at the vendor's request or removal by Atmostellar as described in Section 4.4. See our Cancellation & Refund Policy for full detail.
                 </p>
 
                 <p>
@@ -182,7 +182,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               <ul className="list-disc pl-5 space-y-1.5">
                 <li><strong>Severability:</strong> If any provision of these Terms is held invalid or unenforceable, that provision shall be severed and the remaining provisions shall continue in full force.</li>
                 <li><strong>Modifications:</strong> Atmostellar reserves the right to modify these Terms at any time. Updated Terms will be published on the platform with a revised effective date.</li>
-                <li><strong>Age Requirement:</strong> You must be at least 18 years of age to use this platform or subscribe as a business vendor.</li>
+                <li><strong>Age Requirement:</strong> You must be at least 18 years of age to use this platform or purchase a placement as a business vendor.</li>
               </ul>
             </section>
 

@@ -76,7 +76,7 @@ ${message}`;
               How Can We Help You?
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
-              Before Regret is a property research product owned and operated by Atmostellar. Whether you are a home buyer inquiring about a report or a business vendor managing a sponsored placement subscription, we are here to assist.
+              Before Regret is a property research product owned and operated by Atmostellar. Whether you are a home buyer inquiring about a report or a business vendor managing a sponsored placement, we are here to assist.
             </p>
           </div>
           
@@ -152,7 +152,7 @@ ${message}`;
               )}
               {activeTab === 'vendor' && (
                 <p>
-                  <strong>Business Vendor Support:</strong> For contractors, inspectors, structural engineers, or trade specialists with questions about sponsored placement subscriptions, zip code availability, or monthly billing.
+                  <strong>Business Vendor Support:</strong> For contractors, inspectors, structural engineers, or trade specialists with questions about sponsored placements, zip code availability, or billing.
                 </p>
               )}
               {activeTab === 'error_flag' && (
@@ -218,7 +218,7 @@ ${message}`;
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder={
                       activeTab === 'vendor'
-                        ? 'e.g., Change subscription zip codes or billing'
+                        ? 'e.g., Change placement zip codes or billing'
                         : activeTab === 'error_flag'
                         ? 'e.g., Flood zone classification correction for ZIP 78701'
                         : 'e.g., Question about Austin TX property report sources'
@@ -336,7 +336,7 @@ ${message}`;
               <span>Frequently Asked Support Questions</span>
             </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Quick answers to common questions about report data, vendor listings, and subscription terms.
+              Quick answers to common questions about report data, vendor listings, and placement terms.
             </p>
           </div>
 
@@ -365,10 +365,10 @@ ${message}`;
             {/* FAQ 3 */}
             <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
               <h3 className="font-bold text-slate-900 text-xs sm:text-sm">
-                How do I cancel my vendor subscription?
+                How do I remove my vendor placement early?
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Local business vendors on paid monthly subscriptions can cancel their recurring subscription at any time by emailing <strong>hello@beforeregret.com</strong>. Cancellation takes effect immediately and the placement is removed. All payments are final -- no refunds are issued for any unused portion of the current billing cycle.
+                Topic Ad and Report Ad placements are one-time purchases for a fixed 30-day window, not a subscription -- there's nothing to cancel because nothing renews automatically. If you'd like an active placement removed before it expires, email <strong>hello@beforeregret.com</strong> and we'll remove it right away. All payments are final -- no refunds are issued for any unused portion of the 30-day window.
               </p>
             </div>
 

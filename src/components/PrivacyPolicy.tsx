@@ -44,7 +44,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               Privacy Policy
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              At <strong>Atmostellar</strong> (operating the brand name <strong>Before Regret</strong>), we respect your privacy and are committed to protecting personal data collected across our free consumer property research platform and paid vendor subscription services. Support Contact: <a href="mailto:hello@beforeregret.com" className="text-blue-600 hover:underline font-bold">hello@beforeregret.com</a>.
+              At <strong>Atmostellar</strong> (operating the brand name <strong>Before Regret</strong>), we respect your privacy and are committed to protecting personal data collected across our free consumer property research platform and paid vendor placement services. Support Contact: <a href="mailto:hello@beforeregret.com" className="text-blue-600 hover:underline font-bold">hello@beforeregret.com</a>.
             </p>
           </div>
 
@@ -108,7 +108,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                 <span>3. Payment Card Handling & Processor Security</span>
               </h2>
               <p className="text-xs text-emerald-900 leading-relaxed">
-                Vendor subscription fees are processed entirely through a PCI-DSS Level 1 compliant secure third-party payment processor.
+                Vendor placement fees are processed entirely through a PCI-DSS Level 1 compliant secure third-party payment processor.
               </p>
               <p className="text-xs font-bold text-emerald-950 bg-white p-3 rounded-xl border border-emerald-200">
                 Atmostellar NEVER stores, transmits, or sees full payment card numbers, credit card CVVs, or bank credentials directly on our servers. All financial data is encrypted and tokenized by the third-party payment gateway.
@@ -124,7 +124,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               <ul className="list-disc pl-5 space-y-1 text-xs text-slate-600">
                 <li>Generating and rendering free property research reports.</li>
                 <li>Verifying trade licensure for local business vendors prior to featuring sponsored placements.</li>
-                <li>Managing vendor monthly auto-renewal billing and account modifications.</li>
+                <li>Managing vendor placement billing and account modifications.</li>
                 <li>Auditing dataset accuracy, resolving user data error flags, and improving pSEO page rendering.</li>
                 <li>Maintaining cybersecurity, detecting abuse, and fulfilling legal tax and accounting requirements.</li>
               </ul>
@@ -140,7 +140,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               </p>
               <ul className="list-disc pl-5 space-y-1.5 text-xs text-slate-600">
                 <li>
-                  <strong>Vendor Business Information:</strong> For subscribed vendors, business contact details (company name, trade category, phone number, and logo) appear publicly within sponsored placements ("Need help verifying this?" sections) on free property reports in the vendor's selected zip codes. Vendor internal billing records are never disclosed publicly.
+                  <strong>Vendor Business Information:</strong> For vendors with an active placement, business contact details (company name, trade category, phone number, and logo) appear publicly within sponsored placements ("Need help verifying this?" sections) on free property reports in the vendor's selected zip codes. Vendor internal billing records are never disclosed publicly.
                 </li>
                 <li>
                   <strong>Consumer Data Privacy:</strong> Consumer search queries, IP addresses, and personal inquiry emails are <strong>NEVER sold, rented, monetized, or shared</strong> with third-party advertisers, market brokers, or commercial vendors.
@@ -170,7 +170,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                 7. Data Retention & User Rights
               </h2>
               <p>
-                We retain vendor registration and invoice records for the duration of the active subscription plus required legal tax retention periods. Consumer search logs are retained in aggregated, non-personally-identifiable form for system optimization.
+                We retain vendor registration and receipt records for the duration of the active placement plus required legal tax retention periods. Consumer search logs are retained in aggregated, non-personally-identifiable form for system optimization.
               </p>
               <p>
                 <strong>Your Data Rights:</strong> You have the right to request access to, correction of, or permanent deletion of your personal information stored by Atmostellar. To submit a data privacy request, email <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>. Privacy requests are fulfilled within 14 business days.
