@@ -28,7 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={onNewSearch}
             className="flex items-center gap-2.5 text-slate-900 group text-left cursor-pointer"
           >
-            <Logo className="w-9 h-9 shrink-0 transition-transform group-hover:scale-105" color="#1A6CFF" />
+            <Logo className="w-9 h-9 shrink-0 transition-transform group-hover:scale-105" />
             <div>
               <div className="font-extrabold text-base tracking-tight text-slate-900 flex items-center gap-1.5">
                 <span>Before Regret</span>
