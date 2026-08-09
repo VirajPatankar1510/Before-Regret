@@ -258,7 +258,7 @@ export function App() {
 
     // No pSEO route matched -- if we're sitting at the root path, make sure we actually land on
     // the homepage rather than a stale non-HOME step restored from a prior page's sessionStorage
-    // (e.g. the user was on /vendors, then hard-navigated straight to the bare domain).
+    // (e.g. the user was on /report-ads, then hard-navigated straight to the bare domain).
     const isRoot = pathname === '/';
     if (isRoot) {
       setPseoRoute({ type: 'none' });
