@@ -172,6 +172,8 @@ function GuideStaticBody({ article, relatedGuides }: { article: Article; related
           <div className="max-w-none">{renderArticleMarkdown(article.bodyMarkdown)}</div>
         </div>
 
+        <ArticleClosingNote onNavigate={noNav} />
+
         {relatedGuides.length > 0 && (
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
             <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Related Guides</h2>
@@ -188,8 +190,6 @@ function GuideStaticBody({ article, relatedGuides }: { article: Article; related
             </div>
           </div>
         )}
-
-        <ArticleClosingNote onNavigate={noNav} />
 
         {article.sources.length > 0 && (
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
