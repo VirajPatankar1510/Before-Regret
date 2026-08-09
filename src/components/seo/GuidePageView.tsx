@@ -230,10 +230,18 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           </div>
         </div>
 
-        {/* Related Guides: placed immediately after the body, before the reader has a reason to
-            bounce, rather than at the very bottom of the page below the ad slot and closing CTA.
-            Also the fix for every guide's biggest internal-linking gap -- see
-            src/utils/relatedGuides.ts. */}
+        {/* Vendor ad slot: below the article body, above our own closing CTA -- deliberately not
+            adjacent to/inside ArticleClosingNote below, so a vendor ad never visually competes
+            with or gets mistaken for our own conversion element. */}
+        <GuideAdSlot articleId={article.id} position="bottom" guideTitle={article.title} />
+
+        <ArticleClosingNote onNavigate={onNavigate} />
+
+        {/* Related Guides: placed after our own conversion CTA, not before it -- the closing note
+            above is the one thing on this page we most want the reader to act on, and putting
+            more reading material ahead of it would compete with that. Still well above Sources,
+            since exploring more guides is a more likely next click than following a citation.
+            Fixes every guide's biggest internal-linking gap -- see src/utils/relatedGuides.ts. */}
         {relatedGuides.length > 0 && (
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
             <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Related Guides</h2>
@@ -251,13 +259,6 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             </div>
           </div>
         )}
-
-        {/* Vendor ad slot: below the article body, above our own closing CTA -- deliberately not
-            adjacent to/inside ArticleClosingNote below, so a vendor ad never visually competes
-            with or gets mistaken for our own conversion element. */}
-        <GuideAdSlot articleId={article.id} position="bottom" guideTitle={article.title} />
-
-        <ArticleClosingNote onNavigate={onNavigate} />
 
         {/* Sources -- resolved from a hand-verified lookup (src/data/knownSources.ts), never
             from a URL the model wrote itself. See src/server/articleGenerator.ts for why. */}
