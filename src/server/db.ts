@@ -132,6 +132,57 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_gemini_usage_created_at ON gemini_usage_log(created_at)`;
 
+  // Vendor ad slots on guide pages (see src/server/guideAdsApi.ts). Two tables, not one:
+  // guide_ad_orders is the checkout attempt (one row per PayPal order, holding the pending slot
+  // selection as JSON until captured); guide_ad_purchases is the actual sold inventory (one row
+  // per slot actually paid for). Splitting them matters because a single order can buy many
+  // slots at once (the vendor picks N guide pages in one checkout), and a slot can be resold
+  // later once it expires -- (article_id, position) is deliberately NOT unique here, "who's
+  // active right now" is always a live query (paid_through > now() AND active), never a status
+  // flag that could drift stale.
+  //
+  // No auto-renewal by design: $7.99 buys a flat 30-day window (paid_through), full stop. No
+  // recurring billing was built for a feature with zero proven vendor demand yet -- the existing
+  // PayPal integration here only does one-time orders anyway, and true subscriptions are a
+  // separate integration (PayPal Billing Plans + webhooks) not worth building before anyone's
+  // paid for anything once.
+  await sql`
+    CREATE TABLE IF NOT EXISTS guide_ad_orders (
+      id SERIAL PRIMARY KEY,
+      paypal_order_id TEXT UNIQUE NOT NULL,
+      business_name TEXT NOT NULL,
+      trade_category TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      website TEXT,
+      tagline TEXT,
+      contact_email TEXT NOT NULL,
+      slots_json TEXT NOT NULL,
+      amount_usd NUMERIC(10,2) NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      paypal_capture_id TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS guide_ad_purchases (
+      id SERIAL PRIMARY KEY,
+      order_id INTEGER NOT NULL REFERENCES guide_ad_orders(id),
+      article_id INTEGER NOT NULL,
+      position TEXT NOT NULL,
+      business_name TEXT NOT NULL,
+      trade_category TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      website TEXT,
+      tagline TEXT,
+      paid_through TIMESTAMPTZ NOT NULL,
+      active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_guide_ad_purchases_slot ON guide_ad_purchases(article_id, position)`;
+
   schemaEnsured = true;
 }
 

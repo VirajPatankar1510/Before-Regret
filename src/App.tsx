@@ -5,6 +5,8 @@ import { ResearchProgressView } from './components/ResearchProgressView';
 import { ResearchSummaryView } from './components/ResearchSummaryView';
 import { PropertyReportView } from './components/PropertyReportView';
 import { Vendors } from './components/Vendors';
+import { GuideAdsCheckout } from './components/GuideAdsCheckout';
+import { GuideAdsCheckoutSuccess } from './components/GuideAdsCheckoutSuccess';
 import { ReportGatingModal } from './components/ReportGatingModal';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from './components/ErrorBoundary';
@@ -110,7 +112,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guide' | 'county' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'guide' | 'county' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'guideAds' | 'guideAdsSuccess' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
     countySlug?: string;
   }>({ type: 'none' });
@@ -120,13 +122,24 @@ export function App() {
     // Normalize path trailing slash
     const path = pathname.endsWith('/') ? pathname : `${pathname}/`;
 
-    if (path === '/vendors/' || path.startsWith('/vendors') || path.startsWith('/advertise')) {
-      if (path.startsWith('/advertise')) {
-        try {
-          window.history.replaceState({}, '', '/vendors');
-        } catch (e) {}
-      }
+    if (path === '/vendors/' || path.startsWith('/vendors')) {
       setPseoRoute({ type: 'vendors' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    // Separate from /vendors on purpose: that's an older, interest-capture-only flow (a human
+    // follows up manually, no payment happens there). This one takes real payment immediately
+    // for a structurally different product (per-guide-page ad slots, not per-ZIP), and mixing the
+    // two very different flows into one page/route would confuse both. /advertise used to alias
+    // to /vendors -- it now points here instead, since this is what "advertise" actually means now.
+    if (path === '/guide-ads/success/' || path.startsWith('/guide-ads/success')) {
+      setPseoRoute({ type: 'guideAdsSuccess' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+    if (path === '/guide-ads/' || path.startsWith('/guide-ads') || path.startsWith('/advertise')) {
+      setPseoRoute({ type: 'guideAds' });
       setCurrentStep('PSEO');
       return true;
     }
@@ -453,6 +466,20 @@ export function App() {
         canonicalUrl: 'https://www.beforeregret.com/vendors/',
         robotsDirective: 'noindex, nofollow'
       });
+    } else if (pseoRoute.type === 'guideAds') {
+      applyHeadSeo({
+        title: 'Advertise on Guides | BeforeRegret',
+        description: 'Self-serve ad slots on BeforeRegret guide pages -- $7.99 per slot, 30 days, open to any business.',
+        canonicalUrl: 'https://www.beforeregret.com/guide-ads/',
+        robotsDirective: 'noindex, nofollow'
+      });
+    } else if (pseoRoute.type === 'guideAdsSuccess') {
+      applyHeadSeo({
+        title: 'Payment Confirmation | BeforeRegret',
+        description: 'Guide ad slot payment confirmation.',
+        canonicalUrl: 'https://www.beforeregret.com/guide-ads/success/',
+        robotsDirective: 'noindex, nofollow'
+      });
     } else if (currentStep === 'REPORT') {
       applyHeadSeo({
         title: `Property Insights | ${report?.propertyInfo?.address || 'Subject Property'}`,
@@ -711,6 +738,12 @@ export function App() {
           <>
             {pseoRoute.type === 'vendors' && (
               <Vendors onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'guideAds' && (
+              <GuideAdsCheckout onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'guideAdsSuccess' && (
+              <GuideAdsCheckoutSuccess onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'admin' && (
               <AdminGate>
