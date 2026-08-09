@@ -44,7 +44,7 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
           onClick={() => (onNavigate ? onNavigate('/advertise') : undefined)}
           className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 cursor-pointer"
         >
-          Serve a wide area instead of one ZIP? Compare this against guide-page ads →
+          Serve a wide area instead of one ZIP? Compare this against our National Ads option →
         </button>
 
         {/* Hero Banner */}
@@ -58,10 +58,10 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
 
           <div className="space-y-4 max-w-3xl">
             <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-white tracking-tight leading-tight">
-              Put your business in front of buyers actively researching properties in your zip codes.
+              Put your business in front of people actively researching properties in your ZIP codes.
             </h1>
             <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-              BeforeRegret users are actively researching insights — comparing addresses, preparing offers, scheduling inspections. These are the highest-intent homebuyer moments in the market.
+              Your placement runs inside the actual property report someone is reading for that address -- not a banner they scroll past.
             </p>
           </div>
         </div>
