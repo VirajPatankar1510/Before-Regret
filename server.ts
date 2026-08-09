@@ -22,6 +22,7 @@ import { registerArticleRoutes } from "./src/server/articlesApi.js";
 import { registerCountyRoutes } from "./src/server/countiesApi.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import { GEMINI_MODEL } from "./src/server/geminiModel.js";
+import { logGeminiUsage } from "./src/server/geminiUsageTracker.js";
 import {
   isPayPalConfigured,
   createPayPalOrder,
@@ -827,6 +828,9 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
           }
         });
 
+        // Fire-and-forget -- never let usage logging affect the report response the customer
+        // is actually waiting on. See src/server/geminiUsageTracker.ts.
+        logGeminiUsage('report_generation', GEMINI_MODEL, response.usageMetadata);
         const rawText = response.text || "{}";
         const parsedReport = JSON.parse(rawText);
 

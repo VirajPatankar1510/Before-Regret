@@ -3,6 +3,8 @@ import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
 import { buildArticlePrompt } from './articleGenerator.js';
 import { GEMINI_MODEL, isQuotaError } from './geminiModel.js';
+import { logGeminiUsage } from './geminiUsageTracker.js';
+import type { GenerateContentResponseUsageMetadata } from '@google/genai';
 
 // Real read/write path for editorial articles, replacing the static EDITORIAL_GUIDES_DATASET
 // array and the fake SeoAdminPanel "publish" button that only ever changed local React state.
@@ -169,10 +171,16 @@ export function registerArticleRoutes(app: Express) {
       res.setHeader('Cache-Control', 'no-cache');
       res.flushHeaders?.();
 
+      // Gemini's streaming usageMetadata is cumulative per chunk, not incremental -- the last
+      // chunk that carries it reflects the full call's totals, so overwriting on every chunk
+      // rather than summing is correct here.
+      let lastUsage: GenerateContentResponseUsageMetadata | undefined;
       for await (const chunk of stream) {
         const text = chunk.text;
         if (text) res.write(text);
+        if (chunk.usageMetadata) lastUsage = chunk.usageMetadata;
       }
+      logGeminiUsage('article_generation', GEMINI_MODEL, lastUsage);
       res.end();
     } catch (err: any) {
       console.error('[articles] generate failed:', err);
@@ -195,6 +203,47 @@ export function registerArticleRoutes(app: Express) {
   });
 
   // --- Admin: list all (drafts and published) -------------------------------------------------
+  // --- Admin: Gemini token usage / cost summary, for the live counter in SeoAdminPanel.tsx -----
+  app.get('/api/admin/gemini-usage', requireAdmin, async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    try {
+      // Three window sizes computed in one round trip rather than three separate queries -- each
+      // FILTER clause sums against the same scanned rows. estimated_cost_usd can be NULL (unknown
+      // model pricing, see geminiUsageTracker.ts); SUM() over an all-NULL group correctly returns
+      // NULL rather than 0, which the client renders as "cost unknown" instead of a false "$0.00".
+      const rows = await withDb((sql) => sql`
+        SELECT
+          COALESCE(SUM(total_tokens) FILTER (WHERE created_at >= CURRENT_DATE), 0) AS today_tokens,
+          SUM(estimated_cost_usd) FILTER (WHERE created_at >= CURRENT_DATE) AS today_cost_usd,
+          COALESCE(SUM(total_tokens) FILTER (WHERE created_at >= date_trunc('month', now())), 0) AS month_tokens,
+          SUM(estimated_cost_usd) FILTER (WHERE created_at >= date_trunc('month', now())) AS month_cost_usd,
+          COALESCE(SUM(total_tokens), 0) AS all_time_tokens,
+          SUM(estimated_cost_usd) AS all_time_cost_usd,
+          COUNT(*) FILTER (WHERE created_at >= CURRENT_DATE) AS today_calls,
+          COUNT(*) AS all_time_calls
+        FROM gemini_usage_log
+      `);
+      const recent = await withDb((sql) => sql`
+        SELECT created_at, source, model, total_tokens, estimated_cost_usd
+        FROM gemini_usage_log ORDER BY created_at DESC LIMIT 20
+      `);
+      const row = (rows as unknown as Array<Record<string, unknown>>)[0];
+      res.json({
+        success: true,
+        usage: {
+          today: { tokens: Number(row.today_tokens), costUsd: row.today_cost_usd === null ? null : Number(row.today_cost_usd), calls: Number(row.today_calls) },
+          month: { tokens: Number(row.month_tokens), costUsd: row.month_cost_usd === null ? null : Number(row.month_cost_usd) },
+          allTime: { tokens: Number(row.all_time_tokens), costUsd: row.all_time_cost_usd === null ? null : Number(row.all_time_cost_usd), calls: Number(row.all_time_calls) },
+          model: GEMINI_MODEL,
+          recent: (recent as unknown as Array<{ created_at: string; source: string; model: string; total_tokens: number; estimated_cost_usd: number | null }>),
+        },
+      });
+    } catch (err: any) {
+      console.error('[gemini-usage] fetch failed:', err);
+      res.status(500).json({ success: false, error: 'Could not load usage data.' });
+    }
+  });
+
   app.get('/api/admin/articles', requireAdmin, async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     try {
