@@ -492,14 +492,14 @@ export function App() {
     } else if (pseoRoute.type === 'advertiseCompare') {
       applyHeadSeo({
         title: 'Advertise With Us | BeforeRegret',
-        description: 'Compare National Ads and ZIP-Targeted Report Ads to find the right fit for your business.',
+        description: 'Compare Topic Ads and ZIP-Targeted Report Ads to find the right fit for your business.',
         canonicalUrl: 'https://www.beforeregret.com/advertise/',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'guideAds') {
       applyHeadSeo({
-        title: 'National Ads | BeforeRegret',
-        description: 'Self-serve national ad placements on BeforeRegret -- $7.99 per slot, 30 days, open to any business.',
+        title: 'Topic Ads | BeforeRegret',
+        description: 'Self-serve topic-based ad placements on BeforeRegret -- $7.99 per slot, 30 days, open to any business.',
         canonicalUrl: 'https://www.beforeregret.com/guide-ads/',
         robotsDirective: 'noindex, nofollow'
       });
