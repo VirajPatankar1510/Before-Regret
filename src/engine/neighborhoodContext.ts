@@ -224,6 +224,15 @@ export async function fetchNeighborhoodContextFinding(
 
       // The most decision-relevant comparison available here: how this specific home sits against
       // its own block, which reframes every age-driven inspection priority in the rest of the report.
+      //
+      // ALWAYS shown when a year is given, not just past a threshold. This used to only render a
+      // tile when |subjectDelta| >= 15 -- below that it rendered nothing at all, which reads as a
+      // bug rather than a non-finding: a user who enters "1993" and then sees only "Typical home
+      // age here: Built ~1994" (the tract median, from real Census data, one year off) with no
+      // tile confirming their own entry was even received has no way to tell "these are two
+      // independent numbers that happen to be close" from "the report ignored what I typed." A
+      // close match is itself a real, reassuring finding -- it just doesn't warrant the stronger
+      // "ask about age-adjusted comps" advice a large gap does.
       if (subjectYearBuilt && Number.isFinite(subjectYearBuilt)) {
         const subjectDelta = tract.medianYearBuilt - subjectYearBuilt;
         if (subjectDelta >= 15) {
@@ -243,6 +252,12 @@ export async function fetchNeighborhoodContextFinding(
             comparison: `${Math.abs(subjectDelta)} yrs newer than typical here`,
           });
           headline = `This home was built in ${subjectYearBuilt} -- about ${Math.abs(subjectDelta)} years newer than the typical home on its own block.`;
+        } else {
+          metrics.push({
+            label: 'This home vs. its block',
+            value: `Built ${subjectYearBuilt}`,
+            comparison: 'In line with typical homes here',
+          });
         }
       }
     }
