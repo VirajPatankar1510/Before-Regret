@@ -348,6 +348,36 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     }
   };
 
+  // "+ New Article" creates a real DB row immediately (POST /api/admin/articles, see
+  // src/server/articlesApi.ts) so it can be opened in the editor -- there's no separate "draft
+  // exists only in memory" state. If the admin backs out without typing anything, that empty,
+  // still-default "Untitled article" row would otherwise sit in the list forever with nothing in
+  // it. Only cleans up a draft that still looks exactly like the untouched, never-published
+  // default -- an existing article the admin opened and genuinely blanked out is left alone,
+  // since silently deleting content someone had before is a different (and much worse) mistake
+  // than leaving one empty stub behind.
+  const isUntouchedEmptyDraft = (a: Article) =>
+    a.status !== 'published' &&
+    (!a.title.trim() || a.title.trim() === 'Untitled article') &&
+    !a.metaDescription.trim() &&
+    !a.bodyMarkdown.trim() &&
+    !a.quickAnswer.trim() &&
+    a.sources.length === 0;
+
+  const backToList = async () => {
+    if (draft && isUntouchedEmptyDraft(draft)) {
+      try {
+        await fetch(`/api/admin/articles/${draft.id}`, { method: 'DELETE' });
+      } catch {
+        // Best-effort cleanup -- if this fails the empty stub just sits in the list like before,
+        // no worse than the bug this is fixing. Not worth blocking navigation over.
+      }
+      loadArticles();
+    }
+    setView('list');
+    setDraft(null);
+  };
+
   const deleteArticle = async () => {
     if (!draft) return;
     if (!window.confirm(`Delete "${draft.title}"? This can't be undone.`)) return;
@@ -526,15 +556,19 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // --- Editor view -----------------------------------------------------------------------------
   if (!draft) return null;
 
-  const similarExisting = draft.title.trim() && articles
-    ? articles.find((a) => a.id !== draft.id && titleSimilarity(a.title, draft.title) > 0.5)
+  // Exact title wins over the saved draft title for this check too, same precedence as
+  // generation itself -- otherwise typing a duplicate into "Exact title" shows no warning at all
+  // until after Generate has already run and overwritten draft.title.
+  const titleToCheckForDuplicates = exactTitleInput.trim() || draft.title.trim();
+  const similarExisting = titleToCheckForDuplicates && articles
+    ? articles.find((a) => a.id !== draft.id && titleSimilarity(a.title, titleToCheckForDuplicates) > 0.5)
     : undefined;
 
   return (
     <div className="bg-slate-950 text-white min-h-screen font-sans">
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
         <button
-          onClick={() => { setView('list'); setDraft(null); }}
+          onClick={backToList}
           className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
