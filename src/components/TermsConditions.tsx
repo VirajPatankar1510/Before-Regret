@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FileText, ArrowLeft, ShieldAlert, Building2, CheckCircle2, Lock, Scale, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, ShieldAlert, Building2, CheckCircle2, Lock, Scale, AlertTriangle } from 'lucide-react';
 
 interface TermsConditionsProps {
   onBackToHome: () => void;
@@ -36,10 +36,9 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
           
           {/* Document Header */}
           <div className="border-b border-slate-200 pb-6 space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold font-mono">
-              <FileText className="w-3.5 h-3.5" />
-              <span>Legal Document</span>
-            </div>
+            <p className="text-xs font-medium text-slate-400">
+              Expert property research guides and vendor marketplace for US home buyers. Uncover what matters before closing.
+            </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Terms of Service
             </h1>
