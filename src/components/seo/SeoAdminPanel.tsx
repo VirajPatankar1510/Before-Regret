@@ -827,12 +827,17 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => generateWithAi()}
-            disabled={generating || hasExistingContent}
+            disabled={generating || hasExistingContent || !!similarExisting}
             className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer disabled:opacity-50"
           >
             {generating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
             <span>{generating ? 'Writing...' : 'Generate with AI'}</span>
           </button>
+          {similarExisting && !hasExistingContent && (
+            <p className="text-[11px] text-amber-400">
+              Blocked until you change the title above -- generating now would likely burn a real Gemini call writing a near-duplicate of the existing article.
+            </p>
+          )}
 
           {previousAttempts.length > 0 && (
             <p className="text-[11px] text-slate-500">
