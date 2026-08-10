@@ -6,6 +6,7 @@ import { spawnSync } from 'child_process';
 import { withDb, isDbConfigured } from '../src/server/db.js';
 import { fetchCensusHousingAge, fetchFemaRiskIndex, CountyIdentity } from '../src/server/countyDataFetcher.js';
 import { findCountyRadonZone } from '../src/data/countyRadonZones.js';
+import { submitUrlsToIndexNow } from '../src/utils/indexNowService.js';
 
 // Populates county_data for the counties listed below. This is the enforcement point for the
 // "no data, no page" rule described when this feature was scoped: a county is only ever written
@@ -203,6 +204,17 @@ async function run() {
       `;
     });
     console.log(`  Saved to county_data (slug: ${county.slug}).`);
+
+    // County pages never fired IndexNow at all -- only the guide publish route did. Unlike that
+    // route, this is a one-shot script, not a long-lived server, so the submission is awaited
+    // rather than fire-and-forget: nothing would keep the process alive long enough for a detached
+    // promise to resolve before `run()` returns and the script exits.
+    if (dataComplete) {
+      const result = await submitUrlsToIndexNow([`https://www.beforeregret.com/county/${county.slug}/`]);
+      if (!result.success) {
+        console.warn(`  - IndexNow submission failed: ${result.message}`);
+      }
+    }
   }
 
   console.log('\n[fetch-county-data] Done.');
