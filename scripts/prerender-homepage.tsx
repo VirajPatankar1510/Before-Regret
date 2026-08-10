@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -6,6 +7,12 @@ import { HowItWorksSection } from '../src/components/home/HowItWorksSection';
 import { PricingSection } from '../src/components/home/PricingSection';
 import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
 import { HOMEPAGE_FAQS } from '../src/components/home/FaqSection';
+import { withDb, isDbConfigured } from '../src/server/db.js';
+
+interface HomepageGuideLink {
+  slug: string;
+  title: string;
+}
 
 // Static HTML generator for the homepage, run after `vite build` alongside
 // scripts/prerender-guides.tsx.
@@ -29,7 +36,7 @@ import { HOMEPAGE_FAQS } from '../src/components/home/FaqSection';
 
 function noop() {}
 
-function HomeStaticBody() {
+function HomeStaticBody({ guides }: { guides: HomepageGuideLink[] }) {
   return (
     <div className="space-y-0 pb-16">
       <section className="relative min-h-[40vh] flex flex-col justify-center text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-slate-950">
@@ -75,6 +82,38 @@ function HomeStaticBody() {
         </div>
       </section>
 
+      {guides.length > 0 && (
+        <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-white border-t border-slate-200/80">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="text-center space-y-3 max-w-2xl mx-auto">
+              <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+                Editorial Guides
+              </h2>
+              <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+                What inspectors flag, what insurers deny, and what to ask before you sign.
+              </p>
+            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+              {guides.map((guide) => (
+                <li key={guide.slug}>
+                  <a
+                    href={`/guides/${guide.slug}/`}
+                    className="block px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 hover:text-blue-700 hover:border-blue-300 font-medium"
+                  >
+                    {guide.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <div className="text-center">
+              <a href="/guides/" className="inline-block font-bold text-blue-700 hover:text-blue-800">
+                View all guides →
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
+
       <ClosingCtaSection onScrollToSearch={noop} />
     </div>
   );
@@ -114,7 +153,15 @@ async function run() {
   const template = fs.readFileSync(templatePath, 'utf8');
   fs.writeFileSync(path.join(distPath, 'shell.html'), template, 'utf8');
 
-  const bodyHtml = renderToStaticMarkup(<HomeStaticBody />);
+  let guides: HomepageGuideLink[] = [];
+  if (isDbConfigured()) {
+    const rows = (await withDb((sql) => sql`
+      SELECT slug, title FROM articles WHERE status = 'published' ORDER BY published_at DESC LIMIT 6
+    `)) as unknown as HomepageGuideLink[];
+    guides = rows;
+  }
+
+  const bodyHtml = renderToStaticMarkup(<HomeStaticBody guides={guides} />);
   const faqScript = `<script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(buildFaqJsonLd())}</script>`;
 
   const html = template
