@@ -134,6 +134,14 @@ export function registerArticleRoutes(app: Express) {
     const previousAttempts = Array.isArray(req.body?.previousAttempts)
       ? req.body.previousAttempts.filter((t: unknown): t is string => typeof t === 'string' && t.trim().length > 0)
       : [];
+    // Real search phrases from the admin panel's keyword-research lookup (see
+    // keywordResearchApi.ts) -- capped at 8 so the prompt stays about the article's own topic,
+    // not a keyword dump.
+    const relatedKeywords = Array.isArray(req.body?.relatedKeywords)
+      ? req.body.relatedKeywords
+          .filter((k: unknown): k is string => typeof k === 'string' && k.trim().length > 0)
+          .slice(0, 8)
+      : [];
 
     // Best-effort: if the DB read fails for any reason, generation still proceeds without the
     // duplicate-content guard rather than blocking the whole feature on it.
@@ -157,7 +165,7 @@ export function registerArticleRoutes(app: Express) {
         apiKey,
         httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
       });
-      const { systemInstruction, contents } = buildArticlePrompt(topic, existingTitles, exactTitle);
+      const { systemInstruction, contents } = buildArticlePrompt(topic, existingTitles, exactTitle, relatedKeywords);
 
       const stream = await ai.models.generateContentStream({
         model: GEMINI_MODEL,
