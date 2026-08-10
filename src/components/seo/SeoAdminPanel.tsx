@@ -730,9 +730,28 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
-            Short description
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+              Short description
+            </label>
+            {/* 25-160 is Bing/Google's own guidance -- under 25 reads as too thin to be a real
+                summary, over 160 gets truncated (or replaced outright) in the search results
+                snippet. Bing Webmaster Tools flags both ends of this by name ("Meta Description
+                too long or too short"), which is what caught this in production the first time --
+                catching it here, before publish, is the actual fix. */}
+            <span
+              className={`text-xs font-mono flex items-center gap-1 ${
+                draft.metaDescription.length > 160 || (draft.metaDescription.length > 0 && draft.metaDescription.length < 25)
+                  ? 'text-rose-400'
+                  : 'text-slate-500'
+              }`}
+            >
+              {(draft.metaDescription.length > 160 || (draft.metaDescription.length > 0 && draft.metaDescription.length < 25)) && (
+                <AlertCircle className="w-3 h-3" />
+              )}
+              <span>{draft.metaDescription.length}/160</span>
+            </span>
+          </div>
           <p className="text-xs text-slate-500">This is what shows up under the title in Google search results.</p>
           <textarea
             value={draft.metaDescription}
