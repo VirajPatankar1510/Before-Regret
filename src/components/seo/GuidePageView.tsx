@@ -27,6 +27,22 @@ interface Article {
 // Reads from the real articles table (see src/server/articlesApi.ts) rather than the old static
 // EDITORIAL_GUIDES_DATASET array -- a draft is never reachable here since the API only returns
 // status = 'published' rows for this route.
+// Reads the article scripts/prerender-guides.tsx bakes into the static page as
+// __PRELOADED_GUIDE__, only when its slug matches the one being rendered -- a client-side
+// navigation to a DIFFERENT guide (e.g. via Related Guides) must still fetch fresh, since the
+// script tag on the page still holds whichever guide was server-rendered, not the new one.
+function readPreloadedGuide(slug: string): Article | null {
+  if (typeof document === 'undefined') return null;
+  const el = document.getElementById('__PRELOADED_GUIDE__');
+  if (!el?.textContent) return null;
+  try {
+    const parsed = JSON.parse(el.textContent);
+    return parsed?.slug === slug ? (parsed as Article) : null;
+  } catch {
+    return null;
+  }
+}
+
 export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavigate }) => {
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,6 +54,19 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
     setLoading(true);
     setNotFound(false);
     setArticle(null);
+
+    // Skip the network entirely when the exact guide being rendered is already embedded in the
+    // page -- see readPreloadedGuide above. This is the fix for a real production bug: Google's
+    // renderer showed "Guide Not Found" for a page whose static <head> (title, canonical,
+    // description) was completely correct, because the fetch below failed or got cut off inside
+    // Google's render time budget, and the .catch() further down treated that identically to the
+    // guide genuinely not existing. A fetch that never has to happen can't fail like that.
+    const preloaded = readPreloadedGuide(guideSlug);
+    if (preloaded) {
+      setArticle(preloaded);
+      setLoading(false);
+      return;
+    }
 
     fetch(`/api/guides/${encodeURIComponent(guideSlug)}`)
       .then((res) => {

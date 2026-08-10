@@ -39,6 +39,7 @@ interface ArticleRow {
 }
 
 interface Article {
+  id: number;
   slug: string;
   title: string;
   metaDescription: string;
@@ -57,6 +58,7 @@ function toArticle(row: ArticleRow): Article {
     sources = [];
   }
   return {
+    id: row.id,
     slug: row.slug,
     title: row.title,
     metaDescription: row.meta_description,
@@ -298,7 +300,7 @@ async function run() {
   const template = fs.readFileSync(templatePath, 'utf8');
 
   const rows = (await withDb((sql) => sql`
-    SELECT slug, title, meta_description, body_markdown, quick_answer, sources_json, published_at
+    SELECT id, slug, title, meta_description, body_markdown, quick_answer, sources_json, published_at
     FROM articles WHERE status = 'published' ORDER BY published_at DESC
   `)) as unknown as ArticleRow[];
 
@@ -316,12 +318,20 @@ async function run() {
     const relatedGuides = pickRelatedGuides(article.slug, article.title, allGuideSummaries);
     const bodyHtml = renderToStaticMarkup(<GuideStaticBody article={article} relatedGuides={relatedGuides} />);
 
+    // Embedded verbatim so GuidePageView.tsx's mount effect can use it directly instead of
+    // re-fetching over the network on first paint -- see the matching read in GuidePageView.tsx
+    // for why. Client-side navigation to a DIFFERENT guide (e.g. via Related Guides) still fetches
+    // fresh, since this script tag holds only THIS page's article.
+    const preloadScript = `<script type="application/json" id="__PRELOADED_GUIDE__">${escapeJsonForScriptTag(article)}</script>`;
+
     const html = applyHeadReplacements(template, {
       title: `${article.title} | BeforeRegret Guides`,
       description: article.metaDescription,
       canonicalUrl,
       jsonLd: buildJsonLd(article, canonicalUrl),
-    }).replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`);
+    })
+      .replace('</head>', `${preloadScript}\n  </head>`)
+      .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`);
 
     const outDir = path.join(distPath, 'guides', article.slug);
     fs.mkdirSync(outDir, { recursive: true });
