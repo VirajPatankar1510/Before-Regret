@@ -28,6 +28,14 @@ interface Article {
 // Shape returned by GET /api/admin/gemini-usage (see src/server/articlesApi.ts). costUsd is
 // null, not 0, whenever GEMINI_MODEL has no verified pricing entry in geminiUsageTracker.ts --
 // the UI renders that as "cost unknown" rather than a fabricated "$0.00".
+interface KeywordRow {
+  query: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
 interface GeminiUsageSummary {
   today: { tokens: number; costUsd: number | null; calls: number };
   month: { tokens: number; costUsd: number | null };
@@ -107,6 +115,14 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // previously nothing remembered an unsaved attempt, so regenerating looked identical to the
   // model every time.
   const [previousAttempts, setPreviousAttempts] = useState<string[]>([]);
+  // Real Google queries this site already gets impressions for, scoped to whatever's typed into
+  // topicInput -- see src/server/searchConsoleService.ts. configured starts null (not yet
+  // checked) rather than false, so the button doesn't flash a "not set up" state before the first
+  // request has even gone out.
+  const [keywordResults, setKeywordResults] = useState<KeywordRow[]>([]);
+  const [keywordLoading, setKeywordLoading] = useState(false);
+  const [keywordConfigured, setKeywordConfigured] = useState<boolean | null>(null);
+  const [keywordError, setKeywordError] = useState('');
 
   // Gemini token/cost counter (see src/server/geminiUsageTracker.ts). "Real time" here means
   // polled every 20s while this screen is open, not a websocket push -- a cost dashboard doesn't
@@ -271,6 +287,29 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       setActionError('Lost connection while generating. What was written so far is still here.');
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const checkKeywords = async () => {
+    setKeywordLoading(true);
+    setKeywordError('');
+    try {
+      const res = await fetch(`/api/admin/keyword-research?q=${encodeURIComponent(topicInput.trim())}`);
+      const data = await res.json();
+      if (data?.configured === false) {
+        setKeywordConfigured(false);
+        return;
+      }
+      setKeywordConfigured(true);
+      if (data?.success) {
+        setKeywordResults(data.rows || []);
+      } else {
+        setKeywordError('Search Console query failed. Try again in a moment.');
+      }
+    } catch {
+      setKeywordError('Lost connection while checking Search Console.');
+    } finally {
+      setKeywordLoading(false);
     }
   };
 
@@ -637,6 +676,39 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               disabled={generating}
               className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
             />
+            <button
+              onClick={checkKeywords}
+              disabled={keywordLoading}
+              className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 cursor-pointer disabled:opacity-50"
+            >
+              {keywordLoading ? 'Checking real search queries...' : 'Check real search queries for this topic'}
+            </button>
+
+            {keywordConfigured === false && (
+              <p className="text-[11px] text-slate-500">
+                Search Console isn't connected yet -- set GSC_SERVICE_ACCOUNT_EMAIL, GSC_SERVICE_ACCOUNT_PRIVATE_KEY, and GSC_SITE_URL to enable this.
+              </p>
+            )}
+            {keywordError && <p className="text-[11px] text-rose-400">{keywordError}</p>}
+            {keywordConfigured && keywordResults.length === 0 && !keywordLoading && !keywordError && (
+              <p className="text-[11px] text-slate-500">No real queries found for this yet -- try a broader term, or this may just be a new angle.</p>
+            )}
+            {keywordResults.length > 0 && (
+              <div className="space-y-1 max-h-48 overflow-y-auto">
+                {keywordResults.map((row) => (
+                  <button
+                    key={row.query}
+                    onClick={() => setTopicInput(row.query)}
+                    className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 bg-slate-900/60 hover:bg-slate-800 border border-slate-800 rounded-lg text-left cursor-pointer"
+                  >
+                    <span className="text-xs text-slate-300 truncate">{row.query}</span>
+                    <span className="text-[10px] font-mono text-slate-500 shrink-0">
+                      {row.impressions} impr · pos {row.position.toFixed(1)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600 uppercase tracking-wide">

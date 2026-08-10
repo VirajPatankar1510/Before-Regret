@@ -23,6 +23,7 @@ import {
 } from "./src/server/adminAuth.js";
 import { registerArticleRoutes } from "./src/server/articlesApi.js";
 import { registerCountyRoutes } from "./src/server/countiesApi.js";
+import { registerKeywordResearchRoutes } from "./src/server/keywordResearchApi.js";
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
@@ -170,6 +171,11 @@ export async function createApp() {
   // Public /api/counties/:slug read route only, no admin routes -- these rows are populated by
   // scripts/fetch-county-data.ts, not through an admin editor. See src/server/countiesApi.ts.
   registerCountyRoutes(app);
+
+  // --- Keyword research for the admin article editor (Google Search Console-backed) ---------
+  // Admin-only. See src/server/searchConsoleService.ts for the one-time service-account setup
+  // this depends on; the route responds with configured: false rather than erroring until then.
+  registerKeywordResearchRoutes(app);
 
   // --- Vendor ad slots on guide pages (Neon-backed, PayPal-billed) --------------------------
   // Self-serve, open-market, no vendor login. See src/server/guideAdsApi.ts.
