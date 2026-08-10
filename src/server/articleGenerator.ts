@@ -44,7 +44,8 @@ const PILLAR_STRATEGY = `BeforeRegret's content strategy has six pillars. If no 
 export function buildArticlePrompt(
   topicSeed: string,
   existingTitles: string[] = [],
-  exactTitle: string = ''
+  exactTitle: string = '',
+  relatedKeywords: string[] = []
 ): { systemInstruction: string; contents: string } {
   const trimmedTopic = topicSeed.trim();
   const trimmedExactTitle = exactTitle.trim();
@@ -76,7 +77,18 @@ export function buildArticlePrompt(
 
   const sourcesListBlock = KNOWN_SOURCES.map((s) => `${s.key} = ${s.name}`).join('\n');
 
-  const contents = `${topicInstruction}${existingTitlesBlock}
+  // Additive only -- never touches topicInstruction, existingTitlesBlock, the hard rules, or the
+  // output format below. Real search phrases from live Bing/Search Console data (see
+  // src/server/keywordResearchApi.ts), passed through so the article's own vocabulary matches how
+  // people actually search this topic, not just the one seed phrase chosen as the title angle. A
+  // suggestion, not a requirement -- forcing in a phrase that doesn't fit the specific angle above
+  // would just be keyword-stuffing, which HARD RULE 6 (write like a real person, no listicle
+  // padding) already prohibits.
+  const relatedKeywordsBlock = relatedKeywords.length > 0
+    ? `\n\nReal related search phrases people actually use around this topic (from live Bing/Search Console data, ranked by real search interest) -- weave in the ones that genuinely fit naturally into the article's headers, quick answer, or body wording, in the vocabulary real searchers use. Skip any that don't fit the specific angle above rather than forcing them in, and never list them out mechanically or stuff them in just to include them:\n${relatedKeywords.map((k) => `- ${k}`).join('\n')}`
+    : '';
+
+  const contents = `${topicInstruction}${existingTitlesBlock}${relatedKeywordsBlock}
 
 SEO approach for this article:
 - Target ONE specific, long-tail search query. Long-tail (specific, lower-competition, high buyer-intent) is what a newer site can realistically rank for -- not a broad head term.

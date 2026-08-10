@@ -128,6 +128,11 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [keywordLoading, setKeywordLoading] = useState(false);
   const [keywordConfigured, setKeywordConfigured] = useState<boolean | null>(null);
   const [keywordError, setKeywordError] = useState('');
+  // Real search phrases sent alongside the next generate call so the article's own wording
+  // reflects how people actually search this topic -- set when a keyword-list row is picked
+  // (see the click handler below), cleared on manual typing so a stale list from a previous
+  // topic never silently leaks into an unrelated generation.
+  const [seoKeywordHints, setSeoKeywordHints] = useState<string[]>([]);
 
   // Gemini token/cost counter (see src/server/geminiUsageTracker.ts). "Real time" here means
   // polled every 20s while this screen is open, not a websocket push -- a cost dashboard doesn't
@@ -240,10 +245,15 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     };
   };
 
-  const generateWithAi = async () => {
+  // overrideTopic/overrideExactTitle/overrideHints let the keyword-list click handler below fire
+  // generation immediately with the value it just picked, rather than setting state and hoping a
+  // same-tick read of topicInput/seoKeywordHints sees it -- React state updates aren't synchronous,
+  // so reading the state variables right after setting them here would still see the old values.
+  const generateWithAi = async (overrideTopic?: string, overrideExactTitle?: string, overrideHints?: string[]) => {
     if (!draft || generating) return;
-    const trimmedExactTitle = exactTitleInput.trim();
-    const trimmedTopic = topicInput.trim();
+    const trimmedExactTitle = (overrideExactTitle ?? exactTitleInput).trim();
+    const trimmedTopic = (overrideTopic ?? topicInput).trim();
+    const keywordHints = overrideHints ?? seoKeywordHints;
     setGenerating(true);
     setActionError(null);
     try {
@@ -256,6 +266,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           exactTitle: trimmedExactTitle,
           currentArticleId: draft.id,
           previousAttempts,
+          relatedKeywords: keywordHints,
         }),
       });
       if (!res.ok || !res.body) {
@@ -676,7 +687,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             <input
               type="text"
               value={topicInput}
-              onChange={(e) => setTopicInput(e.target.value)}
+              onChange={(e) => {
+                setTopicInput(e.target.value);
+                setSeoKeywordHints([]);
+              }}
               placeholder="e.g. Zinsco electrical panels — leave blank for a pillar-based suggestion"
               disabled={generating}
               className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
@@ -703,8 +717,21 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 {keywordResults.map((row) => (
                   <button
                     key={row.query}
-                    onClick={() => setTopicInput(row.query)}
-                    className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 bg-slate-900/60 hover:bg-slate-800 border border-slate-800 rounded-lg text-left cursor-pointer"
+                    disabled={generating}
+                    onClick={() => {
+                      // The rest of this same lookup's results, ranked by real search interest --
+                      // handed to the model as vocabulary to draw from, not the clicked term itself
+                      // (that's already the topic/title angle) and capped at 8 (see articlesApi.ts).
+                      const hints = keywordResults
+                        .filter((r) => r.query !== row.query)
+                        .slice(0, 8)
+                        .map((r) => r.query);
+                      setTopicInput(row.query);
+                      setExactTitleInput('');
+                      setSeoKeywordHints(hints);
+                      generateWithAi(row.query, '', hints);
+                    }}
+                    className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 bg-slate-900/60 hover:bg-slate-800 border border-slate-800 rounded-lg text-left cursor-pointer disabled:opacity-50"
                   >
                     <span className="text-xs text-slate-300 truncate">{row.query}</span>
                     <span className="text-[10px] font-mono text-slate-500 shrink-0">
@@ -729,7 +756,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             <input
               type="text"
               value={exactTitleInput}
-              onChange={(e) => setExactTitleInput(e.target.value)}
+              onChange={(e) => {
+                setExactTitleInput(e.target.value);
+                setSeoKeywordHints([]);
+              }}
               placeholder="e.g. Buying a House With a Zinsco Panel"
               disabled={generating}
               className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
@@ -737,7 +767,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           </div>
 
           <button
-            onClick={generateWithAi}
+            onClick={() => generateWithAi()}
             disabled={generating}
             className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer disabled:opacity-50"
           >
