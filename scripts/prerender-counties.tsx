@@ -233,9 +233,7 @@ function buildJsonLd(row: CountyRow, canonicalUrl: string): Record<string, any>[
 function titleCase(value: string): string {
   return value
     .toLowerCase()
-    .split(' ')
-    .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
-    .join(' ');
+    .replace(/(^|[\s-])([a-z])/g, (_, sep, letter) => sep + letter.toUpperCase());
 }
 
 function escapeHtmlAttr(value: string): string {

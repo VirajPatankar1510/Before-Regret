@@ -63,9 +63,7 @@ const RADON_ZONE_TEXT: Record<number, string> = {
 function titleCase(value: string): string {
   return value
     .toLowerCase()
-    .split(' ')
-    .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
-    .join(' ');
+    .replace(/(^|[\s-])([a-z])/g, (_, sep, letter) => sep + letter.toUpperCase());
 }
 
 // Reads the county scripts/prerender-counties.tsx bakes into the static page as
