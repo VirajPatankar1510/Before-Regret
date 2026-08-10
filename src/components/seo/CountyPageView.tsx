@@ -68,6 +68,23 @@ function titleCase(value: string): string {
     .join(' ');
 }
 
+// Reads the county scripts/prerender-counties.tsx bakes into the static page as
+// __PRELOADED_COUNTY__, only when its slug matches the one being rendered -- same fix, same
+// reasoning, as GuidePageView.tsx's readPreloadedGuide: a client-side navigation to a different
+// county must still fetch fresh, since the script tag on the page holds whichever county was
+// server-rendered, not a new one.
+function readPreloadedCounty(slug: string): Record<string, any> | null {
+  if (typeof document === 'undefined') return null;
+  const el = document.getElementById('__PRELOADED_COUNTY__');
+  if (!el?.textContent) return null;
+  try {
+    const parsed = JSON.parse(el.textContent);
+    return parsed?.slug === slug ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNavigate }) => {
   const [county, setCounty] = useState<CountyData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,6 +95,20 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
     setLoading(true);
     setNotFound(false);
     setCounty(null);
+
+    // Skip the network entirely when this exact county is already embedded in the page -- see
+    // readPreloadedCounty above. Without this, this SPA's createRoot() (not hydrateRoot())
+    // re-render unconditionally discards the correct static content and re-fetches identical data
+    // on every load, including the very first one; if that fetch fails or gets cut off inside a
+    // crawler's render time budget, the .catch() below treats it identically to "this county
+    // doesn't exist" -- exactly the soft-404 bug this fixes (see GuidePageView.tsx's identical fix
+    // for the full incident writeup).
+    const preloaded = readPreloadedCounty(countySlug);
+    if (preloaded) {
+      setCounty({ ...preloaded, countyName: titleCase(preloaded.countyName) } as CountyData);
+      setLoading(false);
+      return;
+    }
 
     fetch(`/api/counties/${encodeURIComponent(countySlug)}`)
       .then((res) => {
