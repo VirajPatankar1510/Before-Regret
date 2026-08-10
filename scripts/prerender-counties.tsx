@@ -21,10 +21,34 @@ interface CountyRow {
   census_total_units: number | null;
   census_year_built_json: string;
   fema_risk_rating: string | null;
+  fema_risk_score: number | null;
   fema_hazards_json: string;
   noaa_event_counts_json: string;
   noaa_years_covered: string | null;
   fetched_at: string;
+}
+
+// Matches src/server/countiesApi.ts's toApiShape() exactly -- this is what gets embedded as
+// __PRELOADED_COUNTY__ and read back by CountyPageView.tsx, so it needs to be a real substitute
+// for what GET /api/counties/:slug would have returned, not just whatever fields this script's own
+// static render happens to use.
+function toPreloadShape(row: CountyRow) {
+  return {
+    slug: row.slug,
+    countyName: row.county_name,
+    stateName: row.state_name,
+    stateAbbrev: row.state_abbrev,
+    population: row.population,
+    radonZone: row.radon_zone,
+    censusTotalUnits: row.census_total_units,
+    censusYearBuiltBuckets: JSON.parse(row.census_year_built_json || '{}'),
+    femaRiskRating: row.fema_risk_rating,
+    femaRiskScore: row.fema_risk_score,
+    femaHazards: JSON.parse(row.fema_hazards_json || '{}'),
+    noaaEventCounts: JSON.parse(row.noaa_event_counts_json || '{}'),
+    noaaYearsCovered: row.noaa_years_covered,
+    fetchedAt: row.fetched_at,
+  };
 }
 
 const YEAR_BUILT_LABELS: Array<[string, string]> = [
@@ -243,8 +267,8 @@ async function run() {
 
   const rows = (await withDb((sql) => sql`
     SELECT slug, county_name, state_name, state_abbrev, population, radon_zone,
-           census_total_units, census_year_built_json, fema_risk_rating, fema_hazards_json,
-           noaa_event_counts_json, noaa_years_covered, fetched_at
+           census_total_units, census_year_built_json, fema_risk_rating, fema_risk_score,
+           fema_hazards_json, noaa_event_counts_json, noaa_years_covered, fetched_at
     FROM county_data WHERE data_complete = true
   `)) as unknown as CountyRow[];
 
@@ -259,6 +283,12 @@ async function run() {
     const description = `Real, sourced data for ${row.county_name} County, ${row.state_abbrev}: EPA radon zone, Census housing-age distribution, FEMA natural hazard risk, and recorded NOAA storm history.`;
     const bodyHtml = renderToStaticMarkup(<CountyStaticBody row={row} />);
     const jsonLdScript = `<script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(buildJsonLd(row, canonicalUrl))}</script>`;
+    // Embedded verbatim so CountyPageView.tsx's mount effect can use it directly instead of
+    // re-fetching over the network on first paint -- same fix, same reasoning, as
+    // scripts/prerender-guides.tsx's __PRELOADED_GUIDE__. Built from rawRow (all-caps county
+    // name), not the title-cased row above, since it needs to match what GET
+    // /api/counties/:slug actually returns -- CountyPageView.tsx applies title-casing itself.
+    const preloadScript = `<script type="application/json" id="__PRELOADED_COUNTY__">${escapeJsonForScriptTag(toPreloadShape(rawRow))}</script>`;
 
     let html = template
       .replace(/<title>[^<]*<\/title>/, `<title>${escapeHtmlAttr(title)}</title>`)
@@ -270,7 +300,7 @@ async function run() {
       .replace(/<meta property="og:description" content="[^"]*"/, `<meta property="og:description" content="${escapeHtmlAttr(description)}"`)
       .replace(/<meta name="twitter:title" content="[^"]*"/, `<meta name="twitter:title" content="${escapeHtmlAttr(title)}"`)
       .replace(/<meta name="twitter:description" content="[^"]*"/, `<meta name="twitter:description" content="${escapeHtmlAttr(description)}"`)
-      .replace('</head>', `${jsonLdScript}\n  </head>`)
+      .replace('</head>', `${jsonLdScript}\n${preloadScript}\n  </head>`)
       .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`);
 
     const outDir = path.join(distPath, 'county', row.slug);
