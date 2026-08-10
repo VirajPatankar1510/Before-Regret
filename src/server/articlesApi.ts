@@ -135,12 +135,13 @@ export function registerArticleRoutes(app: Express) {
       ? req.body.previousAttempts.filter((t: unknown): t is string => typeof t === 'string' && t.trim().length > 0)
       : [];
     // Real search phrases from the admin panel's keyword-research lookup (see
-    // keywordResearchApi.ts) -- capped at 8 so the prompt stays about the article's own topic,
-    // not a keyword dump.
+    // keywordResearchApi.ts) -- capped at 10 so the prompt stays about the article's own topic,
+    // not a keyword dump. The client already mixes short-tail and long-tail phrases before
+    // sending these (see SeoAdminPanel.tsx), so this is just a hard ceiling, not the selection.
     const relatedKeywords = Array.isArray(req.body?.relatedKeywords)
       ? req.body.relatedKeywords
           .filter((k: unknown): k is string => typeof k === 'string' && k.trim().length > 0)
-          .slice(0, 8)
+          .slice(0, 10)
       : [];
 
     // Best-effort: if the DB read fails for any reason, generation still proceeds without the

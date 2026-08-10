@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Save, Send, Undo2, Trash2, AlertCircle, Sparkles,
+  Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Send, Undo2, Trash2, AlertCircle, Sparkles,
   Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
@@ -99,7 +99,6 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [savedNotice, setSavedNotice] = useState(false);
   // Tracks whether the admin has hand-edited the web address field -- once true, typing in the
   // title or generating with AI stops auto-updating the slug, so a deliberate custom address
   // never gets silently overwritten.
@@ -329,12 +328,16 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     }
   };
 
-  const saveDraft = async () => {
+  // There's no separate Save action anymore -- Publish now is the only thing that persists the
+  // editor's current state, so it has to write it first and only flip status to published if
+  // that write actually succeeds (never publish on a failed save, that would go live with
+  // whatever the DB last had instead of what's on screen).
+  const publishNow = async () => {
     if (!draft) return;
     setSaving(true);
     setActionError(null);
     try {
-      const res = await fetch(`/api/admin/articles/${draft.id}`, {
+      const saveRes = await fetch(`/api/admin/articles/${draft.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -346,13 +349,18 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           slug: draft.slug,
         }),
       });
-      const data = await res.json();
-      if (data?.success) {
-        setDraft(data.article);
-        setSavedNotice(true);
-        setTimeout(() => setSavedNotice(false), 2000);
+      const saveData = await saveRes.json();
+      if (!saveData?.success) {
+        setActionError(saveData?.error || 'Could not save your changes.');
+        return;
+      }
+      const pubRes = await fetch(`/api/admin/articles/${draft.id}/publish`, { method: 'POST' });
+      const pubData = await pubRes.json();
+      if (pubData?.success) {
+        setDraft(pubData.article);
+        loadArticles();
       } else {
-        setActionError(data?.error || 'Could not save your changes.');
+        setActionError(pubData?.error || 'Could not publish the article.');
       }
     } catch {
       setActionError('Could not reach the server.');
@@ -361,19 +369,22 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     }
   };
 
-  const togglePublish = async () => {
+  // Unpublishing takes an already-live article offline -- nothing on screen needs persisting for
+  // that to make sense, unlike publishNow above. To edit an already-published article, unpublish
+  // it, make the change, then Publish now again -- that's the only round-trip left now that Save
+  // is gone, and it's an intentional tradeoff, not an oversight.
+  const unpublish = async () => {
     if (!draft) return;
     setSaving(true);
     setActionError(null);
-    const endpoint = draft.status === 'published' ? 'unpublish' : 'publish';
     try {
-      const res = await fetch(`/api/admin/articles/${draft.id}/${endpoint}`, { method: 'POST' });
+      const res = await fetch(`/api/admin/articles/${draft.id}/unpublish`, { method: 'POST' });
       const data = await res.json();
       if (data?.success) {
         setDraft(data.article);
         loadArticles();
       } else {
-        setActionError(data?.error || 'Could not update the article status.');
+        setActionError(data?.error || 'Could not unpublish the article.');
       }
     } catch {
       setActionError('Could not reach the server.');
@@ -590,6 +601,12 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // --- Editor view -----------------------------------------------------------------------------
   if (!draft) return null;
 
+  // AI generation (and the keyword lookup that feeds it) is only for writing a brand-new article
+  // from nothing -- gated off entirely once there's real content to lose, published or not, since
+  // Publish now persists whatever's in the editor with no separate save step left to catch a
+  // regenerate-over-real-content mistake before it goes live.
+  const hasExistingContent = draft.status === 'published' || draft.bodyMarkdown.trim().length > 0;
+
   // Exact title wins over the saved draft title for this check too, same precedence as
   // generation itself -- otherwise typing a duplicate into "Exact title" shows no warning at all
   // until after Generate has already run and overwritten draft.title.
@@ -621,7 +638,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           <div className="flex items-center gap-2">
             {draft.status === 'published' ? (
               <button
-                onClick={togglePublish}
+                onClick={unpublish}
                 disabled={saving}
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
               >
@@ -630,11 +647,11 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               </button>
             ) : (
               <button
-                onClick={togglePublish}
+                onClick={publishNow}
                 disabled={saving}
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
               >
-                <Send className="w-3.5 h-3.5" />
+                {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                 <span>Publish now</span>
               </button>
             )}
@@ -676,9 +693,15 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             <Sparkles className="w-4 h-4 text-indigo-400" />
             <span>Write a first draft with AI</span>
           </div>
-          <p className="text-xs text-slate-400">
-            Fill in one of the two fields below, not both -- exact title wins if you do.
-          </p>
+          {hasExistingContent ? (
+            <p className="text-xs text-amber-400">
+              Disabled -- this article already has content (published or drafted), and generating again would overwrite it. Only works on a brand-new, empty draft.
+            </p>
+          ) : (
+            <p className="text-xs text-slate-400">
+              Fill in one of the two fields below, not both -- exact title wins if you do.
+            </p>
+          )}
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
@@ -692,12 +715,12 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 setSeoKeywordHints([]);
               }}
               placeholder="e.g. Zinsco electrical panels — leave blank for a pillar-based suggestion"
-              disabled={generating}
+              disabled={generating || hasExistingContent}
               className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
             />
             <button
               onClick={checkKeywords}
-              disabled={keywordLoading}
+              disabled={keywordLoading || hasExistingContent}
               className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 cursor-pointer disabled:opacity-50"
             >
               {keywordLoading ? 'Checking real search queries...' : 'Check real search queries for this topic'}
@@ -717,19 +740,55 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 {keywordResults.map((row) => (
                   <button
                     key={row.query}
-                    disabled={generating}
+                    disabled={generating || hasExistingContent}
                     onClick={() => {
-                      // The rest of this same lookup's results, ranked by real search interest --
-                      // handed to the model as vocabulary to draw from, not the clicked term itself
-                      // (that's already the topic/title angle) and capped at 8 (see articlesApi.ts).
-                      const hints = keywordResults
-                        .filter((r) => r.query !== row.query)
-                        .slice(0, 8)
+                      // Picking a result only fills in Topic + the hint list below -- it does NOT
+                      // start writing on its own. Generate with AI is still a separate, deliberate
+                      // click, so browsing a few candidates before committing never burns a real
+                      // Gemini call for each one.
+                      const others = keywordResults.filter((r) => r.query !== row.query);
+                      // Ranked by relevance to the clicked term first, raw impressions only as the
+                      // tiebreaker within a relevance tier. Sorting by impressions alone let
+                      // unrelated high-volume noise (a different topic sharing one common word, an
+                      // unrelated abbreviation, a local-permit term) bury genuinely on-topic
+                      // phrases that are lower-volume simply because they're more specific -- e.g.
+                      // "home inspection checklist" ranked 16th by raw volume, behind six unrelated
+                      // terms, for the seed "home inspectors near me".
+                      //
+                      // This is a local formula, not the shared titleSimilarity() from
+                      // relatedGuides.ts: that one divides shared-word count by the SHORTER of the
+                      // two word counts, which is right for comparing two article titles of
+                      // similar length but wrong here -- it rewards a short, often-noisy candidate
+                      // ("home guard") for trivially sharing one word with the seed while
+                      // penalizing a more specific, more useful long-tail phrase ("home inspection
+                      // checklist") for sharing that same one word, purely because it also has more
+                      // words of its own. Dividing by the seed's own fixed word count instead
+                      // removes that length bias.
+                      // "near" specifically (not in the shared STOPWORDS set, which is tuned for
+                      // comparing article titles, not search queries) was inflating the "X near
+                      // me" cluster -- car/vehicle/state inspection all scored as relevant as
+                      // genuine home-inspection phrases purely for sharing that one generic
+                      // locational word with the seed.
+                      const QUERY_FILLER_WORDS = new Set(['near']);
+                      const wordsOf = (text: string) => new Set(
+                        text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w) && !QUERY_FILLER_WORDS.has(w))
+                      );
+                      const seedWords = wordsOf(row.query);
+                      const relevance = (candidate: string) => {
+                        if (seedWords.size === 0) return 0;
+                        const candidateWords = wordsOf(candidate);
+                        let shared = 0;
+                        seedWords.forEach((w) => { if (candidateWords.has(w)) shared++; });
+                        return shared / seedWords.size;
+                      };
+                      const hints = others
+                        .map((r) => ({ query: r.query, impressions: r.impressions, relevance: relevance(r.query) }))
+                        .sort((a, b) => b.relevance - a.relevance || b.impressions - a.impressions)
+                        .slice(0, 10)
                         .map((r) => r.query);
                       setTopicInput(row.query);
                       setExactTitleInput('');
                       setSeoKeywordHints(hints);
-                      generateWithAi(row.query, '', hints);
                     }}
                     className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 bg-slate-900/60 hover:bg-slate-800 border border-slate-800 rounded-lg text-left cursor-pointer disabled:opacity-50"
                   >
@@ -761,14 +820,14 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 setSeoKeywordHints([]);
               }}
               placeholder="e.g. Buying a House With a Zinsco Panel"
-              disabled={generating}
+              disabled={generating || hasExistingContent}
               className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
             />
           </div>
 
           <button
             onClick={() => generateWithAi()}
-            disabled={generating}
+            disabled={generating || hasExistingContent}
             className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer disabled:opacity-50"
           >
             {generating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
@@ -943,16 +1002,13 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           />
         </div>
 
-        <div className="flex items-center gap-3 pt-2 sticky bottom-4">
-          <button
-            onClick={saveDraft}
-            disabled={saving}
-            className="flex items-center gap-1.5 px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition-all cursor-pointer disabled:opacity-50 shadow-lg"
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            <span>{savedNotice ? 'Saved' : 'Save'}</span>
-          </button>
-          {draft.status === 'published' && (
+        {draft.status !== 'published' && (
+          <p className="text-xs text-slate-500 pt-2">
+            Nothing here is saved until you click <b>Publish now</b> above -- there's no separate draft-save step.
+          </p>
+        )}
+        {draft.status === 'published' && (
+          <div className="flex items-center gap-3 pt-2">
             <a
               href={`/guides/${draft.slug}/`}
               target="_blank"
@@ -962,8 +1018,8 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               <Globe className="w-3.5 h-3.5" />
               <span>View live page</span>
             </a>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
