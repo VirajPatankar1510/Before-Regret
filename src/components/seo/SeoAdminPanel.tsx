@@ -28,12 +28,17 @@ interface Article {
 // Shape returned by GET /api/admin/gemini-usage (see src/server/articlesApi.ts). costUsd is
 // null, not 0, whenever GEMINI_MODEL has no verified pricing entry in geminiUsageTracker.ts --
 // the UI renders that as "cost unknown" rather than a fabricated "$0.00".
+// Shape covers both sources the server may return (see keywordResearchApi.ts): Bing's
+// GetRelatedKeywords (query, impressions, broadImpressions) or Search Console's per-query
+// breakdown (query, impressions, clicks, ctr, position) -- clicks/ctr/position only ever come
+// from the latter, broadImpressions only from the former, so both are optional here.
 interface KeywordRow {
   query: string;
-  clicks: number;
   impressions: number;
-  ctr: number;
-  position: number;
+  clicks?: number;
+  ctr?: number;
+  position?: number;
+  broadImpressions?: number;
 }
 
 interface GeminiUsageSummary {
@@ -304,7 +309,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       if (data?.success) {
         setKeywordResults(data.rows || []);
       } else {
-        setKeywordError('Search Console query failed. Try again in a moment.');
+        setKeywordError('Keyword lookup failed. Try again in a moment.');
       }
     } catch {
       setKeywordError('Lost connection while checking Search Console.');
@@ -686,7 +691,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
 
             {keywordConfigured === false && (
               <p className="text-[11px] text-slate-500">
-                Search Console isn't connected yet -- set GSC_SERVICE_ACCOUNT_EMAIL, GSC_SERVICE_ACCOUNT_PRIVATE_KEY, and GSC_SITE_URL to enable this.
+                Not connected yet -- set BING_WEBMASTER_API_KEY to enable this (reports real search interest even for topics this site hasn't covered yet, unlike Search Console).
               </p>
             )}
             {keywordError && <p className="text-[11px] text-rose-400">{keywordError}</p>}
@@ -703,7 +708,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                   >
                     <span className="text-xs text-slate-300 truncate">{row.query}</span>
                     <span className="text-[10px] font-mono text-slate-500 shrink-0">
-                      {row.impressions} impr · pos {row.position.toFixed(1)}
+                      {row.impressions} impr{row.position != null ? ` · pos ${row.position.toFixed(1)}` : ''}
                     </span>
                   </button>
                 ))}
