@@ -416,6 +416,15 @@ export function registerArticleRoutes(app: Express) {
         return;
       }
       res.json({ success: true, article: toApiShape(row) });
+
+      // IndexNow explicitly supports notifying on removed content, not just new/updated -- without
+      // this, an unpublished guide sits fully indexed until a search engine's next natural recrawl
+      // happens to notice it now 404s, instead of being told immediately.
+      submitUrlsToIndexNow([`https://www.beforeregret.com/guides/${row.slug}/`]).then((result) => {
+        if (!result.success) {
+          console.warn('[articles] IndexNow submission on unpublish failed:', result.message);
+        }
+      });
     } catch (err: any) {
       console.error('[articles] unpublish failed:', err);
       res.status(500).json({ success: false, error: 'Could not unpublish the article.' });
@@ -431,8 +440,19 @@ export function registerArticleRoutes(app: Express) {
       return;
     }
     try {
-      await withDb((sql) => sql`DELETE FROM articles WHERE id = ${id}`);
+      const rows = await withDb((sql) => sql`DELETE FROM articles WHERE id = ${id} RETURNING slug`);
+      const row = (rows as unknown as Array<{ slug: string }>)[0];
       res.json({ success: true });
+
+      // Same reasoning as the unpublish route above -- a deleted guide's URL should be reported
+      // gone immediately, not left for the next natural recrawl to discover.
+      if (row?.slug) {
+        submitUrlsToIndexNow([`https://www.beforeregret.com/guides/${row.slug}/`]).then((result) => {
+          if (!result.success) {
+            console.warn('[articles] IndexNow submission on delete failed:', result.message);
+          }
+        });
+      }
     } catch (err: any) {
       console.error('[articles] delete failed:', err);
       res.status(500).json({ success: false, error: 'Could not delete the article.' });
