@@ -4,7 +4,7 @@ import {
   Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
-import { titleSimilarity, STOPWORDS } from '../../utils/relatedGuides';
+import { STOPWORDS } from '../../utils/relatedGuides';
 import { buildPageTitle } from '../../utils/pageTitle';
 
 interface SeoAdminPanelProps {
@@ -49,14 +49,55 @@ interface GeminiUsageSummary {
   recent: Array<{ created_at: string; source: string; model: string; total_tokens: number; estimated_cost_usd: number | null }>;
 }
 
-// titleSimilarity (imported above, from src/utils/relatedGuides.ts) flags a title that clearly
-// overlaps with an existing article the moment you type it, before you even click Generate -- not
-// a semantic/embedding comparison, just shared significant words as a fraction of the shorter
-// title's word count. The server-side duplicate guard (existing titles fed into the Gemini
-// prompt, see src/server/articleGenerator.ts) is the one actually steering what gets written; this
-// is just an instant heads-up in the UI. The same function also ranks "Related Guides" links on
-// each published guide page (see GuidePageView.tsx and scripts/prerender-guides.tsx) -- one
-// implementation, two different uses of the same "how much title vocabulary overlaps" signal.
+// A title that clearly overlaps with an existing article is flagged the moment it's typed, before
+// Generate is ever clicked -- not a semantic/embedding comparison, just weighted shared
+// significant words. The server-side duplicate guard (existing titles fed into the Gemini prompt,
+// see src/server/articleGenerator.ts) is what actually steers what gets written; this is just an
+// instant heads-up (and, below, a hard block on wasting a real Gemini call) in the UI.
+//
+// Deliberately NOT the shared titleSimilarity() from relatedGuides.ts (used elsewhere for
+// "Related Guides" links, left untouched): that function's plain shared-word-count treats two
+// titles as near-duplicates whenever they match on this site's OWN repeated title templates --
+// e.g. "Can You Get Home Insurance With a Flat Roof?" scored 0.60 against "...With Aluminum
+// Wiring?" purely from sharing "get home insurance with", even though the actual topics (flat
+// roof vs. aluminum wiring) are unrelated -- a real false positive that blocked a genuinely new
+// topic. Fixed by weighting each shared word by how rare it is across the site's existing titles:
+// a word repeated in most titles (home, insurance, inspection -- this site's own boilerplate)
+// contributes almost nothing; a word unique to one or two titles (aluminum, flat, roof)
+// contributes heavily. Verified against the real published-article corpus: the flat-roof/
+// aluminum-wiring false positive drops from 0.60 to 0.27, while a genuine near-duplicate (the
+// same title minus one word) still scores 1.00 -- a wide, safe margin either side of the 0.5
+// threshold below.
+function bestTitleOverlap(
+  candidateTitle: string,
+  otherTitles: string[]
+): { matchIndex: number; score: number } | undefined {
+  const words = (text: string) => new Set(
+    text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w))
+  );
+  const candidateWords = words(candidateTitle);
+  if (candidateWords.size === 0 || otherTitles.length === 0) return undefined;
+
+  const otherWordSets = otherTitles.map(words);
+  const docFrequency = new Map<string, number>();
+  candidateWords.forEach((w) => {
+    docFrequency.set(w, otherWordSets.filter((set) => set.has(w)).length);
+  });
+
+  let best: { matchIndex: number; score: number } | undefined;
+  otherWordSets.forEach((existingWords, i) => {
+    let shared = 0;
+    let total = 0;
+    candidateWords.forEach((w) => {
+      const weight = 1 / ((docFrequency.get(w) || 0) + 1);
+      total += weight;
+      if (existingWords.has(w)) shared += weight;
+    });
+    const score = total > 0 ? shared / total : 0;
+    if (!best || score > best.score) best = { matchIndex: i, score };
+  });
+  return best;
+}
 
 // Live preview only -- the server (src/server/articlesApi.ts) re-derives and owns the real slug
 // on save, including collision handling. This just needs to look right as you type.
@@ -132,6 +173,11 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // (see the click handler below), cleared on manual typing so a stale list from a previous
   // topic never silently leaks into an unrelated generation.
   const [seoKeywordHints, setSeoKeywordHints] = useState<string[]>([]);
+  // The overlap check below is a heuristic, and heuristics have false positives -- this is the
+  // escape hatch for when it's wrong about a specific title, rather than a hard block with no way
+  // through. Reset on any manual edit to Topic/Exact Title so it never silently carries over to a
+  // different, unrelated title typed afterward.
+  const [overrideSimilarWarning, setOverrideSimilarWarning] = useState(false);
 
   // Gemini token/cost counter (see src/server/geminiUsageTracker.ts). "Real time" here means
   // polled every 20s while this screen is open, not a websocket push -- a cost dashboard doesn't
@@ -612,12 +658,15 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // check needed for that path), then the saved draft title as a last resort. Topic is included
   // here, not just exact title: a short seed like "TPR valve" against an existing title like
   // "What Is a TPR Valve and Why Do Inspectors Always Check It?" shares most of the seed's few
-  // significant words, which is exactly the strong-overlap signal titleSimilarity's "divide by the
-  // shorter title" formula is designed to catch -- unlike the keyword-hint ranking below, this
-  // isn't the case where that formula's bias toward short candidates is a problem.
+  // significant words, which is exactly the strong-overlap signal bestTitleOverlap (above) is
+  // designed to catch.
   const titleToCheckForDuplicates = exactTitleInput.trim() || topicInput.trim() || draft.title.trim();
-  const similarExisting = titleToCheckForDuplicates && articles
-    ? articles.find((a) => a.id !== draft.id && titleSimilarity(a.title, titleToCheckForDuplicates) > 0.5)
+  const otherArticles = articles ? articles.filter((a) => a.id !== draft.id) : [];
+  const titleOverlap = titleToCheckForDuplicates
+    ? bestTitleOverlap(titleToCheckForDuplicates, otherArticles.map((a) => a.title))
+    : undefined;
+  const similarExisting = titleOverlap && titleOverlap.score > 0.5
+    ? otherArticles[titleOverlap.matchIndex]
     : undefined;
 
   return (
@@ -677,7 +726,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           </div>
         )}
 
-        {similarExisting && (
+        {similarExisting && !overrideSimilarWarning && (
           <div className="p-4 bg-amber-950/40 border border-amber-800/60 rounded-xl text-sm text-amber-200 flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <div>
@@ -688,7 +737,14 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               >
                 "{similarExisting.title}"
               </button>
-              <span> ({similarExisting.status === 'published' ? 'live' : 'draft'}). Consider a different angle, or open it to edit instead.</span>
+              <span> ({similarExisting.status === 'published' ? 'live' : 'draft'}). Consider a different angle, or open it to edit instead -- </span>
+              <button
+                onClick={() => setOverrideSimilarWarning(true)}
+                className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
+              >
+                or generate anyway
+              </button>
+              <span> if this is actually a different topic.</span>
             </div>
           </div>
         )}
@@ -718,6 +774,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               onChange={(e) => {
                 setTopicInput(e.target.value);
                 setSeoKeywordHints([]);
+                setOverrideSimilarWarning(false);
               }}
               placeholder="e.g. Zinsco electrical panels — leave blank for a pillar-based suggestion"
               disabled={generating || hasExistingContent}
@@ -823,6 +880,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               onChange={(e) => {
                 setExactTitleInput(e.target.value);
                 setSeoKeywordHints([]);
+                setOverrideSimilarWarning(false);
               }}
               placeholder="e.g. Buying a House With a Zinsco Panel"
               disabled={generating || hasExistingContent}
@@ -832,15 +890,20 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
 
           <button
             onClick={() => generateWithAi()}
-            disabled={generating || hasExistingContent || !!similarExisting}
+            disabled={generating || hasExistingContent || (!!similarExisting && !overrideSimilarWarning)}
             className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer disabled:opacity-50"
           >
             {generating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
             <span>{generating ? 'Writing...' : 'Generate with AI'}</span>
           </button>
-          {similarExisting && !hasExistingContent && (
+          {similarExisting && !overrideSimilarWarning && !hasExistingContent && (
             <p className="text-[11px] text-amber-400">
-              Blocked until you change the title above -- generating now would likely burn a real Gemini call writing a near-duplicate of the existing article.
+              Blocked until you change the title above, or click "generate anyway" -- generating now would likely burn a real Gemini call writing a near-duplicate of the existing article.
+            </p>
+          )}
+          {similarExisting && overrideSimilarWarning && !hasExistingContent && (
+            <p className="text-[11px] text-slate-500">
+              Proceeding despite the similar-title warning above.
             </p>
           )}
 
