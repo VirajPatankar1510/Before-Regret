@@ -7,6 +7,7 @@ import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../src
 import { resolveKnownSource } from '../src/data/knownSources';
 import { ArticleClosingNote } from '../src/components/seo/ArticleClosingNote';
 import { pickRelatedGuides, GuideSummary } from '../src/utils/relatedGuides';
+import { buildPageTitle } from '../src/utils/pageTitle';
 
 // Static HTML generator for published guide articles, run once after `vite build` as part of
 // `npm run build`. The live app is a pure client-render SPA (createRoot, not hydrateRoot -- see
@@ -325,7 +326,7 @@ async function run() {
     const preloadScript = `<script type="application/json" id="__PRELOADED_GUIDE__">${escapeJsonForScriptTag(article)}</script>`;
 
     const html = applyHeadReplacements(template, {
-      title: `${article.title} | BeforeRegret Guides`,
+      title: buildPageTitle(article.title, ' | BeforeRegret Guides'),
       description: article.metaDescription,
       canonicalUrl,
       jsonLd: buildJsonLd(article, canonicalUrl),
