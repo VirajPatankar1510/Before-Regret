@@ -368,7 +368,7 @@ async function run() {
   ];
   const indexHtml = applyHeadReplacements(template, {
     title: 'Editorial Guides | BeforeRegret',
-    description: "Every BeforeRegret research guide in one place -- what to check for a home's age, permit history, insurance eligibility, and inspection blind spots before you sign.",
+    description: "Every BeforeRegret research guide in one place -- what to check for a home's age, permit history, and inspection blind spots before you sign.",
     canonicalUrl: indexCanonicalUrl,
     jsonLd: indexJsonLd,
   }).replace('<div id="root"></div>', `<div id="root">${indexBodyHtml}</div>`);

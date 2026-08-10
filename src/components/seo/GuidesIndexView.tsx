@@ -49,7 +49,7 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
     if (!guides) return;
     applyHeadSeo({
       title: 'Editorial Guides | BeforeRegret',
-      description: 'Every BeforeRegret research guide in one place -- what to check for a home\'s age, permit history, insurance eligibility, and inspection blind spots before you sign.',
+      description: 'Every BeforeRegret research guide in one place -- what to check for a home\'s age, permit history, and inspection blind spots before you sign.',
       canonicalUrl,
       robotsDirective: 'index, follow',
       jsonLdSchema: [
