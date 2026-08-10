@@ -43,6 +43,24 @@ export const COUNTY_RADON_ZONES: CountyRadonZone[] = [
   { stateAbbrev: 'NV', countyName: 'CLARK', zone: 3 },
   { stateAbbrev: 'GA', countyName: 'FULTON', zone: 1 },
   { stateAbbrev: 'MI', countyName: 'WAYNE', zone: 3 },
+
+  // Second batch beyond the first 16 -- next 15 largest US counties by population not already
+  // covered above, per Census Bureau 2025 vintage estimates. Verified against the same EPA table.
+  { stateAbbrev: 'NY', countyName: 'KINGS', zone: 3 },
+  { stateAbbrev: 'CA', countyName: 'RIVERSIDE', zone: 2 },
+  { stateAbbrev: 'NY', countyName: 'QUEENS', zone: 3 },
+  { stateAbbrev: 'CA', countyName: 'SAN BERNARDINO', zone: 2 },
+  { stateAbbrev: 'FL', countyName: 'BROWARD', zone: 3 },
+  { stateAbbrev: 'MA', countyName: 'MIDDLESEX', zone: 1 },
+  { stateAbbrev: 'NY', countyName: 'NEW YORK', zone: 3 },
+  { stateAbbrev: 'CA', countyName: 'ALAMEDA', zone: 2 },
+  { stateAbbrev: 'CA', countyName: 'SACRAMENTO', zone: 3 },
+  { stateAbbrev: 'FL', countyName: 'PALM BEACH', zone: 3 },
+  { stateAbbrev: 'PA', countyName: 'PHILADELPHIA', zone: 3 },
+  { stateAbbrev: 'FL', countyName: 'HILLSBOROUGH', zone: 2 },
+  { stateAbbrev: 'NY', countyName: 'SUFFOLK', zone: 3 },
+  { stateAbbrev: 'FL', countyName: 'ORANGE', zone: 3 },
+  { stateAbbrev: 'NY', countyName: 'BRONX', zone: 3 },
 ];
 
 export function findCountyRadonZone(stateAbbrev: string, countyName: string): CountyRadonZone | undefined {
