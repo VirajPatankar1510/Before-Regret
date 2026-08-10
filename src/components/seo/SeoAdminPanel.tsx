@@ -607,10 +607,15 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // regenerate-over-real-content mistake before it goes live.
   const hasExistingContent = draft.status === 'published' || draft.bodyMarkdown.trim().length > 0;
 
-  // Exact title wins over the saved draft title for this check too, same precedence as
-  // generation itself -- otherwise typing a duplicate into "Exact title" shows no warning at all
-  // until after Generate has already run and overwritten draft.title.
-  const titleToCheckForDuplicates = exactTitleInput.trim() || draft.title.trim();
+  // Same precedence as generation itself: exact title wins, then topic (this also covers a topic
+  // picked from a keyword-search-query result, since that just sets topicInput too -- no separate
+  // check needed for that path), then the saved draft title as a last resort. Topic is included
+  // here, not just exact title: a short seed like "TPR valve" against an existing title like
+  // "What Is a TPR Valve and Why Do Inspectors Always Check It?" shares most of the seed's few
+  // significant words, which is exactly the strong-overlap signal titleSimilarity's "divide by the
+  // shorter title" formula is designed to catch -- unlike the keyword-hint ranking below, this
+  // isn't the case where that formula's bias toward short candidates is a problem.
+  const titleToCheckForDuplicates = exactTitleInput.trim() || topicInput.trim() || draft.title.trim();
   const similarExisting = titleToCheckForDuplicates && articles
     ? articles.find((a) => a.id !== draft.id && titleSimilarity(a.title, titleToCheckForDuplicates) > 0.5)
     : undefined;
