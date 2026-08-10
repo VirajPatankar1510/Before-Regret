@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
 import { titleSimilarity, STOPWORDS } from '../../utils/relatedGuides';
+import { buildPageTitle } from '../../utils/pageTitle';
 
 interface SeoAdminPanelProps {
   onNavigate: (path: string) => void;
@@ -675,7 +676,23 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Title</label>
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Title</label>
+            {/* Only the bare title itself needs a hard warning here -- the " | BeforeRegret
+                Guides" suffix that ends up in the real <title> tag is added automatically only
+                when it still fits under 70 chars (see src/utils/pageTitle.ts), so a title that's
+                fine on its own is always safe regardless of the suffix. A title over 70 on its
+                own is the one case that fallback can't fix, since dropping the suffix doesn't
+                help -- that has to be shortened here. */}
+            <span
+              className={`text-xs font-mono flex items-center gap-1 ${
+                draft.title.length > 70 ? 'text-rose-400' : 'text-slate-500'
+              }`}
+            >
+              {draft.title.length > 70 && <AlertCircle className="w-3 h-3" />}
+              <span>{draft.title.length}/70</span>
+            </span>
+          </div>
           <input
             type="text"
             value={draft.title}
@@ -694,6 +711,18 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             disabled={generating}
             className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-base font-bold placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
           />
+          {draft.title.trim() && (() => {
+            const rendered = buildPageTitle(draft.title, ' | BeforeRegret Guides');
+            const suffixDropped = rendered.length === draft.title.length;
+            return (
+              <p className="text-[11px] text-slate-500">
+                Search results will show: <span className="text-slate-300 font-medium">&ldquo;{rendered}&rdquo;</span>
+                {suffixDropped && draft.title.length <= 70 && (
+                  <span> (brand suffix dropped -- wouldn't fit under 70 chars with it)</span>
+                )}
+              </p>
+            );
+          })()}
         </div>
 
         <div className="space-y-1.5">
