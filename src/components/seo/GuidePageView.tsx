@@ -6,6 +6,7 @@ import { resolveKnownSource } from '../../data/knownSources';
 import { ArticleClosingNote } from './ArticleClosingNote';
 import { GuideAdSlot } from '../GuideAdSlot';
 import { pickRelatedGuides, GuideSummary } from '../../utils/relatedGuides';
+import { buildPageTitle } from '../../utils/pageTitle';
 
 interface GuidePageViewProps {
   guideSlug: string;
@@ -117,7 +118,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
   useEffect(() => {
     if (!article) return;
     applyHeadSeo({
-      title: `${article.title} | BeforeRegret Guides`,
+      title: buildPageTitle(article.title, ' | BeforeRegret Guides'),
       description: article.metaDescription,
       canonicalUrl,
       robotsDirective: 'index, follow',
