@@ -23,6 +23,17 @@ interface Article {
   sources: string[];
   status: string;
   publishedAt: string | null;
+  updatedAt: string | null;
+}
+
+// AI answer engines (and Google, less strictly) weight how recently a page was verified/updated
+// when deciding whether to trust and cite it. Only worth showing as a distinct "Updated" date when
+// it's a genuinely different calendar day from publishedAt -- otherwise every guide would show two
+// identical dates, which reads as noise, not a freshness signal. Mirrors
+// scripts/prerender-guides.tsx's identical check.
+function hasVisibleUpdate(article: Pick<Article, 'publishedAt' | 'updatedAt'>): boolean {
+  if (!article.updatedAt || !article.publishedAt) return false;
+  return new Date(article.publishedAt).toDateString() !== new Date(article.updatedAt).toDateString();
 }
 
 // Reads from the real articles table (see src/server/articlesApi.ts) rather than the old static
@@ -130,6 +141,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           'description': article.metaDescription,
           'image': 'https://www.beforeregret.com/hero-bg.png',
           'datePublished': article.publishedAt,
+          'dateModified': article.updatedAt || article.publishedAt,
           'author': {
             '@type': 'Organization',
             'name': 'BeforeRegret'
@@ -216,7 +228,13 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             {article.publishedAt && (
               <span className="flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                <span>{new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                <span>Published {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              </span>
+            )}
+            {hasVisibleUpdate(article) && (
+              <span className="flex items-center gap-1 text-emerald-700 font-semibold">
+                <Calendar className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Updated {new Date(article.updatedAt!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
               </span>
             )}
           </div>
