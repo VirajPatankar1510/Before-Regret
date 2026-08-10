@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
 import { ChevronRight, Loader2, MapPin, Home, Flame, CloudRain, ExternalLink } from 'lucide-react';
 import { ArticleClosingNote } from './ArticleClosingNote';
+import { pickGuidesForCounty, GuideLink } from '../../utils/countyGuideTopics';
 
 interface CountyPageViewProps {
   countySlug: string;
@@ -151,6 +152,7 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
           headline: title,
           description,
           image: 'https://www.beforeregret.com/hero-bg.png',
+          dateModified: county.fetchedAt,
           author: { '@type': 'Organization', name: 'BeforeRegret' },
         },
         {
@@ -206,6 +208,15 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
           100
       )
     : null;
+
+  const relatedGuides: GuideLink[] = pickGuidesForCounty({
+    slug: county.slug,
+    countyName: county.countyName,
+    stateAbbrev: county.stateAbbrev,
+    radonZone: county.radonZone,
+    yearBuiltBuckets: county.censusYearBuiltBuckets,
+    totalUnits: county.censusTotalUnits,
+  });
 
   return (
     <div className="bg-slate-50 min-h-screen pb-16">
@@ -346,6 +357,25 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
               <span>Source: NOAA National Centers for Environmental Information, Storm Events Database</span>
               <ExternalLink className="w-3 h-3" />
             </a>
+          </section>
+        )}
+
+        {relatedGuides.length > 0 && (
+          <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">
+              Guides Relevant to This County's Housing Stock
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {relatedGuides.map((g) => (
+                <button
+                  key={g.slug}
+                  onClick={() => onNavigate(`/guides/${g.slug}/`)}
+                  className="flex items-center justify-between gap-2 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-800 text-left"
+                >
+                  <span>{g.title}</span>
+                </button>
+              ))}
+            </div>
           </section>
         )}
 

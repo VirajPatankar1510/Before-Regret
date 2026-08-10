@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { withDb, isDbConfigured } from '../src/server/db.js';
+import { pickGuidesForCounty, GuideLink } from '../src/utils/countyGuideTopics.js';
 
 // Static HTML generator for county research pages, mirroring scripts/prerender-guides.tsx exactly
 // -- same reasoning applies: the live app is a pure client-render SPA (createRoot, not
@@ -85,6 +86,14 @@ function CountyStaticBody({ row }: { row: CountyRow }) {
   const oldHousingShare = row.census_total_units
     ? Math.round((((yearBuilt.built1939OrEarlier || 0) + (yearBuilt.built1940to1949 || 0) + (yearBuilt.built1950to1959 || 0) + (yearBuilt.built1960to1969 || 0)) / row.census_total_units) * 100)
     : null;
+  const relatedGuides: GuideLink[] = pickGuidesForCounty({
+    slug: row.slug,
+    countyName: row.county_name,
+    stateAbbrev: row.state_abbrev,
+    radonZone: row.radon_zone,
+    yearBuiltBuckets: yearBuilt,
+    totalUnits: row.census_total_units,
+  });
 
   return (
     <div className="bg-slate-50 min-h-screen pb-16">
@@ -189,6 +198,25 @@ function CountyStaticBody({ row }: { row: CountyRow }) {
           </section>
         )}
 
+        {relatedGuides.length > 0 && (
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">
+              Guides Relevant to This County's Housing Stock
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {relatedGuides.map((g) => (
+                <a
+                  key={g.slug}
+                  href={`/guides/${g.slug}/`}
+                  className="flex items-center justify-between gap-2 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-800"
+                >
+                  <span>{g.title}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-3xl p-8 sm:p-12 space-y-6">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">Get Your Free Property Report</h2>
           <p className="text-sm sm:text-base text-blue-100 leading-relaxed max-w-2xl">
@@ -217,6 +245,7 @@ function buildJsonLd(row: CountyRow, canonicalUrl: string): Record<string, any>[
       headline: title,
       description,
       image: 'https://www.beforeregret.com/hero-bg.png',
+      dateModified: row.fetched_at,
       author: { '@type': 'Organization', name: 'BeforeRegret' },
     },
     {

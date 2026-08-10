@@ -8,6 +8,7 @@ import { resolveKnownSource } from '../src/data/knownSources';
 import { ArticleClosingNote } from '../src/components/seo/ArticleClosingNote';
 import { pickRelatedGuides, GuideSummary } from '../src/utils/relatedGuides';
 import { buildPageTitle } from '../src/utils/pageTitle';
+import { pickCountiesForGuide, CountyTopicInput } from '../src/utils/countyGuideTopics.js';
 
 // Static HTML generator for published guide articles, run once after `vite build` as part of
 // `npm run build`. The live app is a pure client-render SPA (createRoot, not hydrateRoot -- see
@@ -37,6 +38,7 @@ interface ArticleRow {
   quick_answer: string;
   sources_json: string;
   published_at: string | null;
+  updated_at: string | null;
 }
 
 interface Article {
@@ -48,6 +50,7 @@ interface Article {
   quickAnswer: string;
   sources: string[];
   publishedAt: string | null;
+  updatedAt: string | null;
 }
 
 function toArticle(row: ArticleRow): Article {
@@ -67,7 +70,20 @@ function toArticle(row: ArticleRow): Article {
     quickAnswer: row.quick_answer,
     sources,
     publishedAt: row.published_at,
+    updatedAt: row.updated_at,
   };
+}
+
+// AI answer engines (and Google, less strictly) weight how recently a page was verified/updated
+// when deciding whether to trust and cite it -- an undated or stale-looking page loses out to one
+// that visibly shows its own freshness. Only worth surfacing as "Updated" when it's a genuinely
+// different calendar day from publishedAt; otherwise every guide would show two identical dates,
+// which reads as noise, not a freshness signal.
+function hasVisibleUpdate(article: Pick<Article, 'publishedAt' | 'updatedAt'>): boolean {
+  if (!article.updatedAt || !article.publishedAt) return false;
+  const published = new Date(article.publishedAt).toDateString();
+  const updated = new Date(article.updatedAt).toDateString();
+  return published !== updated;
 }
 
 function escapeHtmlAttr(value: string): string {
@@ -76,6 +92,16 @@ function escapeHtmlAttr(value: string): string {
     .replace(/"/g, '&quot;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+// county_data stores county_name in the all-caps form FEMA/NOAA/Census use for matching (e.g.
+// "TRAVIS") -- title-cased here for the reader-facing county links in "Where This Comes Up".
+// Duplicated from the equivalent in scripts/prerender-counties.tsx / CountyPageView.tsx rather
+// than shared, matching how those two already tolerate the same small duplication.
+function titleCase(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/(^|[\s-])([a-z])/g, (_, sep, letter) => sep + letter.toUpperCase());
 }
 
 function escapeJsonForScriptTag(value: unknown): string {
@@ -91,6 +117,7 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
       description: article.metaDescription,
       image: 'https://www.beforeregret.com/hero-bg.png',
       datePublished: article.publishedAt,
+      dateModified: article.updatedAt || article.publishedAt,
       author: { '@type': 'Organization', name: 'BeforeRegret' },
     },
     {
@@ -124,7 +151,15 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
 // that only work inside Vite's own transform, not this standalone script) and minus the
 // onNavigate-driven breadcrumb buttons, swapped here for real <a href> links so the static page
 // is still navigable without JS.
-function GuideStaticBody({ article, relatedGuides }: { article: Article; relatedGuides: GuideSummary[] }) {
+function GuideStaticBody({
+  article,
+  relatedGuides,
+  relevantCounties,
+}: {
+  article: Article;
+  relatedGuides: GuideSummary[];
+  relevantCounties: Array<{ slug: string; countyName: string; stateAbbrev: string }>;
+}) {
   const wordCount = article.bodyMarkdown.trim().split(/\s+/).filter(Boolean).length;
   const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 220));
   const noNav = () => {};
@@ -148,7 +183,12 @@ function GuideStaticBody({ article, relatedGuides }: { article: Article; related
             <span>{readTimeMinutes} min read</span>
             {article.publishedAt && (
               <span>
-                {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                Published {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </span>
+            )}
+            {hasVisibleUpdate(article) && (
+              <span className="text-emerald-700 font-semibold">
+                Updated {new Date(article.updatedAt!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </span>
             )}
           </div>
@@ -188,6 +228,26 @@ function GuideStaticBody({ article, relatedGuides }: { article: Article; related
                   className="flex items-center justify-between gap-2 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-800"
                 >
                   <span>{g.title}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {relevantCounties.length > 0 && (
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Where This Comes Up</h2>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Real county data where this is a common issue based on housing age, not a guess:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {relevantCounties.map((c) => (
+                <a
+                  key={c.slug}
+                  href={`/county/${c.slug}/`}
+                  className="flex items-center justify-between gap-2 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-800"
+                >
+                  <span>{c.countyName} County, {c.stateAbbrev}</span>
                 </a>
               ))}
             </div>
@@ -301,7 +361,7 @@ async function run() {
   const template = fs.readFileSync(templatePath, 'utf8');
 
   const rows = (await withDb((sql) => sql`
-    SELECT id, slug, title, meta_description, body_markdown, quick_answer, sources_json, published_at
+    SELECT id, slug, title, meta_description, body_markdown, quick_answer, sources_json, published_at, updated_at
     FROM articles WHERE status = 'published' ORDER BY published_at DESC
   `)) as unknown as ArticleRow[];
 
@@ -311,13 +371,40 @@ async function run() {
     publishedAt: r.published_at,
   }));
 
+  // Powers the "Where This Comes Up" section -- links a guide about a housing-era defect (knob
+  // and tube, FPE panels, polybutylene, etc.) to the verified counties where that era actually
+  // makes up a real share of the housing stock. See src/utils/countyGuideTopics.ts for why this
+  // direction is static-only rather than mirrored in the live GuidePageView.tsx: it would need a
+  // new "/api/counties" list endpoint the live client doesn't have today, whereas the reverse
+  // direction (county -> guides) is cheap both ways since __PRELOADED_COUNTY__ already carries
+  // everything CountyPageView.tsx needs. Crawler-facing link equity is the actual goal here, so
+  // static-only still delivers it.
+  const countyRows = (await withDb((sql) => sql`
+    SELECT slug, county_name, state_abbrev, radon_zone, census_total_units, census_year_built_json
+    FROM county_data WHERE data_complete = true
+  `)) as unknown as Array<{
+    slug: string; county_name: string; state_abbrev: string; radon_zone: number | null;
+    census_total_units: number | null; census_year_built_json: string;
+  }>;
+  const counties: CountyTopicInput[] = countyRows.map((c) => ({
+    slug: c.slug,
+    countyName: titleCase(c.county_name),
+    stateAbbrev: c.state_abbrev,
+    radonZone: c.radon_zone,
+    yearBuiltBuckets: JSON.parse(c.census_year_built_json || '{}'),
+    totalUnits: c.census_total_units,
+  }));
+
   let written = 0;
   const llmsTxtLines: string[] = [];
   for (const row of rows) {
     const article = toArticle(row);
     const canonicalUrl = `https://www.beforeregret.com/guides/${article.slug}/`;
     const relatedGuides = pickRelatedGuides(article.slug, article.title, allGuideSummaries);
-    const bodyHtml = renderToStaticMarkup(<GuideStaticBody article={article} relatedGuides={relatedGuides} />);
+    const relevantCounties = pickCountiesForGuide(article.slug, counties);
+    const bodyHtml = renderToStaticMarkup(
+      <GuideStaticBody article={article} relatedGuides={relatedGuides} relevantCounties={relevantCounties} />
+    );
 
     // Embedded verbatim so GuidePageView.tsx's mount effect can use it directly instead of
     // re-fetching over the network on first paint -- see the matching read in GuidePageView.tsx
