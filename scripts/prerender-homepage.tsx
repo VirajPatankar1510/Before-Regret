@@ -164,8 +164,22 @@ async function run() {
   const bodyHtml = renderToStaticMarkup(<HomeStaticBody guides={guides} />);
   const faqScript = `<script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(buildFaqJsonLd())}</script>`;
 
+  // Preload the hero photo. It's the homepage's LCP element, but it's a CSS background-image on a
+  // div that only exists once React has booted -- the static markup above deliberately renders a
+  // plain bg-slate-950 hero instead. So without this hint the browser can't even discover the
+  // image until the JS bundle has downloaded, parsed, and rendered, which is exactly the
+  // "resource load delay" PageSpeed measured as the single largest slice of LCP. The preload
+  // scanner sees this during initial HTML parse and fetches it in parallel with the CSS and JS,
+  // so the bytes are already there by the time the real hero mounts.
+  //
+  // Injected here rather than in the source index.html on purpose: this script only rewrites
+  // dist/index.html, so the hint lands on the homepage alone. hero-bg.jpg isn't a visible
+  // background on guide or county pages (they only cite it as JSON-LD `image` metadata), and
+  // shell.html is written above before this replace runs, so dead URLs don't pay for it either.
+  const heroPreload = `<link rel="preload" as="image" href="/hero-bg.jpg" fetchpriority="high" />`;
+
   const html = template
-    .replace('</head>', `${faqScript}\n  </head>`)
+    .replace('</head>', `${heroPreload}\n  ${faqScript}\n  </head>`)
     .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`);
 
   fs.writeFileSync(templatePath, html, 'utf8');
