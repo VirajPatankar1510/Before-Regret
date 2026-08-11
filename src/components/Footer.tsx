@@ -66,14 +66,14 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                   <BookOpen className="w-3.5 h-3.5 text-blue-400" />
                   <span>Editorial Guides</span>
                 </div>
-                <ul className="space-y-1">
+                <ul className="space-y-2">
                   {guides.map((guide) => (
                     <li key={guide.slug}>
-                      <button onClick={() => onNavigate(`/guides/${guide.slug}/`)} className="hover:text-white cursor-pointer">{guide.title}</button>
+                      <button onClick={() => onNavigate(`/guides/${guide.slug}/`)} className="hover:text-white cursor-pointer block py-1.5">{guide.title}</button>
                     </li>
                   ))}
                   <li>
-                    <button onClick={() => onNavigate('/guides/')} className="hover:text-white cursor-pointer font-bold text-blue-300">View all guides →</button>
+                    <button onClick={() => onNavigate('/guides/')} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">View all guides →</button>
                   </li>
                 </ul>
               </div>
@@ -84,13 +84,13 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                 <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                 <span>Legal & Support Policies</span>
               </div>
-              <ul className="space-y-1">
-                <li><button onClick={() => onNavigate('/about')} className="hover:text-white cursor-pointer font-bold text-blue-300">About & Methodology</button></li>
-                <li><button onClick={() => onNavigate('/advertise')} className="hover:text-white cursor-pointer font-bold text-blue-300">Advertise With Us</button></li>
-                <li><button onClick={() => onNavigate('/support')} className="hover:text-white cursor-pointer font-medium text-slate-300">Customer Support</button></li>
-                <li><button onClick={() => onNavigate('/terms')} className="hover:text-white cursor-pointer text-slate-400">Terms of Service</button></li>
-                <li><button onClick={() => onNavigate('/privacy')} className="hover:text-white cursor-pointer text-slate-400">Privacy Policy</button></li>
-                <li><button onClick={() => onNavigate('/refunds')} className="hover:text-white cursor-pointer text-slate-400">Refund & Cancellation</button></li>
+              <ul className="space-y-2">
+                <li><button onClick={() => onNavigate('/about')} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">About & Methodology</button></li>
+                <li><button onClick={() => onNavigate('/advertise')} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">Advertise With Us</button></li>
+                <li><button onClick={() => onNavigate('/support')} className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5">Customer Support</button></li>
+                <li><button onClick={() => onNavigate('/terms')} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Terms of Service</button></li>
+                <li><button onClick={() => onNavigate('/privacy')} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Privacy Policy</button></li>
+                <li><button onClick={() => onNavigate('/refunds')} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Refund & Cancellation</button></li>
               </ul>
             </div>
           </div>
