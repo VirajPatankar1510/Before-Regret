@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+// Type-only -- the actual maplibre-gl module (and its stylesheet) are loaded on demand in the map
+// init effect below, not at module scope. maplibre is ~800KB of JS, and this component renders in
+// the homepage hero, so a static import put the whole mapping library on the critical path of
+// every page load. The map itself is never visible until someone has searched and picked an
+// address (see `showMap`), so none of it needs to be there for first paint.
+import type { Map as MapLibreMap, Marker as MapLibreMarker } from 'maplibre-gl';
 import {
   Loader2, AlertCircle, MapPin,
   CheckCircle2, ArrowRight, Search, X
@@ -86,8 +90,12 @@ function isSpecificAddress(item: any): boolean {
 
 export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<maplibregl.Map | null>(null);
-  const markerInstanceRef = useRef<maplibregl.Marker | null>(null);
+  const mapInstanceRef = useRef<MapLibreMap | null>(null);
+  const markerInstanceRef = useRef<MapLibreMarker | null>(null);
+  // Handle on the lazily-imported maplibre module, kept in a ref rather than state because its
+  // arrival never needs to trigger a render -- the only consumers are the init effect that loads
+  // it and updateMarkerPosition, which can only run after the map exists.
+  const maplibreRef = useRef<typeof import('maplibre-gl') | null>(null);
 
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
 
@@ -240,7 +248,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   }, [mapSearchQuery]);
 
   const updateMarkerPosition = (lat: number, lon: number) => {
-    if (!mapInstanceRef.current) return;
+    const maplibregl = maplibreRef.current;
+    if (!mapInstanceRef.current || !maplibregl) return;
 
     if (!markerInstanceRef.current) {
       const pinEl = document.createElement('div');
@@ -449,77 +458,102 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     const initialLon = selectedPinResult?.lon || DEFAULT_VIEW.lon;
     const initialZoom = selectedPinResult ? 17 : DEFAULT_VIEW.zoom;
 
-    let map: maplibregl.Map;
-    try {
-      const tileUrl = `${window.location.origin}/api/geocode/tiles/streets/{z}/{x}/{y}.png`;
-      map = new maplibregl.Map({
-        container: mapContainerRef.current,
-        style: {
-          version: 8,
-          sources: {
-            'locationiq-streets': {
-              type: 'raster',
-              tiles: [tileUrl],
-              tileSize: 256,
-              attribution: '&copy; LocationIQ'
-            },
-            'esri-satellite': {
-              type: 'raster',
-              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-              tileSize: 256,
-              attribution: 'Tiles &copy; Esri'
-            },
-            'esri-labels': {
-              type: 'raster',
-              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],
-              tileSize: 256
-            }
-          },
-          layers: [
-            {
-              id: 'streets-layer',
-              type: 'raster',
-              source: 'locationiq-streets',
-              layout: { visibility: 'none' }
-            },
-            {
-              id: 'satellite-layer',
-              type: 'raster',
-              source: 'esri-satellite',
-              layout: { visibility: 'visible' }
-            },
-            {
-              id: 'satellite-labels-layer',
-              type: 'raster',
-              source: 'esri-labels',
-              layout: { visibility: 'visible' }
-            }
-          ]
-        },
-        center: [initialLon, initialLat],
-        zoom: initialZoom,
-        attributionControl: { compact: true },
-        interactive: false
-      });
-    } catch (e) {
-      console.warn('Map creation skipped:', e);
-      return;
-    }
+    // `cancelled` guards the await below: showMap can flip back off (or the component unmount)
+    // while the maplibre chunk is still downloading, and without this the late-arriving module
+    // would build a map into a container React has already torn down, leaking it past the
+    // cleanup that already ran.
+    let cancelled = false;
+    let resizeTimer: ReturnType<typeof setTimeout> | undefined;
 
-    mapInstanceRef.current = map;
-    if (selectedPinResult) {
-      updateMarkerPosition(initialLat, initialLon);
-    }
-
-    const resizeTimer = setTimeout(() => {
-      if (mapInstanceRef.current) {
-        try {
-          mapInstanceRef.current.resize();
-        } catch (e) {}
+    (async () => {
+      let maplibregl: typeof import('maplibre-gl');
+      try {
+        // Stylesheet ships with the module rather than as a <link> in index.html -- it used to be
+        // a render-blocking request to unpkg for a map that isn't on screen yet.
+        [maplibregl] = await Promise.all([
+          import('maplibre-gl'),
+          import('maplibre-gl/dist/maplibre-gl.css'),
+        ]);
+      } catch (e) {
+        console.warn('Map library failed to load:', e);
+        return;
       }
-    }, 200);
+      if (cancelled || !mapContainerRef.current || mapInstanceRef.current) return;
+      maplibreRef.current = maplibregl;
+
+      let map: MapLibreMap;
+      try {
+        const tileUrl = `${window.location.origin}/api/geocode/tiles/streets/{z}/{x}/{y}.png`;
+        map = new maplibregl.Map({
+          container: mapContainerRef.current,
+          style: {
+            version: 8,
+            sources: {
+              'locationiq-streets': {
+                type: 'raster',
+                tiles: [tileUrl],
+                tileSize: 256,
+                attribution: '&copy; LocationIQ'
+              },
+              'esri-satellite': {
+                type: 'raster',
+                tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+                tileSize: 256,
+                attribution: 'Tiles &copy; Esri'
+              },
+              'esri-labels': {
+                type: 'raster',
+                tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],
+                tileSize: 256
+              }
+            },
+            layers: [
+              {
+                id: 'streets-layer',
+                type: 'raster',
+                source: 'locationiq-streets',
+                layout: { visibility: 'none' }
+              },
+              {
+                id: 'satellite-layer',
+                type: 'raster',
+                source: 'esri-satellite',
+                layout: { visibility: 'visible' }
+              },
+              {
+                id: 'satellite-labels-layer',
+                type: 'raster',
+                source: 'esri-labels',
+                layout: { visibility: 'visible' }
+              }
+            ]
+          },
+          center: [initialLon, initialLat],
+          zoom: initialZoom,
+          attributionControl: { compact: true },
+          interactive: false
+        });
+      } catch (e) {
+        console.warn('Map creation skipped:', e);
+        return;
+      }
+
+      mapInstanceRef.current = map;
+      if (selectedPinResult) {
+        updateMarkerPosition(initialLat, initialLon);
+      }
+
+      resizeTimer = setTimeout(() => {
+        if (mapInstanceRef.current) {
+          try {
+            mapInstanceRef.current.resize();
+          } catch (e) {}
+        }
+      }, 200);
+    })();
 
     return () => {
+      cancelled = true;
       clearTimeout(resizeTimer);
       if (markerInstanceRef.current) {
         try { markerInstanceRef.current.remove(); } catch (e) {}
