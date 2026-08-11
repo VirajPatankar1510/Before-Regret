@@ -13,6 +13,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Preconnect to both Google Fonts origins before the stylesheet request even fires -- the
+         connection handshake (DNS + TCP + TLS) to a fresh third-party origin is most of what made
+         this render-blocking request take 750ms despite the CSS itself being under 2KB. Two
+         origins because the CSS below only names fonts.googleapis.com; the actual .woff2 files it
+         references live on fonts.gstatic.com, a second connection the browser wouldn't otherwise
+         start warming until it had already parsed this response. crossorigin is required on the
+         gstatic one specifically -- font fetches are always CORS requests regardless of this tag,
+         and a preconnect missing crossorigin opens a connection the font fetch can't reuse,
+         wasting the handshake it was meant to save. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Previously a CSS @import inside src/index.css -- moved here so the preload scanner finds
+         it during the initial HTML parse instead of after fetching and starting to parse that
+         file first. Playfair Display dropped from the request (see src/index.css for why). -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300..900;1,300..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap" />
     <link rel="shortcut icon" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <title>BeforeRegret — Know What to Check Before You Sign</title>
