@@ -11,6 +11,11 @@ interface SeoAdminPanelProps {
   onNavigate: (path: string) => void;
 }
 
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
 interface Article {
   id: number;
   slug: string;
@@ -19,6 +24,7 @@ interface Article {
   bodyMarkdown: string;
   quickAnswer: string;
   sources: string[];
+  faqItems: FaqItem[];
   status: 'draft' | 'published';
   createdAt: string;
   updatedAt: string;
@@ -392,6 +398,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           bodyMarkdown: draft.bodyMarkdown,
           quickAnswer: draft.quickAnswer,
           sources: draft.sources,
+          faqItems: draft.faqItems,
           slug: draft.slug,
         }),
       });
@@ -415,10 +422,48 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     }
   };
 
+  // For an already-published article: save the current edits WITHOUT touching publish status --
+  // no unpublish/republish round trip, so a live page never has to go offline (even briefly) just
+  // to fix a typo or update a fact. This used to be the only way to edit published content, via
+  // the same unpublish-then-Publish-now dance publishNow above still exists for; that's still
+  // available as its own explicit action (Unpublish), but it's no longer the *only* path for an
+  // edit that was always going back to published anyway.
+  const updateArticle = async () => {
+    if (!draft) return;
+    setSaving(true);
+    setActionError(null);
+    try {
+      const res = await fetch(`/api/admin/articles/${draft.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: draft.title,
+          metaDescription: draft.metaDescription,
+          bodyMarkdown: draft.bodyMarkdown,
+          quickAnswer: draft.quickAnswer,
+          sources: draft.sources,
+          faqItems: draft.faqItems,
+          slug: draft.slug,
+        }),
+      });
+      const data = await res.json();
+      if (data?.success) {
+        setDraft(data.article);
+        loadArticles();
+      } else {
+        setActionError(data?.error || 'Could not save your changes.');
+      }
+    } catch {
+      setActionError('Could not reach the server.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // Unpublishing takes an already-live article offline -- nothing on screen needs persisting for
-  // that to make sense, unlike publishNow above. To edit an already-published article, unpublish
-  // it, make the change, then Publish now again -- that's the only round-trip left now that Save
-  // is gone, and it's an intentional tradeoff, not an oversight.
+  // that to make sense, unlike publishNow/updateArticle above. Still useful on its own when an
+  // edit is big enough that the page genuinely shouldn't be live while it's in progress, or when
+  // taking the page down is the actual goal.
   const unpublish = async () => {
     if (!draft) return;
     setSaving(true);
@@ -453,7 +498,8 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     !a.metaDescription.trim() &&
     !a.bodyMarkdown.trim() &&
     !a.quickAnswer.trim() &&
-    a.sources.length === 0;
+    a.sources.length === 0 &&
+    a.faqItems.length === 0;
 
   const backToList = async () => {
     if (draft && isUntouchedEmptyDraft(draft)) {
@@ -691,14 +737,24 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
 
           <div className="flex items-center gap-2">
             {draft.status === 'published' ? (
-              <button
-                onClick={unpublish}
-                disabled={saving}
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
-              >
-                <Undo2 className="w-3.5 h-3.5" />
-                <span>Unpublish</span>
-              </button>
+              <>
+                <button
+                  onClick={updateArticle}
+                  disabled={saving}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                  <span>Update</span>
+                </button>
+                <button
+                  onClick={unpublish}
+                  disabled={saving}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <Undo2 className="w-3.5 h-3.5" />
+                  <span>Unpublish</span>
+                </button>
+              </>
             ) : (
               <button
                 onClick={publishNow}
@@ -1047,6 +1103,77 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           />
         </div>
 
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
+              <MessageCircleQuestion className="w-3.5 h-3.5" />
+              <span>FAQ (optional)</span>
+            </label>
+            <button
+              type="button"
+              onClick={() => setDraft({ ...draft, faqItems: [...draft.faqItems, { question: '', answer: '' }] })}
+              disabled={generating}
+              className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-semibold cursor-pointer disabled:opacity-60"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add question</span>
+            </button>
+          </div>
+          {/* Rendered as a visible accordion at the foot of the guide, and merged into the page's
+              FAQPage schema (see GuidePageView.tsx) -- write real, fact-checked answers here.
+              Google dropped the FAQ rich-result dropdown for everyone in May 2026, so this no
+              longer earns a SERP snippet; it's still worth writing well because it's real content
+              readers see, and because a wrong answer here is a wrong answer on the live page, not
+              just an unused schema field. */}
+          <p className="text-xs text-slate-500">
+            Adds a visible FAQ accordion at the bottom of the guide. No SERP dropdown for it anymore (Google retired
+            that in May 2026) -- this is for readers and for the page's own FAQPage schema, not a snippet lever.
+          </p>
+          {draft.faqItems.length > 0 && (
+            <div className="space-y-3">
+              {draft.faqItems.map((item, idx) => (
+                <div key={idx} className="p-3 bg-slate-900 border border-slate-800 rounded-xl space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Question {idx + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => setDraft({ ...draft, faqItems: draft.faqItems.filter((_, i) => i !== idx) })}
+                      disabled={generating}
+                      className="text-slate-500 hover:text-rose-400 cursor-pointer disabled:opacity-60"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    value={item.question}
+                    onChange={(e) => {
+                      const next = [...draft.faqItems];
+                      next[idx] = { ...next[idx], question: e.target.value };
+                      setDraft({ ...draft, faqItems: next });
+                    }}
+                    placeholder="e.g. Who pays to close out an expired permit in Austin, TX?"
+                    disabled={generating}
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
+                  />
+                  <textarea
+                    value={item.answer}
+                    onChange={(e) => {
+                      const next = [...draft.faqItems];
+                      next[idx] = { ...next[idx], answer: e.target.value };
+                      setDraft({ ...draft, faqItems: next });
+                    }}
+                    placeholder="A direct, fact-checked answer -- this is exactly what gets published, verify it before writing it here."
+                    rows={2}
+                    disabled={generating}
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none resize-none disabled:opacity-60"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {draft.sources.length > 0 && (
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Sources cited</label>
@@ -1082,11 +1209,14 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
         )}
         {draft.status === 'published' && (
           <div className="flex items-center gap-3 pt-2">
+            <p className="text-xs text-slate-500">
+              Edits here aren't live until you click <b>Update</b> above.
+            </p>
             <a
               href={`/guides/${draft.slug}/`}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white font-medium"
+              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white font-medium shrink-0"
             >
               <Globe className="w-3.5 h-3.5" />
               <span>View live page</span>

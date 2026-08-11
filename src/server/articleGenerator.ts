@@ -33,13 +33,27 @@ HARD RULES -- breaking any of these makes the output unusable:
 7. Write only original analysis and explanation in your own words. Do not paraphrase or lift structure from any specific existing article.
 8. Never invent a URL or a specific report/study to attribute a claim to. You may only cite an organization by its short code from the approved list given to you -- never write out a URL yourself.`;
 
-const PILLAR_STRATEGY = `BeforeRegret's content strategy has six pillars. If no specific topic is given, pick the single best angle from these:
-1. Insurance blockers -- specific things (Federal Pacific/Zinsco panels, polybutylene pipe, aluminum wiring, knob-and-tube) that some insurers have documented declining or surcharging.
-2. Era guides -- what matters most for a home built in a specific decade (pairs with BeforeRegret's Inspection Budget Priorities feature).
-3. What a general inspection won't cover -- sewer scope, structural engineer review, asbestos sampling, EIFS moisture survey -- and why each needs a separate appointment.
-4. Seller question scripts -- specific questions a buyer should ask, by topic.
-5. Regret-native content -- what buyers commonly say they wish they'd checked before closing.
-6. Cost after closing -- property tax reassessment mechanics, insurance deductible structure, era-based utility costs.`;
+// Deliberately not a ranked or numbered list -- an earlier numbered "pillar" version put
+// insurance first and gave it by far the most specific named examples (Federal Pacific/Zinsco
+// panels, polybutylene, aluminum wiring, knob-and-tube), which is exactly what a lot of this
+// site's *existing* article corpus is titled. Combined with the existingTitlesBlock below
+// (which necessarily lists that same insurance-heavy corpus so new topics don't duplicate it),
+// that's a strong pull toward insurance framing regardless of what topic was actually typed in --
+// confirmed as a real, reported bug: topics with nothing to do with insurance kept coming back
+// insurance-framed. The fix has two parts: this list is now flat and explicitly open-ended
+// (covers the full pre-purchase research space BeforeRegret is actually about, not six fixed
+// buckets), and the instruction below tells the model directly not to default to insurance or to
+// treat the existing-titles list as a style guide.
+const CONTENT_SCOPE = `BeforeRegret covers anything a home buyer should research or check before closing -- the full pre-purchase research space, not one narrow angle. Illustrative areas, not an exhaustive list and none of them a default:
+- Insurance blockers: specific systems/materials (old electrical panels, polybutylene pipe, aluminum wiring, knob-and-tube) some insurers have documented declining or surcharging.
+- Permit and records research: how to check permit history, code violations, certificate of occupancy, or property records for a specific city or county.
+- Era-specific inspection priorities: what matters most for a home built in a specific decade.
+- What a general home inspection won't cover: sewer scope, structural engineer review, asbestos sampling, EIFS moisture survey -- and why each needs its own appointment.
+- Seller disclosure and negotiation: specific questions a buyer should ask, and how to read gaps in a disclosure.
+- Location-specific regulatory quirks: county- or city-specific requirements (septic transfer permits, well inspections, flood zone rules) that vary by jurisdiction and most buyers don't know exist.
+- Cost after closing: property tax reassessment mechanics, insurance deductible structure, era-based utility and maintenance costs.
+- Regret-native content: what buyers commonly say afterward they wish they'd checked before closing.
+- Any other area genuinely related to researching a property before buying it, even if it isn't listed above.`;
 
 export function buildArticlePrompt(
   topicSeed: string,
@@ -60,8 +74,8 @@ export function buildArticlePrompt(
   const topicInstruction = trimmedExactTitle
     ? `The exact title for this article is: "${trimmedExactTitle}"\n\nUse this exact wording as the title -- verbatim, character for character. Do not rephrase it, generalize it, "optimize" it, or reframe it into a different question or a different angle (e.g. don't turn a wiring-type question into an insurance or mortgage question unless the given title already says insurance or mortgage). Your TITLE: line in the output must match this text exactly. Write the META, QUICK_ANSWER, and full article body specifically and only for this exact title.`
     : trimmedTopic
-    ? `Topic seed given by the writer: "${trimmedTopic}"\n\nRefine this into the single best specific, long-tail angle -- the exact question a worried buyer would actually type into Google -- rather than writing broadly about the general subject.`
-    : `No topic was given. ${PILLAR_STRATEGY}\n\nPick the single best long-tail angle within that pillar -- not the pillar name itself as a title.`;
+    ? `Topic seed given by the writer: "${trimmedTopic}"\n\nRefine this into the single best specific, long-tail angle -- the exact question a worried buyer would actually type into Google -- rather than writing broadly about the general subject. Stay on the topic given: do not reframe it into an insurance angle, a cost angle, or any other area unless the topic seed itself is already about that. If the existing-titles list further below happens to be dominated by one framing (e.g. insurance-blocker titles), that reflects this site's past output, not a house style to imitate -- it has no bearing on the angle for this topic.`
+    : `No topic was given. ${CONTENT_SCOPE}\n\nPick whichever area (or a genuinely related one not listed) has the least existing coverage relative to how useful it would be to a buyer -- not the first one in the list above, and not an insurance angle by default just because that framing is common in this site's existing archive.`;
 
   // Duplicate-content guard: without this, nothing stops the same topic being generated twice
   // under a different headline. The model is the only thing that can judge topical overlap here
@@ -69,10 +83,18 @@ export function buildArticlePrompt(
   // directly what already exists and instructed to route around it. In exact-title mode the
   // title itself is fixed above, so "pick a different angle" would directly contradict that --
   // the instruction there is about keeping the *body* original, not the headline.
+  //
+  // The trailing sentence in both branches below is the other half of the insurance-drift fix:
+  // this list is necessarily dominated by whatever this site has published most of so far (in
+  // practice, a lot of insurance-blocker titles), and without an explicit caveat the model reads
+  // that concentration as an implicit style guide -- "this is what a BeforeRegret article looks
+  // like" -- and drifts toward it regardless of the actual topic, even though "don't duplicate
+  // these" says nothing about tone or framing. Confirmed as the real cause of a reported bug
+  // where unrelated topics kept coming back insurance-framed.
   const existingTitlesBlock = existingTitles.length > 0
     ? trimmedExactTitle
-      ? `\n\nArticles that already exist on this site (published or in draft), including anything you or a previous attempt already wrote for this exact title -- do not reuse their specific examples, structure, or wording. The title above is fixed regardless; write genuinely original analysis for it even if a similar piece exists:\n${existingTitles.map((t) => `- ${t}`).join('\n')}`
-      : `\n\nArticles that already exist on this site (published or in draft), including anything a previous attempt at this same topic already produced -- do not write about the same specific angle as any of these. Pick a genuinely different angle, a different pillar, or a different specific question if the given topic seed overlaps with one of them:\n${existingTitles.map((t) => `- ${t}`).join('\n')}`
+      ? `\n\nArticles that already exist on this site (published or in draft), including anything you or a previous attempt already wrote for this exact title -- do not reuse their specific examples, structure, or wording. The title above is fixed regardless; write genuinely original analysis for it even if a similar piece exists. This list is only a do-not-repeat check, never a style guide -- ignore whatever framing dominates it:\n${existingTitles.map((t) => `- ${t}`).join('\n')}`
+      : `\n\nArticles that already exist on this site (published or in draft), including anything a previous attempt at this same topic already produced -- do not write about the same specific angle as any of these. Pick a genuinely different angle or a different specific question if the given topic seed overlaps with one of them. This list is only a do-not-repeat check, never a style guide -- if it's dominated by one framing (e.g. insurance), that's this site's past output, not a pattern to carry into an unrelated topic:\n${existingTitles.map((t) => `- ${t}`).join('\n')}`
     : '';
 
   const sourcesListBlock = KNOWN_SOURCES.map((s) => `${s.key} = ${s.name}`).join('\n');
