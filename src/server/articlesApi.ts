@@ -525,6 +525,14 @@ export function registerArticleRoutes(app: Express) {
   });
 
   // --- Public: list published articles (guides index + sitemap) --------------------------------
+  // Deliberately a narrow column list rather than SELECT * -> toApiShape. Three consumers hit this
+  // route -- Footer.tsx (four links, on every page of the site), GuidesIndexView, and
+  // GuidePageView's Related Guides ranking -- and not one of them reads a guide's body; the four
+  // fields below are the complete set they render between them. SELECT * meant every page load
+  // shipped all 42 published articles' full body_markdown, faq_json and sources_json: 452 KB
+  // uncompressed to draw a handful of titles, and the single largest item in the homepage's
+  // critical path (PageSpeed clocked it at 3,781 ms on throttled mobile, ahead of the JS bundle).
+  // A guide's actual content is still served, one at a time, by /api/guides/:slug below.
   app.get('/api/guides', async (req: Request, res: Response) => {
     if (!isDbConfigured()) {
       res.json({ success: true, articles: [] });
@@ -532,9 +540,18 @@ export function registerArticleRoutes(app: Express) {
     }
     try {
       const rows = await withDb((sql) => sql`
-        SELECT * FROM articles WHERE status = 'published' ORDER BY published_at DESC
+        SELECT slug, title, meta_description, published_at
+        FROM articles WHERE status = 'published' ORDER BY published_at DESC
       `);
-      res.json({ success: true, articles: (rows as unknown as ArticleRow[]).map(toApiShape) });
+      const articles = (rows as unknown as Array<
+        Pick<ArticleRow, 'slug' | 'title' | 'meta_description' | 'published_at'>
+      >).map((row) => ({
+        slug: row.slug,
+        title: row.title,
+        metaDescription: row.meta_description,
+        publishedAt: row.published_at,
+      }));
+      res.json({ success: true, articles });
     } catch (err: any) {
       console.error('[guides] list failed:', err);
       res.json({ success: true, articles: [] });
