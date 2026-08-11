@@ -3,11 +3,17 @@ import { resolveKnownSource } from '../data/knownSources';
 
 // Small, dependency-free renderer for exactly the markdown subset the AI generation prompt
 // produces (see src/server/articleGenerator.ts): ## / ### headers, **bold**, paragraphs,
-// bullet/numbered lists, and [CODE] inline citations. Not a general CommonMark implementation --
-// before this existed, the article body was dumped as plain text with `whitespace-pre-line`, so
-// a "## Heading" line rendered as the literal characters "## Heading" instead of an actual
-// heading. That's the bug this fixes; it isn't meant to handle arbitrary markdown from anywhere
-// else.
+// bullet/numbered lists, GFM tables, fenced code blocks, and [CODE] inline citations. Not a
+// general CommonMark implementation -- before this existed, the article body was dumped as plain
+// text with `whitespace-pre-line`, so a "## Heading" line rendered as the literal characters
+// "## Heading" instead of an actual heading. That's the bug this fixes; it isn't meant to handle
+// arbitrary markdown from anywhere else.
+//
+// Table and fenced-code support were added after both showed up in real generated articles with
+// neither block type recognized: a pipe-delimited GFM table (header row + `:---` separator row)
+// and a ``` -fenced ASCII-art flowchart both fell through to the paragraph branch below, which
+// joins lines with a single space and lets the browser collapse the rest -- turning a table or a
+// carefully-aligned diagram into one garbled run-on line. Confirmed on a live published guide.
 
 // Splits inline text on **bold**, single-asterisk *emphasis*, and [CODE] citation markers.
 // Single-asterisk emphasis is a defensive fallback, not something the prompt asks for (it now
@@ -106,6 +112,87 @@ export function renderArticleMarkdown(markdown: string): React.ReactNode[] {
       flushParagraph();
       blocks.push(<hr key={blocks.length} className="my-6 border-slate-200" />);
       i++;
+      continue;
+    }
+
+    // Fenced code block: ``` or ```lang ... ```. Content lines are pushed raw (not `.trim()`-ed)
+    // -- the whole point is preserving exact whitespace/alignment (an ASCII diagram, a code
+    // sample), which a plain <p> collapses. Not run through parseInline: a code block renders
+    // literally, no bold/citation parsing inside it, same as CommonMark.
+    if (trimmed.startsWith('```')) {
+      flushParagraph();
+      i++;
+      const codeLines: string[] = [];
+      while (i < lines.length && lines[i].trim() !== '```') {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      i++; // skip the closing ``` line (or run off the end if the fence was never closed)
+      blocks.push(
+        <pre key={blocks.length} className="bg-slate-900 text-slate-100 rounded-xl p-4 mb-4 overflow-x-auto text-xs leading-relaxed font-mono">
+          <code>{codeLines.join('\n')}</code>
+        </pre>
+      );
+      continue;
+    }
+
+    // GFM table: a `| a | b |` header row immediately followed by a `| :-- | --: |`-style
+    // separator row. Only treated as a table when both lines match -- a single pipe-containing
+    // line without a real separator row underneath it is just a sentence that happens to use a
+    // pipe, not a table.
+    const isTableRow = (l: string) => l.startsWith('|') && l.endsWith('|') && l.length > 1;
+    const isSeparatorRow = (l: string) => /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?$/.test(l);
+    if (isTableRow(trimmed) && i + 1 < lines.length && isSeparatorRow(lines[i + 1].trim())) {
+      flushParagraph();
+      const splitRow = (l: string) => {
+        let row = l.trim();
+        if (row.startsWith('|')) row = row.slice(1);
+        if (row.endsWith('|')) row = row.slice(0, -1);
+        return row.split('|').map((c) => c.trim());
+      };
+      const headerCells = splitRow(trimmed);
+      const alignments = splitRow(lines[i + 1].trim()).map((c) => {
+        const left = c.startsWith(':');
+        const right = c.endsWith(':');
+        if (left && right) return 'text-center';
+        if (right) return 'text-right';
+        return 'text-left';
+      });
+      i += 2;
+      const bodyRows: string[][] = [];
+      while (i < lines.length && lines[i].trim() !== '' && isTableRow(lines[i].trim())) {
+        bodyRows.push(splitRow(lines[i]));
+        i++;
+      }
+      blocks.push(
+        <div key={blocks.length} className="mb-4 overflow-x-auto rounded-xl border border-slate-200">
+          <table className="w-full text-sm text-left border-collapse">
+            <thead className="bg-slate-50">
+              <tr>
+                {headerCells.map((cell, idx) => (
+                  <th
+                    key={idx}
+                    className={`px-3 py-2 font-bold text-slate-900 border-b border-slate-200 ${alignments[idx] || 'text-left'}`}
+                  >
+                    {parseInline(cell)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {bodyRows.map((row, rowIdx) => (
+                <tr key={rowIdx} className="border-b border-slate-100 last:border-0">
+                  {row.map((cell, cellIdx) => (
+                    <td key={cellIdx} className={`px-3 py-2 align-top text-slate-700 ${alignments[cellIdx] || 'text-left'}`}>
+                      {parseInline(cell)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
       continue;
     }
 
