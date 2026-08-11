@@ -26,6 +26,7 @@ import { registerCountyRoutes } from "./src/server/countiesApi.js";
 import { registerKeywordResearchRoutes } from "./src/server/keywordResearchApi.js";
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
+import { registerBacklinksRoutes } from "./src/server/backlinksApi.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import { GEMINI_MODEL } from "./src/server/geminiModel.js";
 import { logGeminiUsage } from "./src/server/geminiUsageTracker.js";
@@ -186,6 +187,11 @@ export async function createApp() {
   // interest-capture-only /api/vendor-slots and /api/vendor-interest routes. See
   // src/server/zipAdsApi.ts.
   registerZipAdsRoutes(app);
+
+  // --- Backlink lead queue (Neon-backed) -----------------------------------------------------
+  // Admin-only. Stores candidate forum threads found by a manual/assisted search scan, plus a
+  // drafted reply, for the admin to review and post by hand. See src/server/backlinksApi.ts.
+  registerBacklinksRoutes(app);
 
   // Master Sitemap Index Endpoint (/sitemap.xml and /sitemaps/sitemap-index.xml)
   app.get(["/sitemap.xml", "/sitemaps/sitemap-index.xml"], (req, res) => {
