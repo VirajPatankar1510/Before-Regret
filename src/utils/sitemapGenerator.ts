@@ -2,6 +2,20 @@ import { withDb, isDbConfigured } from '../server/db.js';
 
 const BASE_URL = 'https://www.beforeregret.com';
 
+// county_name is stored all-caps in county_data (matching FEMA/NOAA/Census's own convention for
+// matching) -- title-cased here for the reader-facing sitemap title, same small duplication as
+// the equivalent titleCase() in scripts/prerender-counties.tsx / prerender-guides.tsx /
+// CountyPageView.tsx rather than a shared import across this many files.
+function titleCase(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/(^|[\s-])([a-z])/g, (_, sep, letter) => sep + letter.toUpperCase());
+}
+
+function escapeXml(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 // This previously also generated sitemap-states/cities/zips/topics/compare sections, driven by
 // the fabricated per-ZIP dataset removed from seoDataset.ts. Those URL groups (36 live pages)
 // were deleted along with the data behind them, not just emptied, so they're gone from here too
@@ -13,6 +27,10 @@ export interface SitemapUrlEntry {
   lastmod: string;
   changefreq: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
   priority: string;
+  // Google's image sitemap extension -- a real, documented discovery path for Google Images
+  // separate from the alt text on the page itself. Only ever populated with a real, reachable
+  // image URL (the county hazard-map SVG), never a placeholder.
+  images?: Array<{ loc: string; title: string }>;
 }
 
 // 1. Sitemap Index Generator (/sitemap.xml)
@@ -81,14 +99,22 @@ export async function generateChildSitemapXml(name: string): Promise<string> {
   } else if (cleanName === 'sitemap-counties' && isDbConfigured()) {
     try {
       const rows = await withDb((sql) => sql`
-        SELECT slug, fetched_at FROM county_data WHERE data_complete = true ORDER BY fetched_at DESC
+        SELECT slug, county_name, state_abbrev, fetched_at FROM county_data WHERE data_complete = true ORDER BY fetched_at DESC
       `);
-      (rows as unknown as Array<{ slug: string; fetched_at: string | Date | null }>).forEach((c) => {
+      (rows as unknown as Array<{ slug: string; county_name: string; state_abbrev: string; fetched_at: string | Date | null }>).forEach((c) => {
         entries.push({
           loc: `${BASE_URL}/county/${c.slug}/`,
           lastmod: c.fetched_at ? new Date(c.fetched_at).toISOString().slice(0, 10) : today,
           changefreq: 'monthly',
-          priority: '0.6'
+          priority: '0.6',
+          // Real image, real title -- see src/utils/countyHazardSvg.ts / the /api/images/:filename
+          // route. A documented, separate discovery path for Google Images beyond the page's own
+          // alt text, and worth the few extra lines since the data (and the image itself) already
+          // exists for every county in this loop.
+          images: [{
+            loc: `${BASE_URL}/api/images/${c.slug}-hazard-map.svg`,
+            title: `${titleCase(c.county_name)} County, ${c.state_abbrev} real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)`,
+          }],
         });
       });
     } catch (err) {
@@ -100,9 +126,12 @@ export async function generateChildSitemapXml(name: string): Promise<string> {
 }
 
 function buildUrlsetXml(entries: SitemapUrlEntry[]): string {
+  const hasImages = entries.some((e) => e.images && e.images.length > 0);
   const xmlLines = [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    hasImages
+      ? '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">'
+      : '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
   ];
 
   entries.forEach(u => {
@@ -111,6 +140,12 @@ function buildUrlsetXml(entries: SitemapUrlEntry[]): string {
     xmlLines.push(`    <lastmod>${u.lastmod}</lastmod>`);
     xmlLines.push(`    <changefreq>${u.changefreq}</changefreq>`);
     xmlLines.push(`    <priority>${u.priority}</priority>`);
+    (u.images || []).forEach((img) => {
+      xmlLines.push('    <image:image>');
+      xmlLines.push(`      <image:loc>${escapeXml(img.loc)}</image:loc>`);
+      xmlLines.push(`      <image:title>${escapeXml(img.title)}</image:title>`);
+      xmlLines.push('    </image:image>');
+    });
     xmlLines.push('  </url>');
   });
 
@@ -138,6 +173,7 @@ Allow: /refunds
 Disallow: /report/
 Disallow: /admin
 Disallow: /api/
+Allow: /api/images/
 
 Sitemap: https://www.beforeregret.com/sitemap.xml
 `;

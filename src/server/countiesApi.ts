@@ -1,5 +1,6 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
+import { buildCountyHazardSvg } from '../utils/countyHazardSvg.js';
 
 // Public read path for county research pages (see scripts/fetch-county-data.ts for how rows get
 // here and CountyPageView.tsx for how they're rendered). data_complete = false is treated
@@ -64,6 +65,58 @@ export function registerCountyRoutes(app: Express) {
     } catch (err: any) {
       console.error('[counties] get failed:', err);
       res.status(404).json({ success: false, error: 'Not found.' });
+    }
+  });
+
+  // --- Public: real-data hazard scorecard, rendered live from the current row ---------------------
+  // Deliberately not a build-time static file, unlike the guide pages' prerendered HTML -- county
+  // hazard data barely changes, but this sidesteps that whole staleness class of bug entirely
+  // (see deployHookService.ts's write-up) rather than adding a fourth thing that needs a redeploy
+  // to stay correct. Rendering an SVG from a DB row is cheap enough that "always live" costs
+  // nothing worth optimizing away.
+  //
+  // Stays under /api/ deliberately, even though robots.txt disallows that whole path (see
+  // sitemapGenerator.ts) -- a real, public /images/counties/ path was the first instinct, but
+  // vercel.json only rewrites /api and /api/:path* to the actual server function; every other
+  // path (including that one) falls through to the catch-all "/(.*)" -> shell.html rewrite and
+  // would never have reached this route at all in production. Fixed the crawlability problem the
+  // other way instead: a scoped `Allow: /api/images/` exception in robots.txt, ahead of the
+  // blanket `Disallow: /api/`. The filename itself still carries the county slug
+  // (travis-county-tx-hazard-map.svg, not a generic hazard-map.svg repeated across all 31
+  // counties) since Google's image indexing does weigh the filename, not just the alt text.
+  app.get('/api/images/:filename', async (req: Request, res: Response) => {
+    const match = req.params.filename.match(/^(.+)-hazard-map\.svg$/);
+    if (!match || !isDbConfigured()) {
+      res.status(404).send('Not found.');
+      return;
+    }
+    const slug = match[1];
+    try {
+      const rows = await withDb((sql) => sql`
+        SELECT * FROM county_data WHERE slug = ${slug} AND data_complete = true LIMIT 1
+      `);
+      const row = (rows as unknown as CountyRow[])[0];
+      if (!row) {
+        res.status(404).send('Not found.');
+        return;
+      }
+      const county = toApiShape(row);
+      const svg = buildCountyHazardSvg({
+        countyName: county.countyName,
+        stateAbbrev: county.stateAbbrev,
+        radonZone: county.radonZone,
+        femaRiskRating: county.femaRiskRating,
+        femaRiskScore: county.femaRiskScore,
+        femaHazards: county.femaHazards,
+        noaaEventCounts: county.noaaEventCounts,
+        noaaYearsCovered: county.noaaYearsCovered,
+      });
+      res.setHeader('Content-Type', 'image/svg+xml');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.send(svg);
+    } catch (err: any) {
+      console.error('[counties] hazard-map.svg failed:', err);
+      res.status(404).send('Not found.');
     }
   });
 }

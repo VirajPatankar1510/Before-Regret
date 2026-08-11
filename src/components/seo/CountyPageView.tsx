@@ -197,6 +197,11 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8);
   const totalStormEvents = noaaEventEntries.reduce((sum, [, count]) => sum + count, 0);
+  // Same top-1 entry the hazard-map SVG picks server-side (see topHazard() in
+  // countyHazardSvg.ts) -- reused here only to build accurate alt text, not recomputed
+  // differently, so the image and its own alt text can never disagree about which hazard is "most
+  // frequent."
+  const topNoaaHazard = topStormEvents.length > 0 ? { type: topStormEvents[0][0], count: topStormEvents[0][1] } : null;
 
   const oldHousingShare = county.censusTotalUnits
     ? Math.round(
@@ -241,6 +246,32 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
             Real data from four public sources, not an internal estimate: the EPA's radon zone classification, Census housing-age records, FEMA's natural hazard risk index, and NOAA's recorded storm history for this county. Every figure below links to where it actually comes from.
           </p>
         </div>
+
+        {(county.femaRiskRating || county.radonZone) && (
+          <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Flame className="w-4 h-4 text-blue-600" />
+              Hazard Summary
+            </h2>
+            {/* Rendered live from this same row -- see src/utils/countyHazardSvg.ts and the
+                /api/images/:filename route (kept under /api/ since vercel.json only rewrites
+                /api/:path* to the real server function; a scoped robots.txt Allow makes this one
+                path crawlable despite the blanket /api/ disallow -- see generateRobotsTxt()).
+                Not build-time static, so it can never go stale the way a prerendered guide page
+                can (see deployHookService.ts); every value plotted here is read from the
+                identical row the text sections below already cite, so the image can't say
+                anything the page doesn't. Filename carries the real slug for image-SEO, not a
+                generic "hazard-map.svg" repeated across all 31 counties. */}
+            <img
+              src={`/api/images/${county.slug}-hazard-map.svg`}
+              alt={`${county.countyName} County, ${county.stateAbbrev} hazard summary: FEMA National Risk Index rated ${county.femaRiskRating || 'not available'}${county.radonZone ? `; EPA radon zone ${county.radonZone} of 3` : ''}${topNoaaHazard ? `; most frequently recorded hazard is ${topNoaaHazard.type.toLowerCase()} (${topNoaaHazard.count} events${county.noaaYearsCovered ? `, ${county.noaaYearsCovered}` : ''})` : ''}.`}
+              width={640}
+              height={240}
+              loading="lazy"
+              className="w-full max-w-2xl rounded-2xl border border-slate-100"
+            />
+          </section>
+        )}
 
         {county.radonZone && (
           <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
