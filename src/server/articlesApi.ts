@@ -21,6 +21,7 @@ interface ArticleRow {
   body_markdown: string;
   quick_answer: string;
   sources_json: string;
+  faq_json: string;
   status: string;
   created_at: string;
   updated_at: string;
@@ -35,6 +36,18 @@ function toApiShape(row: ArticleRow) {
   } catch {
     sources = [];
   }
+  let faqItems: { question: string; answer: string }[] = [];
+  try {
+    const parsed = JSON.parse(row.faq_json || '[]');
+    if (Array.isArray(parsed)) {
+      faqItems = parsed.filter(
+        (item): item is { question: string; answer: string } =>
+          item && typeof item.question === 'string' && typeof item.answer === 'string'
+      );
+    }
+  } catch {
+    faqItems = [];
+  }
   return {
     id: row.id,
     slug: row.slug,
@@ -43,6 +56,7 @@ function toApiShape(row: ArticleRow) {
     bodyMarkdown: row.body_markdown,
     quickAnswer: row.quick_answer,
     sources,
+    faqItems,
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -302,6 +316,15 @@ export function registerArticleRoutes(app: Express) {
     const sourcesInput = Array.isArray(req.body?.sources)
       ? req.body.sources.filter((s: unknown) => typeof s === 'string')
       : undefined;
+    const faqItemsInput = Array.isArray(req.body?.faqItems)
+      ? req.body.faqItems
+          .filter((item: unknown): item is { question: unknown; answer: unknown } => typeof item === 'object' && item !== null)
+          .map((item: { question: unknown; answer: unknown }) => ({
+            question: typeof item.question === 'string' ? item.question.trim() : '',
+            answer: typeof item.answer === 'string' ? item.answer.trim() : '',
+          }))
+          .filter((item: { question: string; answer: string }) => item.question && item.answer)
+      : undefined;
     // Deliberately NOT normalized here yet -- normalizing (slugify()) on every save, even when
     // the slug didn't change, risks a false "locked" error the moment SLUG_STOPWORDS is ever
     // edited or against a slug set by an earlier version of this function: re-running slugify()
@@ -337,6 +360,9 @@ export function registerArticleRoutes(app: Express) {
         const sourcesJson = sourcesInput !== undefined
           ? JSON.stringify(sourcesInput)
           : existing.sources_json;
+        const faqJson = faqItemsInput !== undefined
+          ? JSON.stringify(faqItemsInput)
+          : existing.faq_json;
 
         const rows = await sql`
           UPDATE articles
@@ -346,6 +372,7 @@ export function registerArticleRoutes(app: Express) {
             body_markdown = COALESCE(${bodyMarkdown ?? null}, body_markdown),
             quick_answer = COALESCE(${quickAnswer ?? null}, quick_answer),
             sources_json = ${sourcesJson},
+            faq_json = ${faqJson},
             slug = ${finalSlug},
             updated_at = now()
           WHERE id = ${id}

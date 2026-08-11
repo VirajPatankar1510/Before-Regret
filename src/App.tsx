@@ -32,6 +32,7 @@ import { applyHeadSeo } from './utils/headSeo';
 
 // Legal & Policy Components
 import { ContactUs } from './components/ContactUs';
+import { AboutMethodology } from './components/AboutMethodology';
 import { TermsConditions } from './components/TermsConditions';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { RefundPolicy } from './components/RefundPolicy';
@@ -115,7 +116,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guidesIndex' | 'guide' | 'county' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'guidesIndex' | 'guide' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
     countySlug?: string;
   }>({ type: 'none' });
@@ -157,6 +158,12 @@ export function App() {
     }
     if (path === '/topic-ads/' || path.startsWith('/topic-ads')) {
       setPseoRoute({ type: 'guideAds' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    if (path === '/about/' || path.startsWith('/about')) {
+      setPseoRoute({ type: 'about' });
       setCurrentStep('PSEO');
       return true;
     }
@@ -404,6 +411,34 @@ export function App() {
               },
               'query-input': 'required name=search_term_string'
             }
+          }
+        ]
+      });
+    } else if (pseoRoute.type === 'about') {
+      // Deliberately index, follow -- unlike support/terms/privacy/refunds below, this page is
+      // the whole point of the E-E-A-T/trust exercise, so it needs to actually be crawlable and
+      // linked, not just present. See AboutMethodology.tsx for why it's process-transparency
+      // content rather than a fabricated author bio.
+      applyHeadSeo({
+        title: 'How We Research and Write BeforeRegret | Methodology',
+        description: 'How BeforeRegret verifies live data, writes AI-assisted guides under a fixed set of sourcing rules, and handles corrections.',
+        canonicalUrl: 'https://www.beforeregret.com/about/',
+        robotsDirective: 'index, follow',
+        jsonLdSchema: [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'AboutPage',
+            'name': 'How we research and write this site',
+            'url': 'https://www.beforeregret.com/about/',
+            'isPartOf': { '@type': 'WebSite', 'name': 'BeforeRegret', 'url': 'https://www.beforeregret.com/' }
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'About & Methodology', 'item': 'https://www.beforeregret.com/about/' }
+            ]
           }
         ]
       });
@@ -820,6 +855,9 @@ export function App() {
             )}
             {pseoRoute.type === 'county' && pseoRoute.countySlug && (
               <CountyPageView countySlug={pseoRoute.countySlug} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'about' && (
+              <AboutMethodology onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'support' && (
               <ContactUs onBackToHome={handleNewSearch} onNavigate={handleNavigate} />

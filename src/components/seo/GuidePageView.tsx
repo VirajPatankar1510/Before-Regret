@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
-import { ChevronRight, Clock, Calendar, Loader2, MessageCircleQuestion, ExternalLink } from 'lucide-react';
+import { ChevronRight, ChevronDown, Clock, Calendar, Loader2, MessageCircleQuestion, ExternalLink } from 'lucide-react';
 import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../../utils/renderArticleMarkdown';
 import { resolveKnownSource } from '../../data/knownSources';
 import { ArticleClosingNote } from './ArticleClosingNote';
@@ -13,6 +13,11 @@ interface GuidePageViewProps {
   onNavigate: (path: string) => void;
 }
 
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
 interface Article {
   id: number;
   slug: string;
@@ -21,6 +26,7 @@ interface Article {
   bodyMarkdown: string;
   quickAnswer: string;
   sources: string[];
+  faqItems: FaqItem[];
   status: string;
   publishedAt: string | null;
   updatedAt: string | null;
@@ -60,6 +66,15 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [allGuides, setAllGuides] = useState<GuideSummary[]>([]);
+  const [openFaqIndices, setOpenFaqIndices] = useState<Set<number>>(new Set());
+
+  const toggleFaq = (idx: number) => {
+    setOpenFaqIndices((prev) => {
+      const next = new Set(prev);
+      if (next.has(idx)) next.delete(idx); else next.add(idx);
+      return next;
+    });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -156,21 +171,35 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             { '@type': 'ListItem', 'position': 3, 'name': article.title, 'item': canonicalUrl }
           ]
         },
-        // FAQPage schema using the title as the question and the Quick Answer as the accepted
-        // answer -- this is the structured-data version of the same Quick Answer box rendered on
-        // the page, giving search engines an explicit machine-readable target for a featured
-        // snippet instead of hoping they extract it correctly from prose.
-        ...(article.quickAnswer ? [{
+        // A single FAQPage block, not two -- one entry built from the title + Quick Answer (same
+        // as before), plus any admin-entered FAQ items appended after it. Two separate FAQPage
+        // scripts on one page is invalid/redundant; merging keeps this the one source of truth.
+        // Note: Google deprecated the FAQ rich-result dropdown entirely in May 2026 (even the
+        // narrow government/health-site allowlist it had left since August 2023 is gone), so this
+        // no longer earns a SERP dropdown for anyone. It's kept because Google has said it still
+        // uses FAQ structured data to understand a page, and the visible accordion below is real,
+        // useful content regardless of what the schema does with it.
+        ...(article.quickAnswer || article.faqItems.length > 0 ? [{
           '@context': 'https://schema.org',
           '@type': 'FAQPage',
-          'mainEntity': [{
-            '@type': 'Question',
-            'name': article.title,
-            'acceptedAnswer': {
-              '@type': 'Answer',
-              'text': stripCitationMarkers(article.quickAnswer)
-            }
-          }]
+          'mainEntity': [
+            ...(article.quickAnswer ? [{
+              '@type': 'Question',
+              'name': article.title,
+              'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': stripCitationMarkers(article.quickAnswer)
+              }
+            }] : []),
+            ...article.faqItems.map((item) => ({
+              '@type': 'Question',
+              'name': item.question,
+              'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': item.answer
+              }
+            }))
+          ]
         }] : [])
       ]
     });
@@ -308,6 +337,41 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           </div>
         )}
 
+        {/* FAQ accordion -- admin-entered, per-article. Placed after Related Guides and before
+            Sources: it's genuine reader content (unlike Sources, which is closer to citation
+            housekeeping), but the article body and our own closing CTA still come first. Also
+            feeds the merged FAQPage schema above -- see the jsonLdSchema block. */}
+        {article.faqItems.length > 0 && (
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3 shadow-sm">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Frequently Asked Questions</h2>
+            <div className="divide-y divide-slate-100">
+              {article.faqItems.map((item, idx) => {
+                const isOpen = openFaqIndices.has(idx);
+                return (
+                  <div key={idx} data-print-block className="py-3 first:pt-0 last:pb-0">
+                    <button
+                      onClick={() => toggleFaq(idx)}
+                      aria-expanded={isOpen}
+                      className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
+                    >
+                      <span className="text-sm font-bold text-slate-900">{item.question}</span>
+                      <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {/* print:block -- an FAQ collapsed on screen shouldn't also vanish from the
+                        exported PDF, same reasoning as the walkthrough checklist's print-keep. */}
+                    {isOpen && (
+                      <p className="text-sm text-slate-600 leading-relaxed mt-2">{parseInline(item.answer)}</p>
+                    )}
+                    {!isOpen && (
+                      <p className="hidden print:block text-sm text-slate-600 leading-relaxed mt-2">{parseInline(item.answer)}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Sources -- resolved from a hand-verified lookup (src/data/knownSources.ts), never
             from a URL the model wrote itself. See src/server/articleGenerator.ts for why. */}
         {article.sources.length > 0 && (
@@ -334,6 +398,19 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             </ul>
           </div>
         )}
+
+        {/* Contextual link to the methodology page, right where a reader is evaluating a
+            specific claim -- not just in the footer. Renders regardless of whether this guide
+            has any sources.length, since the methodology page also covers the AI-drafting rules
+            that apply to every guide, not only citation sourcing. */}
+        <p className="text-xs text-slate-500 text-center">
+          <button
+            onClick={() => onNavigate('/about')}
+            className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium"
+          >
+            How we research and write these guides
+          </button>
+        </p>
 
       </div>
     </div>
