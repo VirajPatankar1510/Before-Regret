@@ -6,6 +6,7 @@ import { GEMINI_MODEL, isQuotaError } from './geminiModel.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
 import type { GenerateContentResponseUsageMetadata } from '@google/genai';
 import { submitUrlsToIndexNow } from '../utils/indexNowService.js';
+import { triggerRedeploy } from './deployHookService.js';
 
 // Real read/write path for editorial articles, replacing the static EDITORIAL_GUIDES_DATASET
 // array and the fake SeoAdminPanel "publish" button that only ever changed local React state.
@@ -390,6 +391,17 @@ export function registerArticleRoutes(app: Express) {
         return;
       }
       res.json({ success: true, article: toApiShape(result.row) });
+
+      // Only when the edit landed on an already-live article -- see deployHookService.ts. A
+      // draft's PUT (the first save inside publishNow, before the follow-up POST /publish call)
+      // doesn't need this: nothing is live yet for that slug, so there's no stale static page to
+      // fix. This is exactly the gap the Update button was built to close (editing a published
+      // article without unpublish/republish) -- without this trigger, Update would silently save
+      // to the database while the live page kept showing the old content until the next
+      // unrelated deploy, the same staleness bug this whole fix exists for.
+      if (result.row.status === 'published') {
+        triggerRedeploy(`article ${id} updated`);
+      }
     } catch (err: any) {
       console.error('[articles] update failed:', err);
       res.status(500).json({ success: false, error: 'Could not save changes.' });
@@ -429,6 +441,10 @@ export function registerArticleRoutes(app: Express) {
           console.warn('[articles] IndexNow submission on publish failed:', result.message);
         }
       });
+
+      // See deployHookService.ts -- the static prerendered page for this slug won't exist (or
+      // will still show old content, if this slug was published before) until a new deploy runs.
+      triggerRedeploy(`article ${id} published`);
     } catch (err: any) {
       console.error('[articles] publish failed:', err);
       res.status(500).json({ success: false, error: 'Could not publish the article.' });
@@ -461,6 +477,10 @@ export function registerArticleRoutes(app: Express) {
           console.warn('[articles] IndexNow submission on unpublish failed:', result.message);
         }
       });
+
+      // See deployHookService.ts -- without a new deploy, the static page keeps serving the now-
+      // unpublished content indefinitely instead of a genuine 404.
+      triggerRedeploy(`article ${id} unpublished`);
     } catch (err: any) {
       console.error('[articles] unpublish failed:', err);
       res.status(500).json({ success: false, error: 'Could not unpublish the article.' });
@@ -476,8 +496,8 @@ export function registerArticleRoutes(app: Express) {
       return;
     }
     try {
-      const rows = await withDb((sql) => sql`DELETE FROM articles WHERE id = ${id} RETURNING slug`);
-      const row = (rows as unknown as Array<{ slug: string }>)[0];
+      const rows = await withDb((sql) => sql`DELETE FROM articles WHERE id = ${id} RETURNING slug, status`);
+      const row = (rows as unknown as Array<{ slug: string; status: string }>)[0];
       res.json({ success: true });
 
       // Same reasoning as the unpublish route above -- a deleted guide's URL should be reported
@@ -488,6 +508,15 @@ export function registerArticleRoutes(app: Express) {
             console.warn('[articles] IndexNow submission on delete failed:', result.message);
           }
         });
+      }
+
+      // See deployHookService.ts -- only matters if the deleted article was actually live; a
+      // draft was never baked into a static file. This is the exact bug that prompted the whole
+      // deploy-hook fix: deleting a published article and republishing a new one under the same
+      // slug left the OLD one's static page (and its __PRELOADED_GUIDE__ data) serving
+      // indefinitely, immune to hard refresh, until the next unrelated deploy happened to run.
+      if (row?.status === 'published') {
+        triggerRedeploy(`article ${id} deleted`);
       }
     } catch (err: any) {
       console.error('[articles] delete failed:', err);
