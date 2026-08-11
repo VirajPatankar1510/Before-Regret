@@ -118,6 +118,23 @@ function CountyStaticBody({ row }: { row: CountyRow }) {
           </p>
         </div>
 
+        {(row.fema_risk_rating || row.radon_zone) && (
+          <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
+            <h2 className="text-base font-bold text-slate-900">Hazard Summary</h2>
+            {/* Static twin of the same image in CountyPageView.tsx -- a non-JS crawler needs this
+                in the actual HTML, not just the client-rendered version, or it never sees it at
+                all. See src/utils/countyHazardSvg.ts and the /api/images/:filename route. */}
+            <img
+              src={`/api/images/${row.slug}-hazard-map.svg`}
+              alt={`${row.county_name} County, ${row.state_abbrev} hazard summary: FEMA National Risk Index rated ${row.fema_risk_rating || 'not available'}${row.radon_zone ? `; EPA radon zone ${row.radon_zone} of 3` : ''}${storms.length > 0 ? `; most frequently recorded hazard is ${storms[0][0].toLowerCase()} (${storms[0][1]} events${row.noaa_years_covered ? `, ${row.noaa_years_covered}` : ''})` : ''}.`}
+              width={640}
+              height={240}
+              loading="lazy"
+              className="w-full max-w-2xl rounded-2xl border border-slate-100"
+            />
+          </section>
+        )}
+
         {row.radon_zone && (
           <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
             <h2 className="text-base font-bold text-slate-900">Radon Risk</h2>
