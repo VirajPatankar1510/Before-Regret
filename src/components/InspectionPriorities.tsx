@@ -41,68 +41,88 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
   const result = precomputed !== undefined ? precomputed : getInspectionPriorities(yearBuilt, county, state);
   if (!result) return null;
 
-  return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-      <div className="space-y-2">
-        <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
-          <ClipboardCheck className="w-3.5 h-3.5" />
-          <span>Inspection budget priorities</span>
-        </div>
-        <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-          Where your inspection budget goes furthest
-        </h2>
-        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-          Based on the year built you entered (<strong className="text-slate-900">{result.yearBuilt}</strong>). These are
-          the checks that tend to matter most for homes of this era and area — not findings about this specific house.
-        </p>
-      </div>
+  const renderPriorityItem = (item: (typeof result.priorities)[number]) => {
+    const styles = PRIORITY_STYLES[item.priority];
+    return (
+      <div key={item.id} data-print-block className="flex gap-3.5">
+        <div className={`w-1 rounded-full shrink-0 ${styles.rail}`} aria-hidden="true" />
+        <div className="min-w-0 flex-1 space-y-2 py-0.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <h4 className="font-bold text-sm sm:text-base text-slate-900">{item.title}</h4>
+            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${styles.chip}`}>
+              {styles.label}
+            </span>
+          </div>
 
-      <div className="space-y-4">
-        {result.priorities.map((item) => {
-          const styles = PRIORITY_STYLES[item.priority];
-          return (
-            <div key={item.id} data-print-block className="flex gap-3.5">
-              <div className={`w-1 rounded-full shrink-0 ${styles.rail}`} aria-hidden="true" />
-              <div className="min-w-0 flex-1 space-y-2 py-0.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h4 className="font-bold text-sm sm:text-base text-slate-900">{item.title}</h4>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${styles.chip}`}>
-                    {styles.label}
-                  </span>
-                </div>
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{item.eraBasis}</p>
 
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{item.eraBasis}</p>
-
-                <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs">
-                  <div>
-                    <span className="text-slate-500">Cost to check: </span>
-                    <span className="font-bold text-slate-900">{item.costToCheck}</span>
-                  </div>
-                  {item.typicalRepairCost && (
-                    <div>
-                      <span className="text-slate-500">Typical cost if present: </span>
-                      <span className="font-bold text-slate-900">{item.typicalRepairCost}</span>
-                    </div>
-                  )}
-                </div>
-
-                <p className="text-xs text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 leading-relaxed">
-                  {item.howToCheck}
-                </p>
-
-                {/* Contextual vendor match for this item's trade category, if a real vendor has
-                    paid for it in this ZIP -- only ever present on the server-precomputed
-                    (paid report) path; absent entirely when computed client-side. */}
-                {(item as InspectionPriorityWithVendor).sponsoredVendor && (
-                  <SponsoredVendorCard vendor={(item as InspectionPriorityWithVendor).sponsoredVendor} />
-                )}
-              </div>
+          <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs">
+            <div>
+              <span className="text-slate-500">Cost to check: </span>
+              <span className="font-bold text-slate-900">{item.costToCheck}</span>
             </div>
-          );
-        })}
+            {item.typicalRepairCost && (
+              <div>
+                <span className="text-slate-500">Typical cost if present: </span>
+                <span className="font-bold text-slate-900">{item.typicalRepairCost}</span>
+              </div>
+            )}
+          </div>
+
+          <p className="text-xs text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 leading-relaxed">
+            {item.howToCheck}
+          </p>
+
+          {/* Contextual vendor match for this item's trade category, if a real vendor has
+              paid for it in this ZIP -- only ever present on the server-precomputed
+              (paid report) path; absent entirely when computed client-side. */}
+          {(item as InspectionPriorityWithVendor).sponsoredVendor && (
+            <SponsoredVendorCard vendor={(item as InspectionPriorityWithVendor).sponsoredVendor} />
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const [firstPriority, ...remainingPriorities] = result.priorities;
+
+  return (
+    <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+      {/* Intro is wrapped together with the first priority item in one data-print-block so the
+          heading can never be stranded alone at the bottom of a printed page while the whole
+          list jumps to the next one -- confirmed on a real export: break-after: avoid on the
+          intro block by itself doesn't survive WebKit's pagination when the very next block is
+          itself break-inside: avoid and doesn't fit the remaining space. Only the first item is
+          glued in, not the whole list -- gluing all of them would force the entire (often
+          multi-page) list into one unbreakable chunk, which is the near-empty-page problem the
+          section-level break-before: page attempt already ran into once (see index.css). */}
+      <div className="space-y-6" data-print-block>
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
+            <ClipboardCheck className="w-3.5 h-3.5" />
+            <span>Inspection budget priorities</span>
+          </div>
+          <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
+            Where your inspection budget goes furthest
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            Based on the year built you entered (<strong className="text-slate-900">{result.yearBuilt}</strong>). These are
+            the checks that tend to matter most for homes of this era and area — not findings about this specific house.
+          </p>
+        </div>
+        {firstPriority && renderPriorityItem(firstPriority)}
       </div>
 
-      <div className="flex items-start gap-2.5 text-[11px] text-slate-500 leading-relaxed border-t border-slate-200 pt-4">
+      {remainingPriorities.length > 0 && (
+        // mt-4, not the space-y-6 the container above uses -- this is the gap between the glued
+        // first item and the second item, which has to match the space-y-4 (16px) gap the rest of
+        // the list uses between items, not the 24px gap between the intro and the first item.
+        <div className="space-y-4 mt-4">
+          {remainingPriorities.map(renderPriorityItem)}
+        </div>
+      )}
+
+      <div className="flex items-start gap-2.5 text-[11px] text-slate-500 leading-relaxed border-t border-slate-200 pt-4 mt-6">
         <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
         <p>
           This is a budgeting guide built from published building-science norms for this construction era and region —
