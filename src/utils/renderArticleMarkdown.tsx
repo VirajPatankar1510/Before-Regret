@@ -165,32 +165,56 @@ export function renderArticleMarkdown(markdown: string): React.ReactNode[] {
         i++;
       }
       blocks.push(
-        <div key={blocks.length} className="mb-4 overflow-x-auto rounded-xl border border-slate-200">
-          <table className="w-full text-sm text-left border-collapse">
-            <thead className="bg-slate-50">
-              <tr>
-                {headerCells.map((cell, idx) => (
-                  <th
-                    key={idx}
-                    className={`px-3 py-2 font-bold text-slate-900 border-b border-slate-200 ${alignments[idx] || 'text-left'}`}
-                  >
-                    {parseInline(cell)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {bodyRows.map((row, rowIdx) => (
-                <tr key={rowIdx} className="border-b border-slate-100 last:border-0">
-                  {row.map((cell, cellIdx) => (
-                    <td key={cellIdx} className={`px-3 py-2 align-top text-slate-700 ${alignments[cellIdx] || 'text-left'}`}>
+        <div key={blocks.length} className="mb-4">
+          {/* Real table from sm: (640px) up. A 3+ column table with sentence-length cells
+              genuinely cannot fit an actual mobile viewport at readable font size -- shrinking
+              text or scrolling inside the table are both worse than not needing to scroll at
+              all, so mobile gets a different layout below, not a squeezed version of this one. */}
+          <div className="hidden sm:block overflow-x-auto rounded-xl border border-slate-200">
+            <table className="w-full text-sm text-left border-collapse">
+              <thead className="bg-slate-50">
+                <tr>
+                  {headerCells.map((cell, idx) => (
+                    <th
+                      key={idx}
+                      className={`px-3 py-2 font-bold text-slate-900 border-b border-slate-200 ${alignments[idx] || 'text-left'}`}
+                    >
                       {parseInline(cell)}
-                    </td>
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {bodyRows.map((row, rowIdx) => (
+                  <tr key={rowIdx} className="border-b border-slate-100 last:border-0">
+                    {row.map((cell, cellIdx) => (
+                      <td key={cellIdx} className={`px-3 py-2 align-top text-slate-700 ${alignments[cellIdx] || 'text-left'}`}>
+                        {parseInline(cell)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Below sm: each row becomes a stacked label/value card instead, using the header
+              row as the label for every cell -- no horizontal scroll, nothing to shrink. Built
+              from the same headerCells/bodyRows the table above uses, not a separate parse. */}
+          <div className="sm:hidden rounded-xl border border-slate-200 divide-y divide-slate-100">
+            {bodyRows.map((row, rowIdx) => (
+              <div key={rowIdx} className="p-3 space-y-2">
+                {row.map((cell, cellIdx) => (
+                  <div key={cellIdx}>
+                    <div className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                      {parseInline(headerCells[cellIdx] || '')}
+                    </div>
+                    <div className="text-sm text-slate-700">{parseInline(cell)}</div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       );
       continue;
