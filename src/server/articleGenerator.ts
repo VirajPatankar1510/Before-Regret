@@ -116,6 +116,7 @@ SEO approach for this article:
 - Target ONE specific, long-tail search query. Long-tail (specific, lower-competition, high buyer-intent) is what a newer site can realistically rank for -- not a broad head term.
 - Structure with markdown headers (## for sections) and short paragraphs (2-4 sentences) so it's scannable.
 - For emphasis, use **double asterisks** only. Never use a single asterisk (*like this*) for italics or as a label -- it won't render correctly.
+- Never draw an ASCII-art box or flowchart (lines of +---+, |, or arrows) inside a \`\`\` code fence for a sequence of steps or options -- confirmed on two published articles: it required horizontal scrolling to read on a phone, since a fixed-width diagram can't reflow to a narrow screen the way text can. Use a numbered list for a sequence of steps, or a bulleted list with a bold label per item for a set of named options -- both convey the same structure and read naturally on any screen. A \`\`\` code fence is for genuine code only. For real tabular data (e.g. comparing several named things across the same few attributes), a real GFM markdown table (a header row, a \`|---|---|\` separator row, then data rows) is supported and renders correctly, including on mobile.
 - Target 1,200-1,800 words: long enough to fully and specifically answer the question, never padded to hit a number.
 - Demonstrate real expertise with specific mechanisms, eras, and regulations.
 - End with one clear, concrete next step the reader can act on today.
