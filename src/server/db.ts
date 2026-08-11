@@ -57,6 +57,14 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS quick_answer TEXT NOT NULL DEFAULT ''`;
   await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS sources_json TEXT NOT NULL DEFAULT '[]'`;
+  // Array of {question, answer} pairs, same JSON-in-TEXT convention as sources_json. Rendered as a
+  // visible accordion at the foot of the guide and merged into the page's FAQPage JSON-LD -- see
+  // GuidePageView.tsx. Google deprecated the FAQ rich-result dropdown in May 2026 (even for the
+  // narrow government/health-site allowlist it had left since August 2023), so this schema no
+  // longer earns a SERP dropdown for anyone; it's kept because Google has said it still uses FAQ
+  // structured data to understand a page, and because the visible accordion is real, useful
+  // content in its own right, independent of what the schema does.
+  await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS faq_json TEXT NOT NULL DEFAULT '[]'`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS transactions (

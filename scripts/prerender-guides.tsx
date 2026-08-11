@@ -37,8 +37,14 @@ interface ArticleRow {
   body_markdown: string;
   quick_answer: string;
   sources_json: string;
+  faq_json: string;
   published_at: string | null;
   updated_at: string | null;
+}
+
+interface FaqItem {
+  question: string;
+  answer: string;
 }
 
 interface Article {
@@ -49,6 +55,7 @@ interface Article {
   bodyMarkdown: string;
   quickAnswer: string;
   sources: string[];
+  faqItems: FaqItem[];
   publishedAt: string | null;
   updatedAt: string | null;
 }
@@ -61,6 +68,17 @@ function toArticle(row: ArticleRow): Article {
   } catch {
     sources = [];
   }
+  let faqItems: FaqItem[] = [];
+  try {
+    const parsed = JSON.parse(row.faq_json || '[]');
+    if (Array.isArray(parsed)) {
+      faqItems = parsed.filter(
+        (item): item is FaqItem => item && typeof item.question === 'string' && typeof item.answer === 'string'
+      );
+    }
+  } catch {
+    faqItems = [];
+  }
   return {
     id: row.id,
     slug: row.slug,
@@ -69,6 +87,7 @@ function toArticle(row: ArticleRow): Article {
     bodyMarkdown: row.body_markdown,
     quickAnswer: row.quick_answer,
     sources,
+    faqItems,
     publishedAt: row.published_at,
     updatedAt: row.updated_at,
   };
@@ -130,16 +149,24 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
       ],
     },
   ];
-  if (article.quickAnswer) {
+  // One merged FAQPage block, same reasoning as GuidePageView.tsx: the title + Quick Answer as
+  // the first entry, admin-entered FAQ items appended after it, never two separate FAQPage
+  // scripts on the same page.
+  if (article.quickAnswer || article.faqItems.length > 0) {
     schemas.push({
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
       mainEntity: [
-        {
+        ...(article.quickAnswer ? [{
           '@type': 'Question',
           name: article.title,
           acceptedAnswer: { '@type': 'Answer', text: stripCitationMarkers(article.quickAnswer) },
-        },
+        }] : []),
+        ...article.faqItems.map((item) => ({
+          '@type': 'Question',
+          name: item.question,
+          acceptedAnswer: { '@type': 'Answer', text: item.answer },
+        })),
       ],
     });
   }
@@ -254,6 +281,23 @@ function GuideStaticBody({
           </div>
         )}
 
+        {/* Static twin of GuidePageView.tsx's FAQ accordion -- rendered fully expanded here since
+            this HTML has no JS-driven toggle state; the live client swaps in the interactive
+            collapsed version on mount. Both feed the same merged FAQPage schema above. */}
+        {article.faqItems.length > 0 && (
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3 shadow-sm">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Frequently Asked Questions</h2>
+            <div className="divide-y divide-slate-100">
+              {article.faqItems.map((item, idx) => (
+                <div key={idx} className="py-3 first:pt-0 last:pb-0">
+                  <div className="text-sm font-bold text-slate-900">{item.question}</div>
+                  <p className="text-sm text-slate-600 leading-relaxed mt-2">{parseInline(item.answer)}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {article.sources.length > 0 && (
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
             <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Sources</h2>
@@ -272,6 +316,14 @@ function GuideStaticBody({
             </ul>
           </div>
         )}
+
+        {/* Static twin of the same link in GuidePageView.tsx -- real <a href>, not onNavigate,
+            since this markup has no JS router until the client bundle takes over. */}
+        <p className="text-xs text-slate-500 text-center">
+          <a href="/about/" className="text-blue-600 hover:underline font-medium">
+            How we research and write these guides
+          </a>
+        </p>
       </div>
     </div>
   );
@@ -361,7 +413,7 @@ async function run() {
   const template = fs.readFileSync(templatePath, 'utf8');
 
   const rows = (await withDb((sql) => sql`
-    SELECT id, slug, title, meta_description, body_markdown, quick_answer, sources_json, published_at, updated_at
+    SELECT id, slug, title, meta_description, body_markdown, quick_answer, sources_json, faq_json, published_at, updated_at
     FROM articles WHERE status = 'published' ORDER BY published_at DESC
   `)) as unknown as ArticleRow[];
 

@@ -85,6 +85,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                 <span>Legal & Support Policies</span>
               </div>
               <ul className="space-y-1">
+                <li><button onClick={() => onNavigate('/about')} className="hover:text-white cursor-pointer font-bold text-blue-300">About & Methodology</button></li>
                 <li><button onClick={() => onNavigate('/advertise')} className="hover:text-white cursor-pointer font-bold text-blue-300">Advertise With Us</button></li>
                 <li><button onClick={() => onNavigate('/support')} className="hover:text-white cursor-pointer font-medium text-slate-300">Customer Support</button></li>
                 <li><button onClick={() => onNavigate('/terms')} className="hover:text-white cursor-pointer text-slate-400">Terms of Service</button></li>
