@@ -39,7 +39,30 @@ function noop() {}
 function HomeStaticBody({ guides }: { guides: HomepageGuideLink[] }) {
   return (
     <div className="space-y-0 pb-16">
-      <section className="relative min-h-[40vh] flex flex-col justify-center text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-slate-950">
+      {/* Geometry here is a deliberate mirror of the real hero in src/components/Hero.tsx, not an
+          approximation: same min-h-[85vh], same absolutely-positioned background layers. That
+          matters for more than looks. The background photo is this page's LCP element, and LCP
+          re-fires whenever a *larger* candidate paints -- so a shorter static hero (this was
+          min-h-[40vh] with a flat bg-slate-950) doesn't just miss the win, it actively wastes it:
+          the small version paints early, then React mounts the full-height one and LCP resets to
+          whenever the JS bundle finished. Rendering it at the final size means the photo painted
+          from this static HTML *is* the largest paint, so LCP lands on the preloaded image
+          arriving rather than on React booting.
+
+          Section height is driven purely by min-h-[85vh] (690px at a 375x812 mobile viewport,
+          measured) -- the centered content is only ~370px -- so leaving AddressSearchBox out
+          below cannot change the height of these background layers. */}
+      <section className="relative min-h-[85vh] flex flex-col justify-center text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden shadow-2xl">
+        {/* url() intentionally unquoted: React escapes quotes inside a style attribute, and
+            unquoted is valid CSS anyway. Paired with the rel=preload hint injected into <head>
+            further down, so the bytes are already in flight when this paints. */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-scroll md:bg-fixed"
+          style={{ backgroundImage: 'url(/hero-bg.jpg)' }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/10 via-slate-950/25 to-slate-950/50" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+
         <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
           <div className="space-y-4">
             <h1 className="font-sans text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
