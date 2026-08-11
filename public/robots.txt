@@ -2,6 +2,7 @@
 User-agent: *
 Allow: /
 Allow: /guides/
+Allow: /about
 Allow: /support
 Allow: /terms
 Allow: /privacy
@@ -10,5 +11,6 @@ Allow: /refunds
 Disallow: /report/
 Disallow: /admin
 Disallow: /api/
+Allow: /api/images/
 
 Sitemap: https://www.beforeregret.com/sitemap.xml
