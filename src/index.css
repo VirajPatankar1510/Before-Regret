@@ -52,12 +52,25 @@
     margin: 12mm 15mm 15mm 15mm;
   }
 
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   html, body {
     background-color: #ffffff !important;
     color: #0f172a !important;
     font-size: 10pt !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+  }
+
+  /* Every page in the app is wrapped in the global Navbar/Footer (real <header>/<footer> tags,
+     see App.tsx). Neither carries its own print:hidden, so without this every exported PDF --
+     not just this page -- would carry the sticky nav bar and dark marketing footer on top of the
+     report content. This used to live as a page-local <style> tag inside PropertyReportView.tsx,
+     which also duplicated (and, on one rule, silently lost to) several of the rules below -- see
+     the break-inside fix further down for what that duplication actually broke. */
+  header, footer {
+    display: none !important;
   }
 
   /* Hide interactive UI elements.
@@ -101,8 +114,16 @@
     padding-bottom: 12px !important;
   }
 
-  /* Apply break-inside: avoid ONLY to individual finding/action cards */
-  .finding-card, .action-item-card, .source-card, .card-item {
+  /* Apply break-inside: avoid ONLY to individual finding/action/seller-question/priority cards --
+     every one of these is marked with data-print-block in its component (PropertyReportView.tsx,
+     InspectionPriorities.tsx, SellerQuestions.tsx). This used to target .finding-card,
+     .action-item-card, .source-card and .card-item, none of which exist anywhere in the actual
+     JSX, so the rule silently matched nothing. The finding cards it was meant to protect also
+     carry .rounded-2xl, which the blanket rule above forces to break-inside: auto !important --
+     confirmed on a real export where a card's "What to do next" heading landed on one page and
+     its body text on the next. Declaring this selector, with the same !important weight, after
+     that rule is what makes it win the tie (equal specificity, later source order). */
+  [data-print-block] {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
