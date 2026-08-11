@@ -234,9 +234,9 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
       {/* Breadcrumbs */}
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
-          <button onClick={() => onNavigate('/')} className="hover:text-blue-600">Home</button>
+          <button onClick={() => onNavigate('/')} className="hover:text-blue-600 cursor-pointer">Home</button>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <span className="hover:text-blue-600">Editorial Guides</span>
+          <button onClick={() => onNavigate('/guides/')} className="hover:text-blue-600 cursor-pointer">Editorial Guides</button>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-slate-900 font-bold truncate">{article.title}</span>
         </div>

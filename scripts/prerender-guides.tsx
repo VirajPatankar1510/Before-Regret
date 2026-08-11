@@ -197,7 +197,7 @@ function GuideStaticBody({
         <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
           <a href="/" className="hover:text-blue-600">Home</a>
           <span>/</span>
-          <span>Editorial Guides</span>
+          <a href="/guides/" className="hover:text-blue-600">Editorial Guides</a>
           <span>/</span>
           <span className="text-slate-900 font-bold truncate">{article.title}</span>
         </div>
