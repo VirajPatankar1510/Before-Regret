@@ -235,6 +235,28 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_zip_ad_purchases_slot ON zip_ad_purchases(zip_code, trade_category)`;
 
+  // backlink_leads: candidate forum threads (City-Data, Bogleheads, etc.) found by manually
+  // running a search-based scan from the admin page -- see src/server/backlinksApi.ts. Deliberately
+  // just a queue, not a live scanner: the forums that are actually reachable (unlike Reddit, which
+  // blocks both search indexing and direct navigation outright) still block automated page-fetching,
+  // so a human reads the real thread and either pastes it in for a drafted reply or writes one
+  // directly -- draft_answer is never auto-posted anywhere, only stored for the admin to copy.
+  await sql`
+    CREATE TABLE IF NOT EXISTS backlink_leads (
+      id SERIAL PRIMARY KEY,
+      source TEXT NOT NULL,
+      title TEXT NOT NULL,
+      url TEXT NOT NULL,
+      topic_snippet TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'new',
+      draft_answer TEXT NOT NULL DEFAULT '',
+      county_slug TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_backlink_leads_status ON backlink_leads(status)`;
+
   schemaEnsured = true;
 }
 
