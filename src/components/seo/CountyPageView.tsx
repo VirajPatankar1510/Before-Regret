@@ -151,7 +151,7 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
           '@type': 'Article',
           headline: title,
           description,
-          image: 'https://www.beforeregret.com/hero-bg.png',
+          image: 'https://www.beforeregret.com/hero-bg.jpg',
           dateModified: county.fetchedAt,
           author: { '@type': 'Organization', name: 'BeforeRegret' },
         },

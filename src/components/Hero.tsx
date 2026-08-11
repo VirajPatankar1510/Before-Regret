@@ -34,8 +34,10 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
           content vertically centered now that the section is taller than its content. */}
       <section className="relative min-h-[85vh] flex flex-col justify-center text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden shadow-2xl">
 
-        {/* Background image -- real photograph of a suburban street at dusk (public/hero-bg.png,
-            2.28:1, replaces the earlier corrupted file). Sky is already near-black at the top
+        {/* Background image -- real photograph of a suburban street at dusk (public/hero-bg.jpg,
+            2.28:1; re-encoded from the original PNG -- 1.4MB lossless was overkill for a photo and
+            was the site's single largest LCP cost per PageSpeed Insights, a JPEG at this quality is
+            visually identical at ~239KB). Sky is already near-black at the top
             (where the headline sits), so the overlay is kept light there and only slightly
             heavier toward the bottom -- just enough for the free-report subtext to stay
             readable, while letting the house row show through clearly rather than washing it
@@ -51,7 +53,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
             browsers handle it correctly. */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-scroll md:bg-fixed"
-          style={{ backgroundImage: "url('/hero-bg.png')" }}
+          style={{ backgroundImage: "url('/hero-bg.jpg')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/10 via-slate-950/25 to-slate-950/50" />
 

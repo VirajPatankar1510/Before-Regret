@@ -134,7 +134,7 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
       '@type': 'Article',
       headline: article.title,
       description: article.metaDescription,
-      image: 'https://www.beforeregret.com/hero-bg.png',
+      image: 'https://www.beforeregret.com/hero-bg.jpg',
       datePublished: article.publishedAt,
       dateModified: article.updatedAt || article.publishedAt,
       author: { '@type': 'Organization', name: 'BeforeRegret' },

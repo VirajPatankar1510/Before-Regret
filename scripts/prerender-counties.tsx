@@ -261,7 +261,7 @@ function buildJsonLd(row: CountyRow, canonicalUrl: string): Record<string, any>[
       '@type': 'Article',
       headline: title,
       description,
-      image: 'https://www.beforeregret.com/hero-bg.png',
+      image: 'https://www.beforeregret.com/hero-bg.jpg',
       dateModified: row.fetched_at,
       author: { '@type': 'Organization', name: 'BeforeRegret' },
     },
