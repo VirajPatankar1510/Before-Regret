@@ -472,7 +472,7 @@ export async function createApp() {
       foundInfo: false,
       itemCount: 0,
       details: 'Not yet independently verified for this address. Link provided for your own reference.',
-      sourceUrl: getPublicSourceUrl(s.id, resolvedMeta.county)
+      sourceUrl: getPublicSourceUrl(s.id, resolvedMeta.county, resolvedMeta.city)
     }));
 
     const usefulSourcesFound = 0;
@@ -872,7 +872,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
         let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
         cleanedReport = stripInternalMetadata(cleanedReport);
         attachSponsoredVendors(cleanedReport, zipVendorMap);
-        attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
+        attachFindingSourceUrls(cleanedReport, resolvedMeta.county, resolvedMeta.city);
         cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, zipVendorMap);
         cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType);
 
@@ -894,7 +894,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
     attachSponsoredVendors(cleanedReport, zipVendorMap);
-    attachFindingSourceUrls(cleanedReport, resolvedMeta.county);
+    attachFindingSourceUrls(cleanedReport, resolvedMeta.county, resolvedMeta.city);
     cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, zipVendorMap);
     cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType);
 
@@ -1307,12 +1307,12 @@ const FINDING_SOURCE_LOOKUP_KEY: Record<string, string> = {
 // Seattle-area address after the jurisdiction fix in getPublicSourceUrl, because that table lived
 // as a second, disconnected hardcoded copy in PropertyReportView.tsx and reportFallback.ts rather
 // than reading from the fixed lookup. Mutates report.canonicalFindings in place.
-function attachFindingSourceUrls(report: any, county: string) {
+function attachFindingSourceUrls(report: any, county: string, city?: string) {
   if (!report || !Array.isArray(report.canonicalFindings)) return report;
   for (const finding of report.canonicalFindings) {
     const lookupKey = FINDING_SOURCE_LOOKUP_KEY[finding.id];
     if (lookupKey) {
-      finding.sourceUrl = getPublicSourceUrl(lookupKey, county);
+      finding.sourceUrl = getPublicSourceUrl(lookupKey, county, city);
     }
   }
   return report;
@@ -1499,8 +1499,36 @@ const GENERIC_LOCAL_GOVERNMENT_DIRECTORY = 'https://www.usa.gov/local-government
 
 const LOCAL_SOURCE_IDS: LocalSourceId[] = ['county_assessor', 'county_recorder', 'muni_permits', 'muni_zoning', 'county_planning', 'county_water', 'city_code'];
 
-function getPublicSourceUrl(id: string, county?: string): string {
+// Large counties contain multiple independently-incorporated cities, each with its own building
+// department -- the county-level table above picks one "anchor" city's portal (e.g. Seattle's
+// SDCI for King County), which is simply wrong for every other city in that county. Confirmed on
+// a real report for SeaTac, WA (King County): the report pointed roof/electrical/HVAC/code
+// findings at seattle.gov/sdci, which has no jurisdiction outside Seattle city limits and returns
+// zero results for a SeaTac address. This overrides the county default with a verified per-city
+// portal where one exists; every other King County city not listed here still falls through to
+// Seattle's portal by default -- also wrong for those cities, but out of scope until reported.
+// Keyed by bare lowercased city name (no county/state qualifier) since this app only covers a
+// small, curated set of metros -- add the qualifier if a future city name collision is found.
+const CITY_JURISDICTION_OVERRIDES: Record<string, Partial<Record<LocalSourceId, string>>> = {
+  seatac: {
+    // lama.seatacwa.gov is SeaTac's actual permit/land-use lookup application (verified reachable
+    // with real content), not just a marketing page about permits.
+    muni_permits: 'https://lama.seatacwa.gov',
+    muni_zoning: 'https://lama.seatacwa.gov',
+    city_code: 'https://www.seatacwa.gov/services/code-enforcement-and-compliance',
+  },
+};
+
+function normalizeCityKey(rawCity?: string | null): string {
+  if (!rawCity || typeof rawCity !== 'string') return '';
+  return rawCity.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+function getPublicSourceUrl(id: string, county?: string, city?: string): string {
   if ((LOCAL_SOURCE_IDS as string[]).includes(id)) {
+    const cityOverride = CITY_JURISDICTION_OVERRIDES[normalizeCityKey(city)]?.[id as LocalSourceId];
+    if (cityOverride) return cityOverride;
+
     // normalizeCountyKey, not a bare toLowerCase().trim() -- "Travis" vs "Travis County" used to
     // decide whether this returned the real Austin permit portal or the generic usa.gov directory,
     // with nothing in the output indicating which one you got. See src/utils/normalizeCounty.ts.
