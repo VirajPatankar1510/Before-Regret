@@ -185,6 +185,16 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // different, unrelated title typed afterward.
   const [overrideSimilarWarning, setOverrideSimilarWarning] = useState(false);
 
+  // Same escape-hatch pattern as overrideSimilarWarning above, for a different real bug: a
+  // generation stream that errors out mid-response (or gets published while still streaming --
+  // see the generating-disabled wiring on the Publish/Update buttons below) leaves a real,
+  // finished-looking draft that actually ends mid-sentence. Confirmed live: a published Clark
+  // County guide ends "...City of North Las Vegas: Maintains" with nothing after it -- 317 words
+  // against a 1,200-1,800 word target, no closing section, no punctuation at all on the last
+  // line. Reset whenever the body is edited so a genuine fix (or a new generation) re-evaluates
+  // cleanly instead of carrying a stale override forward.
+  const [overrideTruncatedWarning, setOverrideTruncatedWarning] = useState(false);
+
   // Gemini token/cost counter (see src/server/geminiUsageTracker.ts). "Real time" here means
   // polled every 20s while this screen is open, not a websocket push -- a cost dashboard doesn't
   // need sub-second latency, and polling is the whole mechanism, not a placeholder for something
@@ -307,6 +317,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     const keywordHints = overrideHints ?? seoKeywordHints;
     setGenerating(true);
     setActionError(null);
+    setOverrideTruncatedWarning(false);
     try {
       const res = await fetch('/api/admin/articles/generate', {
         method: 'POST',
@@ -715,6 +726,14 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     ? otherArticles[titleOverlap.matchIndex]
     : undefined;
 
+  // A complete article body always ends in sentence-terminating punctuation (the generation
+  // prompt asks it to close with a concrete next step, not a dangling list item or table row) --
+  // a stream cut off mid-word leaves the last line with no terminal punctuation at all, which is
+  // the actual, confirmed signature of the truncated-publish bug above. Empty bodies are handled
+  // by hasExistingContent elsewhere, not flagged here as "truncated."
+  const bodyTrimmed = draft.bodyMarkdown.trim();
+  const looksTruncated = bodyTrimmed.length > 0 && !/[.!?]["')\]]?\s*$/.test(bodyTrimmed);
+
   return (
     <div className="bg-slate-950 text-white min-h-screen font-sans">
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
@@ -740,7 +759,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               <>
                 <button
                   onClick={updateArticle}
-                  disabled={saving}
+                  disabled={saving || generating || (looksTruncated && !overrideTruncatedWarning)}
                   className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
                 >
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
@@ -758,7 +777,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             ) : (
               <button
                 onClick={publishNow}
-                disabled={saving}
+                disabled={saving || generating || (looksTruncated && !overrideTruncatedWarning)}
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
               >
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
@@ -779,6 +798,25 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           <div className="p-4 bg-rose-950/60 border border-rose-800 rounded-xl text-sm text-rose-200 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{actionError}</span>
+          </div>
+        )}
+
+        {looksTruncated && !overrideTruncatedWarning && (
+          <div className="p-4 bg-amber-950/40 border border-amber-800/60 rounded-xl text-sm text-amber-200 flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <div>
+              <span>
+                This doesn't end with a finished sentence -- it may have been cut off mid-generation (a dropped
+                connection or an interrupted stream). Check the end of the article below before publishing --{' '}
+              </span>
+              <button
+                onClick={() => setOverrideTruncatedWarning(true)}
+                className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
+              >
+                it's actually complete, publish anyway
+              </button>
+              <span>.</span>
+            </div>
           </div>
         )}
 
@@ -1194,7 +1232,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Article</label>
           <textarea
             value={draft.bodyMarkdown}
-            onChange={(e) => setDraft({ ...draft, bodyMarkdown: e.target.value })}
+            onChange={(e) => {
+              setDraft({ ...draft, bodyMarkdown: e.target.value });
+              setOverrideTruncatedWarning(false);
+            }}
             placeholder="Write the article here, or click Generate with AI above."
             rows={20}
             disabled={generating}
