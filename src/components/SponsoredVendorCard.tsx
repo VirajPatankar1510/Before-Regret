@@ -37,7 +37,7 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
           <a
             href={vendor.website}
             target="_blank"
-            rel="noreferrer"
+            rel="sponsored noopener noreferrer"
             className="inline-flex items-center gap-1 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-all"
           >
             <ExternalLink className="w-3.5 h-3.5" />

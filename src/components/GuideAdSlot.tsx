@@ -77,7 +77,7 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, position, g
               <span>{vendor.phone}</span>
             </a>
             {vendor.website && (
-              <a href={vendor.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+              <a href={vendor.website} target="_blank" rel="sponsored noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
                 <Globe className="w-3 h-3" />
                 <span>Visit website</span>
               </a>
