@@ -15,25 +15,47 @@ import { resolveKnownSource } from '../data/knownSources';
 // joins lines with a single space and lets the browser collapse the rest -- turning a table or a
 // carefully-aligned diagram into one garbled run-on line. Confirmed on a live published guide.
 
-// Splits inline text on **bold**, single-asterisk *emphasis*, and [CODE] citation markers.
-// Single-asterisk emphasis is a defensive fallback, not something the prompt asks for (it now
-// explicitly tells the model to use **double asterisks** only) -- this just means any content
-// generated before that instruction existed still renders cleanly instead of showing literal
-// asterisk characters. [CODE] only ever renders as a link if it resolves against the same
-// hand-verified list the prompt was given (src/data/knownSources.ts) -- an unresolved bracket
-// (which shouldn't happen, since the model is constrained to that list) just renders as plain
-// text instead of a broken link.
+// Splits inline text on **bold**, single-asterisk *emphasis*, [CODE] citation markers, and real
+// [text](url) markdown links. Single-asterisk emphasis is a defensive fallback, not something the
+// prompt asks for (it now explicitly tells the model to use **double asterisks** only) -- this
+// just means any content generated before that instruction existed still renders cleanly instead
+// of showing literal asterisk characters. [CODE] only ever renders as a link if it resolves
+// against the same hand-verified list the prompt was given (src/data/knownSources.ts) -- an
+// unresolved bracket (which shouldn't happen, since the model is constrained to that list) just
+// renders as plain text instead of a broken link.
+//
+// [text](url) support was added after real generated content shipped with genuinely broken
+// links: the county-comparison report, defect-reference library, and FEMA county-event
+// generators (all added after this file was first written) all cite real guide/county/declaration
+// URLs using standard markdown link syntax, which this parser didn't recognize at all -- the
+// whole "[title](url)" fell through to the plain-text branch and rendered as literal bracket
+// text, not a link. Confirmed on a real published guide before this fix.
 // Exported for callers that only need one line of inline formatting rendered -- the Quick Answer
 // box in GuidePageView.tsx is a single paragraph, not multi-block markdown, so it uses this
 // directly rather than the full block-level renderArticleMarkdown below.
 export function parseInline(text: string): React.ReactNode[] {
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*|\[[A-Z]+\])/g);
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*|\[[^\]]+\]\([^)\s]+\)|\[[A-Z]+\])/g);
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
       return <strong key={i}>{part.slice(2, -2)}</strong>;
     }
     if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
       return <em key={i}>{part.slice(1, -1)}</em>;
+    }
+    const linkMatch = part.match(/^\[([^\]]+)\]\(([^)\s]+)\)$/);
+    if (linkMatch) {
+      const [, linkText, url] = linkMatch;
+      const isInternal = url.startsWith('https://www.beforeregret.com/') || url.startsWith('/');
+      return (
+        <a
+          key={i}
+          href={url}
+          {...(isInternal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+          className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+        >
+          {linkText}
+        </a>
+      );
     }
     const citationMatch = part.match(/^\[([A-Z]+)\]$/);
     if (citationMatch) {
