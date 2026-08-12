@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClipboardCheck, Info } from 'lucide-react';
+import { ClipboardCheck, Info, ShieldAlert } from 'lucide-react';
 import { getInspectionPriorities, PriorityLevel } from '../engine/inspectionPriorities';
 import { InspectionPrioritiesReportData, InspectionPriorityWithVendor } from '../types';
 import { SponsoredVendorCard } from './SponsoredVendorCard';
@@ -119,6 +119,27 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
         // the list uses between items, not the 24px gap between the intro and the first item.
         <div className="space-y-4 mt-4">
           {remainingPriorities.map(renderPriorityItem)}
+        </div>
+      )}
+
+      {/* Cross-cutting view of items above that already carry a documented insurance impact --
+          no new facts, just pulled out of individual eraBasis paragraphs so a buyer skimming
+          past the full list doesn't miss the theme. Renders nothing when none of the matched
+          rules for this era/region carry one. */}
+      {result.insuranceRedFlags.length > 0 && (
+        <div data-print-block className="mt-6 bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-3">
+          <div className="flex items-center gap-2 text-amber-800">
+            <ShieldAlert className="w-4 h-4 shrink-0" />
+            <h3 className="text-sm font-bold">Insurance red flags for a {result.eraLabel} home</h3>
+          </div>
+          <ul className="space-y-1.5 text-xs sm:text-sm text-amber-900 leading-relaxed list-disc pl-4">
+            {result.insuranceRedFlags.map((flag, i) => (
+              <li key={i}>{flag}</li>
+            ))}
+          </ul>
+          <p className="text-[11px] text-amber-700 leading-relaxed">
+            Call an insurance agent for a quote before you remove contingencies — not after. Carrier rules vary and this is not a determination that any of the above is actually present in this home.
+          </p>
         </div>
       )}
 
