@@ -33,6 +33,9 @@ const STATUS_STYLES: Record<Lead['status'], string> = {
 const inputClass =
   'w-full px-3 py-2 bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none';
 
+// Must match NEW_GUIDE_URL_PLACEHOLDER in src/server/backlinkReplyGenerator.ts.
+const NEW_GUIDE_URL_PLACEHOLDER = '[[NEW_GUIDE_URL]]';
+
 interface BacklinksAdminPanelProps {
   onNavigate: (path: string) => void;
 }
@@ -49,6 +52,9 @@ export const BacklinksAdminPanel: React.FC<BacklinksAdminPanelProps> = ({ onNavi
   const [generating, setGenerating] = useState(false);
   const [threadText, setThreadText] = useState('');
   const [countyDataUsed, setCountyDataUsed] = useState<boolean | null>(null);
+  const [suggestedGuideTitle, setSuggestedGuideTitle] = useState<string | null>(null);
+  const [titleCopied, setTitleCopied] = useState(false);
+  const [newGuideUrlInput, setNewGuideUrlInput] = useState('');
 
   const [newLead, setNewLead] = useState({ source: '', title: '', url: '', topicSnippet: '', countySlug: '' });
   const [editDraft, setEditDraft] = useState({ status: 'new' as Lead['status'], draftAnswer: '' });
@@ -75,8 +81,13 @@ export const BacklinksAdminPanel: React.FC<BacklinksAdminPanelProps> = ({ onNavi
     setCopied(false);
     setThreadText('');
     setCountyDataUsed(null);
+    setSuggestedGuideTitle(null);
+    setTitleCopied(false);
+    setNewGuideUrlInput('');
     setView('edit');
   };
+
+  const hasPlaceholder = editDraft.draftAnswer.includes(NEW_GUIDE_URL_PLACEHOLDER);
 
   const handleAddLead = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,6 +157,9 @@ export const BacklinksAdminPanel: React.FC<BacklinksAdminPanelProps> = ({ onNavi
       if (data?.success) {
         setEditDraft((prev) => ({ ...prev, draftAnswer: data.draftAnswer }));
         setCountyDataUsed(data.countyDataUsed);
+        setSuggestedGuideTitle(data.suggestedGuideTitle ?? null);
+        setTitleCopied(false);
+        setNewGuideUrlInput('');
       } else {
         setActionError(data?.error || 'Could not generate a reply.');
       }
@@ -177,11 +191,31 @@ export const BacklinksAdminPanel: React.FC<BacklinksAdminPanelProps> = ({ onNavi
   };
 
   const handleCopyDraft = () => {
-    if (!editingLead) return;
+    if (!editingLead || hasPlaceholder) return;
     navigator.clipboard.writeText(editDraft.draftAnswer).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
+  };
+
+  const handleCopyTitle = () => {
+    if (!suggestedGuideTitle) return;
+    navigator.clipboard.writeText(suggestedGuideTitle).then(() => {
+      setTitleCopied(true);
+      setTimeout(() => setTitleCopied(false), 2000);
+    });
+  };
+
+  // Client-side only -- swaps the placeholder token for a real URL once the admin has actually
+  // published the suggested guide. No Gemini call involved, so it's free and instant.
+  const handleInsertGuideUrl = () => {
+    const url = newGuideUrlInput.trim();
+    if (!url) return;
+    setEditDraft((prev) => ({
+      ...prev,
+      draftAnswer: prev.draftAnswer.split(NEW_GUIDE_URL_PLACEHOLDER).join(url),
+    }));
+    setNewGuideUrlInput('');
   };
 
   return (
@@ -410,6 +444,67 @@ export const BacklinksAdminPanel: React.FC<BacklinksAdminPanelProps> = ({ onNavi
               />
             </div>
 
+            {hasPlaceholder && (
+              <div className="p-4 bg-violet-950/40 border border-violet-800 rounded-xl space-y-3">
+                <p className="text-sm text-violet-200 flex items-start gap-1.5">
+                  <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-violet-400" />
+                  <span>
+                    This reply points to a guide that doesn&apos;t exist yet &mdash; the draft above
+                    has a placeholder (<code className="text-violet-300">{NEW_GUIDE_URL_PLACEHOLDER}</code>)
+                    where the link goes. Don&apos;t post it as-is.
+                  </span>
+                </p>
+
+                {suggestedGuideTitle && (
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-violet-300">
+                      Suggested title &mdash; paste into /admin/seo&apos;s &quot;Exact title&quot; field
+                    </label>
+                    <div className="flex gap-2">
+                      <input readOnly value={suggestedGuideTitle} className={`${inputClass} flex-1`} />
+                      <button
+                        onClick={handleCopyTitle}
+                        className="px-3 py-2 bg-violet-800 hover:bg-violet-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 cursor-pointer shrink-0"
+                      >
+                        {titleCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        {titleCopied ? 'Copied' : 'Copy'}
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => onNavigate('/admin/seo')}
+                      className="text-xs text-violet-400 hover:text-violet-300 cursor-pointer"
+                    >
+                      Open /admin/seo, publish with this title, then come back &rarr;
+                    </button>
+                  </div>
+                )}
+
+                <div className="space-y-1.5 border-t border-violet-800/60 pt-3">
+                  <label className="block text-xs font-bold text-violet-300">
+                    Once published, paste the real guide URL here
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      value={newGuideUrlInput}
+                      onChange={(e) => setNewGuideUrlInput(e.target.value)}
+                      placeholder="https://www.beforeregret.com/guides/..."
+                      className={`${inputClass} flex-1`}
+                    />
+                    <button
+                      onClick={handleInsertGuideUrl}
+                      disabled={!newGuideUrlInput.trim()}
+                      className="px-3 py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg cursor-pointer shrink-0"
+                    >
+                      Insert link
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-violet-400/80">
+                    Swaps the placeholder for this URL right in the draft above &mdash; no AI call, free.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {actionError && (
               <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
                 <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
@@ -428,7 +523,8 @@ export const BacklinksAdminPanel: React.FC<BacklinksAdminPanelProps> = ({ onNavi
               </button>
               <button
                 onClick={handleCopyDraft}
-                disabled={!editDraft.draftAnswer}
+                disabled={!editDraft.draftAnswer || hasPlaceholder}
+                title={hasPlaceholder ? "Insert the real guide URL above before copying -- the placeholder isn't a real link." : undefined}
                 className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}

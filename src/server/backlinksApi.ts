@@ -3,7 +3,13 @@ import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
 import { GEMINI_MODEL, isQuotaError } from './geminiModel.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
-import { BACKLINK_REPLY_SYSTEM_INSTRUCTION, buildBacklinkReplyPrompt, CountyContextForReply } from './backlinkReplyGenerator.js';
+import {
+  BACKLINK_REPLY_SYSTEM_INSTRUCTION,
+  BACKLINK_REPLY_RESPONSE_SCHEMA,
+  NEW_GUIDE_URL_PLACEHOLDER,
+  buildBacklinkReplyPrompt,
+  CountyContextForReply,
+} from './backlinkReplyGenerator.js';
 
 // Queue of candidate forum threads for the guerilla backlink workflow (see /admin/backlinks).
 // Deliberately not a live scanner: Reddit blocks both search indexing and direct navigation
@@ -215,16 +221,47 @@ export function registerBacklinksRoutes(app: Express) {
       const response = await ai.models.generateContent({
         model: GEMINI_MODEL,
         contents: prompt,
-        config: { systemInstruction: BACKLINK_REPLY_SYSTEM_INSTRUCTION, temperature: 0.8 },
+        config: {
+          systemInstruction: BACKLINK_REPLY_SYSTEM_INSTRUCTION,
+          temperature: 0.8,
+          responseMimeType: 'application/json',
+          responseSchema: BACKLINK_REPLY_RESPONSE_SCHEMA,
+        },
       });
 
       logGeminiUsage('backlink_reply_generation', GEMINI_MODEL, response.usageMetadata);
-      const draftAnswer = response.text?.trim() || '';
-      if (!draftAnswer) {
+      const raw = response.text?.trim() || '';
+      if (!raw) {
         res.status(500).json({ success: false, error: 'Gemini returned an empty response. Try again.' });
         return;
       }
-      res.json({ success: true, draftAnswer, countyDataUsed: !!county });
+      let parsed: { reply?: unknown; suggestedGuideTitle?: unknown };
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        console.error('[backlink-leads] generate-reply: response was not valid JSON:', raw);
+        res.status(500).json({ success: false, error: 'Gemini returned a malformed response. Try again.' });
+        return;
+      }
+      const draftAnswer = typeof parsed.reply === 'string' ? parsed.reply.trim() : '';
+      if (!draftAnswer) {
+        res.status(500).json({ success: false, error: 'Gemini returned an empty reply. Try again.' });
+        return;
+      }
+      const suggestedGuideTitle = typeof parsed.suggestedGuideTitle === 'string' && parsed.suggestedGuideTitle.trim()
+        ? parsed.suggestedGuideTitle.trim()
+        : null;
+      // Belt-and-suspenders: only report a title when the reply actually uses the placeholder --
+      // a model that fills in suggestedGuideTitle without the token would otherwise show the
+      // admin a "new guide needed" prompt with nothing in the draft to attach the link to.
+      const usesPlaceholder = draftAnswer.includes(NEW_GUIDE_URL_PLACEHOLDER);
+      res.json({
+        success: true,
+        draftAnswer,
+        countyDataUsed: !!county,
+        suggestedGuideTitle: usesPlaceholder ? suggestedGuideTitle : null,
+        placeholderToken: usesPlaceholder ? NEW_GUIDE_URL_PLACEHOLDER : null,
+      });
     } catch (err: any) {
       console.error('[backlink-leads] generate-reply failed:', err);
       if (isQuotaError(err)) {
