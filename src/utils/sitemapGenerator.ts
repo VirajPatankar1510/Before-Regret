@@ -41,6 +41,7 @@ export function generateSitemapIndexXml(): string {
     { loc: `${BASE_URL}/sitemaps/sitemap-pages.xml`, lastmod: today },
     { loc: `${BASE_URL}/sitemaps/sitemap-guides.xml`, lastmod: today },
     { loc: `${BASE_URL}/sitemaps/sitemap-counties.xml`, lastmod: today },
+    { loc: `${BASE_URL}/sitemaps/sitemap-news.xml`, lastmod: today },
   ];
 
   const xmlLines = [
@@ -59,12 +60,47 @@ export function generateSitemapIndexXml(): string {
   return xmlLines.join('\n');
 }
 
+// Google News sitemap entries need a title + a real publication_date (W3C datetime, not just a
+// date), on top of the plain <loc> every other sitemap entry has -- see buildNewsUrlsetXml below.
+export interface NewsUrlEntry {
+  loc: string;
+  title: string;
+  publicationDate: string;
+}
+
 // 2. Child Sitemap Generator (/sitemaps/:name.xml)
 export async function generateChildSitemapXml(name: string): Promise<string> {
   const cleanName = name.replace(/\.xml$/, '');
   let entries: SitemapUrlEntry[] = [];
 
   const today = new Date().toISOString().split('T')[0];
+
+  // Google News sitemap: a distinct XML shape (news:news per URL, not <changefreq>/<priority>),
+  // so it's built and returned separately from the plain-urlset branches below. Only the FEMA
+  // county-event pieces qualify (article_type = 'news' -- see countyEventsApi.ts) -- evergreen
+  // guides were never meant for this, Google's own guidance is that a news sitemap is for actual
+  // news content. Restricted to the last 48 hours per Google's news-sitemap freshness rule: an
+  // article older than that should drop out of this sitemap even though it stays live on the
+  // site and in the regular sitemap-guides.xml (Google keeps it in the News index for about a
+  // month off the strength of when it first saw it here, it just stops needing to be told again).
+  if (cleanName === 'sitemap-news' && isDbConfigured()) {
+    try {
+      const rows = await withDb((sql) => sql`
+        SELECT slug, title, published_at FROM articles
+        WHERE status = 'published' AND article_type = 'news' AND published_at >= now() - interval '48 hours'
+        ORDER BY published_at DESC
+      `);
+      const newsEntries: NewsUrlEntry[] = (rows as unknown as Array<{ slug: string; title: string; published_at: string | Date | null }>).map((a) => ({
+        loc: `${BASE_URL}/guides/${a.slug}/`,
+        title: a.title,
+        publicationDate: a.published_at ? new Date(a.published_at).toISOString() : new Date().toISOString(),
+      }));
+      return buildNewsUrlsetXml(newsEntries);
+    } catch (err) {
+      console.error('[sitemap] failed to load recent news articles:', err);
+      return buildNewsUrlsetXml([]);
+    }
+  }
 
   if (cleanName === 'sitemap-pages') {
     entries = [
@@ -123,6 +159,33 @@ export async function generateChildSitemapXml(name: string): Promise<string> {
   }
 
   return buildUrlsetXml(entries);
+}
+
+// Google News sitemap protocol: xmlns:news + one <news:news> block per <url>, with
+// news:publication (name + language), news:publication_date (W3C datetime), and news:title
+// required. https://developers.google.com/search/docs/crawling-indexing/sitemaps/news-sitemap
+function buildNewsUrlsetXml(entries: NewsUrlEntry[]): string {
+  const xmlLines = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">',
+  ];
+
+  entries.forEach((e) => {
+    xmlLines.push('  <url>');
+    xmlLines.push(`    <loc>${escapeXml(e.loc)}</loc>`);
+    xmlLines.push('    <news:news>');
+    xmlLines.push('      <news:publication>');
+    xmlLines.push('        <news:name>BeforeRegret</news:name>');
+    xmlLines.push('        <news:language>en</news:language>');
+    xmlLines.push('      </news:publication>');
+    xmlLines.push(`      <news:publication_date>${e.publicationDate}</news:publication_date>`);
+    xmlLines.push(`      <news:title>${escapeXml(e.title)}</news:title>`);
+    xmlLines.push('    </news:news>');
+    xmlLines.push('  </url>');
+  });
+
+  xmlLines.push('</urlset>');
+  return xmlLines.join('\n');
 }
 
 function buildUrlsetXml(entries: SitemapUrlEntry[]): string {
