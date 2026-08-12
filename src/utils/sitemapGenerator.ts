@@ -174,6 +174,7 @@ Disallow: /report/
 Disallow: /admin
 Disallow: /api/
 Allow: /api/images/
+Allow: /api/v1/
 
 Sitemap: https://www.beforeregret.com/sitemap.xml
 `;

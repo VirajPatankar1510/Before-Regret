@@ -27,6 +27,7 @@ import { registerKeywordResearchRoutes } from "./src/server/keywordResearchApi.j
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerBacklinksRoutes } from "./src/server/backlinksApi.js";
+import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import { GEMINI_MODEL } from "./src/server/geminiModel.js";
 import { logGeminiUsage } from "./src/server/geminiUsageTracker.js";
@@ -192,6 +193,14 @@ export async function createApp() {
   // Admin-only. Stores candidate forum threads found by a manual/assisted search scan, plus a
   // drafted reply, for the admin to review and post by hand. See src/server/backlinksApi.ts.
   registerBacklinksRoutes(app);
+
+  // --- Public API v1 (Neon-backed, cached, rate-limited) -------------------------------------
+  // The documented, agent-facing surface for county hazard data and the guide index. Separate
+  // from /api/counties/:slug and /api/guides above -- those stay exactly as they are, still used
+  // internally by the React app with no cache headers and no rate limit, which is fine when the
+  // only caller is your own frontend. This is the version meant to be published, crawled, and
+  // linked from llms.txt and robots.txt. See src/server/publicApiV1.ts.
+  registerPublicApiV1Routes(app);
 
   // Master Sitemap Index Endpoint (/sitemap.xml and /sitemaps/sitemap-index.xml)
   app.get(["/sitemap.xml", "/sitemaps/sitemap-index.xml"], (req, res) => {
