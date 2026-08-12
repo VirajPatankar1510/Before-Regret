@@ -28,6 +28,7 @@ import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerBacklinksRoutes } from "./src/server/backlinksApi.js";
 import { registerCountyEventsRoutes } from "./src/server/countyEventsApi.js";
+import { registerCountyComparisonRoutes } from "./src/server/countyComparisonApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import { GEMINI_MODEL } from "./src/server/geminiModel.js";
@@ -202,6 +203,12 @@ export async function createApp() {
   // same articles table as any other guide -- a human reviews and publishes it, nothing here
   // ever publishes on its own. See src/server/countyEventsApi.ts.
   registerCountyEventsRoutes(app);
+
+  // --- Original data journalism report generator (Neon-backed) --------------------------------
+  // Admin-triggered, not event-triggered -- ranks every covered county by real Census housing-age
+  // data (computed in plain code, never by Gemini) and drafts an article around the real table.
+  // See src/server/countyComparisonApi.ts.
+  registerCountyComparisonRoutes(app);
 
   // --- Public API v1 (Neon-backed, cached, rate-limited) -------------------------------------
   // The documented, agent-facing surface for county hazard data and the guide index. Separate

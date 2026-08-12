@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Send, Undo2, Trash2, AlertCircle, Sparkles,
-  Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp, CloudLightning
+  Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp, CloudLightning, BarChart3
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
 import { STOPWORDS } from '../../utils/relatedGuides';
@@ -216,6 +216,12 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // 31-county footprint -- capped server-side at 400 days regardless of what's entered here.
   const [countyEventLookbackDays, setCountyEventLookbackDays] = useState('14');
 
+  // Original data journalism report generator -- see src/server/countyComparisonApi.ts. Admin-
+  // triggered (not event-triggered), meant to run occasionally, not on a schedule.
+  const [comparisonGenerating, setComparisonGenerating] = useState(false);
+  const [comparisonResult, setComparisonResult] = useState<{ slug: string; countiesRanked: number } | null>(null);
+  const [comparisonError, setComparisonError] = useState<string | null>(null);
+
   const loadArticles = () => {
     setLoadError(null);
     fetch('/api/admin/articles')
@@ -309,6 +315,26 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       setCountyEventError('Could not reach the server.');
     } finally {
       setCountyEventChecking(false);
+    }
+  };
+
+  const generateComparisonReport = async () => {
+    setComparisonGenerating(true);
+    setComparisonError(null);
+    setComparisonResult(null);
+    try {
+      const res = await fetch('/api/admin/reports/county-comparison', { method: 'POST' });
+      const data = await res.json();
+      if (data?.success) {
+        setComparisonResult({ slug: data.slug, countiesRanked: data.countiesRanked });
+        loadArticles();
+      } else {
+        setComparisonError(data?.error || 'Could not generate the report.');
+      }
+    } catch {
+      setComparisonError('Could not reach the server.');
+    } finally {
+      setComparisonGenerating(false);
     }
   };
 
@@ -658,6 +684,40 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             )}
           </div>
 
+          {/* Original data journalism report -- see src/server/countyComparisonApi.ts. Ranks
+              every covered county by real Census housing-age data, computed in plain code, never
+              by Gemini. Meant to be run occasionally (a handful of times a year), not scheduled. */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+                <BarChart3 className="w-3.5 h-3.5" />
+                <span>County comparison report</span>
+              </div>
+              <button
+                onClick={generateComparisonReport}
+                disabled={comparisonGenerating}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
+              >
+                {comparisonGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <BarChart3 className="w-3.5 h-3.5" />}
+                {comparisonGenerating ? 'Generating…' : 'Generate report'}
+              </button>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Ranks every county this site covers by real Census housing-age data (% built before 1950 and before 1980) and drafts an original data report around the real ranking table. The table itself is computed here, not by Gemini -- only the surrounding analysis is AI-drafted. Lands below as a draft like any other article.
+            </p>
+            {comparisonError && (
+              <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                <span>{comparisonError}</span>
+              </p>
+            )}
+            {comparisonResult && (
+              <p className="text-xs text-emerald-400 font-semibold border-t border-slate-800 pt-3">
+                Draft created, ranking {comparisonResult.countiesRanked} counties -- slug: {comparisonResult.slug}
+              </p>
+            )}
+          </div>
+
           {/* Gemini token/cost counter -- see src/server/geminiUsageTracker.ts. Polls every 20s
               (see the effect above); "real time" here means that, not a websocket push. Covers
               every Gemini call the app makes: property reports, this panel's own "Generate with
@@ -725,6 +785,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                               : r.source === 'article_generation' ? 'Article (admin)'
                               : r.source === 'backlink_reply_generation' ? 'Backlink reply'
                               : r.source === 'county_event_generation' ? 'FEMA county event'
+                              : r.source === 'county_comparison_generation' ? 'County comparison'
                               : 'Batch draft'}
                           </span>
                           <span className="text-slate-600">·</span>
