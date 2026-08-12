@@ -26,13 +26,18 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
   targetAddress,
   onConfirmAndGenerate
 }) => {
-  const { user, triggerClerkSignIn } = useAuth();
+  const { user, loading, triggerClerkSignIn } = useAuth();
 
   const [step, setStep] = useState<'AUTH_REQUIRED' | 'CLAIM_FREE' | 'PAYMENT_INTERCEPT' | 'PROCESSING' | 'PAYMENT'>('CLAIM_FREE');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Sync step based on authentication status and report quota
+  // Sync step based on authentication status and report quota. Waits out `loading` before
+  // deciding anything -- Clerk itself now loads lazily (see AuthContext.tsx), so `loading` stays
+  // true for a real, visible stretch rather than resolving near-instantly. Deciding AUTH_REQUIRED
+  // from a `user` that's merely "not yet known" rather than "genuinely signed out" would prompt an
+  // already-signed-in visitor to sign in again.
   useEffect(() => {
+    if (loading) return;
     if (!user) {
       setStep('AUTH_REQUIRED');
       return;
@@ -48,7 +53,7 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
     } else {
       setStep('CLAIM_FREE');
     }
-  }, [user]);
+  }, [user, loading]);
 
   if (!isOpen) return null;
 
@@ -106,8 +111,18 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
           ✕
         </button>
 
+        {/* STEP 0: Auth status not yet known (Clerk still loading) -- distinct from genuinely
+            signed out, so an already-signed-in visitor who opens this modal quickly doesn't get
+            told to sign in again. */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center gap-3 py-10 text-slate-400">
+            <Loader2 className="w-6 h-6 animate-spin" />
+            <p className="text-xs font-medium">Checking your account…</p>
+          </div>
+        )}
+
         {/* STEP A: MANDATORY AUTH PROMPT (WHEN NOT LOGGED IN) */}
-        {!user && (
+        {!loading && !user && (
           <div className="space-y-6">
             <div className="space-y-2 text-center">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-mono font-bold border border-blue-100">
