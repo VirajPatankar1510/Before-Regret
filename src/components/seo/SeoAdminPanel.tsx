@@ -208,9 +208,13 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // so a real declaration doesn't have to wait for the next scheduled run to show up as a draft.
   const [countyEventChecking, setCountyEventChecking] = useState(false);
   const [countyEventResult, setCountyEventResult] = useState<{
-    declarationsChecked: number; coveredCountyMatches: number; alreadyProcessed: number; draftsCreated: number; errors: string[];
+    declarationsChecked: number; coveredCountyMatches: number; alreadyProcessed: number; draftsCreated: number; errors: string[]; lookbackDays: number;
   } | null>(null);
   const [countyEventError, setCountyEventError] = useState<string | null>(null);
+  // Defaults to the same 14-day window the daily cron uses. Widening it is the actual way to test
+  // this against real historical declarations instead of waiting for a live one to land inside a
+  // 31-county footprint -- capped server-side at 400 days regardless of what's entered here.
+  const [countyEventLookbackDays, setCountyEventLookbackDays] = useState('14');
 
   const loadArticles = () => {
     setLoadError(null);
@@ -291,7 +295,9 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     setCountyEventError(null);
     setCountyEventResult(null);
     try {
-      const res = await fetch('/api/admin/county-events/check');
+      const days = parseInt(countyEventLookbackDays, 10);
+      const query = Number.isFinite(days) && days > 0 && days !== 14 ? `?days=${days}` : '';
+      const res = await fetch(`/api/admin/county-events/check${query}`);
       const data = await res.json();
       if (data?.success) {
         setCountyEventResult(data.summary);
@@ -599,22 +605,35 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               src/server/countyEventsApi.ts. Same check the daily Vercel Cron runs; this button
               exists so a real declaration doesn't have to wait for the next scheduled run. */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
                 <CloudLightning className="w-3.5 h-3.5" />
                 <span>FEMA county-event drafts</span>
               </div>
-              <button
-                onClick={checkCountyEvents}
-                disabled={countyEventChecking}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
-              >
-                {countyEventChecking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CloudLightning className="w-3.5 h-3.5" />}
-                {countyEventChecking ? 'Checking…' : 'Check now'}
-              </button>
+              <div className="flex items-center gap-2">
+                <label className="text-[11px] text-slate-500 flex items-center gap-1.5">
+                  Lookback (days)
+                  <input
+                    type="number"
+                    min={1}
+                    max={400}
+                    value={countyEventLookbackDays}
+                    onChange={(e) => setCountyEventLookbackDays(e.target.value)}
+                    className="w-16 px-2 py-1 bg-slate-950 border border-slate-800 focus:border-violet-500 rounded-md text-white text-xs focus:outline-none"
+                  />
+                </label>
+                <button
+                  onClick={checkCountyEvents}
+                  disabled={countyEventChecking}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
+                >
+                  {countyEventChecking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CloudLightning className="w-3.5 h-3.5" />}
+                  {countyEventChecking ? 'Checking…' : 'Check now'}
+                </button>
+              </div>
             </div>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Checks OpenFEMA for new disaster declarations in counties this site already covers, and drafts an article for each new match -- same as the daily automatic check. Drafts land below like any other article; nothing publishes on its own.
+              Checks OpenFEMA for new disaster declarations in counties this site already covers, and drafts an article for each new match -- same as the daily automatic check (which always uses 14 days). Widen the lookback above to test against real past declarations instead of waiting for a live one -- with only 31 counties covered, a match inside 14 days is rare. Drafts land below like any other article; nothing publishes on its own.
             </p>
             {countyEventError && (
               <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
@@ -624,7 +643,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             )}
             {countyEventResult && (
               <div className="text-xs text-slate-300 space-y-1 border-t border-slate-800 pt-3">
-                <p>{countyEventResult.declarationsChecked} declarations checked in the last 14 days, {countyEventResult.coveredCountyMatches} matched a covered county.</p>
+                <p>{countyEventResult.declarationsChecked} declarations checked in the last {countyEventResult.lookbackDays} days, {countyEventResult.coveredCountyMatches} matched a covered county.</p>
                 <p>
                   {countyEventResult.draftsCreated > 0 ? (
                     <span className="text-emerald-400 font-semibold">{countyEventResult.draftsCreated} new draft{countyEventResult.draftsCreated === 1 ? '' : 's'} created.</span>
