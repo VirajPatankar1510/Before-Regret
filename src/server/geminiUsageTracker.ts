@@ -19,7 +19,7 @@ const MODEL_PRICING_PER_MILLION_TOKENS: Record<string, { input: number; output: 
   'gemini-2.5-flash': { input: 0.30, output: 2.50 },
 };
 
-export type GeminiUsageSource = 'report_generation' | 'article_generation' | 'batch_draft_articles' | 'backlink_reply_generation' | 'media_request_response';
+export type GeminiUsageSource = 'report_generation' | 'article_generation' | 'batch_draft_articles' | 'backlink_reply_generation';
 
 export interface GeminiUsageMetadataLike {
   promptTokenCount?: number;

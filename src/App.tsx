@@ -28,7 +28,6 @@ import { GuidesIndexView } from './components/seo/GuidesIndexView';
 import { CountyPageView } from './components/seo/CountyPageView';
 import { SeoAdminPanel } from './components/seo/SeoAdminPanel';
 import { BacklinksAdminPanel } from './components/admin/BacklinksAdminPanel';
-import { MediaRequestsAdminPanel } from './components/admin/MediaRequestsAdminPanel';
 import { AdminGate } from './components/admin/AdminGate';
 import { applyHeadSeo } from './utils/headSeo';
 
@@ -118,7 +117,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'adminBacklinks' | 'adminMediaRequests' | 'guidesIndex' | 'guide' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'adminBacklinks' | 'guidesIndex' | 'guide' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
     countySlug?: string;
   }>({ type: 'none' });
@@ -208,12 +207,6 @@ export function App() {
 
     if (path.startsWith('/admin/backlinks')) {
       setPseoRoute({ type: 'adminBacklinks' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path.startsWith('/admin/media-requests')) {
-      setPseoRoute({ type: 'adminMediaRequests' });
       setCurrentStep('PSEO');
       return true;
     }
@@ -602,13 +595,6 @@ export function App() {
         canonicalUrl: 'https://www.beforeregret.com/admin/backlinks',
         robotsDirective: 'noindex, nofollow'
       });
-    } else if (pseoRoute.type === 'adminMediaRequests') {
-      applyHeadSeo({
-        title: 'Media Requests | BeforeRegret',
-        description: 'Internal queue for journalist source requests and drafted responses.',
-        canonicalUrl: 'https://www.beforeregret.com/admin/media-requests',
-        robotsDirective: 'noindex, nofollow'
-      });
     } else if (pseoRoute.type === 'notFound') {
       applyHeadSeo({
         title: 'Page Not Found | BeforeRegret',
@@ -878,11 +864,6 @@ export function App() {
             {pseoRoute.type === 'adminBacklinks' && (
               <AdminGate>
                 <BacklinksAdminPanel onNavigate={handleNavigate} />
-              </AdminGate>
-            )}
-            {pseoRoute.type === 'adminMediaRequests' && (
-              <AdminGate>
-                <MediaRequestsAdminPanel onNavigate={handleNavigate} />
               </AdminGate>
             )}
             {pseoRoute.type === 'guidesIndex' && (
