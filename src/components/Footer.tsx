@@ -37,7 +37,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
               <Logo className="w-8 h-8 shrink-0" />
               <div>
                 <span className="font-extrabold text-lg text-white tracking-tight block">Before Regret</span>
-                <span className="text-[10px] font-medium text-slate-500">Check it before you sign it.</span>
+                <span className="text-[10px] font-medium text-slate-400">Check it before you sign it.</span>
               </div>
             </div>
             <p className="text-xs text-slate-400 max-w-md">
@@ -96,7 +96,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
           </div>
         )}
 
-        <div className="text-xs text-slate-500">
+        <div className="text-xs text-slate-400">
           <p>© {new Date().getFullYear()} Before Regret. All rights reserved.</p>
         </div>
 
