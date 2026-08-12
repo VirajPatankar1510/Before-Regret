@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Loader2, AlertCircle, Plus, ExternalLink, Trash2, Copy, Check, ArrowLeft, Link2,
+  Loader2, AlertCircle, Plus, ExternalLink, Trash2, Copy, Check, ArrowLeft, Link2, Sparkles,
 } from 'lucide-react';
 
 // Queue for the guerilla backlink workflow -- see src/server/backlinksApi.ts. Deliberately not a
@@ -46,6 +46,9 @@ export const BacklinksAdminPanel: React.FC<BacklinksAdminPanelProps> = ({ onNavi
   const [actionError, setActionError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [threadText, setThreadText] = useState('');
+  const [countyDataUsed, setCountyDataUsed] = useState<boolean | null>(null);
 
   const [newLead, setNewLead] = useState({ source: '', title: '', url: '', topicSnippet: '', countySlug: '' });
   const [editDraft, setEditDraft] = useState({ status: 'new' as Lead['status'], draftAnswer: '' });
@@ -70,6 +73,8 @@ export const BacklinksAdminPanel: React.FC<BacklinksAdminPanelProps> = ({ onNavi
     setEditDraft({ status: lead.status, draftAnswer: lead.draftAnswer });
     setActionError(null);
     setCopied(false);
+    setThreadText('');
+    setCountyDataUsed(null);
     setView('edit');
   };
 
@@ -124,6 +129,30 @@ export const BacklinksAdminPanel: React.FC<BacklinksAdminPanelProps> = ({ onNavi
       setActionError('Could not reach the server.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleGenerateReply = async () => {
+    if (!editingLead || !threadText.trim()) return;
+    setActionError(null);
+    setGenerating(true);
+    try {
+      const res = await fetch(`/api/admin/backlink-leads/${editingLead.id}/generate-reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ threadText }),
+      });
+      const data = await res.json();
+      if (data?.success) {
+        setEditDraft((prev) => ({ ...prev, draftAnswer: data.draftAnswer }));
+        setCountyDataUsed(data.countyDataUsed);
+      } else {
+        setActionError(data?.error || 'Could not generate a reply.');
+      }
+    } catch {
+      setActionError('Could not reach the server.');
+    } finally {
+      setGenerating(false);
     }
   };
 
@@ -345,8 +374,34 @@ export const BacklinksAdminPanel: React.FC<BacklinksAdminPanelProps> = ({ onNavi
 
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-300">
-                Drafted reply <span className="text-slate-500 font-normal">(paste the real thread into chat to have me write this, or write it yourself)</span>
+                Real thread text <span className="text-slate-500 font-normal">(open the URL above, copy the actual post -- the AI only drafts from what's genuinely there, never from the title alone)</span>
               </label>
+              <textarea
+                value={threadText}
+                onChange={(e) => setThreadText(e.target.value)}
+                className={`${inputClass} min-h-[120px] resize-y`}
+                placeholder="Paste the original poster's actual message here..."
+              />
+              <button
+                onClick={handleGenerateReply}
+                disabled={generating || !threadText.trim()}
+                className="w-full py-2.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {generating ? 'Drafting…' : 'Generate reply'}
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-xs font-bold text-slate-300">
+                Drafted reply <span className="text-slate-500 font-normal">(generated above, or write it yourself -- review before saving, nothing here ever posts on its own)</span>
+              </label>
+              {countyDataUsed === false && (
+                <p className="text-xs text-amber-400 flex items-start gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                  <span>No county data was attached to this lead, so the draft below doesn't cite any real FEMA/NOAA/EPA numbers -- check it's not vaguer than it needs to be.</span>
+                </p>
+              )}
               <textarea
                 value={editDraft.draftAnswer}
                 onChange={(e) => setEditDraft({ ...editDraft, draftAnswer: e.target.value })}
