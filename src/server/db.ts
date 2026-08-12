@@ -1,10 +1,17 @@
-import { neon } from '@neondatabase/serverless';
+import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
 
 // Same fail-closed pattern as adminAuth.ts: a missing DATABASE_URL must mean "the write path is
 // unavailable," never a silent fallback or crash deep in a query. isDbConfigured() lets callers
 // check before touching sql() at all.
 
-let cachedSql: ReturnType<typeof neon> | null = null;
+// neon() below is always called with no options, so it always runs in its default mode
+// (arrayMode: false, fullResults: false) -- rows come back as Record<string, any>[]. Typed
+// explicitly as NeonQueryFunction<false, false> rather than ReturnType<typeof neon>, which
+// widens both generics to their `boolean` constraint and makes every query's return type a
+// three-way union including FullQueryResults (the fullResults: true shape, never actually used
+// here). That union is why `(await sql\`...\`).length` doesn't typecheck at several call sites --
+// FullQueryResults doesn't have a `.length`, even though it's never the type in this app.
+let cachedSql: NeonQueryFunction<false, false> | null = null;
 let schemaEnsured = false;
 
 export interface Transaction {
@@ -260,7 +267,7 @@ export async function ensureArticlesSchema(): Promise<void> {
   schemaEnsured = true;
 }
 
-export async function withDb<T>(fn: (sql: ReturnType<typeof neon>) => Promise<T>): Promise<T> {
+export async function withDb<T>(fn: (sql: NeonQueryFunction<false, false>) => Promise<T>): Promise<T> {
   await ensureArticlesSchema();
   return fn(getSql());
 }
