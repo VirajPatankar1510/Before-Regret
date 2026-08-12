@@ -27,6 +27,7 @@ import { registerKeywordResearchRoutes } from "./src/server/keywordResearchApi.j
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerBacklinksRoutes } from "./src/server/backlinksApi.js";
+import { registerMediaRequestsRoutes } from "./src/server/mediaRequestsApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import { GEMINI_MODEL } from "./src/server/geminiModel.js";
@@ -193,6 +194,12 @@ export async function createApp() {
   // Admin-only. Stores candidate forum threads found by a manual/assisted search scan, plus a
   // drafted reply, for the admin to review and post by hand. See src/server/backlinksApi.ts.
   registerBacklinksRoutes(app);
+
+  // --- Media/journalist request queue (Neon-backed) --------------------------------------------
+  // Admin-only. Stores journalist source requests found on Connectively/Qwoted/Featured (these
+  // platforms require a real account, so finding a query stays a manual step), plus a drafted
+  // response, for the admin to review and submit by hand. See src/server/mediaRequestsApi.ts.
+  registerMediaRequestsRoutes(app);
 
   // --- Public API v1 (Neon-backed, cached, rate-limited) -------------------------------------
   // The documented, agent-facing surface for county hazard data and the guide index. Separate

@@ -233,12 +233,20 @@ export const BacklinksAdminPanel: React.FC<BacklinksAdminPanelProps> = ({ onNavi
               copied and posted by hand.
             </p>
           </div>
-          <button
-            onClick={() => onNavigate('/admin/seo')}
-            className="text-xs text-slate-500 hover:text-slate-300 cursor-pointer shrink-0"
-          >
-            SEO admin &rarr;
-          </button>
+          <div className="flex flex-col items-end gap-1 shrink-0">
+            <button
+              onClick={() => onNavigate('/admin/media-requests')}
+              className="text-xs text-slate-500 hover:text-slate-300 cursor-pointer"
+            >
+              Media requests &rarr;
+            </button>
+            <button
+              onClick={() => onNavigate('/admin/seo')}
+              className="text-xs text-slate-500 hover:text-slate-300 cursor-pointer"
+            >
+              SEO admin &rarr;
+            </button>
+          </div>
         </div>
 
         {view === 'list' && (
