@@ -28,6 +28,7 @@ interface Article {
   sources: string[];
   faqItems: FaqItem[];
   status: string;
+  articleType: string;
   publishedAt: string | null;
   updatedAt: string | null;
 }
@@ -151,7 +152,9 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
       jsonLdSchema: [
         {
           '@context': 'https://schema.org',
-          '@type': 'Article',
+          // Kept in sync with scripts/prerender-guides.tsx's buildJsonLd -- see that file's
+          // comment for why NewsArticle vs Article and what it does/doesn't earn.
+          '@type': article.articleType === 'news' ? 'NewsArticle' : 'Article',
           'headline': article.title,
           'description': article.metaDescription,
           'image': 'https://www.beforeregret.com/hero-bg.jpg',
@@ -247,8 +250,8 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
         {/* Guide Header */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
           <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-            <span className="px-2.5 py-1 bg-blue-100 text-blue-800 font-bold text-[11px] rounded-lg">
-              GUIDE
+            <span className={`px-2.5 py-1 font-bold text-[11px] rounded-lg ${article.articleType === 'news' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}`}>
+              {article.articleType === 'news' ? 'COUNTY UPDATE' : 'GUIDE'}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5 text-slate-400" />

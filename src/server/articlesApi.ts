@@ -24,6 +24,7 @@ interface ArticleRow {
   sources_json: string;
   faq_json: string;
   status: string;
+  article_type: string;
   created_at: string;
   updated_at: string;
   published_at: string | null;
@@ -59,6 +60,7 @@ function toApiShape(row: ArticleRow) {
     sources,
     faqItems,
     status: row.status,
+    articleType: row.article_type,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     publishedAt: row.published_at,

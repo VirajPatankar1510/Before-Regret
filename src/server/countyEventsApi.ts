@@ -242,14 +242,15 @@ export function registerCountyEventsRoutes(app: Express) {
               slug = `${base}-${attempt + 1}`;
             }
             const rows = await sql`
-              INSERT INTO articles (slug, title, meta_description, body_markdown, quick_answer, sources_json, status)
+              INSERT INTO articles (slug, title, meta_description, body_markdown, quick_answer, sources_json, status, article_type)
               VALUES (
                 ${slug}, ${title},
                 ${typeof parsed.metaDescription === 'string' ? parsed.metaDescription.trim() : ''},
                 ${bodyMarkdown},
                 ${typeof parsed.quickAnswer === 'string' ? parsed.quickAnswer.trim() : ''},
                 ${JSON.stringify(Array.isArray(parsed.sourcesUsed) ? parsed.sourcesUsed : [])},
-                'draft'
+                'draft',
+                'news'
               )
               RETURNING id
             `;

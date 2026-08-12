@@ -72,6 +72,11 @@ export async function ensureArticlesSchema(): Promise<void> {
   // structured data to understand a page, and because the visible accordion is real, useful
   // content in its own right, independent of what the schema does.
   await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS faq_json TEXT NOT NULL DEFAULT '[]'`;
+  // 'guide' (the default, evergreen content) or 'news' (a timely FEMA-declaration county-event
+  // piece -- see countyEventsApi.ts). Drives which schema.org type the prerender step emits:
+  // Article for a guide, NewsArticle for news. Evergreen guides stay Article deliberately --
+  // NewsArticle is schema.org's type for actual news content, not "how to" reference material.
+  await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS article_type TEXT NOT NULL DEFAULT 'guide'`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS transactions (

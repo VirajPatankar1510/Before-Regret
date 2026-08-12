@@ -38,6 +38,7 @@ interface ArticleRow {
   quick_answer: string;
   sources_json: string;
   faq_json: string;
+  article_type: string;
   published_at: string | null;
   updated_at: string | null;
 }
@@ -56,6 +57,7 @@ interface Article {
   quickAnswer: string;
   sources: string[];
   faqItems: FaqItem[];
+  articleType: string;
   publishedAt: string | null;
   updatedAt: string | null;
 }
@@ -88,6 +90,7 @@ function toArticle(row: ArticleRow): Article {
     quickAnswer: row.quick_answer,
     sources,
     faqItems,
+    articleType: row.article_type,
     publishedAt: row.published_at,
     updatedAt: row.updated_at,
   };
@@ -131,7 +134,13 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
   const schemas: Record<string, any>[] = [
     {
       '@context': 'https://schema.org',
-      '@type': 'Article',
+      // NewsArticle for the timely FEMA-declaration county-event pieces (see
+      // countyEventsApi.ts), Article for everything else. This doesn't get these into the
+      // Google News/Discover tabs by itself -- that also needs a separate news-sitemap.xml and
+      // real site trust/authority signals this site doesn't have yet -- but it's the correct
+      // schema.org type either way, and Google has said it uses this kind of markup for general
+      // page/entity understanding (AI Overviews, AI Mode) independent of any rich-result surface.
+      '@type': article.articleType === 'news' ? 'NewsArticle' : 'Article',
       headline: article.title,
       description: article.metaDescription,
       image: 'https://www.beforeregret.com/hero-bg.jpg',
@@ -206,7 +215,9 @@ function GuideStaticBody({
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
           <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-            <span className="px-2.5 py-1 bg-blue-100 text-blue-800 font-bold text-[11px] rounded-lg">GUIDE</span>
+            <span className={`px-2.5 py-1 font-bold text-[11px] rounded-lg ${article.articleType === 'news' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}`}>
+              {article.articleType === 'news' ? 'COUNTY UPDATE' : 'GUIDE'}
+            </span>
             <span>{readTimeMinutes} min read</span>
             {article.publishedAt && (
               <span>
@@ -413,7 +424,7 @@ async function run() {
   const template = fs.readFileSync(templatePath, 'utf8');
 
   const rows = (await withDb((sql) => sql`
-    SELECT id, slug, title, meta_description, body_markdown, quick_answer, sources_json, faq_json, published_at, updated_at
+    SELECT id, slug, title, meta_description, body_markdown, quick_answer, sources_json, faq_json, article_type, published_at, updated_at
     FROM articles WHERE status = 'published' ORDER BY published_at DESC
   `)) as unknown as ArticleRow[];
 
