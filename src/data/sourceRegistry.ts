@@ -150,4 +150,14 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     isLive: false,
     statusNote: 'Not integrated yet -- provided as a reference link.',
   },
+  {
+    id: 'src_usgs_landslide',
+    name: 'USGS Landslide Hazards Program',
+    agency: 'U.S. Geological Survey',
+    governmentLevel: 'Federal',
+    officialUrl: 'https://www.usgs.gov/programs/landslide-hazards',
+    dataTypes: ['Landslide Susceptibility Mapping'],
+    isLive: false,
+    statusNote: 'Not integrated yet -- provided as a reference link. See the Inspection Budget Priorities section for the states where this is surfaced.',
+  },
 ];

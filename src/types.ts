@@ -74,6 +74,7 @@ export interface InspectionPrioritiesReportData {
   eraLabel: string;
   regionLabel: string;
   priorities: InspectionPriorityWithVendor[];
+  insuranceRedFlags: string[];
 }
 
 // Computed server-side from the same (year built, county, state) triple as

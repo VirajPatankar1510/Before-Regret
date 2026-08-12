@@ -56,6 +56,15 @@ interface PriorityRule extends InspectionPriority {
   maxYear: number;
   /** Lowercased counties this is specific to. Omit for rules that apply everywhere covered. */
   counties?: string[];
+  /** Two-letter state codes this is specific to. Omit for rules that apply everywhere covered. */
+  states?: string[];
+  /**
+   * Short, standalone restatement of a real insurance impact this rule's eraBasis already
+   * documents -- never a new claim, just the same already-vetted fact pulled out for the
+   * consolidated "Insurance Red Flags" callout. Omit for rules with no documented insurance
+   * angle rather than reaching for one.
+   */
+  insuranceRedFlag?: string;
 }
 
 export interface InspectionPrioritiesResult {
@@ -63,6 +72,12 @@ export interface InspectionPrioritiesResult {
   eraLabel: string;
   regionLabel: string;
   priorities: InspectionPriority[];
+  /**
+   * Cross-cutting view of the same rules above that have a documented insurance impact --
+   * never new facts, just eraBasis content some buyers only skim past inside individual items.
+   * Empty when nothing matched carries one, which callers should render as nothing.
+   */
+  insuranceRedFlags: string[];
 }
 
 // Counties with well-documented expansive clay soil, used to gate the foundation-specific rules
@@ -91,6 +106,23 @@ export const EXPANSIVE_SOIL_REGIONS: Record<string, { label: string }> = {
   // Waco (heart of the Blackland Prairie) and Killeen-Temple
   'mclennan county': { label: 'McLennan County, TX' },
   'bell county': { label: 'Bell County, TX' },
+};
+
+// Two-letter state codes USGS's own published national landslide overview broadly characterizes
+// as having elevated susceptibility: the Pacific coastal ranges, the Rocky Mountains, and the
+// Appalachian region. This is deliberately coarse -- state-level, not the fine-grained slope/soil
+// mapping USGS itself publishes -- because that is the level of precision we can actually back
+// without guessing at a specific address's real susceptibility. The rule below says exactly that
+// and points the reader at USGS's own tool for anything more specific, same pattern as
+// EXPANSIVE_SOIL_REGIONS deferring to a structural engineer rather than asserting a soil claim
+// this engine can't verify itself. See recommendation #4 of the 2026-08 report value-add audit.
+export const LANDSLIDE_SUSCEPTIBLE_STATES: Record<string, { label: string }> = {
+  WA: { label: 'Washington' }, OR: { label: 'Oregon' }, CA: { label: 'California' },
+  ID: { label: 'Idaho' }, MT: { label: 'Montana' }, WY: { label: 'Wyoming' },
+  CO: { label: 'Colorado' }, UT: { label: 'Utah' },
+  PA: { label: 'Pennsylvania' }, WV: { label: 'West Virginia' }, VA: { label: 'Virginia' },
+  NC: { label: 'North Carolina' }, TN: { label: 'Tennessee' }, KY: { label: 'Kentucky' },
+  AR: { label: 'Arkansas' },
 };
 
 /** Title-cases a raw county string ("king county" -> "King County") for the fallback label. */
@@ -144,6 +176,7 @@ const PRIORITY_RULES: PriorityRule[] = [
     typicalRepairCost: 'Partial to whole-home rewire $8,000 – $30,000+',
     howToCheck:
       'Ask your inspector to confirm in writing whether any knob-and-tube is still energized, then confirm insurability with your insurance agent before your option period ends.',
+    insuranceRedFlag: 'Knob-and-tube wiring — many insurance carriers will not write a policy while it is still energized.',
   },
   {
     id: 'electrical_aluminum_wiring',
@@ -170,6 +203,7 @@ const PRIORITY_RULES: PriorityRule[] = [
     typicalRepairCost: 'Panel replacement $1,500 – $4,000',
     howToCheck:
       'Ask your inspector to record the panel brand and model in writing, then confirm insurability with your insurance agent before your option period ends.',
+    insuranceRedFlag: 'Certain recalled panel brands from this era — some insurance carriers decline to write policies on homes that still have them.',
   },
 
   // --- Plumbing ---
@@ -211,6 +245,7 @@ const PRIORITY_RULES: PriorityRule[] = [
     typicalRepairCost: 'Whole-home repipe $4,000 – $15,000',
     howToCheck:
       'Ask your inspector to check at the water heater and main shutoff. Polybutylene is flexible and usually gray, sometimes blue or black. If it is present, confirm insurability with your agent before your option period ends.',
+    insuranceRedFlag: 'Polybutylene supply piping — many carriers now decline or surcharge policies on homes that still have it.',
   },
 
   // --- Foundation: expansive clay soil geology, scoped to the documented Texas counties in
@@ -322,6 +357,20 @@ const PRIORITY_RULES: PriorityRule[] = [
 
   // --- Geology-driven, not era-driven; always ranked last ---
   {
+    id: 'landslide_susceptibility',
+    minYear: 1800,
+    maxYear: CURRENT_YEAR,
+    states: Object.keys(LANDSLIDE_SUSCEPTIBLE_STATES),
+    title: 'Check landslide susceptibility if the home is on a slope or hillside',
+    priority: 'lower',
+    eraBasis:
+      'Landslide risk is driven by local slope and geology rather than construction era, so this is not specific to a home of any particular vintage. This state falls within a region the U.S. Geological Survey has broadly mapped as having elevated landslide susceptibility. Standard homeowners policies typically do not cover landslide or earth-movement damage, and it is usually not covered by flood insurance either.',
+    costToCheck: 'Free — check the USGS Landslide Hazards Program\'s susceptibility mapping for this area',
+    typicalRepairCost: null,
+    howToCheck:
+      'If the home is on a slope or hillside, ask your inspector or a geotechnical engineer to note any signs of slope movement, and confirm with your insurance agent whether landslide or earth-movement coverage is included or needs to be added separately.',
+  },
+  {
     id: 'radon_test',
     minYear: 1800,
     maxYear: CURRENT_YEAR,
@@ -369,12 +418,14 @@ export function getInspectionPriorities(
   // a parish or borough is still displayed by its real name.
   const normalizedCounty = normalizeCountyKey(county);
   const soilRegion = EXPANSIVE_SOIL_REGIONS[normalizedCounty];
+  const normalizedState = (state || '').trim().toUpperCase();
 
   let matched = PRIORITY_RULES.filter(
     (rule) =>
       yearBuilt >= rule.minYear &&
       yearBuilt <= rule.maxYear &&
-      (!rule.counties || rule.counties.includes(normalizedCounty))
+      (!rule.counties || rule.counties.includes(normalizedCounty)) &&
+      (!rule.states || rule.states.includes(normalizedState))
   );
   // Outside expansive-soil counties, foundation_type_general is the fallback. Inside them, the
   // more specific foundation_pre_posttension/foundation_posttension/pier_and_beam rules already
@@ -386,16 +437,21 @@ export function getInspectionPriorities(
 
   const regionLabel = soilRegion?.label || buildFallbackRegionLabel(county, state);
 
+  const insuranceRedFlags = matched
+    .filter((rule) => rule.insuranceRedFlag)
+    .map((rule) => rule.insuranceRedFlag as string);
+
   // Stable sort by priority band, preserving the declaration order above within each band.
   const priorities = [...matched]
     .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority])
-    .map(({ minYear, maxYear, counties, ...priority }) => priority);
+    .map(({ minYear, maxYear, counties, states: _states, insuranceRedFlag: _insuranceRedFlag, ...priority }) => priority);
 
   return {
     yearBuilt,
     eraLabel: getEraLabel(yearBuilt),
     regionLabel,
     priorities,
+    insuranceRedFlags,
   };
 }
 
