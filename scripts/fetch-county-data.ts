@@ -4,58 +4,23 @@ import path from 'path';
 import zlib from 'zlib';
 import { spawnSync } from 'child_process';
 import { withDb, isDbConfigured } from '../src/server/db.js';
-import { fetchCensusHousingAge, fetchFemaRiskIndex, CountyIdentity } from '../src/server/countyDataFetcher.js';
+import { fetchCensusHousingAge, fetchFemaRiskIndex, type CountyIdentity } from '../src/server/countyDataFetcher.js';
 import { findCountyRadonZone } from '../src/data/countyRadonZones.js';
 import { submitUrlsToIndexNow } from '../src/utils/indexNowService.js';
+import { COVERED_COUNTIES } from '../src/data/coveredCounties.js';
 
-// Populates county_data for the counties listed below. This is the enforcement point for the
-// "no data, no page" rule described when this feature was scoped: a county is only ever written
-// with data_complete = true when all four real sources below returned genuine data. Any source
-// that fails leaves data_complete = false, and src/server/countiesApi.ts's public read route
-// treats that exactly like the county doesn't exist (404) -- there's no partial/best-effort page.
+// Populates county_data for the counties listed in src/data/coveredCounties.ts. This is the
+// enforcement point for the "no data, no page" rule described when this feature was scoped: a
+// county is only ever written with data_complete = true when all four real sources below
+// returned genuine data. Any source that fails leaves data_complete = false, and
+// src/server/countiesApi.ts's public read route treats that exactly like the county doesn't
+// exist (404) -- there's no partial/best-effort page.
 //
 // Counties to process are a hardcoded list, not a batch-all-3,142-counties run -- deliberately,
 // same reasoning as scripts/generate-draft-articles.ts's TOPIC_LIMIT: publishing thousands of new
 // pages at once is itself a red flag to search engines regardless of whether the underlying data
 // is real, so this scales one deliberate batch at a time.
-const COUNTIES: Array<CountyIdentity & { slug: string }> = [
-  { slug: 'travis-county-tx', countyName: 'TRAVIS', stateName: 'Texas', stateAbbrev: 'TX', stateFips: '48', countyFips: '453' },
-  // First batch beyond Travis -- one county per major metro, radon zones verified against EPA's
-  // national table (see src/data/countyRadonZones.ts), FIPS codes verified against the Census
-  // Bureau's own reference file (www2.census.gov/geo/docs/reference/codes2020/national_county2020.txt).
-  { slug: 'harris-county-tx', countyName: 'HARRIS', stateName: 'Texas', stateAbbrev: 'TX', stateFips: '48', countyFips: '201' },
-  { slug: 'dallas-county-tx', countyName: 'DALLAS', stateName: 'Texas', stateAbbrev: 'TX', stateFips: '48', countyFips: '113' },
-  { slug: 'bexar-county-tx', countyName: 'BEXAR', stateName: 'Texas', stateAbbrev: 'TX', stateFips: '48', countyFips: '029' },
-  { slug: 'tarrant-county-tx', countyName: 'TARRANT', stateName: 'Texas', stateAbbrev: 'TX', stateFips: '48', countyFips: '439' },
-  { slug: 'los-angeles-county-ca', countyName: 'LOS ANGELES', stateName: 'California', stateAbbrev: 'CA', stateFips: '06', countyFips: '037' },
-  { slug: 'san-diego-county-ca', countyName: 'SAN DIEGO', stateName: 'California', stateAbbrev: 'CA', stateFips: '06', countyFips: '073' },
-  { slug: 'orange-county-ca', countyName: 'ORANGE', stateName: 'California', stateAbbrev: 'CA', stateFips: '06', countyFips: '059' },
-  { slug: 'santa-clara-county-ca', countyName: 'SANTA CLARA', stateName: 'California', stateAbbrev: 'CA', stateFips: '06', countyFips: '085' },
-  { slug: 'maricopa-county-az', countyName: 'MARICOPA', stateName: 'Arizona', stateAbbrev: 'AZ', stateFips: '04', countyFips: '013' },
-  { slug: 'cook-county-il', countyName: 'COOK', stateName: 'Illinois', stateAbbrev: 'IL', stateFips: '17', countyFips: '031' },
-  { slug: 'king-county-wa', countyName: 'KING', stateName: 'Washington', stateAbbrev: 'WA', stateFips: '53', countyFips: '033' },
-  { slug: 'miami-dade-county-fl', countyName: 'MIAMI-DADE', stateName: 'Florida', stateAbbrev: 'FL', stateFips: '12', countyFips: '086' },
-  { slug: 'clark-county-nv', countyName: 'CLARK', stateName: 'Nevada', stateAbbrev: 'NV', stateFips: '32', countyFips: '003' },
-  { slug: 'fulton-county-ga', countyName: 'FULTON', stateName: 'Georgia', stateAbbrev: 'GA', stateFips: '13', countyFips: '121' },
-  { slug: 'wayne-county-mi', countyName: 'WAYNE', stateName: 'Michigan', stateAbbrev: 'MI', stateFips: '26', countyFips: '163' },
-  // Second batch -- next 15 largest US counties by population not already covered above. FIPS
-  // codes verified against the Census Bureau's national_county2020.txt reference file.
-  { slug: 'kings-county-ny', countyName: 'KINGS', stateName: 'New York', stateAbbrev: 'NY', stateFips: '36', countyFips: '047' },
-  { slug: 'riverside-county-ca', countyName: 'RIVERSIDE', stateName: 'California', stateAbbrev: 'CA', stateFips: '06', countyFips: '065' },
-  { slug: 'queens-county-ny', countyName: 'QUEENS', stateName: 'New York', stateAbbrev: 'NY', stateFips: '36', countyFips: '081' },
-  { slug: 'san-bernardino-county-ca', countyName: 'SAN BERNARDINO', stateName: 'California', stateAbbrev: 'CA', stateFips: '06', countyFips: '071' },
-  { slug: 'broward-county-fl', countyName: 'BROWARD', stateName: 'Florida', stateAbbrev: 'FL', stateFips: '12', countyFips: '011' },
-  { slug: 'middlesex-county-ma', countyName: 'MIDDLESEX', stateName: 'Massachusetts', stateAbbrev: 'MA', stateFips: '25', countyFips: '017' },
-  { slug: 'new-york-county-ny', countyName: 'NEW YORK', stateName: 'New York', stateAbbrev: 'NY', stateFips: '36', countyFips: '061' },
-  { slug: 'alameda-county-ca', countyName: 'ALAMEDA', stateName: 'California', stateAbbrev: 'CA', stateFips: '06', countyFips: '001' },
-  { slug: 'sacramento-county-ca', countyName: 'SACRAMENTO', stateName: 'California', stateAbbrev: 'CA', stateFips: '06', countyFips: '067' },
-  { slug: 'palm-beach-county-fl', countyName: 'PALM BEACH', stateName: 'Florida', stateAbbrev: 'FL', stateFips: '12', countyFips: '099' },
-  { slug: 'philadelphia-county-pa', countyName: 'PHILADELPHIA', stateName: 'Pennsylvania', stateAbbrev: 'PA', stateFips: '42', countyFips: '101' },
-  { slug: 'hillsborough-county-fl', countyName: 'HILLSBOROUGH', stateName: 'Florida', stateAbbrev: 'FL', stateFips: '12', countyFips: '057' },
-  { slug: 'suffolk-county-ny', countyName: 'SUFFOLK', stateName: 'New York', stateAbbrev: 'NY', stateFips: '36', countyFips: '103' },
-  { slug: 'orange-county-fl', countyName: 'ORANGE', stateName: 'Florida', stateAbbrev: 'FL', stateFips: '12', countyFips: '095' },
-  { slug: 'bronx-county-ny', countyName: 'BRONX', stateName: 'New York', stateAbbrev: 'NY', stateFips: '36', countyFips: '005' },
-];
+const COUNTIES = COVERED_COUNTIES;
 
 // NOAA Storm Events Database: bulk annual CSVs, not a queryable-by-county API (see
 // https://www.ncei.noaa.gov/stormevents/faq.jsp) -- so all 3,142 counties' event history for a

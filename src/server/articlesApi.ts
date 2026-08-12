@@ -73,7 +73,7 @@ const SLUG_STOPWORDS = new Set([
   'your', 'you', 'how', 'what', 'why', 'can', 'do', 'does', 'this', 'that', 'it', 'its',
 ]);
 
-function slugify(input: string): string {
+export function slugify(input: string): string {
   const words = input
     .toLowerCase()
     .trim()

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Send, Undo2, Trash2, AlertCircle, Sparkles,
-  Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp
+  Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp, CloudLightning
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
 import { STOPWORDS } from '../../utils/relatedGuides';
@@ -203,6 +203,15 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [geminiUsageError, setGeminiUsageError] = useState<string | null>(null);
   const [usageDetailOpen, setUsageDetailOpen] = useState(false);
 
+  // Manual trigger for the FEMA-declaration county-event drafter (see
+  // src/server/countyEventsApi.ts) -- same check the daily Vercel Cron runs, callable on demand
+  // so a real declaration doesn't have to wait for the next scheduled run to show up as a draft.
+  const [countyEventChecking, setCountyEventChecking] = useState(false);
+  const [countyEventResult, setCountyEventResult] = useState<{
+    declarationsChecked: number; coveredCountyMatches: number; alreadyProcessed: number; draftsCreated: number; errors: string[];
+  } | null>(null);
+  const [countyEventError, setCountyEventError] = useState<string | null>(null);
+
   const loadArticles = () => {
     setLoadError(null);
     fetch('/api/admin/articles')
@@ -274,6 +283,26 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       }
     } catch {
       setActionError('Could not reach the server.');
+    }
+  };
+
+  const checkCountyEvents = async () => {
+    setCountyEventChecking(true);
+    setCountyEventError(null);
+    setCountyEventResult(null);
+    try {
+      const res = await fetch('/api/admin/county-events/check');
+      const data = await res.json();
+      if (data?.success) {
+        setCountyEventResult(data.summary);
+        if (data.summary?.draftsCreated > 0) loadArticles();
+      } else {
+        setCountyEventError(data?.error || 'Could not run the check.');
+      }
+    } catch {
+      setCountyEventError('Could not reach the server.');
+    } finally {
+      setCountyEventChecking(false);
     }
   };
 
@@ -566,6 +595,50 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             </button>
           </div>
 
+          {/* Manual trigger for the FEMA-declaration county-event drafter -- see
+              src/server/countyEventsApi.ts. Same check the daily Vercel Cron runs; this button
+              exists so a real declaration doesn't have to wait for the next scheduled run. */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+                <CloudLightning className="w-3.5 h-3.5" />
+                <span>FEMA county-event drafts</span>
+              </div>
+              <button
+                onClick={checkCountyEvents}
+                disabled={countyEventChecking}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
+              >
+                {countyEventChecking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CloudLightning className="w-3.5 h-3.5" />}
+                {countyEventChecking ? 'Checking…' : 'Check now'}
+              </button>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Checks OpenFEMA for new disaster declarations in counties this site already covers, and drafts an article for each new match -- same as the daily automatic check. Drafts land below like any other article; nothing publishes on its own.
+            </p>
+            {countyEventError && (
+              <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                <span>{countyEventError}</span>
+              </p>
+            )}
+            {countyEventResult && (
+              <div className="text-xs text-slate-300 space-y-1 border-t border-slate-800 pt-3">
+                <p>{countyEventResult.declarationsChecked} declarations checked in the last 14 days, {countyEventResult.coveredCountyMatches} matched a covered county.</p>
+                <p>
+                  {countyEventResult.draftsCreated > 0 ? (
+                    <span className="text-emerald-400 font-semibold">{countyEventResult.draftsCreated} new draft{countyEventResult.draftsCreated === 1 ? '' : 's'} created.</span>
+                  ) : (
+                    <span className="text-slate-500">No new drafts -- {countyEventResult.alreadyProcessed} already processed.</span>
+                  )}
+                </p>
+                {countyEventResult.errors.length > 0 && (
+                  <p className="text-amber-400">{countyEventResult.errors.length} failed: {countyEventResult.errors.join('; ')}</p>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Gemini token/cost counter -- see src/server/geminiUsageTracker.ts. Polls every 20s
               (see the effect above); "real time" here means that, not a websocket push. Covers
               every Gemini call the app makes: property reports, this panel's own "Generate with
@@ -629,7 +702,11 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                             {new Date(r.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                           </span>
                           <span className="text-slate-300 truncate">
-                            {r.source === 'report_generation' ? 'Property report' : r.source === 'article_generation' ? 'Article (admin)' : 'Batch draft'}
+                            {r.source === 'report_generation' ? 'Property report'
+                              : r.source === 'article_generation' ? 'Article (admin)'
+                              : r.source === 'backlink_reply_generation' ? 'Backlink reply'
+                              : r.source === 'county_event_generation' ? 'FEMA county event'
+                              : 'Batch draft'}
                           </span>
                           <span className="text-slate-600">·</span>
                           <span className="text-slate-500 truncate">{r.model}</span>
