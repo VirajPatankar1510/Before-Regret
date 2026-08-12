@@ -266,19 +266,19 @@ export const LeadMarketplaceWidget: React.FC<LeadMarketplaceWidgetProps> = ({ wi
 
                     <div className="grid grid-cols-2 gap-3 text-slate-300 text-[11px]">
                       <div>
-                        <span className="text-slate-500 block text-[9px]">ZIP CODE</span>
+                        <span className="text-slate-400 block text-[9px]">ZIP CODE</span>
                         <span className="font-bold text-white">{createdLead.zipCode}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block text-[9px]">PROPERTY ERA</span>
+                        <span className="text-slate-400 block text-[9px]">PROPERTY ERA</span>
                         <span className="font-bold text-white">{createdLead.propertyEra}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block text-[9px]">TIMELINE</span>
+                        <span className="text-slate-400 block text-[9px]">TIMELINE</span>
                         <span className="font-bold text-emerald-400">{createdLead.timeline}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block text-[9px]">SMS STATUS</span>
+                        <span className="text-slate-400 block text-[9px]">SMS STATUS</span>
                         <span className="font-bold text-blue-400">✓ {createdLead.smsVerificationStatus}</span>
                       </div>
                     </div>

@@ -708,7 +708,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                   className="w-full flex items-center justify-between gap-2 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 transition-all cursor-pointer"
                 >
                   <span className="text-xs text-slate-300">
-                    <span className="text-slate-500">Property type: </span>
+                    <span className="text-slate-400">Property type: </span>
                     <span className="font-bold text-white">
                       {declaredPropertyType === 'single_family'
                         ? 'Single-Family Home'
@@ -804,7 +804,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               <button
                 type="button"
                 onClick={() => setShowPropertyTypeModal(false)}
-                className="text-slate-500 hover:text-white shrink-0 cursor-pointer"
+                className="text-slate-400 hover:text-white shrink-0 cursor-pointer"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -852,7 +852,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
             <div className="space-y-1.5 pt-1 border-t border-slate-800">
               <label htmlFor="year-built-input" className="block text-[11px] font-bold text-slate-300 pt-2">
-                Year built <span className="font-normal text-slate-500">— usually on the listing</span>
+                Year built <span className="font-normal text-slate-400">— usually on the listing</span>
               </label>
               <input
                 id="year-built-input"
@@ -863,7 +863,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 placeholder="e.g. 1968"
                 className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
               />
-              <p className="text-[10px] text-slate-500 leading-relaxed">
+              <p className="text-[10px] text-slate-400 leading-relaxed">
                 Lets us show which checks matter most for homes of that era. We can't verify it — it's used exactly as you enter it. Don't know it exactly? A close estimate is fine.
               </p>
             </div>
