@@ -77,6 +77,13 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
             <AddressSearchBox onSelectProperty={onSelectProperty} />
           </div>
 
+          {/* Concrete example -- the placeholder alone ("Enter your full street address...")
+              says what format to type but not what it actually looks like, or that a full report
+              is what comes out the other end. */}
+          <p className="text-xs text-slate-500">
+            e.g., 123 Main St, Austin, TX
+          </p>
+
           {/* Subtext */}
           <p className="text-xs sm:text-sm text-slate-400 font-medium">
             Your first report is free. No credit card required.

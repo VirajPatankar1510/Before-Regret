@@ -100,7 +100,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="px-3.5 py-1.5 sm:py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
               >
                 <LogIn className="w-3.5 h-3.5" />
-                <span>Sign In</span>
+                <span>Free Report</span>
               </button>
             )}
           </div>
