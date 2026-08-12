@@ -1,18 +1,21 @@
 /* Google Fonts moved to a <link rel="stylesheet"> in index.html's <head> -- a CSS @import here
    made this the *second* render-blocking request the browser could discover (it has to fetch and
    start parsing this file before it even sees the @import), one level deeper in the chain than a
-   <link> the preload scanner finds directly during initial HTML parse. Playfair Display was
-   dropped from the request entirely: grepped for it across every .tsx/.ts/.css file in the repo
-   and it has zero usage anywhere -- an unused variable-font family (400-900, both styles) was
-   being downloaded on every single page load for nothing. */
+   <link> the preload scanner finds directly during initial HTML parse.
+
+   Two families have been dropped from that request as dead weight, each verified by grepping the
+   whole repo first: Playfair Display (never referenced at all), and Outfit, which was reachable
+   only through the --font-display / --font-logo theme vars below -- and nothing ever used the
+   font-display or font-logo utility classes those vars generate. Both vars are removed with it,
+   since leaving them would keep generating utilities for a font that no longer loads. The three
+   families that remain are all genuinely rendered: Inter (font-sans, the default everywhere),
+   Crimson Pro (font-serif, ~10 components), JetBrains Mono (font-mono, ~20 components). */
 @import "tailwindcss";
 
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-serif: 'Crimson Pro', Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-display: 'Outfit', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --font-logo: 'Outfit', sans-serif;
 }
 
 @layer utilities {
