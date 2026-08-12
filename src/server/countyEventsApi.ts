@@ -110,8 +110,19 @@ export function registerCountyEventsRoutes(app: Express) {
 
     const summary = { declarationsChecked: 0, coveredCountyMatches: 0, alreadyProcessed: 0, draftsCreated: 0, errors: [] as string[] };
 
+    // Optional ?days=N override, for testing against real historical declarations instead of
+    // waiting for a live one -- coverage is only 31 counties, so a real match inside the default
+    // 14-day window is rare. Capped at 400 days (a little over a year) so an admin testing this
+    // can't accidentally trigger months of drafting across the whole declarations archive, which
+    // goes back to 1953. The daily cron in vercel.json always hits the plain path with no query
+    // param, so this only ever changes behavior for a request an admin deliberately sent.
+    const requestedDays = parseInt(String(req.query.days ?? ''), 10);
+    const lookbackDays = Number.isFinite(requestedDays) && requestedDays > 0
+      ? Math.min(requestedDays, 400)
+      : LOOKBACK_DAYS;
+
     try {
-      const sinceIso = new Date(Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000).toISOString();
+      const sinceIso = new Date(Date.now() - lookbackDays * 24 * 60 * 60 * 1000).toISOString();
       const declarations = await fetchRecentFemaDeclarations(sinceIso);
       summary.declarationsChecked = declarations.length;
 
@@ -257,7 +268,7 @@ export function registerCountyEventsRoutes(app: Express) {
         }
       }
 
-      res.json({ success: true, summary });
+      res.json({ success: true, summary: { ...summary, lookbackDays } });
     } catch (err: any) {
       console.error('[county-events] check failed:', err);
       if (isQuotaError(err)) {
