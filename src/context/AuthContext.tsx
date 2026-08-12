@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { ClerkProvider, useUser, useClerk } from '@clerk/clerk-react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
+import type { ClerkBridgeState } from './ClerkAuthBridge';
 
 export interface User {
   uid: string;
@@ -60,63 +60,60 @@ export const getClerkPublishableKey = (): string => {
   return extractedKey || 'pk_test_YW11c2luZy1nYXplbGxlLTQ4LmNsZXJrLmFjY291bnRzLmRldiQ';
 };
 
-// Internal provider implementing auth logic and Clerk hook synchronization
-const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+const CLERK_NOT_READY_WARNING = 'Clerk instance is not initialized or Clerk key is missing.';
 
+// Isolates every direct dependency on @clerk/clerk-react (~296KB across its own internal chunks --
+// ui-common, vendors, framework, plus the core clerk.browser bundle) into its own lazy-loaded
+// module. See ClerkAuthBridge.tsx for the full reasoning; this is just the import() boundary.
+const ClerkAuthBridge = lazy(() => import('./ClerkAuthBridge'));
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const clerkPublishableKey = getClerkPublishableKey();
   const isClerkActive = !!clerkPublishableKey;
 
-  // Conditionally hook into Clerk if key is available
-  let clerkUser: any = null;
-  let isClerkLoaded = false;
-  let isClerkSignedIn = false;
-  let clerkInstance: any = null;
+  // loading starts true only when there's actually a key to resolve against -- with no key at
+  // all there was never anything to wait for, matching the previous behavior exactly (the old
+  // code's effect set loading=false immediately in that branch).
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(isClerkActive);
+  const [shouldLoadBridge, setShouldLoadBridge] = useState(false);
+  // Imperative handle, not state -- changing it should never itself trigger a re-render; it's
+  // only read inside the trigger*/logout callbacks below, at the moment they're actually called.
+  const clerkInstanceRef = useRef<any>(null);
 
-  if (isClerkActive) {
-    try {
-      const clerkData = useUser();
-      clerkUser = clerkData.user;
-      isClerkLoaded = clerkData.isLoaded;
-      isClerkSignedIn = clerkData.isSignedIn ?? false;
-      clerkInstance = useClerk();
-    } catch (err) {
-      console.warn("Clerk hooks called outside ClerkProvider scope:", err);
-    }
-  }
-
-  // Sync state from Clerk -- Clerk is the sole source of truth for who's signed in. No local
-  // session is ever created independently of it, so there's nothing to "restore" from
-  // localStorage on its own; br_current_user is only ever a cache of what Clerk already reported.
+  // Starting the Clerk chunk download is deferred to idle time, same reasoning as the Google Tag
+  // Manager deferral in index.html -- ClerkProvider previously mounted unconditionally at app
+  // root, so its ~296KB downloaded on every single page view, homepage included, regardless of
+  // whether that visitor was ever going to sign in.
   useEffect(() => {
-    if (!isClerkActive) {
-      // Missing/invalid publishable key -- a real misconfiguration, not a state to fall back
-      // from. Nobody is signed in until it's fixed.
-      setUser(null);
-      setLoading(false);
-      return;
+    if (!isClerkActive) return;
+    const trigger = () => setShouldLoadBridge(true);
+    const win = window as any;
+    if (typeof win.requestIdleCallback === 'function') {
+      const id = win.requestIdleCallback(trigger, { timeout: 4000 });
+      return () => win.cancelIdleCallback?.(id);
     }
-    if (!isClerkLoaded) return;
+    window.addEventListener('load', trigger);
+    return () => window.removeEventListener('load', trigger);
+  }, [isClerkActive]);
 
-    if (isClerkSignedIn && clerkUser) {
-      const mappedUser: User = {
-        uid: clerkUser.id,
-        email: clerkUser.primaryEmailAddress?.emailAddress || null,
-        displayName: clerkUser.fullName || clerkUser.firstName || 'Account',
-        photoURL: clerkUser.imageUrl || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(clerkUser.id)}`
-      };
-      setUser(mappedUser);
-      localStorage.setItem('br_current_user', JSON.stringify(mappedUser));
-      setLoading(false);
-    } else {
-      setUser(null);
-      localStorage.removeItem('br_current_user');
-      setLoading(false);
+  // Stable across renders (empty deps) so ClerkStateSync's own effect, which lists this in its
+  // dependency array, never re-fires just because this component re-rendered.
+  const handleBridgeState = useCallback((next: ClerkBridgeState) => {
+    clerkInstanceRef.current = next.clerkInstance;
+    setUser(next.user);
+    setLoading(next.loading);
+  }, []);
+
+  const getTargetRedirectUrl = () => {
+    if (typeof window !== 'undefined') {
+      return window.location.href;
     }
-  }, [isClerkActive, isClerkLoaded, isClerkSignedIn, clerkUser]);
+    return '/';
+  };
 
   const triggerClerkSignIn = (redirectUrl?: string) => {
+    const clerkInstance = clerkInstanceRef.current;
     if (clerkInstance) {
       const targetUrl = redirectUrl || getTargetRedirectUrl();
       clerkInstance.openSignIn({
@@ -128,11 +125,12 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         redirectUrl: targetUrl,
       });
     } else {
-      console.warn("Clerk instance is not initialized or Clerk key is missing.");
+      console.warn(CLERK_NOT_READY_WARNING);
     }
   };
 
   const triggerClerkSignUp = (redirectUrl?: string) => {
+    const clerkInstance = clerkInstanceRef.current;
     if (clerkInstance) {
       const targetUrl = redirectUrl || getTargetRedirectUrl();
       clerkInstance.openSignUp({
@@ -145,21 +143,15 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         redirectUrl: targetUrl,
       });
     } else {
-      console.warn("Clerk instance is not initialized or Clerk key is missing.");
+      console.warn(CLERK_NOT_READY_WARNING);
     }
-  };
-
-  const getTargetRedirectUrl = () => {
-    if (typeof window !== 'undefined') {
-      return window.location.href;
-    }
-    return '/';
   };
 
   const logout = async () => {
+    const clerkInstance = clerkInstanceRef.current;
     setLoading(true);
     try {
-      if (isClerkActive && clerkInstance) {
+      if (clerkInstance) {
         await clerkInstance.signOut();
       }
       localStorage.removeItem('br_current_user');
@@ -170,37 +162,14 @@ const AuthContextImplProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      loading,
-      logout,
-      isClerkActive,
-      triggerClerkSignIn,
-      triggerClerkSignUp
-    }}>
+    <AuthContext.Provider value={{ user, loading, logout, isClerkActive, triggerClerkSignIn, triggerClerkSignUp }}>
       {children}
+      {isClerkActive && shouldLoadBridge && (
+        <Suspense fallback={null}>
+          <ClerkAuthBridge publishableKey={clerkPublishableKey} onStateChange={handleBridgeState} />
+        </Suspense>
+      )}
     </AuthContext.Provider>
-  );
-};
-
-// Main Export wraps children in ClerkProvider only if Publishable Key is specified
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const clerkPublishableKey = getClerkPublishableKey();
-
-  if (clerkPublishableKey) {
-    return (
-      <ClerkProvider publishableKey={clerkPublishableKey}>
-        <AuthContextImplProvider>
-          {children}
-        </AuthContextImplProvider>
-      </ClerkProvider>
-    );
-  }
-
-  return (
-    <AuthContextImplProvider>
-      {children}
-    </AuthContextImplProvider>
   );
 };
 
