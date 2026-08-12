@@ -15,10 +15,10 @@ export const ClosingCtaSection: React.FC<ClosingCtaSectionProps> = ({ onScrollTo
 
         <div className="relative z-10 max-w-3xl mx-auto space-y-4">
           <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
-            Know before you sign
+            Researching a home you're about to tour?
           </h2>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-            One search tells you what the listing won't. Your first report is free.
+            Run the address before your walkthrough — it takes 60 seconds and you'll know exactly what to look for.
           </p>
         </div>
 
