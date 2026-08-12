@@ -1,6 +1,9 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
+import { GEMINI_MODEL, isQuotaError } from './geminiModel.js';
+import { logGeminiUsage } from './geminiUsageTracker.js';
+import { BACKLINK_REPLY_SYSTEM_INSTRUCTION, buildBacklinkReplyPrompt, CountyContextForReply } from './backlinkReplyGenerator.js';
 
 // Queue of candidate forum threads for the guerilla backlink workflow (see /admin/backlinks).
 // Deliberately not a live scanner: Reddit blocks both search indexing and direct navigation
@@ -127,6 +130,98 @@ export function registerBacklinksRoutes(app: Express) {
     } catch (err: any) {
       console.error('[backlink-leads] update failed:', err);
       res.status(500).json({ success: false, error: 'Could not update the lead.' });
+    }
+  });
+
+  // --- Admin: AI-draft a reply from a human-pasted real thread ---------------------------------
+  // Never writes draft_answer to the DB itself -- returns the text for the client to review and
+  // edit, same as every other admin write in this file requiring an explicit Save. The point
+  // isn't caution theater: a human reading the draft before it's stored as "the" draft is a real
+  // check against exactly the failure mode this feature could otherwise have (a plausible-sounding
+  // but subtly wrong reply going out under a real person's account on a forum this project doesn't
+  // own).
+  app.post('/api/admin/backlink-leads/:id/generate-reply', requireAdmin, async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      res.status(503).json({ success: false, error: 'AI generation is not configured on this server (missing GEMINI_API_KEY).' });
+      return;
+    }
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      res.status(400).json({ success: false, error: 'Invalid lead id.' });
+      return;
+    }
+    const threadText = typeof req.body?.threadText === 'string' ? req.body.threadText.trim() : '';
+    if (!threadText) {
+      res.status(400).json({ success: false, error: 'Paste the actual thread text first -- a title and URL alone are not enough to draft a grounded reply.' });
+      return;
+    }
+
+    try {
+      const lead = await withDb(async (sql) => {
+        const rows = await sql`SELECT * FROM backlink_leads WHERE id = ${id} LIMIT 1`;
+        return (rows[0] as BacklinkLeadRow | undefined) ?? null;
+      });
+      if (!lead) {
+        res.status(404).json({ success: false, error: 'Lead not found.' });
+        return;
+      }
+
+      let county: CountyContextForReply | null = null;
+      if (lead.county_slug) {
+        const countyRow = await withDb(async (sql) => {
+          const rows = await sql`SELECT * FROM county_data WHERE slug = ${lead.county_slug} AND data_complete = true LIMIT 1`;
+          return rows[0] as Record<string, any> | undefined;
+        });
+        if (countyRow) {
+          county = {
+            countyName: countyRow.county_name,
+            stateAbbrev: countyRow.state_abbrev,
+            femaRiskRating: countyRow.fema_risk_rating,
+            femaRiskScore: countyRow.fema_risk_score,
+            femaHazards: JSON.parse(countyRow.fema_hazards_json || '{}'),
+            noaaEventCounts: JSON.parse(countyRow.noaa_event_counts_json || '{}'),
+            noaaYearsCovered: countyRow.noaa_years_covered,
+            radonZone: countyRow.radon_zone,
+            countyUrl: `https://www.beforeregret.com/county/${lead.county_slug}/`,
+          };
+        }
+      }
+
+      const prompt = buildBacklinkReplyPrompt({
+        threadTitle: lead.title,
+        threadUrl: lead.url,
+        topicSnippet: lead.topic_snippet,
+        threadText,
+        county,
+      });
+
+      const { GoogleGenAI } = await import('@google/genai');
+      const ai = new GoogleGenAI({ apiKey, httpOptions: { headers: { 'User-Agent': 'aistudio-build' } } });
+      const response = await ai.models.generateContent({
+        model: GEMINI_MODEL,
+        contents: prompt,
+        config: { systemInstruction: BACKLINK_REPLY_SYSTEM_INSTRUCTION, temperature: 0.8 },
+      });
+
+      logGeminiUsage('backlink_reply_generation', GEMINI_MODEL, response.usageMetadata);
+      const draftAnswer = response.text?.trim() || '';
+      if (!draftAnswer) {
+        res.status(500).json({ success: false, error: 'Gemini returned an empty response. Try again.' });
+        return;
+      }
+      res.json({ success: true, draftAnswer, countyDataUsed: !!county });
+    } catch (err: any) {
+      console.error('[backlink-leads] generate-reply failed:', err);
+      if (isQuotaError(err)) {
+        res.status(429).json({
+          success: false,
+          error: `Gemini's daily quota for ${GEMINI_MODEL} is used up. Retrying won't help until it resets, or set GEMINI_MODEL to another model.`,
+        });
+      } else {
+        res.status(500).json({ success: false, error: 'Reply generation failed. Try again.' });
+      }
     }
   });
 
