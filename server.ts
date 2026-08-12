@@ -29,6 +29,7 @@ import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAds
 import { registerBacklinksRoutes } from "./src/server/backlinksApi.js";
 import { registerCountyEventsRoutes } from "./src/server/countyEventsApi.js";
 import { registerCountyComparisonRoutes } from "./src/server/countyComparisonApi.js";
+import { registerDefectReferenceRoutes } from "./src/server/defectReferenceApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import { GEMINI_MODEL } from "./src/server/geminiModel.js";
@@ -209,6 +210,12 @@ export async function createApp() {
   // data (computed in plain code, never by Gemini) and drafts an article around the real table.
   // See src/server/countyComparisonApi.ts.
   registerCountyComparisonRoutes(app);
+
+  // --- Era x defect reference library generator (Neon-backed) ---------------------------------
+  // One-shot batch: drafts a page per material/system defect (knob-and-tube, polybutylene, etc.),
+  // each ranking covered counties by real Census housing-age data for that defect's era. See
+  // src/server/defectReferenceApi.ts.
+  registerDefectReferenceRoutes(app);
 
   // --- Public API v1 (Neon-backed, cached, rate-limited) -------------------------------------
   // The documented, agent-facing surface for county hazard data and the guide index. Separate

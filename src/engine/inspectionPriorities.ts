@@ -50,7 +50,7 @@ export interface InspectionPriority {
   howToCheck: string;
 }
 
-interface PriorityRule extends InspectionPriority {
+export interface PriorityRule extends InspectionPriority {
   /** Inclusive construction-year window in which this rule applies. */
   minYear: number;
   maxYear: number;
@@ -147,7 +147,10 @@ export function buildFallbackRegionLabel(county: string | null | undefined, stat
   return 'the United States';
 }
 
-const PRIORITY_RULES: PriorityRule[] = [
+// Exported (not just used internally by getInspectionPriorities below) so the defect reference
+// pages (see src/server/defectReferenceGenerator.ts) can pull real era windows and eraBasis text
+// directly from this one source of truth, rather than a second, driftable copy of the same facts.
+export const PRIORITY_RULES: PriorityRule[] = [
   // --- Federal disclosure: free, legally mandated, so it leads for anything pre-1978 ---
   {
     id: 'lead_paint_disclosure',

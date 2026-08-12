@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
   Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Send, Undo2, Trash2, AlertCircle, Sparkles,
-  Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp, CloudLightning, BarChart3
+  Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp, CloudLightning, BarChart3,
+  Library
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
 import { STOPWORDS } from '../../utils/relatedGuides';
@@ -222,6 +223,14 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [comparisonResult, setComparisonResult] = useState<{ slug: string; countiesRanked: number } | null>(null);
   const [comparisonError, setComparisonError] = useState<string | null>(null);
 
+  // Era x defect reference library -- see src/server/defectReferenceApi.ts. One-shot batch (8
+  // fixed defects), not a recurring job.
+  const [defectLibraryGenerating, setDefectLibraryGenerating] = useState(false);
+  const [defectLibraryResult, setDefectLibraryResult] = useState<{
+    attempted: number; created: number; results: Array<{ ruleId: string; slug?: string; error?: string; skipped?: boolean }>;
+  } | null>(null);
+  const [defectLibraryError, setDefectLibraryError] = useState<string | null>(null);
+
   const loadArticles = () => {
     setLoadError(null);
     fetch('/api/admin/articles')
@@ -335,6 +344,26 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       setComparisonError('Could not reach the server.');
     } finally {
       setComparisonGenerating(false);
+    }
+  };
+
+  const generateDefectLibrary = async () => {
+    setDefectLibraryGenerating(true);
+    setDefectLibraryError(null);
+    setDefectLibraryResult(null);
+    try {
+      const res = await fetch('/api/admin/reports/defect-reference-library', { method: 'POST' });
+      const data = await res.json();
+      if (data?.success) {
+        setDefectLibraryResult(data.summary);
+        if (data.summary?.created > 0) loadArticles();
+      } else {
+        setDefectLibraryError(data?.error || 'Could not generate the reference library.');
+      }
+    } catch {
+      setDefectLibraryError('Could not reach the server.');
+    } finally {
+      setDefectLibraryGenerating(false);
     }
   };
 
@@ -718,6 +747,45 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             )}
           </div>
 
+          {/* Era x defect reference library -- see src/server/defectReferenceApi.ts. One-shot
+              batch across 8 fixed defects (knob-and-tube, polybutylene, etc.), each ranking
+              covered counties by real Census data for that defect's era. */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+                <Library className="w-3.5 h-3.5" />
+                <span>Era x defect reference library</span>
+              </div>
+              <button
+                onClick={generateDefectLibrary}
+                disabled={defectLibraryGenerating}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
+              >
+                {defectLibraryGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Library className="w-3.5 h-3.5" />}
+                {defectLibraryGenerating ? 'Generating 8 pages…' : 'Generate reference library'}
+              </button>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Drafts one page per material/system defect (knob-and-tube wiring, polybutylene pipe, recalled panel brands, cast iron sewer, galvanized supply, lead paint, asbestos, aluminum wiring), each ranking covered counties by real Census housing-age data for that defect's era. The description and ranking are real, already-computed facts -- only the connecting analysis is AI-drafted. All land below as drafts.
+            </p>
+            {defectLibraryError && (
+              <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                <span>{defectLibraryError}</span>
+              </p>
+            )}
+            {defectLibraryResult && (
+              <div className="text-xs text-slate-300 space-y-1 border-t border-slate-800 pt-3">
+                <p className="text-emerald-400 font-semibold">{defectLibraryResult.created} of {defectLibraryResult.attempted} pages created.</p>
+                {defectLibraryResult.results.map((r) => (
+                  <p key={r.ruleId} className={r.error ? 'text-amber-400' : r.skipped ? 'text-slate-600' : 'text-slate-500'}>
+                    {r.ruleId}: {r.error ? `failed -- ${r.error}` : r.skipped ? 'already exists, skipped' : r.slug}
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Gemini token/cost counter -- see src/server/geminiUsageTracker.ts. Polls every 20s
               (see the effect above); "real time" here means that, not a websocket push. Covers
               every Gemini call the app makes: property reports, this panel's own "Generate with
@@ -786,6 +854,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                               : r.source === 'backlink_reply_generation' ? 'Backlink reply'
                               : r.source === 'county_event_generation' ? 'FEMA county event'
                               : r.source === 'county_comparison_generation' ? 'County comparison'
+                              : r.source === 'defect_reference_generation' ? 'Defect reference'
                               : 'Batch draft'}
                           </span>
                           <span className="text-slate-600">·</span>

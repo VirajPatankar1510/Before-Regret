@@ -77,6 +77,12 @@ export async function ensureArticlesSchema(): Promise<void> {
   // Article for a guide, NewsArticle for news. Evergreen guides stay Article deliberately --
   // NewsArticle is schema.org's type for actual news content, not "how to" reference material.
   await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS article_type TEXT NOT NULL DEFAULT 'guide'`;
+  // Set only for article_type = 'reference' rows (see defectReferenceApi.ts), to the
+  // inspectionPriorities.ts rule id the page covers (e.g. 'knob_and_tube'). Lets the batch
+  // generator skip a defect that already has a page instead of creating a duplicate on a re-run
+  // -- a real need, not theoretical: the batch can genuinely fail partway through (a Gemini quota
+  // limit hit after generating some but not all 8), and re-running it should resume, not duplicate.
+  await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS defect_rule_id TEXT`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS transactions (
