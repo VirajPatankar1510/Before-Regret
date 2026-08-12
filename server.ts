@@ -27,6 +27,7 @@ import { registerKeywordResearchRoutes } from "./src/server/keywordResearchApi.j
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerBacklinksRoutes } from "./src/server/backlinksApi.js";
+import { registerCountyEventsRoutes } from "./src/server/countyEventsApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import { GEMINI_MODEL } from "./src/server/geminiModel.js";
@@ -193,6 +194,14 @@ export async function createApp() {
   // Admin-only. Stores candidate forum threads found by a manual/assisted search scan, plus a
   // drafted reply, for the admin to review and post by hand. See src/server/backlinksApi.ts.
   registerBacklinksRoutes(app);
+
+  // --- FEMA-declaration county-event drafter (Neon-backed) ------------------------------------
+  // Checks OpenFEMA for new disaster declarations in counties BeforeRegret already covers with
+  // real federal data, and drafts an article for each new match. Triggered daily by Vercel Cron
+  // (see vercel.json) and by a manual button in the SEO admin panel. Every draft lands in the
+  // same articles table as any other guide -- a human reviews and publishes it, nothing here
+  // ever publishes on its own. See src/server/countyEventsApi.ts.
+  registerCountyEventsRoutes(app);
 
   // --- Public API v1 (Neon-backed, cached, rate-limited) -------------------------------------
   // The documented, agent-facing surface for county hazard data and the guide index. Separate

@@ -264,6 +264,23 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_backlink_leads_status ON backlink_leads(status)`;
 
+  // Dedup ledger for the FEMA-declaration county-event drafter (see
+  // src/server/femaDeclarationsService.ts / countyEventGenerator.ts). OpenFEMA has no "give me
+  // only what's new" cursor -- every check re-fetches a wide recent window, so this table is what
+  // actually stops the same declaration+county pair from being redrafted on every cron run.
+  await sql`
+    CREATE TABLE IF NOT EXISTS fema_declaration_events (
+      id SERIAL PRIMARY KEY,
+      disaster_number INTEGER NOT NULL,
+      county_slug TEXT NOT NULL,
+      fema_declaration_string TEXT NOT NULL DEFAULT '',
+      declaration_title TEXT NOT NULL DEFAULT '',
+      article_id INTEGER,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      UNIQUE(disaster_number, county_slug)
+    )
+  `;
+
   schemaEnsured = true;
 }
 

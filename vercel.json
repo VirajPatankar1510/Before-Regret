@@ -12,5 +12,11 @@
       "source": "/(.*)",
       "destination": "/shell.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/admin/county-events/check",
+      "schedule": "0 13 * * *"
+    }
   ]
 }

@@ -14,6 +14,7 @@ export const KNOWN_SOURCES: KnownSource[] = [
   { key: 'CPSC', name: 'U.S. Consumer Product Safety Commission', url: 'https://www.cpsc.gov' },
   { key: 'EPA', name: 'U.S. Environmental Protection Agency', url: 'https://www.epa.gov' },
   { key: 'FEMA', name: 'Federal Emergency Management Agency', url: 'https://www.fema.gov' },
+  { key: 'NOAA', name: 'National Oceanic and Atmospheric Administration', url: 'https://www.noaa.gov' },
   { key: 'HUD', name: 'U.S. Department of Housing and Urban Development', url: 'https://www.hud.gov' },
   { key: 'CFPB', name: 'Consumer Financial Protection Bureau', url: 'https://www.consumerfinance.gov' },
   { key: 'IRS', name: 'Internal Revenue Service', url: 'https://www.irs.gov' },
