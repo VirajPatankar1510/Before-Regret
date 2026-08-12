@@ -31,7 +31,14 @@ interface GuideAdsCheckoutProps {
 // payment happens there) -- this one takes real payment immediately, and mixing the two very
 // different flows on one page would confuse both.
 export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }) => {
-  const { user, triggerClerkSignIn } = useAuth();
+  const { user, loading: authLoading, triggerClerkSignIn, requestClerkLoad } = useAuth();
+
+  // A dedicated checkout page, not a modal opened from Navbar -- someone can land here directly
+  // (a shared link, the /advertise comparison page), so this is often the first thing on the page
+  // that needs real auth state. Without this call nothing else on this path loads Clerk anymore.
+  useEffect(() => {
+    requestClerkLoad();
+  }, [requestClerkLoad]);
 
   const [guides, setGuides] = useState<GuideRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -153,7 +160,14 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           </p>
         </div>
 
-        {!user && (
+        {authLoading && (
+          <div className="bg-white border border-slate-200 rounded-2xl p-10 flex flex-col items-center justify-center gap-3 text-slate-400">
+            <Loader2 className="w-6 h-6 animate-spin" />
+            <p className="text-xs font-medium">Checking your account…</p>
+          </div>
+        )}
+
+        {!authLoading && !user && (
           <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 text-center space-y-4">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-mono font-bold border border-blue-100">
               <Lock className="w-3.5 h-3.5 text-blue-600" />
@@ -174,7 +188,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           </div>
         )}
 
-        {user && (
+        {!authLoading && user && (
         <form onSubmit={handleCheckout} className="space-y-6">
           <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">

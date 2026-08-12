@@ -17,7 +17,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   selectedAddress,
   onNavigate
 }) => {
-  const { user } = useAuth();
+  const { user, requestClerkLoad } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   return (
@@ -87,8 +87,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
             ) : (
+              // onMouseEnter/onFocus start the Clerk chunk downloading before the click even
+              // happens, on desktop -- by the time a mouse click lands, the hover almost always
+              // preceded it by enough time to have a head start. onClick is the guaranteed
+              // trigger for touch (no hover event exists) and keyboard activation without a
+              // preceding focus... though focus does normally precede Enter-key activation too;
+              // onClick just costs nothing extra since requestClerkLoad is idempotent.
               <button
-                onClick={() => setIsAuthModalOpen(true)}
+                onClick={() => { requestClerkLoad(); setIsAuthModalOpen(true); }}
+                onMouseEnter={requestClerkLoad}
+                onFocus={requestClerkLoad}
                 className="px-3.5 py-1.5 sm:py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
               >
                 <LogIn className="w-3.5 h-3.5" />
