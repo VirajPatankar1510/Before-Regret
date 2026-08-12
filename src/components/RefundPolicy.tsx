@@ -37,7 +37,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
           {/* Document Header */}
           <div className="border-b border-slate-200 pb-6 space-y-3">
             <p className="text-xs font-medium text-slate-400">
-              Expert property research guides and vendor marketplace for US home buyers. Uncover what matters before closing.
+              Expert property research guides for US home buyers. Uncover what matters before closing.
             </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Cancellation & Refund Policy

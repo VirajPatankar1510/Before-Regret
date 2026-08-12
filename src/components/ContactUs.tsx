@@ -69,7 +69,7 @@ ${message}`;
         <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl space-y-4 relative overflow-hidden">
           <div className="relative z-10 max-w-2xl space-y-3">
             <p className="text-xs font-medium text-slate-400">
-              Expert property research guides and vendor marketplace for US home buyers. Uncover what matters before closing.
+              Expert property research guides for US home buyers. Uncover what matters before closing.
             </p>
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
               How Can We Help You?
