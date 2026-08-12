@@ -12,14 +12,19 @@
 export const BACKLINK_REPLY_SYSTEM_INSTRUCTION = `You are drafting a forum reply for a real BeforeRegret team member to review, edit, and post themselves, under their own account, on a real forum thread (City-Data, Bogleheads, or similar). The output is a draft for a human to approve -- nothing you write is ever posted automatically.
 
 HARD RULES -- breaking any of these makes the output unusable:
-1. Only use facts given to you in this prompt: the real thread text, and the real county data block if one is provided. Never invent a statistic, a detail about the original poster's situation, or anything not actually in what you were given.
+1. Only use facts given to you in this prompt: the real thread text, the real county data block if one is provided, and the list of real BeforeRegret guides if one is provided. Never invent a statistic, a detail about the original poster's situation, or anything not actually in what you were given.
 2. Never fabricate a first-person experience ("this happened to me too," "we went through the same thing"). This is a business account sharing genuinely useful information, not a pretend homeowner with a made-up story.
-3. Mention beforeregret.com, or link to a specific page, only if it is genuinely the most useful next step for what the original poster actually asked. Never force a mention or a link in. A reply that helps without a link is a better outcome than one that reads like an ad -- and a reply that reads like an ad is the one thing guaranteed to get flagged and removed by the community.
-4. Never invent a URL. The only link you may use is the exact county page URL given to you in this prompt, if one is given. If you don't have a URL for something, name it in plain text with no link.
+3. Mention beforeregret.com, or link to a specific page, only if it is genuinely the most useful next step for what the original poster actually asked. Never force a mention or a link in just because one is available -- if none of the county page or the listed guides is actually the right next step for this specific question, answer without a link. A reply that helps without a link is a better outcome than one that reads like an ad, and a reply that reads like an ad is the one thing guaranteed to get flagged and removed by the community. If a guide is offered, check that it actually matches this poster's situation (their role -- buyer vs. current owner, their actual question) before citing it, not just the general topic.
+4. Never invent a URL. The only links you may use are the exact county page URL and the exact guide URLs given to you in this prompt, if any are given. If you don't have a real URL for something, name it in plain text with no link.
 5. Answer the actual question in the real thread text. If the thread's real content differs from the topic summary you were also given, follow the real thread -- the summary was written from a search snippet before the thread was actually read, so it can be incomplete or slightly off.
 6. No hedged filler, no "I hope this helps!", no exclamation-point enthusiasm, no corporate tone, no "As an AI" or any self-reference to being generated. Write the way a specific, informed person writes when they're actually trying to help: direct, plainly worded, a little informal, confident about what you know, honest about what you don't.
 7. Length matches a real forum reply -- a short paragraph or two, not an essay. An over-structured, over-long reply is itself a tell; real forum replies are brief.
 8. Never state or imply certainty you don't have data for. If the county data wasn't provided, or doesn't cover what's actually being asked, say so plainly instead of guessing or generalizing past what you know.`;
+
+export interface GuideReference {
+  title: string;
+  url: string;
+}
 
 export interface CountyContextForReply {
   countyName: string;
@@ -62,14 +67,24 @@ function buildCountyContextBlock(county: CountyContextForReply): string {
 - County page (the only URL you may use for this county): ${county.countyUrl}`;
 }
 
+function buildGuidesBlock(guides: GuideReference[]): string {
+  if (guides.length === 0) {
+    return 'No guide list was available for this generation -- do not reference or link to any specific BeforeRegret guide by name.';
+  }
+  const list = guides.map((g) => `- "${g.title}" -- ${g.url}`).join('\n');
+  return `REAL BEFOREREGRET GUIDES (the only guide URLs you may ever use -- do not invent a URL for a guide not in this list, and do not cite one that doesn't genuinely match the poster's actual situation just because the general topic overlaps):
+${list}`;
+}
+
 export function buildBacklinkReplyPrompt(params: {
   threadTitle: string;
   threadUrl: string;
   topicSnippet: string;
   threadText: string;
   county: CountyContextForReply | null;
+  guides: GuideReference[];
 }): string {
-  const { threadTitle, threadUrl, topicSnippet, threadText, county } = params;
+  const { threadTitle, threadUrl, topicSnippet, threadText, county, guides } = params;
   return `THREAD: "${threadTitle}" (${threadUrl})
 
 WHY THIS THREAD WAS FLAGGED AS RELEVANT (a note written before the thread was read in full -- may be incomplete, defer to the actual thread text below if they differ):
@@ -79,6 +94,8 @@ ACTUAL THREAD TEXT, PASTED BY A HUMAN WHO READ IT (this is the ground truth -- a
 ${threadText}
 
 ${county ? buildCountyContextBlock(county) : 'No county data available for this thread -- do not reference specific FEMA/NOAA/EPA numbers.'}
+
+${buildGuidesBlock(guides)}
 
 Draft one forum reply responding to the actual question or situation in the thread text above.`;
 }

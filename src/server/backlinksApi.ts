@@ -189,12 +189,25 @@ export function registerBacklinksRoutes(app: Express) {
         }
       }
 
+      // Only published guides -- a draft's URL 404s until someone publishes it AND a real
+      // redeploy runs (guide pages are statically prerendered, per articlesApi.ts/prerender-
+      // guides.tsx). Citing anything else would hand back a dead link for a human to post on a
+      // forum this project doesn't own.
+      const guideRows = await withDb((sql) => sql`
+        SELECT slug, title FROM articles WHERE status = 'published' ORDER BY published_at DESC
+      `);
+      const guides = (guideRows as unknown as Array<{ slug: string; title: string }>).map((g) => ({
+        title: g.title,
+        url: `https://www.beforeregret.com/guides/${g.slug}/`,
+      }));
+
       const prompt = buildBacklinkReplyPrompt({
         threadTitle: lead.title,
         threadUrl: lead.url,
         topicSnippet: lead.topic_snippet,
         threadText,
         county,
+        guides,
       });
 
       const { GoogleGenAI } = await import('@google/genai');
