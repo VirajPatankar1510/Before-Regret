@@ -8,7 +8,7 @@ import { resolveKnownSource } from '../src/data/knownSources';
 import { ArticleClosingNote } from '../src/components/seo/ArticleClosingNote';
 import { pickRelatedGuides, GuideSummary } from '../src/utils/relatedGuides';
 import { buildPageTitle } from '../src/utils/pageTitle';
-import { pickCountiesForGuide, CountyTopicInput } from '../src/utils/countyGuideTopics.js';
+import { pickCountiesForGuide, CountyTopicInput, GUIDE_TOPICS } from '../src/utils/countyGuideTopics.js';
 
 // Static HTML generator for published guide articles, run once after `vite build` as part of
 // `npm run build`. The live app is a pure client-render SPA (createRoot, not hydrateRoot -- see
@@ -448,7 +448,7 @@ async function run() {
   }));
 
   let written = 0;
-  const llmsTxtLines: string[] = [];
+  const llmsGuides: Array<{ slug: string; title: string; metaDescription: string; canonicalUrl: string }> = [];
   for (const row of rows) {
     const article = toArticle(row);
     const canonicalUrl = `https://www.beforeregret.com/guides/${article.slug}/`;
@@ -478,7 +478,7 @@ async function run() {
     fs.writeFileSync(path.join(outDir, 'index.html'), html, 'utf8');
     written++;
 
-    llmsTxtLines.push(`- [${article.title}](${canonicalUrl}): ${article.metaDescription}`);
+    llmsGuides.push({ slug: article.slug, title: article.title, metaDescription: article.metaDescription, canonicalUrl });
   }
 
   console.log(`[prerender-guides] Wrote static HTML for ${written} published guide(s) to dist/guides/<slug>/index.html`);
@@ -523,19 +523,114 @@ async function run() {
   // vite build already copied public/ into dist/ -- writing to public/ here would only take
   // effect on the *next* build. Generated from the same DB rows as the sitemap/prerendered pages
   // above so it can never list a guide that doesn't actually exist or is missing one that does.
+  //
+  // Guides are grouped below using only associations that already exist elsewhere in this
+  // codebase, not invented for this file: GUIDE_TOPICS (countyGuideTopics.ts) is the same
+  // hand-verified era/material map that drives "Where This Comes Up" on the guide pages
+  // themselves, and the by-county grouping is a plain substring match of each guide's own title
+  // against the real counties list -- the county name is already in the title text, this isn't a
+  // guess. Anything that doesn't match either real structure falls through to a flat list rather
+  // than being forced into a category it doesn't actually belong to.
+  // Values match county.countyName's actual casing (titleCase() output, e.g. "Kings" not "KINGS")
+  // -- county_data stores county names all-caps, but this script title-cases them into `counties`
+  // well before this point (see the titleCase(c.county_name) call above), same as it does for
+  // every other display use of countyName in this file.
+  const NYC_BOROUGH_TO_COUNTY: Record<string, string> = {
+    Brooklyn: 'Kings', Manhattan: 'New York', 'Staten Island': 'Richmond', Queens: 'Queens', Bronx: 'Bronx',
+  };
+  const TOPIC_LABELS: Record<string, string> = {
+    radonZone1: 'Radon (EPA Zone 1 counties)',
+    knobAndTubeEra: 'Knob-and-tube wiring',
+    midCenturyPanelEra: 'Federal Pacific / Zinsco panels',
+    aluminumWiringEra: 'Aluminum wiring',
+    polybutyleneEra: 'Polybutylene plumbing',
+    castIronEra: 'Cast iron sewer pipe',
+    asbestosEra: 'Asbestos',
+  };
+
+  const taggedSlugs = new Set<string>();
+  const guidesByCounty = new Map<string, typeof llmsGuides>();
+  for (const county of counties) {
+    const nameVariants = [county.countyName, ...Object.entries(NYC_BOROUGH_TO_COUNTY).filter(([, n]) => n === county.countyName).map(([b]) => b)];
+    const matches = llmsGuides.filter((g) => !taggedSlugs.has(g.slug) && nameVariants.some((n) => g.title.includes(n)));
+    if (matches.length > 0) {
+      guidesByCounty.set(county.slug, matches);
+      matches.forEach((g) => taggedSlugs.add(g.slug));
+    }
+  }
+
+  const guidesByTopic = new Map<string, typeof llmsGuides>();
+  for (const guide of llmsGuides) {
+    if (taggedSlugs.has(guide.slug)) continue;
+    const topic = GUIDE_TOPICS[guide.slug];
+    if (!topic) continue;
+    if (!guidesByTopic.has(topic)) guidesByTopic.set(topic, []);
+    guidesByTopic.get(topic)!.push(guide);
+    taggedSlugs.add(guide.slug);
+  }
+
+  const generalGuides = llmsGuides.filter((g) => !taggedSlugs.has(g.slug));
+
+  const countyGuideSection = [...guidesByCounty.entries()]
+    .map(([slug, guides]) => {
+      const county = counties.find((c) => c.slug === slug)!;
+      const lines = guides.map((g) => `  - [${g.title}](${g.canonicalUrl}): ${g.metaDescription}`).join('\n');
+      return `- ${county.countyName} County, ${county.stateAbbrev}\n${lines}`;
+    })
+    .join('\n');
+
+  const topicGuideSection = [...guidesByTopic.entries()]
+    .map(([topic, guides]) => {
+      const lines = guides.map((g) => `  - [${g.title}](${g.canonicalUrl}): ${g.metaDescription}`).join('\n');
+      return `- ${TOPIC_LABELS[topic] || topic}\n${lines}`;
+    })
+    .join('\n');
+
+  const generalGuideSection = generalGuides.map((g) => `- [${g.title}](${g.canonicalUrl}): ${g.metaDescription}`).join('\n');
+
+  const countiesListSection = [...counties]
+    .sort((a, b) => a.countyName.localeCompare(b.countyName))
+    .map((c) => `- [${c.countyName} County, ${c.stateAbbrev}](https://www.beforeregret.com/county/${c.slug}/)`)
+    .join('\n');
+
   const llmsTxt = `# BeforeRegret
 
 > Free, address-based public property research for U.S. homebuyers and renters. Runs a live USGS seismic hazard check and validates the address against U.S. Census records automatically; everything else is a curated checklist linking to the real government source for each check (FEMA, EPA, USDA, U.S. DOT, FCC, local municipal records) -- clearly labeled as not yet independently verified until you follow the link and check it yourself. The first report is free; additional reports are a one-time $14.99 flat fee, no subscription.
 
 BeforeRegret does not fabricate data. If a claim in these guides isn't backed by a live check or a cited government source, it says so explicitly rather than guessing.
 
-## Guides
+## API
 
-${llmsTxtLines.join('\n')}
+Read-only, cached (1 hour), rate-limited (30 requests/minute/IP, no signup required). Full docs: https://www.beforeregret.com/api/v1/docs
+
+- \`GET /api/v1/counties\` -- every verified county (slug, name, state, population)
+- \`GET /api/v1/county/{slug}\` -- FEMA National Risk Index (all 18 hazard scores), EPA radon zone, Census housing-age distribution, and NOAA storm-event history for one county, with a fetchedAt timestamp
+- \`GET /api/v1/guides\` -- every published guide (slug, title, meta description, publish date)
+
+## Report
+
+Address-based due-diligence report for a specific US residential address: a live USGS/ASCE 7-22 seismic design category lookup, US Census address validation, inspection-budget priorities for a home of that decade and county, exact seller questions with what a reassuring answer sounds like, a phone-tickable walkthrough checklist, and a plainly labeled "what's not yet verified" section linking to the real government source. First report free, no card required; each additional report is a flat $14.99, no subscription. https://www.beforeregret.com/
+
+## Counties (${counties.length} verified)
+
+${countiesListSection}
+
+## Guides -- by county
+
+${countyGuideSection}
+
+## Guides -- by material / system era
+
+${topicGuideSection}
+
+## Guides -- general
+
+${generalGuideSection}
 
 ## Site
 
 - [Homepage](https://www.beforeregret.com/): Address search and free property research report.
+- [About & Methodology](https://www.beforeregret.com/about/): How reports and guides are researched and sourced.
 - [Support & FAQ](https://www.beforeregret.com/support/)
 `;
   fs.writeFileSync(path.join(distPath, 'llms.txt'), llmsTxt, 'utf8');
