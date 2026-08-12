@@ -264,6 +264,28 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_backlink_leads_status ON backlink_leads(status)`;
 
+  // Queue for journalist source requests (Connectively/Qwoted/Featured) -- same human-in-the-loop
+  // shape as backlink_leads above (a human pastes in a real query, gets a drafted response back,
+  // reviews and submits it themselves), but a distinct table rather than reusing backlink_leads
+  // because the content is a different animal: a quotable pitch response with a deadline, not a
+  // forum reply. See src/server/mediaRequestGenerator.ts.
+  await sql`
+    CREATE TABLE IF NOT EXISTS media_requests (
+      id SERIAL PRIMARY KEY,
+      platform TEXT NOT NULL,
+      outlet_name TEXT NOT NULL DEFAULT '',
+      query_text TEXT NOT NULL DEFAULT '',
+      topic_snippet TEXT NOT NULL DEFAULT '',
+      deadline TIMESTAMPTZ,
+      status TEXT NOT NULL DEFAULT 'new',
+      draft_response TEXT NOT NULL DEFAULT '',
+      county_slug TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_media_requests_status ON media_requests(status)`;
+
   schemaEnsured = true;
 }
 
