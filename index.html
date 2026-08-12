@@ -1,14 +1,32 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z61ENG55YD"></script>
+    <!-- Google tag (gtag.js) -- the 147.9KiB script download is deferred to idle time rather than
+         fetched eagerly. dataLayer/gtag() are defined synchronously so any gtag() calls made
+         before the real script arrives still queue correctly (that's the whole design of
+         dataLayer -- GTM drains the queue once it loads), so nothing is lost, only delayed.
+         Previously a plain <script async src=...>, which -- unlike a render-blocking <script> --
+         doesn't block first paint, but still competes for bandwidth with the hero image and JS
+         bundle during the page's most bandwidth-constrained window on a throttled connection, for
+         a script with zero visual output. requestIdleCallback with a 4s timeout falls back to the
+         load event on browsers that don't support it (Safari). -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-Z61ENG55YD');
+
+      function loadGtagScript() {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-Z61ENG55YD';
+        document.head.appendChild(s);
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadGtagScript, { timeout: 4000 });
+      } else {
+        window.addEventListener('load', loadGtagScript);
+      }
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
