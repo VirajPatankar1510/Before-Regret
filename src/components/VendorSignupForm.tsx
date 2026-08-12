@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle, Lock } from 'lucide-react';
 import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
 import { useAuth } from '../context/AuthContext';
@@ -19,7 +19,13 @@ interface SlotAvailability {
 // Replaces the old interest-capture-only version of this form, which only logged a submission to
 // console and asked a human to follow up manually -- no payment ever happened there.
 export const VendorSignupForm: React.FC = () => {
-  const { user, triggerClerkSignIn } = useAuth();
+  const { user, loading: authLoading, triggerClerkSignIn, requestClerkLoad } = useAuth();
+
+  // A dedicated checkout page, same reasoning as GuideAdsCheckout.tsx -- someone can land here
+  // directly without ever touching Navbar's Sign In button, so this needs its own trigger.
+  useEffect(() => {
+    requestClerkLoad();
+  }, [requestClerkLoad]);
 
   const [stage, setStage] = useState<Stage>('checking-form');
   const [tradeCategory, setTradeCategory] = useState('');
@@ -158,7 +164,14 @@ export const VendorSignupForm: React.FC = () => {
         </div>
       )}
 
-      {(stage === 'available' || stage === 'submitting') && availability && !user && (
+      {(stage === 'available' || stage === 'submitting') && availability && authLoading && (
+        <div className="bg-white border border-slate-200 rounded-2xl p-10 flex flex-col items-center justify-center gap-3 text-slate-400">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <p className="text-xs font-medium">Checking your account…</p>
+        </div>
+      )}
+
+      {(stage === 'available' || stage === 'submitting') && availability && !authLoading && !user && (
         <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 text-center space-y-4">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-mono font-bold border border-blue-100">
             <Lock className="w-3.5 h-3.5 text-blue-600" />
@@ -179,7 +192,7 @@ export const VendorSignupForm: React.FC = () => {
         </div>
       )}
 
-      {(stage === 'available' || stage === 'submitting') && availability && user && (
+      {(stage === 'available' || stage === 'submitting') && availability && !authLoading && user && (
         <div className="space-y-5">
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-2 text-emerald-800 text-sm font-bold">
             <CheckCircle2 className="w-4 h-4 shrink-0" />

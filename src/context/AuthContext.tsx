@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
+import React, { createContext, useContext, useState, useRef, useCallback, lazy, Suspense } from 'react';
 import type { ClerkBridgeState } from './ClerkAuthBridge';
 
 export interface User {
@@ -15,6 +15,12 @@ interface AuthContextType {
   isClerkActive: boolean;
   triggerClerkSignIn: (redirectUrl?: string) => void;
   triggerClerkSignUp: (redirectUrl?: string) => void;
+  // Starts the Clerk chunk downloading. Safe to call from anywhere, any number of times --
+  // backed by a single boolean flip, so the first caller wins and the rest are no-ops. Every
+  // consumer that can show UI depending on real auth state (not just a click handler that fires
+  // well after page load) needs to call this itself now that there's no automatic page-wide
+  // trigger -- see AuthProvider below for why that trigger was removed.
+  requestClerkLoad: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,21 +87,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // only read inside the trigger*/logout callbacks below, at the moment they're actually called.
   const clerkInstanceRef = useRef<any>(null);
 
-  // Starting the Clerk chunk download is deferred to idle time, same reasoning as the Google Tag
-  // Manager deferral in index.html -- ClerkProvider previously mounted unconditionally at app
-  // root, so its ~296KB downloaded on every single page view, homepage included, regardless of
-  // whether that visitor was ever going to sign in.
-  useEffect(() => {
-    if (!isClerkActive) return;
-    const trigger = () => setShouldLoadBridge(true);
-    const win = window as any;
-    if (typeof win.requestIdleCallback === 'function') {
-      const id = win.requestIdleCallback(trigger, { timeout: 4000 });
-      return () => win.cancelIdleCallback?.(id);
-    }
-    window.addEventListener('load', trigger);
-    return () => window.removeEventListener('load', trigger);
-  }, [isClerkActive]);
+  // Was previously an automatic requestIdleCallback trigger, firing on every page view a few
+  // hundred ms after load regardless of whether that visitor ever went near auth. That got Clerk
+  // off the render-blocking critical path, but the bytes still downloaded every time -- Lighthouse's
+  // "reduce unused JavaScript" audit kept flagging ~190KB of Clerk code that never actually ran
+  // (57-94% unused across its own chunks), because most homepage visitors just browse and search,
+  // never sign in. requestClerkLoad() replaces that: nothing loads Clerk until a real consumer
+  // calls it, which now happens at the specific points in Navbar.tsx, AuthModal.tsx,
+  // ReportGatingModal.tsx, GuideAdsCheckout.tsx, and VendorSignupForm.tsx that actually need to
+  // know real auth state, not on every page view.
+  const requestClerkLoad = useCallback(() => {
+    setShouldLoadBridge(true);
+  }, []);
 
   // Stable across renders (empty deps) so ClerkStateSync's own effect, which lists this in its
   // dependency array, never re-fires just because this component re-rendered.
@@ -162,7 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout, isClerkActive, triggerClerkSignIn, triggerClerkSignUp }}>
+    <AuthContext.Provider value={{ user, loading, logout, isClerkActive, triggerClerkSignIn, triggerClerkSignUp, requestClerkLoad }}>
       {children}
       {isClerkActive && shouldLoadBridge && (
         <Suspense fallback={null}>

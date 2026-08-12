@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
-  ShieldCheck, Lock, User, LogOut, CheckCircle2, ArrowRight, UserCheck
+  ShieldCheck, Lock, User, LogOut, CheckCircle2, ArrowRight, UserCheck, Loader2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,10 +15,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 }) => {
   const {
     user,
+    loading,
     logout,
     triggerClerkSignIn,
-    triggerClerkSignUp
+    triggerClerkSignUp,
+    requestClerkLoad
   } = useAuth();
+
+  // Defense-in-depth, not the primary trigger -- Navbar's Sign In button (the only thing that
+  // opens this modal today) already calls requestClerkLoad() on hover/focus/click, well before
+  // this effect would even run. Kept here too since requestClerkLoad is idempotent and this modal
+  // could reasonably be opened from somewhere else in the future without that guarantee.
+  useEffect(() => {
+    if (isOpen) requestClerkLoad();
+  }, [isOpen, requestClerkLoad]);
 
   if (!isOpen) return null;
 
@@ -35,8 +45,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           ✕
         </button>
 
+        {/* Auth status not yet known -- Clerk loads on demand now (see AuthContext.tsx), so this
+            window is real rather than near-instant. Without this, an already-signed-in visitor
+            who clicks Sign In would see the sign-in form for a moment and Sign In would silently
+            do nothing until Clerk finishes (triggerClerkSignIn no-ops with just a console.warn
+            while clerkInstanceRef is still null). */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center gap-3 py-10 text-slate-400">
+            <Loader2 className="w-6 h-6 animate-spin" />
+            <p className="text-xs font-medium">Checking your account…</p>
+          </div>
+        )}
+
         {/* If User is Already Logged In */}
-        {user ? (
+        {!loading && (user ? (
           <div className="space-y-6">
             <div className="text-center space-y-2">
               <div className="w-16 h-16 rounded-full bg-blue-50 border-2 border-blue-500 overflow-hidden mx-auto shadow-md flex items-center justify-center">
@@ -112,7 +134,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </p>
 
           </div>
-        )}
+        ))}
 
       </div>
     </div>

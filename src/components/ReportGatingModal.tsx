@@ -26,10 +26,17 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
   targetAddress,
   onConfirmAndGenerate
 }) => {
-  const { user, loading, triggerClerkSignIn } = useAuth();
+  const { user, loading, triggerClerkSignIn, requestClerkLoad } = useAuth();
 
   const [step, setStep] = useState<'AUTH_REQUIRED' | 'CLAIM_FREE' | 'PAYMENT_INTERCEPT' | 'PROCESSING' | 'PAYMENT'>('CLAIM_FREE');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // The report flow (search an address, then generate) never touches Navbar's Sign In button, so
+  // this is often the FIRST thing that needs real auth state -- without this call, `loading`
+  // would never resolve, since nothing else on this path loads Clerk anymore.
+  useEffect(() => {
+    if (isOpen) requestClerkLoad();
+  }, [isOpen, requestClerkLoad]);
 
   // Sync step based on authentication status and report quota. Waits out `loading` before
   // deciding anything -- Clerk itself now loads lazily (see AuthContext.tsx), so `loading` stays
