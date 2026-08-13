@@ -93,7 +93,12 @@ const FEMA_HAZARD_CODES = [
 // own map application uses (https://hazards.fema.gov/nri) -- not a bulk CSV re-hosted here, so
 // this always reflects whatever NRI version FEMA currently has live.
 export async function fetchFemaRiskIndex(identity: CountyIdentity): Promise<FemaRiskResult> {
-  const where = encodeURIComponent(`STATEABBRV='${identity.stateAbbrev}' AND COUNTY='${identity.countyName}'`);
+  // ArcGIS's `where` clause is SQL-like, so a literal apostrophe in the county name (Prince
+  // George's, MD is the real case that surfaced this) terminates the string early and the service
+  // returns a 400 "invalid query parameters" -- not a "county not found," a malformed query.
+  // Standard SQL escaping is doubling the quote, which ArcGIS's query engine also honors.
+  const escapedCountyName = identity.countyName.replace(/'/g, "''");
+  const where = encodeURIComponent(`STATEABBRV='${identity.stateAbbrev}' AND COUNTY='${escapedCountyName}'`);
   const url = `https://services.arcgis.com/XG15cJAlne2vxtgt/arcgis/rest/services/National_Risk_Index_Counties/FeatureServer/0/query?where=${where}&outFields=*&f=json`;
   const res = await fetch(url);
   if (!res.ok) {

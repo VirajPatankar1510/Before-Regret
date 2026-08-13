@@ -16,8 +16,13 @@ interface CountyRow {
 
 // county_data stores county_name in the all-caps form FEMA/NOAA/Census use for matching (e.g.
 // "LOS ANGELES") -- the API passes that through unchanged, so every reader-facing use title-cases
-// it itself. Same helper, same reasoning, as CountyPageView.tsx's own copy.
+// it itself. Same helper, same override, same reasoning, as CountyPageView.tsx's own copy.
+const TITLE_CASE_OVERRIDES: Record<string, string> = {
+  DUPAGE: 'DuPage',
+};
+
 function titleCase(value: string): string {
+  if (TITLE_CASE_OVERRIDES[value]) return TITLE_CASE_OVERRIDES[value];
   return value
     .toLowerCase()
     .replace(/(^|[\s-])([a-z])/g, (_, sep, letter) => sep + letter.toUpperCase());

@@ -1,8 +1,298 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
+    <loc>https://www.beforeregret.com/county/dupage-county-il/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/dupage-county-il-hazard-map.svg</image:loc>
+      <image:title>Dupage County, IL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/pierce-county-wa/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/pierce-county-wa-hazard-map.svg</image:loc>
+      <image:title>Pierce County, WA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/erie-county-ny/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/erie-county-ny-hazard-map.svg</image:loc>
+      <image:title>Erie County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/pinellas-county-fl/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/pinellas-county-fl-hazard-map.svg</image:loc>
+      <image:title>Pinellas County, FL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/prince-georges-county-md/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/prince-georges-county-md-hazard-map.svg</image:loc>
+      <image:title>Prince George's County, MD real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/fort-bend-county-tx/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/fort-bend-county-tx-hazard-map.svg</image:loc>
+      <image:title>Fort Bend County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/bergen-county-nj/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/bergen-county-nj-hazard-map.svg</image:loc>
+      <image:title>Bergen County, NJ real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/honolulu-county-hi/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/honolulu-county-hi-hazard-map.svg</image:loc>
+      <image:title>Honolulu County, HI real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/st-louis-county-mo/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/st-louis-county-mo-hazard-map.svg</image:loc>
+      <image:title>St. Louis County, MO real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/marion-county-in/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/marion-county-in-hazard-map.svg</image:loc>
+      <image:title>Marion County, IN real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/westchester-county-ny/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/westchester-county-ny-hazard-map.svg</image:loc>
+      <image:title>Westchester County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/gwinnett-county-ga/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/gwinnett-county-ga-hazard-map.svg</image:loc>
+      <image:title>Gwinnett County, GA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/fresno-county-ca/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/fresno-county-ca-hazard-map.svg</image:loc>
+      <image:title>Fresno County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/duval-county-fl/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/duval-county-fl-hazard-map.svg</image:loc>
+      <image:title>Duval County, FL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/denton-county-tx/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/denton-county-tx-hazard-map.svg</image:loc>
+      <image:title>Denton County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/montgomery-county-md/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/montgomery-county-md-hazard-map.svg</image:loc>
+      <image:title>Montgomery County, MD real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/pima-county-az/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/pima-county-az-hazard-map.svg</image:loc>
+      <image:title>Pima County, AZ real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/fairfax-county-va/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/fairfax-county-va-hazard-map.svg</image:loc>
+      <image:title>Fairfax County, VA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/contra-costa-county-ca/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/contra-costa-county-ca-hazard-map.svg</image:loc>
+      <image:title>Contra Costa County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/salt-lake-county-ut/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/salt-lake-county-ut-hazard-map.svg</image:loc>
+      <image:title>Salt Lake County, UT real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/allegheny-county-pa/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/allegheny-county-pa-hazard-map.svg</image:loc>
+      <image:title>Allegheny County, PA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/cuyahoga-county-oh/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/cuyahoga-county-oh-hazard-map.svg</image:loc>
+      <image:title>Cuyahoga County, OH real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/mecklenburg-county-nc/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/mecklenburg-county-nc-hazard-map.svg</image:loc>
+      <image:title>Mecklenburg County, NC real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/wake-county-nc/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/wake-county-nc-hazard-map.svg</image:loc>
+      <image:title>Wake County, NC real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/hennepin-county-mn/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/hennepin-county-mn-hazard-map.svg</image:loc>
+      <image:title>Hennepin County, MN real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/oakland-county-mi/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/oakland-county-mi-hazard-map.svg</image:loc>
+      <image:title>Oakland County, MI real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/collin-county-tx/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/collin-county-tx-hazard-map.svg</image:loc>
+      <image:title>Collin County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/franklin-county-oh/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/franklin-county-oh-hazard-map.svg</image:loc>
+      <image:title>Franklin County, OH real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/nassau-county-ny/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/nassau-county-ny-hazard-map.svg</image:loc>
+      <image:title>Nassau County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://www.beforeregret.com/county/bronx-county-ny/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -12,7 +302,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/orange-county-fl/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -22,7 +312,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/suffolk-county-ny/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -32,7 +322,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/hillsborough-county-fl/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -42,7 +332,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/philadelphia-county-pa/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -52,7 +342,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/palm-beach-county-fl/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -62,7 +352,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/sacramento-county-ca/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -72,7 +362,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/alameda-county-ca/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -82,7 +372,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/new-york-county-ny/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -92,7 +382,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/middlesex-county-ma/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -102,7 +392,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/broward-county-fl/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -112,7 +402,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/san-bernardino-county-ca/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -122,7 +412,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/queens-county-ny/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -132,7 +422,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/riverside-county-ca/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -142,7 +432,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/kings-county-ny/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -152,7 +442,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/wayne-county-mi/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -162,7 +452,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/fulton-county-ga/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -172,7 +462,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/clark-county-nv/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -182,7 +472,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/miami-dade-county-fl/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -192,7 +482,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/king-county-wa/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -202,7 +492,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/cook-county-il/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -212,7 +502,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/maricopa-county-az/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -222,7 +512,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/santa-clara-county-ca/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -232,7 +522,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/orange-county-ca/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -242,7 +532,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/san-diego-county-ca/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -252,7 +542,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/los-angeles-county-ca/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -262,7 +552,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/tarrant-county-tx/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -272,7 +562,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/bexar-county-tx/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -282,7 +572,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/dallas-county-tx/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -292,7 +582,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/harris-county-tx/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
@@ -302,7 +592,7 @@
   </url>
   <url>
     <loc>https://www.beforeregret.com/county/travis-county-tx/</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>

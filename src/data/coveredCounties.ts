@@ -39,4 +39,41 @@ export const COVERED_COUNTIES: Array<CountyIdentity & { slug: string }> = [
   { slug: 'suffolk-county-ny', countyName: 'SUFFOLK', stateName: 'New York', stateAbbrev: 'NY', stateFips: '36', countyFips: '103' },
   { slug: 'orange-county-fl', countyName: 'ORANGE', stateName: 'Florida', stateAbbrev: 'FL', stateFips: '12', countyFips: '095' },
   { slug: 'bronx-county-ny', countyName: 'BRONX', stateName: 'New York', stateAbbrev: 'NY', stateFips: '36', countyFips: '005' },
+
+  // Second batch -- next-most-populous US counties by 2024/2025 Census estimates not already
+  // above, per the Wikipedia-sourced ranking cross-checked against this list (ranks ~30-61).
+  // FIPS codes verified against the Census Bureau's national_county2020.txt reference file, same
+  // as the batch above. One nominally-higher-ranked entry (Connecticut's "Capitol Planning
+  // Region," rank ~51) was skipped: Connecticut retired traditional counties for most statistical
+  // purposes, so it has no standard county-equivalent FIPS code the rest of this app's
+  // FIPS-keyed matching (Census API calls, FEMA declaration matching) can rely on the same way.
+  { slug: 'nassau-county-ny', countyName: 'NASSAU', stateName: 'New York', stateAbbrev: 'NY', stateFips: '36', countyFips: '059' },
+  { slug: 'franklin-county-oh', countyName: 'FRANKLIN', stateName: 'Ohio', stateAbbrev: 'OH', stateFips: '39', countyFips: '049' },
+  { slug: 'collin-county-tx', countyName: 'COLLIN', stateName: 'Texas', stateAbbrev: 'TX', stateFips: '48', countyFips: '085' },
+  { slug: 'oakland-county-mi', countyName: 'OAKLAND', stateName: 'Michigan', stateAbbrev: 'MI', stateFips: '26', countyFips: '125' },
+  { slug: 'hennepin-county-mn', countyName: 'HENNEPIN', stateName: 'Minnesota', stateAbbrev: 'MN', stateFips: '27', countyFips: '053' },
+  { slug: 'wake-county-nc', countyName: 'WAKE', stateName: 'North Carolina', stateAbbrev: 'NC', stateFips: '37', countyFips: '183' },
+  { slug: 'mecklenburg-county-nc', countyName: 'MECKLENBURG', stateName: 'North Carolina', stateAbbrev: 'NC', stateFips: '37', countyFips: '119' },
+  { slug: 'cuyahoga-county-oh', countyName: 'CUYAHOGA', stateName: 'Ohio', stateAbbrev: 'OH', stateFips: '39', countyFips: '035' },
+  { slug: 'allegheny-county-pa', countyName: 'ALLEGHENY', stateName: 'Pennsylvania', stateAbbrev: 'PA', stateFips: '42', countyFips: '003' },
+  { slug: 'salt-lake-county-ut', countyName: 'SALT LAKE', stateName: 'Utah', stateAbbrev: 'UT', stateFips: '49', countyFips: '035' },
+  { slug: 'contra-costa-county-ca', countyName: 'CONTRA COSTA', stateName: 'California', stateAbbrev: 'CA', stateFips: '06', countyFips: '013' },
+  { slug: 'fairfax-county-va', countyName: 'FAIRFAX', stateName: 'Virginia', stateAbbrev: 'VA', stateFips: '51', countyFips: '059' },
+  { slug: 'pima-county-az', countyName: 'PIMA', stateName: 'Arizona', stateAbbrev: 'AZ', stateFips: '04', countyFips: '019' },
+  { slug: 'montgomery-county-md', countyName: 'MONTGOMERY', stateName: 'Maryland', stateAbbrev: 'MD', stateFips: '24', countyFips: '031' },
+  { slug: 'denton-county-tx', countyName: 'DENTON', stateName: 'Texas', stateAbbrev: 'TX', stateFips: '48', countyFips: '121' },
+  { slug: 'duval-county-fl', countyName: 'DUVAL', stateName: 'Florida', stateAbbrev: 'FL', stateFips: '12', countyFips: '031' },
+  { slug: 'fresno-county-ca', countyName: 'FRESNO', stateName: 'California', stateAbbrev: 'CA', stateFips: '06', countyFips: '019' },
+  { slug: 'gwinnett-county-ga', countyName: 'GWINNETT', stateName: 'Georgia', stateAbbrev: 'GA', stateFips: '13', countyFips: '135' },
+  { slug: 'westchester-county-ny', countyName: 'WESTCHESTER', stateName: 'New York', stateAbbrev: 'NY', stateFips: '36', countyFips: '119' },
+  { slug: 'marion-county-in', countyName: 'MARION', stateName: 'Indiana', stateAbbrev: 'IN', stateFips: '18', countyFips: '097' },
+  { slug: 'st-louis-county-mo', countyName: 'ST. LOUIS', stateName: 'Missouri', stateAbbrev: 'MO', stateFips: '29', countyFips: '189' },
+  { slug: 'honolulu-county-hi', countyName: 'HONOLULU', stateName: 'Hawaii', stateAbbrev: 'HI', stateFips: '15', countyFips: '003' },
+  { slug: 'bergen-county-nj', countyName: 'BERGEN', stateName: 'New Jersey', stateAbbrev: 'NJ', stateFips: '34', countyFips: '003' },
+  { slug: 'fort-bend-county-tx', countyName: 'FORT BEND', stateName: 'Texas', stateAbbrev: 'TX', stateFips: '48', countyFips: '157' },
+  { slug: 'prince-georges-county-md', countyName: "PRINCE GEORGE'S", stateName: 'Maryland', stateAbbrev: 'MD', stateFips: '24', countyFips: '033' },
+  { slug: 'pinellas-county-fl', countyName: 'PINELLAS', stateName: 'Florida', stateAbbrev: 'FL', stateFips: '12', countyFips: '103' },
+  { slug: 'erie-county-ny', countyName: 'ERIE', stateName: 'New York', stateAbbrev: 'NY', stateFips: '36', countyFips: '029' },
+  { slug: 'pierce-county-wa', countyName: 'PIERCE', stateName: 'Washington', stateAbbrev: 'WA', stateFips: '53', countyFips: '053' },
+  { slug: 'dupage-county-il', countyName: 'DUPAGE', stateName: 'Illinois', stateAbbrev: 'IL', stateFips: '17', countyFips: '043' },
 ];
