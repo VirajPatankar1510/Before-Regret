@@ -6,14 +6,8 @@ import { HowItWorksSection } from './home/HowItWorksSection';
 import { PricingSection } from './home/PricingSection';
 import { FaqSection } from './home/FaqSection';
 import { ClosingCtaSection } from './home/ClosingCtaSection';
-import { ProofStrip } from './home/ProofStrip';
 import { GuideCardsSection } from './home/GuideCardsSection';
-import {
-  HomeData,
-  buildGuideClusters,
-  pickResearchPages,
-  computeCoverageStats,
-} from '../utils/homeContent';
+import { HomeData, buildGuideClusters, pickResearchPages } from '../utils/homeContent';
 
 interface HeroProps {
   onSelectProperty: (property: PropertySearchResult) => void;
@@ -66,7 +60,6 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
 
   const clusters = buildGuideClusters(homeData.articles);
   const research = pickResearchPages(homeData.articles);
-  const stats = computeCoverageStats(homeData);
 
   const handleScrollToSearch = () => {
     if (searchBoxRef.current) {
@@ -146,34 +139,31 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
         </div>
       </section>
 
-      {/* 2. PROOF OF DEPTH -- real counts from the live library, straight under the hero */}
-      <ProofStrip stats={stats} />
-
-      {/* 3. WHAT A LISTING WON'T TELL YOU */}
+      {/* 2. WHAT A LISTING WON'T TELL YOU */}
       <ListingOmissionsSection />
 
-      {/* 4. HOW IT WORKS & DATA SYNTHESIS WORKFLOW */}
+      {/* 3. HOW IT WORKS & DATA SYNTHESIS WORKFLOW */}
       <HowItWorksSection />
 
-      {/* 5. PLAIN, TRANSPARENT PRICING -- directly after the product explanation, before the
+      {/* 4. PLAIN, TRANSPARENT PRICING -- directly after the product explanation, before the
           content library. A landing page makes its offer early; the library below is there for
           whoever isn't ready yet, not a detour before the price. */}
       <PricingSection onScrollToSearch={handleScrollToSearch} />
 
-      {/* 6. GUIDE LIBRARY -- a diverse sample of real guide cards, explicitly framed as free
+      {/* 5. GUIDE LIBRARY -- a diverse sample of real guide cards, explicitly framed as free
           content separate from the report (see GuideCardsSection.tsx for why the framing matters
           here specifically). Everything not shown inline is one click away at /guides/. */}
       <GuideCardsSection
         clusters={clusters}
         research={research}
-        totalGuides={stats.guideCount}
+        totalGuides={homeData.articles.length}
         onNavigate={onNavigate}
       />
 
-      {/* 7. FREQUENTLY ASKED QUESTIONS */}
+      {/* 6. FREQUENTLY ASKED QUESTIONS */}
       <FaqSection />
 
-      {/* 8. CLOSING CALL TO ACTION */}
+      {/* 7. CLOSING CALL TO ACTION */}
       <ClosingCtaSection onScrollToSearch={handleScrollToSearch} />
 
     </div>

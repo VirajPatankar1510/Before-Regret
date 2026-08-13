@@ -59,14 +59,10 @@ export const GuideCardsSection: React.FC<GuideCardsSectionProps> = ({
     <section className="bg-slate-50 border-y border-slate-200/80 py-14 sm:py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-10">
 
-        <div className="text-center space-y-3 max-w-2xl mx-auto">
+        <div className="text-center max-w-2xl mx-auto">
           <h2 className="font-sans text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             Explore the guide library
           </h2>
-          <p className="text-base text-slate-600 leading-relaxed">
-            Free guides and original research, not part of your report — read anything below
-            whenever you want, no address required.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
