@@ -716,7 +716,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               </div>
             </div>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Checks OpenFEMA for new disaster declarations in counties this site already covers, and drafts an article for each new match -- same as the daily automatic check (which always uses 14 days). Widen the lookback above to test against real past declarations instead of waiting for a live one -- with only 31 counties covered, a match inside 14 days is rare. Drafts land below like any other article; nothing publishes on its own.
+              Checks OpenFEMA for new disaster declarations in counties this site already covers, and drafts an article for each new match -- same as the daily automatic check (which always uses 14 days). Widen the lookback above to test against real past declarations instead of waiting for a live one -- coverage is broader now (60 counties across 22 states) but a match inside 14 days is still not guaranteed. Drafts land below like any other article; nothing publishes on its own.
             </p>
             {countyEventError && (
               <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
