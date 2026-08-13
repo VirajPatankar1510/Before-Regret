@@ -45,8 +45,28 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Previously a CSS @import inside src/index.css -- moved here so the preload scanner finds
          it during the initial HTML parse instead of after fetching and starting to parse that
-         file first. Playfair Display dropped from the request (see src/index.css for why). -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300..900;1,300..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" />
+         file first. Playfair Display dropped from the request (see src/index.css for why).
+
+         media="print" + onload="this.media='all'" is what stops this from blocking first paint.
+         A stylesheet whose media query doesn't match the current device is still downloaded, just
+         at low priority and WITHOUT holding up render; flipping media to "all" once it has
+         arrived then applies it normally. PageSpeed measured this single request as 750ms of
+         render-blocking time (1,390ms across both blocking requests) -- almost entirely the
+         third-party connection setup, which the preconnects above can only partly hide.
+
+         This does not introduce a font flash that wasn't already there: the URL already ends in
+         &display=swap, which by definition renders fallback text first and swaps when the webfont
+         arrives. All this changes is that the *rest of the page* no longer waits on the font CSS
+         to start painting. The <noscript> copy keeps fonts working where the onload never fires. -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300..900;1,300..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300..900;1,300..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" />
+    </noscript>
     <link rel="shortcut icon" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <title>BeforeRegret — Know What to Check Before You Sign</title>

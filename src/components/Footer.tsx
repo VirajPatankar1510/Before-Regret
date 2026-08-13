@@ -16,10 +16,26 @@ interface GuideSummary {
 export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
   const [guides, setGuides] = useState<GuideSummary[]>([]);
 
+  // Deferred to idle rather than fired on mount. PageSpeed's network dependency tree showed this
+  // request as the tail of the homepage's longest critical chain (HTML -> JS bundle -> /api/guides,
+  // 1,810ms max latency) -- it can't start until the whole JS bundle has downloaded and executed,
+  // and then competes for bandwidth during the page's most contended window, all for four links in
+  // a footer that is below the fold on every viewport.
+  //
+  // No SEO cost: these links have never existed in the static HTML. Effects don't run during
+  // renderToString, and no prerender script renders Footer at all -- confirmed against the live
+  // homepage, whose served HTML contains no footer guide links. They have always been
+  // client-rendered after this fetch; this only changes when it starts. Same requestIdleCallback +
+  // load-event fallback shape as the deferred gtag loader in index.html.
   useEffect(() => {
-    fetch('/api/guides')
+    let cancelled = false;
+
+    const loadGuides = () => {
+      if (cancelled) return;
+      fetch('/api/guides')
       .then((res) => res.json())
       .then((data) => {
+        if (cancelled) return;
         if (data?.success && Array.isArray(data.articles)) {
           // Evergreen guides only -- /api/guides returns every published article newest-first,
           // which now includes timely FEMA county-event pieces and data-comparison reports
@@ -31,7 +47,38 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
           setGuides(data.articles.filter((a: GuideSummary) => (a.articleType ?? 'guide') === 'guide').slice(0, 4));
         }
       })
-      .catch(() => {});
+        .catch(() => {});
+    };
+
+    // Read off a local rather than testing `'requestIdleCallback' in window` directly -- that form
+    // narrows `window` itself to never in the branch below, where it's still needed.
+    // 3s timeout, not the 4s used for gtag: these are real navigation links a reader might
+    // actually want, so they should never be held back long on a page that simply stays busy.
+    const idle: ((cb: () => void, opts?: { timeout: number }) => number) | undefined =
+      (window as any).requestIdleCallback;
+    if (idle) {
+      const handle = idle(loadGuides, { timeout: 3000 });
+      return () => {
+        cancelled = true;
+        (window as any).cancelIdleCallback?.(handle);
+      };
+    }
+
+    // Safari has no requestIdleCallback. If the load event already fired (the common case for a
+    // client-side route change into a page that mounts Footer), listening for it would never fire
+    // again -- so run on the next tick instead.
+    if (document.readyState === 'complete') {
+      const timer = setTimeout(loadGuides, 0);
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
+    }
+    window.addEventListener('load', loadGuides);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('load', loadGuides);
+    };
   }, []);
 
   return (
