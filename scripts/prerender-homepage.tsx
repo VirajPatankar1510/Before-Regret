@@ -60,13 +60,11 @@ function HomeStaticBody({ data }: { data: HomeData }) {
           measured) -- the centered content is only ~370px -- so leaving AddressSearchBox out
           below cannot change the height of these background layers. */}
       <section className="relative min-h-[85vh] flex flex-col justify-center text-white pt-12 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden shadow-2xl">
-        {/* url() intentionally unquoted: React escapes quotes inside a style attribute, and
-            unquoted is valid CSS anyway. Paired with the rel=preload hint injected into <head>
-            further down, so the bytes are already in flight when this paints. */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-scroll md:bg-fixed"
-          style={{ backgroundImage: 'url(/hero-bg.jpg)' }}
-        />
+        {/* The background-image itself is the .hero-bg rule in src/index.css (a WebP with a JPEG
+            fallback -- see that rule), not an inline style, so this static markup and the real
+            Hero component stay on one definition. Paired with the rel=preload hint injected into
+            <head> further down, so the bytes are already in flight when this paints. */}
+        <div className="hero-bg absolute inset-0 bg-cover bg-center bg-scroll md:bg-fixed" />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/10 via-slate-950/25 to-slate-950/50" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -202,10 +200,16 @@ async function run() {
   // so the bytes are already there by the time the real hero mounts.
   //
   // Injected here rather than in the source index.html on purpose: this script only rewrites
-  // dist/index.html, so the hint lands on the homepage alone. hero-bg.jpg isn't a visible
+  // dist/index.html, so the hint lands on the homepage alone. The hero image isn't a visible
   // background on guide or county pages (they only cite it as JSON-LD `image` metadata), and
   // shell.html is written above before this replace runs, so dead URLs don't pay for it either.
-  const heroPreload = `<link rel="preload" as="image" href="/hero-bg.jpg" fetchpriority="high" />`;
+  //
+  // Preloads the WebP, matching what .hero-bg (src/index.css) actually resolves to in any browser
+  // that supports image-set(). type="image/webp" is what keeps this honest for the browsers that
+  // don't: a preload carrying a `type` is only fetched by a browser that can decode it, so they
+  // skip this and pick up the JPEG fallback from the stylesheet instead of eagerly downloading
+  // 52KB they would never paint.
+  const heroPreload = `<link rel="preload" as="image" href="/hero-bg.webp" type="image/webp" fetchpriority="high" />`;
 
   const html = template
     .replace('</head>', `${heroPreload}\n  ${faqScript}\n  ${preloadScript}\n  </head>`)
