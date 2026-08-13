@@ -78,12 +78,15 @@ const RADON_ZONE_TEXT: Record<number, string> = {
 
 function CountyStaticBody({ row, rankings }: { row: CountyRow; rankings: CountyRankings }) {
   const yearBuilt = JSON.parse(row.census_year_built_json || '{}') as Record<string, number>;
+  // All of them, not a top-N slice -- see the matching comment in CountyPageView.tsx. This also
+  // fixes a real accuracy bug: totalStorms below sums this same array, so when it was capped at 8
+  // event types, any county with more than 8 distinct storm types had its own total undercounted
+  // in the static HTML (the client version summed the *unsliced* noaaEventEntries separately, so
+  // it never had this bug -- only this static twin did).
   const hazards = Object.entries(JSON.parse(row.fema_hazards_json || '{}') as Record<string, { rating: string; score: number | null }>)
-    .sort((a, b) => (b[1].score ?? 0) - (a[1].score ?? 0))
-    .slice(0, 5);
+    .sort((a, b) => (b[1].score ?? 0) - (a[1].score ?? 0));
   const storms = Object.entries(JSON.parse(row.noaa_event_counts_json || '{}') as Record<string, number>)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 8);
+    .sort((a, b) => b[1] - a[1]);
   const totalStorms = storms.reduce((sum, [, c]) => sum + c, 0);
   const oldHousingShare = row.census_total_units
     ? Math.round((((yearBuilt.built1939OrEarlier || 0) + (yearBuilt.built1940to1949 || 0) + (yearBuilt.built1950to1959 || 0) + (yearBuilt.built1960to1969 || 0)) / row.census_total_units) * 100)
