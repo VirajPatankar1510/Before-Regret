@@ -23,6 +23,7 @@ import {
 } from "./src/server/adminAuth.js";
 import { registerArticleRoutes } from "./src/server/articlesApi.js";
 import { registerCountyRoutes } from "./src/server/countiesApi.js";
+import { registerHomepageRoutes } from "./src/server/homepageApi.js";
 import { registerKeywordResearchRoutes } from "./src/server/keywordResearchApi.js";
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
@@ -176,6 +177,12 @@ export async function createApp() {
   // Public /api/counties/:slug read route only, no admin routes -- these rows are populated by
   // scripts/fetch-county-data.ts, not through an admin editor. See src/server/countiesApi.ts.
   registerCountyRoutes(app);
+
+  // --- Homepage content sections (Neon-backed) ----------------------------------------------
+  // Public read route feeding the homepage's guide clusters, research pages, and county coverage.
+  // In production the same data is baked into dist/index.html by scripts/prerender-homepage.tsx;
+  // this route serves dev and client-side navigations back to '/'. See src/server/homepageApi.ts.
+  registerHomepageRoutes(app);
 
   // --- Keyword research for the admin article editor (Google Search Console-backed) ---------
   // Admin-only. See src/server/searchConsoleService.ts for the one-time service-account setup
