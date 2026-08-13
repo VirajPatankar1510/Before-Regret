@@ -1,23 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
-import { ResearchProgressView } from './components/ResearchProgressView';
-import { ResearchSummaryView } from './components/ResearchSummaryView';
-import { PropertyReportView } from './components/PropertyReportView';
-import { Vendors } from './components/Vendors';
-import { GuideAdsCheckout } from './components/GuideAdsCheckout';
-import { GuideAdsCheckoutSuccess } from './components/GuideAdsCheckoutSuccess';
-import { ZipAdsCheckoutSuccess } from './components/ZipAdsCheckoutSuccess';
-import { AdvertiseCompare } from './components/AdvertiseCompare';
-import { ReportGatingModal } from './components/ReportGatingModal';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from './components/ErrorBoundary';
 import { Footer } from './components/Footer';
 import { Loader2 } from 'lucide-react';
-import { 
-  PropertySearchResult, 
-  ResearchSummaryData, 
-  PropertyReport 
+import {
+  PropertySearchResult,
+  ResearchSummaryData,
+  PropertyReport
 } from './types';
 import { createFallbackSummary, createFallbackReport } from './utils/reportFallback';
 
@@ -27,9 +18,6 @@ import { GuidePageView } from './components/seo/GuidePageView';
 import { GuidesIndexView } from './components/seo/GuidesIndexView';
 import { CountiesIndexView } from './components/seo/CountiesIndexView';
 import { CountyPageView } from './components/seo/CountyPageView';
-import { SeoAdminPanel } from './components/seo/SeoAdminPanel';
-import { BacklinksAdminPanel } from './components/admin/BacklinksAdminPanel';
-import { AdminGate } from './components/admin/AdminGate';
 import { applyHeadSeo } from './utils/headSeo';
 
 // Legal & Policy Components
@@ -39,9 +27,41 @@ import { TermsConditions } from './components/TermsConditions';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { RefundPolicy } from './components/RefundPolicy';
 
-// Payment Components
-import { PaymentSuccess } from './components/PaymentSuccess';
-import { PaymentCancelled } from './components/PaymentCancelled';
+// --- Route-level code splitting ------------------------------------------------------------
+// Everything below is pulled out of the initial bundle, because none of it can appear on a
+// visitor's first paint. Measured against the real production build: the single entry chunk was
+// 1,157 kB raw / 237 kB gzip, and PageSpeed reported ~94 KiB of it as never executed on the
+// homepage -- almost entirely the two admin panels (2,373 lines between them, behind a login
+// nobody but the operator ever passes) plus the checkout and post-search report views.
+//
+// What is deliberately NOT lazy here: Navbar, Hero, Footer, the guide/county/legal page views.
+// Those are the prerendered SEO landing pages (see scripts/prerender-*.tsx), and their static
+// HTML is written *inside* <div id="root">. main.tsx mounts with createRoot().render(), which
+// discards that server markup on mount -- so if one of those components were behind a lazy
+// chunk, the prerendered content would be replaced by a Suspense fallback and the page would
+// visibly blank out mid-load, hurting the exact LCP this change exists to improve. Splitting is
+// only safe for routes whose content was never in the initial HTML to begin with.
+const ResearchProgressView = lazy(() => import('./components/ResearchProgressView').then((m) => ({ default: m.ResearchProgressView })));
+const ResearchSummaryView = lazy(() => import('./components/ResearchSummaryView').then((m) => ({ default: m.ResearchSummaryView })));
+const PropertyReportView = lazy(() => import('./components/PropertyReportView').then((m) => ({ default: m.PropertyReportView })));
+const ReportGatingModal = lazy(() => import('./components/ReportGatingModal').then((m) => ({ default: m.ReportGatingModal })));
+const Vendors = lazy(() => import('./components/Vendors').then((m) => ({ default: m.Vendors })));
+const GuideAdsCheckout = lazy(() => import('./components/GuideAdsCheckout').then((m) => ({ default: m.GuideAdsCheckout })));
+const GuideAdsCheckoutSuccess = lazy(() => import('./components/GuideAdsCheckoutSuccess').then((m) => ({ default: m.GuideAdsCheckoutSuccess })));
+const ZipAdsCheckoutSuccess = lazy(() => import('./components/ZipAdsCheckoutSuccess').then((m) => ({ default: m.ZipAdsCheckoutSuccess })));
+const AdvertiseCompare = lazy(() => import('./components/AdvertiseCompare').then((m) => ({ default: m.AdvertiseCompare })));
+const SeoAdminPanel = lazy(() => import('./components/seo/SeoAdminPanel').then((m) => ({ default: m.SeoAdminPanel })));
+const BacklinksAdminPanel = lazy(() => import('./components/admin/BacklinksAdminPanel').then((m) => ({ default: m.BacklinksAdminPanel })));
+const AdminGate = lazy(() => import('./components/admin/AdminGate').then((m) => ({ default: m.AdminGate })));
+const PaymentSuccess = lazy(() => import('./components/PaymentSuccess').then((m) => ({ default: m.PaymentSuccess })));
+const PaymentCancelled = lazy(() => import('./components/PaymentCancelled').then((m) => ({ default: m.PaymentCancelled })));
+
+/** Shown only while a split chunk above is in flight -- never on a prerendered landing page. */
+const RouteChunkFallback: React.FC = () => (
+  <div className="flex items-center justify-center py-24">
+    <Loader2 className="w-6 h-6 text-slate-400 animate-spin" />
+  </div>
+);
 
 export function App() {
   // Session state restoration to continue where left off after auth login/signup
@@ -817,7 +837,11 @@ export function App() {
         </div>
       )}
 
+      {/* One boundary around every route branch. Suspends only when a branch that actually uses a
+          lazy chunk renders -- the eager landing pages (Hero, guide, county, legal) never trip it,
+          so their prerendered HTML is never swapped for a spinner. */}
       <main className="flex-1">
+       <Suspense fallback={<RouteChunkFallback />}>
         {currentStep === 'HOME' && (
           <Hero onSelectProperty={handleSelectProperty} onNavigate={handleNavigate} />
         )}
@@ -925,16 +949,24 @@ export function App() {
             )}
           </>
         )}
+       </Suspense>
       </main>
 
       <Footer onNewSearch={handleNewSearch} onNavigate={handleNavigate} />
 
-      <ReportGatingModal
-        isOpen={isGatingModalOpen}
-        onClose={() => setIsGatingModalOpen(false)}
-        targetAddress={selectedProperty?.formattedAddress || selectedProperty?.displayName || 'Selected Address'}
-        onConfirmAndGenerate={handleConfirmAndGenerateReport}
-      />
+      {/* Its own boundary with a null fallback, not the shared spinner: this modal is closed on
+          first paint, and its chunk is fetched the moment isOpen flips. A visible fallback here
+          would flash a spinner over the page behind it for no reason. */}
+      {isGatingModalOpen && (
+        <Suspense fallback={null}>
+          <ReportGatingModal
+            isOpen={isGatingModalOpen}
+            onClose={() => setIsGatingModalOpen(false)}
+            targetAddress={selectedProperty?.formattedAddress || selectedProperty?.displayName || 'Selected Address'}
+            onConfirmAndGenerate={handleConfirmAndGenerateReport}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }
