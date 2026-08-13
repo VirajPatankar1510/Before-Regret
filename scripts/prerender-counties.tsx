@@ -4,6 +4,7 @@ import path from 'path';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { withDb, isDbConfigured } from '../src/server/db.js';
 import { pickGuidesForCounty, GuideLink } from '../src/utils/countyGuideTopics.js';
+import { computeCountyRankings, CountyMetricInput, CountyRankings } from '../src/utils/countyRankings.js';
 
 // Static HTML generator for county research pages, mirroring scripts/prerender-guides.tsx exactly
 // -- same reasoning applies: the live app is a pure client-render SPA (createRoot, not
@@ -33,7 +34,7 @@ interface CountyRow {
 // __PRELOADED_COUNTY__ and read back by CountyPageView.tsx, so it needs to be a real substitute
 // for what GET /api/counties/:slug would have returned, not just whatever fields this script's own
 // static render happens to use.
-function toPreloadShape(row: CountyRow) {
+function toPreloadShape(row: CountyRow, rankings: CountyRankings) {
   return {
     slug: row.slug,
     countyName: row.county_name,
@@ -49,6 +50,7 @@ function toPreloadShape(row: CountyRow) {
     noaaEventCounts: JSON.parse(row.noaa_event_counts_json || '{}'),
     noaaYearsCovered: row.noaa_years_covered,
     fetchedAt: row.fetched_at,
+    rankings,
   };
 }
 
@@ -74,7 +76,7 @@ const RADON_ZONE_TEXT: Record<number, string> = {
   3: 'Zone 3 -- low potential. EPA predicts an average indoor radon screening level below 2 pCi/L for this county.',
 };
 
-function CountyStaticBody({ row }: { row: CountyRow }) {
+function CountyStaticBody({ row, rankings }: { row: CountyRow; rankings: CountyRankings }) {
   const yearBuilt = JSON.parse(row.census_year_built_json || '{}') as Record<string, number>;
   const hazards = Object.entries(JSON.parse(row.fema_hazards_json || '{}') as Record<string, { rating: string; score: number | null }>)
     .sort((a, b) => (b[1].score ?? 0) - (a[1].score ?? 0))
@@ -119,6 +121,44 @@ function CountyStaticBody({ row }: { row: CountyRow }) {
             Real data from four public sources, not an internal estimate: the EPA's radon zone classification, Census housing-age records, FEMA's natural hazard risk index, and NOAA's recorded storm history for this county. Every figure below links to where it actually comes from.
           </p>
         </div>
+
+        {(rankings.oldHousingShareRank || rankings.hazardRiskScoreRank || rankings.stormFrequencyRank) && (
+          <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
+            <h2 className="text-base font-bold text-slate-900">How {row.county_name} County Compares</h2>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Ranked against all {rankings.oldHousingShareRank?.total || rankings.hazardRiskScoreRank?.total || rankings.stormFrequencyRank?.total} counties BeforeRegret currently covers -- same source data as the sections below, just compared side by side.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {rankings.oldHousingShareRank && (
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                  <div className="text-xl font-extrabold text-slate-900">
+                    #{rankings.oldHousingShareRank.rank}<span className="text-xs font-medium text-slate-400"> / {rankings.oldHousingShareRank.total}</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 leading-snug">Share of housing built before 1970</div>
+                </div>
+              )}
+              {rankings.hazardRiskScoreRank && (
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                  <div className="text-xl font-extrabold text-slate-900">
+                    #{rankings.hazardRiskScoreRank.rank}<span className="text-xs font-medium text-slate-400"> / {rankings.hazardRiskScoreRank.total}</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 leading-snug">FEMA overall hazard risk score</div>
+                </div>
+              )}
+              {rankings.stormFrequencyRank && (
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                  <div className="text-xl font-extrabold text-slate-900">
+                    #{rankings.stormFrequencyRank.rank}<span className="text-xs font-medium text-slate-400"> / {rankings.stormFrequencyRank.total}</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 leading-snug">Recorded storm events{row.noaa_years_covered ? ` (${row.noaa_years_covered})` : ''}</div>
+                </div>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              #1 is the highest of the group for that measure -- not necessarily a warning, and not a claim about any specific property in the county.
+            </p>
+          </section>
+        )}
 
         {(row.fema_risk_rating || row.radon_zone) && (
           <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
@@ -398,6 +438,17 @@ async function run() {
     FROM county_data WHERE data_complete = true
   `)) as unknown as CountyRow[];
 
+  // Every covered county's minimal fields, computed once outside the loop -- ranking one county
+  // needs every county's numbers in hand, and re-deriving this per iteration would be the same
+  // fixed cost 31+ times over for no benefit. See src/utils/countyRankings.ts.
+  const rankingInputs: CountyMetricInput[] = rows.map((r) => ({
+    slug: r.slug,
+    censusTotalUnits: r.census_total_units,
+    censusYearBuiltBuckets: JSON.parse(r.census_year_built_json || '{}'),
+    femaRiskScore: r.fema_risk_score,
+    noaaEventCounts: JSON.parse(r.noaa_event_counts_json || '{}'),
+  }));
+
   let written = 0;
   const titleCasedRows: CountyRow[] = [];
   for (const rawRow of rows) {
@@ -406,17 +457,18 @@ async function run() {
     // CountyPageView.tsx's client-side equivalent.
     const row: CountyRow = { ...rawRow, county_name: titleCase(rawRow.county_name) };
     titleCasedRows.push(row);
+    const rankings = computeCountyRankings(row.slug, rankingInputs);
     const canonicalUrl = `https://www.beforeregret.com/county/${row.slug}/`;
     const title = `${row.county_name} County, ${row.state_abbrev} Property Research | BeforeRegret`;
     const description = `Real, sourced data for ${row.county_name} County, ${row.state_abbrev}: EPA radon zone, Census housing-age distribution, FEMA natural hazard risk, and recorded NOAA storm history.`;
-    const bodyHtml = renderToStaticMarkup(<CountyStaticBody row={row} />);
+    const bodyHtml = renderToStaticMarkup(<CountyStaticBody row={row} rankings={rankings} />);
     const jsonLdScript = `<script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(buildJsonLd(row, canonicalUrl))}</script>`;
     // Embedded verbatim so CountyPageView.tsx's mount effect can use it directly instead of
     // re-fetching over the network on first paint -- same fix, same reasoning, as
     // scripts/prerender-guides.tsx's __PRELOADED_GUIDE__. Built from rawRow (all-caps county
     // name), not the title-cased row above, since it needs to match what GET
     // /api/counties/:slug actually returns -- CountyPageView.tsx applies title-casing itself.
-    const preloadScript = `<script type="application/json" id="__PRELOADED_COUNTY__">${escapeJsonForScriptTag(toPreloadShape(rawRow))}</script>`;
+    const preloadScript = `<script type="application/json" id="__PRELOADED_COUNTY__">${escapeJsonForScriptTag(toPreloadShape(rawRow, rankings))}</script>`;
 
     let html = template
       .replace(/<title>[^<]*<\/title>/, `<title>${escapeHtmlAttr(title)}</title>`)

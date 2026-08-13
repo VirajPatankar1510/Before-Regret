@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
-import { ChevronRight, Loader2, MapPin, Home, Flame, CloudRain, ExternalLink } from 'lucide-react';
+import { ChevronRight, Loader2, MapPin, Home, Flame, CloudRain, ExternalLink, BarChart3 } from 'lucide-react';
 import { ArticleClosingNote } from './ArticleClosingNote';
 import { pickGuidesForCounty, GuideLink } from '../../utils/countyGuideTopics';
+import { CountyRankings } from '../../utils/countyRankings';
 
 interface CountyPageViewProps {
   countySlug: string;
@@ -24,6 +25,8 @@ interface CountyData {
   noaaEventCounts: Record<string, number>;
   noaaYearsCovered: string | null;
   fetchedAt: string;
+  /** Optional -- absent for any cached __PRELOADED_COUNTY__ blob written before this field existed. */
+  rankings?: CountyRankings;
 }
 
 // Labels/order for the Census B25034 buckets this page renders -- oldest first, matching how
@@ -249,6 +252,47 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
             Real data from four public sources, not an internal estimate: the EPA's radon zone classification, Census housing-age records, FEMA's natural hazard risk index, and NOAA's recorded storm history for this county. Every figure below links to where it actually comes from.
           </p>
         </div>
+
+        {county.rankings && (county.rankings.oldHousingShareRank || county.rankings.hazardRiskScoreRank || county.rankings.stormFrequencyRank) && (
+          <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-blue-600" />
+              How {county.countyName} County Compares
+            </h2>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Ranked against all {county.rankings.oldHousingShareRank?.total || county.rankings.hazardRiskScoreRank?.total || county.rankings.stormFrequencyRank?.total} counties BeforeRegret currently covers -- same source data as the sections below, just compared side by side.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {county.rankings.oldHousingShareRank && (
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                  <div className="text-xl font-extrabold text-slate-900">
+                    #{county.rankings.oldHousingShareRank.rank}<span className="text-xs font-medium text-slate-400"> / {county.rankings.oldHousingShareRank.total}</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 leading-snug">Share of housing built before 1970</div>
+                </div>
+              )}
+              {county.rankings.hazardRiskScoreRank && (
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                  <div className="text-xl font-extrabold text-slate-900">
+                    #{county.rankings.hazardRiskScoreRank.rank}<span className="text-xs font-medium text-slate-400"> / {county.rankings.hazardRiskScoreRank.total}</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 leading-snug">FEMA overall hazard risk score</div>
+                </div>
+              )}
+              {county.rankings.stormFrequencyRank && (
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                  <div className="text-xl font-extrabold text-slate-900">
+                    #{county.rankings.stormFrequencyRank.rank}<span className="text-xs font-medium text-slate-400"> / {county.rankings.stormFrequencyRank.total}</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 leading-snug">Recorded storm events{county.noaaYearsCovered ? ` (${county.noaaYearsCovered})` : ''}</div>
+                </div>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              #1 is the highest of the group for that measure -- not necessarily a warning, and not a claim about any specific property in the county.
+            </p>
+          </section>
+        )}
 
         {(county.femaRiskRating || county.radonZone) && (
           <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
