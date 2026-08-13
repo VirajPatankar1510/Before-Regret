@@ -15,11 +15,11 @@ import {
   CountyHousingRow,
 } from './defectReferenceGenerator.js';
 
-// Admin-triggered, one-shot batch generator for the "era x defect" reference library -- see
-// /admin/seo's "Generate reference library" button. Fixed set of 8 defects (see
-// defectReferenceGenerator.ts's DEFECT_RULE_IDS), each drafted independently so one failure
-// doesn't block the rest. Meant to be run once to build out the library, and occasionally again
-// if a defect rule's real data changes -- not a recurring/scheduled job like the FEMA checker.
+// Admin-triggered generator for the "era x defect" reference library -- see /admin/seo's
+// "Generate reference library" button. Fixed set of 8 defects (see defectReferenceGenerator.ts's
+// DEFECT_RULE_IDS). Each click generates exactly ONE missing page, not the whole remaining batch --
+// this keeps each draft reviewable on its own and avoids burning through Gemini's daily quota in a
+// single click. Click the button again (once reviewed, or once quota resets) to generate the next one.
 
 interface CountyDataRow {
   slug: string;
@@ -64,9 +64,8 @@ export function registerDefectReferenceRoutes(app: Express) {
       }));
 
       const rules = getDefectRules();
-      const { GoogleGenAI } = await import('@google/genai');
-      const ai = new GoogleGenAI({ apiKey, httpOptions: { headers: { 'User-Agent': 'aistudio-build' } } });
 
+      let nextRule: typeof rules[number] | null = null;
       for (const rule of rules) {
         const alreadyExists = await withDb(async (sql) => {
           const rows = await sql`SELECT id FROM articles WHERE defect_rule_id = ${rule.id} LIMIT 1`;
@@ -74,9 +73,22 @@ export function registerDefectReferenceRoutes(app: Express) {
         });
         if (alreadyExists) {
           summary.results.push({ ruleId: rule.id, skipped: true });
-          continue;
+        } else {
+          nextRule = rule;
+          break;
         }
+      }
 
+      if (!nextRule) {
+        res.json({ success: true, summary, complete: true });
+        return;
+      }
+
+      const { GoogleGenAI } = await import('@google/genai');
+      const ai = new GoogleGenAI({ apiKey, httpOptions: { headers: { 'User-Agent': 'aistudio-build' } } });
+
+      {
+        const rule = nextRule;
         summary.attempted++;
         try {
           const dataPack = computeDefectCountyRanking(housingRows, rule);

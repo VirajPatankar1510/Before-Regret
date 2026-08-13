@@ -223,11 +223,12 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [comparisonResult, setComparisonResult] = useState<{ slug: string; countiesRanked: number } | null>(null);
   const [comparisonError, setComparisonError] = useState<string | null>(null);
 
-  // Era x defect reference library -- see src/server/defectReferenceApi.ts. One-shot batch (8
-  // fixed defects), not a recurring job.
+  // Era x defect reference library -- see src/server/defectReferenceApi.ts. 8 fixed defects,
+  // generated one page per click (not a recurring job) so each draft can be reviewed before
+  // the next one is requested, and so a single click can't burn through a whole day's Gemini quota.
   const [defectLibraryGenerating, setDefectLibraryGenerating] = useState(false);
   const [defectLibraryResult, setDefectLibraryResult] = useState<{
-    attempted: number; created: number; results: Array<{ ruleId: string; slug?: string; error?: string; skipped?: boolean }>;
+    attempted: number; created: number; results: Array<{ ruleId: string; slug?: string; error?: string; skipped?: boolean }>; complete?: boolean;
   } | null>(null);
   const [defectLibraryError, setDefectLibraryError] = useState<string | null>(null);
 
@@ -747,9 +748,9 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             )}
           </div>
 
-          {/* Era x defect reference library -- see src/server/defectReferenceApi.ts. One-shot
-              batch across 8 fixed defects (knob-and-tube, polybutylene, etc.), each ranking
-              covered counties by real Census data for that defect's era. */}
+          {/* Era x defect reference library -- see src/server/defectReferenceApi.ts. 8 fixed
+              defects (knob-and-tube, polybutylene, etc.), each ranking covered counties by real
+              Census data for that defect's era. One page generated per click. */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
@@ -762,11 +763,11 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
               >
                 {defectLibraryGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Library className="w-3.5 h-3.5" />}
-                {defectLibraryGenerating ? 'Generating 8 pages…' : 'Generate reference library'}
+                {defectLibraryGenerating ? 'Generating…' : 'Generate next page'}
               </button>
             </div>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Drafts one page per material/system defect (knob-and-tube wiring, polybutylene pipe, recalled panel brands, cast iron sewer, galvanized supply, lead paint, asbestos, aluminum wiring), each ranking covered counties by real Census housing-age data for that defect's era. The description and ranking are real, already-computed facts -- only the connecting analysis is AI-drafted. All land below as drafts.
+              Drafts one page per click, for the next missing material/system defect (knob-and-tube wiring, polybutylene pipe, recalled panel brands, cast iron sewer, galvanized supply, lead paint, asbestos, aluminum wiring -- 8 total), ranking covered counties by real Census housing-age data for that defect's era. The description and ranking are real, already-computed facts -- only the connecting analysis is AI-drafted. Click again to generate the next one; each draft lands below for review before the next click.
             </p>
             {defectLibraryError && (
               <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
@@ -776,7 +777,11 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             )}
             {defectLibraryResult && (
               <div className="text-xs text-slate-300 space-y-1 border-t border-slate-800 pt-3">
-                <p className="text-emerald-400 font-semibold">{defectLibraryResult.created} of {defectLibraryResult.attempted} pages created.</p>
+                {defectLibraryResult.complete ? (
+                  <p className="text-emerald-400 font-semibold">All 8 pages already exist -- library complete.</p>
+                ) : (
+                  <p className="text-emerald-400 font-semibold">{defectLibraryResult.created} of {defectLibraryResult.attempted} pages created this click.</p>
+                )}
                 {defectLibraryResult.results.map((r) => (
                   <p key={r.ruleId} className={r.error ? 'text-amber-400' : r.skipped ? 'text-slate-600' : 'text-slate-500'}>
                     {r.ruleId}: {r.error ? `failed -- ${r.error}` : r.skipped ? 'already exists, skipped' : r.slug}
