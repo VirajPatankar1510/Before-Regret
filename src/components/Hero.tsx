@@ -7,12 +7,11 @@ import { PricingSection } from './home/PricingSection';
 import { FaqSection } from './home/FaqSection';
 import { ClosingCtaSection } from './home/ClosingCtaSection';
 import { ProofStrip } from './home/ProofStrip';
-import { LibrarySnapshotSection } from './home/LibrarySnapshotSection';
+import { GuideCardsSection } from './home/GuideCardsSection';
 import {
   HomeData,
   buildGuideClusters,
   pickResearchPages,
-  pickCountyUpdates,
   computeCoverageStats,
 } from '../utils/homeContent';
 
@@ -67,7 +66,6 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
 
   const clusters = buildGuideClusters(homeData.articles);
   const research = pickResearchPages(homeData.articles);
-  const updates = pickCountyUpdates(homeData.articles);
   const stats = computeCoverageStats(homeData);
 
   const handleScrollToSearch = () => {
@@ -162,14 +160,12 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
           whoever isn't ready yet, not a detour before the price. */}
       <PricingSection onScrollToSearch={handleScrollToSearch} />
 
-      {/* 6. WHAT'S INSIDE -- one compact, single-scan proof of the library (a few guides per
-          situation, the research pages, top counties), not an exhaustive directory. Everything it
-          doesn't show inline is one click away at /guides/. */}
-      <LibrarySnapshotSection
+      {/* 6. GUIDE LIBRARY -- a diverse sample of real guide cards, explicitly framed as free
+          content separate from the report (see GuideCardsSection.tsx for why the framing matters
+          here specifically). Everything not shown inline is one click away at /guides/. */}
+      <GuideCardsSection
         clusters={clusters}
         research={research}
-        counties={homeData.counties}
-        updates={updates}
         totalGuides={stats.guideCount}
         onNavigate={onNavigate}
       />

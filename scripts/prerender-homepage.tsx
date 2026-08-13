@@ -8,14 +8,13 @@ import { PricingSection } from '../src/components/home/PricingSection';
 import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
 import { HOMEPAGE_FAQS } from '../src/components/home/FaqSection';
 import { ProofStrip } from '../src/components/home/ProofStrip';
-import { LibrarySnapshotSection } from '../src/components/home/LibrarySnapshotSection';
+import { GuideCardsSection } from '../src/components/home/GuideCardsSection';
 import { isDbConfigured } from '../src/server/db.js';
 import { loadHomepageData } from '../src/server/homepageApi.js';
 import {
   HomeData,
   buildGuideClusters,
   pickResearchPages,
-  pickCountyUpdates,
   computeCoverageStats,
 } from '../src/utils/homeContent.js';
 
@@ -49,7 +48,6 @@ function HomeStaticBody({ data }: { data: HomeData }) {
   // show the same clusters, in the same order, with the same counts.
   const clusters = buildGuideClusters(data.articles);
   const research = pickResearchPages(data.articles);
-  const updates = pickCountyUpdates(data.articles);
   const stats = computeCoverageStats(data);
 
   return (
@@ -100,12 +98,10 @@ function HomeStaticBody({ data }: { data: HomeData }) {
 
       {/* Same order and position as src/components/Hero.tsx. No onNavigate is passed, so
           ContentLink renders plain crawlable <a href> markup here -- the point of prerendering
-          this section: its guide and county links get picked up from the domain's strongest page. */}
-      <LibrarySnapshotSection
+          this section: its guide card links get picked up from the domain's strongest page. */}
+      <GuideCardsSection
         clusters={clusters}
         research={research}
-        counties={data.counties}
-        updates={updates}
         totalGuides={stats.guideCount}
       />
 
