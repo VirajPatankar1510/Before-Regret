@@ -218,10 +218,16 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [countyEventLookbackDays, setCountyEventLookbackDays] = useState('14');
 
   // Original data journalism report generator -- see src/server/countyComparisonApi.ts. Admin-
-  // triggered (not event-triggered), meant to run occasionally, not on a schedule.
+  // triggered (not event-triggered), meant to run occasionally, not on a schedule. A living
+  // singleton page rather than a one-shot: comparisonStatus is what lets the button tell "no
+  // report yet" from "up to date" from "coverage grew, update available" without wasting a click
+  // (and a Gemini call) just to find out.
   const [comparisonGenerating, setComparisonGenerating] = useState(false);
-  const [comparisonResult, setComparisonResult] = useState<{ slug: string; countiesRanked: number } | null>(null);
+  const [comparisonResult, setComparisonResult] = useState<{ action: 'created' | 'updated'; slug: string; countiesRanked: number } | null>(null);
   const [comparisonError, setComparisonError] = useState<string | null>(null);
+  const [comparisonStatus, setComparisonStatus] = useState<{
+    exists: boolean; eligibleCounties: number; countiesRanked: number | null; slug: string | null;
+  } | null>(null);
 
   // Era x defect reference library -- see src/server/defectReferenceApi.ts. 8 fixed defects,
   // generated one page per click (not a recurring job) so each draft can be reviewed before
@@ -248,6 +254,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
 
   useEffect(() => {
     loadArticles();
+  }, []);
+
+  useEffect(() => {
+    loadComparisonStatus();
   }, []);
 
   useEffect(() => {
@@ -328,6 +338,22 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     }
   };
 
+  const loadComparisonStatus = () => {
+    fetch('/api/admin/reports/county-comparison/status')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success) {
+          setComparisonStatus({
+            exists: data.exists,
+            eligibleCounties: data.eligibleCounties,
+            countiesRanked: data.countiesRanked,
+            slug: data.slug,
+          });
+        }
+      })
+      .catch(() => {});
+  };
+
   const generateComparisonReport = async () => {
     setComparisonGenerating(true);
     setComparisonError(null);
@@ -336,8 +362,9 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       const res = await fetch('/api/admin/reports/county-comparison', { method: 'POST' });
       const data = await res.json();
       if (data?.success) {
-        setComparisonResult({ slug: data.slug, countiesRanked: data.countiesRanked });
+        setComparisonResult({ action: data.action, slug: data.slug, countiesRanked: data.countiesRanked });
         loadArticles();
+        loadComparisonStatus();
       } else {
         setComparisonError(data?.error || 'Could not generate the report.');
       }
@@ -718,22 +745,40 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               every covered county by real Census housing-age data, computed in plain code, never
               by Gemini. Meant to be run occasionally (a handful of times a year), not scheduled. */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
-                <BarChart3 className="w-3.5 h-3.5" />
-                <span>County comparison report</span>
-              </div>
-              <button
-                onClick={generateComparisonReport}
-                disabled={comparisonGenerating}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
-              >
-                {comparisonGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <BarChart3 className="w-3.5 h-3.5" />}
-                {comparisonGenerating ? 'Generating…' : 'Generate report'}
-              </button>
-            </div>
+            {(() => {
+              const eligible = comparisonStatus?.eligibleCounties ?? null;
+              const ranked = comparisonStatus?.countiesRanked ?? null;
+              const reportExists = comparisonStatus?.exists ?? false;
+              const isUpToDate = reportExists && eligible !== null && ranked === eligible;
+              const newCounties = reportExists && eligible !== null && ranked !== null ? eligible - ranked : null;
+              const label = comparisonGenerating
+                ? 'Generating…'
+                : isUpToDate
+                ? 'Up to date'
+                : reportExists
+                ? `Update report (+${newCounties})`
+                : 'Generate report';
+
+              return (
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+                    <BarChart3 className="w-3.5 h-3.5" />
+                    <span>County comparison report</span>
+                  </div>
+                  <button
+                    onClick={generateComparisonReport}
+                    disabled={comparisonGenerating || isUpToDate}
+                    title={isUpToDate ? `Already ranks all ${eligible} covered counties -- add more county data to unlock an update.` : undefined}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
+                  >
+                    {comparisonGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <BarChart3 className="w-3.5 h-3.5" />}
+                    {label}
+                  </button>
+                </div>
+              );
+            })()}
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Ranks every county this site covers by real Census housing-age data (% built before 1950 and before 1980) and drafts an original data report around the real ranking table. The table itself is computed here, not by Gemini -- only the surrounding analysis is AI-drafted. Lands below as a draft like any other article.
+              Ranks every county this site covers by real Census housing-age data (% built before 1950 and before 1980) and drafts an original data report around the real ranking table. The table itself is computed here, not by Gemini -- only the surrounding analysis is AI-drafted. A single living page, not one per run -- generating again updates the same article in place (back to draft for review) instead of creating a duplicate, and is only available once county coverage actually grows.
             </p>
             {comparisonError && (
               <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
@@ -743,7 +788,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             )}
             {comparisonResult && (
               <p className="text-xs text-emerald-400 font-semibold border-t border-slate-800 pt-3">
-                Draft created, ranking {comparisonResult.countiesRanked} counties -- slug: {comparisonResult.slug}
+                Draft {comparisonResult.action === 'updated' ? 'updated' : 'created'}, ranking {comparisonResult.countiesRanked} counties -- slug: {comparisonResult.slug}
               </p>
             )}
           </div>

@@ -83,6 +83,11 @@ export async function ensureArticlesSchema(): Promise<void> {
   // -- a real need, not theoretical: the batch can genuinely fail partway through (a Gemini quota
   // limit hit after generating some but not all 8), and re-running it should resume, not duplicate.
   await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS defect_rule_id TEXT`;
+  // Set only for the singleton article_type = 'comparison' row (see countyComparisonApi.ts), to
+  // how many counties were ranked the last time it was generated or updated. Lets the admin panel
+  // tell "coverage grew since this was last written" from "nothing's changed" without re-running
+  // Gemini just to find out, and lets the update route itself refuse a no-op regeneration.
+  await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS counties_ranked INTEGER`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS transactions (
