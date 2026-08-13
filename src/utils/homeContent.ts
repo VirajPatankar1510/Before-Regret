@@ -142,17 +142,19 @@ export function buildGuideClusters(articles: HomeArticle[], minSize = 3): GuideC
 }
 
 /**
- * The original-research set: county-ranked reference pages plus the comparison reports. These are
- * the pages built from real Census/FEMA data rather than written from research, so they carry the
- * authority weight on the homepage and get their own section.
+ * The original-research set: county-ranked reference pages plus the comparison report(s). These
+ * are the pages built from real Census/FEMA data rather than written from research, so they carry
+ * the authority weight on the homepage and get their own section.
  *
- * `reference` is the article_type the defect-library generator writes. The comparison reports are
- * stored as 'guide' (they predate a dedicated type) and are matched by the "ranking"/"oldest vs"
- * shape of their titles instead -- narrow enough not to sweep in ordinary guides.
+ * `reference` is the article_type the defect-library generator writes; `comparison` is the county-
+ * comparison generator's (see countyComparisonApi.ts). The title-shape regex is kept only as a
+ * fallback for the one comparison report published before that type existed (stored as 'guide') --
+ * narrow enough not to sweep in ordinary guides.
  */
 export function pickResearchPages(articles: HomeArticle[]): HomeArticle[] {
   return articles.filter((a) => {
-    if ((a.articleType ?? 'guide') === 'reference') return true;
+    const type = a.articleType ?? 'guide';
+    if (type === 'reference' || type === 'comparison') return true;
     const hay = haystack(a);
     return /ranking|oldest vs|county comparison/.test(hay);
   });
