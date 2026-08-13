@@ -10,6 +10,7 @@ interface FooterProps {
 interface GuideSummary {
   slug: string;
   title: string;
+  articleType?: string;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
@@ -20,7 +21,14 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
       .then((res) => res.json())
       .then((data) => {
         if (data?.success && Array.isArray(data.articles)) {
-          setGuides(data.articles.slice(0, 4));
+          // Evergreen guides only -- /api/guides returns every published article newest-first,
+          // which now includes timely FEMA county-event pieces and data-comparison reports
+          // alongside the evergreen "how to" guides this list was built to showcase. A footer
+          // that mixes "Does Buying a House Reset Property Tax Assessment" with "FEMA Declaration
+          // DR-4906-WA" reads as incoherent -- a first-time visitor can't tell what the site is
+          // from a list like that. Filtering to article_type = 'guide' keeps this list what it
+          // was meant to be: a first impression of the evergreen editorial content.
+          setGuides(data.articles.filter((a: GuideSummary) => (a.articleType ?? 'guide') === 'guide').slice(0, 4));
         }
       })
       .catch(() => {});
