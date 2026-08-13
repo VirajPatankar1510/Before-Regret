@@ -201,15 +201,14 @@ export function registerDefectReferenceRoutes(app: Express) {
         const quickAnswer = parsed.quickAnswer?.trim() || '';
 
         if (next.action === 'update') {
-          // Same id, same slug -- preserves the URL and whatever indexing it's earned. Forced
-          // back to 'draft' rather than left published, same reasoning as the comparison report's
-          // update path: this prose is freshly AI-generated same as any other draft in this app,
-          // and nothing here skips the human-review step just because the page already existed.
+          // Same id, same slug -- preserves the URL and whatever indexing it's earned. status is
+          // deliberately NOT touched, same reasoning as countyComparisonApi.ts's update path: an
+          // already-published page stays published rather than blinking out of the sitemap and
+          // out of "published" status every time coverage grows.
           await withDb((sql) => sql`
             UPDATE articles
             SET title = ${title}, meta_description = ${metaDescription}, body_markdown = ${bodyMarkdown},
-                quick_answer = ${quickAnswer}, counties_ranked = ${rows.length}, status = 'draft',
-                updated_at = now()
+                quick_answer = ${quickAnswer}, counties_ranked = ${rows.length}, updated_at = now()
             WHERE id = ${next.state.id}
           `);
           summary.created++;

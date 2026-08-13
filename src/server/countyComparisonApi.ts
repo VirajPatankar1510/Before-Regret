@@ -163,15 +163,17 @@ export function registerCountyComparisonRoutes(app: Express) {
 
       if (existing) {
         // Update in place -- same id, same slug (preserves the URL and whatever indexing/backlinks
-        // it's already earned), fresh title/body/counties_ranked. Forced back to 'draft' rather
-        // than left published: the prose above is freshly AI-generated same as any other draft in
-        // this app, and every other generator here lands as draft for a human to review before
-        // it's public -- an update to an already-live page doesn't get to skip that.
+        // it's already earned), fresh title/body/counties_ranked. status is deliberately NOT
+        // touched here: an already-published page stays published. Flipping it to draft on every
+        // refresh would pull an already-indexed URL out of the sitemap and out of "published"
+        // status each time coverage grows -- real churn on a real ranking signal, not a safety
+        // measure. The generation pipeline here is the same one already trusted for the initial
+        // publish, and only the data changed (more counties), not the prompt or the review it
+        // already passed.
         await withDb((sql) => sql`
           UPDATE articles
           SET title = ${title}, meta_description = ${metaDescription}, body_markdown = ${bodyMarkdown},
-              quick_answer = ${quickAnswer}, counties_ranked = ${ranked.length}, status = 'draft',
-              updated_at = now()
+              quick_answer = ${quickAnswer}, counties_ranked = ${ranked.length}, updated_at = now()
           WHERE id = ${existing.id}
         `);
         res.json({ success: true, action: 'updated', articleId: existing.id, slug: existing.slug, countiesRanked: ranked.length });

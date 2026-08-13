@@ -309,6 +309,16 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     setView('edit');
   };
 
+  // The "Draft created/updated" result lines below give a slug, not a full Article object -- these
+  // are always freshly created/updated by the same generator call that just ran, so loadArticles()
+  // (already re-triggered after that call) has it by the time this is clickable. A draft has no
+  // public /guides/<slug>/ URL yet (status='published' gates that everywhere else in this app), so
+  // "jump to the editor" is the real "go look at it" action here, not an external link.
+  const openArticleBySlug = (slug: string) => {
+    const article = articles?.find((a) => a.slug === slug);
+    if (article) openEditor(article);
+  };
+
   const createArticle = async () => {
     setActionError(null);
     try {
@@ -810,7 +820,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               );
             })()}
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Ranks every county this site covers by real Census housing-age data (% built before 1950 and before 1980) and drafts an original data report around the real ranking table. The table itself is computed here, not by Gemini -- only the surrounding analysis is AI-drafted. A single living page, not one per run -- generating again updates the same article in place (back to draft for review) instead of creating a duplicate, and is only available once county coverage actually grows.
+              Ranks every county this site covers by real Census housing-age data (% built before 1950 and before 1980) and drafts an original data report around the real ranking table. The table itself is computed here, not by Gemini -- only the surrounding analysis is AI-drafted. A single living page, not one per run -- generating again updates the same article in place instead of creating a duplicate, keeps its current published/draft status as-is, and is only available once county coverage actually grows.
             </p>
             {comparisonError && (
               <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
@@ -820,7 +830,13 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             )}
             {comparisonResult && (
               <p className="text-xs text-emerald-400 font-semibold border-t border-slate-800 pt-3">
-                Draft {comparisonResult.action === 'updated' ? 'updated' : 'created'}, ranking {comparisonResult.countiesRanked} counties -- slug: {comparisonResult.slug}
+                {comparisonResult.action === 'updated' ? 'Updated in place' : 'Draft created'}, ranking {comparisonResult.countiesRanked} counties --{' '}
+                <button
+                  onClick={() => openArticleBySlug(comparisonResult.slug)}
+                  className="underline decoration-emerald-400/50 hover:decoration-emerald-400 cursor-pointer"
+                >
+                  open {comparisonResult.slug}
+                </button>
               </p>
             )}
           </div>
@@ -861,7 +877,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               );
             })()}
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Drafts or refreshes one page per click, for the next missing or stale material/system defect (knob-and-tube wiring, polybutylene pipe, recalled panel brands, cast iron sewer, galvanized supply, lead paint, asbestos, aluminum wiring -- 8 total), ranking covered counties by real Census housing-age data for that defect's era. The description and ranking are real, already-computed facts -- only the connecting analysis is AI-drafted. A page whose county coverage has grown since it was last written gets updated in place (same URL, back to draft for review) instead of ever getting a second, near-duplicate page for the same defect.
+              Drafts or refreshes one page per click, for the next missing or stale material/system defect (knob-and-tube wiring, polybutylene pipe, recalled panel brands, cast iron sewer, galvanized supply, lead paint, asbestos, aluminum wiring -- 8 total), ranking covered counties by real Census housing-age data for that defect's era. The description and ranking are real, already-computed facts -- only the connecting analysis is AI-drafted. A page whose county coverage has grown since it was last written gets updated in place (same URL, current published/draft status unchanged) instead of ever getting a second, near-duplicate page for the same defect.
             </p>
             {defectLibraryError && (
               <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
@@ -878,7 +894,21 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 )}
                 {defectLibraryResult.results.map((r) => (
                   <p key={r.ruleId} className={r.error ? 'text-amber-400' : r.skipped ? 'text-slate-600' : 'text-slate-500'}>
-                    {r.ruleId}: {r.error ? `failed -- ${r.error}` : r.skipped ? 'already up to date, skipped' : `${r.action} -- ${r.slug}`}
+                    {r.ruleId}: {r.error ? (
+                      `failed -- ${r.error}`
+                    ) : r.skipped ? (
+                      'already up to date, skipped'
+                    ) : (
+                      <>
+                        {r.action} --{' '}
+                        <button
+                          onClick={() => openArticleBySlug(r.slug!)}
+                          className="underline decoration-slate-500/50 hover:decoration-slate-300 hover:text-slate-300 cursor-pointer"
+                        >
+                          open {r.slug}
+                        </button>
+                      </>
+                    )}
                   </p>
                 ))}
               </div>
