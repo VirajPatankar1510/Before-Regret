@@ -122,7 +122,7 @@ export const CountiesIndexView: React.FC<CountiesIndexViewProps> = ({ onNavigate
             <span>County Research</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
-            Every county we hold verified data on
+            Every county we have complete data for
           </h1>
           <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
             Each page carries that county's real EPA radon zone, Census housing-age breakdown, FEMA
