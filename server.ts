@@ -25,6 +25,7 @@ import { registerArticleRoutes } from "./src/server/articlesApi.js";
 import { registerCountyRoutes } from "./src/server/countiesApi.js";
 import { registerHomepageRoutes } from "./src/server/homepageApi.js";
 import { registerKeywordResearchRoutes } from "./src/server/keywordResearchApi.js";
+import { registerNewsCoverageRoutes } from "./src/server/newsCoverageApi.js";
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerBacklinksRoutes } from "./src/server/backlinksApi.js";
@@ -188,6 +189,7 @@ export async function createApp() {
   // Admin-only. See src/server/searchConsoleService.ts for the one-time service-account setup
   // this depends on; the route responds with configured: false rather than erroring until then.
   registerKeywordResearchRoutes(app);
+  registerNewsCoverageRoutes(app);
 
   // --- Vendor ad slots on guide pages (Neon-backed, PayPal-billed) --------------------------
   // Self-serve, open-market, no vendor login. See src/server/guideAdsApi.ts.
