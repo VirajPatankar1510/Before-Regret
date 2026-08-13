@@ -229,14 +229,23 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     exists: boolean; eligibleCounties: number; countiesRanked: number | null; slug: string | null;
   } | null>(null);
 
-  // Era x defect reference library -- see src/server/defectReferenceApi.ts. 8 fixed defects,
-  // generated one page per click (not a recurring job) so each draft can be reviewed before
-  // the next one is requested, and so a single click can't burn through a whole day's Gemini quota.
+  // Era x defect reference library -- see src/server/defectReferenceApi.ts. 8 fixed defects, one
+  // page per click (not a recurring job) so each draft can be reviewed before the next one is
+  // requested, and so a single click can't burn through a whole day's Gemini quota.
+  // defectLibraryStatus is what lets the button tell "N pages missing" from "N pages need a
+  // refresh because coverage grew" from "all 8 up to date" without spending a click to find out --
+  // same mechanism as comparisonStatus above, applied per-defect instead of to one singleton.
   const [defectLibraryGenerating, setDefectLibraryGenerating] = useState(false);
   const [defectLibraryResult, setDefectLibraryResult] = useState<{
-    attempted: number; created: number; results: Array<{ ruleId: string; slug?: string; error?: string; skipped?: boolean }>; complete?: boolean;
+    attempted: number; created: number;
+    results: Array<{ ruleId: string; slug?: string; action?: 'created' | 'updated'; error?: string; skipped?: boolean }>;
+    complete?: boolean;
   } | null>(null);
   const [defectLibraryError, setDefectLibraryError] = useState<string | null>(null);
+  const [defectLibraryStatus, setDefectLibraryStatus] = useState<{
+    eligibleCounties: number; totalDefects: number; missingCount: number; staleCount: number;
+    nextAction: 'create' | 'update' | null; nextRuleId: string | null;
+  } | null>(null);
 
   const loadArticles = () => {
     setLoadError(null);
@@ -258,6 +267,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
 
   useEffect(() => {
     loadComparisonStatus();
+  }, []);
+
+  useEffect(() => {
+    loadDefectLibraryStatus();
   }, []);
 
   useEffect(() => {
@@ -375,6 +388,24 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     }
   };
 
+  const loadDefectLibraryStatus = () => {
+    fetch('/api/admin/reports/defect-reference-library/status')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success) {
+          setDefectLibraryStatus({
+            eligibleCounties: data.eligibleCounties,
+            totalDefects: data.totalDefects,
+            missingCount: data.missingCount,
+            staleCount: data.staleCount,
+            nextAction: data.nextAction,
+            nextRuleId: data.nextRuleId,
+          });
+        }
+      })
+      .catch(() => {});
+  };
+
   const generateDefectLibrary = async () => {
     setDefectLibraryGenerating(true);
     setDefectLibraryError(null);
@@ -385,6 +416,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       if (data?.success) {
         setDefectLibraryResult(data.summary);
         if (data.summary?.created > 0) loadArticles();
+        loadDefectLibraryStatus();
       } else {
         setDefectLibraryError(data?.error || 'Could not generate the reference library.');
       }
@@ -797,22 +829,39 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               defects (knob-and-tube, polybutylene, etc.), each ranking covered counties by real
               Census data for that defect's era. One page generated per click. */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
-                <Library className="w-3.5 h-3.5" />
-                <span>Era x defect reference library</span>
-              </div>
-              <button
-                onClick={generateDefectLibrary}
-                disabled={defectLibraryGenerating}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
-              >
-                {defectLibraryGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Library className="w-3.5 h-3.5" />}
-                {defectLibraryGenerating ? 'Generating…' : 'Generate next page'}
-              </button>
-            </div>
+            {(() => {
+              const nextAction = defectLibraryStatus?.nextAction ?? null;
+              const isUpToDate = defectLibraryStatus !== null && nextAction === null;
+              const label = defectLibraryGenerating
+                ? 'Generating…'
+                : isUpToDate
+                ? 'Up to date'
+                : nextAction === 'update'
+                ? `Update next page (${defectLibraryStatus!.staleCount} stale)`
+                : nextAction === 'create'
+                ? `Generate next page (${defectLibraryStatus!.missingCount} missing)`
+                : 'Generate next page';
+
+              return (
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+                    <Library className="w-3.5 h-3.5" />
+                    <span>Era x defect reference library</span>
+                  </div>
+                  <button
+                    onClick={generateDefectLibrary}
+                    disabled={defectLibraryGenerating || isUpToDate}
+                    title={isUpToDate ? `All 8 pages ranked against all ${defectLibraryStatus!.eligibleCounties} covered counties -- add more county data to unlock an update.` : undefined}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
+                  >
+                    {defectLibraryGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Library className="w-3.5 h-3.5" />}
+                    {label}
+                  </button>
+                </div>
+              );
+            })()}
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Drafts one page per click, for the next missing material/system defect (knob-and-tube wiring, polybutylene pipe, recalled panel brands, cast iron sewer, galvanized supply, lead paint, asbestos, aluminum wiring -- 8 total), ranking covered counties by real Census housing-age data for that defect's era. The description and ranking are real, already-computed facts -- only the connecting analysis is AI-drafted. Click again to generate the next one; each draft lands below for review before the next click.
+              Drafts or refreshes one page per click, for the next missing or stale material/system defect (knob-and-tube wiring, polybutylene pipe, recalled panel brands, cast iron sewer, galvanized supply, lead paint, asbestos, aluminum wiring -- 8 total), ranking covered counties by real Census housing-age data for that defect's era. The description and ranking are real, already-computed facts -- only the connecting analysis is AI-drafted. A page whose county coverage has grown since it was last written gets updated in place (same URL, back to draft for review) instead of ever getting a second, near-duplicate page for the same defect.
             </p>
             {defectLibraryError && (
               <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
@@ -823,13 +872,13 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             {defectLibraryResult && (
               <div className="text-xs text-slate-300 space-y-1 border-t border-slate-800 pt-3">
                 {defectLibraryResult.complete ? (
-                  <p className="text-emerald-400 font-semibold">All 8 pages already exist -- library complete.</p>
+                  <p className="text-emerald-400 font-semibold">All 8 pages up to date -- library complete.</p>
                 ) : (
-                  <p className="text-emerald-400 font-semibold">{defectLibraryResult.created} of {defectLibraryResult.attempted} pages created this click.</p>
+                  <p className="text-emerald-400 font-semibold">{defectLibraryResult.created} of {defectLibraryResult.attempted} pages touched this click.</p>
                 )}
                 {defectLibraryResult.results.map((r) => (
                   <p key={r.ruleId} className={r.error ? 'text-amber-400' : r.skipped ? 'text-slate-600' : 'text-slate-500'}>
-                    {r.ruleId}: {r.error ? `failed -- ${r.error}` : r.skipped ? 'already exists, skipped' : r.slug}
+                    {r.ruleId}: {r.error ? `failed -- ${r.error}` : r.skipped ? 'already up to date, skipped' : `${r.action} -- ${r.slug}`}
                   </p>
                 ))}
               </div>
