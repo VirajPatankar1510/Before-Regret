@@ -91,7 +91,7 @@ export function buildCountyComparisonPrompt(params: {
   const topFive = [...rankedByPre1950].sort((a, b) => b.pctBefore1950 - a.pctBefore1950).slice(0, 5);
   const bottomFive = [...rankedByPre1950].sort((a, b) => a.pctBefore1950 - b.pctBefore1950).slice(0, 5);
 
-  return `REAL DATA (already computed, already sorted, from U.S. Census ACS 5-year housing-age estimates for the ${totalCounties} counties BeforeRegret currently covers with complete verified data):
+  return `REAL DATA (already computed, already sorted, from U.S. Census ACS 5-year housing-age estimates for the ${totalCounties} counties BeforeRegret currently has complete data for):
 
 TOP 5 by share of housing built before 1950:
 ${topFive.map((r, i) => `${i + 1}. ${r.countyName} County, ${r.stateAbbrev}: ${r.pctBefore1950.toFixed(1)}% before 1950, ${r.pctBefore1980.toFixed(1)}% before 1980`).join('\n')}

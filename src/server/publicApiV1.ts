@@ -91,7 +91,7 @@ const DOCS_RESPONSE = {
   name: 'BeforeRegret Public API',
   version: 'v1',
   description:
-    'Real-data county hazard information (FEMA National Risk Index, EPA radon zones, Census housing-age distribution, NOAA storm-event history) for the counties BeforeRegret has fully verified. Every value is sourced from the cited government agency and carries the fetchedAt timestamp of that agency query -- nothing here is model-generated or estimated.',
+    'Real-data county hazard information (FEMA National Risk Index, EPA radon zones, Census housing-age distribution, NOAA storm-event history) for the counties BeforeRegret has complete data for. Every value is sourced from the cited government agency and carries the fetchedAt timestamp of that agency query -- nothing here is model-generated or estimated.',
   endpoints: {
     'GET /api/v1/counties': 'List every county currently available, with slug, name, state, and population.',
     'GET /api/v1/county/{slug}': 'Full hazard record for one county. Slugs come from /api/v1/counties, e.g. bronx-county-ny.',

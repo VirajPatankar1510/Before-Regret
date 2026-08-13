@@ -180,7 +180,7 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
         <h1 className="text-xl font-bold text-slate-900">County Not Found</h1>
-        <p className="text-xs text-slate-600">This county doesn't have a verified research page yet.</p>
+        <p className="text-xs text-slate-600">This county doesn't have a research page yet.</p>
         <button onClick={() => onNavigate('/')} className="px-4 py-2 bg-blue-600 text-white rounded text-xs font-bold">
           Return Home
         </button>
