@@ -5,8 +5,22 @@ import {
   Library
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
+import { NEWS_TOPIC_PRESETS, type NewsTopicPreset } from '../../data/newsTopicPresets';
 import { STOPWORDS } from '../../utils/relatedGuides';
 import { buildPageTitle } from '../../utils/pageTitle';
+
+// Grouped once at module load, not per-render -- NEWS_TOPIC_PRESETS is a static import, so this
+// never needs to recompute. Preserves the data file's own category order (the order categories
+// first appear in), not alphabetical, so "Market & affordability" leads the way it's written.
+const newsTopicCategories: Array<[string, NewsTopicPreset[]]> = (() => {
+  const map = new Map<string, NewsTopicPreset[]>();
+  for (const preset of NEWS_TOPIC_PRESETS) {
+    const list = map.get(preset.category);
+    if (list) list.push(preset);
+    else map.set(preset.category, [preset]);
+  }
+  return Array.from(map.entries());
+})();
 
 interface SeoAdminPanelProps {
   onNavigate: (path: string) => void;
@@ -46,6 +60,15 @@ interface KeywordRow {
   ctr?: number;
   position?: number;
   broadImpressions?: number;
+}
+
+// Shape returned by GET /api/admin/news-coverage (see src/server/newsCoverageApi.ts).
+interface NewsCoverageItem {
+  title: string;
+  url: string;
+  domain: string;
+  seenAt: string;
+  source: 'gdelt' | 'google-news';
 }
 
 interface GeminiUsageSummary {
@@ -180,6 +203,25 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // (see the click handler below), cleared on manual typing so a stale list from a previous
   // topic never silently leaks into an unrelated generation.
   const [seoKeywordHints, setSeoKeywordHints] = useState<string[]>([]);
+  // Manual, on-demand GDELT search (see src/server/newsCoverageApi.ts) -- always defaulted to the
+  // open article's own title on openEditor below, so reviewing a freshly-drafted FEMA county-
+  // event article is one click away from "what else is being reported on this" without retyping
+  // anything. Freely editable, so it doubles as a general "what's timely right now" search when
+  // starting a brand-new evergreen guide. Never auto-runs -- a fresh GDELT hit only ever happens
+  // on a real click, matching this whole panel's one-action-per-click pattern.
+  const [newsCoverageQuery, setNewsCoverageQuery] = useState('');
+  const [newsCoverageResults, setNewsCoverageResults] = useState<NewsCoverageItem[]>([]);
+  const [newsCoverageLoading, setNewsCoverageLoading] = useState(false);
+  const [newsCoverageError, setNewsCoverageError] = useState('');
+  // Set when one source (GDELT or Google News) failed but the other still returned results --
+  // distinct from newsCoverageError, which is only for a hard failure of both at once. The
+  // results below are still real and worth showing; this just says they're not the full picture.
+  const [newsCoverageWarning, setNewsCoverageWarning] = useState('');
+  const [newsCoverageFetched, setNewsCoverageFetched] = useState(false);
+  // Collapsed by default -- NEWS_TOPIC_PRESETS spans 7 categories now, and most visits to this
+  // card are the "check coverage on the article I just opened" case (title already pre-filled),
+  // not topic browsing. Same expand/collapse pattern as the Gemini usage panel's usageDetailOpen.
+  const [newsTopicsOpen, setNewsTopicsOpen] = useState(false);
   // The overlap check below is a heuristic, and heuristics have false positives -- this is the
   // escape hatch for when it's wrong about a specific title, rather than a hard block with no way
   // through. Reset on any manual edit to Topic/Exact Title so it never silently carries over to a
@@ -311,6 +353,14 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     setTopicInput('');
     setExactTitleInput('');
     setPreviousAttempts([]);
+    // Defaulted to this article's own title, not left blank -- the common case opening this is a
+    // freshly-drafted FEMA county-event article, where the title already names the county and
+    // incident. Results from whatever article was open previously are cleared too, so switching
+    // articles never shows stale headlines under a new title.
+    setNewsCoverageQuery(article.title);
+    setNewsCoverageResults([]);
+    setNewsCoverageError('');
+    setNewsCoverageFetched(false);
     setView('edit');
   };
 
@@ -553,6 +603,31 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       setKeywordError('Lost connection while checking Search Console.');
     } finally {
       setKeywordLoading(false);
+    }
+  };
+
+  // overrideQuery lets a preset topic chip run its own search immediately, without waiting on a
+  // same-tick state update to newsCoverageQuery (React state updates aren't synchronous -- same
+  // reasoning as generateWithAi's overrideTopic above).
+  const checkNewsCoverage = async (overrideQuery?: string) => {
+    const query = (overrideQuery ?? newsCoverageQuery).trim();
+    setNewsCoverageLoading(true);
+    setNewsCoverageError('');
+    setNewsCoverageWarning('');
+    try {
+      const res = await fetch(`/api/admin/news-coverage?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      setNewsCoverageFetched(true);
+      if (data?.success) {
+        setNewsCoverageResults(data.items || []);
+        setNewsCoverageWarning(data.warning || '');
+      } else {
+        setNewsCoverageError(data?.error || 'News coverage lookup failed. Try again in a moment.');
+      }
+    } catch {
+      setNewsCoverageError('Lost connection while checking for news coverage.');
+    } finally {
+      setNewsCoverageLoading(false);
     }
   };
 
@@ -1215,6 +1290,115 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             </div>
           </div>
         )}
+
+        {/* Manual, on-demand GDELT search -- see src/server/newsCoverageApi.ts. Deliberately its
+            own card, not folded into "Write a first draft with AI" below: that one hides once the
+            article already has content, but the main reason to check this is reviewing an
+            already-drafted FEMA county-event article for a follow-up angle -- so this has to keep
+            working after generation, not just before it. Defaulted to the open article's title
+            (see openEditor), freely editable, never auto-runs. */}
+        <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl space-y-3">
+          <div className="text-sm font-bold text-white flex items-center gap-1.5">
+            <Globe className="w-4 h-4 text-sky-400" />
+            <span>Latest news coverage</span>
+          </div>
+          <p className="text-xs text-slate-400">
+            Recent headlines from GDELT and Google News for whatever's typed below -- useful for checking follow-up angles on a FEMA county-event draft, or for spotting a timely topic before starting a new guide. Never cited as a source; just inspiration for what to write.
+          </p>
+
+          <button
+            onClick={() => setNewsTopicsOpen((v) => !v)}
+            className="text-[11px] font-bold text-sky-400 hover:text-sky-300 flex items-center gap-1 cursor-pointer"
+          >
+            <span>Browse topics ({NEWS_TOPIC_PRESETS.length})</span>
+            {newsTopicsOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
+
+          {newsTopicsOpen && (
+            <div className="space-y-2.5">
+              {newsTopicCategories.map(([category, presets]) => (
+                <div key={category} className="space-y-1">
+                  <div className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{category}</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {presets.map((preset) => (
+                      <button
+                        key={preset.label}
+                        type="button"
+                        disabled={newsCoverageLoading}
+                        onClick={() => {
+                          setNewsCoverageQuery(preset.query);
+                          checkNewsCoverage(preset.query);
+                        }}
+                        className="px-2.5 py-1 bg-slate-800 hover:bg-sky-900/60 border border-slate-700 hover:border-sky-700 text-[11px] font-semibold text-slate-300 hover:text-sky-300 rounded-full transition-all cursor-pointer disabled:opacity-40"
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={newsCoverageQuery}
+              onChange={(e) => setNewsCoverageQuery(e.target.value)}
+              placeholder="e.g. Pierce County storm, or aluminum wiring lawsuit"
+              className="flex-1 px-3.5 py-2.5 bg-slate-950 border border-slate-800 focus:border-sky-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none"
+            />
+            <button
+              onClick={() => checkNewsCoverage()}
+              disabled={newsCoverageLoading}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 bg-sky-600 hover:bg-sky-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
+            >
+              {newsCoverageLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Globe className="w-3.5 h-3.5" />}
+              {newsCoverageLoading ? 'Checking…' : 'Show latest coverage'}
+            </button>
+          </div>
+
+          {newsCoverageError && (
+            <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              <span>{newsCoverageError}</span>
+            </p>
+          )}
+          {newsCoverageWarning && (
+            <p className="text-[11px] text-amber-400 flex items-start gap-1.5">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              <span>{newsCoverageWarning} Showing results from the other source only.</span>
+            </p>
+          )}
+          {newsCoverageFetched && newsCoverageResults.length === 0 && !newsCoverageLoading && !newsCoverageError && (
+            <p className="text-xs text-slate-500">No recent headlines matched -- try a broader search.</p>
+          )}
+          {newsCoverageResults.length > 0 && (
+            <div className="space-y-1 max-h-64 overflow-y-auto border-t border-slate-800 pt-3">
+              {newsCoverageResults.map((item) => (
+                <a
+                  key={item.url}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-2 p-2 rounded-lg hover:bg-slate-800/60 group"
+                >
+                  <Link2 className="w-3.5 h-3.5 text-slate-600 group-hover:text-sky-400 shrink-0 mt-0.5" />
+                  <span className="flex-1 text-xs text-slate-300 group-hover:text-white">
+                    {item.title}
+                    <span className="block text-[10px] text-slate-500 mt-0.5">
+                      {item.domain}
+                      {' · '}
+                      {new Date(item.seenAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {' · '}
+                      {item.source === 'gdelt' ? 'GDELT' : 'Google News'}
+                    </span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div className="p-4 bg-indigo-950/40 border border-indigo-800/60 rounded-2xl space-y-3">
           <div className="text-sm font-bold text-white flex items-center gap-1.5">
