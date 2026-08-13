@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { buildCountyHazardSvg } from '../utils/countyHazardSvg.js';
+import { computeCountyRankings, CountyMetricInput } from '../utils/countyRankings.js';
 
 // Public read path for county research pages (see scripts/fetch-county-data.ts for how rows get
 // here and CountyPageView.tsx for how they're rendered). data_complete = false is treated
@@ -53,15 +54,37 @@ export function registerCountyRoutes(app: Express) {
       return;
     }
     try {
-      const rows = await withDb((sql) => sql`
-        SELECT * FROM county_data WHERE slug = ${req.params.slug} AND data_complete = true LIMIT 1
-      `);
+      const [rows, rankingRows] = await Promise.all([
+        withDb((sql) => sql`
+          SELECT * FROM county_data WHERE slug = ${req.params.slug} AND data_complete = true LIMIT 1
+        `),
+        // All 31 (and growing) covered counties' minimal fields -- how this one ranks against the
+        // rest is only computable with every county's numbers in hand, not just this one's own
+        // row. See src/utils/countyRankings.ts for why this lives in a shared module: the static
+        // prerender (scripts/prerender-counties.tsx) needs to compute the exact same rank from the
+        // exact same input, or a crawler and a live visitor would see different numbers.
+        withDb((sql) => sql`
+          SELECT slug, census_total_units, census_year_built_json, fema_risk_score, noaa_event_counts_json
+          FROM county_data WHERE data_complete = true
+        `),
+      ]);
       const row = (rows as unknown as CountyRow[])[0];
       if (!row) {
         res.status(404).json({ success: false, error: 'Not found.' });
         return;
       }
-      res.json({ success: true, county: toApiShape(row) });
+      const rankingInputs: CountyMetricInput[] = (rankingRows as unknown as Array<{
+        slug: string; census_total_units: number | null; census_year_built_json: string;
+        fema_risk_score: number | null; noaa_event_counts_json: string;
+      }>).map((r) => ({
+        slug: r.slug,
+        censusTotalUnits: r.census_total_units,
+        censusYearBuiltBuckets: JSON.parse(r.census_year_built_json || '{}'),
+        femaRiskScore: r.fema_risk_score,
+        noaaEventCounts: JSON.parse(r.noaa_event_counts_json || '{}'),
+      }));
+      const rankings = computeCountyRankings(row.slug, rankingInputs);
+      res.json({ success: true, county: { ...toApiShape(row), rankings } });
     } catch (err: any) {
       console.error('[counties] get failed:', err);
       res.status(404).json({ success: false, error: 'Not found.' });
