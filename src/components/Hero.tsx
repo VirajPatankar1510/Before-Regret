@@ -7,9 +7,7 @@ import { PricingSection } from './home/PricingSection';
 import { FaqSection } from './home/FaqSection';
 import { ClosingCtaSection } from './home/ClosingCtaSection';
 import { ProofStrip } from './home/ProofStrip';
-import { ContentRouterSection } from './home/ContentRouterSection';
-import { OriginalResearchSection } from './home/OriginalResearchSection';
-import { LocalDataSection } from './home/LocalDataSection';
+import { LibrarySnapshotSection } from './home/LibrarySnapshotSection';
 import {
   HomeData,
   buildGuideClusters,
@@ -159,30 +157,27 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
       {/* 4. HOW IT WORKS & DATA SYNTHESIS WORKFLOW */}
       <HowItWorksSection />
 
-      {/* 5-7. THE CONTENT LAYER.
-          Placed after the product explanation and before the price on purpose: a visitor who isn't
-          ready to run an address (most of them) gets somewhere useful to go instead of bouncing,
-          and a visitor who is ready has already passed the search box twice. Asking for money
-          lands better after the library has done the arguing. */}
-      <ContentRouterSection
+      {/* 5. PLAIN, TRANSPARENT PRICING -- directly after the product explanation, before the
+          content library. A landing page makes its offer early; the library below is there for
+          whoever isn't ready yet, not a detour before the price. */}
+      <PricingSection onScrollToSearch={handleScrollToSearch} />
+
+      {/* 6. WHAT'S INSIDE -- one compact, single-scan proof of the library (a few guides per
+          situation, the research pages, top counties), not an exhaustive directory. Everything it
+          doesn't show inline is one click away at /guides/. */}
+      <LibrarySnapshotSection
         clusters={clusters}
+        research={research}
+        counties={homeData.counties}
+        updates={updates}
         totalGuides={stats.guideCount}
         onNavigate={onNavigate}
       />
-      <OriginalResearchSection
-        research={research}
-        countyCount={stats.countyCount}
-        onNavigate={onNavigate}
-      />
-      <LocalDataSection counties={homeData.counties} updates={updates} onNavigate={onNavigate} />
 
-      {/* 8. PLAIN, TRANSPARENT PRICING */}
-      <PricingSection onScrollToSearch={handleScrollToSearch} />
-
-      {/* 9. FREQUENTLY ASKED QUESTIONS */}
+      {/* 7. FREQUENTLY ASKED QUESTIONS */}
       <FaqSection />
 
-      {/* 10. CLOSING CALL TO ACTION */}
+      {/* 8. CLOSING CALL TO ACTION */}
       <ClosingCtaSection onScrollToSearch={handleScrollToSearch} />
 
     </div>
