@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { Check } from 'lucide-react';
 import { AddressSearchBox } from './AddressSearchBox';
 import { PropertySearchResult } from '../types';
 import { ListingOmissionsSection } from './home/ListingOmissionsSection';
@@ -110,13 +111,35 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
         <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
 
           {/* Main Risk-Framed Headline & Subhead */}
-          <div className="space-y-4">
+          <div className="space-y-5">
             <h1 className="font-sans text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
               Could you regret moving here?
             </h1>
             <p className="text-base sm:text-xl text-slate-300 font-sans font-normal max-w-2xl mx-auto leading-relaxed">
-              Search any US residential address. Get the checks that actually matter for a home of its age and county, the exact questions to ask the seller, and a clear list of what to verify before you sign.
+              Search any US residential address and get:
             </p>
+            {/* Broken out from one dense sentence into a scannable checklist -- three distinct
+                deliverables read faster as three lines than buried in one "X, Y, and Z" clause. */}
+            <ul className="max-w-md mx-auto text-left space-y-2.5 pt-1">
+              <li className="flex items-start gap-2.5">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 shrink-0 mt-0.5" />
+                <span className="text-sm sm:text-base text-slate-300 leading-snug">
+                  The checks that actually matter for a home of its age and county
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 shrink-0 mt-0.5" />
+                <span className="text-sm sm:text-base text-slate-300 leading-snug">
+                  The exact questions to ask the seller
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 shrink-0 mt-0.5" />
+                <span className="text-sm sm:text-base text-slate-300 leading-snug">
+                  A clear list of what to verify before you sign
+                </span>
+              </li>
+            </ul>
           </div>
 
           {/* Search Box Container */}
