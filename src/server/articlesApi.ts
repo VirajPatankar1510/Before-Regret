@@ -542,15 +542,16 @@ export function registerArticleRoutes(app: Express) {
     }
     try {
       const rows = await withDb((sql) => sql`
-        SELECT slug, title, meta_description, published_at
+        SELECT slug, title, meta_description, article_type, published_at
         FROM articles WHERE status = 'published' ORDER BY published_at DESC
       `);
       const articles = (rows as unknown as Array<
-        Pick<ArticleRow, 'slug' | 'title' | 'meta_description' | 'published_at'>
+        Pick<ArticleRow, 'slug' | 'title' | 'meta_description' | 'article_type' | 'published_at'>
       >).map((row) => ({
         slug: row.slug,
         title: row.title,
         metaDescription: row.meta_description,
+        articleType: row.article_type,
         publishedAt: row.published_at,
       }));
       res.json({ success: true, articles });
