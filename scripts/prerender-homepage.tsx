@@ -2,6 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { Check } from 'lucide-react';
 import { ListingOmissionsSection } from '../src/components/home/ListingOmissionsSection';
 import { HowItWorksSection } from '../src/components/home/HowItWorksSection';
 import { PricingSection } from '../src/components/home/PricingSection';
@@ -70,13 +71,33 @@ function HomeStaticBody({ data }: { data: HomeData }) {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
-          <div className="space-y-4">
+          <div className="space-y-5">
             <h1 className="font-sans text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
               Could you regret moving here?
             </h1>
             <p className="text-base sm:text-xl text-slate-300 font-sans font-normal max-w-2xl mx-auto leading-relaxed">
-              Search any US residential address. Get the checks that actually matter for a home of its age and county, the exact questions to ask the seller, and a clear list of what to verify before you sign.
+              Search any US residential address and get:
             </p>
+            <ul className="max-w-md mx-auto text-left space-y-2.5 pt-1">
+              <li className="flex items-start gap-2.5">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 shrink-0 mt-0.5" />
+                <span className="text-sm sm:text-base text-slate-300 leading-snug">
+                  The checks that actually matter for a home of its age and county
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 shrink-0 mt-0.5" />
+                <span className="text-sm sm:text-base text-slate-300 leading-snug">
+                  The exact questions to ask the seller
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 shrink-0 mt-0.5" />
+                <span className="text-sm sm:text-base text-slate-300 leading-snug">
+                  A clear list of what to verify before you sign
+                </span>
+              </li>
+            </ul>
           </div>
           <p className="text-xs sm:text-sm text-slate-400 font-medium">
             Your first report is free. No credit card required.
