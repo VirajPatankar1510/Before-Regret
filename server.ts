@@ -233,18 +233,23 @@ export async function createApp() {
   registerPublicApiV1Routes(app);
 
   // Master Sitemap Index Endpoint (/sitemap.xml and /sitemaps/sitemap-index.xml)
-  app.get(["/sitemap.xml", "/sitemaps/sitemap-index.xml"], (req, res) => {
+  app.get(["/sitemap.xml", "/sitemaps/sitemap-index.xml"], async (req, res) => {
     res.setHeader("Content-Type", "application/xml; charset=utf-8");
     res.setHeader("Cache-Control", "public, max-age=3600");
-    res.send(generateSitemapIndexXml());
+    res.send(await generateSitemapIndexXml());
   });
 
   // Child Modular Sitemap Endpoints (/sitemaps/sitemap-pages.xml, /sitemaps/sitemap-guides.xml)
   app.get("/sitemaps/:sitemapName", async (req, res) => {
     const { sitemapName } = req.params;
+    const xml = await generateChildSitemapXml(sitemapName);
+    if (xml === null) {
+      res.status(404).end();
+      return;
+    }
     res.setHeader("Content-Type", "application/xml; charset=utf-8");
     res.setHeader("Cache-Control", "public, max-age=3600");
-    res.send(await generateChildSitemapXml(sitemapName));
+    res.send(xml);
   });
 
   // Robots.txt Endpoint

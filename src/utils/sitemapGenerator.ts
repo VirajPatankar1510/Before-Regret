@@ -33,16 +33,41 @@ export interface SitemapUrlEntry {
   images?: Array<{ loc: string; title: string }>;
 }
 
+// Same 48-hour News-sitemap freshness window as generateChildSitemapXml's 'sitemap-news' branch
+// below -- pulled out so the index can decide whether to list that file at all. The sitemaps.org
+// schema requires <urlset> to contain at least one <url> (minOccurs="1"), so a urlset with zero
+// entries -- which is exactly what happens whenever no county-event article has published in the
+// last 48 hours -- is not just empty, it's an invalid sitemap. Google Search Console reports this
+// as "Sitemap can be read, but has errors / Missing XML tag" on urlset. The fix isn't to fake an
+// entry; it's to not list (or serve) the file at all when there's genuinely nothing current to
+// report, same as any other time-windowed feed.
+async function countRecentNewsArticles(): Promise<number> {
+  if (!isDbConfigured()) return 0;
+  try {
+    const rows = await withDb((sql) => sql`
+      SELECT count(*)::int AS n FROM articles
+      WHERE status = 'published' AND article_type = 'news' AND published_at >= now() - interval '48 hours'
+    `);
+    return (rows as unknown as Array<{ n: number }>)[0].n;
+  } catch (err) {
+    console.error('[sitemap] failed to count recent news articles:', err);
+    return 0;
+  }
+}
+
 // 1. Sitemap Index Generator (/sitemap.xml)
-export function generateSitemapIndexXml(): string {
+export async function generateSitemapIndexXml(): Promise<string> {
   const today = new Date().toISOString().split('T')[0];
 
   const sitemaps = [
     { loc: `${BASE_URL}/sitemaps/sitemap-pages.xml`, lastmod: today },
     { loc: `${BASE_URL}/sitemaps/sitemap-guides.xml`, lastmod: today },
     { loc: `${BASE_URL}/sitemaps/sitemap-counties.xml`, lastmod: today },
-    { loc: `${BASE_URL}/sitemaps/sitemap-news.xml`, lastmod: today },
   ];
+
+  if ((await countRecentNewsArticles()) > 0) {
+    sitemaps.push({ loc: `${BASE_URL}/sitemaps/sitemap-news.xml`, lastmod: today });
+  }
 
   const xmlLines = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -68,8 +93,12 @@ export interface NewsUrlEntry {
   publicationDate: string;
 }
 
-// 2. Child Sitemap Generator (/sitemaps/:name.xml)
-export async function generateChildSitemapXml(name: string): Promise<string> {
+// 2. Child Sitemap Generator (/sitemaps/:name.xml). Returns null for sitemap-news specifically
+// when there's currently nothing within its freshness window -- see countRecentNewsArticles
+// above for why a zero-entry urlset isn't just empty, it's invalid. Callers should treat null as
+// "this file doesn't exist right now" (a 404 for the live route, skip writing it for the static
+// build), not as "serve a body anyway."
+export async function generateChildSitemapXml(name: string): Promise<string | null> {
   const cleanName = name.replace(/\.xml$/, '');
   let entries: SitemapUrlEntry[] = [];
 
@@ -90,6 +119,7 @@ export async function generateChildSitemapXml(name: string): Promise<string> {
         WHERE status = 'published' AND article_type = 'news' AND published_at >= now() - interval '48 hours'
         ORDER BY published_at DESC
       `);
+      if (rows.length === 0) return null;
       const newsEntries: NewsUrlEntry[] = (rows as unknown as Array<{ slug: string; title: string; published_at: string | Date | null }>).map((a) => ({
         loc: `${BASE_URL}/guides/${a.slug}/`,
         title: a.title,
@@ -98,7 +128,7 @@ export async function generateChildSitemapXml(name: string): Promise<string> {
       return buildNewsUrlsetXml(newsEntries);
     } catch (err) {
       console.error('[sitemap] failed to load recent news articles:', err);
-      return buildNewsUrlsetXml([]);
+      return null;
     }
   }
 
@@ -218,7 +248,7 @@ function buildUrlsetXml(entries: SitemapUrlEntry[]): string {
 }
 
 // Backward compatibility helper
-export function generateXmlSitemap(): string {
+export async function generateXmlSitemap(): Promise<string> {
   return generateSitemapIndexXml();
 }
 
