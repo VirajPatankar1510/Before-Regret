@@ -191,15 +191,14 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
     );
   }
 
+  // All of them, not a top-N slice -- FEMA's National Risk Index scores 18 hazard types (this app
+  // stores whichever a county actually has real values for, typically 14), and trimming to a top 5
+  // was an arbitrary display cap that hid real data this app already holds and already fetched.
   const femaHazardEntries = Object.entries(county.femaHazards) as [string, { rating: string; score: number | null }][];
-  const topHazards = femaHazardEntries
-    .sort((a, b) => (b[1].score ?? 0) - (a[1].score ?? 0))
-    .slice(0, 5);
+  const topHazards = femaHazardEntries.sort((a, b) => (b[1].score ?? 0) - (a[1].score ?? 0));
 
   const noaaEventEntries = Object.entries(county.noaaEventCounts) as [string, number][];
-  const topStormEvents = noaaEventEntries
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 8);
+  const topStormEvents = noaaEventEntries.sort((a, b) => b[1] - a[1]);
   const totalStormEvents = noaaEventEntries.reduce((sum, [, count]) => sum + count, 0);
   // Same top-1 entry the hazard-map SVG picks server-side (see topHazard() in
   // countyHazardSvg.ts) -- reused here only to build accurate alt text, not recomputed
