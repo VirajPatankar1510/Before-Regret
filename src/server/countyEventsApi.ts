@@ -18,12 +18,24 @@ import {
 } from './countyEventGenerator.js';
 
 // Checks for new FEMA disaster declarations in counties BeforeRegret already covers, and drafts
-// an article for each one that hasn't already been processed. Triggered two ways: a daily Vercel
-// Cron hit (see vercel.json), authenticated with CRON_SECRET since a cron invocation carries no
-// admin session cookie; and a manual "Check now" button in the SEO admin panel, authenticated the
-// normal way. Every draft lands in the same `articles` table as any other guide, at status
-// 'draft' -- nothing here ever publishes on its own. See docs at the top of
-// countyEventGenerator.ts for why the citation-the-real-declaration rule is non-negotiable.
+// an article for the first one that hasn't already been processed -- at most one Gemini call per
+// request, not a loop over every match. Triggered two ways: a daily Vercel Cron hit (see
+// vercel.json), authenticated with CRON_SECRET since a cron invocation carries no admin session
+// cookie; and a manual "Check now" button in the SEO admin panel, authenticated the normal way.
+// Every draft lands in the same `articles` table as any other guide, at status 'draft' -- nothing
+// here ever publishes on its own. See docs at the top of countyEventGenerator.ts for why the
+// citation-the-real-declaration rule is non-negotiable.
+//
+// One-at-a-time is a deliberate fix, not the original design: this route has no maxDuration
+// override, so it runs on Vercel's default serverless timeout. Looping over every unprocessed
+// match in one request was fine when this covered 31 counties ("a match inside 14 days is rare"),
+// but confirmed live after expanding to 60: a single admin-triggered widened-lookback check found
+// 3 real unprocessed matches at once, each needing its own sequential Gemini call, and the request
+// timed out mid-run with a generic failure and nothing useful in the logs -- the platform killing
+// the function, not this file's own catch block, which never got to run. Processing one match per
+// request (repeat the check to work through a real backlog, same pattern as the defect-reference
+// library and comparison-report generators) makes this timeout-proof regardless of how many real
+// matches exist in a given window.
 
 const LOOKBACK_DAYS = 14;
 
@@ -108,11 +120,18 @@ export function registerCountyEventsRoutes(app: Express) {
       return;
     }
 
-    const summary = { declarationsChecked: 0, coveredCountyMatches: 0, alreadyProcessed: 0, draftsCreated: 0, errors: [] as string[] };
+    const summary = {
+      declarationsChecked: 0,
+      coveredCountyMatches: 0,
+      alreadyProcessed: 0,
+      draftsCreated: 0,
+      remainingCount: 0,
+      processed: null as { disasterNumber: number; countySlug: string; slug: string } | null,
+      errors: [] as string[],
+    };
 
     // Optional ?days=N override, for testing against real historical declarations instead of
-    // waiting for a live one -- coverage is only 31 counties, so a real match inside the default
-    // 14-day window is rare. Capped at 400 days (a little over a year) so an admin testing this
+    // waiting for a live one. Capped at 400 days (a little over a year) so an admin testing this
     // can't accidentally trigger months of drafting across the whole declarations archive, which
     // goes back to 1953. The daily cron in vercel.json always hits the plain path with no query
     // param, so this only ever changes behavior for a request an admin deliberately sent.
@@ -128,6 +147,13 @@ export function registerCountyEventsRoutes(app: Express) {
 
       const knownSourcesBlock = KNOWN_SOURCES.map((s) => `${s.key} = ${s.name}`).join('\n');
 
+      // First pass: find every real, actionable match (not yet processed, has complete county
+      // data) without spending a single Gemini call -- these are all cheap DB reads. A match with
+      // no complete county_data row is deduped immediately here too (also cheap, no Gemini), same
+      // "no data, no article" discipline as the rest of this app, so a permanently-incomplete
+      // county doesn't get re-checked forever. Only the actual generation step below is expensive
+      // enough to risk a timeout, so that's the only thing capped to one per request.
+      const actionable: Array<{ declaration: typeof declarations[number]; match: NonNullable<ReturnType<typeof matchDeclarationToCoveredCounty>>; countyRow: CountyDataRow }> = [];
       for (const declaration of declarations) {
         const match = matchDeclarationToCoveredCounty(declaration);
         if (!match) continue;
@@ -146,25 +172,29 @@ export function registerCountyEventsRoutes(app: Express) {
           continue;
         }
 
-        try {
-          const countyRow = await withDb(async (sql) => {
-            const rows = await sql`
-              SELECT * FROM county_data WHERE slug = ${match.slug} AND data_complete = true LIMIT 1
-            `;
-            return rows[0] as CountyDataRow | undefined;
-          });
-          // No complete county_data row -- same "no data, no article" discipline as the rest of
-          // this app. Still record the dedup row so a permanently-incomplete county doesn't get
-          // re-attempted (and re-billed) on every single cron run.
-          if (!countyRow) {
-            await withDb((sql) => sql`
-              INSERT INTO fema_declaration_events (disaster_number, county_slug, fema_declaration_string, declaration_title)
-              VALUES (${declaration.disasterNumber}, ${match.slug}, ${declaration.femaDeclarationString}, ${declaration.declarationTitle})
-              ON CONFLICT (disaster_number, county_slug) DO NOTHING
-            `);
-            continue;
-          }
+        const countyRow = await withDb(async (sql) => {
+          const rows = await sql`
+            SELECT * FROM county_data WHERE slug = ${match.slug} AND data_complete = true LIMIT 1
+          `;
+          return rows[0] as CountyDataRow | undefined;
+        });
+        if (!countyRow) {
+          await withDb((sql) => sql`
+            INSERT INTO fema_declaration_events (disaster_number, county_slug, fema_declaration_string, declaration_title)
+            VALUES (${declaration.disasterNumber}, ${match.slug}, ${declaration.femaDeclarationString}, ${declaration.declarationTitle})
+            ON CONFLICT (disaster_number, county_slug) DO NOTHING
+          `);
+          continue;
+        }
 
+        actionable.push({ declaration, match, countyRow });
+      }
+
+      summary.remainingCount = Math.max(0, actionable.length - 1);
+
+      if (actionable.length > 0) {
+        const { declaration, match, countyRow } = actionable[0];
+        try {
           const dominantEra = pickDominantEraYear(countyRow.census_year_built_json);
           const eraResult = dominantEra
             ? getInspectionPriorities(dominantEra.year, countyRow.county_name, countyRow.state_abbrev)
@@ -233,7 +263,7 @@ export function registerCountyEventsRoutes(app: Express) {
             throw new Error('Gemini returned an incomplete draft (missing title or body).');
           }
 
-          const articleId = await withDb(async (sql) => {
+          const { id: articleId, slug: createdSlug } = await withDb(async (sql) => {
             const base = slugify(title);
             let slug = base;
             for (let attempt = 1; attempt <= 20; attempt++) {
@@ -252,9 +282,9 @@ export function registerCountyEventsRoutes(app: Express) {
                 'draft',
                 'news'
               )
-              RETURNING id
+              RETURNING id, slug
             `;
-            return (rows[0] as { id: number }).id;
+            return rows[0] as { id: number; slug: string };
           });
 
           await withDb((sql) => sql`
@@ -262,7 +292,8 @@ export function registerCountyEventsRoutes(app: Express) {
             VALUES (${declaration.disasterNumber}, ${match.slug}, ${declaration.femaDeclarationString}, ${declaration.declarationTitle}, ${articleId})
             ON CONFLICT (disaster_number, county_slug) DO NOTHING
           `);
-          summary.draftsCreated++;
+          summary.draftsCreated = 1;
+          summary.processed = { disasterNumber: declaration.disasterNumber, countySlug: match.slug, slug: createdSlug };
         } catch (innerErr: any) {
           console.error(`[county-events] failed to draft for disaster ${declaration.disasterNumber} / ${match.slug}:`, innerErr);
           summary.errors.push(`${declaration.femaDeclarationString} (${match.slug}): ${innerErr?.message || 'unknown error'}`);
