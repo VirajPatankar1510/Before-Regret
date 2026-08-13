@@ -7,16 +7,10 @@ import { HowItWorksSection } from '../src/components/home/HowItWorksSection';
 import { PricingSection } from '../src/components/home/PricingSection';
 import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
 import { HOMEPAGE_FAQS } from '../src/components/home/FaqSection';
-import { ProofStrip } from '../src/components/home/ProofStrip';
 import { GuideCardsSection } from '../src/components/home/GuideCardsSection';
 import { isDbConfigured } from '../src/server/db.js';
 import { loadHomepageData } from '../src/server/homepageApi.js';
-import {
-  HomeData,
-  buildGuideClusters,
-  pickResearchPages,
-  computeCoverageStats,
-} from '../src/utils/homeContent.js';
+import { HomeData, buildGuideClusters, pickResearchPages } from '../src/utils/homeContent.js';
 
 const EMPTY_HOME_DATA: HomeData = { articles: [], counties: [] };
 
@@ -48,7 +42,6 @@ function HomeStaticBody({ data }: { data: HomeData }) {
   // show the same clusters, in the same order, with the same counts.
   const clusters = buildGuideClusters(data.articles);
   const research = pickResearchPages(data.articles);
-  const stats = computeCoverageStats(data);
 
   return (
     <div className="space-y-0 pb-16">
@@ -91,7 +84,6 @@ function HomeStaticBody({ data }: { data: HomeData }) {
         </div>
       </section>
 
-      <ProofStrip stats={stats} />
       <ListingOmissionsSection />
       <HowItWorksSection />
       <PricingSection onScrollToSearch={noop} />
@@ -102,7 +94,7 @@ function HomeStaticBody({ data }: { data: HomeData }) {
       <GuideCardsSection
         clusters={clusters}
         research={research}
-        totalGuides={stats.guideCount}
+        totalGuides={data.articles.length}
       />
 
       <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 border-t border-slate-200/80">
