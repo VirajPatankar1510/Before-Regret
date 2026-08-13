@@ -61,6 +61,40 @@ export const COUNTY_RADON_ZONES: CountyRadonZone[] = [
   { stateAbbrev: 'NY', countyName: 'SUFFOLK', zone: 3 },
   { stateAbbrev: 'FL', countyName: 'ORANGE', zone: 3 },
   { stateAbbrev: 'NY', countyName: 'BRONX', zone: 3 },
+
+  // Third batch -- next 29 largest US counties not already covered above, per the same Census
+  // Bureau population ranking. Verified against the same EPA table (see file header), pulled and
+  // cross-checked against both the 'un-filtered-raw-data' and 'filtered-raw data' sheets of EPA's
+  // own spreadsheet -- both agreed on every value below.
+  { stateAbbrev: 'NY', countyName: 'NASSAU', zone: 3 },
+  { stateAbbrev: 'OH', countyName: 'FRANKLIN', zone: 1 },
+  { stateAbbrev: 'TX', countyName: 'COLLIN', zone: 3 },
+  { stateAbbrev: 'MI', countyName: 'OAKLAND', zone: 2 },
+  { stateAbbrev: 'MN', countyName: 'HENNEPIN', zone: 1 },
+  { stateAbbrev: 'NC', countyName: 'WAKE', zone: 2 },
+  { stateAbbrev: 'NC', countyName: 'MECKLENBURG', zone: 3 },
+  { stateAbbrev: 'OH', countyName: 'CUYAHOGA', zone: 2 },
+  { stateAbbrev: 'PA', countyName: 'ALLEGHENY', zone: 1 },
+  { stateAbbrev: 'UT', countyName: 'SALT LAKE', zone: 2 },
+  { stateAbbrev: 'CA', countyName: 'CONTRA COSTA', zone: 2 },
+  { stateAbbrev: 'VA', countyName: 'FAIRFAX', zone: 1 },
+  { stateAbbrev: 'AZ', countyName: 'PIMA', zone: 2 },
+  { stateAbbrev: 'MD', countyName: 'MONTGOMERY', zone: 1 },
+  { stateAbbrev: 'TX', countyName: 'DENTON', zone: 3 },
+  { stateAbbrev: 'FL', countyName: 'DUVAL', zone: 3 },
+  { stateAbbrev: 'CA', countyName: 'FRESNO', zone: 2 },
+  { stateAbbrev: 'GA', countyName: 'GWINNETT', zone: 1 },
+  { stateAbbrev: 'NY', countyName: 'WESTCHESTER', zone: 3 },
+  { stateAbbrev: 'IN', countyName: 'MARION', zone: 1 },
+  { stateAbbrev: 'MO', countyName: 'ST. LOUIS', zone: 2 },
+  { stateAbbrev: 'HI', countyName: 'HONOLULU', zone: 3 },
+  { stateAbbrev: 'NJ', countyName: 'BERGEN', zone: 2 },
+  { stateAbbrev: 'TX', countyName: 'FORT BEND', zone: 3 },
+  { stateAbbrev: 'MD', countyName: "PRINCE GEORGE'S", zone: 2 },
+  { stateAbbrev: 'FL', countyName: 'PINELLAS', zone: 3 },
+  { stateAbbrev: 'NY', countyName: 'ERIE', zone: 1 },
+  { stateAbbrev: 'WA', countyName: 'PIERCE', zone: 3 },
+  { stateAbbrev: 'IL', countyName: 'DUPAGE', zone: 2 },
 ];
 
 export function findCountyRadonZone(stateAbbrev: string, countyName: string): CountyRadonZone | undefined {

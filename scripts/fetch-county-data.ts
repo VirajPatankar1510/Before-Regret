@@ -81,11 +81,22 @@ function parseCsvLine(line: string): string[] {
   return fields;
 }
 
+// NOAA's Storm Events Database (CZ_NAME field) occasionally spells a county differently from the
+// Census/FEMA convention this app otherwise uses everywhere -- confirmed by grepping the actual
+// cached CSVs, not guessed: DuPage County, IL is 'DU PAGE' (two words) in NOAA's own data, while
+// Census and FEMA both match on 'DUPAGE' (one word, and FEMA's fetch for it already succeeds).
+// This is NOAA's own data quirk, not a wrong identity -- so it's aliased only for this one lookup
+// rather than changing identity.countyName, which would break the other two fetchers that already
+// agree on the standard spelling.
+const NOAA_CZ_NAME_ALIASES: Record<string, string> = {
+  'IL:DUPAGE': 'DU PAGE',
+};
+
 async function countNoaaEventsForCounty(filePaths: string[], identity: CountyIdentity): Promise<{ eventCounts: Record<string, number>; yearsCovered: string } | null> {
   const counts: Record<string, number> = {};
   let total = 0;
   const targetState = identity.stateName.toUpperCase();
-  const targetCounty = identity.countyName.toUpperCase();
+  const targetCounty = NOAA_CZ_NAME_ALIASES[`${identity.stateAbbrev}:${identity.countyName.toUpperCase()}`] || identity.countyName.toUpperCase();
 
   for (const filePath of filePaths) {
     const decompressed = zlib.gunzipSync(fs.readFileSync(filePath)).toString('utf8');

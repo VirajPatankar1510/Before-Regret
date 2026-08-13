@@ -61,10 +61,18 @@ const RADON_ZONE_TEXT: Record<number, string> = {
   3: 'Zone 3 -- low potential. EPA predicts an average indoor radon screening level below 2 pCi/L for this county.',
 };
 
+// A handful of real county names have a correct spelling the naive title-case regex below can't
+// produce -- an internal capital that isn't at a word/hyphen boundary. Checked before falling
+// through to the regex, keyed on the all-caps source form.
+const TITLE_CASE_OVERRIDES: Record<string, string> = {
+  DUPAGE: 'DuPage',
+};
+
 // The API returns countyName in the all-caps form FEMA/NOAA/Census use internally for matching
 // (e.g. "TRAVIS") -- fine for those lookups, not for a reader-facing page. Title-cased once here
 // rather than at every display site below.
 function titleCase(value: string): string {
+  if (TITLE_CASE_OVERRIDES[value]) return TITLE_CASE_OVERRIDES[value];
   return value
     .toLowerCase()
     .replace(/(^|[\s-])([a-z])/g, (_, sep, letter) => sep + letter.toUpperCase());

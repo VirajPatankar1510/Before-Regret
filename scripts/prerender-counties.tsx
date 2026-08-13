@@ -401,7 +401,13 @@ function CountiesIndexStaticBody({ rows }: { rows: CountyRow[] }) {
   );
 }
 
+// Matches the same override in CountyPageView.tsx -- see that file's comment for why.
+const TITLE_CASE_OVERRIDES: Record<string, string> = {
+  DUPAGE: 'DuPage',
+};
+
 function titleCase(value: string): string {
+  if (TITLE_CASE_OVERRIDES[value]) return TITLE_CASE_OVERRIDES[value];
   return value
     .toLowerCase()
     .replace(/(^|[\s-])([a-z])/g, (_, sep, letter) => sep + letter.toUpperCase());
