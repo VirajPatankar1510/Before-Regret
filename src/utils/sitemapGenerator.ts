@@ -106,6 +106,7 @@ export async function generateChildSitemapXml(name: string): Promise<string> {
     entries = [
       { loc: `${BASE_URL}/`, lastmod: today, changefreq: 'daily', priority: '1.0' },
       { loc: `${BASE_URL}/guides/`, lastmod: today, changefreq: 'weekly', priority: '0.8' },
+      { loc: `${BASE_URL}/counties/`, lastmod: today, changefreq: 'weekly', priority: '0.8' },
       // Real trust/process content, not legal boilerplate -- given the same priority as the
       // guides hub, unlike support/terms/privacy/refunds below which are 0.5 (and noindex on the
       // page itself for support/terms/privacy -- see App.tsx). This one needs to actually be
@@ -227,6 +228,7 @@ export function generateRobotsTxt(): string {
 User-agent: *
 Allow: /
 Allow: /guides/
+Allow: /counties/
 Allow: /about
 Allow: /support
 Allow: /terms

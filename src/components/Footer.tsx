@@ -83,6 +83,9 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                   <li>
                     <button onClick={() => onNavigate('/guides/')} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">View all guides →</button>
                   </li>
+                  <li>
+                    <button onClick={() => onNavigate('/counties/')} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">View all counties →</button>
+                  </li>
                 </ul>
               </div>
             )}

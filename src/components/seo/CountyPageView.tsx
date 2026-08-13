@@ -160,7 +160,8 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
           '@type': 'BreadcrumbList',
           itemListElement: [
             { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
-            { '@type': 'ListItem', position: 2, name: `${county.countyName} County, ${county.stateAbbrev}`, item: canonicalUrl },
+            { '@type': 'ListItem', position: 2, name: 'County Research', item: 'https://www.beforeregret.com/counties/' },
+            { '@type': 'ListItem', position: 3, name: `${county.countyName} County, ${county.stateAbbrev}`, item: canonicalUrl },
           ],
         },
       ],
@@ -228,6 +229,8 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
           <button onClick={() => onNavigate('/')} className="hover:text-blue-600">Home</button>
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+          <button onClick={() => onNavigate('/counties/')} className="hover:text-blue-600 shrink-0">County Research</button>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-slate-900 font-bold truncate">{county.countyName} County, {county.stateAbbrev}</span>
         </div>

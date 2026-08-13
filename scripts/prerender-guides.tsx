@@ -365,6 +365,9 @@ function GuidesIndexStaticBody({ guides }: { guides: GuideSummary[] }) {
           <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
             Every research guide we've published, in one place -- what a specific era, system, or record actually means for a home you're buying, cited back to the government or industry source behind it.
           </p>
+          <a href="/counties/" className="text-xs font-bold text-blue-700 hover:text-blue-800 inline-block">
+            Looking for county-level hazard and housing data instead? Browse all covered counties →
+          </a>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
