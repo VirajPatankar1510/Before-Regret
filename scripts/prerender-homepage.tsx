@@ -7,12 +7,21 @@ import { HowItWorksSection } from '../src/components/home/HowItWorksSection';
 import { PricingSection } from '../src/components/home/PricingSection';
 import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
 import { HOMEPAGE_FAQS } from '../src/components/home/FaqSection';
-import { withDb, isDbConfigured } from '../src/server/db.js';
+import { ProofStrip } from '../src/components/home/ProofStrip';
+import { ContentRouterSection } from '../src/components/home/ContentRouterSection';
+import { OriginalResearchSection } from '../src/components/home/OriginalResearchSection';
+import { LocalDataSection } from '../src/components/home/LocalDataSection';
+import { isDbConfigured } from '../src/server/db.js';
+import { loadHomepageData } from '../src/server/homepageApi.js';
+import {
+  HomeData,
+  buildGuideClusters,
+  pickResearchPages,
+  pickCountyUpdates,
+  computeCoverageStats,
+} from '../src/utils/homeContent.js';
 
-interface HomepageGuideLink {
-  slug: string;
-  title: string;
-}
+const EMPTY_HOME_DATA: HomeData = { articles: [], counties: [] };
 
 // Static HTML generator for the homepage, run after `vite build` alongside
 // scripts/prerender-guides.tsx.
@@ -36,7 +45,15 @@ interface HomepageGuideLink {
 
 function noop() {}
 
-function HomeStaticBody({ guides }: { guides: HomepageGuideLink[] }) {
+function HomeStaticBody({ data }: { data: HomeData }) {
+  // Same derivations the client runs in src/components/Hero.tsx, from the same shared module in
+  // src/utils/homeContent.ts -- that's what guarantees the crawler-facing HTML and the booted app
+  // show the same clusters, in the same order, with the same counts.
+  const clusters = buildGuideClusters(data.articles);
+  const research = pickResearchPages(data.articles);
+  const updates = pickCountyUpdates(data.articles);
+  const stats = computeCoverageStats(data);
+
   return (
     <div className="space-y-0 pb-16">
       {/* Geometry here is a deliberate mirror of the real hero in src/components/Hero.tsx, not an
@@ -78,8 +95,18 @@ function HomeStaticBody({ guides }: { guides: HomepageGuideLink[] }) {
         </div>
       </section>
 
+      <ProofStrip stats={stats} />
       <ListingOmissionsSection />
       <HowItWorksSection />
+
+      {/* The content layer, in the same order and position as src/components/Hero.tsx. No
+          onNavigate is passed, so ContentLink renders plain crawlable <a href> markup here --
+          which is the entire point of prerendering these: ~40 guide and county URLs get a real
+          link from the domain's strongest page. */}
+      <ContentRouterSection clusters={clusters} totalGuides={stats.guideCount} />
+      <OriginalResearchSection research={research} countyCount={stats.countyCount} />
+      <LocalDataSection counties={data.counties} updates={updates} />
+
       <PricingSection onScrollToSearch={noop} />
 
       <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 border-t border-slate-200/80">
@@ -104,38 +131,6 @@ function HomeStaticBody({ guides }: { guides: HomepageGuideLink[] }) {
           </div>
         </div>
       </section>
-
-      {guides.length > 0 && (
-        <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-white border-t border-slate-200/80">
-          <div className="max-w-4xl mx-auto space-y-6">
-            <div className="text-center space-y-3 max-w-2xl mx-auto">
-              <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
-                Editorial Guides
-              </h2>
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-                What inspectors flag, what insurers deny, and what to ask before you sign.
-              </p>
-            </div>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-              {guides.map((guide) => (
-                <li key={guide.slug}>
-                  <a
-                    href={`/guides/${guide.slug}/`}
-                    className="block px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 hover:text-blue-700 hover:border-blue-300 font-medium"
-                  >
-                    {guide.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <div className="text-center">
-              <a href="/guides/" className="inline-block font-bold text-blue-700 hover:text-blue-800">
-                View all guides →
-              </a>
-            </div>
-          </div>
-        </section>
-      )}
 
       <ClosingCtaSection onScrollToSearch={noop} />
     </div>
@@ -176,16 +171,18 @@ async function run() {
   const template = fs.readFileSync(templatePath, 'utf8');
   fs.writeFileSync(path.join(distPath, 'shell.html'), template, 'utf8');
 
-  let guides: HomepageGuideLink[] = [];
-  if (isDbConfigured()) {
-    const rows = (await withDb((sql) => sql`
-      SELECT slug, title FROM articles WHERE status = 'published' ORDER BY published_at DESC LIMIT 6
-    `)) as unknown as HomepageGuideLink[];
-    guides = rows;
-  }
+  // Reuses the exact loader GET /api/homepage serves, rather than a second hand-written query, so
+  // the build-time content and the runtime fallback can't drift apart in either shape or filtering.
+  const data: HomeData = isDbConfigured() ? await loadHomepageData() : EMPTY_HOME_DATA;
 
-  const bodyHtml = renderToStaticMarkup(<HomeStaticBody guides={guides} />);
+  const bodyHtml = renderToStaticMarkup(<HomeStaticBody data={data} />);
   const faqScript = `<script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(buildFaqJsonLd())}</script>`;
+
+  // Hand the same dataset to the client so React's first paint already has it -- see useHomeData()
+  // in src/components/Hero.tsx. Without this the booted app would briefly render the content
+  // sections empty and then pop them in once /api/homepage resolved, undoing the whole point of
+  // prerendering them.
+  const preloadScript = `<script>window.__PRELOADED_HOME__=${escapeJsonForScriptTag(data)}</script>`;
 
   // Preload the hero photo. It's the homepage's LCP element, but it's a CSS background-image on a
   // div that only exists once React has booted -- the static markup above deliberately renders a
@@ -202,11 +199,14 @@ async function run() {
   const heroPreload = `<link rel="preload" as="image" href="/hero-bg.jpg" fetchpriority="high" />`;
 
   const html = template
-    .replace('</head>', `${heroPreload}\n  ${faqScript}\n  </head>`)
+    .replace('</head>', `${heroPreload}\n  ${faqScript}\n  ${preloadScript}\n  </head>`)
     .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`);
 
   fs.writeFileSync(templatePath, html, 'utf8');
-  console.log('[prerender-homepage] Wrote dist/shell.html (empty, for dead-URL fallback) and overwrote dist/index.html with real homepage content');
+  console.log(
+    `[prerender-homepage] Wrote dist/shell.html (empty, for dead-URL fallback) and overwrote dist/index.html ` +
+      `with real homepage content (${data.articles.length} published pages, ${data.counties.length} counties)`
+  );
 }
 
 run().catch((err) => {

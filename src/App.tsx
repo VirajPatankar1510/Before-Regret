@@ -809,7 +809,7 @@ export function App() {
 
       <main className="flex-1">
         {currentStep === 'HOME' && (
-          <Hero onSelectProperty={handleSelectProperty} />
+          <Hero onSelectProperty={handleSelectProperty} onNavigate={handleNavigate} />
         )}
 
         {currentStep === 'RESEARCHING' && (
@@ -819,7 +819,7 @@ export function App() {
               onComplete={handleResearchProgressComplete}
             />
           ) : (
-            <Hero onSelectProperty={handleSelectProperty} />
+            <Hero onSelectProperty={handleSelectProperty} onNavigate={handleNavigate} />
           )
         )}
 

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { AddressSearchBox } from './AddressSearchBox';
 import { PropertySearchResult } from '../types';
 import { ListingOmissionsSection } from './home/ListingOmissionsSection';
@@ -6,13 +6,71 @@ import { HowItWorksSection } from './home/HowItWorksSection';
 import { PricingSection } from './home/PricingSection';
 import { FaqSection } from './home/FaqSection';
 import { ClosingCtaSection } from './home/ClosingCtaSection';
+import { ProofStrip } from './home/ProofStrip';
+import { ContentRouterSection } from './home/ContentRouterSection';
+import { OriginalResearchSection } from './home/OriginalResearchSection';
+import { LocalDataSection } from './home/LocalDataSection';
+import {
+  HomeData,
+  buildGuideClusters,
+  pickResearchPages,
+  pickCountyUpdates,
+  computeCoverageStats,
+} from '../utils/homeContent';
 
 interface HeroProps {
   onSelectProperty: (property: PropertySearchResult) => void;
+  onNavigate?: (path: string) => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
+const EMPTY_HOME_DATA: HomeData = { articles: [], counties: [] };
+
+/**
+ * Homepage content comes from whichever source is available, in that order:
+ *
+ *  1. `window.__PRELOADED_HOME__`, embedded in dist/index.html by scripts/prerender-homepage.tsx.
+ *     On a real page load this is always present, so the content sections render on the very first
+ *     paint with no fetch and no layout shift -- the same trick CountyPageView uses with
+ *     __PRELOADED_COUNTY__.
+ *  2. GET /api/homepage, for dev (where no prerender has run) and for client-side navigations back
+ *     to '/' that never reloaded the document.
+ */
+function useHomeData(): HomeData {
+  const [data, setData] = useState<HomeData>(() => {
+    if (typeof window === 'undefined') return EMPTY_HOME_DATA;
+    const preloaded = (window as any).__PRELOADED_HOME__;
+    return preloaded && Array.isArray(preloaded.articles) ? (preloaded as HomeData) : EMPTY_HOME_DATA;
+  });
+
+  useEffect(() => {
+    if (data.articles.length > 0 || data.counties.length > 0) return;
+    let cancelled = false;
+    fetch('/api/homepage')
+      .then((res) => res.json())
+      .then((json) => {
+        if (cancelled || !json?.success) return;
+        setData({ articles: json.articles || [], counties: json.counties || [] });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+    // Runs once on mount; the guard above is what prevents a refetch when the preload already
+    // supplied content.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return data;
+}
+
+export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
   const searchBoxRef = useRef<HTMLDivElement>(null);
+  const homeData = useHomeData();
+
+  const clusters = buildGuideClusters(homeData.articles);
+  const research = pickResearchPages(homeData.articles);
+  const updates = pickCountyUpdates(homeData.articles);
+  const stats = computeCoverageStats(homeData);
 
   const handleScrollToSearch = () => {
     if (searchBoxRef.current) {
@@ -92,19 +150,39 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty }) => {
         </div>
       </section>
 
-      {/* 2. WHAT A LISTING WON'T TELL YOU */}
+      {/* 2. PROOF OF DEPTH -- real counts from the live library, straight under the hero */}
+      <ProofStrip stats={stats} />
+
+      {/* 3. WHAT A LISTING WON'T TELL YOU */}
       <ListingOmissionsSection />
 
-      {/* 3. HOW IT WORKS & DATA SYNTHESIS WORKFLOW */}
+      {/* 4. HOW IT WORKS & DATA SYNTHESIS WORKFLOW */}
       <HowItWorksSection />
 
-      {/* 4. PLAIN, TRANSPARENT PRICING */}
+      {/* 5-7. THE CONTENT LAYER.
+          Placed after the product explanation and before the price on purpose: a visitor who isn't
+          ready to run an address (most of them) gets somewhere useful to go instead of bouncing,
+          and a visitor who is ready has already passed the search box twice. Asking for money
+          lands better after the library has done the arguing. */}
+      <ContentRouterSection
+        clusters={clusters}
+        totalGuides={stats.guideCount}
+        onNavigate={onNavigate}
+      />
+      <OriginalResearchSection
+        research={research}
+        countyCount={stats.countyCount}
+        onNavigate={onNavigate}
+      />
+      <LocalDataSection counties={homeData.counties} updates={updates} onNavigate={onNavigate} />
+
+      {/* 8. PLAIN, TRANSPARENT PRICING */}
       <PricingSection onScrollToSearch={handleScrollToSearch} />
 
-      {/* 5. FREQUENTLY ASKED QUESTIONS */}
+      {/* 9. FREQUENTLY ASKED QUESTIONS */}
       <FaqSection />
 
-      {/* 6. CLOSING CALL TO ACTION */}
+      {/* 10. CLOSING CALL TO ACTION */}
       <ClosingCtaSection onScrollToSearch={handleScrollToSearch} />
 
     </div>
