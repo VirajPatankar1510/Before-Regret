@@ -13,6 +13,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.beforeregret.com/counties/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.beforeregret.com/about/</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>

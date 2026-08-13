@@ -25,6 +25,7 @@ import { createFallbackSummary, createFallbackReport } from './utils/reportFallb
 // was fully removed; only the hand-written editorial guides remain.
 import { GuidePageView } from './components/seo/GuidePageView';
 import { GuidesIndexView } from './components/seo/GuidesIndexView';
+import { CountiesIndexView } from './components/seo/CountiesIndexView';
 import { CountyPageView } from './components/seo/CountyPageView';
 import { SeoAdminPanel } from './components/seo/SeoAdminPanel';
 import { BacklinksAdminPanel } from './components/admin/BacklinksAdminPanel';
@@ -117,7 +118,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'adminBacklinks' | 'guidesIndex' | 'guide' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'adminBacklinks' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
     countySlug?: string;
   }>({ type: 'none' });
@@ -238,6 +239,15 @@ export function App() {
         setCurrentStep('PSEO');
         return true;
       }
+    }
+
+    // path is always trailing-slash-normalized above, so '/counties/' is the only exact form to
+    // check -- same reasoning as the guidesIndex branch, just without a slug variant to test first
+    // since there's no /counties/<something>/ route.
+    if (path === '/counties/') {
+      setPseoRoute({ type: 'countiesIndex' });
+      setCurrentStep('PSEO');
+      return true;
     }
 
     // /state/* and /compare/* routes (city/state/zip hubs, topic pages, zip comparisons) were
@@ -871,6 +881,9 @@ export function App() {
             )}
             {pseoRoute.type === 'guide' && pseoRoute.guideSlug && (
               <GuidePageView guideSlug={pseoRoute.guideSlug} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'countiesIndex' && (
+              <CountiesIndexView onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'county' && pseoRoute.countySlug && (
               <CountyPageView countySlug={pseoRoute.countySlug} onNavigate={handleNavigate} />

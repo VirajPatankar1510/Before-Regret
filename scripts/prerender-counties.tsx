@@ -101,6 +101,8 @@ function CountyStaticBody({ row }: { row: CountyRow }) {
         <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium">
           <a href="/" className="hover:text-blue-600">Home</a>
           <span>/</span>
+          <a href="/counties/" className="hover:text-blue-600">County Research</a>
+          <span>/</span>
           <span className="text-slate-900 font-bold">{row.county_name} County, {row.state_abbrev}</span>
         </div>
       </div>
@@ -270,10 +272,90 @@ function buildJsonLd(row: CountyRow, canonicalUrl: string): Record<string, any>[
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
-        { '@type': 'ListItem', position: 2, name: `${row.county_name} County, ${row.state_abbrev}`, item: canonicalUrl },
+        { '@type': 'ListItem', position: 2, name: 'County Research', item: 'https://www.beforeregret.com/counties/' },
+        { '@type': 'ListItem', position: 3, name: `${row.county_name} County, ${row.state_abbrev}`, item: canonicalUrl },
       ],
     },
   ];
+}
+
+// Mirrors prerender-guides.tsx's GuidesIndexStaticBody / CountiesIndexView.tsx -- the hub every
+// county page should be reachable from with one click, baked to real HTML at
+// dist/counties/index.html so a crawler that doesn't run JS sees the same grouped list and the
+// same real <a href> links to all 31 (now more) counties a browser would. Before this existed, 20
+// of 31 county pages had zero inbound links anywhere on the site.
+function CountiesIndexStaticBody({ rows }: { rows: CountyRow[] }) {
+  const grouped = Array.from(
+    rows
+      .reduce((map, r) => {
+        const list = map.get(r.state_abbrev) ?? [];
+        list.push(r);
+        map.set(r.state_abbrev, list);
+        return map;
+      }, new Map<string, CountyRow[]>())
+      .entries()
+  )
+    .map(([state, list]) => ({
+      state,
+      counties: list.sort((a, b) => (b.population || 0) - (a.population || 0)),
+    }))
+    .sort((a, b) => b.counties.length - a.counties.length || a.state.localeCompare(b.state));
+
+  return (
+    <div className="bg-slate-50 min-h-screen pb-16">
+      <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium">
+          <a href="/" className="hover:text-blue-600">Home</a>
+          <span>/</span>
+          <span className="text-slate-900 font-bold">County Research</span>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <div className="space-y-2">
+          <div className="text-xs font-bold uppercase tracking-wide text-blue-700 bg-blue-50 inline-block px-2.5 py-1 rounded-full">
+            County Research
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+            Every county we hold verified data on
+          </h1>
+          <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
+            Each page carries that county's real EPA radon zone, Census housing-age breakdown, FEMA
+            natural hazard risk, and recorded NOAA storm history -- pulled from the source, not
+            estimated. A county with incomplete data from any of the four never gets a page.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+          {grouped.map((group) => (
+            <div key={group.state} className="space-y-2">
+              <div className="flex items-baseline gap-2 pb-1.5 border-b border-slate-200">
+                <span className="text-sm font-extrabold text-slate-900 tracking-tight">{group.state}</span>
+                <span className="text-[11px] font-medium text-slate-400">
+                  {group.counties.length} {group.counties.length === 1 ? 'county' : 'counties'}
+                </span>
+              </div>
+              <ul>
+                {group.counties.map((c) => (
+                  <li key={c.slug}>
+                    <a
+                      href={`/county/${c.slug}/`}
+                      className="flex items-baseline justify-between gap-3 py-1.5 text-xs text-slate-700 hover:text-blue-700 font-medium"
+                    >
+                      <span>{c.county_name} County</span>
+                      {c.population && (
+                        <span className="text-[11px] text-slate-400 shrink-0">pop. {c.population.toLocaleString()}</span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function titleCase(value: string): string {
@@ -317,11 +399,13 @@ async function run() {
   `)) as unknown as CountyRow[];
 
   let written = 0;
+  const titleCasedRows: CountyRow[] = [];
   for (const rawRow of rows) {
     // county_name is stored in the all-caps form FEMA/NOAA/Census use for matching (e.g.
     // "TRAVIS") -- title-cased once here for the reader-facing page, matching
     // CountyPageView.tsx's client-side equivalent.
     const row: CountyRow = { ...rawRow, county_name: titleCase(rawRow.county_name) };
+    titleCasedRows.push(row);
     const canonicalUrl = `https://www.beforeregret.com/county/${row.slug}/`;
     const title = `${row.county_name} County, ${row.state_abbrev} Property Research | BeforeRegret`;
     const description = `Real, sourced data for ${row.county_name} County, ${row.state_abbrev}: EPA radon zone, Census housing-age distribution, FEMA natural hazard risk, and recorded NOAA storm history.`;
@@ -354,6 +438,50 @@ async function run() {
   }
 
   console.log(`[prerender-counties] Wrote static HTML for ${written} verified county page(s) to dist/county/<slug>/index.html`);
+
+  // The hub page (dist/counties/index.html) -- see CountiesIndexView.tsx for the client-rendered
+  // twin, and its own comment for why this page needed to exist at all.
+  const indexCanonicalUrl = 'https://www.beforeregret.com/counties/';
+  const indexTitle = 'County Property Research | BeforeRegret';
+  const indexDescription = `Real EPA radon, Census housing-age, FEMA hazard, and NOAA storm data for ${titleCasedRows.length} US counties -- every figure sourced, nothing estimated.`;
+  const indexBodyHtml = renderToStaticMarkup(<CountiesIndexStaticBody rows={titleCasedRows} />);
+  const indexJsonLd: Record<string, any>[] = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+        { '@type': 'ListItem', position: 2, name: 'County Research', item: indexCanonicalUrl },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: titleCasedRows.map((r, idx) => ({
+        '@type': 'ListItem',
+        position: idx + 1,
+        url: `https://www.beforeregret.com/county/${r.slug}/`,
+        name: `${r.county_name} County, ${r.state_abbrev}`,
+      })),
+    },
+  ];
+  const indexJsonLdScript = `<script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(indexJsonLd)}</script>`;
+  const indexHtml = template
+    .replace(/<title>[^<]*<\/title>/, `<title>${escapeHtmlAttr(indexTitle)}</title>`)
+    .replace(/<meta name="description" content="[^"]*"/, `<meta name="description" content="${escapeHtmlAttr(indexDescription)}"`)
+    .replace(/<meta name="robots" content="[^"]*"/, `<meta name="robots" content="index, follow"`)
+    .replace(/<link rel="canonical" href="[^"]*"/, `<link rel="canonical" href="${escapeHtmlAttr(indexCanonicalUrl)}"`)
+    .replace(/<meta property="og:url" content="[^"]*"/, `<meta property="og:url" content="${escapeHtmlAttr(indexCanonicalUrl)}"`)
+    .replace(/<meta property="og:title" content="[^"]*"/, `<meta property="og:title" content="${escapeHtmlAttr(indexTitle)}"`)
+    .replace(/<meta property="og:description" content="[^"]*"/, `<meta property="og:description" content="${escapeHtmlAttr(indexDescription)}"`)
+    .replace(/<meta name="twitter:title" content="[^"]*"/, `<meta name="twitter:title" content="${escapeHtmlAttr(indexTitle)}"`)
+    .replace(/<meta name="twitter:description" content="[^"]*"/, `<meta name="twitter:description" content="${escapeHtmlAttr(indexDescription)}"`)
+    .replace('</head>', `${indexJsonLdScript}\n  </head>`)
+    .replace('<div id="root"></div>', `<div id="root">${indexBodyHtml}</div>`);
+  const indexOutDir = path.join(distPath, 'counties');
+  fs.mkdirSync(indexOutDir, { recursive: true });
+  fs.writeFileSync(path.join(indexOutDir, 'index.html'), indexHtml, 'utf8');
+  console.log('[prerender-counties] Wrote static HTML for the counties hub to dist/counties/index.html');
 }
 
 run().catch((err) => {
