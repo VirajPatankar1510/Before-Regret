@@ -8,9 +8,7 @@ import { PricingSection } from '../src/components/home/PricingSection';
 import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
 import { HOMEPAGE_FAQS } from '../src/components/home/FaqSection';
 import { ProofStrip } from '../src/components/home/ProofStrip';
-import { ContentRouterSection } from '../src/components/home/ContentRouterSection';
-import { OriginalResearchSection } from '../src/components/home/OriginalResearchSection';
-import { LocalDataSection } from '../src/components/home/LocalDataSection';
+import { LibrarySnapshotSection } from '../src/components/home/LibrarySnapshotSection';
 import { isDbConfigured } from '../src/server/db.js';
 import { loadHomepageData } from '../src/server/homepageApi.js';
 import {
@@ -98,16 +96,18 @@ function HomeStaticBody({ data }: { data: HomeData }) {
       <ProofStrip stats={stats} />
       <ListingOmissionsSection />
       <HowItWorksSection />
-
-      {/* The content layer, in the same order and position as src/components/Hero.tsx. No
-          onNavigate is passed, so ContentLink renders plain crawlable <a href> markup here --
-          which is the entire point of prerendering these: ~40 guide and county URLs get a real
-          link from the domain's strongest page. */}
-      <ContentRouterSection clusters={clusters} totalGuides={stats.guideCount} />
-      <OriginalResearchSection research={research} countyCount={stats.countyCount} />
-      <LocalDataSection counties={data.counties} updates={updates} />
-
       <PricingSection onScrollToSearch={noop} />
+
+      {/* Same order and position as src/components/Hero.tsx. No onNavigate is passed, so
+          ContentLink renders plain crawlable <a href> markup here -- the point of prerendering
+          this section: its guide and county links get picked up from the domain's strongest page. */}
+      <LibrarySnapshotSection
+        clusters={clusters}
+        research={research}
+        counties={data.counties}
+        updates={updates}
+        totalGuides={stats.guideCount}
+      />
 
       <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 border-t border-slate-200/80">
         <div className="max-w-4xl mx-auto space-y-12">
