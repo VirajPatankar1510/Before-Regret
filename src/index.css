@@ -18,6 +18,40 @@
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
+/* Hero background photo -- see src/components/Hero.tsx for the art direction, and
+   scripts/prerender-homepage.tsx which renders the same element into the static homepage.
+
+   Declared here rather than as a React inline style because a WebP/JPEG fallback pair needs two
+   rules, which a style object (one value per key) cannot express. Browsers that understand
+   image-set() take the WebP; everything else keeps the JPEG and is never asked to fetch a format
+   it can't decode.
+
+   Why it matters: PageSpeed identified this element as the homepage's LCP element, and the JPEG
+   was 233 KiB. The WebP is the same 1895x830 pixels at 52 KiB -- 78% smaller, verified visually
+   identical including the dark sky gradient where WebP banding would show first. Re-encoding
+   rather than downscaling is deliberate: bg-cover on a tall, narrow mobile viewport scales this
+   2.28:1 image to cover the container's *height*, so a smaller source would be upscaled and
+   visibly soft on exactly the devices this is meant to help.
+
+   The fallback is expressed as a separate @supports block rather than as two declarations of
+   background-image on one rule. That plain-then-override form is the usual CSS idiom, but it does
+   not survive this build: Lightning CSS collapsed the JPEG declaration away entirely and emitted
+   only a -webkit-image-set() + image-set() pair (verified in dist/assets/*.css). Safari 16 -- which
+   is inside Vite's own default browser target -- supports -webkit-image-set() but not the type()
+   function inside it, and does not support unprefixed image-set() at all, so both of those
+   declarations would have been invalid there and the hero would have painted with no background
+   whatsoever. A separate @supports rule cannot be merged into the base rule, so the JPEG survives
+   minification and every browser gets one working image. */
+.hero-bg {
+  background-image: url('/hero-bg.jpg');
+}
+
+@supports (background-image: image-set(url('/hero-bg.webp') type('image/webp'))) {
+  .hero-bg {
+    background-image: image-set(url('/hero-bg.webp') type('image/webp'), url('/hero-bg.jpg') type('image/jpeg'));
+  }
+}
+
 @layer utilities {
   .animate-fadeIn {
     animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
