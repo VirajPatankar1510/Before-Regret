@@ -10,37 +10,47 @@
 // requests come back 429 with a quota metric containing "free_tier", that project is on the free
 // tier (20 requests/day/model) regardless of any consumer subscription on the same Google account.
 
-// GEMINI_MODEL: the free property report's PRIMARY model (server.ts calls it directly, first),
-// and content generation's LAST-RESORT fallback (see CONTENT_GENERATION_MODELS below) -- it's the
-// single highest-volume, most user-facing Gemini call this app makes, so report generation always
-// gets first claim on this model's 20/day free-tier allowance, tried before either of content
-// generation's two dedicated models ever touch it. If this model's quota is exhausted for the
-// report route specifically, that route already degrades gracefully to fallbackReport (a real,
-// non-AI report) rather than needing a model fallback of its own.
+// GEMINI_MODEL: the free property report's PRIMARY model -- the single highest-volume, most
+// user-facing Gemini call this app makes, so it gets first claim on the best available model's
+// 20/day free-tier allowance. Also content generation's LAST-RESORT fallback tier (see
+// CONTENT_GENERATION_MODELS below).
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
 
 const CONTENT_GENERATION_DEDICATED_MODELS: string[] = process.env.GEMINI_CONTENT_MODELS
   ? process.env.GEMINI_CONTENT_MODELS.split(',').map((m) => m.trim()).filter(Boolean)
   : ['gemini-3.5-flash', 'gemini-2.5-flash'];
 
-// CONTENT_GENERATION_MODELS: the full cascade every OTHER Gemini call in this codebase uses, via
-// generateContentWithFallback/generateContentStreamWithFallback below -- articles, comparison
-// reports, backlink replies, etc. Two dedicated tiers first (each with its own separate 20/day
-// free-tier allowance, so content generation gets 40/day before ever touching GEMINI_MODEL), then
-// GEMINI_MODEL itself appended as a third, last-resort tier once both dedicated models are
-// exhausted for the day.
+// Both routes now cascade through the SAME three models, in opposite priority order -- each
+// prefers its own "home" model first, then falls through to the other route's models rather than
+// failing outright once its preferred tier is exhausted for the day. Every model has its own
+// separate 20/day free-tier allowance, so between them the two routes share a combined pool of up
+// to 60 calls/day rather than being hard-walled into 20 (report) and 40 (content) that can never
+// borrow from each other.
 //
-// That third tier is a deliberate trade, not an oversight: the stricter version of this design
-// kept GEMINI_MODEL fully isolated so content generation could never eat into the report's quota
-// at all. This trades a sliver of that isolation for content generation actually finishing on a
-// heavy day instead of failing outright at 40 calls -- report generation still always tries
-// GEMINI_MODEL FIRST (server.ts calls it directly, never through this cascade), so it only ever
-// finds that quota already spent if content generation alone burned through 60 combined calls
-// (40 dedicated + up to 20 of GEMINI_MODEL's own) before the report request landed. And even then,
-// the report route's existing fallbackReport degrade means the real-world cost of that edge case
-// is "one visitor's report is less AI-polished," never a failure. Comma-separated override via
-// GEMINI_CONTENT_MODELS for the two dedicated tiers; GEMINI_MODEL is always appended last unless
-// the override already ends with it.
+// This is a deliberate trade, not an oversight: a stricter version of this design kept the two
+// pools fully isolated so neither route could ever eat into the other's quota. That's safer in
+// theory but wastes real capacity in practice -- on a day where content generation runs light,
+// its spare quota would otherwise just go unused while a report request that same day degrades to
+// the non-AI fallbackReport for lack of an available model. Letting both routes reach for
+// whatever's actually free that day uses the full 60-call pool instead of an artificially
+// partitioned slice of it. The asymmetry that's preserved is priority, not access: report
+// generation still tries GEMINI_MODEL first and only reaches for the other two after its own is
+// exhausted, so on a normal day (well under 20 report requests) the two pools behave exactly as if
+// they were still isolated -- this only changes behavior once one side's preferred tier actually
+// runs out.
+//
+// REPORT_GENERATION_MODELS: GEMINI_MODEL first, then the two content-dedicated models as
+// fallback -- used by server.ts's report route via generateContentWithFallback. Only reaches its
+// second or third tier once GEMINI_MODEL's own 20/day is exhausted; falls through to the existing
+// non-AI fallbackReport only if all three are exhausted (or erroring for some other reason).
+export const REPORT_GENERATION_MODELS: string[] = CONTENT_GENERATION_DEDICATED_MODELS.includes(GEMINI_MODEL)
+  ? [GEMINI_MODEL, ...CONTENT_GENERATION_DEDICATED_MODELS.filter((m) => m !== GEMINI_MODEL)]
+  : [GEMINI_MODEL, ...CONTENT_GENERATION_DEDICATED_MODELS];
+
+// CONTENT_GENERATION_MODELS: the two content-dedicated models first, GEMINI_MODEL as fallback --
+// used by every OTHER Gemini call in this codebase (articles, comparison reports, backlink
+// replies, etc.) via generateContentWithFallback/generateContentStreamWithFallback below. Mirror
+// image of REPORT_GENERATION_MODELS above -- same three models, opposite priority order.
 export const CONTENT_GENERATION_MODELS: string[] = CONTENT_GENERATION_DEDICATED_MODELS.includes(GEMINI_MODEL)
   ? CONTENT_GENERATION_DEDICATED_MODELS
   : [...CONTENT_GENERATION_DEDICATED_MODELS, GEMINI_MODEL];

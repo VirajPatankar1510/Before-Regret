@@ -36,7 +36,7 @@ import { registerCountyInsuranceRoutes } from "./src/server/countyInsuranceApi.j
 import { registerDefectReferenceRoutes } from "./src/server/defectReferenceApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
-import { GEMINI_MODEL } from "./src/server/geminiModel.js";
+import { REPORT_GENERATION_MODELS, generateContentWithFallback } from "./src/server/geminiModel.js";
 import { logGeminiUsage } from "./src/server/geminiUsageTracker.js";
 import { checkAndReserveReportGenerationCapacity } from "./src/server/reportGenerationLimiter.js";
 import {
@@ -708,8 +708,11 @@ Maintain a non-diagnostic stance:
 - Assign every finding a confidence badge: "Verified Record" or "No Record Found".
 `;
 
-        const response = await ai.models.generateContent({
-          model: GEMINI_MODEL,
+        // Cascades through REPORT_GENERATION_MODELS (this route's own model first, then the two
+        // content-generation models as fallback) on quota exhaustion -- see geminiModel.ts. Only
+        // falls through to the fallbackReport below if every model in that chain is exhausted (or
+        // some other error occurs).
+        const { result: response, model: usedModel } = await generateContentWithFallback(ai, {
           contents: prompt,
           config: {
             systemInstruction: `You are the executive property research engine at BeforeRegret (beforeregret.com).
@@ -904,11 +907,11 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
               ]
             }
           }
-        });
+        }, REPORT_GENERATION_MODELS);
 
         // Fire-and-forget -- never let usage logging affect the report response the customer
         // is actually waiting on. See src/server/geminiUsageTracker.ts.
-        logGeminiUsage('report_generation', GEMINI_MODEL, response.usageMetadata);
+        logGeminiUsage('report_generation', usedModel, response.usageMetadata);
         const rawText = response.text || "{}";
         const parsedReport = JSON.parse(rawText);
 
