@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
 import { ChevronRight, Loader2, BookOpen, Calendar } from 'lucide-react';
+import { ContentLink } from '../home/ContentLink';
 
 interface GuidesIndexViewProps {
   onNavigate: (path: string) => void;
@@ -79,7 +80,7 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
     <div className="bg-slate-50 min-h-screen pb-16">
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium">
-          <button onClick={() => onNavigate('/')} className="hover:text-blue-600">Home</button>
+          <ContentLink href="/" onNavigate={onNavigate} className="hover:text-blue-600">Home</ContentLink>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-slate-900 font-bold">Editorial Guides</span>
         </div>
@@ -97,9 +98,9 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
           <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
             Every research guide we've published, in one place -- what a specific era, system, or record actually means for a home you're buying, cited back to the government or industry source behind it.
           </p>
-          <button onClick={() => onNavigate('/counties/')} className="text-xs font-bold text-blue-700 hover:text-blue-800 cursor-pointer">
+          <ContentLink href="/counties/" onNavigate={onNavigate} className="text-xs font-bold text-blue-700 hover:text-blue-800 cursor-pointer block">
             Looking for county-level hazard and housing data instead? Browse all covered counties →
-          </button>
+          </ContentLink>
         </div>
 
         {loadError && (
@@ -123,10 +124,11 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
         {guides && guides.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {guides.map((g) => (
-              <button
+              <ContentLink
                 key={g.slug}
-                onClick={() => onNavigate(`/guides/${g.slug}/`)}
-                className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 text-left hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer group"
+                href={`/guides/${g.slug}/`}
+                onNavigate={onNavigate}
+                className="block bg-white border border-slate-200 rounded-2xl p-5 space-y-2 text-left hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer group"
               >
                 <h2 className="text-sm font-bold text-slate-900 group-hover:text-blue-700 leading-snug">
                   {g.title}
@@ -142,7 +144,7 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
                     <span>{new Date(g.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                   </div>
                 )}
-              </button>
+              </ContentLink>
             ))}
           </div>
         )}

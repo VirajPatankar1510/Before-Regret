@@ -9,6 +9,22 @@
       "destination": "/api/index"
     },
     {
+      "source": "/guides/:slug",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/guides/:slug/",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/county/:slug",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/county/:slug/",
+      "destination": "/api/index"
+    },
+    {
       "source": "/(.*)",
       "destination": "/shell.html"
     }
