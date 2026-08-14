@@ -4,7 +4,7 @@ import path from 'path';
 import { withDb, isDbConfigured } from '../src/server/db.js';
 import { buildArticlePrompt } from '../src/server/articleGenerator.js';
 import { KNOWN_SOURCES } from '../src/data/knownSources.js';
-import { GEMINI_MODEL } from '../src/server/geminiModel.js';
+import { generateContentWithFallback } from '../src/server/geminiModel.js';
 import { logGeminiUsage } from '../src/server/geminiUsageTracker.js';
 
 // Batch draft generator for scaling the guide library (12 -> 150 target). Reuses the exact same
@@ -158,12 +158,11 @@ async function run() {
     console.log(`\n[generate-draft-articles] Generating for seed: "${seed}"`);
     try {
       const { systemInstruction, contents } = buildArticlePrompt(seed, existingTitles, '');
-      const response = await ai.models.generateContent({
-        model: GEMINI_MODEL,
+      const { result: response, model: usedModel } = await generateContentWithFallback(ai, {
         contents,
         config: { systemInstruction, temperature: 0.8 },
       });
-      await logGeminiUsage('batch_draft_articles', GEMINI_MODEL, response.usageMetadata);
+      await logGeminiUsage('batch_draft_articles', usedModel, response.usageMetadata);
       const fullText = response.text || '';
       const parsed = parseGeneratedText(fullText);
 
