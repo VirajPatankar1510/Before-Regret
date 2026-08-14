@@ -52,6 +52,34 @@
   }
 }
 
+/* Portrait phones get a center CROP of the same image, not a downscale -- the distinction matters
+   and is why this doesn't contradict the note above. bg-cover on a portrait phone scales this
+   2.28:1 image to cover the container's height, which crops away most of its width: measured live
+   at 375x690, only 23.8% of the image's width is ever on screen, and real phone widths from 320px
+   to 430px show just 443-476 of its 1895 source pixels. The other ~75% is downloaded and thrown
+   away, competing with the CSS and JS bundle for bandwidth in the exact window that decides LCP.
+
+   hero-bg-mobile.webp is those middle 640 columns at the full original 830px height, so every
+   pixel a phone actually paints is still a native pixel -- same crop, same bg-center composition,
+   same 1.66x cover upscale at DPR 2, pixel-identical output -- for 22.8 KiB instead of 52.3 KiB
+   (56% less). It is encoded at a HIGHER bitrate density than the desktop file (0.0429 vs 0.0333
+   KiB/kpx), so it cannot be the softer of the two. Downscaling, which the note above correctly
+   rules out, would have lost real detail; cropping to what's on screen loses nothing.
+
+   The 640px crop carries deliberate headroom over the 476px worst case so this never has to be
+   retuned for a wider phone. orientation: portrait is load-bearing, not decoration -- a landscape
+   phone under 500px tall inverts the cover math and windows into ~1,200 source px, which a 640px
+   crop would have to upscale. Those get the full-width image instead. The preload links in
+   scripts/prerender-homepage.tsx carry these same two media queries so the preload scanner starts
+   the one that will actually be used, and never fetches both. */
+@supports (background-image: image-set(url('/hero-bg-mobile.webp') type('image/webp'))) {
+  @media (max-width: 500px) and (orientation: portrait) {
+    .hero-bg {
+      background-image: image-set(url('/hero-bg-mobile.webp') type('image/webp'));
+    }
+  }
+}
+
 @layer utilities {
   .animate-fadeIn {
     animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;

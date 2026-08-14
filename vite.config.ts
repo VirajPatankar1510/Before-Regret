@@ -29,6 +29,18 @@ export default defineConfig(() => {
 
   return {
     plugins: [react(), tailwindcss()],
+    build: {
+      // Emits dist/.vite/manifest.json, which the prerender scripts read to turn a source module
+      // path into the hashed chunk filename it was built into. Needed because the nine prerendered
+      // route views are lazy now (see src/routeChunks.ts): without a hint in the HTML, the browser
+      // cannot discover a route's chunk until the entry bundle has downloaded, parsed, and called
+      // import() -- a full extra round trip before React can mount, measured as a clean serial gap
+      // in the waterfall. Emitting <link rel="modulepreload"> for the right chunk lets that fetch
+      // start during the initial HTML parse instead, in parallel with the entry bundle. Globbing
+      // dist/assets for a name prefix would avoid this flag, but the manifest also lists each
+      // chunk's transitive imports, which is what makes the hint complete rather than partial.
+      manifest: true,
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

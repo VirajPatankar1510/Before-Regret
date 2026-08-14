@@ -209,7 +209,18 @@ async function run() {
   // don't: a preload carrying a `type` is only fetched by a browser that can decode it, so they
   // skip this and pick up the JPEG fallback from the stylesheet instead of eagerly downloading
   // 52KB they would never paint.
-  const heroPreload = `<link rel="preload" as="image" href="/hero-bg.webp" type="image/webp" fetchpriority="high" />`;
+  //
+  // Two links, not one, because .hero-bg now resolves to a different file on portrait phones (a
+  // 640px center crop, 22.8 KiB vs 52.3 KiB -- see the @media rule in src/index.css for why the
+  // crop is lossless here). The `media` attribute is what keeps that a saving rather than a
+  // regression: a preload without it would start the desktop image on every phone, and the
+  // stylesheet would then request the mobile one too, downloading both and making LCP worse than
+  // before the split. These two queries are mutually exclusive and must stay character-for-
+  // character identical to the ones in src/index.css -- if they ever disagree, the preload scanner
+  // races the wrong file and the stylesheet quietly fetches the right one on top of it.
+  const heroPreload =
+    `<link rel="preload" as="image" href="/hero-bg-mobile.webp" type="image/webp" fetchpriority="high" media="(max-width: 500px) and (orientation: portrait)" />\n  ` +
+    `<link rel="preload" as="image" href="/hero-bg.webp" type="image/webp" fetchpriority="high" media="not all and (max-width: 500px) and (orientation: portrait)" />`;
 
   const html = template
     .replace('</head>', `${heroPreload}\n  ${faqScript}\n  ${preloadScript}\n  </head>`)

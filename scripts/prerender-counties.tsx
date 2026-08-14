@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { withDb, isDbConfigured } from '../src/server/db.js';
 import { pickGuidesForCounty, GuideLink } from '../src/utils/countyGuideTopics.js';
 import { computeCountyRankings, CountyMetricInput, CountyRankings } from '../src/utils/countyRankings.js';
+import { modulePreloadTags } from './lib/routeChunkPreload.js';
 
 // Static HTML generator for county research pages, mirroring scripts/prerender-guides.tsx exactly
 // -- same reasoning applies: the live app is a pure client-render SPA (createRoot, not
@@ -489,7 +490,7 @@ async function run() {
       .replace(/<meta property="og:description" content="[^"]*"/, `<meta property="og:description" content="${escapeHtmlAttr(description)}"`)
       .replace(/<meta name="twitter:title" content="[^"]*"/, `<meta name="twitter:title" content="${escapeHtmlAttr(title)}"`)
       .replace(/<meta name="twitter:description" content="[^"]*"/, `<meta name="twitter:description" content="${escapeHtmlAttr(description)}"`)
-      .replace('</head>', `${jsonLdScript}\n${preloadScript}\n  </head>`)
+      .replace('</head>', `${modulePreloadTags('county')}\n  ${jsonLdScript}\n${preloadScript}\n  </head>`)
       .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`);
 
     const outDir = path.join(distPath, 'county', row.slug);
@@ -537,7 +538,7 @@ async function run() {
     .replace(/<meta property="og:description" content="[^"]*"/, `<meta property="og:description" content="${escapeHtmlAttr(indexDescription)}"`)
     .replace(/<meta name="twitter:title" content="[^"]*"/, `<meta name="twitter:title" content="${escapeHtmlAttr(indexTitle)}"`)
     .replace(/<meta name="twitter:description" content="[^"]*"/, `<meta name="twitter:description" content="${escapeHtmlAttr(indexDescription)}"`)
-    .replace('</head>', `${indexJsonLdScript}\n  </head>`)
+    .replace('</head>', `${modulePreloadTags('countiesIndex')}\n  ${indexJsonLdScript}\n  </head>`)
     .replace('<div id="root"></div>', `<div id="root">${indexBodyHtml}</div>`);
   const indexOutDir = path.join(distPath, 'counties');
   fs.mkdirSync(indexOutDir, { recursive: true });
