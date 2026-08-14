@@ -90,7 +90,7 @@ function parseGdeltDate(seendate: string): string {
 async function fetchGdelt(q: string): Promise<{ items: NewsCoverageItem[]; warning: string | null }> {
   try {
     const params = new URLSearchParams({
-      query: `${quotedOrFallback(q)} sourcelang:english`,
+      query: `${quotedOrFallback(q)} sourcecountry:US sourcelang:english`,
       mode: 'ArtList',
       maxrecords: '25',
       timespan: '14d',
