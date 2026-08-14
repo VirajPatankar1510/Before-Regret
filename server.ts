@@ -32,6 +32,7 @@ import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAds
 import { registerBacklinksRoutes } from "./src/server/backlinksApi.js";
 import { registerCountyEventsRoutes } from "./src/server/countyEventsApi.js";
 import { registerCountyComparisonRoutes } from "./src/server/countyComparisonApi.js";
+import { registerCountyInsuranceRoutes } from "./src/server/countyInsuranceApi.js";
 import { registerDefectReferenceRoutes } from "./src/server/defectReferenceApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
@@ -227,6 +228,7 @@ export async function createApp() {
   // data (computed in plain code, never by Gemini) and drafts an article around the real table.
   // See src/server/countyComparisonApi.ts.
   registerCountyComparisonRoutes(app);
+  registerCountyInsuranceRoutes(app);
 
   // --- Era x defect reference library generator (Neon-backed) ---------------------------------
   // One-shot batch: drafts a page per material/system defect (knob-and-tube, polybutylene, etc.),

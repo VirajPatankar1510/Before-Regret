@@ -144,6 +144,17 @@ export async function ensureArticlesSchema(): Promise<void> {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `;
+  // Raw ACS B25141 "Homeowners Insurance Costs by Mortgage Status" bucket counts for mortgaged
+  // households (see fetchCensusInsuranceCosts in countyDataFetcher.ts) -- feeds the county
+  // insurance-cost comparison report (countyInsuranceComparisonGenerator.ts). Deliberately NOT part
+  // of the data_complete gate above: that boolean already controls whether a county's own /county/
+  // <slug>/ page exists at all, and this data has nothing to do with that page -- it only feeds a
+  // separate singleton comparison report. Making it a hard requirement would mean one Census table
+  // hiccup on one county could 404 an already-published, unrelated county page. Raw buckets, not a
+  // precomputed percentage, for the same reason computeHousingAgeRankings() takes raw year-built
+  // buckets rather than a precomputed age split: every displayed number should be re-derivable in
+  // code from the actual Census counts, not trusted from an intermediate that could itself be wrong.
+  await sql`ALTER TABLE county_data ADD COLUMN IF NOT EXISTS census_insurance_json TEXT NOT NULL DEFAULT '{}'`;
 
   // Gemini token/cost tracking (see src/server/geminiUsageTracker.ts). Persisted here rather than
   // kept in memory for the same reason property reports shouldn't be in-memory either: a

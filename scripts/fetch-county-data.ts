@@ -4,7 +4,7 @@ import path from 'path';
 import zlib from 'zlib';
 import { spawnSync } from 'child_process';
 import { withDb, isDbConfigured } from '../src/server/db.js';
-import { fetchCensusHousingAge, fetchFemaRiskIndex, type CountyIdentity } from '../src/server/countyDataFetcher.js';
+import { fetchCensusHousingAge, fetchCensusInsuranceCosts, fetchFemaRiskIndex, type CountyIdentity } from '../src/server/countyDataFetcher.js';
 import { findCountyRadonZone } from '../src/data/countyRadonZones.js';
 import { submitUrlsToIndexNow } from '../src/utils/indexNowService.js';
 import { COVERED_COUNTIES } from '../src/data/coveredCounties.js';
@@ -158,12 +158,23 @@ async function run() {
       console.warn(`  - FEMA fetch failed: ${(err as Error).message}`);
     }
 
+    // Not part of dataComplete below -- see the census_insurance_json column comment in db.ts for
+    // why this one real Census table is deliberately allowed to fail without touching whether this
+    // county's own page exists.
+    let insurance = null;
+    try {
+      insurance = await fetchCensusInsuranceCosts(county, censusApiKey);
+    } catch (err) {
+      console.warn(`  - Census insurance-cost fetch failed: ${(err as Error).message}`);
+    }
+
     const noaa = await countNoaaEventsForCounty(noaaFiles, county);
     if (!noaa) console.warn(`  - No NOAA storm event records found for this county in ${NOAA_YEARS[0]}-${NOAA_YEARS[NOAA_YEARS.length - 1]}.`);
 
     const dataComplete = Boolean(radon && census && fema && noaa);
     console.log(`  - EPA radon: ${radon ? `Zone ${radon.zone}` : 'MISSING'}`);
     console.log(`  - Census housing age: ${census ? `${census.totalUnits} total units` : 'MISSING'}`);
+    console.log(`  - Census insurance cost: ${insurance ? `${insurance.totalMortgaged} mortgaged households` : 'MISSING (non-fatal)'}`);
     console.log(`  - FEMA risk index: ${fema ? fema.riskRating : 'MISSING'}`);
     console.log(`  - NOAA storm events: ${noaa ? `${Object.values(noaa.eventCounts).reduce((a, b) => a + b, 0)} events` : 'MISSING'}`);
     console.log(`  -> data_complete = ${dataComplete}`);
@@ -172,12 +183,12 @@ async function run() {
       await sql`
         INSERT INTO county_data (
           slug, county_name, state_name, state_abbrev, population,
-          radon_zone, census_total_units, census_year_built_json,
+          radon_zone, census_total_units, census_year_built_json, census_insurance_json,
           fema_risk_rating, fema_risk_score, fema_hazards_json,
           noaa_event_counts_json, noaa_years_covered, data_complete, fetched_at, updated_at
         ) VALUES (
           ${county.slug}, ${county.countyName}, ${county.stateName}, ${county.stateAbbrev}, ${fema?.population ?? null},
-          ${radon?.zone ?? null}, ${census?.totalUnits ?? null}, ${JSON.stringify(census?.yearBuiltBuckets ?? {})},
+          ${radon?.zone ?? null}, ${census?.totalUnits ?? null}, ${JSON.stringify(census?.yearBuiltBuckets ?? {})}, ${JSON.stringify(insurance ?? {})},
           ${fema?.riskRating ?? null}, ${fema?.riskScore ?? null}, ${JSON.stringify(fema?.hazards ?? {})},
           ${JSON.stringify(noaa?.eventCounts ?? {})}, ${noaa?.yearsCovered ?? null}, ${dataComplete}, now(), now()
         )
@@ -186,6 +197,14 @@ async function run() {
           radon_zone = EXCLUDED.radon_zone,
           census_total_units = EXCLUDED.census_total_units,
           census_year_built_json = EXCLUDED.census_year_built_json,
+          census_insurance_json = CASE
+            -- Preserve the existing value rather than overwrite with '{}' when this run's fetch
+            -- failed but a previous run already had good data -- same reasoning as the ON CONFLICT
+            -- as a whole (never let one bad run erase previously-good data), applied to a column
+            -- that isn't part of dataComplete and so has no other protection against that.
+            WHEN ${JSON.stringify(insurance ?? {})} = '{}' THEN county_data.census_insurance_json
+            ELSE EXCLUDED.census_insurance_json
+          END,
           fema_risk_rating = EXCLUDED.fema_risk_rating,
           fema_risk_score = EXCLUDED.fema_risk_score,
           fema_hazards_json = EXCLUDED.fema_hazards_json,

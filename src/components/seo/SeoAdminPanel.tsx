@@ -291,6 +291,17 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     exists: boolean; eligibleCounties: number; countiesRanked: number | null; slug: string | null;
   } | null>(null);
 
+  // County homeowners-insurance-cost comparison report -- see src/server/countyInsuranceApi.ts.
+  // Same singleton/update-in-place pattern and status mechanism as comparisonStatus above, just
+  // gated on counties with real census_insurance_json rather than data_complete (see that
+  // column's comment in db.ts for why insurance-cost data doesn't need a county's full data set).
+  const [insuranceComparisonGenerating, setInsuranceComparisonGenerating] = useState(false);
+  const [insuranceComparisonResult, setInsuranceComparisonResult] = useState<{ action: 'created' | 'updated'; slug: string; countiesRanked: number } | null>(null);
+  const [insuranceComparisonError, setInsuranceComparisonError] = useState<string | null>(null);
+  const [insuranceComparisonStatus, setInsuranceComparisonStatus] = useState<{
+    exists: boolean; eligibleCounties: number; countiesRanked: number | null; slug: string | null;
+  } | null>(null);
+
   // Era x defect reference library -- see src/server/defectReferenceApi.ts. 8 fixed defects, one
   // page per click (not a recurring job) so each draft can be reviewed before the next one is
   // requested, and so a single click can't burn through a whole day's Gemini quota.
@@ -329,6 +340,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
 
   useEffect(() => {
     loadComparisonStatus();
+  }, []);
+
+  useEffect(() => {
+    loadInsuranceComparisonStatus();
   }, []);
 
   useEffect(() => {
@@ -539,6 +554,43 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       setComparisonError('Could not reach the server.');
     } finally {
       setComparisonGenerating(false);
+    }
+  };
+
+  const loadInsuranceComparisonStatus = () => {
+    fetch('/api/admin/reports/county-insurance/status')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success) {
+          setInsuranceComparisonStatus({
+            exists: data.exists,
+            eligibleCounties: data.eligibleCounties,
+            countiesRanked: data.countiesRanked,
+            slug: data.slug,
+          });
+        }
+      })
+      .catch(() => {});
+  };
+
+  const generateInsuranceComparisonReport = async () => {
+    setInsuranceComparisonGenerating(true);
+    setInsuranceComparisonError(null);
+    setInsuranceComparisonResult(null);
+    try {
+      const res = await fetch('/api/admin/reports/county-insurance', { method: 'POST' });
+      const data = await res.json();
+      if (data?.success) {
+        setInsuranceComparisonResult({ action: data.action, slug: data.slug, countiesRanked: data.countiesRanked });
+        loadArticles();
+        loadInsuranceComparisonStatus();
+      } else {
+        setInsuranceComparisonError(data?.error || 'Could not generate the report.');
+      }
+    } catch {
+      setInsuranceComparisonError('Could not reach the server.');
+    } finally {
+      setInsuranceComparisonGenerating(false);
     }
   };
 
@@ -1033,6 +1085,64 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             )}
           </div>
 
+          {/* Original data journalism report -- see src/server/countyInsuranceApi.ts. Ranks every
+              county with real ACS insurance-cost data, computed in plain code, never by Gemini.
+              Same singleton/update-in-place pattern as the housing-age report above. */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+            {(() => {
+              const eligible = insuranceComparisonStatus?.eligibleCounties ?? null;
+              const ranked = insuranceComparisonStatus?.countiesRanked ?? null;
+              const reportExists = insuranceComparisonStatus?.exists ?? false;
+              const isUpToDate = reportExists && eligible !== null && ranked === eligible;
+              const newCounties = reportExists && eligible !== null && ranked !== null ? eligible - ranked : null;
+              const label = insuranceComparisonGenerating
+                ? 'Generating…'
+                : isUpToDate
+                ? 'Up to date'
+                : reportExists
+                ? `Update report (+${newCounties})`
+                : 'Generate report';
+
+              return (
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+                    <BarChart3 className="w-3.5 h-3.5" />
+                    <span>County insurance cost report</span>
+                  </div>
+                  <button
+                    onClick={generateInsuranceComparisonReport}
+                    disabled={insuranceComparisonGenerating || isUpToDate}
+                    title={isUpToDate ? `Already ranks all ${eligible} counties with insurance-cost data -- fetch more county data to unlock an update.` : undefined}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
+                  >
+                    {insuranceComparisonGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <BarChart3 className="w-3.5 h-3.5" />}
+                    {label}
+                  </button>
+                </div>
+              );
+            })()}
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Ranks every county with real ACS homeowners-insurance-cost data (share of mortgaged homeowners paying $3,000+/yr and $2,000+/yr) and drafts an original data report around the real ranking table. The table itself is computed here, not by Gemini -- only the surrounding analysis is AI-drafted. Historical 2019-2023 average data, not a live quote -- the article is required to say so plainly. A single living page, not one per run -- generating again updates the same article in place instead of creating a duplicate, keeps its current published/draft status as-is, and is only available once county coverage actually grows.
+            </p>
+            {insuranceComparisonError && (
+              <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                <span>{insuranceComparisonError}</span>
+              </p>
+            )}
+            {insuranceComparisonResult && (
+              <p className="text-xs text-emerald-400 font-semibold border-t border-slate-800 pt-3">
+                {insuranceComparisonResult.action === 'updated' ? 'Updated in place' : 'Draft created'}, ranking {insuranceComparisonResult.countiesRanked} counties --{' '}
+                <button
+                  onClick={() => openArticleBySlug(insuranceComparisonResult.slug)}
+                  className="underline decoration-emerald-400/50 hover:decoration-emerald-400 cursor-pointer"
+                >
+                  open {insuranceComparisonResult.slug}
+                </button>
+              </p>
+            )}
+          </div>
+
           {/* Era x defect reference library -- see src/server/defectReferenceApi.ts. 8 fixed
               defects (knob-and-tube, polybutylene, etc.), each ranking covered counties by real
               Census data for that defect's era. One page generated per click. */}
@@ -1175,6 +1285,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                               : r.source === 'backlink_reply_generation' ? 'Backlink reply'
                               : r.source === 'county_event_generation' ? 'FEMA county event'
                               : r.source === 'county_comparison_generation' ? 'County comparison'
+                              : r.source === 'county_insurance_comparison_generation' ? 'County insurance cost'
                               : r.source === 'defect_reference_generation' ? 'Defect reference'
                               : 'Batch draft'}
                           </span>
