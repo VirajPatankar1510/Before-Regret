@@ -5,7 +5,7 @@ import {
   Library
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
-import { extractCitedSourceCodes } from '../../server/articleGenerator';
+import { extractCitedSourceCodes, findAdversarialCounterpartyFraming } from '../../server/articleGenerator';
 import { NEWS_TOPIC_PRESETS, type NewsTopicPreset } from '../../data/newsTopicPresets';
 import { STOPWORDS } from '../../utils/relatedGuides';
 import { buildPageTitle } from '../../utils/pageTitle';
@@ -261,6 +261,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // line. Reset whenever the body is edited so a genuine fix (or a new generation) re-evaluates
   // cleanly instead of carrying a stale override forward.
   const [overrideTruncatedWarning, setOverrideTruncatedWarning] = useState(false);
+
+  // Same reset-on-edit/reset-on-regenerate treatment as overrideTruncatedWarning above -- see
+  // findAdversarialCounterpartyFraming in articleGenerator.ts for what this catches and why.
+  const [overrideAdversarialWarning, setOverrideAdversarialWarning] = useState(false);
 
   // Gemini token/cost counter (see src/server/geminiUsageTracker.ts). "Real time" here means
   // polled every 20s while this screen is open, not a websocket push -- a cost dashboard doesn't
@@ -684,6 +688,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     setGenerating(true);
     setActionError(null);
     setOverrideTruncatedWarning(false);
+    setOverrideAdversarialWarning(false);
     try {
       const res = await fetch('/api/admin/articles/generate', {
         method: 'POST',
@@ -1446,6 +1451,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // the generating flag alone already accounts for "not ready to publish yet."
   const bodyTrimmed = draft.bodyMarkdown.trim();
   const looksTruncated = !generating && bodyTrimmed.length > 0 && !/[.!?]["')\]]?\s*$/.test(bodyTrimmed);
+  const adversarialFramingHits = generating ? [] : findAdversarialCounterpartyFraming(draft.bodyMarkdown);
 
   return (
     <div className="bg-slate-950 text-white min-h-screen font-sans">
@@ -1472,7 +1478,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               <>
                 <button
                   onClick={updateArticle}
-                  disabled={saving || generating || (looksTruncated && !overrideTruncatedWarning)}
+                  disabled={saving || generating || (looksTruncated && !overrideTruncatedWarning) || (adversarialFramingHits.length > 0 && !overrideAdversarialWarning)}
                   className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
                 >
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
@@ -1490,7 +1496,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             ) : (
               <button
                 onClick={publishNow}
-                disabled={saving || generating || (looksTruncated && !overrideTruncatedWarning)}
+                disabled={saving || generating || (looksTruncated && !overrideTruncatedWarning) || (adversarialFramingHits.length > 0 && !overrideAdversarialWarning)}
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
               >
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
@@ -1527,6 +1533,27 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
               >
                 it's actually complete, publish anyway
+              </button>
+              <span>.</span>
+            </div>
+          </div>
+        )}
+
+        {adversarialFramingHits.length > 0 && !overrideAdversarialWarning && (
+          <div className="p-4 bg-amber-950/40 border border-amber-800/60 rounded-xl text-sm text-amber-200 flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <div>
+              <span>
+                This reads as an accusation of bad faith against a standard, disclosed practice (a lease clause, a
+                fee, a lender rule) rather than a plain description of the financial risk -- found:{' '}
+                <strong>{adversarialFramingHits.map((h) => `"${h}"`).join(', ')}</strong>. Reword it to describe
+                the mechanism and consequence, not the counterparty's intent, or{' '}
+              </span>
+              <button
+                onClick={() => setOverrideAdversarialWarning(true)}
+                className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
+              >
+                it's accurate as written, publish anyway
               </button>
               <span>.</span>
             </div>
@@ -2143,6 +2170,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             onChange={(e) => {
               setDraft({ ...draft, bodyMarkdown: e.target.value });
               setOverrideTruncatedWarning(false);
+              setOverrideAdversarialWarning(false);
             }}
             placeholder="Write the article here, or click Generate with AI above."
             rows={20}
