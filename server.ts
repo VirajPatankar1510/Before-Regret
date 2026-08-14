@@ -36,6 +36,7 @@ import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import { GEMINI_MODEL } from "./src/server/geminiModel.js";
 import { logGeminiUsage } from "./src/server/geminiUsageTracker.js";
+import { checkAndReserveReportGenerationCapacity } from "./src/server/reportGenerationLimiter.js";
 import {
   isPayPalConfigured,
   createPayPalOrder,
@@ -625,7 +626,22 @@ export async function createApp() {
 
     const apiKey = process.env.GEMINI_API_KEY;
 
-    if (apiKey) {
+    // Hard cost ceiling, not just a UX gate: the "one free report" limit below this is enforced
+    // only in the browser (see ReportGatingModal.tsx's localStorage-based count), which a direct
+    // POST to this endpoint -- from any client, any number of times, any number of IPs -- bypasses
+    // entirely. Before this check existed there was no server-side limit on this route at all, so
+    // nothing bounded how many real-money Gemini calls it could ever make. See
+    // reportGenerationLimiter.ts for the actual caps and why they're sized the way they are. A
+    // capped/unavailable result here doesn't fail the request -- it just skips straight to the
+    // `fallbackReport` path below, the exact same graceful degrade this route already uses for a
+    // genuine Gemini error (see the catch block further down), so a visitor always gets a full,
+    // real report either way.
+    const capacityCheck = await checkAndReserveReportGenerationCapacity(requestIp(req));
+    if (!capacityCheck.allowed) {
+      console.warn(`[report-generation] Gemini call skipped (${capacityCheck.reason}) for ${fullAddr}`);
+    }
+
+    if (apiKey && capacityCheck.allowed) {
       try {
         const { GoogleGenAI, Type } = await import("@google/genai");
         const ai = new GoogleGenAI({

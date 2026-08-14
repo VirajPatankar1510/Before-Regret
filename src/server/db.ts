@@ -300,6 +300,38 @@ export async function ensureArticlesSchema(): Promise<void> {
     )
   `;
 
+  // Admission-control counters for /api/property/generate-report's Gemini call (see
+  // src/server/reportGenerationLimiter.ts). This is deliberately a *pre-call* gate, separate from
+  // gemini_usage_log above: gemini_usage_log records real token/cost data *after* a call succeeds,
+  // which is the wrong tool for capping spend before it happens. Before this existed, that route
+  // had zero server-side limit of any kind -- the "one free report" rule was enforced only in the
+  // browser (localStorage), so a direct POST to the endpoint, from any number of IPs, could fire
+  // Gemini calls indefinitely with no ceiling on cost.
+  //
+  // Two independent counters, not one: a global daily cap bounds total worst-case spend
+  // regardless of how many IPs are involved (the actual dollar-figure guarantee); a per-IP daily
+  // cap stops a single caller from single-handedly exhausting that whole day's budget and denying
+  // every real visitor the AI-enhanced report for the rest of the day. Both are checked and
+  // incremented with a single `INSERT ... ON CONFLICT DO UPDATE ... WHERE count < cap` statement
+  // (see reportGenerationLimiter.ts) -- one atomic round-trip per counter, so concurrent requests
+  // on Vercel's separate serverless instances can't race past the cap the way a plain
+  // SELECT-then-INSERT (or any in-memory counter, which wouldn't even be shared across instances)
+  // would allow.
+  await sql`
+    CREATE TABLE IF NOT EXISTS report_generation_daily_cap (
+      usage_date DATE PRIMARY KEY,
+      call_count INTEGER NOT NULL DEFAULT 0
+    )
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS report_generation_ip_daily_cap (
+      ip_address TEXT NOT NULL,
+      usage_date DATE NOT NULL,
+      call_count INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (ip_address, usage_date)
+    )
+  `;
+
   schemaEnsured = true;
 }
 
