@@ -7,6 +7,8 @@ import { ContactUs } from '../src/components/ContactUs';
 import { TermsConditions } from '../src/components/TermsConditions';
 import { PrivacyPolicy } from '../src/components/PrivacyPolicy';
 import { RefundPolicy } from '../src/components/RefundPolicy';
+import { modulePreloadTags } from './lib/routeChunkPreload.js';
+import type { PrerenderedRouteKey } from '../src/routeChunks.js';
 
 // Static HTML generator for About, Support, Terms, Privacy, and Refunds -- the one class of route
 // on this domain that had NO build-time prerendering and no client-side-only content either: they
@@ -49,6 +51,8 @@ interface LegalPageConfig {
   robots: 'index, follow' | 'noindex, nofollow';
   jsonLd: Record<string, any>[];
   Component: React.FC<{ onBackToHome: () => void; onNavigate?: (path: string) => void }>;
+  /** Which lazy route chunk this page needs on boot -- see scripts/lib/routeChunkPreload.ts. */
+  routeKey: PrerenderedRouteKey;
 }
 
 const noop = () => {};
@@ -120,6 +124,7 @@ const PAGES: LegalPageConfig[] = [
       ABOUT_BREADCRUMB,
     ],
     Component: AboutMethodology,
+    routeKey: 'about',
   },
   {
     outputPath: 'support',
@@ -153,6 +158,7 @@ const PAGES: LegalPageConfig[] = [
       SUPPORT_BREADCRUMB,
     ],
     Component: ContactUs,
+    routeKey: 'support',
   },
   {
     outputPath: 'terms',
@@ -162,6 +168,7 @@ const PAGES: LegalPageConfig[] = [
     robots: 'noindex, nofollow',
     jsonLd: [TERMS_BREADCRUMB],
     Component: TermsConditions,
+    routeKey: 'terms',
   },
   {
     outputPath: 'privacy',
@@ -171,6 +178,7 @@ const PAGES: LegalPageConfig[] = [
     robots: 'noindex, nofollow',
     jsonLd: [PRIVACY_BREADCRUMB],
     Component: PrivacyPolicy,
+    routeKey: 'privacy',
   },
   {
     outputPath: 'refunds',
@@ -180,6 +188,7 @@ const PAGES: LegalPageConfig[] = [
     robots: 'noindex, nofollow',
     jsonLd: [REFUNDS_BREADCRUMB],
     Component: RefundPolicy,
+    routeKey: 'refunds',
   },
   // Legacy alias -- App.tsx's client router still treats any /refund-policy* path as the 'refunds'
   // type (see the `path.startsWith('/refund-policy')` check), but nothing before this script ever
@@ -195,6 +204,7 @@ const PAGES: LegalPageConfig[] = [
     robots: 'noindex, nofollow',
     jsonLd: [REFUNDS_BREADCRUMB],
     Component: RefundPolicy,
+    routeKey: 'refunds',
   },
 ];
 
@@ -226,7 +236,7 @@ function applyHeadReplacements(template: string, page: LegalPageConfig): string 
   html = html.replace(/<meta name="twitter:description" content="[^"]*"/, `<meta name="twitter:description" content="${escapeHtmlAttr(page.description)}"`);
 
   const jsonLdScript = `<script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(page.jsonLd)}</script>`;
-  html = html.replace('</head>', `${jsonLdScript}\n  </head>`);
+  html = html.replace('</head>', `${modulePreloadTags(page.routeKey)}\n  ${jsonLdScript}\n  </head>`);
 
   return html;
 }

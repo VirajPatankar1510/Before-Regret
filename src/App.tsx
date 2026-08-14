@@ -12,20 +12,8 @@ import {
 } from './types';
 import { createFallbackSummary, createFallbackReport } from './utils/reportFallback';
 
-// pSEO Components -- the fabricated-stats ZIP/city/state/topic/compare surface (36 live URLs)
-// was fully removed; only the hand-written editorial guides remain.
-import { GuidePageView } from './components/seo/GuidePageView';
-import { GuidesIndexView } from './components/seo/GuidesIndexView';
-import { CountiesIndexView } from './components/seo/CountiesIndexView';
-import { CountyPageView } from './components/seo/CountyPageView';
 import { applyHeadSeo } from './utils/headSeo';
-
-// Legal & Policy Components
-import { ContactUs } from './components/ContactUs';
-import { AboutMethodology } from './components/AboutMethodology';
-import { TermsConditions } from './components/TermsConditions';
-import { PrivacyPolicy } from './components/PrivacyPolicy';
-import { RefundPolicy } from './components/RefundPolicy';
+import { routeChunkLoaders } from './routeChunks';
 
 // --- Route-level code splitting ------------------------------------------------------------
 // Everything below is pulled out of the initial bundle, because none of it can appear on a
@@ -34,13 +22,16 @@ import { RefundPolicy } from './components/RefundPolicy';
 // homepage -- almost entirely the two admin panels (2,373 lines between them, behind a login
 // nobody but the operator ever passes) plus the checkout and post-search report views.
 //
-// What is deliberately NOT lazy here: Navbar, Hero, Footer, the guide/county/legal page views.
-// Those are the prerendered SEO landing pages (see scripts/prerender-*.tsx), and their static
-// HTML is written *inside* <div id="root">. main.tsx mounts with createRoot().render(), which
-// discards that server markup on mount -- so if one of those components were behind a lazy
-// chunk, the prerendered content would be replaced by a Suspense fallback and the page would
-// visibly blank out mid-load, hurting the exact LCP this change exists to improve. Splitting is
-// only safe for routes whose content was never in the initial HTML to begin with.
+// What is deliberately NOT lazy here: Navbar, Hero, Footer. Those are on the homepage's own first
+// paint, so splitting them would only add a round trip to the page this exists to speed up.
+//
+// The guide/county/legal page views below WERE in that same exempt list, for a reason that was
+// correct as written: their prerendered HTML lives inside <div id="root">, and main.tsx mounts
+// with createRoot().render(), which discards that markup and re-renders -- so a lazy chunk would
+// have swapped a visitor's prerendered article for a spinner mid-load. They are split now only
+// because main.tsx awaits the current route's chunk before mounting (see src/routeChunks.ts), so
+// React never mounts into a state where those components are missing and the Suspense boundary is
+// never reached for them. Without that await this would be a regression, not an optimization.
 const ResearchProgressView = lazy(() => import('./components/ResearchProgressView').then((m) => ({ default: m.ResearchProgressView })));
 const ResearchSummaryView = lazy(() => import('./components/ResearchSummaryView').then((m) => ({ default: m.ResearchSummaryView })));
 const PropertyReportView = lazy(() => import('./components/PropertyReportView').then((m) => ({ default: m.PropertyReportView })));
@@ -55,6 +46,20 @@ const BacklinksAdminPanel = lazy(() => import('./components/admin/BacklinksAdmin
 const AdminGate = lazy(() => import('./components/admin/AdminGate').then((m) => ({ default: m.AdminGate })));
 const PaymentSuccess = lazy(() => import('./components/PaymentSuccess').then((m) => ({ default: m.PaymentSuccess })));
 const PaymentCancelled = lazy(() => import('./components/PaymentCancelled').then((m) => ({ default: m.PaymentCancelled })));
+
+// The nine prerendered route views. These go through routeChunkLoaders rather than a bare
+// import() so this file and main.tsx's pre-mount await resolve the identical module specifier --
+// if the two ever drifted apart, main.tsx would dutifully warm one chunk while lazy() requested a
+// different one, and the flash these are ordered around would come straight back.
+const GuidePageView = lazy(() => routeChunkLoaders.guide().then((m) => ({ default: m.GuidePageView })));
+const GuidesIndexView = lazy(() => routeChunkLoaders.guidesIndex().then((m) => ({ default: m.GuidesIndexView })));
+const CountyPageView = lazy(() => routeChunkLoaders.county().then((m) => ({ default: m.CountyPageView })));
+const CountiesIndexView = lazy(() => routeChunkLoaders.countiesIndex().then((m) => ({ default: m.CountiesIndexView })));
+const AboutMethodology = lazy(() => routeChunkLoaders.about().then((m) => ({ default: m.AboutMethodology })));
+const ContactUs = lazy(() => routeChunkLoaders.support().then((m) => ({ default: m.ContactUs })));
+const TermsConditions = lazy(() => routeChunkLoaders.terms().then((m) => ({ default: m.TermsConditions })));
+const PrivacyPolicy = lazy(() => routeChunkLoaders.privacy().then((m) => ({ default: m.PrivacyPolicy })));
+const RefundPolicy = lazy(() => routeChunkLoaders.refunds().then((m) => ({ default: m.RefundPolicy })));
 
 /** Shown only while a split chunk above is in flight -- never on a prerendered landing page. */
 const RouteChunkFallback: React.FC = () => (

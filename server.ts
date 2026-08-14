@@ -52,7 +52,12 @@ import {
 
 dotenv.config();
 
-const PORT = 3000;
+// Only read when this file bootstraps its own listener (npm run dev / npm start); Vercel never
+// reaches the app.listen() below. The env override exists so the dev server and a local
+// production build (node dist/server.cjs, serving the real prerendered dist/) can run at the same
+// time on different ports -- verifying prerendered output requires the built server, and it can't
+// take port 3000 while the dev server is holding it.
+const PORT = Number(process.env.PORT) || 3000;
 
 // Builds and returns the fully-configured Express app, without binding a port. Shared by the
 // local/traditional-server bootstrap below (startServer) and the Vercel serverless entry point

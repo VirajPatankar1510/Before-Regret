@@ -9,6 +9,8 @@ import { ArticleClosingNote } from '../src/components/seo/ArticleClosingNote';
 import { pickRelatedGuides, GuideSummary } from '../src/utils/relatedGuides';
 import { buildPageTitle } from '../src/utils/pageTitle';
 import { pickCountiesForGuide, CountyTopicInput, GUIDE_TOPICS } from '../src/utils/countyGuideTopics.js';
+import { modulePreloadTags } from './lib/routeChunkPreload.js';
+import type { PrerenderedRouteKey } from '../src/routeChunks.js';
 
 // Static HTML generator for published guide articles, run once after `vite build` as part of
 // `npm run build`. The live app is a pure client-render SPA (createRoot, not hydrateRoot -- see
@@ -391,6 +393,8 @@ function applyHeadReplacements(template: string, opts: {
   description: string;
   canonicalUrl: string;
   jsonLd: Record<string, any>[];
+  /** Which lazy route chunk this page will need on boot -- see scripts/lib/routeChunkPreload.ts. */
+  routeKey: PrerenderedRouteKey;
 }): string {
   let html = template;
   html = html.replace(/<title>[^<]*<\/title>/, `<title>${escapeHtmlAttr(opts.title)}</title>`);
@@ -407,7 +411,7 @@ function applyHeadReplacements(template: string, opts: {
   html = html.replace(/<meta name="twitter:description" content="[^"]*"/, `<meta name="twitter:description" content="${escapeHtmlAttr(opts.description)}"`);
 
   const jsonLdScript = `<script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(opts.jsonLd)}</script>`;
-  html = html.replace('</head>', `${jsonLdScript}\n  </head>`);
+  html = html.replace('</head>', `${modulePreloadTags(opts.routeKey)}\n  ${jsonLdScript}\n  </head>`);
 
   return html;
 }
@@ -479,6 +483,7 @@ async function run() {
     const preloadScript = `<script type="application/json" id="__PRELOADED_GUIDE__">${escapeJsonForScriptTag(article)}</script>`;
 
     const html = applyHeadReplacements(template, {
+      routeKey: 'guide',
       title: buildPageTitle(article.title, ' | BeforeRegret Guides'),
       description: article.metaDescription,
       canonicalUrl,
@@ -521,6 +526,7 @@ async function run() {
     },
   ];
   const indexHtml = applyHeadReplacements(template, {
+    routeKey: 'guidesIndex',
     title: 'Editorial Guides | BeforeRegret',
     description: "Every BeforeRegret research guide in one place -- what to check for a home's age, permit history, and inspection blind spots before you sign.",
     canonicalUrl: indexCanonicalUrl,
