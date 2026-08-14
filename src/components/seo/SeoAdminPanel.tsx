@@ -1278,8 +1278,16 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // a stream cut off mid-word leaves the last line with no terminal punctuation at all, which is
   // the actual, confirmed signature of the truncated-publish bug above. Empty bodies are handled
   // by hasExistingContent elsewhere, not flagged here as "truncated."
+  //
+  // !generating is load-bearing, not a style choice: generateWithAi calls setDraft on every
+  // streamed chunk, so bodyMarkdown is mid-sentence for nearly the entire time text is actively
+  // arriving -- without this guard, the warning banner below (and the Publish/Update buttons'
+  // disabled state, which OR's looksTruncated in) lit up almost continuously WHILE the AI was
+  // still writing, not just when a stream genuinely dropped. The real check only means anything
+  // once the stream has actually stopped, successfully or not; while generating is still true,
+  // the generating flag alone already accounts for "not ready to publish yet."
   const bodyTrimmed = draft.bodyMarkdown.trim();
-  const looksTruncated = bodyTrimmed.length > 0 && !/[.!?]["')\]]?\s*$/.test(bodyTrimmed);
+  const looksTruncated = !generating && bodyTrimmed.length > 0 && !/[.!?]["')\]]?\s*$/.test(bodyTrimmed);
 
   return (
     <div className="bg-slate-950 text-white min-h-screen font-sans">
