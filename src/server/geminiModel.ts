@@ -68,13 +68,37 @@ export const CONTENT_GENERATION_MODELS: string[] = CONTENT_GENERATION_DEDICATED_
 /**
  * True when an error from @google/genai is a quota-exhaustion 429 rather than a transient fault.
  * Worth distinguishing because the two need opposite advice: a transient error is worth retrying
- * immediately, a daily-quota error is not retryable until the quota window resets.
+ * immediately, a daily-quota error is not retryable until the quota window resets. Kept narrow
+ * (429 only) because this is also what call sites read to choose the specific "quota exhausted,
+ * retrying won't help until tomorrow" user-facing message -- see contentQuotaExhaustedMessage.
  */
 export function isQuotaError(err: unknown): boolean {
   const status = (err as { status?: number })?.status;
   if (status === 429) return true;
   const message = String((err as { message?: string })?.message ?? err ?? '');
   return message.includes('RESOURCE_EXHAUSTED') || message.includes('exceeded your current quota');
+}
+
+// Broader than isQuotaError -- this is what decides whether the fallback chain below cascades to
+// the next model. Confirmed live, two different failures in a row on the exact same title/prompt,
+// neither a quota error: a raw "fetch failed" / ETIMEDOUT (the TLS read to Gemini never
+// completed) and a genuine 503 "this model is currently experiencing high demand" from Gemini
+// itself. Both are exactly as safe to retry against a different model as a 429 is -- nothing
+// about the request caused either, so a different model's endpoint has just as good a chance of
+// succeeding -- but neither matched isQuotaError, so withModelFallback used to rethrow
+// immediately on the FIRST model instead of trying the other two, surfacing a generic "AI
+// generation failed" to the user for what was really a one-model, one-moment blip.
+function isTransientModelError(err: unknown): boolean {
+  if (isQuotaError(err)) return true;
+  const status = (err as { status?: number })?.status;
+  if (status === 503) return true;
+  const message = String((err as { message?: string })?.message ?? err ?? '');
+  if (message.includes('UNAVAILABLE') || message.includes('overloaded') || message === 'fetch failed') return true;
+  // Raw Node/undici network failures never reach @google/genai's own error wrapping -- they throw
+  // a plain TypeError('fetch failed') with the real reason on .cause, one level down.
+  const causeCode = (err as { cause?: { code?: string } })?.cause?.code;
+  const transientNetworkCodes = new Set(['ETIMEDOUT', 'ECONNRESET', 'ECONNREFUSED', 'ENOTFOUND', 'EAI_AGAIN']);
+  return Boolean(causeCode && transientNetworkCodes.has(causeCode));
 }
 
 export interface ModelFallbackResult<T> {
@@ -85,11 +109,12 @@ export interface ModelFallbackResult<T> {
 
 /**
  * Tries `attempt(model)` for each model in `models`, in order, cascading to the next ONLY on a
- * quota-exhaustion error. Any other error (a bad request, a network fault, a content-policy
- * rejection) is assumed to fail identically on every model in the chain -- there's no reason to
- * think a different model fixes a malformed prompt -- so it's rethrown immediately rather than
- * silently burning through the whole chain on a request that was never going to succeed. Rethrows
- * the last model's error once every model in the chain is quota-exhausted.
+ * transient error (quota exhaustion, a 503/"high demand" response, or a network-level failure
+ * reaching Gemini at all). Any other error (a bad request, a content-policy rejection) is assumed
+ * to fail identically on every model in the chain -- there's no reason to think a different model
+ * fixes a malformed prompt -- so it's rethrown immediately rather than silently burning through
+ * the whole chain on a request that was never going to succeed. Rethrows the last model's error
+ * once every model in the chain has failed.
  */
 async function withModelFallback<T>(
   models: string[],
@@ -101,7 +126,7 @@ async function withModelFallback<T>(
       return { result: await attempt(model), model };
     } catch (err) {
       lastErr = err;
-      if (!isQuotaError(err)) throw err;
+      if (!isTransientModelError(err)) throw err;
     }
   }
   throw lastErr;

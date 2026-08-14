@@ -31,7 +31,8 @@ HARD RULES -- breaking any of these makes the output unusable:
 5. Hedge appropriately -- "commonly," "often," "can," "may" -- never "always," "will," "guaranteed." This includes numbers: if a figure genuinely varies by lender, insurer, or provider (a down payment percentage, an interest rate premium, a deductible), describe it qualitatively ("often requires a significantly larger down payment") rather than stating a specific range as if it were a fixed rule -- a precise-looking number implies a precision the underlying reality doesn't have.
 6. Vary sentence length and structure like a real person writing. No "In today's fast-paced world," no "In conclusion," no listicle padding, no filler sentences added just to hit a word count.
 7. Write only original analysis and explanation in your own words. Do not paraphrase or lift structure from any specific existing article.
-8. Never invent a URL or a specific report/study to attribute a claim to. You may only cite an organization by its short code from the approved list given to you -- never write out a URL yourself. Precision matters as much as existence: only attach a citation when that specific organization is the actual, correct authority for that specific claim -- not merely the closest-sounding or most plausible agency on the list. A federal regulator's general subject-matter area (e.g. CFPB covers consumer lending disclosures and servicing) does not make it the right citation for a claim that actually belongs to a different body (e.g. Fannie Mae/Freddie Mac's non-warrantable-property underwriting rules, which are not a government agency and are not on this list at all). Confirmed as a real, published mistake: a claim about GSE mortgage underwriting treatment of HOA litigation was cited to [CFPB], which does not set or publish that standard. When no organization on the approved list is a precise match for a claim, state the claim in plain text with no citation bracket -- an uncited true statement is correct; a citation to the wrong authority is not, even if the organization itself is real and on the list.`;
+8. Never invent a URL or a specific report/study to attribute a claim to. You may only cite an organization by its short code from the approved list given to you -- never write out a URL yourself. Precision matters as much as existence: only attach a citation when that specific organization is the actual, correct authority for that specific claim -- not merely the closest-sounding or most plausible agency on the list. A federal regulator's general subject-matter area (e.g. CFPB covers consumer lending disclosures and servicing) does not make it the right citation for a claim that actually belongs to a different body (e.g. Fannie Mae/Freddie Mac's non-warrantable-property underwriting rules, which are not a government agency and are not on this list at all). Confirmed as a real, published mistake: a claim about GSE mortgage underwriting treatment of HOA litigation was cited to [CFPB], which does not set or publish that standard. When no organization on the approved list is a precise match for a claim, state the claim in plain text with no citation bracket -- an uncited true statement is correct; a citation to the wrong authority is not, even if the organization itself is real and on the list.
+9. When a counterparty in the transaction (a landowner, seller, HOA, lender, or any vendor -- inspector, contractor, agent, attorney) uses a standard, legal, disclosed practice, describe its financial mechanism and consequence to the buyer -- never editorialize it as deception or bad intent. Words like "trap," "landmine," or a section header like "Why the Purchase Price Is Deceptive" assume the counterparty meant to harm the reader; a disclosed rent-escalation clause or a standard contract term is a real risk to explain, not a scheme to expose. Confirmed as a real, published mistake: an article on land-lease apartments titled a section "The Escalation Clause Trap" and called standard reappraisal clauses "financial landmines," which a landowner could reasonably read as an accusation of bad faith for using a disclosed, legal term. State the risk plainly and let the facts carry the warning.`;
 
 // Deliberately not a ranked or numbered list -- an earlier numbered "pillar" version put
 // insurance first and gave it by far the most specific named examples (Federal Pacific/Zinsco
@@ -67,6 +68,34 @@ const CONTENT_SCOPE = `BeforeRegret covers anything a home buyer should research
 // source list directly from what the body actually cites -- the SOURCES: header line is still
 // requested in the prompt above (it doesn't hurt, and may reinforce the citation habit) but its
 // value is intentionally unused for this.
+// Narrow tripwire for HARD RULE 9 (above) failing to hold -- catches literal recurrence of the
+// exact adversarial-counterparty phrasing already confirmed live on the land-lease article
+// ("The Escalation Clause Trap," "financial landmines," "the purchase price is deceptive"), not
+// a general accusatory-tone detector. Deliberately does NOT flag words like "red flag,"
+// "predatory," "dangerous," or "ripped off" -- those are legitimate, intended language when an
+// article is actually about spotting a bad actor (a corner-cutting contractor, a licensing
+// violation; see the "How to Hire a [Vendor] Without Getting Ripped Off" / "[Vendor] Red Flags"
+// article series), and banning them here would fight that intended style. This only catches the
+// narrower case rule 9 addresses: a STANDARD, DISCLOSED practice (a lease clause, a fee
+// structure) described as if it were designed in bad faith.
+const ADVERSARIAL_COUNTERPARTY_PATTERNS: RegExp[] = [
+  /financial landmines?/i,
+  /\b(?:is|are|as)\s+deceptive\b/i,
+  /financial trap/i,
+  /\b(?:clause|contract|lease)\s+trap\b/i,
+  /\bdangerous provisions?\b/i,
+];
+
+/** Returns the matched phrases, or an empty array if none of the confirmed bad patterns recur. */
+export function findAdversarialCounterpartyFraming(bodyMarkdown: string): string[] {
+  const hits: string[] = [];
+  for (const pattern of ADVERSARIAL_COUNTERPARTY_PATTERNS) {
+    const match = bodyMarkdown.match(pattern);
+    if (match) hits.push(match[0]);
+  }
+  return hits;
+}
+
 export function extractCitedSourceCodes(bodyMarkdown: string): string[] {
   const knownKeys = new Set(KNOWN_SOURCES.map((s) => s.key));
   const found = new Set<string>();
