@@ -154,8 +154,17 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
           </div>
         )}
 
-        <div className="text-xs text-slate-400">
+        <div className="text-xs text-slate-400 space-y-1.5">
           <p>© {new Date().getFullYear()} Before Regret. All rights reserved.</p>
+          {/* Required verbatim by the Census Bureau API's Terms of Service (Attribution section,
+              census.gov/data/developers/about/terms-of-service.html): "should display the
+              following notice prominently within the application." Several published pages
+              already draw on this API (county housing-age/insurance-cost comparisons, the era x
+              defect reference library) -- this is the one, site-wide place that notice lives,
+              rather than repeating it on every page that happens to use Census data. */}
+          <p className="text-[11px] text-slate-500">
+            This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau.
+          </p>
         </div>
 
       </div>
