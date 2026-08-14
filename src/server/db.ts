@@ -332,6 +332,18 @@ export async function ensureArticlesSchema(): Promise<void> {
     )
   `;
 
+  // A FIFO backlog of exact-title questions to write about, so the admin can paste a whole batch
+  // (from keyword research, reader questions, whatever) once instead of maintaining a separate
+  // spreadsheet and copy-pasting one title at a time into the "Exact title" field. See
+  // questionQueueApi.ts. id is the queue order -- oldest (lowest id) is always "next".
+  await sql`
+    CREATE TABLE IF NOT EXISTS question_queue (
+      id SERIAL PRIMARY KEY,
+      question_text TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+
   schemaEnsured = true;
 }
 
