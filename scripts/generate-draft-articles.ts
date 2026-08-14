@@ -2,8 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { withDb, isDbConfigured } from '../src/server/db.js';
-import { buildArticlePrompt } from '../src/server/articleGenerator.js';
-import { KNOWN_SOURCES } from '../src/data/knownSources.js';
+import { buildArticlePrompt, extractCitedSourceCodes } from '../src/server/articleGenerator.js';
 import { generateContentWithFallback } from '../src/server/geminiModel.js';
 import { logGeminiUsage } from '../src/server/geminiUsageTracker.js';
 
@@ -67,11 +66,10 @@ function parseGeneratedText(fullText: string): GeneratedArticle {
   const titleMatch = headerBlock.match(/^TITLE:\s*(.+)$/m);
   const metaMatch = headerBlock.match(/^META:\s*(.+)$/m);
   const quickAnswerMatch = headerBlock.match(/^QUICK_ANSWER:\s*(.+)$/m);
-  const sourcesMatch = headerBlock.match(/^SOURCES:\s*(.+)$/m);
-  const knownKeys = new Set(KNOWN_SOURCES.map((s) => s.key));
-  const sources = sourcesMatch
-    ? sourcesMatch[1].split(',').map((s) => s.trim().toUpperCase()).filter((s) => knownKeys.has(s))
-    : [];
+  // Sources come from scanning the body for [CODE] markers actually cited, not the model's own
+  // SOURCES: header line -- see extractCitedSourceCodes in articleGenerator.ts for why that line
+  // can't be trusted on its own.
+  const sources = extractCitedSourceCodes(delimiterIndex === -1 ? '' : body);
   return {
     title: titleMatch ? titleMatch[1].trim() : '',
     metaDescription: metaMatch ? metaMatch[1].trim() : '',

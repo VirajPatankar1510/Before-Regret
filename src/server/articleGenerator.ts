@@ -55,6 +55,27 @@ const CONTENT_SCOPE = `BeforeRegret covers anything a home buyer should research
 - Regret-native content: what buyers commonly say afterward they wish they'd checked before closing.
 - Any other area genuinely related to researching a property before buying it, even if it isn't listed above.`;
 
+// The model's own SOURCES: header line is not reliable enough to trust as-is -- confirmed live:
+// asked to test gemini-2.5-flash's output quality, it cited [CPSC] inline in the body (correctly
+// -- that's the exact breaker failure-to-trip claim the system instruction above names as the
+// worked example) but left SOURCES: empty, which would have silently dropped CPSC from the
+// rendered "Sources" list. The inline citation still would have rendered as a working link
+// regardless (renderArticleMarkdown.tsx's parseInline resolves any [CODE] bracket it finds
+// directly from the body, independent of this list) -- but the reference list at the bottom of
+// the article would have been incomplete despite a citation actually being used.
+// Rather than trust two independent statements of the same fact to stay in sync, derive the
+// source list directly from what the body actually cites -- the SOURCES: header line is still
+// requested in the prompt above (it doesn't hurt, and may reinforce the citation habit) but its
+// value is intentionally unused for this.
+export function extractCitedSourceCodes(bodyMarkdown: string): string[] {
+  const knownKeys = new Set(KNOWN_SOURCES.map((s) => s.key));
+  const found = new Set<string>();
+  for (const match of bodyMarkdown.matchAll(/\[([A-Z]+)\]/g)) {
+    if (knownKeys.has(match[1])) found.add(match[1]);
+  }
+  return Array.from(found);
+}
+
 export function buildArticlePrompt(
   topicSeed: string,
   existingTitles: string[] = [],
