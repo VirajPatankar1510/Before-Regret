@@ -5,6 +5,7 @@ import {
   Library
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
+import { extractCitedSourceCodes } from '../../server/articleGenerator';
 import { NEWS_TOPIC_PRESETS, type NewsTopicPreset } from '../../data/newsTopicPresets';
 import { STOPWORDS } from '../../utils/relatedGuides';
 import { buildPageTitle } from '../../utils/pageTitle';
@@ -654,11 +655,12 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     const titleMatch = headerBlock.match(/^TITLE:\s*(.+)$/m);
     const metaMatch = headerBlock.match(/^META:\s*(.+)$/m);
     const quickAnswerMatch = headerBlock.match(/^QUICK_ANSWER:\s*(.+)$/m);
-    const sourcesMatch = headerBlock.match(/^SOURCES:\s*(.+)$/m);
-    const knownKeys = new Set(KNOWN_SOURCES.map((s) => s.key));
-    const sources = sourcesMatch
-      ? sourcesMatch[1].split(',').map((s) => s.trim().toUpperCase()).filter((s) => knownKeys.has(s))
-      : [];
+    // Sources come from scanning the body for [CODE] markers actually cited, not from the
+    // model's own SOURCES: header line -- confirmed live that gemini-2.5-flash can cite a source
+    // inline while leaving that line empty, which would silently drop it from the rendered
+    // "Sources" list even though the inline link still resolves. See extractCitedSourceCodes in
+    // articleGenerator.ts.
+    const sources = extractCitedSourceCodes(delimiterIndex === -1 ? '' : body);
     // Fallback: if the model didn't follow the delimiter format at all, don't lose the output --
     // show everything as the body rather than silently dropping it.
     return {
