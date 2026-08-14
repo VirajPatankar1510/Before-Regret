@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
 import { buildArticlePrompt } from './articleGenerator.js';
-import { GEMINI_MODEL, CONTENT_GENERATION_MODELS, isQuotaError, generateContentStreamWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
+import { GEMINI_MODEL, CONTENT_GENERATION_MODELS, REPORT_GENERATION_MODELS, DAILY_FREE_TIER_LIMIT_PER_MODEL, isQuotaError, generateContentStreamWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
 import type { GenerateContentResponseUsageMetadata } from '@google/genai';
 import { submitUrlsToIndexNow } from '../utils/indexNowService.js';
@@ -257,6 +257,33 @@ export function registerArticleRoutes(app: Express) {
         SELECT created_at, source, model, total_tokens, estimated_cost_usd
         FROM gemini_usage_log ORDER BY created_at DESC LIMIT 20
       `);
+
+      // Per-model calls today, for the "X of 20 left" quota display -- REPORT_GENERATION_MODELS is
+      // the canonical list of the 3 models this app ever actually calls (see geminiModel.ts), in
+      // priority order (report's own model first). Grouped from the same log the other stats above
+      // read, so this never drifts out of sync with what those totals already show.
+      const modelCountRows = await withDb((sql) => sql`
+        SELECT model, COUNT(*)::int AS calls
+        FROM gemini_usage_log
+        WHERE created_at >= CURRENT_DATE
+        GROUP BY model
+      `);
+      const callsTodayByModel = new Map(
+        (modelCountRows as unknown as Array<{ model: string; calls: number }>).map((r) => [r.model, r.calls])
+      );
+      const quotaByModel = REPORT_GENERATION_MODELS.map((model) => {
+        const callsToday = callsTodayByModel.get(model) ?? 0;
+        return {
+          model,
+          callsToday,
+          remaining: Math.max(0, DAILY_FREE_TIER_LIMIT_PER_MODEL - callsToday),
+          dailyLimit: DAILY_FREE_TIER_LIMIT_PER_MODEL,
+        };
+      });
+
+      const publishedRows = await withDb((sql) => sql`SELECT COUNT(*)::int AS n FROM articles WHERE status = 'published'`);
+      const publishedArticleCount = (publishedRows as unknown as Array<{ n: number }>)[0].n;
+
       const row = (rows as unknown as Array<Record<string, unknown>>)[0];
       res.json({
         success: true,
@@ -266,6 +293,8 @@ export function registerArticleRoutes(app: Express) {
           allTime: { tokens: Number(row.all_time_tokens), costUsd: row.all_time_cost_usd === null ? null : Number(row.all_time_cost_usd), calls: Number(row.all_time_calls) },
           reportModel: GEMINI_MODEL,
           contentModels: CONTENT_GENERATION_MODELS,
+          quotaByModel,
+          publishedArticleCount,
           recent: (recent as unknown as Array<{ created_at: string; source: string; model: string; total_tokens: number; estimated_cost_usd: number | null }>),
         },
       });

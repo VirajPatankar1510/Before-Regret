@@ -10,6 +10,16 @@
 // requests come back 429 with a quota metric containing "free_tier", that project is on the free
 // tier (20 requests/day/model) regardless of any consumer subscription on the same Google account.
 
+// The free tier's per-model daily cap, used to show "X calls left today" in the admin usage panel
+// (see the /api/admin/gemini-usage route in articlesApi.ts). This is Google's documented free-tier
+// number, not something read back from a live quota-check API -- @google/genai doesn't expose
+// remaining quota, so "remaining" there is always DAILY_FREE_TIER_LIMIT_PER_MODEL minus however
+// many calls this app's own gemini_usage_log recorded against that model today. That's exact for
+// this app's own traffic, but would overstate what's left if the same API key is also used
+// elsewhere outside this codebase, and doesn't apply at all once billing is enabled on the project
+// (there's no cap to count down from at that point).
+export const DAILY_FREE_TIER_LIMIT_PER_MODEL = 20;
+
 // GEMINI_MODEL: the free property report's PRIMARY model -- the single highest-volume, most
 // user-facing Gemini call this app makes, so it gets first claim on the best available model's
 // 20/day free-tier allowance. Also content generation's LAST-RESORT fallback tier (see
