@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
 import { ChevronRight, Loader2, MapPin } from 'lucide-react';
+import { ContentLink } from '../home/ContentLink';
 
 interface CountiesIndexViewProps {
   onNavigate: (path: string) => void;
@@ -114,7 +115,7 @@ export const CountiesIndexView: React.FC<CountiesIndexViewProps> = ({ onNavigate
     <div className="bg-slate-50 min-h-screen pb-16">
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium">
-          <button onClick={() => onNavigate('/')} className="hover:text-blue-600">Home</button>
+          <ContentLink href="/" onNavigate={onNavigate} className="hover:text-blue-600">Home</ContentLink>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-slate-900 font-bold">County Research</span>
         </div>
@@ -161,8 +162,9 @@ export const CountiesIndexView: React.FC<CountiesIndexViewProps> = ({ onNavigate
                 <ul>
                   {group.counties.map((county) => (
                     <li key={county.slug}>
-                      <button
-                        onClick={() => onNavigate(`/county/${county.slug}/`)}
+                      <ContentLink
+                        href={`/county/${county.slug}/`}
+                        onNavigate={onNavigate}
                         className="w-full flex items-baseline justify-between gap-3 py-1.5 text-xs text-slate-700 hover:text-blue-700 font-medium text-left cursor-pointer"
                       >
                         <span>{county.countyName} County</span>
@@ -171,7 +173,7 @@ export const CountiesIndexView: React.FC<CountiesIndexViewProps> = ({ onNavigate
                             pop. {county.population.toLocaleString()}
                           </span>
                         )}
-                      </button>
+                      </ContentLink>
                     </li>
                   ))}
                 </ul>

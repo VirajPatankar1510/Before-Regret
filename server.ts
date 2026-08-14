@@ -1,4 +1,4 @@
-import express, { type Request } from "express";
+import express, { type Request, type Response } from "express";
 import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
@@ -49,7 +49,8 @@ import {
   createTransaction,
   updateTransaction,
   getTransaction,
-  isDbConfigured
+  isDbConfigured,
+  withDb
 } from "./src/server/db.js";
 
 dotenv.config();
@@ -1213,16 +1214,58 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     // Vercel this Express branch's static serving is never reached at all (see vercel.json's
     // rewrites), so this has no bearing on the live deployment.
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+
+    const sendShellWithStatus = (res: Response, status: number) => {
       const shellPath = path.join(distPath, 'shell.html');
       const indexPath = path.join(distPath, 'index.html');
       const target = fs.existsSync(shellPath) ? shellPath : indexPath;
       if (fs.existsSync(target)) {
-        let html = fs.readFileSync(target, 'utf8');
-        res.send(html);
+        res.status(status).send(fs.readFileSync(target, 'utf8'));
       } else {
         res.status(404).send('Not found');
       }
+    };
+
+    // Confirmed as a real, externally-reported issue: a guessed or stale /guides/:slug or
+    // /county/:slug URL that doesn't correspond to any real article/county previously fell all
+    // the way through to the generic catch-all below, which always sends 200 -- the client-side
+    // GuidePageView/CountyPageView then renders a "Not Found" message, but a crawler sees a
+    // "soft 404" (real content missing, HTTP status says the page is fine). express.static above
+    // already serves a REAL prerendered page directly for any slug that existed at the last
+    // deploy, bypassing these two routes entirely -- they're only ever reached for a slug that's
+    // either genuinely invalid, or was published/completed after the last deploy (in which case
+    // GuidePageView/CountyPageView's own client-side fetch to /api/guides|counties/:slug still
+    // finds and renders it -- this only changes the HTTP status here, never the served content,
+    // so that legitimate case keeps working exactly as it did before). Fails open (200) on a DB
+    // error rather than risk 404-ing a real page over a transient outage.
+    app.get(['/guides/:slug', '/guides/:slug/'], async (req, res) => {
+      if (!isDbConfigured()) return sendShellWithStatus(res, 200);
+      try {
+        const rows = await withDb((sql) => sql`
+          SELECT 1 FROM articles WHERE slug = ${req.params.slug} AND status = 'published' LIMIT 1
+        `);
+        sendShellWithStatus(res, rows.length > 0 ? 200 : 404);
+      } catch (err) {
+        console.error('[guides] slug-existence check failed, serving 200:', err);
+        sendShellWithStatus(res, 200);
+      }
+    });
+
+    app.get(['/county/:slug', '/county/:slug/'], async (req, res) => {
+      if (!isDbConfigured()) return sendShellWithStatus(res, 200);
+      try {
+        const rows = await withDb((sql) => sql`
+          SELECT 1 FROM county_data WHERE slug = ${req.params.slug} AND data_complete = true LIMIT 1
+        `);
+        sendShellWithStatus(res, rows.length > 0 ? 200 : 404);
+      } catch (err) {
+        console.error('[counties] slug-existence check failed, serving 200:', err);
+        sendShellWithStatus(res, 200);
+      }
+    });
+
+    app.get('*', (req, res) => {
+      sendShellWithStatus(res, 200);
     });
   }
 

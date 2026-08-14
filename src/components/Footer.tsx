@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ShieldCheck, ArrowRight, BookOpen } from 'lucide-react';
 import { Logo } from './Logo';
+import { ContentLink } from './home/ContentLink';
 
 interface FooterProps {
   onNewSearch: () => void;
@@ -102,6 +103,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
 
           <div className="flex flex-wrap items-center gap-3">
             <button
+              type="button"
               onClick={onNewSearch}
               className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md"
             >
@@ -124,14 +126,14 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                 <ul className="space-y-2">
                   {guides.map((guide) => (
                     <li key={guide.slug}>
-                      <button onClick={() => onNavigate(`/guides/${guide.slug}/`)} className="hover:text-white cursor-pointer block py-1.5">{guide.title}</button>
+                      <ContentLink href={`/guides/${guide.slug}/`} onNavigate={onNavigate} className="hover:text-white cursor-pointer block py-1.5">{guide.title}</ContentLink>
                     </li>
                   ))}
                   <li>
-                    <button onClick={() => onNavigate('/guides/')} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">View all guides →</button>
+                    <ContentLink href="/guides/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">View all guides →</ContentLink>
                   </li>
                   <li>
-                    <button onClick={() => onNavigate('/counties/')} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">View all counties →</button>
+                    <ContentLink href="/counties/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">View all counties →</ContentLink>
                   </li>
                 </ul>
               </div>
@@ -143,12 +145,12 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                 <span>Legal & Support Policies</span>
               </div>
               <ul className="space-y-2">
-                <li><button onClick={() => onNavigate('/about')} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">About & Methodology</button></li>
-                <li><button onClick={() => onNavigate('/advertise')} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">Advertise With Us</button></li>
-                <li><button onClick={() => onNavigate('/support')} className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5">Customer Support</button></li>
-                <li><button onClick={() => onNavigate('/terms')} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Terms of Service</button></li>
-                <li><button onClick={() => onNavigate('/privacy')} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Privacy Policy</button></li>
-                <li><button onClick={() => onNavigate('/refunds')} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Refund & Cancellation</button></li>
+                <li><ContentLink href="/about" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">About & Methodology</ContentLink></li>
+                <li><ContentLink href="/advertise" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">Advertise With Us</ContentLink></li>
+                <li><ContentLink href="/support" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5">Customer Support</ContentLink></li>
+                <li><ContentLink href="/terms" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Terms of Service</ContentLink></li>
+                <li><ContentLink href="/privacy" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Privacy Policy</ContentLink></li>
+                <li><ContentLink href="/refunds" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Refund & Cancellation</ContentLink></li>
               </ul>
             </div>
           </div>
