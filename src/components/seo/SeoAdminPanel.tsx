@@ -184,6 +184,21 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // a time -- exactTitleInput wins if both are.
   const [topicInput, setTopicInput] = useState('');
   const [exactTitleInput, setExactTitleInput] = useState('');
+
+  // The pasted-list-of-titles backlog (see src/server/questionQueueApi.ts), so exact titles can
+  // come from one bulk paste instead of a manually-maintained spreadsheet. Always sorted
+  // oldest-first by the server, so questionQueue[0] is always "next" -- no separate peek endpoint.
+  // importedQuestionId tracks which row (if any) the current exactTitleInput came from, so
+  // publishNow() knows which row to delete -- a row is only ever consumed by an actual publish,
+  // never by importing it (see the queue card's comment for why that distinction matters).
+  const [questionQueue, setQuestionQueue] = useState<Array<{ id: number; questionText: string; createdAt: string }>>([]);
+  const [questionQueueLoaded, setQuestionQueueLoaded] = useState(false);
+  const [importedQuestionId, setImportedQuestionId] = useState<number | null>(null);
+  const [questionQueueOpen, setQuestionQueueOpen] = useState(false);
+  const [questionQueueBulkText, setQuestionQueueBulkText] = useState('');
+  const [questionQueueBusy, setQuestionQueueBusy] = useState(false);
+  const [questionQueueMessage, setQuestionQueueMessage] = useState('');
+  const [questionQueueError, setQuestionQueueError] = useState('');
   // Titles generated for this draft earlier in the current editing session, before Save was ever
   // clicked. Passed to the server alongside the DB-backed duplicate list so clicking "Generate"
   // twice in a row for the same topic doesn't produce the same (or near-same) title/angle twice --
@@ -320,6 +335,20 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     loadDefectLibraryStatus();
   }, []);
 
+  const loadQuestionQueue = () => {
+    fetch('/api/admin/question-queue')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success) setQuestionQueue(data.questions);
+      })
+      .catch(() => {})
+      .finally(() => setQuestionQueueLoaded(true));
+  };
+
+  useEffect(() => {
+    loadQuestionQueue();
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     const loadUsage = () => {
@@ -352,6 +381,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     setSlugManuallyEdited(false);
     setTopicInput('');
     setExactTitleInput('');
+    setImportedQuestionId(null);
     setPreviousAttempts([]);
     // Defaulted to this article's own title, not left blank -- the common case opening this is a
     // freshly-drafted FEMA county-event article, where the title already names the county and
@@ -372,6 +402,65 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const openArticleBySlug = (slug: string) => {
     const article = articles?.find((a) => a.slug === slug);
     if (article) openEditor(article);
+  };
+
+  // questionQueue is already sorted oldest-first by the server, so [0] is always "next" -- no
+  // network round trip needed just to peek. Non-destructive on purpose: importing only fills the
+  // field and remembers which row it came from (importedQuestionId), it does not remove the row.
+  // Consuming happens in publishNow() below, and only there -- see questionQueueApi.ts for why.
+  const importNextQuestion = () => {
+    if (questionQueue.length === 0) return;
+    const next = questionQueue[0];
+    setExactTitleInput(next.questionText);
+    setImportedQuestionId(next.id);
+    setTopicInput('');
+    setSeoKeywordHints([]);
+    setOverrideSimilarWarning(false);
+  };
+
+  const addQuestionsToQueue = async () => {
+    const lines = questionQueueBulkText.split('\n').map((l) => l.trim()).filter(Boolean);
+    if (lines.length === 0) return;
+    setQuestionQueueBusy(true);
+    setQuestionQueueError('');
+    setQuestionQueueMessage('');
+    try {
+      const res = await fetch('/api/admin/question-queue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ questions: lines }),
+      });
+      const data = await res.json();
+      if (data?.success) {
+        setQuestionQueue(data.questions);
+        setQuestionQueueBulkText('');
+        setQuestionQueueMessage(
+          data.duplicates > 0
+            ? `Added ${data.added} question${data.added === 1 ? '' : 's'} (${data.duplicates} already in the list, skipped).`
+            : `Added ${data.added} question${data.added === 1 ? '' : 's'}.`
+        );
+      } else {
+        setQuestionQueueError(data?.error || 'Could not save those questions.');
+      }
+    } catch {
+      setQuestionQueueError('Could not reach the server.');
+    } finally {
+      setQuestionQueueBusy(false);
+    }
+  };
+
+  // Manual removal from the list view below -- e.g. a pasted question that was a typo or turned
+  // out to be a duplicate of an already-published guide. Separate from the auto-consume on
+  // publish, same DELETE route either way.
+  const removeQuestionFromQueue = async (id: number) => {
+    setQuestionQueue((prev) => prev.filter((q) => q.id !== id));
+    if (importedQuestionId === id) setImportedQuestionId(null);
+    try {
+      await fetch(`/api/admin/question-queue/${id}`, { method: 'DELETE' });
+    } catch {
+      // Best-effort -- a failed delete here just means a manually-removed row reappears on the
+      // next full reload, which is a minor annoyance, not data loss. Not worth an error banner.
+    }
   };
 
   const createArticle = async () => {
@@ -663,6 +752,16 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       if (pubData?.success) {
         setDraft(pubData.article);
         loadArticles();
+        // A real publish is the only thing that consumes a question queue row -- see
+        // questionQueueApi.ts and importNextQuestion() above for why importing alone doesn't.
+        // Fire-and-forget: if this fails, the row just stays queued and gets imported again next
+        // time, which is a minor annoyance, not a reason to fail an otherwise-successful publish.
+        if (importedQuestionId !== null) {
+          const consumedId = importedQuestionId;
+          setImportedQuestionId(null);
+          setQuestionQueue((prev) => prev.filter((q) => q.id !== consumedId));
+          fetch(`/api/admin/question-queue/${consumedId}`, { method: 'DELETE' }).catch(() => {});
+        }
       } else {
         setActionError(pubData?.error || 'Could not publish the article.');
       }
@@ -1426,6 +1525,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 setTopicInput(e.target.value);
                 setSeoKeywordHints([]);
                 setOverrideSimilarWarning(false);
+                setImportedQuestionId(null);
               }}
               placeholder="e.g. Zinsco electrical panels — leave blank for a pillar-based suggestion"
               disabled={generating || hasExistingContent}
@@ -1501,6 +1601,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                         .map((r) => r.query);
                       setTopicInput(row.query);
                       setExactTitleInput('');
+                      setImportedQuestionId(null);
                       setSeoKeywordHints(hints);
                     }}
                     className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 bg-slate-900/60 hover:bg-slate-800 border border-slate-800 rounded-lg text-left cursor-pointer disabled:opacity-50"
@@ -1522,9 +1623,23 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
-              Exact title <span className="text-slate-500 font-normal normal-case">— used word-for-word, never rephrased</span>
-            </label>
+            <div className="flex items-center justify-between gap-2">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+                Exact title <span className="text-slate-500 font-normal normal-case">— used word-for-word, never rephrased</span>
+              </label>
+              {/* Only shown once something's actually been queued -- an admin who has never used
+                  the paste-a-list workflow shouldn't see a button that always does nothing. */}
+              {questionQueueLoaded && questionQueue.length > 0 && (
+                <button
+                  type="button"
+                  onClick={importNextQuestion}
+                  disabled={generating || hasExistingContent}
+                  className="shrink-0 text-[11px] font-bold text-indigo-400 hover:text-indigo-300 cursor-pointer disabled:opacity-50"
+                >
+                  Import next question ({questionQueue.length})
+                </button>
+              )}
+            </div>
             <input
               type="text"
               value={exactTitleInput}
@@ -1532,11 +1647,81 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 setExactTitleInput(e.target.value);
                 setSeoKeywordHints([]);
                 setOverrideSimilarWarning(false);
+                setImportedQuestionId(null);
               }}
               placeholder="e.g. Buying a House With a Zinsco Panel"
               disabled={generating || hasExistingContent}
               className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
             />
+            {importedQuestionId !== null && (
+              <p className="text-[11px] text-indigo-400">
+                Imported from the queue -- removed from the list once you publish. Editing this field un-tracks it.
+              </p>
+            )}
+          </div>
+
+          <div className="border-t border-indigo-900/60 pt-3 space-y-2.5">
+            <button
+              type="button"
+              onClick={() => setQuestionQueueOpen((v) => !v)}
+              className="text-[11px] font-bold text-slate-400 hover:text-slate-300 flex items-center gap-1 cursor-pointer"
+            >
+              <MessageCircleQuestion className="w-3.5 h-3.5" />
+              <span>Question queue ({questionQueue.length})</span>
+              {questionQueueOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+
+            {questionQueueOpen && (
+              <div className="space-y-3">
+                <p className="text-xs text-slate-400">
+                  Paste a list of exact-title questions below, one per line. Click "Import next question" above to load them into Exact title one at a time -- each one is only removed from this list once you actually publish it, so an abandoned draft or an overwritten title never loses your place.
+                </p>
+
+                <textarea
+                  value={questionQueueBulkText}
+                  onChange={(e) => setQuestionQueueBulkText(e.target.value)}
+                  placeholder={'One question per line, e.g.\nCan You Get a Mortgage on a House With Foundation Cracks?\nDoes a Home Warranty Cover Pre-Existing Problems?'}
+                  rows={4}
+                  disabled={questionQueueBusy}
+                  className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60 resize-y"
+                />
+                <button
+                  type="button"
+                  onClick={addQuestionsToQueue}
+                  disabled={questionQueueBusy || !questionQueueBulkText.trim()}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {questionQueueBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                  <span>{questionQueueBusy ? 'Adding...' : 'Add to queue'}</span>
+                </button>
+                {questionQueueMessage && <p className="text-[11px] text-emerald-400">{questionQueueMessage}</p>}
+                {questionQueueError && <p className="text-[11px] text-rose-400">{questionQueueError}</p>}
+
+                {questionQueue.length > 0 && (
+                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                    {questionQueue.map((q, i) => (
+                      <div
+                        key={q.id}
+                        className="flex items-center justify-between gap-2 px-2.5 py-1.5 bg-slate-900/60 border border-slate-800 rounded-lg"
+                      >
+                        <span className="text-xs text-slate-300 truncate">
+                          {i === 0 && <span className="text-indigo-400 font-bold mr-1.5">Next —</span>}
+                          {q.questionText}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeQuestionFromQueue(q.id)}
+                          title="Remove from queue"
+                          className="shrink-0 text-slate-600 hover:text-rose-400 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <button
