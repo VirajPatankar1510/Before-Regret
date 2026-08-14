@@ -79,6 +79,11 @@ interface GeminiUsageSummary {
   // free property report; contentModels is the cascading chain every other Gemini call uses.
   reportModel: string;
   contentModels: string[];
+  // Per-model "calls used today" against the free tier's 20/day cap, in priority order (report's
+  // own model first) -- see DAILY_FREE_TIER_LIMIT_PER_MODEL in geminiModel.ts for the caveat that
+  // this is computed from this app's own logged calls, not read back from a live quota API.
+  quotaByModel: Array<{ model: string; callsToday: number; remaining: number; dailyLimit: number }>;
+  publishedArticleCount: number;
   recent: Array<{ created_at: string; source: string; model: string; total_tokens: number; estimated_cost_usd: number | null }>;
 }
 
@@ -1234,13 +1239,19 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 </span>
               </div>
               {geminiUsage && (
-                <button
-                  onClick={() => setUsageDetailOpen((v) => !v)}
-                  className="text-xs text-slate-500 hover:text-slate-300 flex items-center gap-1 cursor-pointer"
-                >
-                  <span>Recent calls</span>
-                  {usageDetailOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                </button>
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400" title="Published articles across the whole site">
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>{geminiUsage.publishedArticleCount} published</span>
+                  </div>
+                  <button
+                    onClick={() => setUsageDetailOpen((v) => !v)}
+                    className="text-xs text-slate-500 hover:text-slate-300 flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Recent calls</span>
+                    {usageDetailOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
               )}
             </div>
 
@@ -1272,6 +1283,34 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                       {col.sub && <div className="text-[11px] text-slate-500 mt-1">{col.sub}</div>}
                     </div>
                   ))}
+                </div>
+
+                {/* Free-tier quota left today, per model -- see quotaByModel's comment above for
+                    why this is computed from our own logged calls, not a live check against
+                    Google. Doesn't mean anything once billing is enabled on the project (no cap to
+                    count down from), but is the right thing to watch on the free tier this app
+                    defaults to. */}
+                <div className="border-t border-slate-800 p-4 space-y-2">
+                  <div className="text-[10px] uppercase tracking-wide text-slate-500 font-semibold">
+                    Free-tier quota left today <span className="normal-case font-normal">(estimated from calls logged here)</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {geminiUsage.quotaByModel.map((q) => {
+                      const pctLeft = q.remaining / q.dailyLimit;
+                      const barColor = pctLeft === 0 ? 'bg-rose-500' : pctLeft <= 0.25 ? 'bg-amber-500' : 'bg-emerald-500';
+                      return (
+                        <div key={q.model} className="bg-slate-950/60 border border-slate-800 rounded-lg p-2.5">
+                          <div className="text-[11px] font-semibold text-slate-300 truncate" title={q.model}>{q.model}</div>
+                          <div className="text-sm font-bold text-white mt-1">
+                            {q.remaining} <span className="text-[11px] font-normal text-slate-500">/ {q.dailyLimit} left</span>
+                          </div>
+                          <div className="h-1 bg-slate-800 rounded-full mt-1.5 overflow-hidden">
+                            <div className={`h-full ${barColor}`} style={{ width: `${pctLeft * 100}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {usageDetailOpen && (
