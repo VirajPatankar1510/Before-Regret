@@ -1,21 +1,25 @@
 import { TRADE_CATEGORIES } from './sponsoredVendors.js';
 
 // Manually-maintained, same reasoning as SPONSORED_VENDORS in sponsoredVendors.ts: there is no
-// lead-discovery pipeline or CRM yet, and building one before a single outreach email has been
-// sent and validated would be automating a message nobody has confirmed converts. Add real
-// prospects here by hand -- a business you or a teammate found, with a real email you're
-// confident is theirs. Never invent a plausible-sounding business to fill this list; an empty
-// array is the honest, correct state until real prospecting happens.
+// lead-discovery pipeline or CRM yet. Add real prospects here by hand -- a business you or a
+// teammate found, with a real email you're confident is theirs. Never invent a plausible-sounding
+// business to fill this list; an empty array is the honest, correct state until real prospecting
+// happens.
+//
+// There used to be an automated cold-email script (Resend) that read this list -- removed
+// entirely, since Resend's Acceptable Use Policy explicitly prohibits "cold outreach... to
+// recipients who have [not] explicitly opted in," which is exactly what these prospects are
+// (verified real contacts, but no prior relationship or consent). The only outreach channel this
+// list now feeds is the manual, human-executed Instagram DM workflow in
+// docs/VENDOR_INSTAGRAM_OUTREACH_PLAYBOOK.md -- add a business here once you've found it, and log
+// the outcome (replied, signed up, declined) after reaching out yourself. Nothing here sends
+// anything automatically.
 //
 // Real Estate Attorney and Moving Company are deliberately excluded from
 // OUTREACH_ELIGIBLE_TRADES below -- neither has a placement anywhere in the report yet (see
 // FINDING_TRADE_CATEGORY / PRIORITY_TRADE_CATEGORY in sponsoredVendors.ts), so a prospect who
 // signs up under either category would pay and never actually appear. Don't add prospects in
 // those two categories until a real placement exists for them.
-//
-// Prospects sourced via Instagram DM (see docs/VENDOR_INSTAGRAM_OUTREACH_PLAYBOOK.md) belong in
-// this same list once they reply with interest -- add a note saying where they came from. That
-// playbook is a manual, human-executed workflow, not a script; nothing here automates it.
 export const OUTREACH_ELIGIBLE_TRADES = TRADE_CATEGORIES.filter(
   (t) => t !== 'Real Estate Attorney' && t !== 'Moving Company'
 );
@@ -36,8 +40,8 @@ export interface VendorProspect {
   email: string;
   contactName?: string;
   status: ProspectStatus;
-  // Set by the send script after a successful send -- not auto-updated any other way. This file
-  // is hand-maintained; update status here yourself after checking outreach-log.json or a reply.
+  // Nothing sets this automatically -- this file is hand-maintained; update status and this field
+  // yourself after reaching out via Instagram DM (see the playbook) and getting a reply.
   contactedAt?: string;
   notes?: string;
 }

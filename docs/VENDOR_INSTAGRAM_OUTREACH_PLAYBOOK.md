@@ -1,13 +1,14 @@
 # Vendor Instagram Outreach Playbook
 
-Related: [`docs/`](.) architecture notes, [`src/emails/vendorOutreachTemplates.ts`](../src/emails/vendorOutreachTemplates.ts) (the email equivalent of this, Phase 3).
-
 This is a **manual workflow, not a tool**, and that's a deliberate choice, not a gap to fill in
 later. Meta's terms prohibit automated or bulk DM outreach to strangers and actively detect it —
 scripting this (via their API or via browser automation) risks the account being banned outright,
-which defeats the channel entirely. Automating the *mechanics* of outbound contact is what Phase 3
-(email) is for; Instagram's value here is specifically that it's warm and personal, which is not a
-thing code can do on your behalf. This doc is the checklist a person follows.
+which defeats the channel entirely. An earlier version of this project also had an automated
+cold-email script (Phase 3, via Resend) as a second channel -- that's been removed entirely, since
+Resend's Acceptable Use Policy explicitly prohibits cold outreach to non-opted-in recipients, which
+is exactly what these prospects are. This manual Instagram workflow is now the only outreach
+channel this project uses, and it's warm and personal specifically because it's a person doing it,
+which is not a thing code can do on your behalf. This doc is the checklist a person follows.
 
 ## Which trades, and why only these three
 
@@ -21,12 +22,12 @@ Instagram-native businesses that post their own work:
 - **HVAC Inspection** — install/replacement photos, less universal than roofing but common enough
 
 The other five eligible trades (Sewer Scope, Radon Testing, Foundation Engineer, Home Inspector,
-Insurance Agent) are not naturally visual, social-first businesses — use email (Phase 3) for those
-instead of forcing an Instagram angle that won't land.
+Insurance Agent) are not naturally visual, social-first businesses — don't force an Instagram angle
+on them that won't land; there's no other automated outreach channel for them right now.
 
-Same exclusion as Phase 3 applies here too: **do not** reach out to Real Estate Attorney or Moving
-Company prospects on any channel yet. Neither has a placement anywhere in the report, so a signed-up
-vendor in either category would pay and never actually appear.
+Same OUTREACH_ELIGIBLE_TRADES exclusion applies here too: **do not** reach out to Real Estate
+Attorney or Moving Company prospects on any channel yet. Neither has a placement anywhere in the
+report, so a signed-up vendor in either category would pay and never actually appear.
 
 ## The workflow
 
@@ -94,5 +95,4 @@ Don't build tooling for this before you have evidence the channel converts at al
   the wording, and only send to accounts you've actually looked at.
 - Don't DM an account you're not confident is a real, currently-operating local business.
 - Don't quote a number of BeforeRegret users, report volume, or "results" in a DM — there's no
-  verified traffic data to back a claim like that yet (same reason the email templates in Phase 3
-  don't make one either).
+  verified traffic data to back a claim like that yet.
