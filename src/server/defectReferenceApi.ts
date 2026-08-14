@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
-import { GEMINI_MODEL, isQuotaError } from './geminiModel.js';
+import { isQuotaError, generateContentWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
 import { slugify } from './articlesApi.js';
 import {
@@ -167,8 +167,7 @@ export function registerDefectReferenceRoutes(app: Express) {
         const realTable = buildRankingTableMarkdown(dataPack);
         const prompt = buildDefectReferencePrompt(dataPack);
 
-        const response = await ai.models.generateContent({
-          model: GEMINI_MODEL,
+        const { result: response, model: usedModel } = await generateContentWithFallback(ai, {
           contents: prompt,
           config: {
             systemInstruction: DEFECT_REFERENCE_SYSTEM_INSTRUCTION,
@@ -177,7 +176,7 @@ export function registerDefectReferenceRoutes(app: Express) {
             responseSchema: DEFECT_REFERENCE_RESPONSE_SCHEMA,
           },
         });
-        logGeminiUsage('defect_reference_generation', GEMINI_MODEL, response.usageMetadata);
+        logGeminiUsage('defect_reference_generation', usedModel, response.usageMetadata);
 
         const raw = response.text?.trim() || '';
         const parsed = JSON.parse(raw);
@@ -242,7 +241,7 @@ export function registerDefectReferenceRoutes(app: Express) {
     } catch (err: any) {
       console.error('[defect-reference] batch failed:', err);
       if (isQuotaError(err)) {
-        res.status(429).json({ success: false, error: `Gemini's daily quota for ${GEMINI_MODEL} is used up.` });
+        res.status(429).json({ success: false, error: contentQuotaExhaustedMessage() });
       } else {
         res.status(500).json({ success: false, error: 'Reference library generation failed. See server logs.' });
       }

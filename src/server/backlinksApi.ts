@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
-import { GEMINI_MODEL, isQuotaError } from './geminiModel.js';
+import { isQuotaError, generateContentWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
 import {
   BACKLINK_REPLY_SYSTEM_INSTRUCTION,
@@ -218,8 +218,7 @@ export function registerBacklinksRoutes(app: Express) {
 
       const { GoogleGenAI } = await import('@google/genai');
       const ai = new GoogleGenAI({ apiKey, httpOptions: { headers: { 'User-Agent': 'aistudio-build' } } });
-      const response = await ai.models.generateContent({
-        model: GEMINI_MODEL,
+      const { result: response, model: usedModel } = await generateContentWithFallback(ai, {
         contents: prompt,
         config: {
           systemInstruction: BACKLINK_REPLY_SYSTEM_INSTRUCTION,
@@ -229,7 +228,7 @@ export function registerBacklinksRoutes(app: Express) {
         },
       });
 
-      logGeminiUsage('backlink_reply_generation', GEMINI_MODEL, response.usageMetadata);
+      logGeminiUsage('backlink_reply_generation', usedModel, response.usageMetadata);
       const raw = response.text?.trim() || '';
       if (!raw) {
         res.status(500).json({ success: false, error: 'Gemini returned an empty response. Try again.' });
@@ -267,7 +266,7 @@ export function registerBacklinksRoutes(app: Express) {
       if (isQuotaError(err)) {
         res.status(429).json({
           success: false,
-          error: `Gemini's daily quota for ${GEMINI_MODEL} is used up. Retrying won't help until it resets, or set GEMINI_MODEL to another model.`,
+          error: contentQuotaExhaustedMessage(),
         });
       } else {
         res.status(500).json({ success: false, error: 'Reply generation failed. Try again.' });

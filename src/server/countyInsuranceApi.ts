@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
-import { GEMINI_MODEL, isQuotaError } from './geminiModel.js';
+import { isQuotaError, generateContentWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
 import { slugify } from './articlesApi.js';
 import {
@@ -125,8 +125,7 @@ export function registerCountyInsuranceRoutes(app: Express) {
 
       const { GoogleGenAI } = await import('@google/genai');
       const ai = new GoogleGenAI({ apiKey, httpOptions: { headers: { 'User-Agent': 'aistudio-build' } } });
-      const response = await ai.models.generateContent({
-        model: GEMINI_MODEL,
+      const { result: response, model: usedModel } = await generateContentWithFallback(ai, {
         contents: prompt,
         config: {
           systemInstruction: COUNTY_INSURANCE_COMPARISON_SYSTEM_INSTRUCTION,
@@ -135,7 +134,7 @@ export function registerCountyInsuranceRoutes(app: Express) {
           responseSchema: COUNTY_INSURANCE_COMPARISON_RESPONSE_SCHEMA,
         },
       });
-      logGeminiUsage('county_insurance_comparison_generation', GEMINI_MODEL, response.usageMetadata);
+      logGeminiUsage('county_insurance_comparison_generation', usedModel, response.usageMetadata);
 
       const raw = response.text?.trim() || '';
       const parsed = JSON.parse(raw);
@@ -197,7 +196,7 @@ export function registerCountyInsuranceRoutes(app: Express) {
       if (isQuotaError(err)) {
         res.status(429).json({
           success: false,
-          error: `Gemini's daily quota for ${GEMINI_MODEL} is used up. Retrying won't help until it resets.`,
+          error: contentQuotaExhaustedMessage(),
         });
       } else {
         res.status(500).json({ success: false, error: 'Report generation failed. Try again.' });

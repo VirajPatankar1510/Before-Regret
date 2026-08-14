@@ -75,7 +75,10 @@ interface GeminiUsageSummary {
   today: { tokens: number; costUsd: number | null; calls: number };
   month: { tokens: number; costUsd: number | null };
   allTime: { tokens: number; costUsd: number | null; calls: number };
-  model: string;
+  // Two separate model tiers now, not one -- see geminiModel.ts. reportModel is reserved for the
+  // free property report; contentModels is the cascading chain every other Gemini call uses.
+  reportModel: string;
+  contentModels: string[];
   recent: Array<{ created_at: string; source: string; model: string; total_tokens: number; estimated_cost_usd: number | null }>;
 }
 
@@ -1225,7 +1228,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             <div className="p-4 flex items-center justify-between gap-4">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
                 <Gauge className="w-3.5 h-3.5" />
-                <span>Gemini usage{geminiUsage?.model ? ` (${geminiUsage.model})` : ''}</span>
+                <span>
+                  Gemini usage
+                  {geminiUsage ? ` (report: ${geminiUsage.reportModel} · content: ${geminiUsage.contentModels.join(' → ')})` : ''}
+                </span>
               </div>
               {geminiUsage && (
                 <button

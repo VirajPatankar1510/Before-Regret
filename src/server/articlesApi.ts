@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
 import { buildArticlePrompt } from './articleGenerator.js';
-import { GEMINI_MODEL, isQuotaError } from './geminiModel.js';
+import { GEMINI_MODEL, CONTENT_GENERATION_MODELS, isQuotaError, generateContentStreamWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
 import type { GenerateContentResponseUsageMetadata } from '@google/genai';
 import { submitUrlsToIndexNow } from '../utils/indexNowService.js';
@@ -185,8 +185,11 @@ export function registerArticleRoutes(app: Express) {
       });
       const { systemInstruction, contents } = buildArticlePrompt(topic, existingTitles, exactTitle, relatedKeywords);
 
-      const stream = await ai.models.generateContentStream({
-        model: GEMINI_MODEL,
+      // Cascades through CONTENT_GENERATION_MODELS (gemini-3.5-flash, then gemini-2.5-flash) on
+      // quota exhaustion -- see geminiModel.ts. Deliberately not GEMINI_MODEL: that model is
+      // reserved for the free property report, which shouldn't have its own quota eaten by admin
+      // article generation.
+      const { result: stream, model: usedModel } = await generateContentStreamWithFallback(ai, {
         contents,
         config: {
           systemInstruction,
@@ -207,7 +210,7 @@ export function registerArticleRoutes(app: Express) {
         if (text) res.write(text);
         if (chunk.usageMetadata) lastUsage = chunk.usageMetadata;
       }
-      logGeminiUsage('article_generation', GEMINI_MODEL, lastUsage);
+      logGeminiUsage('article_generation', usedModel, lastUsage);
       res.end();
     } catch (err: any) {
       console.error('[articles] generate failed:', err);
@@ -218,7 +221,7 @@ export function registerArticleRoutes(app: Express) {
         if (isQuotaError(err)) {
           res.status(429).json({
             success: false,
-            error: `Gemini's daily quota for ${GEMINI_MODEL} is used up, so retrying won't help until it resets. Quota is per model, so setting GEMINI_MODEL to another one (e.g. gemini-3.5-flash) works around it; enabling billing on the Gemini API project removes the cap entirely.`,
+            error: contentQuotaExhaustedMessage(),
           });
         } else {
           res.status(500).json({ success: false, error: 'AI generation failed. Try again.' });
@@ -261,7 +264,8 @@ export function registerArticleRoutes(app: Express) {
           today: { tokens: Number(row.today_tokens), costUsd: row.today_cost_usd === null ? null : Number(row.today_cost_usd), calls: Number(row.today_calls) },
           month: { tokens: Number(row.month_tokens), costUsd: row.month_cost_usd === null ? null : Number(row.month_cost_usd) },
           allTime: { tokens: Number(row.all_time_tokens), costUsd: row.all_time_cost_usd === null ? null : Number(row.all_time_cost_usd), calls: Number(row.all_time_calls) },
-          model: GEMINI_MODEL,
+          reportModel: GEMINI_MODEL,
+          contentModels: CONTENT_GENERATION_MODELS,
           recent: (recent as unknown as Array<{ created_at: string; source: string; model: string; total_tokens: number; estimated_cost_usd: number | null }>),
         },
       });
