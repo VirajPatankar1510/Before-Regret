@@ -178,7 +178,11 @@ psql $DATABASE_URL -c "SELECT 1"
 
 ⚠️ **Email Notifications**
 - Currently no email sent on payment
-- Consider adding Resend integration (already available in project)
+- Resend was removed from the project (was only used for cold vendor outreach, which violated
+  Resend's Acceptable Use Policy -- see docs/VENDOR_INSTAGRAM_OUTREACH_PLAYBOOK.md). A purchase
+  receipt to a customer who just paid is a genuinely different, compliant use case (transactional,
+  not cold), so any ESP is fine here, Resend included if you want it back for this narrower purpose
+- Send from hello@beforeregret.com
 - Email should confirm receipt and provide transaction details
 
 ---
