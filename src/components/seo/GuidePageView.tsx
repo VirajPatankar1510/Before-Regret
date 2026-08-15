@@ -400,20 +400,6 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           </div>
         )}
 
-        {/* Contextual link to the methodology page, right where a reader is evaluating a
-            specific claim -- not just in the footer. Renders regardless of whether this guide
-            has any sources.length, since the methodology page also covers the AI-drafting rules
-            that apply to every guide, not only citation sourcing. */}
-        <p className="text-xs text-slate-500 text-center">
-          <ContentLink
-            href="/about"
-            onNavigate={onNavigate}
-            className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium"
-          >
-            How we research and write these guides
-          </ContentLink>
-        </p>
-
       </div>
     </div>
   );
