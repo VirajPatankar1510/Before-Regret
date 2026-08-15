@@ -44,6 +44,19 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  // Starts the Clerk chunk loading as soon as this page mounts -- not on the "Sign In to Pay"
+  // click itself. requestClerkLoad() only flips a flag that mounts ClerkAuthBridge; the actual
+  // sign-in trigger (clerkInstanceRef) isn't ready until that bridge reports back, which is
+  // asynchronous. Calling both requestClerkLoad() and triggerClerkSignIn() in the same click
+  // handler (the previous version of this effect) meant triggerClerkSignIn() almost always fired
+  // before Clerk had loaded and no-opped with just a console.warn -- worse, `authLoading` never
+  // resolves to false without this call at all, so the button was stuck permanently disabled
+  // (see its `disabled={authLoading}` below). Guide browsing itself stays unauthenticated either
+  // way -- this only front-loads the auth chunk, not a sign-in prompt.
+  useEffect(() => {
+    requestClerkLoad();
+  }, [requestClerkLoad]);
+
   // Prefill from MyAdsPanel.tsx's "Renew" button, if that's how the vendor got here -- stashed in
   // sessionStorage rather than a URL param since it also carries the previous business details,
   // not just which guide to re-select. Read once and cleared immediately so a later plain visit
@@ -79,10 +92,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       .catch(() => setLoadError('Could not reach the server.'));
   }, []);
 
-  // Only loads Clerk once the vendor is actually ready to check out -- browsing the guide list
-  // and filling in the business form shouldn't pull in the auth chunk before it's needed.
+  // Clerk is already loading by the time this is clickable (see the mount effect above) -- the
+  // button itself is disabled while authLoading is true, so triggerClerkSignIn() only ever fires
+  // once clerkInstanceRef is actually populated.
   const handleSignInClick = () => {
-    requestClerkLoad();
     triggerClerkSignIn();
   };
 
