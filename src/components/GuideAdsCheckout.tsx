@@ -1,5 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Loader2, AlertCircle, CheckSquare, Square, Lock, Search } from 'lucide-react';
+import {
+  ArrowLeft, Loader2, AlertCircle, CheckSquare, Square, Lock, Search, Megaphone, Globe,
+  ListChecks, CircleDollarSign, Phone, ExternalLink, ChevronDown, CreditCard, ShieldCheck, XCircle,
+} from 'lucide-react';
 import { TRADE_CATEGORIES } from '../data/sponsoredVendors';
 import { guessTradeCategoryFromTitle } from '../data/guideAdCategoryGuess';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +17,33 @@ interface GuideRow {
 interface GuideAdsCheckoutProps {
   onNavigate: (path: string) => void;
 }
+
+const FAQ_ITEMS: Array<{ q: string; a: string }> = [
+  {
+    q: 'Do you verify businesses before listing them?',
+    a: 'No -- this is self-serve. Business name, trade category, and contact details are self-reported at checkout, not independently verified.',
+  },
+  {
+    q: 'How many people will see my ad?',
+    a: "We don't track or guarantee impressions, clicks, or leads -- you're buying a fixed placement for the window, not a performance number.",
+  },
+  {
+    q: 'Can I pick more than one guide?',
+    a: 'Yes -- select as many as you want in one checkout. Each guide is a separate $7.99 charge, all paid in one PayPal transaction.',
+  },
+  {
+    q: 'What happens when my placement expires?',
+    a: 'It stops showing and the slot reopens for other vendors. No reminder email is sent right now -- check My Placements or come back to buy another window if you want to stay live.',
+  },
+  {
+    q: 'Can I edit my phone or website after I’ve paid?',
+    a: 'Yes, any time from My Placements. Business name and trade category are locked once purchased.',
+  },
+  {
+    q: 'Is this a subscription?',
+    a: "No. It's a single flat charge for a fixed 30-day window -- nothing bills you again automatically.",
+  },
+];
 
 // Self-serve, open-market vendor ad checkout for guide pages -- $7.99 per guide, one slot each,
 // flat 30-day window, no auto-renewal, any business can select any guide. See
@@ -35,6 +65,8 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [slotDurationDays, setSlotDurationDays] = useState(30);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState('');
+  const [showAllGuides, setShowAllGuides] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const [businessName, setBusinessName] = useState('');
   const [tradeCategory, setTradeCategory] = useState('');
@@ -108,20 +140,22 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     });
   };
 
-  // Guides matching the vendor's own selected trade float to the top -- with 88+ guides and no
-  // search-as-you-select affordance otherwise, a roofer had to scroll an alphabetical wall of
-  // titles to find the handful actually relevant to their trade. Falls back to plain alphabetical
-  // (the order the server already returns) once no trade is chosen yet or nothing searched.
-  const visibleGuides = useMemo(() => {
+  // Guides matching the vendor's own selected trade are split into their own group -- with 96
+  // guides and no grouping otherwise, a roofer had to scroll an alphabetical wall of titles to
+  // find the handful actually relevant to their trade. "Other guides" stays collapsed behind a
+  // toggle unless the vendor is actively searching (search intent overrides grouping) or hasn't
+  // picked a trade yet (nothing to group by, so there's just one browsable list).
+  const isSearching = search.trim().length > 0;
+  const { matchedGuides, otherGuides } = useMemo(() => {
     const query = search.trim().toLowerCase();
     const filtered = guides ? guides.filter((g) => !query || g.title.toLowerCase().includes(query)) : [];
-    if (!tradeCategory) return filtered;
+    if (!tradeCategory) return { matchedGuides: [] as GuideRow[], otherGuides: filtered };
     const matched: GuideRow[] = [];
     const rest: GuideRow[] = [];
     for (const g of filtered) {
       (guessTradeCategoryFromTitle(g.title) === tradeCategory ? matched : rest).push(g);
     }
-    return [...matched, ...rest];
+    return { matchedGuides: matched, otherGuides: rest };
   }, [guides, search, tradeCategory]);
 
   const selectedCount = selected.size;
@@ -179,9 +213,41 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     }
   };
 
+  // Shared row markup for both the "matches your trade" and "other guides" groups (and the flat
+  // search-results list) -- one definition so the taken/selected states can't visually drift
+  // between whichever group a given guide happens to render in.
+  const renderGuideRow = (g: GuideRow) => {
+    const isSelected = selected.has(g.articleId);
+    return (
+      <button
+        type="button"
+        key={g.articleId}
+        disabled={g.taken}
+        onClick={() => toggleSlot(g.articleId)}
+        className={`w-full px-1 py-3 flex items-center justify-between gap-3 text-left transition-colors ${
+          g.taken ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-slate-50'
+        }`}
+      >
+        <span className="text-sm text-slate-800 min-w-0 flex-1">{g.title}</span>
+        <span
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border shrink-0 ${
+            g.taken
+              ? 'bg-slate-100 border-slate-200 text-slate-400'
+              : isSelected
+              ? 'bg-blue-600 border-blue-600 text-white'
+              : 'bg-white border-slate-300 text-slate-700'
+          }`}
+        >
+          {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+          <span>{g.taken ? 'Taken' : isSelected ? 'Selected' : 'Select'}</span>
+        </span>
+      </button>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 font-sans text-slate-900">
-      <div className="max-w-3xl mx-auto space-y-8">
+      <div className="max-w-4xl mx-auto space-y-10">
         <div className="flex items-center justify-between border-b border-slate-200 pb-6">
           <button
             onClick={() => onNavigate('/advertise')}
@@ -195,16 +261,115 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           </span>
         </div>
 
-        <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            Get your phone number in front of people researching this exact problem
-          </h1>
-          <p className="text-sm text-slate-600 leading-relaxed">
-            ${pricePerSlot.toFixed(2)} per guide, {slotDurationDays} days, no subscription and no auto-renewal --
-            pick as many guides as you want below, pay once, and your business shows up there until it expires.
-            Any business can advertise on any guide. This buys a fixed placement, not impressions or clicks --
-            we don't track or guarantee how many people see it.
-          </p>
+        {/* Hero -- this page used to jump straight from a plain heading into a form, which read
+            as abrupt next to /advertise and /report-ads' dark hero banners. Matches their visual
+            language so the three ad pages feel like one funnel rather than three unrelated pages. */}
+        <div className="bg-slate-900 text-white border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 relative overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-xs font-mono font-bold text-blue-300">
+            <Megaphone className="w-3.5 h-3.5" />
+            <span>Topic Ads</span>
+          </div>
+
+          <div className="space-y-4 max-w-2xl">
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-white tracking-tight leading-tight">
+              Get your phone number in front of people researching this exact problem
+            </h1>
+            <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
+              ${pricePerSlot.toFixed(2)} per guide, {slotDurationDays} days -- pick as many guides as you want,
+              pay once, and your business shows up there until it expires. Any business can advertise on any guide.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3 pt-2">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+              <CreditCard className="w-3.5 h-3.5 text-slate-400" />
+              No subscription
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+              <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
+              Self-serve checkout
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+              <XCircle className="w-3.5 h-3.5 text-slate-400" />
+              No auto-renewal
+            </span>
+          </div>
+        </div>
+
+        {/* Three value points */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+              <Globe className="w-5 h-5" />
+            </div>
+            <h3 className="font-extrabold text-base text-slate-900">Nationwide Reach</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-normal">
+              Shown on the educational guides you pick, across the whole site -- not tied to any one ZIP code.
+              Readers researching that exact topic see you, wherever they are.
+            </p>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+              <ListChecks className="w-5 h-5" />
+            </div>
+            <h3 className="font-extrabold text-base text-slate-900">You Choose the Topics</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-normal">
+              Any business, any guide -- pick exactly which pages you appear on and how many, all in one checkout.
+            </p>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+              <CircleDollarSign className="w-5 h-5" />
+            </div>
+            <h3 className="font-extrabold text-base text-slate-900">Lowest Cost Per Slot</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-normal">
+              ${pricePerSlot.toFixed(2)} vs. $29 for a Report Ad -- a good fit if you serve customers across many
+              cities or the whole country.
+            </p>
+          </div>
+        </div>
+
+        {/* Visual placement preview -- mirrors GuideAdSlot.tsx's real active-vendor card exactly
+            (green border, "Ad" badge, business name/trade/phone), so this can never drift from
+            what actually renders on a live guide page. */}
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
+          <div className="space-y-2">
+            <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Visual Placement Preview</div>
+            <h2 className="font-serif text-2xl font-bold text-slate-900">How Your Listing Appears</h2>
+            <p className="text-xs sm:text-sm text-slate-600">
+              This is exactly what your placement looks like on a guide page, right after the reader's Quick Answer:
+            </p>
+          </div>
+
+          <div className="relative bg-white border border-slate-200 border-l-4 border-l-emerald-500 rounded-r-2xl p-4 sm:p-5 max-w-2xl mx-auto">
+            <span className="absolute top-2 right-3 text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+              Ad
+            </span>
+            <div className="flex flex-wrap items-start justify-between gap-3 pr-10">
+              <div className="flex items-start gap-3 min-w-0">
+                <div className="shrink-0 w-9 h-9 rounded-full bg-emerald-50 flex items-center justify-center">
+                  <ListChecks className="w-4 h-4 text-emerald-700" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">Electrician</div>
+                  <div className="text-sm font-bold text-slate-900 mt-0.5">Example Electric Co.</div>
+                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">Locally owned, same-day estimates</p>
+                </div>
+              </div>
+              <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">
+                <span className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600">
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>(512) 555-0100</span>
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs text-slate-500">
+                  <ExternalLink className="w-3 h-3" />
+                  <span>Visit website</span>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <form onSubmit={handleCheckout} className="space-y-6">
@@ -246,10 +411,8 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-sm font-bold text-slate-900">Choose where you appear</h2>
-              {tradeCategory && (
-                <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-1 rounded-full">
-                  Guides matching {tradeCategory} shown first
-                </span>
+              {guides && guides.length > 0 && (
+                <span className="text-[11px] text-slate-400 font-medium">{guides.length} guides available</span>
               )}
             </div>
 
@@ -278,42 +441,102 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
               <p className="text-xs text-slate-500 py-4">No placements available yet -- check back soon.</p>
             )}
 
-            {guides && guides.length > 0 && visibleGuides.length === 0 && (
+            {guides && guides.length > 0 && matchedGuides.length + otherGuides.length === 0 && (
               <p className="text-xs text-slate-500 py-4">No guides match "{search}".</p>
             )}
 
-            {visibleGuides.length > 0 && (
+            {/* Searching overrides grouping -- flat results, matched-trade guides still first. */}
+            {guides && guides.length > 0 && isSearching && matchedGuides.length + otherGuides.length > 0 && (
               <div className="divide-y divide-slate-100 -mx-1 max-h-[28rem] overflow-y-auto">
-                {visibleGuides.map((g) => {
-                  const isSelected = selected.has(g.articleId);
-                  return (
-                    <button
-                      type="button"
-                      key={g.articleId}
-                      disabled={g.taken}
-                      onClick={() => toggleSlot(g.articleId)}
-                      className={`w-full px-1 py-3 flex items-center justify-between gap-3 text-left transition-colors ${
-                        g.taken ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-slate-50'
-                      }`}
-                    >
-                      <span className="text-sm text-slate-800 min-w-0 flex-1">{g.title}</span>
-                      <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border shrink-0 ${
-                          g.taken
-                            ? 'bg-slate-100 border-slate-200 text-slate-400'
-                            : isSelected
-                            ? 'bg-blue-600 border-blue-600 text-white'
-                            : 'bg-white border-slate-300 text-slate-700'
-                        }`}
-                      >
-                        {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
-                        <span>{g.taken ? 'Taken' : isSelected ? 'Selected' : 'Select'}</span>
-                      </span>
-                    </button>
-                  );
-                })}
+                {[...matchedGuides, ...otherGuides].map(renderGuideRow)}
               </div>
             )}
+
+            {/* Not searching, a trade is picked: matched guides shown expanded, everything else
+                collapsed behind a toggle -- this is the group breakdown that replaces the old
+                single 96-item scroll. */}
+            {guides && guides.length > 0 && !isSearching && tradeCategory && (
+              <>
+                <div className="space-y-1.5">
+                  <span className="inline-flex items-center text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-1 rounded-full">
+                    Matches {tradeCategory} ({matchedGuides.length})
+                  </span>
+                  {matchedGuides.length > 0 ? (
+                    <div className="divide-y divide-slate-100 -mx-1 border-y border-slate-100">
+                      {matchedGuides.map(renderGuideRow)}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-slate-500 py-2">No guide titles matched {tradeCategory} specifically -- browse all guides below.</p>
+                  )}
+                </div>
+
+                {otherGuides.length > 0 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setShowAllGuides((v) => !v)}
+                      className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 py-2 cursor-pointer"
+                    >
+                      <span>{showAllGuides ? 'Hide' : 'Show'} {otherGuides.length} other guide{otherGuides.length === 1 ? '' : 's'}</span>
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showAllGuides ? 'rotate-180' : ''}`} />
+                    </button>
+                    {showAllGuides && (
+                      <div className="divide-y divide-slate-100 -mx-1 max-h-[24rem] overflow-y-auto">
+                        {otherGuides.map(renderGuideRow)}
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+
+            {/* No trade picked yet, not searching: nothing to group by, so just offer to browse
+                everything rather than dumping all 96 titles by default. */}
+            {guides && guides.length > 0 && !isSearching && !tradeCategory && (
+              <>
+                <p className="text-xs text-slate-500">
+                  Pick a business type above to see guides matching your trade first, or browse all {otherGuides.length} guides below.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowAllGuides((v) => !v)}
+                  className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 py-2 cursor-pointer"
+                >
+                  <span>{showAllGuides ? 'Hide' : 'Browse all'} {otherGuides.length} guides</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showAllGuides ? 'rotate-180' : ''}`} />
+                </button>
+                {showAllGuides && (
+                  <div className="divide-y divide-slate-100 -mx-1 max-h-[28rem] overflow-y-auto">
+                    {otherGuides.map(renderGuideRow)}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* FAQ -- right before the total/CTA, so the honest answers (no verification, no view
+              guarantee, no refunds) land just before the moment of paying rather than after. */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-1">
+            <h2 className="text-sm font-bold text-slate-900 mb-2">Questions before you buy</h2>
+            {FAQ_ITEMS.map((item, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <div key={item.q} className="border-t border-slate-100 first:border-t-0 py-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    aria-expanded={isOpen}
+                    className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
+                  >
+                    <span className="text-xs sm:text-sm font-bold text-slate-900">{item.q}</span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {isOpen && (
+                    <p className="text-xs text-slate-600 leading-relaxed mt-2">{item.a}</p>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           <div className="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
