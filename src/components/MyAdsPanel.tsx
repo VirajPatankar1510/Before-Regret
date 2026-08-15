@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Loader2, Lock, ExternalLink, Pencil, Check, X, RotateCcw, Receipt, MapPin, BookOpen } from 'lucide-react';
+import { Loader2, Lock, ExternalLink, Pencil, Check, X, RotateCcw, Receipt, MapPin, BookOpen, CreditCard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface GuidePlacement {
@@ -89,7 +89,12 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const [editError, setEditError] = useState<string | null>(null);
 
   const [renewingKey, setRenewingKey] = useState<string | null>(null);
+  const [confirmingKey, setConfirmingKey] = useState<string | null>(null);
+  const [renewal, setRenewal] = useState<{ guidePriceUsd: number; zipPriceUsd: number; days: number } | null>(null);
   const [renewBanner, setRenewBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  // Read off the URL on mount, before any auth gating, so an approved payment isn't stranded when
+  // the vendor comes back from PayPal with an expired session -- see the capture effect below.
+  const [pendingRenewal, setPendingRenewal] = useState<{ type: string; token: string } | null>(null);
 
   const loadPlacements = async () => {
     // Verified session token, not the uid -- the server derives identity from this (see
@@ -110,6 +115,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
         setGuidePlacements(data.guidePlacements);
         setZipPlacements(data.zipPlacements);
         setOrders(data.orders || []);
+        if (data.renewal) setRenewal(data.renewal);
       })
       .catch(() => setLoadError('Could not reach the server.'));
   };
@@ -124,15 +130,28 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   // same "capture on the return page" shape as GuideAdsCheckoutSuccess.tsx / ZipAdsCheckoutSuccess.tsx,
   // just inline here instead of a dedicated success page, since there's nothing to show beyond
   // "it worked, here's your new expiry" and the vendor is already looking at the right list.
-  // Query params are stripped immediately so a later refresh of this page can't re-fire the capture.
+  //
+  // Read on mount rather than inside the capture effect below, and deliberately not gated on
+  // `user`: if the session lapsed during the PayPal round trip, the old version bailed before ever
+  // looking at the URL, so an approved payment vanished with no capture, no record, and nothing
+  // said -- the vendor believed they had renewed. Holding it in state lets the sign-in gate
+  // explain what's waiting and lets the capture fire the moment they're back in. The params are
+  // stripped immediately either way so a refresh can't replay them (the capture routes are
+  // idempotent regardless, but there's no reason to lean on that).
   useEffect(() => {
-    if (!user) return;
     const params = new URLSearchParams(window.location.search);
     const renewed = params.get('renewed');
     const token = params.get('token');
     if (!renewed || !token) return;
+    setPendingRenewal({ type: renewed, token });
     window.history.replaceState({}, '', '/my-ads');
-    const endpoint = renewed === 'guide' ? `/api/guide-ads/renew/${token}/capture` : `/api/zip-ads/renew/${token}/capture`;
+  }, []);
+
+  useEffect(() => {
+    if (!user || !pendingRenewal) return;
+    const { type, token } = pendingRenewal;
+    setPendingRenewal(null);
+    const endpoint = type === 'guide' ? `/api/guide-ads/renew/${token}/capture` : `/api/zip-ads/renew/${token}/capture`;
     fetch(endpoint, { method: 'POST' })
       .then((res) => res.json())
       .then((data) => {
@@ -140,13 +159,13 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
           setRenewBanner({ type: 'error', message: data?.error || 'Could not confirm the renewal payment.' });
           return;
         }
-        const label = renewed === 'guide' ? data.title || 'Your topic ad' : `${data.tradeCategory || 'Your report ad'} in ZIP ${data.zipCode || ''}`;
+        const label = type === 'guide' ? data.title || 'Your topic ad' : `${data.tradeCategory || 'Your report ad'} in ZIP ${data.zipCode || ''}`;
         setRenewBanner({ type: 'success', message: `Renewed -- ${label} is now live through ${expiryLabel(data.paidThrough)}.` });
         loadPlacements();
       })
-      .catch(() => setRenewBanner({ type: 'error', message: 'Could not reach the server to confirm the renewal.' }));
+      .catch(() => setRenewBanner({ type: 'error', message: 'Could not reach the server to confirm the renewal. Your payment was not lost -- reload this page to finish.' }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, pendingRenewal]);
 
   const activeGuides = useMemo(
     () => (guidePlacements || []).filter((p) => p.active).sort((a, b) => new Date(a.paidThrough).getTime() - new Date(b.paidThrough).getTime()),
@@ -309,6 +328,11 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
           </div>
           <h1 className="font-serif text-xl font-bold text-slate-900">Sign in to manage your placements</h1>
           <p className="text-xs text-slate-600 leading-relaxed">Your placements are tied to the account you checked out with.</p>
+          {pendingRenewal && (
+            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2.5 leading-relaxed">
+              You approved a renewal at PayPal, but your session expired. Sign in to finish confirming it -- nothing has been charged yet.
+            </p>
+          )}
           <button
             type="button"
             onClick={() => triggerClerkSignIn()}
@@ -322,18 +346,49 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     );
   }
 
-  // Shared by both active-guide and active-zip cards.
-  const renewButton = (key: string, onRenew: () => void) => (
-    <button
-      type="button"
-      onClick={onRenew}
-      disabled={renewingKey === key}
-      className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 disabled:opacity-60 disabled:cursor-wait"
-    >
-      {renewingKey === key ? <Loader2 className="w-3 h-3 animate-spin" /> : <RotateCcw className="w-3 h-3" />}
-      <span>Renew (+30 days)</span>
-    </button>
-  );
+  // Shared by both active-guide and active-zip cards. The first click only arms a confirmation
+  // that states the actual amount -- this used to go straight to a live PayPal payment page with
+  // the price appearing nowhere in our own UI, which is the one place a vendor should be able to
+  // see what they're about to be charged before they're handed off.
+  const renewControl = (key: string, priceUsd: number | undefined, onRenew: () => void) => {
+    const days = renewal?.days ?? 30;
+    if (confirmingKey !== key) {
+      return (
+        <button
+          type="button"
+          onClick={() => { setConfirmingKey(key); setRenewBanner(null); }}
+          disabled={renewingKey === key}
+          className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 disabled:opacity-60 disabled:cursor-wait"
+        >
+          {renewingKey === key ? <Loader2 className="w-3 h-3 animate-spin" /> : <RotateCcw className="w-3 h-3" />}
+          <span>Renew (+{days} days)</span>
+        </button>
+      );
+    }
+    return (
+      <span className="inline-flex flex-wrap items-center gap-2 text-xs">
+        <span className="font-semibold text-slate-700">
+          Renew for {priceUsd === undefined ? 'the listed price' : `$${priceUsd.toFixed(2)}`} -- adds {days} days?
+        </span>
+        <button
+          type="button"
+          onClick={onRenew}
+          disabled={renewingKey === key}
+          className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg disabled:opacity-60 disabled:cursor-wait"
+        >
+          {renewingKey === key ? <Loader2 className="w-3 h-3 animate-spin" /> : <CreditCard className="w-3 h-3" />}
+          <span>Continue to PayPal</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setConfirmingKey(null)}
+          className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg"
+        >
+          <X className="w-3 h-3" /><span>Cancel</span>
+        </button>
+      </span>
+    );
+  };
 
   const editForm = (onSave: () => void) => (
     <div className="mt-3 space-y-2 bg-slate-50 border border-slate-200 rounded-xl p-3">
@@ -415,7 +470,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                           <Pencil className="w-3 h-3" /><span>Edit contact info</span>
                         </button>
                       )}
-                      {renewButton(key, () => startGuideRenew(p))}
+                      {renewControl(key, renewal?.guidePriceUsd, () => startGuideRenew(p))}
                     </div>
                     {editingKey === key && editForm(() => saveGuideEdit(p.purchaseId))}
                   </div>
@@ -449,7 +504,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                           <Pencil className="w-3 h-3" /><span>Edit contact info</span>
                         </button>
                       )}
-                      {renewButton(key, () => startZipRenew(p))}
+                      {renewControl(key, renewal?.zipPriceUsd, () => startZipRenew(p))}
                     </div>
                     {editingKey === key && editForm(() => saveZipEdit(p.purchaseId))}
                   </div>
