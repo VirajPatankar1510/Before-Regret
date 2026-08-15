@@ -47,16 +47,19 @@ interface MyAdsPanelProps {
 const RENEW_GUIDE_KEY = 'br_renew_guide_ads';
 const RENEW_ZIP_KEY = 'br_renew_zip_ad';
 
-// Renewing a placement that's still active fails today: the slot shows as "taken" (by the vendor
-// themselves) on the checkout page, which either hard-rejects the order (guide ads, "taken by
-// another advertiser") or silently sells a second duplicate listing instead of extending the
-// first (ZIP ads, since availability there is a headcount, not a single flag). Properly fixing
-// that means checkout/capture recognizing "this taken slot is mine" and extending in place --
-// real work, and not worth it since almost nobody renews on day one of a 30-day window anyway.
-// Gating Renew to the same last-5-days window the amber "expiring soon" color already signals
-// sidesteps the bug entirely: by then the slot is close enough to actually reopening that the
-// existing "taken" check basically does the right thing.
-const RENEWAL_WINDOW_DAYS = 5;
+// Renewing a placement that's still active is impossible today, at any days-left value, not just
+// close to expiry: the availability check both checkout and capture use is a flat `paid_through >
+// now()`, which stays true for the entire time a placement is active regardless of how close it is
+// to expiring. So the slot always reads as "taken" (by the vendor themselves), which either
+// hard-rejects the order (guide ads, "taken by another advertiser" -- confirmed live, see commit
+// history) or silently sells a second duplicate listing instead of extending the first (ZIP ads,
+// since availability there is a headcount, not a single flag). A near-expiry countdown window was
+// tried here first and verified, live, to NOT fix this -- proximity to expiry doesn't change the
+// check at all. The only point at which renewal actually works is after the placement has fully
+// expired and moved to the Expired section below, which already has its own correct "Buy again"
+// flow. Properly supporting early renewal means checkout/capture recognizing "this taken slot is
+// mine" and extending in place -- real work, not worth it for a case that's this rare. So the
+// Active section below shows no actionable Renew control at all; renewal happens through Expired.
 
 function daysLeft(paidThrough: string): number {
   return Math.ceil((new Date(paidThrough).getTime() - Date.now()) / (24 * 60 * 60 * 1000));
@@ -240,18 +243,14 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     );
   }
 
-  // Shared by both active-guide and active-zip cards -- see RENEWAL_WINDOW_DAYS above for why
-  // this stays locked until close to expiry instead of being clickable the whole time.
-  const renewControl = (left: number, onRenew: () => void) =>
-    left <= RENEWAL_WINDOW_DAYS ? (
-      <button type="button" onClick={onRenew} className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800">
-        <RotateCcw className="w-3 h-3" /><span>Renew</span>
-      </button>
-    ) : (
-      <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300">
-        <RotateCcw className="w-3 h-3" /><span>Renew opens in {left - RENEWAL_WINDOW_DAYS} day{left - RENEWAL_WINDOW_DAYS === 1 ? '' : 's'}</span>
-      </span>
-    );
+  // Shared by both active-guide and active-zip cards -- see the comment above RENEW_GUIDE_KEY for
+  // why this is never clickable here. Renewal happens through the Expired section instead, once
+  // this placement's slot has actually reopened.
+  const renewNotice = (
+    <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400">
+      <RotateCcw className="w-3 h-3" /><span>Renews once this expires</span>
+    </span>
+  );
 
   const editForm = (onSave: () => void) => (
     <div className="mt-3 space-y-2 bg-slate-50 border border-slate-200 rounded-xl p-3">
@@ -327,7 +326,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                           <Pencil className="w-3 h-3" /><span>Edit contact info</span>
                         </button>
                       )}
-                      {renewControl(left, () => renewGuide(p))}
+                      {renewNotice}
                     </div>
                     {editingKey === key && editForm(() => saveGuideEdit(p.purchaseId))}
                   </div>
@@ -361,7 +360,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                           <Pencil className="w-3 h-3" /><span>Edit contact info</span>
                         </button>
                       )}
-                      {renewControl(left, () => renewZip(p))}
+                      {renewNotice}
                     </div>
                     {editingKey === key && editForm(() => saveZipEdit(p.purchaseId))}
                   </div>
