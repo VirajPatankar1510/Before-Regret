@@ -12,7 +12,7 @@ which is not a thing code can do on your behalf. This doc is the checklist a per
 
 ## Which trades, and why only these three
 
-Of the 8 trade categories that actually have a placement in the report today (see
+Of the 7 trade categories that actually have a placement in the report today (see
 `FINDING_TRADE_CATEGORY` / `PRIORITY_TRADE_CATEGORY` in
 [`src/data/sponsoredVendors.ts`](../src/data/sponsoredVendors.ts)), only a handful are genuinely
 Instagram-native businesses that post their own work:
@@ -21,13 +21,16 @@ Instagram-native businesses that post their own work:
 - **Electrician** — panel upgrades and code-violation fixes are commonly posted
 - **HVAC Inspection** — install/replacement photos, less universal than roofing but common enough
 
-The other five eligible trades (Sewer Scope, Radon Testing, Foundation Engineer, Home Inspector,
-Insurance Agent) are not naturally visual, social-first businesses — don't force an Instagram angle
-on them that won't land; there's no other automated outreach channel for them right now.
+The other four eligible trades (Sewer Scope, Radon Testing, General Contractor, Home Inspector)
+are not naturally visual, social-first businesses — don't force an Instagram angle on them that
+won't land; there's no other automated outreach channel for them right now.
 
-Same OUTREACH_ELIGIBLE_TRADES exclusion applies here too: **do not** reach out to Real Estate
-Attorney or Moving Company prospects on any channel yet. Neither has a placement anywhere in the
-report, so a signed-up vendor in either category would pay and never actually appear.
+Same OUTREACH_ELIGIBLE_TRADES exclusion applies here too: **do not** reach out to Asbestos/Mold
+Abatement, Pest/Termite Control, Chimney Sweep, Well & Septic Services, or Moving Company
+prospects on any channel yet. None of these has a placement anywhere in the report, so a signed-up
+vendor in any of them would pay and never actually appear (this only affects Report Ads -- Topic
+Ads on guide pages are open-market with no trade-category matching, so those five trades are still
+fine to sell a guide-page placement to, just not to prospect for on this list).
 
 ## The workflow
 

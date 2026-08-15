@@ -15,14 +15,20 @@ import { TRADE_CATEGORIES } from './sponsoredVendors.js';
 // the outcome (replied, signed up, declined) after reaching out yourself. Nothing here sends
 // anything automatically.
 //
-// Real Estate Attorney and Moving Company are deliberately excluded from
-// OUTREACH_ELIGIBLE_TRADES below -- neither has a placement anywhere in the report yet (see
-// FINDING_TRADE_CATEGORY / PRIORITY_TRADE_CATEGORY in sponsoredVendors.ts), so a prospect who
-// signs up under either category would pay and never actually appear. Don't add prospects in
-// those two categories until a real placement exists for them.
-export const OUTREACH_ELIGIBLE_TRADES = TRADE_CATEGORIES.filter(
-  (t) => t !== 'Real Estate Attorney' && t !== 'Moving Company'
-);
+// These five are deliberately excluded from OUTREACH_ELIGIBLE_TRADES below -- none has a
+// placement anywhere in the report yet (see FINDING_TRADE_CATEGORY / PRIORITY_TRADE_CATEGORY in
+// sponsoredVendors.ts), so a prospect who signs up under any of them would pay for a Report Ad
+// slot and never actually appear there (Topic Ads on guide pages are unaffected -- that product
+// is open-market with no trade-category matching, see guideAdsApi.ts). Don't add prospects in
+// these categories until a real report placement exists for them.
+const OUTREACH_EXCLUDED_TRADES = new Set<typeof TRADE_CATEGORIES[number]>([
+  'Asbestos/Mold Abatement',
+  'Pest/Termite Control',
+  'Chimney Sweep',
+  'Well & Septic Services',
+  'Moving Company',
+]);
+export const OUTREACH_ELIGIBLE_TRADES = TRADE_CATEGORIES.filter((t) => !OUTREACH_EXCLUDED_TRADES.has(t));
 
 export type ProspectStatus =
   | 'not_contacted'
