@@ -5,6 +5,7 @@ import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../../
 import { resolveKnownSource } from '../../data/knownSources';
 import { ArticleClosingNote } from './ArticleClosingNote';
 import { GuideAdSlot } from '../GuideAdSlot';
+import { ContentLink } from '../home/ContentLink';
 import { pickRelatedGuides, GuideSummary } from '../../utils/relatedGuides';
 import { buildPageTitle } from '../../utils/pageTitle';
 
@@ -221,9 +222,9 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
       <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
         <h1 className="text-xl font-bold text-slate-900">Guide Not Found</h1>
         <p className="text-xs text-slate-600">The requested editorial guide is unavailable.</p>
-        <button onClick={() => onNavigate('/')} className="px-4 py-2 bg-blue-600 text-white rounded text-xs font-bold">
+        <ContentLink href="/" onNavigate={onNavigate} className="inline-block px-4 py-2 bg-blue-600 text-white rounded text-xs font-bold">
           Return Home
-        </button>
+        </ContentLink>
       </div>
     );
   }
@@ -237,9 +238,9 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
       {/* Breadcrumbs */}
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
-          <button onClick={() => onNavigate('/')} className="hover:text-blue-600 cursor-pointer">Home</button>
+          <ContentLink href="/" onNavigate={onNavigate} className="hover:text-blue-600">Home</ContentLink>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <button onClick={() => onNavigate('/guides/')} className="hover:text-blue-600 cursor-pointer">Editorial Guides</button>
+          <ContentLink href="/guides/" onNavigate={onNavigate} className="hover:text-blue-600">Editorial Guides</ContentLink>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-slate-900 font-bold truncate">{article.title}</span>
         </div>
@@ -327,14 +328,15 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Related Guides</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {relatedGuides.map((g) => (
-                <button
+                <ContentLink
                   key={g.slug}
-                  onClick={() => onNavigate(`/guides/${g.slug}/`)}
+                  href={`/guides/${g.slug}/`}
+                  onNavigate={onNavigate}
                   className="flex items-center justify-between gap-2 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-left transition-colors cursor-pointer group"
                 >
                   <span className="text-sm font-semibold text-slate-800 group-hover:text-blue-700">{g.title}</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 group-hover:text-blue-600" />
-                </button>
+                </ContentLink>
               ))}
             </div>
           </div>
@@ -407,12 +409,13 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             has any sources.length, since the methodology page also covers the AI-drafting rules
             that apply to every guide, not only citation sourcing. */}
         <p className="text-xs text-slate-500 text-center">
-          <button
-            onClick={() => onNavigate('/about')}
+          <ContentLink
+            href="/about"
+            onNavigate={onNavigate}
             className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium"
           >
             How we research and write these guides
-          </button>
+          </ContentLink>
         </p>
 
       </div>
