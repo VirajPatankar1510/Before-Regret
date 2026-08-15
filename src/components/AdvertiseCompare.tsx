@@ -249,7 +249,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
 
         {/* Quick-scan comparison table */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xs">
-          <h2 className="font-serif text-xl font-bold text-slate-900">Side by side</h2>
+          <h2 className="font-serif text-xl font-bold text-slate-900">Comparison</h2>
           <div className="overflow-x-auto -mx-2">
             <table className="w-full text-xs sm:text-sm min-w-[480px]">
               <thead>
