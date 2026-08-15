@@ -261,4 +261,130 @@ export function registerZipAdsRoutes(app: Express) {
       res.status(500).json({ success: false, error: err.message || 'Payment capture failed.' });
     }
   });
+
+  // --- Renew: extend a placement the signed-in vendor already owns, in place ------------------
+  // Same reasoning as guideAdsApi.ts's renew routes: the regular checkout flow's availability
+  // check counts the vendor's own active row toward MAX_SLOTS_PER_ZIP_TRADE, so renewing early
+  // through it would silently sell a second, duplicate listing instead of extending the first.
+  // This flow skips availability entirely -- ownership is the only check -- and extends
+  // paid_through on the existing row at capture time.
+  app.post('/api/zip-ads/renew/:purchaseId', requireVerifiedUser, async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    if (!isPayPalConfigured()) {
+      res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
+      return;
+    }
+    const purchaseId = parseInt(req.params.purchaseId, 10);
+    const clerkUserId = req.verifiedUserId as string;
+    if (!Number.isFinite(purchaseId)) {
+      res.status(400).json({ success: false, error: 'Invalid placement.' });
+      return;
+    }
+    try {
+      const owned = await withDb((sql) => sql`
+        SELECT p.id, p.paid_through, o.contact_email
+        FROM zip_ad_purchases p JOIN zip_ad_orders o ON o.id = p.order_id
+        WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
+      `);
+      const purchase = (owned as unknown as Array<{ id: number; paid_through: string; contact_email: string }>)[0];
+      if (!purchase) {
+        res.status(404).json({ success: false, error: 'Placement not found.' });
+        return;
+      }
+      // Once actually expired, one of the (up to) 2 slots for this (zip, trade) pair may already
+      // belong to someone else -- that case goes through the normal "Buy again" checkout flow
+      // instead (see MyAdsPanel.tsx's Expired section), which re-checks availability properly.
+      if (new Date(purchase.paid_through).getTime() <= Date.now()) {
+        res.status(409).json({ success: false, error: 'This placement has already expired -- buy it again from My Placements instead.' });
+        return;
+      }
+
+      const appUrl = process.env.APP_URL || 'http://localhost:3000';
+      const paypalOrder = await createPayPalOrder({
+        amount: PRICE_PER_SLOT_USD.toFixed(2),
+        currency: 'USD',
+        type: 'vendor_subscription',
+        description: `BeforeRegret ZIP ad renewal -- ${SLOT_DURATION_DAYS} more days`,
+        returnUrl: `${appUrl}/my-ads?renewed=zip`,
+        cancelUrl: `${appUrl}/my-ads`,
+        userEmail: purchase.contact_email,
+      });
+
+      await withDb((sql) => sql`
+        INSERT INTO zip_ad_orders (
+          paypal_order_id, business_name, trade_category, zip_code, phone, website, tagline,
+          contact_email, amount_usd, status, clerk_user_id, renews_purchase_id
+        )
+        SELECT ${paypalOrder.orderId}, business_name, trade_category, zip_code, phone, website, tagline,
+               ${purchase.contact_email}, ${PRICE_PER_SLOT_USD.toFixed(2)}, 'pending', ${clerkUserId}, ${purchaseId}
+        FROM zip_ad_purchases WHERE id = ${purchaseId}
+      `);
+
+      const approvalUrl = `https://www.${
+        process.env.PAYPAL_MODE === 'live' ? 'paypal.com' : 'sandbox.paypal.com'
+      }/cgi-bin/webscr?cmd=_express-checkout&token=${paypalOrder.orderId}`;
+
+      res.json({ success: true, orderId: paypalOrder.orderId, approvalUrl });
+    } catch (err: any) {
+      console.error('[zip-ads] renew checkout failed:', err);
+      res.status(500).json({ success: false, error: err.message || 'Could not start renewal.' });
+    }
+  });
+
+  // --- Public: capture a renewal payment and extend the existing placement --------------------
+  // No requireVerifiedUser, same as the regular capture route above -- reached from PayPal's
+  // redirect back, identified by the unguessable orderId, not a fresh Authorization header.
+  app.post('/api/zip-ads/renew/:orderId/capture', async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    if (!isPayPalConfigured()) {
+      res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
+      return;
+    }
+    const { orderId } = req.params;
+    try {
+      const orderRows = await withDb((sql) => sql`SELECT * FROM zip_ad_orders WHERE paypal_order_id = ${orderId} LIMIT 1`);
+      const order = (orderRows as unknown as any[])[0];
+      if (!order || !order.renews_purchase_id) {
+        res.status(404).json({ success: false, error: 'Renewal order not found.' });
+        return;
+      }
+
+      if (order.status === 'completed') {
+        const rows = await withDb((sql) => sql`SELECT paid_through, zip_code, trade_category FROM zip_ad_purchases WHERE id = ${order.renews_purchase_id} LIMIT 1`);
+        const row = (rows as unknown as Array<{ paid_through: string; zip_code: string; trade_category: string }>)[0];
+        res.json({ success: true, alreadyCaptured: true, paidThrough: row?.paid_through ?? null, zipCode: row?.zip_code, tradeCategory: row?.trade_category });
+        return;
+      }
+
+      const captureResult = await capturePayPalOrder(orderId);
+
+      // Same GREATEST(paid_through, now()) reasoning as guideAdsApi.ts's renew capture route.
+      const rows = await withDb((sql) => sql`
+        UPDATE zip_ad_purchases
+        SET paid_through = GREATEST(paid_through, now()) + (${SLOT_DURATION_DAYS} * interval '1 day')
+        WHERE id = ${order.renews_purchase_id}
+        RETURNING paid_through, zip_code, trade_category
+      `);
+      const updated = (rows as unknown as Array<{ paid_through: string; zip_code: string; trade_category: string }>)[0];
+
+      await withDb((sql) => sql`
+        UPDATE zip_ad_orders SET status = 'completed', paypal_capture_id = ${captureResult.captureId}, updated_at = now()
+        WHERE id = ${order.id}
+      `);
+
+      res.json({
+        success: true,
+        captureId: captureResult.captureId,
+        paidThrough: updated.paid_through,
+        zipCode: updated.zip_code,
+        tradeCategory: updated.trade_category,
+      });
+    } catch (err: any) {
+      console.error('[zip-ads] renew capture failed:', err);
+      try {
+        await withDb((sql) => sql`UPDATE zip_ad_orders SET status = 'failed', updated_at = now() WHERE paypal_order_id = ${orderId}`);
+      } catch { /* best effort */ }
+      res.status(500).json({ success: false, error: err.message || 'Renewal payment capture failed.' });
+    }
+  });
 }

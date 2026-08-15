@@ -243,6 +243,12 @@ export async function ensureArticlesSchema(): Promise<void> {
   await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS clerk_user_id TEXT`;
   await sql`CREATE INDEX IF NOT EXISTS idx_guide_ad_orders_clerk_user ON guide_ad_orders(clerk_user_id)`;
 
+  // Set only on orders created through the dedicated /renew route (see guideAdsApi.ts) -- marks
+  // "this order isn't claiming a new slot, it's extending a purchase the same vendor already
+  // owns," so capture can skip the availability check entirely (there's nothing to contend for,
+  // it's already theirs) and extend paid_through in place instead of inserting a new row.
+  await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS renews_purchase_id INTEGER REFERENCES guide_ad_purchases(id)`;
+
   // zip_ad_orders / zip_ad_purchases: same split as guide_ad_orders/guide_ad_purchases above and
   // for the same reason (order = checkout attempt, purchase = actually-sold inventory, "who's
   // active right now" is always a live query never a status flag). One selection per order here
@@ -290,6 +296,9 @@ export async function ensureArticlesSchema(): Promise<void> {
   // Same stable-identity column and same reasoning as guide_ad_orders.clerk_user_id above.
   await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS clerk_user_id TEXT`;
   await sql`CREATE INDEX IF NOT EXISTS idx_zip_ad_orders_clerk_user ON zip_ad_orders(clerk_user_id)`;
+
+  // Same renewal-order marker and reasoning as guide_ad_orders.renews_purchase_id above.
+  await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS renews_purchase_id INTEGER REFERENCES zip_ad_purchases(id)`;
 
   // Same one-edit-ever rule and reasoning as guide_ad_purchases.contact_edited above.
   await sql`ALTER TABLE zip_ad_purchases ADD COLUMN IF NOT EXISTS contact_edited BOOLEAN NOT NULL DEFAULT FALSE`;
