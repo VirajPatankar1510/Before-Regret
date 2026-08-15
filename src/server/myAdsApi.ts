@@ -1,7 +1,10 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireVerifiedUser } from './clerkAuth.js';
-import { PRICE_PER_SLOT_USD as GUIDE_PRICE_USD, SLOT_DURATION_DAYS as RENEWAL_DAYS } from './guideAdsApi.js';
+// GUIDE_RENEWAL_PRICE_USD, not PRICE_PER_SLOT_USD: the dashboard must quote whatever renewals
+// actually charge, so the confirmation can't disagree with the PayPal bill. Temporarily $1 for a
+// live-payment smoke test -- see the constant's comment in guideAdsApi.ts.
+import { GUIDE_RENEWAL_PRICE_USD as GUIDE_PRICE_USD, SLOT_DURATION_DAYS as RENEWAL_DAYS } from './guideAdsApi.js';
 import { PRICE_PER_SLOT_USD as ZIP_PRICE_USD } from './zipAdsApi.js';
 
 // The vendor-facing placement manager (/my-ads) -- deliberately not called a "dashboard" anywhere

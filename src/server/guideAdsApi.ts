@@ -22,6 +22,19 @@ export const PRICE_PER_SLOT_USD = 7.99;
 export const SLOT_DURATION_DAYS = 30;
 const SLOT_POSITION = 'top';
 
+// ============================================================================================
+// TEMPORARY -- $1 live-payment smoke test. REVERT TO PRICE_PER_SLOT_USD WHEN THE TEST IS DONE.
+// ============================================================================================
+// The one hop nothing else can exercise is PayPal actually returning a capture id and this code
+// running against it: sandbox credentials aren't configured, and every other part of the renewal
+// path is already verified against the real database. So renewals are temporarily priced at $1
+// to drive one genuine payment through end to end.
+//
+// Scoped to renewals only -- new checkouts on /topic-ads still charge PRICE_PER_SLOT_USD -- and
+// deliberately used for BOTH the amount charged and the amount myAdsApi.ts quotes in the
+// dashboard, so the confirmation the vendor sees can never disagree with what PayPal bills.
+export const GUIDE_RENEWAL_PRICE_USD = 1.00;
+
 function dbUnavailable(res: Response) {
   res.status(503).json({ success: false, error: 'The ad system is not configured yet.' });
 }
@@ -386,7 +399,7 @@ export function registerGuideAdsRoutes(app: Express) {
       // PayPal appends `&token=<orderId>` to this on redirect back -- see
       // GuideAdsCheckoutSuccess.tsx's own returnUrl handling for the same pattern this mirrors.
       const paypalOrder = await createPayPalOrder({
-        amount: PRICE_PER_SLOT_USD.toFixed(2),
+        amount: GUIDE_RENEWAL_PRICE_USD.toFixed(2), // TEMPORARY test price -- see the constant
         currency: 'USD',
         type: 'vendor_subscription',
         description: `BeforeRegret guide ad renewal -- ${SLOT_DURATION_DAYS} more days`,
@@ -401,7 +414,7 @@ export function registerGuideAdsRoutes(app: Express) {
           slots_json, amount_usd, status, clerk_user_id, renews_purchase_id
         )
         SELECT ${paypalOrder.orderId}, business_name, trade_category, phone, website, tagline,
-               ${purchase.contact_email}, '[]', ${PRICE_PER_SLOT_USD.toFixed(2)}, 'pending', ${clerkUserId}, ${purchaseId}
+               ${purchase.contact_email}, '[]', ${GUIDE_RENEWAL_PRICE_USD.toFixed(2)}, 'pending', ${clerkUserId}, ${purchaseId}
         FROM guide_ad_purchases WHERE id = ${purchaseId}
       `);
 
