@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { ContentLink } from '../home/ContentLink';
 
 interface ArticleClosingNoteProps {
   onNavigate: (path: string) => void;
@@ -17,13 +18,14 @@ export const ArticleClosingNote: React.FC<ArticleClosingNoteProps> = ({ onNaviga
         </p>
       </div>
 
-      <button
-        onClick={() => onNavigate('/')}
+      <ContentLink
+        href="/"
+        onNavigate={onNavigate}
         className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white text-blue-700 font-bold text-sm sm:text-base rounded-xl hover:bg-blue-50 transition-colors cursor-pointer shadow-lg"
       >
         <span>Get Your First Report Free</span>
         <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-      </button>
+      </ContentLink>
 
       <p className="text-xs sm:text-sm text-blue-100">
         No credit card required. Additional reports are $14.99 each.

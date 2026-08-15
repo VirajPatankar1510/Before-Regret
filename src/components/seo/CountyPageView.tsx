@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
 import { ChevronRight, Loader2, MapPin, Home, Flame, CloudRain, ExternalLink, BarChart3 } from 'lucide-react';
 import { ArticleClosingNote } from './ArticleClosingNote';
+import { ContentLink } from '../home/ContentLink';
 import { pickGuidesForCounty, GuideLink } from '../../utils/countyGuideTopics';
 import { CountyRankings } from '../../utils/countyRankings';
 
@@ -192,9 +193,9 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
       <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
         <h1 className="text-xl font-bold text-slate-900">County Not Found</h1>
         <p className="text-xs text-slate-600">This county doesn't have a research page yet.</p>
-        <button onClick={() => onNavigate('/')} className="px-4 py-2 bg-blue-600 text-white rounded text-xs font-bold">
+        <ContentLink href="/" onNavigate={onNavigate} className="inline-block px-4 py-2 bg-blue-600 text-white rounded text-xs font-bold">
           Return Home
-        </button>
+        </ContentLink>
       </div>
     );
   }
@@ -238,9 +239,9 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
     <div className="bg-slate-50 min-h-screen pb-16">
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
-          <button onClick={() => onNavigate('/')} className="hover:text-blue-600">Home</button>
+          <ContentLink href="/" onNavigate={onNavigate} className="hover:text-blue-600">Home</ContentLink>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <button onClick={() => onNavigate('/counties/')} className="hover:text-blue-600 shrink-0">County Research</button>
+          <ContentLink href="/counties/" onNavigate={onNavigate} className="hover:text-blue-600 shrink-0">County Research</ContentLink>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-slate-900 font-bold truncate">{county.countyName} County, {county.stateAbbrev}</span>
         </div>
@@ -336,9 +337,9 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
             <p className="text-sm text-slate-700 leading-relaxed">{RADON_ZONE_TEXT[county.radonZone]}</p>
             <p className="text-xs text-slate-500 leading-relaxed">
               This is a county-wide prediction from geology and soil data, not a measurement of any specific home -- EPA recommends testing every home regardless of zone.{' '}
-              <button onClick={() => onNavigate('/guides/negotiate-radon-mitigation-after-inspection/')} className="text-blue-600 hover:underline font-medium">
+              <ContentLink href="/guides/negotiate-radon-mitigation-after-inspection/" onNavigate={onNavigate} className="text-blue-600 hover:underline font-medium">
                 See our guide on negotiating radon mitigation after inspection
-              </button>.
+              </ContentLink>.
             </p>
             <a
               href="https://www.epa.gov/radon/epa-maps-radon-zones-and-supporting-documents-state"
@@ -372,9 +373,9 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
               ))}
             </div>
             <p className="text-xs text-slate-500">
-              <button onClick={() => onNavigate('/guides/knob-tube-wiring-have-be-replaced-before-closing/')} className="text-blue-600 hover:underline font-medium">
+              <ContentLink href="/guides/knob-tube-wiring-have-be-replaced-before-closing/" onNavigate={onNavigate} className="text-blue-600 hover:underline font-medium">
                 Does knob-and-tube wiring have to be replaced before closing?
-              </button>
+              </ContentLink>
             </p>
             <a
               href="https://data.census.gov/table/ACSDT5Y2023.B25034"
@@ -452,13 +453,14 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {relatedGuides.map((g) => (
-                <button
+                <ContentLink
                   key={g.slug}
-                  onClick={() => onNavigate(`/guides/${g.slug}/`)}
+                  href={`/guides/${g.slug}/`}
+                  onNavigate={onNavigate}
                   className="flex items-center justify-between gap-2 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-800 text-left"
                 >
                   <span>{g.title}</span>
-                </button>
+                </ContentLink>
               ))}
             </div>
           </section>
