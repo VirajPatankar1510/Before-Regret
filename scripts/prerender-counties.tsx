@@ -405,6 +405,7 @@ function CountiesIndexStaticBody({ rows }: { rows: CountyRow[] }) {
 // Matches the same override in CountyPageView.tsx -- see that file's comment for why.
 const TITLE_CASE_OVERRIDES: Record<string, string> = {
   DUPAGE: 'DuPage',
+  DEKALB: 'DeKalb',
 };
 
 function titleCase(value: string): string {

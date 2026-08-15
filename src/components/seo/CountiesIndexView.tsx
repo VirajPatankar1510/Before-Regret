@@ -20,6 +20,7 @@ interface CountyRow {
 // it itself. Same helper, same override, same reasoning, as CountyPageView.tsx's own copy.
 const TITLE_CASE_OVERRIDES: Record<string, string> = {
   DUPAGE: 'DuPage',
+  DEKALB: 'DeKalb',
 };
 
 function titleCase(value: string): string {

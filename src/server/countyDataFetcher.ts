@@ -4,6 +4,31 @@
 // fetch script) so a future "refresh this county" admin action could call the same functions
 // without re-downloading NOAA's bulk files.
 
+import { spawnSync } from 'child_process';
+
+// Node's native fetch() hangs on api.census.gov and services.arcgis.com in this environment --
+// confirmed live, a 10s ConnectTimeoutError racing every candidate address (IPv4 and IPv6 alike)
+// for both hosts, while curl reaches the same URLs in under a second. Same root cause and same
+// workaround already used for NOAA's bulk files in scripts/fetch-county-data.ts (see that file's
+// ensureNoaaFilesCached for the fuller diagnosis). Shaped to match the handful of Response
+// properties the three fetchers below actually use (ok, status, json()) so those call sites only
+// need fetch(url) swapped for curlFetch(url), nothing else.
+async function curlFetch(url: string): Promise<{ ok: boolean; status: number; json: () => Promise<any> }> {
+  const result = spawnSync('curl', ['-sS', '-w', '\n%{http_code}', url], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
+  if (result.status !== 0) {
+    throw new Error(`curl failed for ${url}: ${result.stderr || `exit ${result.status}`}`);
+  }
+  const output = result.stdout;
+  const splitAt = output.lastIndexOf('\n');
+  const body = output.slice(0, splitAt);
+  const status = parseInt(output.slice(splitAt + 1), 10);
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    json: async () => JSON.parse(body),
+  };
+}
+
 export interface CountyIdentity {
   countyName: string; // Uppercase, e.g. 'TRAVIS' -- matches Census/FEMA/NOAA naming conventions
   stateName: string; // e.g. 'Texas'
@@ -39,7 +64,7 @@ export async function fetchCensusHousingAge(
 ): Promise<CensusHousingAgeResult> {
   const fields = ['B25034_001E', 'B25034_002E', 'B25034_003E', 'B25034_004E', 'B25034_005E', 'B25034_006E', 'B25034_007E', 'B25034_008E', 'B25034_009E', 'B25034_010E', 'B25034_011E'];
   const url = `https://api.census.gov/data/2023/acs/acs5?get=${fields.join(',')}&for=county:${identity.countyFips}&in=state:${identity.stateFips}&key=${apiKey}`;
-  const res = await fetch(url);
+  const res = await curlFetch(url);
   if (!res.ok) {
     throw new Error(`Census API returned ${res.status} for ${identity.countyName} County, ${identity.stateAbbrev}`);
   }
@@ -109,7 +134,7 @@ export async function fetchCensusInsuranceCosts(
     'B25141_008E', 'B25141_009E', 'B25141_010E', 'B25141_011E', 'B25141_012E', 'B25141_013E', 'B25141_014E',
   ];
   const url = `https://api.census.gov/data/2023/acs/acs5?get=${fields.join(',')}&for=county:${identity.countyFips}&in=state:${identity.stateFips}&key=${apiKey}`;
-  const res = await fetch(url);
+  const res = await curlFetch(url);
   if (!res.ok) {
     throw new Error(`Census API returned ${res.status} for ${identity.countyName} County, ${identity.stateAbbrev}`);
   }
@@ -172,7 +197,7 @@ export async function fetchFemaRiskIndex(identity: CountyIdentity): Promise<Fema
   const escapedCountyName = identity.countyName.replace(/'/g, "''");
   const where = encodeURIComponent(`STATEABBRV='${identity.stateAbbrev}' AND COUNTY='${escapedCountyName}'`);
   const url = `https://services.arcgis.com/XG15cJAlne2vxtgt/arcgis/rest/services/National_Risk_Index_Counties/FeatureServer/0/query?where=${where}&outFields=*&f=json`;
-  const res = await fetch(url);
+  const res = await curlFetch(url);
   if (!res.ok) {
     throw new Error(`FEMA NRI service returned ${res.status} for ${identity.countyName} County, ${identity.stateAbbrev}`);
   }

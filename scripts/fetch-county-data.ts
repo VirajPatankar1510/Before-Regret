@@ -33,7 +33,15 @@ const NOAA_FILE_BASE_URL = 'https://www.ncei.noaa.gov/pub/data/swdi/stormevents/
 
 async function ensureNoaaFilesCached(): Promise<string[]> {
   fs.mkdirSync(NOAA_CACHE_DIR, { recursive: true });
-  const listing = await fetch(NOAA_FILE_LIST_URL).then((r) => r.text());
+  // Same reasoning as the curl-based file download a few lines below: Node's native fetch() hangs
+  // on this specific host (confirmed live -- a 10s ConnectTimeoutError racing every candidate
+  // address, IPv4 and IPv6 alike) even though curl reaches it in under a second. The directory
+  // listing fetch was missed when that workaround was first applied to the actual file downloads.
+  const listingResult = spawnSync('curl', ['-sS', '--fail', NOAA_FILE_LIST_URL], { encoding: 'utf8' });
+  if (listingResult.status !== 0) {
+    throw new Error(`Could not fetch NOAA file listing via curl (exit ${listingResult.status}): ${listingResult.stderr}`);
+  }
+  const listing = listingResult.stdout;
   const paths: string[] = [];
   for (const year of NOAA_YEARS) {
     const match = listing.match(new RegExp(`StormEvents_details-ftp_v1\\.0_d${year}_c[0-9]+\\.csv\\.gz`));
@@ -87,9 +95,13 @@ function parseCsvLine(line: string): string[] {
 // Census and FEMA both match on 'DUPAGE' (one word, and FEMA's fetch for it already succeeds).
 // This is NOAA's own data quirk, not a wrong identity -- so it's aliased only for this one lookup
 // rather than changing identity.countyName, which would break the other two fetchers that already
-// agree on the standard spelling.
+// agree on the standard spelling. DeKalb County, GA is the same pattern -- 'DE KALB' (two words)
+// in every one of NOAA's 2015-2024 files for Georgia, no exceptions, confirmed by filtering the
+// raw CSVs on STATE='GEORGIA' before checking CZ_NAME (an unfiltered substring search on "Georgia"
+// first turned up a false positive from another state's free-text narrative field).
 const NOAA_CZ_NAME_ALIASES: Record<string, string> = {
   'IL:DUPAGE': 'DU PAGE',
+  'GA:DEKALB': 'DE KALB',
 };
 
 async function countNoaaEventsForCounty(filePaths: string[], identity: CountyIdentity): Promise<{ eventCounts: Record<string, number>; yearsCovered: string } | null> {
