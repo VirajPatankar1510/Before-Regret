@@ -44,22 +44,16 @@ interface MyAdsPanelProps {
   onNavigate: (path: string) => void;
 }
 
+// Used only by the Expired section's "Buy again" -- a lapsed slot may already belong to someone
+// else, so that goes through the normal checkout flow (which re-checks availability properly),
+// prefilled from what was here before. An active placement's Renew button, below, is a completely
+// different, dedicated flow (src/server/guideAdsApi.ts / zipAdsApi.ts's /renew routes) that never
+// touches availability at all -- it extends paid_through on the existing row in place, since the
+// vendor already owns it and there's nothing to contend for. Earlier attempts routed early
+// renewal through this same checkout flow and were verified, live, to fail: the availability
+// check reads the vendor's own active row as "taken" regardless of how close to expiry it is.
 const RENEW_GUIDE_KEY = 'br_renew_guide_ads';
 const RENEW_ZIP_KEY = 'br_renew_zip_ad';
-
-// Renewing a placement that's still active is impossible today, at any days-left value, not just
-// close to expiry: the availability check both checkout and capture use is a flat `paid_through >
-// now()`, which stays true for the entire time a placement is active regardless of how close it is
-// to expiring. So the slot always reads as "taken" (by the vendor themselves), which either
-// hard-rejects the order (guide ads, "taken by another advertiser" -- confirmed live, see commit
-// history) or silently sells a second duplicate listing instead of extending the first (ZIP ads,
-// since availability there is a headcount, not a single flag). A near-expiry countdown window was
-// tried here first and verified, live, to NOT fix this -- proximity to expiry doesn't change the
-// check at all. The only point at which renewal actually works is after the placement has fully
-// expired and moved to the Expired section below, which already has its own correct "Buy again"
-// flow. Properly supporting early renewal means checkout/capture recognizing "this taken slot is
-// mine" and extending in place -- real work, not worth it for a case that's this rare. So the
-// Active section below shows no actionable Renew control at all; renewal happens through Expired.
 
 function daysLeft(paidThrough: string): number {
   return Math.ceil((new Date(paidThrough).getTime() - Date.now()) / (24 * 60 * 60 * 1000));
@@ -94,6 +88,9 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
+  const [renewingKey, setRenewingKey] = useState<string | null>(null);
+  const [renewBanner, setRenewBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
   const loadPlacements = async () => {
     // Verified session token, not the uid -- the server derives identity from this (see
     // clerkAuth.ts) rather than trusting an id in the URL, which used to mean anyone could list
@@ -120,6 +117,34 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
     if (user) loadPlacements();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // PayPal lands back here with ?renewed=guide|zip&token=<orderId> after a renewal approval --
+  // same "capture on the return page" shape as GuideAdsCheckoutSuccess.tsx / ZipAdsCheckoutSuccess.tsx,
+  // just inline here instead of a dedicated success page, since there's nothing to show beyond
+  // "it worked, here's your new expiry" and the vendor is already looking at the right list.
+  // Query params are stripped immediately so a later refresh of this page can't re-fire the capture.
+  useEffect(() => {
+    if (!user) return;
+    const params = new URLSearchParams(window.location.search);
+    const renewed = params.get('renewed');
+    const token = params.get('token');
+    if (!renewed || !token) return;
+    window.history.replaceState({}, '', '/my-ads');
+    const endpoint = renewed === 'guide' ? `/api/guide-ads/renew/${token}/capture` : `/api/zip-ads/renew/${token}/capture`;
+    fetch(endpoint, { method: 'POST' })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.success) {
+          setRenewBanner({ type: 'error', message: data?.error || 'Could not confirm the renewal payment.' });
+          return;
+        }
+        const label = renewed === 'guide' ? data.title || 'Your topic ad' : `${data.tradeCategory || 'Your report ad'} in ZIP ${data.zipCode || ''}`;
+        setRenewBanner({ type: 'success', message: `Renewed -- ${label} is now live through ${expiryLabel(data.paidThrough)}.` });
+        loadPlacements();
+      })
+      .catch(() => setRenewBanner({ type: 'error', message: 'Could not reach the server to confirm the renewal.' }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
@@ -195,6 +220,60 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     }
   };
 
+  // Extends the existing placement in place -- see the comment above RENEW_GUIDE_KEY for how this
+  // differs from renewGuide/renewZip below, which start a fresh checkout for an already-expired one.
+  const startGuideRenew = async (p: GuidePlacement) => {
+    if (!user) return;
+    const key = `guide-${p.purchaseId}`;
+    setRenewingKey(key);
+    setRenewBanner(null);
+    const token = await getToken();
+    if (!token) {
+      setRenewBanner({ type: 'error', message: 'Your session has expired -- please sign in again.' });
+      setRenewingKey(null);
+      return;
+    }
+    try {
+      const res = await fetch(`/api/guide-ads/renew/${p.purchaseId}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (!data.success) {
+        setRenewBanner({ type: 'error', message: data?.error || 'Could not start renewal.' });
+        setRenewingKey(null);
+        return;
+      }
+      window.location.href = data.approvalUrl;
+    } catch {
+      setRenewBanner({ type: 'error', message: 'Could not reach the server.' });
+      setRenewingKey(null);
+    }
+  };
+
+  const startZipRenew = async (p: ZipPlacement) => {
+    if (!user) return;
+    const key = `zip-${p.purchaseId}`;
+    setRenewingKey(key);
+    setRenewBanner(null);
+    const token = await getToken();
+    if (!token) {
+      setRenewBanner({ type: 'error', message: 'Your session has expired -- please sign in again.' });
+      setRenewingKey(null);
+      return;
+    }
+    try {
+      const res = await fetch(`/api/zip-ads/renew/${p.purchaseId}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (!data.success) {
+        setRenewBanner({ type: 'error', message: data?.error || 'Could not start renewal.' });
+        setRenewingKey(null);
+        return;
+      }
+      window.location.href = data.approvalUrl;
+    } catch {
+      setRenewBanner({ type: 'error', message: 'Could not reach the server.' });
+      setRenewingKey(null);
+    }
+  };
+
   const renewGuide = (p: GuidePlacement) => {
     sessionStorage.setItem(RENEW_GUIDE_KEY, JSON.stringify({
       articleIds: [p.articleId], businessName: p.businessName, tradeCategory: p.tradeCategory,
@@ -243,13 +322,17 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     );
   }
 
-  // Shared by both active-guide and active-zip cards -- see the comment above RENEW_GUIDE_KEY for
-  // why this is never clickable here. Renewal happens through the Expired section instead, once
-  // this placement's slot has actually reopened.
-  const renewNotice = (
-    <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400">
-      <RotateCcw className="w-3 h-3" /><span>Renews once this expires</span>
-    </span>
+  // Shared by both active-guide and active-zip cards.
+  const renewButton = (key: string, onRenew: () => void) => (
+    <button
+      type="button"
+      onClick={onRenew}
+      disabled={renewingKey === key}
+      className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 disabled:opacity-60 disabled:cursor-wait"
+    >
+      {renewingKey === key ? <Loader2 className="w-3 h-3 animate-spin" /> : <RotateCcw className="w-3 h-3" />}
+      <span>Renew (+30 days)</span>
+    </button>
   );
 
   const editForm = (onSave: () => void) => (
@@ -283,6 +366,12 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
         </div>
 
         {loadError && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">{loadError}</p>}
+
+        {renewBanner && (
+          <p className={`text-xs rounded-lg p-3 border ${renewBanner.type === 'success' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-rose-600 bg-rose-50 border-rose-200'}`}>
+            {renewBanner.message}
+          </p>
+        )}
 
         {(guidePlacements === null || zipPlacements === null) && !loadError && (
           <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 text-slate-400 animate-spin" /></div>
@@ -326,7 +415,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                           <Pencil className="w-3 h-3" /><span>Edit contact info</span>
                         </button>
                       )}
-                      {renewNotice}
+                      {renewButton(key, () => startGuideRenew(p))}
                     </div>
                     {editingKey === key && editForm(() => saveGuideEdit(p.purchaseId))}
                   </div>
@@ -360,7 +449,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                           <Pencil className="w-3 h-3" /><span>Edit contact info</span>
                         </button>
                       )}
-                      {renewNotice}
+                      {renewButton(key, () => startZipRenew(p))}
                     </div>
                     {editingKey === key && editForm(() => saveZipEdit(p.purchaseId))}
                   </div>

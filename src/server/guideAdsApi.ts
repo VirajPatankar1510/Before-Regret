@@ -306,4 +306,148 @@ export function registerGuideAdsRoutes(app: Express) {
       res.status(500).json({ success: false, error: err.message || 'Payment capture failed.' });
     }
   });
+
+  // --- Renew: extend a placement the signed-in vendor already owns, in place ------------------
+  // Deliberately a separate flow from /api/guide-ads/checkout above, not a variant of it -- that
+  // route's availability check (findAlreadyTakenArticleIds) would always reject a still-active
+  // slot as "taken," which is exactly the vendor's own placement (confirmed live before this was
+  // built: renewing inside the old 5-day-left window still 409'd with "taken by another
+  // advertiser"). Renewal never contends for availability at all -- ownership (verified via
+  // clerk_user_id, same join pattern as myAdsApi.ts's edit routes) is the only check that
+  // matters, and capture extends paid_through on the existing row instead of inserting a new one.
+  app.post('/api/guide-ads/renew/:purchaseId', requireVerifiedUser, async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    if (!isPayPalConfigured()) {
+      res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
+      return;
+    }
+    const purchaseId = parseInt(req.params.purchaseId, 10);
+    const clerkUserId = req.verifiedUserId as string;
+    if (!Number.isFinite(purchaseId)) {
+      res.status(400).json({ success: false, error: 'Invalid placement.' });
+      return;
+    }
+    try {
+      const owned = await withDb((sql) => sql`
+        SELECT p.id, p.paid_through, o.contact_email
+        FROM guide_ad_purchases p JOIN guide_ad_orders o ON o.id = p.order_id
+        WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
+      `);
+      const purchase = (owned as unknown as Array<{ id: number; paid_through: string; contact_email: string }>)[0];
+      if (!purchase) {
+        res.status(404).json({ success: false, error: 'Placement not found.' });
+        return;
+      }
+      // Renewal only makes sense while still genuinely active -- once actually expired, the slot
+      // may already belong to someone else, so that case goes through the normal "Buy again"
+      // checkout flow instead (see MyAdsPanel.tsx's Expired section), not this one.
+      if (new Date(purchase.paid_through).getTime() <= Date.now()) {
+        res.status(409).json({ success: false, error: 'This placement has already expired -- buy it again from My Placements instead.' });
+        return;
+      }
+
+      const appUrl = process.env.APP_URL || 'http://localhost:3000';
+      // PayPal appends `&token=<orderId>` to this on redirect back -- see
+      // GuideAdsCheckoutSuccess.tsx's own returnUrl handling for the same pattern this mirrors.
+      const paypalOrder = await createPayPalOrder({
+        amount: PRICE_PER_SLOT_USD.toFixed(2),
+        currency: 'USD',
+        type: 'vendor_subscription',
+        description: `BeforeRegret guide ad renewal -- ${SLOT_DURATION_DAYS} more days`,
+        returnUrl: `${appUrl}/my-ads?renewed=guide`,
+        cancelUrl: `${appUrl}/my-ads`,
+        userEmail: purchase.contact_email,
+      });
+
+      await withDb((sql) => sql`
+        INSERT INTO guide_ad_orders (
+          paypal_order_id, business_name, trade_category, phone, website, tagline, contact_email,
+          slots_json, amount_usd, status, clerk_user_id, renews_purchase_id
+        )
+        SELECT ${paypalOrder.orderId}, business_name, trade_category, phone, website, tagline,
+               ${purchase.contact_email}, '[]', ${PRICE_PER_SLOT_USD.toFixed(2)}, 'pending', ${clerkUserId}, ${purchaseId}
+        FROM guide_ad_purchases WHERE id = ${purchaseId}
+      `);
+
+      const approvalUrl = `https://www.${
+        process.env.PAYPAL_MODE === 'live' ? 'paypal.com' : 'sandbox.paypal.com'
+      }/cgi-bin/webscr?cmd=_express-checkout&token=${paypalOrder.orderId}`;
+
+      res.json({ success: true, orderId: paypalOrder.orderId, approvalUrl });
+    } catch (err: any) {
+      console.error('[guide-ads] renew checkout failed:', err);
+      res.status(500).json({ success: false, error: err.message || 'Could not start renewal.' });
+    }
+  });
+
+  // --- Public: capture a renewal payment and extend the existing placement --------------------
+  // No requireVerifiedUser here, same as the regular capture route above -- this is reached from
+  // PayPal's redirect back, identified by the unguessable orderId it was created against, not a
+  // fresh Authorization header. Ownership was already verified once, at renewal-checkout time.
+  app.post('/api/guide-ads/renew/:orderId/capture', async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    if (!isPayPalConfigured()) {
+      res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
+      return;
+    }
+    const { orderId } = req.params;
+    try {
+      const orderRows = await withDb((sql) => sql`SELECT * FROM guide_ad_orders WHERE paypal_order_id = ${orderId} LIMIT 1`);
+      const order = (orderRows as unknown as any[])[0];
+      if (!order || !order.renews_purchase_id) {
+        res.status(404).json({ success: false, error: 'Renewal order not found.' });
+        return;
+      }
+
+      // Reload-safety, same reasoning as the regular capture route: rebuild from what's actually
+      // persisted rather than re-capturing (and re-extending) an already-completed renewal.
+      if (order.status === 'completed') {
+        const rows = await withDb((sql) => sql`
+          SELECT p.paid_through, a.slug, a.title FROM guide_ad_purchases p JOIN articles a ON a.id = p.article_id
+          WHERE p.id = ${order.renews_purchase_id} LIMIT 1
+        `);
+        const row = (rows as unknown as Array<{ paid_through: string; slug: string; title: string }>)[0];
+        res.json({ success: true, alreadyCaptured: true, paidThrough: row?.paid_through ?? null, slug: row?.slug, title: row?.title });
+        return;
+      }
+
+      const captureResult = await capturePayPalOrder(orderId);
+
+      // GREATEST(paid_through, now()) rather than always adding to the stored paid_through -- if
+      // payment took long enough that the placement slipped past expiry mid-checkout, extending
+      // from a stale past date would under-credit the vendor for however long it sat expired.
+      // Multiplying an interval literal by a parameterized count (rather than splicing
+      // SLOT_DURATION_DAYS into a quoted interval string) sidesteps the same sql`` parameterization
+      // issue noted in the regular capture route above.
+      const rows = await withDb((sql) => sql`
+        UPDATE guide_ad_purchases
+        SET paid_through = GREATEST(paid_through, now()) + (${SLOT_DURATION_DAYS} * interval '1 day')
+        WHERE id = ${order.renews_purchase_id}
+        RETURNING paid_through, article_id
+      `);
+      const updated = (rows as unknown as Array<{ paid_through: string; article_id: number }>)[0];
+
+      await withDb((sql) => sql`
+        UPDATE guide_ad_orders SET status = 'completed', paypal_capture_id = ${captureResult.captureId}, updated_at = now()
+        WHERE id = ${order.id}
+      `);
+
+      const articleRows = await withDb((sql) => sql`SELECT slug, title FROM articles WHERE id = ${updated.article_id} LIMIT 1`);
+      const article = (articleRows as unknown as Array<{ slug: string; title: string }>)[0];
+
+      res.json({
+        success: true,
+        captureId: captureResult.captureId,
+        paidThrough: updated.paid_through,
+        slug: article?.slug,
+        title: article?.title,
+      });
+    } catch (err: any) {
+      console.error('[guide-ads] renew capture failed:', err);
+      try {
+        await withDb((sql) => sql`UPDATE guide_ad_orders SET status = 'failed', updated_at = now() WHERE paypal_order_id = ${orderId}`);
+      } catch { /* best effort */ }
+      res.status(500).json({ success: false, error: err.message || 'Renewal payment capture failed.' });
+    }
+  });
 }
