@@ -27,7 +27,7 @@ interface GuideAdsCheckoutProps {
 // GuideAdSlot.tsx's "Are you in the X business?" CTA landed on a login screen instead of the thing
 // they clicked, before ever seeing what's for sale.
 export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }) => {
-  const { user, loading: authLoading, triggerClerkSignIn, requestClerkLoad } = useAuth();
+  const { user, loading: authLoading, triggerClerkSignIn, getToken, requestClerkLoad } = useAuth();
 
   const [guides, setGuides] = useState<GuideRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -126,10 +126,19 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     const contactEmail = user.email || `${user.uid}@beforeregret.com`;
 
     setSubmitting(true);
+    // A verified session token, not the raw uid -- the server checks this against Clerk's own
+    // signing keys (src/server/clerkAuth.ts) rather than trusting whatever id gets sent, so an
+    // order can no longer be attributed to an account that isn't actually the one paying.
+    const token = await getToken();
+    if (!token) {
+      setSubmitError('Your session has expired -- please sign in again.');
+      setSubmitting(false);
+      return;
+    }
     try {
       const res = await fetch('/api/guide-ads/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           businessName: businessName.trim(),
           tradeCategory,
@@ -138,7 +147,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           tagline: tagline.trim() || undefined,
           contactEmail,
           slots: Array.from(selected),
-          clerkUserId: user.uid,
         }),
       });
       const data = await res.json();

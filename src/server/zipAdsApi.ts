@@ -3,6 +3,7 @@ import { withDb, isDbConfigured } from './db.js';
 import { isPayPalConfigured, createPayPalOrder, capturePayPalOrder } from './paypalService.js';
 import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors.js';
 import type { SponsoredVendor } from '../types.js';
+import { requireVerifiedUser } from './clerkAuth.js';
 
 // Self-serve, ZIP-targeted vendor ad slots inside reports: one vendor per (zip, trade category)
 // purchase, at most MAX_SLOTS_PER_ZIP_TRADE active at once per pair, $29 for a flat 30-day
@@ -109,17 +110,18 @@ export function registerZipAdsRoutes(app: Express) {
     }
   });
 
-  // --- Public: start checkout for one (zip, trade category) slot ------------------------------
-  // No Clerk sign-in required, same reasoning as guideAdsApi.ts -- this is a business buying ad
-  // space, not a report reader with an account, so this calls paypalService.ts directly rather
-  // than the generic /api/paypal/orders route (which hard-requires a Clerk userId).
-  app.post('/api/zip-ads/checkout', async (req: Request, res: Response) => {
+  // --- Start checkout for one (zip, trade category) slot ---------------------------------------
+  // Availability checking (above) stays public, but the actual checkout write requires a verified
+  // Clerk session -- same reasoning and same requireVerifiedUser middleware as guideAdsApi.ts.
+  // This calls paypalService.ts directly rather than the generic /api/paypal/orders route, which
+  // has its own separate Clerk userId handling.
+  app.post('/api/zip-ads/checkout', requireVerifiedUser, async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     if (!isPayPalConfigured()) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const { businessName, tradeCategory, zipCode, phone, website, tagline, contactEmail, clerkUserId } = req.body || {};
+    const { businessName, tradeCategory, zipCode, phone, website, tagline, contactEmail } = req.body || {};
     const errors: string[] = [];
     if (typeof businessName !== 'string' || !businessName.trim()) errors.push('Business name is required.');
     if (typeof tradeCategory !== 'string' || !(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) errors.push('Please choose a valid trade category.');
@@ -159,7 +161,7 @@ export function registerZipAdsRoutes(app: Express) {
           paypal_order_id, business_name, trade_category, zip_code, phone, website, tagline, contact_email, amount_usd, status, clerk_user_id
         ) VALUES (
           ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${zipCode}, ${phone}, ${website || null}, ${tagline || null},
-          ${contactEmail}, ${amount}, 'pending', ${typeof clerkUserId === 'string' ? clerkUserId : null}
+          ${contactEmail}, ${amount}, 'pending', ${req.verifiedUserId as string}
         )
       `);
 

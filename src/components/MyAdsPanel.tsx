@@ -60,7 +60,7 @@ function expiryLabel(paidThrough: string): string {
 // is proof of purchase, expiry, contact-detail edits, and renewal -- a placement manager, not a
 // stats board. See src/server/myAdsApi.ts.
 export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
-  const { user, loading: authLoading, triggerClerkSignIn, requestClerkLoad } = useAuth();
+  const { user, loading: authLoading, triggerClerkSignIn, getToken, requestClerkLoad } = useAuth();
 
   useEffect(() => {
     requestClerkLoad();
@@ -78,8 +78,16 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
-  const loadPlacements = (uid: string) => {
-    fetch(`/api/my-ads/${uid}`)
+  const loadPlacements = async () => {
+    // Verified session token, not the uid -- the server derives identity from this (see
+    // clerkAuth.ts) rather than trusting an id in the URL, which used to mean anyone could list
+    // another vendor's placements just by knowing their Clerk user id.
+    const token = await getToken();
+    if (!token) {
+      setLoadError('Your session has expired -- please sign in again.');
+      return;
+    }
+    fetch('/api/my-ads', { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) {
@@ -95,7 +103,8 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (user) loadPlacements(user.uid);
+    if (user) loadPlacements();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const activeGuides = useMemo(
@@ -127,11 +136,13 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     if (!editPhone.trim()) return setEditError('Phone number is required.');
     setSavingEdit(true);
     setEditError(null);
+    const token = await getToken();
+    if (!token) { setEditError('Your session has expired -- please sign in again.'); setSavingEdit(false); return; }
     try {
       const res = await fetch(`/api/my-ads/guide/${purchaseId}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clerkUserId: user.uid, phone: editPhone.trim(), website: editWebsite.trim() || undefined, tagline: editTagline.trim() || undefined }),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ phone: editPhone.trim(), website: editWebsite.trim() || undefined, tagline: editTagline.trim() || undefined }),
       });
       const data = await res.json();
       if (!data.success) { setEditError(data?.error || 'Could not save.'); setSavingEdit(false); return; }
@@ -149,11 +160,13 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     if (!editPhone.trim()) return setEditError('Phone number is required.');
     setSavingEdit(true);
     setEditError(null);
+    const token = await getToken();
+    if (!token) { setEditError('Your session has expired -- please sign in again.'); setSavingEdit(false); return; }
     try {
       const res = await fetch(`/api/my-ads/zip/${purchaseId}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clerkUserId: user.uid, phone: editPhone.trim(), website: editWebsite.trim() || undefined, tagline: editTagline.trim() || undefined }),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ phone: editPhone.trim(), website: editWebsite.trim() || undefined, tagline: editTagline.trim() || undefined }),
       });
       const data = await res.json();
       if (!data.success) { setEditError(data?.error || 'Could not save.'); setSavingEdit(false); return; }

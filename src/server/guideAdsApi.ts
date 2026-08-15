@@ -2,6 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { isPayPalConfigured, createPayPalOrder, capturePayPalOrder } from './paypalService.js';
 import { TRADE_CATEGORIES } from '../data/sponsoredVendors.js';
+import { requireVerifiedUser } from './clerkAuth.js';
 
 // Self-serve vendor ad slots on guide pages: one slot per guide, open market (any business, any
 // guide, no trade-category matching required), $7.99 per slot for a flat 30-day window, no
@@ -109,19 +110,22 @@ export function registerGuideAdsRoutes(app: Express) {
     }
   });
 
-  // --- Public: start checkout for a set of selected guide slots -------------------------------
-  // No Clerk sign-in required -- this is a business buying ad space, not a report reader with an
-  // account, and the existing generic /api/paypal/orders route hard-requires a Clerk userId, so
-  // this calls paypalService.ts's functions directly rather than going through that route.
-  // clerkUserId is stored when the client does have one (see GuideAdsCheckout.tsx) purely to key
-  // the /my-ads placement-manager dashboard -- checkout itself works without it.
-  app.post('/api/guide-ads/checkout', async (req: Request, res: Response) => {
+  // --- Start checkout for a set of selected guide slots ---------------------------------------
+  // Guide browsing and the business form stay public (GuideAdsCheckout.tsx renders both before
+  // sign-in), but the actual checkout write requires a verified Clerk session -- requireVerifiedUser
+  // checks the Authorization: Bearer token against Clerk's own signing keys and sets
+  // req.verifiedUserId, which is what gets stored as guide_ad_orders.clerk_user_id below. This
+  // used to trust a client-sent `clerkUserId` field with no verification at all; that would have
+  // let anyone attribute an order (and later, read/edit it via /my-ads) to any account they typed
+  // in, not just their own. This calls paypalService.ts's functions directly rather than the
+  // generic /api/paypal/orders route, which has its own separate Clerk userId handling.
+  app.post('/api/guide-ads/checkout', requireVerifiedUser, async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     if (!isPayPalConfigured()) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const { businessName, tradeCategory, phone, website, tagline, contactEmail, slots, clerkUserId } = req.body;
+    const { businessName, tradeCategory, phone, website, tagline, contactEmail, slots } = req.body;
     if (!businessName || typeof businessName !== 'string') {
       res.status(400).json({ success: false, error: 'Business name is required.' });
       return;
@@ -172,7 +176,7 @@ export function registerGuideAdsRoutes(app: Express) {
           paypal_order_id, business_name, trade_category, phone, website, tagline, contact_email, slots_json, amount_usd, status, clerk_user_id
         ) VALUES (
           ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${phone}, ${website || null}, ${tagline || null},
-          ${contactEmail}, ${JSON.stringify(slots)}, ${amount}, 'pending', ${typeof clerkUserId === 'string' ? clerkUserId : null}
+          ${contactEmail}, ${JSON.stringify(slots)}, ${amount}, 'pending', ${req.verifiedUserId as string}
         )
       `);
 
