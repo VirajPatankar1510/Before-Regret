@@ -56,6 +56,23 @@ import {
 
 dotenv.config();
 
+// Every top-level path the SPA's client-side router (App.tsx's resolveRouteFromPath) recognizes
+// as a real page, aside from '/', guide/county slugs, and paths with their own dedicated Express
+// route registered above (e.g. /report/:id, which 301-redirects before ever reaching the
+// catch-all). Used by the production catch-all below to decide whether an unmatched path is a
+// real client-only route (serve the shell, 200) or genuinely dead (serve the shell's "Not Found"
+// state, but with a real 404 status -- see that handler for why this matters for search indexing).
+// Hand-kept in sync with resolveRouteFromPath since there's no shared module between client and
+// server routing yet; a path added there needs adding here too.
+const KNOWN_STATIC_ROUTE_PREFIXES = [
+  '/advertise', '/my-ads', '/topic-ads', '/report-ads',
+  '/about', '/support', '/terms', '/privacy', '/refunds', '/refund-policy',
+  '/payment-success', '/payment-cancelled',
+  '/admin/backlinks', '/admin/seo',
+  '/guides/', '/counties/',
+  '/insights/', '/report/', '/reports/',
+];
+
 // Only read when this file bootstraps its own listener (npm run dev / npm start); Vercel never
 // reaches the app.listen() below. The env override exists so the dev server and a local
 // production build (node dist/server.cjs, serving the real prerendered dist/) can run at the same
@@ -1271,8 +1288,29 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
       }
     });
 
+    // Same soft-404 bug as the two handlers above, generalized: any path that isn't a real static
+    // asset, a prerendered page, a guide/county slug (both already checked above), or one of the
+    // SPA's own known client-only routes used to fall all the way through here and get an
+    // unconditional 200 -- including genuinely dead URLs, like a leftover page from a pre-pivot
+    // version of this product (this codebase used to be an India-focused resident/housing-society
+    // Q&A platform; /become-expert was a real page in that product, deleted along with the rest of
+    // that dead frontend, but still indexed in Bing because it kept returning 200 after removal).
+    // KNOWN_STATIC_ROUTE_PREFIXES is hand-kept in sync with App.tsx's resolveRouteFromPath -- the
+    // client already has the authoritative list of what it can route to, there's just no shared
+    // module between client and server yet to import it from directly.
     app.get('*', (req, res) => {
-      sendShellWithStatus(res, 200);
+      const path = req.path;
+      const isKnownRoute =
+        path === '/' ||
+        KNOWN_STATIC_ROUTE_PREFIXES.some((prefix) => {
+          // Some prefixes are already slash-terminated ('/guides/', '/insights/') -- appending
+          // another slash before checking would double it up (`/insights//`) and never match a
+          // real suffix like `/insights/abc123`, which is exactly the bug this fixed after the
+          // first version of this handler shipped 404-ing real /insights/:id links.
+          const boundary = prefix.endsWith('/') ? prefix : `${prefix}/`;
+          return path === prefix || path.startsWith(boundary);
+        });
+      sendShellWithStatus(res, isKnownRoute ? 200 : 404);
     });
   }
 

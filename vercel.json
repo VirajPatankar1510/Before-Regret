@@ -26,7 +26,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/shell.html"
+      "destination": "/api/index"
     }
   ],
   "headers": [
