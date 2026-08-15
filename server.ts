@@ -29,6 +29,7 @@ import { registerNewsCoverageRoutes } from "./src/server/newsCoverageApi.js";
 import { registerQuestionQueueRoutes } from "./src/server/questionQueueApi.js";
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
+import { registerMyAdsRoutes } from "./src/server/myAdsApi.js";
 import { registerBacklinksRoutes } from "./src/server/backlinksApi.js";
 import { registerCountyEventsRoutes } from "./src/server/countyEventsApi.js";
 import { registerCountyComparisonRoutes } from "./src/server/countyComparisonApi.js";
@@ -210,6 +211,12 @@ export async function createApp() {
   // interest-capture-only /api/vendor-slots and /api/vendor-interest routes. See
   // src/server/zipAdsApi.ts.
   registerZipAdsRoutes(app);
+
+  // --- Vendor placement manager (Neon-backed) -------------------------------------------------
+  // /my-ads: everything a signed-in vendor has bought across both ad products -- proof of
+  // purchase, expiry, and contact-detail edits. No traffic/visibility stats by design. See
+  // src/server/myAdsApi.ts.
+  registerMyAdsRoutes(app);
 
   // --- Backlink lead queue (Neon-backed) -----------------------------------------------------
   // Admin-only. Stores candidate forum threads found by a manual/assisted search scan, plus a

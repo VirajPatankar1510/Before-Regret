@@ -41,6 +41,7 @@ const GuideAdsCheckout = lazy(() => import('./components/GuideAdsCheckout').then
 const GuideAdsCheckoutSuccess = lazy(() => import('./components/GuideAdsCheckoutSuccess').then((m) => ({ default: m.GuideAdsCheckoutSuccess })));
 const ZipAdsCheckoutSuccess = lazy(() => import('./components/ZipAdsCheckoutSuccess').then((m) => ({ default: m.ZipAdsCheckoutSuccess })));
 const AdvertiseCompare = lazy(() => import('./components/AdvertiseCompare').then((m) => ({ default: m.AdvertiseCompare })));
+const MyAdsPanel = lazy(() => import('./components/MyAdsPanel').then((m) => ({ default: m.MyAdsPanel })));
 const SeoAdminPanel = lazy(() => import('./components/seo/SeoAdminPanel').then((m) => ({ default: m.SeoAdminPanel })));
 const BacklinksAdminPanel = lazy(() => import('./components/admin/BacklinksAdminPanel').then((m) => ({ default: m.BacklinksAdminPanel })));
 const AdminGate = lazy(() => import('./components/admin/AdminGate').then((m) => ({ default: m.AdminGate })));
@@ -143,7 +144,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'adminBacklinks' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'adminBacklinks' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
     countySlug?: string;
   }>({ type: 'none' });
@@ -174,6 +175,14 @@ export function App() {
     // two checkout routes below since /advertise no longer aliases straight to topic-ads.
     if (path === '/advertise/' || path.startsWith('/advertise')) {
       setPseoRoute({ type: 'advertiseCompare' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    // The vendor placement manager -- checked here rather than folded into either checkout route,
+    // since a vendor with both a topic ad and a report ad needs one place that covers both.
+    if (path === '/my-ads/' || path.startsWith('/my-ads')) {
+      setPseoRoute({ type: 'myAds' });
       setCurrentStep('PSEO');
       return true;
     }
@@ -609,6 +618,13 @@ export function App() {
         canonicalUrl: 'https://www.beforeregret.com/topic-ads/success/',
         robotsDirective: 'noindex, nofollow'
       });
+    } else if (pseoRoute.type === 'myAds') {
+      applyHeadSeo({
+        title: 'My Placements | BeforeRegret',
+        description: 'Manage your BeforeRegret ad placements.',
+        canonicalUrl: 'https://www.beforeregret.com/my-ads/',
+        robotsDirective: 'noindex, nofollow'
+      });
     } else if (currentStep === 'REPORT') {
       applyHeadSeo({
         title: `Property Insights | ${report?.propertyInfo?.address || 'Subject Property'}`,
@@ -894,6 +910,9 @@ export function App() {
             )}
             {pseoRoute.type === 'guideAdsSuccess' && (
               <GuideAdsCheckoutSuccess onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'myAds' && (
+              <MyAdsPanel onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'admin' && (
               <AdminGate>

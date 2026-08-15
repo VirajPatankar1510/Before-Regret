@@ -4,7 +4,6 @@ import { guessBusinessPhraseFromTitle } from '../data/guideAdCategoryGuess';
 
 interface GuideAdSlotProps {
   articleId: number;
-  position: 'top' | 'bottom';
   guideTitle: string;
 }
 
@@ -16,25 +15,29 @@ interface ActiveVendor {
   tagline?: string;
 }
 
-// Self-serve vendor ad slot, open market, $7.99/30 days -- see src/server/guideAdsApi.ts. Always
-// renders something (unlike AdSlot.tsx's Google units, which render nothing until configured):
-// either the paying vendor currently occupying this slot, or a recruitment CTA asking a business
-// in a topic-matched trade to buy it. Both states carry the same "Ad" badge -- this is ad
-// inventory either way, sold or not, and disclosing that plainly regardless of which state it's
-// in is the same honesty standard as every other claim on this site. Colored left border and
-// badge distinguish the two states for a reader at a glance (blue = open, green = a real vendor
-// is here) without either one reading as a banner ad or a popup.
+// Self-serve vendor ad slot, open market, $7.99/30 days -- see src/server/guideAdsApi.ts. One
+// slot per guide, not two: an earlier top+bottom split sold both positions at the same price
+// despite unequal placement value, which meant a rational vendor always bought "top" and "bottom"
+// sat unsold -- and an unsold slot renders as a recruitment CTA, so every guide showed two empty
+// "want to advertise here?" boxes with zero vendors. Always renders something (unlike AdSlot.tsx's
+// Google units, which render nothing until configured): either the paying vendor currently
+// occupying this slot, or a recruitment CTA asking a business in a topic-matched trade to buy it.
+// Both states carry the same "Ad" badge -- this is ad inventory either way, sold or not, and
+// disclosing that plainly regardless of which state it's in is the same honesty standard as every
+// other claim on this site. Colored left border and badge distinguish the two states for a reader
+// at a glance (blue = open, green = a real vendor is here) without either one reading as a banner
+// ad or a popup.
 //
 // The recruitment copy deliberately did NOT end up as "Need a sewer inspection before closing?"
 // (an earlier draft) -- that addressed the reader, not the vendor who's the actual audience for
 // this state, and a business owner skimming past would read it as reader content and miss the
 // pitch entirely. "Are you in the X business?" keeps the vendor as the addressee throughout.
-export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, position, guideTitle }) => {
+export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle }) => {
   const [vendor, setVendor] = useState<ActiveVendor | null | undefined>(undefined); // undefined = loading
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/guide-ads/active/${articleId}/${position}`)
+    fetch(`/api/guide-ads/active/${articleId}`)
       .then((res) => res.json())
       .then((data) => {
         if (cancelled) return;
@@ -46,7 +49,7 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, position, g
     return () => {
       cancelled = true;
     };
-  }, [articleId, position]);
+  }, [articleId]);
 
   // Loading: reserve the space silently rather than flashing "want to advertise here?" for a
   // moment before a real vendor's card swaps in a beat later.

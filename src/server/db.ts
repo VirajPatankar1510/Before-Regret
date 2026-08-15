@@ -228,6 +228,15 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_guide_ad_purchases_slot ON guide_ad_purchases(article_id, position)`;
 
+  // clerk_user_id: the stable identity the placement-manager dashboard (/my-ads) keys off of.
+  // contact_email alone can't be trusted for that -- it's client-synthesized as
+  // `user.email || \`${uid}@beforeregret.com\`` at checkout time (see GuideAdsCheckout.tsx /
+  // VendorSignupForm.tsx), so two orders from the same vendor with different email states would
+  // never join together. Nullable because it backfills nothing for orders placed before this
+  // column existed; those just won't surface in the dashboard, same as any other pre-feature row.
+  await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS clerk_user_id TEXT`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_guide_ad_orders_clerk_user ON guide_ad_orders(clerk_user_id)`;
+
   // zip_ad_orders / zip_ad_purchases: same split as guide_ad_orders/guide_ad_purchases above and
   // for the same reason (order = checkout attempt, purchase = actually-sold inventory, "who's
   // active right now" is always a live query never a status flag). One selection per order here
@@ -271,6 +280,10 @@ export async function ensureArticlesSchema(): Promise<void> {
     )
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_zip_ad_purchases_slot ON zip_ad_purchases(zip_code, trade_category)`;
+
+  // Same stable-identity column and same reasoning as guide_ad_orders.clerk_user_id above.
+  await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS clerk_user_id TEXT`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_zip_ad_orders_clerk_user ON zip_ad_orders(clerk_user_id)`;
 
   // backlink_leads: candidate forum threads (City-Data, Bogleheads, etc.) found by manually
   // running a search-based scan from the admin page -- see src/server/backlinksApi.ts. Deliberately
