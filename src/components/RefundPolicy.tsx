@@ -83,7 +83,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                 2. Business Vendor Placements Overview
               </h2>
               <p>
-                Atmostellar offers two self-serve, one-time-payment placement products for local business vendors (contractors, licensed home inspectors, structural engineers, environmental remediation specialists): a <strong>Topic Ad</strong>, shown on educational guide articles across the site, and a <strong>Report Ad</strong>, shown as a sponsored placement ("Need help verifying this?" section) inside property reports for one specific zip code and trade category. Neither is a subscription -- each is a single, one-time charge for a fixed 30-day placement window, with no automatic renewal or re-billing of any kind.
+                Atmostellar offers two self-serve, one-time-payment placement products for local business vendors (contractors, home inspectors, pest control specialists, environmental remediation specialists): a <strong>Topic Ad</strong>, shown on educational guide articles across the site, and a <strong>Report Ad</strong>, shown as a sponsored placement ("Need help verifying this?" section) inside property reports for one specific zip code and trade category. Neither is a subscription -- each is a single, one-time charge for a fixed 30-day placement window, with no automatic renewal or re-billing of any kind.
               </p>
               <p>Pricing is a flat rate per slot, with no tiers or bundles:</p>
 
@@ -135,7 +135,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                 4. Listing Removal & Refund Eligibility (Atmostellar-Initiated)
               </h2>
               <p>
-                To maintain the integrity of BeforeRegret reports, Atmostellar enforces strict vendor licensure and quality standards, and also reserves the right to discontinue the vendor placement program, or a specific placement, for administrative or business reasons.
+                Vendor placements are self-serve: Atmostellar does not independently verify a vendor's trade license, insurance, or credentials before a placement goes live -- business name, trade category, and contact details are self-reported by the vendor at checkout. Atmostellar reserves the right to remove a placement, or discontinue the placement program entirely, for administrative or business reasons, or upon becoming aware of a problem with a listing.
               </p>
 
               <div className="space-y-3 pt-1">
@@ -145,7 +145,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                     <span>Removal for Vendor Policy Violation or Breach (NO REFUND)</span>
                   </h3>
                   <p className="text-amber-900 leading-relaxed">
-                    If Atmostellar suspends or removes a vendor's sponsored placement due to expired or revoked trade licensure, fraudulent business practices, unresolved consumer complaints, or breach of our Terms of Service, <strong>no refund or credit will be issued</strong> for the remaining portion of the 30-day placement window. The removal is a direct consequence of vendor non-compliance.
+                    If Atmostellar becomes aware -- through a consumer complaint or otherwise -- that a vendor's trade license has expired or been revoked, or that a listing involves fraudulent business practices or a breach of our Terms of Service, and suspends or removes the placement as a result, <strong>no refund or credit will be issued</strong> for the remaining portion of the 30-day placement window. The removal is a direct consequence of vendor non-compliance.
                   </p>
                 </div>
 

@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Building2, ArrowLeft, Check, Sparkles, MapPin, Target,
-  HelpCircle, Phone, ExternalLink, Megaphone
+  HelpCircle, Phone, ExternalLink, Megaphone, ChevronDown
 } from 'lucide-react';
 import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
 import { VendorSignupForm } from './VendorSignupForm';
@@ -11,7 +11,36 @@ interface VendorsProps {
   onNavigate?: (path: string) => void;
 }
 
+const FAQ_ITEMS: Array<{ q: string; a: string }> = [
+  {
+    q: 'Do you verify businesses before listing them?',
+    a: 'No -- this is self-serve. Business name, trade category, and contact details are self-reported at checkout, not independently verified.',
+  },
+  {
+    q: 'How many views or leads will I get?',
+    a: "We don't guarantee a specific number of views, clicks, calls, or business outcomes -- visibility depends on how many reports get generated in your selected ZIP codes.",
+  },
+  {
+    q: 'Can I cancel or get a refund?',
+    a: "No refunds once payment completes. There's nothing to cancel either way -- it's a flat 30-day charge, not a subscription.",
+  },
+  {
+    q: 'What happens when my placement expires?',
+    a: 'Your slot reopens automatically for other vendors. No reminder email is sent right now -- check My Placements or come back here to buy another window if you want to stay live.',
+  },
+  {
+    q: 'Can I edit my listing after I’ve paid?',
+    a: 'Yes -- phone, website, and tagline can be updated any time from My Placements. Business name and trade category are locked once purchased.',
+  },
+  {
+    q: `Why only ${MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP and trade?`,
+    a: "Keeps each slot meaningful instead of turning into a directory -- first come, first served, and a slot only opens up once someone's window expires or they're removed.",
+  },
+];
+
 export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) => {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -131,7 +160,8 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
           <div className="space-y-2">
             <h2 className="font-serif text-2xl font-bold text-slate-900">Available Trade Categories</h2>
             <p className="text-xs sm:text-sm text-slate-600">
-              We accept verified local service providers across these primary residential categories:
+              Any business in these categories can buy a placement -- trade and business details are self-reported
+              at checkout, not independently verified by us.
             </p>
           </div>
 
@@ -167,8 +197,36 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
           </div>
         </div>
 
+        {/* FAQ -- right before the form, so the honest answers (no verification, no view
+            guarantee, no refunds) land just before the moment of filling it in, not after. */}
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-1">
+          <h2 className="font-serif text-xl font-bold text-slate-900 mb-4">Questions before you buy</h2>
+          {FAQ_ITEMS.map((item, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div key={item.q} className="border-t border-slate-100 first:border-t-0 py-3">
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  aria-expanded={isOpen}
+                  className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
+                >
+                  <span className="text-sm font-bold text-slate-900">{item.q}</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isOpen && (
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-2">{item.a}</p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
         {/* Vendor Signup Form */}
-        <VendorSignupForm />
+        <div className="space-y-2">
+          <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider text-center">Ready when you are</div>
+          <VendorSignupForm />
+        </div>
 
         {/* Disclaimer / What is NOT Guaranteed */}
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-2 text-xs text-amber-900">

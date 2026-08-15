@@ -91,9 +91,8 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                     <span>B. Local Business Vendors (Subscribers)</span>
                   </h3>
                   <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
-                    <li>Business contact details (company name, owner name, email address, business phone number).</li>
-                    <li>Trade category, state licensure number, and registration verification details (non-mandatory).</li>
-                    <li>Selected zip code and trade category placement choices.</li>
+                    <li>Business contact details (company name, account email address, business phone number, and an optional website and tagline) -- self-reported by the vendor at checkout, not independently verified by us.</li>
+                    <li>Trade category and selected zip code placement choices.</li>
                     <li>Billing and invoice transaction records handled by our secure payment gateway.</li>
                   </ul>
                 </div>
@@ -122,8 +121,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               <p>We utilize collected information solely for operational and service delivery purposes:</p>
               <ul className="list-disc pl-5 space-y-1 text-xs text-slate-600">
                 <li>Generating and rendering free property research reports.</li>
-                <li>Verifying trade licensure for local business vendors prior to featuring sponsored placements.</li>
-                <li>Managing vendor placement billing and account modifications.</li>
+                <li>Managing vendor placement billing, account modifications, and the contact details a vendor submits for their own listing.</li>
                 <li>Auditing dataset accuracy, resolving user data error flags, and improving pSEO page rendering.</li>
                 <li>Maintaining cybersecurity, detecting abuse, and fulfilling legal tax and accounting requirements.</li>
               </ul>

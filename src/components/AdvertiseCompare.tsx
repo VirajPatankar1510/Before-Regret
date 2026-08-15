@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Wrench, MapPin, Check, Megaphone, Phone, ShieldCheck, CreditCard, XCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ArrowLeft, ArrowRight, Wrench, MapPin, Check, Megaphone, Phone, ShieldCheck, CreditCard, XCircle, ListChecks, Zap, ChevronDown } from 'lucide-react';
 import { MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
 
 interface AdvertiseCompareProps {
@@ -20,7 +20,36 @@ interface AdvertiseCompareProps {
 // instead. (2) The term "guide page" -- it's this codebase's internal name for the underlying
 // content type, not something a vendor buying an ad slot needs to know; the vendor just needs to
 // know their ad reaches nationwide readers of educational content vs. one ZIP code's report.
+const FAQ_ITEMS: Array<{ q: string; a: string }> = [
+  {
+    q: 'Do I need to be licensed or verified to advertise?',
+    a: 'No license or credential check happens before your placement goes live -- business name, trade category, and contact details are self-reported at checkout. Nothing gates you from buying a placement in any category listed.',
+  },
+  {
+    q: 'How many people will see my ad?',
+    a: "We don't track or guarantee impressions, clicks, or leads for either product -- you're buying a fixed placement for the 30-day window, not a performance number. Click through to a live guide or report to see your listing yourself.",
+  },
+  {
+    q: 'Can I cancel or get a refund?',
+    a: "No refunds once payment completes. There's nothing to cancel either way -- it's a single flat charge for a fixed 30-day window, not a subscription, so nothing bills you again automatically.",
+  },
+  {
+    q: 'What happens when my placement expires?',
+    a: "It simply stops showing and the slot reopens for other vendors. No reminder email is sent before that happens right now -- check My Placements or come back here to buy another window if you want to stay live.",
+  },
+  {
+    q: 'Can I edit my listing after I’ve paid?',
+    a: 'Yes -- phone, website, and tagline can be changed any time from My Placements. Business name and trade category are locked once purchased, since those define what was sold.',
+  },
+  {
+    q: 'Can I buy both Topic Ads and Report Ads?',
+    a: "Yes, nothing stops you from buying both -- they reach different audiences (nationwide by topic vs. one ZIP code), so some vendors run both at once.",
+  },
+];
+
 export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }) => {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -71,6 +100,28 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               No auto-renewal
             </span>
           </div>
+        </div>
+
+        {/* How it works -- the page used to cut straight from the hero into the two pricing
+            cards, which read as a spec sheet rather than something that walks a vendor toward a
+            decision. Three steps, no jargon, sets up why the two cards below are worth reading. */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          {[
+            { icon: ListChecks, step: '1', title: 'Pick a plan', body: 'Topic Ads reach readers nationwide by subject. Report Ads target one ZIP code and trade. Compare both below.' },
+            { icon: CreditCard, step: '2', title: 'Add your business', body: 'Business name, phone, and trade category -- pay once through PayPal, no account setup beyond that.' },
+            { icon: Zap, step: '3', title: "You're live", body: 'Your placement goes live within minutes and runs for a flat 30-day window, no auto-renewal.' },
+          ].map(({ icon: Icon, step, title, body }) => (
+            <div key={step} className="flex items-start gap-3 sm:flex-col sm:items-start sm:gap-3">
+              <div className="shrink-0 w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center relative">
+                <Icon className="w-4 h-4" />
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center border-2 border-slate-50">{step}</span>
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-bold text-sm text-slate-900">{title}</h3>
+                <p className="text-xs text-slate-600 leading-relaxed mt-0.5">{body}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Two products */}
@@ -245,6 +296,32 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
           If you only serve one town or ZIP code, Report Ads put you in front of someone
           researching that exact address instead of a general topic -- worth the higher price for that
           precision. Nothing stops you from buying both.
+        </div>
+
+        {/* FAQ -- closes the page on the honest answers a vendor would actually want before
+            paying (no verification gate, no view guarantee, no refunds) rather than ending
+            abruptly on the comparison table. */}
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-1">
+          <h2 className="font-serif text-xl font-bold text-slate-900 mb-4">Questions before you buy</h2>
+          {FAQ_ITEMS.map((item, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div key={item.q} className="border-t border-slate-100 first:border-t-0 py-3">
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  aria-expanded={isOpen}
+                  className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
+                >
+                  <span className="text-sm font-bold text-slate-900">{item.q}</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isOpen && (
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-2">{item.a}</p>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
