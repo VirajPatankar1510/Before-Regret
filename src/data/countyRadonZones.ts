@@ -95,6 +95,54 @@ export const COUNTY_RADON_ZONES: CountyRadonZone[] = [
   { stateAbbrev: 'NY', countyName: 'ERIE', zone: 1 },
   { stateAbbrev: 'WA', countyName: 'PIERCE', zone: 3 },
   { stateAbbrev: 'IL', countyName: 'DUPAGE', zone: 2 },
+
+  // Fourth batch -- matches coveredCounties.ts's fourth batch. Downloaded EPA's own current
+  // national radon-zones spreadsheet directly (epa.gov/system/files/documents/2024-05/radon_zones-
+  // spreadsheet.xls, last saved by EPA Sept 2025) and cross-checked every value below against both
+  // the 'filtered-raw data' and 'un-filtered-raw-data' sheets -- zero mismatches. Georgia's DeKalb
+  // County is listed as "De Kalb, GA" (with a space) in EPA's own key column; Census spells it
+  // "DeKalb" (no space), which is what's used here to match this file's Census/FEMA naming
+  // convention -- same underlying EPA zone value either way.
+  { stateAbbrev: 'WI', countyName: 'MILWAUKEE', zone: 2 },
+  { stateAbbrev: 'TN', countyName: 'SHELBY', zone: 3 },
+  { stateAbbrev: 'CA', countyName: 'KERN', zone: 2 },
+  { stateAbbrev: 'TX', countyName: 'HIDALGO', zone: 3 },
+  { stateAbbrev: 'MI', countyName: 'MACOMB', zone: 3 },
+  { stateAbbrev: 'TX', countyName: 'EL PASO', zone: 3 },
+  { stateAbbrev: 'MA', countyName: 'WORCESTER', zone: 1 },
+  { stateAbbrev: 'NJ', countyName: 'MIDDLESEX', zone: 2 },
+  { stateAbbrev: 'PA', countyName: 'MONTGOMERY', zone: 1 },
+  { stateAbbrev: 'NJ', countyName: 'ESSEX', zone: 2 },
+  { stateAbbrev: 'MD', countyName: 'BALTIMORE', zone: 1 },
+  { stateAbbrev: 'CA', countyName: 'VENTURA', zone: 1 },
+  { stateAbbrev: 'CA', countyName: 'SAN FRANCISCO', zone: 2 },
+  { stateAbbrev: 'WA', countyName: 'SNOHOMISH', zone: 3 },
+  { stateAbbrev: 'OH', countyName: 'HAMILTON', zone: 1 },
+  { stateAbbrev: 'MA', countyName: 'ESSEX', zone: 1 },
+  { stateAbbrev: 'OR', countyName: 'MULTNOMAH', zone: 2 },
+  { stateAbbrev: 'OK', countyName: 'OKLAHOMA', zone: 3 },
+  { stateAbbrev: 'FL', countyName: 'LEE', zone: 3 },
+  { stateAbbrev: 'CA', countyName: 'SAN JOAQUIN', zone: 3 },
+  { stateAbbrev: 'MA', countyName: 'SUFFOLK', zone: 3 },
+  { stateAbbrev: 'KY', countyName: 'JEFFERSON', zone: 1 },
+  { stateAbbrev: 'GA', countyName: 'COBB', zone: 1 },
+  { stateAbbrev: 'GA', countyName: 'DEKALB', zone: 1 },
+  { stateAbbrev: 'FL', countyName: 'POLK', zone: 2 },
+  { stateAbbrev: 'NY', countyName: 'MONROE', zone: 2 },
+  { stateAbbrev: 'CA', countyName: 'SAN MATEO', zone: 2 },
+  { stateAbbrev: 'CO', countyName: 'EL PASO', zone: 1 },
+  { stateAbbrev: 'MA', countyName: 'NORFOLK', zone: 2 },
+  { stateAbbrev: 'MO', countyName: 'JACKSON', zone: 1 },
+  { stateAbbrev: 'CO', countyName: 'DENVER', zone: 1 },
+  { stateAbbrev: 'IL', countyName: 'LAKE', zone: 2 },
+  { stateAbbrev: 'NJ', countyName: 'HUDSON', zone: 2 },
+  { stateAbbrev: 'TN', countyName: 'DAVIDSON', zone: 1 },
+  { stateAbbrev: 'IL', countyName: 'WILL', zone: 2 },
+  { stateAbbrev: 'UT', countyName: 'UTAH', zone: 2 },
+  { stateAbbrev: 'NM', countyName: 'BERNALILLO', zone: 1 },
+  { stateAbbrev: 'OK', countyName: 'TULSA', zone: 3 },
+  { stateAbbrev: 'AL', countyName: 'JEFFERSON', zone: 2 },
+  { stateAbbrev: 'RI', countyName: 'PROVIDENCE', zone: 2 },
 ];
 
 export function findCountyRadonZone(stateAbbrev: string, countyName: string): CountyRadonZone | undefined {

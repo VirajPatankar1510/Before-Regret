@@ -67,6 +67,7 @@ const RADON_ZONE_TEXT: Record<number, string> = {
 // through to the regex, keyed on the all-caps source form.
 const TITLE_CASE_OVERRIDES: Record<string, string> = {
   DUPAGE: 'DuPage',
+  DEKALB: 'DeKalb',
 };
 
 // The API returns countyName in the all-caps form FEMA/NOAA/Census use internally for matching
