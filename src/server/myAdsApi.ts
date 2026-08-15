@@ -1,5 +1,6 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
+import { requireVerifiedUser } from './clerkAuth.js';
 
 // The vendor-facing placement manager (/my-ads) -- deliberately not called a "dashboard" anywhere
 // in its copy, since it carries zero traffic/impression stats by design (this app doesn't
@@ -9,31 +10,21 @@ import { withDb, isDbConfigured } from './db.js';
 // synthesized `user.email || uid@beforeregret.com` fallback, not guaranteed consistent across
 // orders from the same vendor).
 //
-// No server-side Clerk token verification exists anywhere in this codebase yet (only
-// @clerk/clerk-react is installed, no @clerk/backend) -- every existing user-scoped route
-// (PaymentProcessor.tsx's userId, this one's clerkUserId) trusts whatever id the client sends,
-// same as the rest of the app. Not introducing a heavier auth model here that the rest of the
-// codebase doesn't have; noting the gap rather than silently building past it.
+// Every route here is gated by requireVerifiedUser (clerkAuth.ts), which checks a real Clerk
+// session token rather than trusting a clerkUserId the client just hands over -- this used to
+// take that id as a URL param / request body field with no verification, which meant anyone could
+// list or edit another vendor's placements just by knowing (or guessing) their Clerk user id.
+// req.verifiedUserId below always comes from a cryptographically verified token, never the client.
 
 function dbUnavailable(res: Response) {
   res.status(503).json({ success: false, error: 'The ad system is not configured yet.' });
 }
 
-function requireClerkUserId(req: Request, res: Response): string | null {
-  const id = req.params.clerkUserId;
-  if (!id || typeof id !== 'string') {
-    res.status(400).json({ success: false, error: 'Missing account id.' });
-    return null;
-  }
-  return id;
-}
-
 export function registerMyAdsRoutes(app: Express) {
   // --- Everything one signed-in vendor has ever bought, across both products -----------------
-  app.get('/api/my-ads/:clerkUserId', async (req: Request, res: Response) => {
+  app.get('/api/my-ads', requireVerifiedUser, async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
-    const clerkUserId = requireClerkUserId(req, res);
-    if (!clerkUserId) return;
+    const clerkUserId = req.verifiedUserId as string;
 
     try {
       const guideRows = await withDb((sql) => sql`
@@ -150,11 +141,12 @@ export function registerMyAdsRoutes(app: Express) {
   // purchase time (see the adversarial-content-tripwire pattern this app already uses elsewhere:
   // letting the sold identity of a slot change post-purchase without review is the same class of
   // gap). Phone/website/tagline are the only fields a vendor can update themselves.
-  app.post('/api/my-ads/guide/:purchaseId', async (req: Request, res: Response) => {
+  app.post('/api/my-ads/guide/:purchaseId', requireVerifiedUser, async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     const purchaseId = parseInt(req.params.purchaseId, 10);
-    const { clerkUserId, phone, website, tagline } = req.body || {};
-    if (!Number.isFinite(purchaseId) || !clerkUserId || typeof clerkUserId !== 'string') {
+    const clerkUserId = req.verifiedUserId as string;
+    const { phone, website, tagline } = req.body || {};
+    if (!Number.isFinite(purchaseId)) {
       res.status(400).json({ success: false, error: 'Invalid request.' });
       return;
     }
@@ -183,11 +175,12 @@ export function registerMyAdsRoutes(app: Express) {
   });
 
   // --- Edit the reader-facing contact details on one ZIP placement ---------------------------
-  app.post('/api/my-ads/zip/:purchaseId', async (req: Request, res: Response) => {
+  app.post('/api/my-ads/zip/:purchaseId', requireVerifiedUser, async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     const purchaseId = parseInt(req.params.purchaseId, 10);
-    const { clerkUserId, phone, website, tagline } = req.body || {};
-    if (!Number.isFinite(purchaseId) || !clerkUserId || typeof clerkUserId !== 'string') {
+    const clerkUserId = req.verifiedUserId as string;
+    const { phone, website, tagline } = req.body || {};
+    if (!Number.isFinite(purchaseId)) {
       res.status(400).json({ success: false, error: 'Invalid request.' });
       return;
     }

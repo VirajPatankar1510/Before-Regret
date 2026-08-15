@@ -15,6 +15,12 @@ interface AuthContextType {
   isClerkActive: boolean;
   triggerClerkSignIn: (redirectUrl?: string) => void;
   triggerClerkSignUp: (redirectUrl?: string) => void;
+  // Resolves to the current session's JWT (or null if signed out / Clerk not yet loaded) -- the
+  // one thing a server route can actually verify, unlike `user.uid` which is just a plain string
+  // the client could type in. Callers send this as `Authorization: Bearer <token>` on any request
+  // that writes or reads vendor-scoped data (see GuideAdsCheckout.tsx, VendorSignupForm.tsx,
+  // MyAdsPanel.tsx); the server verifies it in src/server/clerkAuth.ts.
+  getToken: () => Promise<string | null>;
   // Starts the Clerk chunk downloading. Safe to call from anywhere, any number of times --
   // backed by a single boolean flip, so the first caller wins and the rest are no-ops. Every
   // consumer that can show UI depending on real auth state (not just a click handler that fires
@@ -150,6 +156,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // clerkInstance.session is the active Session object once signed in (same instance
+  // triggerClerkSignIn/logout already pull off the ref) -- its own getToken() fetches (and
+  // transparently refreshes) a short-lived JWT. No session yet, or Clerk hasn't loaded, both just
+  // resolve to null rather than throwing -- callers treat "no token" as "not signed in."
+  const getToken = async (): Promise<string | null> => {
+    const clerkInstance = clerkInstanceRef.current;
+    if (!clerkInstance?.session) return null;
+    try {
+      return await clerkInstance.session.getToken();
+    } catch {
+      return null;
+    }
+  };
+
   const logout = async () => {
     const clerkInstance = clerkInstanceRef.current;
     setLoading(true);
@@ -165,7 +185,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout, isClerkActive, triggerClerkSignIn, triggerClerkSignUp, requestClerkLoad }}>
+    <AuthContext.Provider value={{ user, loading, logout, isClerkActive, triggerClerkSignIn, triggerClerkSignUp, getToken, requestClerkLoad }}>
       {children}
       {isClerkActive && shouldLoadBridge && (
         <Suspense fallback={null}>

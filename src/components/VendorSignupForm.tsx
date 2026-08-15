@@ -19,7 +19,7 @@ interface SlotAvailability {
 // Replaces the old interest-capture-only version of this form, which only logged a submission to
 // console and asked a human to follow up manually -- no payment ever happened there.
 export const VendorSignupForm: React.FC = () => {
-  const { user, loading: authLoading, triggerClerkSignIn, requestClerkLoad } = useAuth();
+  const { user, loading: authLoading, triggerClerkSignIn, getToken, requestClerkLoad } = useAuth();
 
   // A dedicated checkout page, same reasoning as GuideAdsCheckout.tsx -- someone can land here
   // directly without ever touching Navbar's Sign In button, so this needs its own trigger.
@@ -98,10 +98,18 @@ export const VendorSignupForm: React.FC = () => {
     const contactEmail = user.email || `${user.uid}@beforeregret.com`;
 
     setStage('submitting');
+    // Verified session token, not the raw uid -- see clerkAuth.ts; the server no longer trusts a
+    // client-sent clerkUserId for who an order gets attributed to.
+    const token = await getToken();
+    if (!token) {
+      setSubmitErrors(['Your session has expired -- please sign in again.']);
+      setStage('available');
+      return;
+    }
     try {
       const res = await fetch('/api/zip-ads/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           businessName: businessName.trim(),
           tradeCategory,
@@ -110,7 +118,6 @@ export const VendorSignupForm: React.FC = () => {
           website: website.trim() || undefined,
           tagline: tagline.trim() || undefined,
           contactEmail,
-          clerkUserId: user.uid,
         }),
       });
       const data = await res.json();
