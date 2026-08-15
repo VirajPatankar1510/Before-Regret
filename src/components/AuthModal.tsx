@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
 import {
-  ShieldCheck, Lock, User, LogOut, CheckCircle2, ArrowRight, UserCheck, Loader2
+  ShieldCheck, Lock, User, LogOut, CheckCircle2, ArrowRight, UserCheck, Loader2, Megaphone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onNavigate?: (path: string) => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
-  onClose
+  onClose,
+  onNavigate
 }) => {
   const {
     user,
@@ -78,6 +80,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <span>Signed In</span>
               </div>
             </div>
+
+            {/* Vendors' only way back to /my-ads once they leave the checkout-success page it
+                links from -- without this, a signed-in vendor with no bookmark had no path back
+                to their own placements anywhere on the site. */}
+            {onNavigate && (
+              <button
+                onClick={() => {
+                  onClose();
+                  onNavigate('/my-ads');
+                }}
+                className="w-full py-3 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Megaphone className="w-4 h-4 text-slate-500" />
+                <span>Manage My Ads</span>
+              </button>
+            )}
 
             {/* Logout Action */}
             <button

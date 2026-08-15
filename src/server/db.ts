@@ -228,6 +228,12 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_guide_ad_purchases_slot ON guide_ad_purchases(article_id, position)`;
 
+  // A vendor gets exactly one pass at correcting their own contact info post-purchase -- unlimited
+  // self-edits would turn "phone/website/tagline" into an unreviewed second draft of what was
+  // actually sold, drifting further from the identity a human approved at purchase time with every
+  // edit. One edit covers the real case (a typo, a number that changed) without reopening that gap.
+  await sql`ALTER TABLE guide_ad_purchases ADD COLUMN IF NOT EXISTS contact_edited BOOLEAN NOT NULL DEFAULT FALSE`;
+
   // clerk_user_id: the stable identity the placement-manager dashboard (/my-ads) keys off of.
   // contact_email alone can't be trusted for that -- it's client-synthesized as
   // `user.email || \`${uid}@beforeregret.com\`` at checkout time (see GuideAdsCheckout.tsx /
@@ -284,6 +290,9 @@ export async function ensureArticlesSchema(): Promise<void> {
   // Same stable-identity column and same reasoning as guide_ad_orders.clerk_user_id above.
   await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS clerk_user_id TEXT`;
   await sql`CREATE INDEX IF NOT EXISTS idx_zip_ad_orders_clerk_user ON zip_ad_orders(clerk_user_id)`;
+
+  // Same one-edit-ever rule and reasoning as guide_ad_purchases.contact_edited above.
+  await sql`ALTER TABLE zip_ad_purchases ADD COLUMN IF NOT EXISTS contact_edited BOOLEAN NOT NULL DEFAULT FALSE`;
 
   // backlink_leads: candidate forum threads (City-Data, Bogleheads, etc.) found by manually
   // running a search-based scan from the admin page -- see src/server/backlinksApi.ts. Deliberately

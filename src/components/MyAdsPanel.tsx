@@ -14,6 +14,7 @@ interface GuidePlacement {
   tagline: string | null;
   paidThrough: string;
   active: boolean;
+  contactEdited: boolean;
 }
 
 interface ZipPlacement {
@@ -26,6 +27,7 @@ interface ZipPlacement {
   tagline: string | null;
   paidThrough: string;
   active: boolean;
+  contactEdited: boolean;
 }
 
 interface OrderHistoryRow {
@@ -146,7 +148,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
       });
       const data = await res.json();
       if (!data.success) { setEditError(data?.error || 'Could not save.'); setSavingEdit(false); return; }
-      setGuidePlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, tagline: editTagline.trim() || null } : p));
+      setGuidePlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, tagline: editTagline.trim() || null, contactEdited: true } : p));
       setEditingKey(null);
     } catch {
       setEditError('Could not reach the server.');
@@ -170,7 +172,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
       });
       const data = await res.json();
       if (!data.success) { setEditError(data?.error || 'Could not save.'); setSavingEdit(false); return; }
-      setZipPlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, tagline: editTagline.trim() || null } : p));
+      setZipPlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, tagline: editTagline.trim() || null, contactEdited: true } : p));
       setEditingKey(null);
     } catch {
       setEditError('Could not reach the server.');
@@ -250,12 +252,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 font-sans text-slate-900">
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="space-y-1">
-          <span className="text-xs font-mono font-bold text-slate-500 bg-slate-200/80 px-3 py-1 rounded-full">My Placements</span>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight pt-2">Manage what you've bought</h1>
-          <p className="text-sm text-slate-600 leading-relaxed">
-            Proof of purchase, expiry, and contact details for every placement on this account.
-            We don't track impressions or clicks for either product -- click through to a live guide to see it yourself.
-          </p>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Manage what you've bought</h1>
         </div>
 
         {loadError && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">{loadError}</p>}
@@ -292,10 +289,16 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                         <div className="text-[11px] text-slate-400">Live until {expiryLabel(p.paidThrough)}</div>
                       </div>
                     </div>
-                    <div className="flex gap-3 mt-3">
-                      <button type="button" onClick={() => startEdit(key, p)} className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900">
-                        <Pencil className="w-3 h-3" /><span>Edit contact info</span>
-                      </button>
+                    <div className="flex items-center gap-3 mt-3">
+                      {p.contactEdited ? (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400">
+                          <Lock className="w-3 h-3" /><span>Contact info edit used</span>
+                        </span>
+                      ) : (
+                        <button type="button" onClick={() => startEdit(key, p)} className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900">
+                          <Pencil className="w-3 h-3" /><span>Edit contact info</span>
+                        </button>
+                      )}
                       <button type="button" onClick={() => renewGuide(p)} className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800">
                         <RotateCcw className="w-3 h-3" /><span>Renew</span>
                       </button>
@@ -322,10 +325,16 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                         <div className="text-[11px] text-slate-400">Live until {expiryLabel(p.paidThrough)}</div>
                       </div>
                     </div>
-                    <div className="flex gap-3 mt-3">
-                      <button type="button" onClick={() => startEdit(key, p)} className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900">
-                        <Pencil className="w-3 h-3" /><span>Edit contact info</span>
-                      </button>
+                    <div className="flex items-center gap-3 mt-3">
+                      {p.contactEdited ? (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400">
+                          <Lock className="w-3 h-3" /><span>Contact info edit used</span>
+                        </span>
+                      ) : (
+                        <button type="button" onClick={() => startEdit(key, p)} className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900">
+                          <Pencil className="w-3 h-3" /><span>Edit contact info</span>
+                        </button>
+                      )}
                       <button type="button" onClick={() => renewZip(p)} className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800">
                         <RotateCcw className="w-3 h-3" /><span>Renew</span>
                       </button>

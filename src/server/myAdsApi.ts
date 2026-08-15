@@ -29,7 +29,7 @@ export function registerMyAdsRoutes(app: Express) {
     try {
       const guideRows = await withDb((sql) => sql`
         SELECT p.id AS purchase_id, p.article_id, a.slug, a.title, p.business_name, p.trade_category,
-               p.phone, p.website, p.tagline, p.paid_through, p.created_at, o.id AS order_id,
+               p.phone, p.website, p.tagline, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id,
                o.amount_usd, o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at
         FROM guide_ad_purchases p
         JOIN guide_ad_orders o ON o.id = p.order_id
@@ -40,7 +40,7 @@ export function registerMyAdsRoutes(app: Express) {
 
       const zipRows = await withDb((sql) => sql`
         SELECT p.id AS purchase_id, p.zip_code, p.trade_category, p.business_name, p.phone, p.website,
-               p.tagline, p.paid_through, p.created_at, o.id AS order_id, o.amount_usd,
+               p.tagline, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id, o.amount_usd,
                o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at
         FROM zip_ad_purchases p
         JOIN zip_ad_orders o ON o.id = p.order_id
@@ -66,13 +66,13 @@ export function registerMyAdsRoutes(app: Express) {
       type GuidePurchaseRow = {
         purchase_id: number; article_id: number; slug: string; title: string; business_name: string;
         trade_category: string; phone: string; website: string | null; tagline: string | null;
-        paid_through: string; created_at: string; order_id: number; amount_usd: string;
+        paid_through: string; created_at: string; contact_edited: boolean; order_id: number; amount_usd: string;
         paypal_order_id: string; paypal_capture_id: string | null; order_created_at: string;
       };
       type ZipPurchaseRow = {
         purchase_id: number; zip_code: string; trade_category: string; business_name: string;
         phone: string; website: string | null; tagline: string | null; paid_through: string;
-        created_at: string; order_id: number; amount_usd: string; paypal_order_id: string;
+        created_at: string; contact_edited: boolean; order_id: number; amount_usd: string; paypal_order_id: string;
         paypal_capture_id: string | null; order_created_at: string;
       };
 
@@ -89,6 +89,7 @@ export function registerMyAdsRoutes(app: Express) {
         tagline: r.tagline,
         paidThrough: r.paid_through,
         active: new Date(r.paid_through).getTime() > now,
+        contactEdited: r.contact_edited,
       }));
       const zipPlacements = (zipRows as unknown as ZipPurchaseRow[]).map((r) => ({
         purchaseId: r.purchase_id,
@@ -100,6 +101,7 @@ export function registerMyAdsRoutes(app: Express) {
         tagline: r.tagline,
         paidThrough: r.paid_through,
         active: new Date(r.paid_through).getTime() > now,
+        contactEdited: r.contact_edited,
       }));
 
       const orders = [
@@ -140,7 +142,8 @@ export function registerMyAdsRoutes(app: Express) {
   // Business name and trade category are locked -- they define what was sold and reviewed at
   // purchase time (see the adversarial-content-tripwire pattern this app already uses elsewhere:
   // letting the sold identity of a slot change post-purchase without review is the same class of
-  // gap). Phone/website/tagline are the only fields a vendor can update themselves.
+  // gap). Phone/website/tagline are the only fields a vendor can update themselves, and only once
+  // (contact_edited, enforced here server-side, not just hidden client-side once used).
   app.post('/api/my-ads/guide/:purchaseId', requireVerifiedUser, async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     const purchaseId = parseInt(req.params.purchaseId, 10);
@@ -156,17 +159,30 @@ export function registerMyAdsRoutes(app: Express) {
     }
     try {
       const owned = await withDb((sql) => sql`
-        SELECT p.id FROM guide_ad_purchases p JOIN guide_ad_orders o ON o.id = p.order_id
+        SELECT p.id, p.contact_edited FROM guide_ad_purchases p JOIN guide_ad_orders o ON o.id = p.order_id
         WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
       `);
-      if ((owned as unknown[]).length === 0) {
+      const ownedRow = (owned as unknown as Array<{ id: number; contact_edited: boolean }>)[0];
+      if (!ownedRow) {
         res.status(404).json({ success: false, error: 'Placement not found.' });
         return;
       }
-      await withDb((sql) => sql`
-        UPDATE guide_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null}, tagline = ${tagline?.trim() || null}
-        WHERE id = ${purchaseId}
+      if (ownedRow.contact_edited) {
+        res.status(409).json({ success: false, error: 'You\'ve already used your one edit for this placement. Contact support if you need another change.' });
+        return;
+      }
+      // contact_edited = false in the WHERE, not just the earlier SELECT above, closes the same
+      // kind of race the capture-time slot allocation guard does (see guideAdsApi.ts) -- two
+      // near-simultaneous save clicks can't both land as "the" one allowed edit.
+      const updated = await withDb((sql) => sql`
+        UPDATE guide_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null}, tagline = ${tagline?.trim() || null}, contact_edited = true
+        WHERE id = ${purchaseId} AND contact_edited = false
+        RETURNING id
       `);
+      if ((updated as unknown[]).length === 0) {
+        res.status(409).json({ success: false, error: 'You\'ve already used your one edit for this placement. Contact support if you need another change.' });
+        return;
+      }
       res.json({ success: true });
     } catch (err: any) {
       console.error('[my-ads] guide edit failed:', err);
@@ -190,17 +206,27 @@ export function registerMyAdsRoutes(app: Express) {
     }
     try {
       const owned = await withDb((sql) => sql`
-        SELECT p.id FROM zip_ad_purchases p JOIN zip_ad_orders o ON o.id = p.order_id
+        SELECT p.id, p.contact_edited FROM zip_ad_purchases p JOIN zip_ad_orders o ON o.id = p.order_id
         WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
       `);
-      if ((owned as unknown[]).length === 0) {
+      const ownedRow = (owned as unknown as Array<{ id: number; contact_edited: boolean }>)[0];
+      if (!ownedRow) {
         res.status(404).json({ success: false, error: 'Placement not found.' });
         return;
       }
-      await withDb((sql) => sql`
-        UPDATE zip_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null}, tagline = ${tagline?.trim() || null}
-        WHERE id = ${purchaseId}
+      if (ownedRow.contact_edited) {
+        res.status(409).json({ success: false, error: 'You\'ve already used your one edit for this placement. Contact support if you need another change.' });
+        return;
+      }
+      const updated = await withDb((sql) => sql`
+        UPDATE zip_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null}, tagline = ${tagline?.trim() || null}, contact_edited = true
+        WHERE id = ${purchaseId} AND contact_edited = false
+        RETURNING id
       `);
+      if ((updated as unknown[]).length === 0) {
+        res.status(409).json({ success: false, error: 'You\'ve already used your one edit for this placement. Contact support if you need another change.' });
+        return;
+      }
       res.json({ success: true });
     } catch (err: any) {
       console.error('[my-ads] zip edit failed:', err);
