@@ -232,31 +232,41 @@ export function registerGuideAdsRoutes(app: Express) {
       }
 
       const requestedArticleIds = JSON.parse(order.slots_json) as number[];
-      // Re-check availability at capture time, not just at order-creation time -- a slot can be
-      // bought by someone else in the gap between those two moments. Slots that lost the race are
-      // simply skipped rather than failing the whole order; the vendor is still charged for what
-      // they selected (PayPal capture happens below regardless), so this is reported back
-      // clearly rather than silently dropping paid-for inventory.
-      const stillTaken = await findAlreadyTakenArticleIds(requestedArticleIds);
-      const stillTakenSet = new Set(stillTaken);
-      const grantedArticleIds = requestedArticleIds.filter((id) => !stillTakenSet.has(id));
-
       const captureResult = await capturePayPalOrder(orderId);
 
       // Computed in JS, not as a `now() + interval '${SLOT_DURATION_DAYS} days'` SQL literal --
       // the sql`` tagged template parameterizes every ${...} it's given, which breaks trying to
       // splice a variable into a quoted interval literal. A plain Date is unambiguous either way.
       const paidThrough = new Date(Date.now() + SLOT_DURATION_DAYS * 24 * 60 * 60 * 1000);
+      const grantedArticleIds: number[] = [];
+      const skippedArticleIds: number[] = [];
       await withDb(async (sql) => {
-        for (const articleId of grantedArticleIds) {
-          await sql`
+        for (const articleId of requestedArticleIds) {
+          // The availability check and the insert used to be two separate round trips (a
+          // findAlreadyTakenArticleIds SELECT, then an unconditional INSERT), which left a real
+          // race window: two vendors' capture calls for the same guide, close enough together,
+          // could both pass the SELECT before either INSERT landed, and both PayPal captures
+          // still succeed either way (that money is already spent by the time we're here) so
+          // neither vendor's charge could be undone after the fact. Folding the check into the
+          // INSERT's own WHERE NOT EXISTS makes Postgres evaluate "is this slot still free" and
+          // "claim it" as one atomic statement, so only the first insert to arrive can ever win.
+          const inserted = await sql`
             INSERT INTO guide_ad_purchases (
               order_id, article_id, position, business_name, trade_category, phone, website, tagline, paid_through
-            ) VALUES (
-              ${order.id}, ${articleId}, ${SLOT_POSITION}, ${order.business_name}, ${order.trade_category},
-              ${order.phone}, ${order.website}, ${order.tagline}, ${paidThrough.toISOString()}
             )
+            SELECT ${order.id}, ${articleId}, ${SLOT_POSITION}, ${order.business_name}, ${order.trade_category},
+                   ${order.phone}, ${order.website}, ${order.tagline}, ${paidThrough.toISOString()}
+            WHERE NOT EXISTS (
+              SELECT 1 FROM guide_ad_purchases
+              WHERE article_id = ${articleId} AND position = ${SLOT_POSITION} AND active = true AND paid_through > now()
+            )
+            RETURNING id
           `;
+          if ((inserted as unknown[]).length > 0) {
+            grantedArticleIds.push(articleId);
+          } else {
+            skippedArticleIds.push(articleId);
+          }
         }
         await sql`
           UPDATE guide_ad_orders SET status = 'completed', paypal_capture_id = ${captureResult.captureId}, updated_at = now()
@@ -269,7 +279,7 @@ export function registerGuideAdsRoutes(app: Express) {
       // in one checkout, never worth a batched IN/ANY query for.
       const titleMap = new Map<number, { slug: string; title: string }>();
       await withDb(async (sql) => {
-        for (const id of new Set([...grantedArticleIds, ...stillTaken])) {
+        for (const id of new Set([...grantedArticleIds, ...skippedArticleIds])) {
           const rows = await sql`SELECT slug, title FROM articles WHERE id = ${id} LIMIT 1`;
           const row = (rows as unknown as Array<{ slug: string; title: string }>)[0];
           if (row) titleMap.set(id, row);
@@ -286,7 +296,7 @@ export function registerGuideAdsRoutes(app: Express) {
         captureId: captureResult.captureId,
         paidThrough: paidThrough.toISOString(),
         grantedGuides: toGuideList(grantedArticleIds),
-        skippedGuides: toGuideList(stillTaken),
+        skippedGuides: toGuideList(skippedArticleIds),
       });
     } catch (err: any) {
       console.error('[guide-ads] capture failed:', err);

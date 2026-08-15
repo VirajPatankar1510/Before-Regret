@@ -210,31 +210,35 @@ export function registerZipAdsRoutes(app: Express) {
         return;
       }
 
-      // Re-check availability at capture time, not just at checkout time -- someone else could
-      // have bought the last slot in the gap between those two moments. Payment is still captured
-      // below either way (the vendor already approved it in PayPal); if the slot is gone, that's
-      // reported back clearly rather than silently either dropping the payment or overselling the
-      // slot past MAX_SLOTS_PER_ZIP_TRADE.
-      const slotsTaken = await countActiveSlots(order.zip_code, order.trade_category);
-      const granted = slotsTaken < MAX_SLOTS_PER_ZIP_TRADE;
-
       const captureResult = await capturePayPalOrder(orderId);
 
       // Computed in JS, not a `now() + interval '${SLOT_DURATION_DAYS} days'` SQL literal -- the
       // sql`` tagged template parameterizes every ${...}, which breaks splicing a variable into a
       // quoted interval literal. A plain Date sidesteps that ambiguity entirely.
       const paidThrough = new Date(Date.now() + SLOT_DURATION_DAYS * 24 * 60 * 60 * 1000);
+      let granted = false;
       await withDb(async (sql) => {
-        if (granted) {
-          await sql`
-            INSERT INTO zip_ad_purchases (
-              order_id, zip_code, trade_category, business_name, phone, website, tagline, paid_through
-            ) VALUES (
-              ${order.id}, ${order.zip_code}, ${order.trade_category}, ${order.business_name},
-              ${order.phone}, ${order.website}, ${order.tagline}, ${paidThrough.toISOString()}
-            )
-          `;
-        }
+        // The pre-capture availability check and the insert used to be two separate round trips,
+        // leaving a race window: two vendors' capture calls for the same (zip, trade) pair, close
+        // enough together, could both pass the COUNT(*) check before either INSERT landed and
+        // oversell past MAX_SLOTS_PER_ZIP_TRADE -- and neither PayPal charge could be undone by
+        // that point anyway. Folding the count into the INSERT's own WHERE makes Postgres
+        // evaluate "is there still room" and "claim it" as one atomic statement, so only inserts
+        // that land before the cap fills can ever succeed.
+        const inserted = await sql`
+          INSERT INTO zip_ad_purchases (
+            order_id, zip_code, trade_category, business_name, phone, website, tagline, paid_through
+          )
+          SELECT ${order.id}, ${order.zip_code}, ${order.trade_category}, ${order.business_name},
+                 ${order.phone}, ${order.website}, ${order.tagline}, ${paidThrough.toISOString()}
+          WHERE (
+            SELECT COUNT(*) FROM zip_ad_purchases
+            WHERE zip_code = ${order.zip_code} AND trade_category = ${order.trade_category}
+              AND active = true AND paid_through > now()
+          ) < ${MAX_SLOTS_PER_ZIP_TRADE}
+          RETURNING id
+        `;
+        granted = (inserted as unknown[]).length > 0;
         await sql`
           UPDATE zip_ad_orders SET status = 'completed', paypal_capture_id = ${captureResult.captureId}, updated_at = now()
           WHERE id = ${order.id}
