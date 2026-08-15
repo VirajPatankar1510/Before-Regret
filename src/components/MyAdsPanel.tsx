@@ -47,6 +47,17 @@ interface MyAdsPanelProps {
 const RENEW_GUIDE_KEY = 'br_renew_guide_ads';
 const RENEW_ZIP_KEY = 'br_renew_zip_ad';
 
+// Renewing a placement that's still active fails today: the slot shows as "taken" (by the vendor
+// themselves) on the checkout page, which either hard-rejects the order (guide ads, "taken by
+// another advertiser") or silently sells a second duplicate listing instead of extending the
+// first (ZIP ads, since availability there is a headcount, not a single flag). Properly fixing
+// that means checkout/capture recognizing "this taken slot is mine" and extending in place --
+// real work, and not worth it since almost nobody renews on day one of a 30-day window anyway.
+// Gating Renew to the same last-5-days window the amber "expiring soon" color already signals
+// sidesteps the bug entirely: by then the slot is close enough to actually reopening that the
+// existing "taken" check basically does the right thing.
+const RENEWAL_WINDOW_DAYS = 5;
+
 function daysLeft(paidThrough: string): number {
   return Math.ceil((new Date(paidThrough).getTime() - Date.now()) / (24 * 60 * 60 * 1000));
 }
@@ -229,6 +240,19 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     );
   }
 
+  // Shared by both active-guide and active-zip cards -- see RENEWAL_WINDOW_DAYS above for why
+  // this stays locked until close to expiry instead of being clickable the whole time.
+  const renewControl = (left: number, onRenew: () => void) =>
+    left <= RENEWAL_WINDOW_DAYS ? (
+      <button type="button" onClick={onRenew} className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800">
+        <RotateCcw className="w-3 h-3" /><span>Renew</span>
+      </button>
+    ) : (
+      <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300">
+        <RotateCcw className="w-3 h-3" /><span>Renew opens in {left - RENEWAL_WINDOW_DAYS} day{left - RENEWAL_WINDOW_DAYS === 1 ? '' : 's'}</span>
+      </span>
+    );
+
   const editForm = (onSave: () => void) => (
     <div className="mt-3 space-y-2 bg-slate-50 border border-slate-200 rounded-xl p-3">
       <p className="flex items-center gap-1 text-[11px] font-semibold text-amber-700">
@@ -303,9 +327,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                           <Pencil className="w-3 h-3" /><span>Edit contact info</span>
                         </button>
                       )}
-                      <button type="button" onClick={() => renewGuide(p)} className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800">
-                        <RotateCcw className="w-3 h-3" /><span>Renew</span>
-                      </button>
+                      {renewControl(left, () => renewGuide(p))}
                     </div>
                     {editingKey === key && editForm(() => saveGuideEdit(p.purchaseId))}
                   </div>
@@ -339,9 +361,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                           <Pencil className="w-3 h-3" /><span>Edit contact info</span>
                         </button>
                       )}
-                      <button type="button" onClick={() => renewZip(p)} className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800">
-                        <RotateCcw className="w-3 h-3" /><span>Renew</span>
-                      </button>
+                      {renewControl(left, () => renewZip(p))}
                     </div>
                     {editingKey === key && editForm(() => saveZipEdit(p.purchaseId))}
                   </div>
