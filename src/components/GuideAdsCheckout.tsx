@@ -1,50 +1,40 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Loader2, AlertCircle, CheckSquare, Square, Lock } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertCircle, CheckSquare, Square, Lock, Search } from 'lucide-react';
 import { TRADE_CATEGORIES } from '../data/sponsoredVendors';
+import { guessTradeCategoryFromTitle } from '../data/guideAdCategoryGuess';
 import { useAuth } from '../context/AuthContext';
 
 interface GuideRow {
   articleId: number;
   slug: string;
   title: string;
-  topTaken: boolean;
-  bottomTaken: boolean;
-}
-
-interface SlotKey {
-  articleId: number;
-  position: 'top' | 'bottom';
-}
-
-function slotKeyString(s: SlotKey): string {
-  return `${s.articleId}:${s.position}`;
+  taken: boolean;
 }
 
 interface GuideAdsCheckoutProps {
   onNavigate: (path: string) => void;
 }
 
-// Self-serve, open-market vendor ad checkout for guide pages -- $7.99 per (guide, position)
-// slot, flat 30-day window, no auto-renewal, any business can select any guide. See
+// Self-serve, open-market vendor ad checkout for guide pages -- $7.99 per guide, one slot each,
+// flat 30-day window, no auto-renewal, any business can select any guide. See
 // src/server/guideAdsApi.ts. Deliberately its own page rather than folded into Vendors.tsx: that
 // page is a different, older, interest-capture-only flow (a human follows up manually, no
 // payment happens there) -- this one takes real payment immediately, and mixing the two very
 // different flows on one page would confuse both.
+//
+// The guide list and business form render regardless of sign-in state -- only the final "Continue
+// to PayPal" step requires it. Gating the whole page behind sign-in used to mean a vendor clicking
+// GuideAdSlot.tsx's "Are you in the X business?" CTA landed on a login screen instead of the thing
+// they clicked, before ever seeing what's for sale.
 export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }) => {
   const { user, loading: authLoading, triggerClerkSignIn, requestClerkLoad } = useAuth();
-
-  // A dedicated checkout page, not a modal opened from Navbar -- someone can land here directly
-  // (a shared link, the /advertise comparison page), so this is often the first thing on the page
-  // that needs real auth state. Without this call nothing else on this path loads Clerk anymore.
-  useEffect(() => {
-    requestClerkLoad();
-  }, [requestClerkLoad]);
 
   const [guides, setGuides] = useState<GuideRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pricePerSlot, setPricePerSlot] = useState(7.99);
   const [slotDurationDays, setSlotDurationDays] = useState(30);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [search, setSearch] = useState('');
 
   const [businessName, setBusinessName] = useState('');
   const [tradeCategory, setTradeCategory] = useState('');
@@ -53,6 +43,25 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [tagline, setTagline] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Prefill from MyAdsPanel.tsx's "Renew" button, if that's how the vendor got here -- stashed in
+  // sessionStorage rather than a URL param since it also carries the previous business details,
+  // not just which guide to re-select. Read once and cleared immediately so a later plain visit
+  // to this page (or a back-button return) doesn't silently resurrect stale form state.
+  useEffect(() => {
+    const raw = sessionStorage.getItem('br_renew_guide_ads');
+    if (!raw) return;
+    sessionStorage.removeItem('br_renew_guide_ads');
+    try {
+      const renew = JSON.parse(raw) as { articleIds: number[]; businessName: string; tradeCategory: string; phone: string; website: string | null; tagline: string | null };
+      setSelected(new Set(renew.articleIds));
+      setBusinessName(renew.businessName || '');
+      setTradeCategory(renew.tradeCategory || '');
+      setPhone(renew.phone || '');
+      setWebsite(renew.website || '');
+      setTagline(renew.tagline || '');
+    } catch { /* malformed stash, ignore */ }
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -70,34 +79,49 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       .catch(() => setLoadError('Could not reach the server.'));
   }, []);
 
-  const toggleSlot = (key: SlotKey) => {
+  // Only loads Clerk once the vendor is actually ready to check out -- browsing the guide list
+  // and filling in the business form shouldn't pull in the auth chunk before it's needed.
+  const handleSignInClick = () => {
+    requestClerkLoad();
+    triggerClerkSignIn();
+  };
+
+  const toggleSlot = (articleId: number) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      const k = slotKeyString(key);
-      if (next.has(k)) next.delete(k);
-      else next.add(k);
+      if (next.has(articleId)) next.delete(articleId);
+      else next.add(articleId);
       return next;
     });
   };
 
-  const selectedSlots: SlotKey[] = useMemo(
-    () =>
-      Array.from(selected).map((k: string) => {
-        const [articleId, position] = k.split(':');
-        return { articleId: Number(articleId), position: position as 'top' | 'bottom' };
-      }),
-    [selected]
-  );
-  const total = selectedSlots.length * pricePerSlot;
+  // Guides matching the vendor's own selected trade float to the top -- with 88+ guides and no
+  // search-as-you-select affordance otherwise, a roofer had to scroll an alphabetical wall of
+  // titles to find the handful actually relevant to their trade. Falls back to plain alphabetical
+  // (the order the server already returns) once no trade is chosen yet or nothing searched.
+  const visibleGuides = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    const filtered = guides ? guides.filter((g) => !query || g.title.toLowerCase().includes(query)) : [];
+    if (!tradeCategory) return filtered;
+    const matched: GuideRow[] = [];
+    const rest: GuideRow[] = [];
+    for (const g of filtered) {
+      (guessTradeCategoryFromTitle(g.title) === tradeCategory ? matched : rest).push(g);
+    }
+    return [...matched, ...rest];
+  }, [guides, search, tradeCategory]);
+
+  const selectedCount = selected.size;
+  const total = selectedCount * pricePerSlot;
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
-    if (!user) return setSubmitError('Please sign in first.');
     if (!businessName.trim()) return setSubmitError('Enter your business name.');
     if (!tradeCategory) return setSubmitError('Choose a business type.');
     if (!phone.trim()) return setSubmitError('Enter a phone number for readers to call.');
-    if (selectedSlots.length === 0) return setSubmitError('Select at least one ad slot below.');
+    if (selectedCount === 0) return setSubmitError('Select at least one guide below.');
+    if (!user) return setSubmitError('Sign in to complete your purchase.');
 
     const contactEmail = user.email || `${user.uid}@beforeregret.com`;
 
@@ -113,13 +137,14 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           website: website.trim() || undefined,
           tagline: tagline.trim() || undefined,
           contactEmail,
-          slots: selectedSlots,
+          slots: Array.from(selected),
+          clerkUserId: user.uid,
         }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        if (data?.takenSlots) {
-          setSubmitError('One or more slots you picked were just taken by someone else -- refresh the page and try again.');
+        if (data?.takenArticleIds) {
+          setSubmitError('One or more guides you picked were just taken by someone else -- refresh the page and try again.');
         } else {
           setSubmitError(data?.error || 'Could not start checkout.');
         }
@@ -154,47 +179,16 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             Get your phone number in front of people researching this exact problem
           </h1>
           <p className="text-sm text-slate-600 leading-relaxed">
-            ${pricePerSlot.toFixed(2)} per slot, {slotDurationDays} days, no subscription and no auto-renewal --
-            pick as many placements as you want below, pay once, and your business shows up there until it expires.
-            Any business can advertise on any page.
+            ${pricePerSlot.toFixed(2)} per guide, {slotDurationDays} days, no subscription and no auto-renewal --
+            pick as many guides as you want below, pay once, and your business shows up there until it expires.
+            Any business can advertise on any guide. This buys a fixed placement, not impressions or clicks --
+            we don't track or guarantee how many people see it.
           </p>
         </div>
 
-        {authLoading && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-10 flex flex-col items-center justify-center gap-3 text-slate-400">
-            <Loader2 className="w-6 h-6 animate-spin" />
-            <p className="text-xs font-medium">Checking your account…</p>
-          </div>
-        )}
-
-        {!authLoading && !user && (
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 text-center space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-mono font-bold border border-blue-100">
-              <Lock className="w-3.5 h-3.5 text-blue-600" />
-              <span>Sign-In Required</span>
-            </div>
-            <h2 className="font-serif text-xl font-bold text-slate-900">Sign in to buy a placement</h2>
-            <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
-              We use your account email for your receipt and to manage your placements -- no separate email field needed.
-            </p>
-            <button
-              type="button"
-              onClick={() => triggerClerkSignIn()}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition-all cursor-pointer"
-            >
-              <Lock className="w-4 h-4" />
-              <span>Sign In / Sign Up</span>
-            </button>
-          </div>
-        )}
-
-        {!authLoading && user && (
         <form onSubmit={handleCheckout} className="space-y-6">
           <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-slate-900">Your business</h2>
-              <span className="text-xs text-slate-500">Signed in as <span className="font-semibold text-slate-700">{user.email || user.displayName}</span></span>
-            </div>
+            <h2 className="text-sm font-bold text-slate-900">Your business</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input
                 type="text" placeholder="Business name" value={businessName}
@@ -229,7 +223,23 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-3">
-            <h2 className="text-sm font-bold text-slate-900">Choose where you appear</h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-sm font-bold text-slate-900">Choose where you appear</h2>
+              {tradeCategory && (
+                <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-1 rounded-full">
+                  Guides matching {tradeCategory} shown first
+                </span>
+              )}
+            </div>
+
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text" placeholder="Search guide titles..." value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm"
+              />
+            </div>
 
             {loadError && (
               <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-center gap-2">
@@ -247,39 +257,40 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
               <p className="text-xs text-slate-500 py-4">No placements available yet -- check back soon.</p>
             )}
 
-            {guides && guides.length > 0 && (
-              <div className="divide-y divide-slate-100 -mx-1">
-                {guides.map((g) => (
-                  <div key={g.articleId} className="px-1 py-3 flex flex-wrap items-center justify-between gap-3">
-                    <span className="text-sm text-slate-800 min-w-0 flex-1">{g.title}</span>
-                    <div className="flex items-center gap-3 shrink-0">
-                      {(['top', 'bottom'] as const).map((position) => {
-                        const taken = position === 'top' ? g.topTaken : g.bottomTaken;
-                        const key: SlotKey = { articleId: g.articleId, position };
-                        const isSelected = selected.has(slotKeyString(key));
-                        return (
-                          <button
-                            type="button"
-                            key={position}
-                            disabled={taken}
-                            onClick={() => toggleSlot(key)}
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-                              taken
-                                ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
-                                : isSelected
-                                ? 'bg-blue-600 border-blue-600 text-white cursor-pointer'
-                                : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400 cursor-pointer'
-                            }`}
-                          >
-                            {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
-                            <span className="capitalize">{position}</span>
-                            {taken && <span className="ml-1">(taken)</span>}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
+            {guides && guides.length > 0 && visibleGuides.length === 0 && (
+              <p className="text-xs text-slate-500 py-4">No guides match "{search}".</p>
+            )}
+
+            {visibleGuides.length > 0 && (
+              <div className="divide-y divide-slate-100 -mx-1 max-h-[28rem] overflow-y-auto">
+                {visibleGuides.map((g) => {
+                  const isSelected = selected.has(g.articleId);
+                  return (
+                    <button
+                      type="button"
+                      key={g.articleId}
+                      disabled={g.taken}
+                      onClick={() => toggleSlot(g.articleId)}
+                      className={`w-full px-1 py-3 flex items-center justify-between gap-3 text-left transition-colors ${
+                        g.taken ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="text-sm text-slate-800 min-w-0 flex-1">{g.title}</span>
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border shrink-0 ${
+                          g.taken
+                            ? 'bg-slate-100 border-slate-200 text-slate-400'
+                            : isSelected
+                            ? 'bg-blue-600 border-blue-600 text-white'
+                            : 'bg-white border-slate-300 text-slate-700'
+                        }`}
+                      >
+                        {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                        <span>{g.taken ? 'Taken' : isSelected ? 'Selected' : 'Select'}</span>
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -288,17 +299,40 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             <div>
               <div className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Total</div>
               <div className="text-2xl font-black">${total.toFixed(2)}</div>
-              <div className="text-xs text-slate-400 mt-0.5">{selectedSlots.length} slot{selectedSlots.length === 1 ? '' : 's'} selected</div>
+              <div className="text-xs text-slate-400 mt-0.5">{selectedCount} guide{selectedCount === 1 ? '' : 's'} selected</div>
             </div>
-            <button
-              type="submit"
-              disabled={submitting || selectedSlots.length === 0}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-all cursor-pointer flex items-center gap-2"
-            >
-              {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-              <span>Continue to PayPal</span>
-            </button>
+
+            {!authLoading && user ? (
+              <button
+                type="submit"
+                disabled={submitting || selectedCount === 0}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-all cursor-pointer flex items-center gap-2"
+              >
+                {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                <span>Continue to PayPal</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleSignInClick}
+                disabled={authLoading}
+                className="px-6 py-3 bg-white text-slate-900 hover:bg-slate-100 disabled:opacity-60 font-bold text-sm rounded-xl transition-all cursor-pointer flex items-center gap-2"
+              >
+                {authLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+                <span>Sign In to Pay</span>
+              </button>
+            )}
           </div>
+
+          {!authLoading && user && (
+            <p className="text-xs text-slate-500 -mt-2">
+              Signed in as <span className="font-semibold text-slate-700">{user.email || user.displayName}</span> --
+              we use your account email for your receipt and to manage your placements in{' '}
+              <button type="button" onClick={() => onNavigate('/my-ads')} className="text-blue-600 hover:underline font-semibold cursor-pointer">
+                My Placements
+              </button>.
+            </p>
+          )}
 
           {submitError && (
             <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-center gap-2">
@@ -307,7 +341,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             </div>
           )}
         </form>
-        )}
       </div>
     </div>
   );

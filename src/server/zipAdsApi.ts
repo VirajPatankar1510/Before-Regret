@@ -119,7 +119,7 @@ export function registerZipAdsRoutes(app: Express) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const { businessName, tradeCategory, zipCode, phone, website, tagline, contactEmail } = req.body || {};
+    const { businessName, tradeCategory, zipCode, phone, website, tagline, contactEmail, clerkUserId } = req.body || {};
     const errors: string[] = [];
     if (typeof businessName !== 'string' || !businessName.trim()) errors.push('Business name is required.');
     if (typeof tradeCategory !== 'string' || !(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) errors.push('Please choose a valid trade category.');
@@ -156,10 +156,10 @@ export function registerZipAdsRoutes(app: Express) {
 
       await withDb((sql) => sql`
         INSERT INTO zip_ad_orders (
-          paypal_order_id, business_name, trade_category, zip_code, phone, website, tagline, contact_email, amount_usd, status
+          paypal_order_id, business_name, trade_category, zip_code, phone, website, tagline, contact_email, amount_usd, status, clerk_user_id
         ) VALUES (
           ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${zipCode}, ${phone}, ${website || null}, ${tagline || null},
-          ${contactEmail}, ${amount}, 'pending'
+          ${contactEmail}, ${amount}, 'pending', ${typeof clerkUserId === 'string' ? clerkUserId : null}
         )
       `);
 
@@ -189,8 +189,22 @@ export function registerZipAdsRoutes(app: Express) {
         res.status(404).json({ success: false, error: 'Order not found.' });
         return;
       }
+      // Same reload-safety reasoning as guideAdsApi.ts's capture route: rebuild real details from
+      // what was persisted instead of the bare acknowledgement this used to return.
       if (order.status === 'completed') {
-        res.json({ success: true, alreadyCaptured: true, granted: true });
+        const purchaseRows = await withDb((sql) => sql`
+          SELECT paid_through FROM zip_ad_purchases WHERE order_id = ${order.id} ORDER BY created_at DESC LIMIT 1
+        `);
+        const purchase = (purchaseRows as unknown as Array<{ paid_through: string }>)[0];
+        res.json({
+          success: true,
+          alreadyCaptured: true,
+          granted: Boolean(purchase),
+          captureId: order.paypal_capture_id,
+          paidThrough: purchase?.paid_through ?? null,
+          zipCode: order.zip_code,
+          tradeCategory: order.trade_category,
+        });
         return;
       }
 
@@ -229,6 +243,7 @@ export function registerZipAdsRoutes(app: Express) {
         success: true,
         captureId: captureResult.captureId,
         granted,
+        paidThrough: granted ? paidThrough.toISOString() : null,
         zipCode: order.zip_code,
         tradeCategory: order.trade_category,
       });

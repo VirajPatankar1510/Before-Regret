@@ -39,16 +39,15 @@ export const VendorSignupForm: React.FC = () => {
   const [tagline, setTagline] = useState('');
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
 
-  const checkAvailability = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!tradeCategory || !/^\d{5}$/.test(zipCode)) {
+  const checkAvailabilityFor = async (checkZip: string, checkTrade: string) => {
+    if (!checkTrade || !/^\d{5}$/.test(checkZip)) {
       setCheckError('Pick a business type and enter a valid 5-digit ZIP code.');
       return;
     }
     setCheckError(null);
     setStage('checking');
     try {
-      const res = await fetch(`/api/zip-ads/slots?zip=${encodeURIComponent(zipCode)}&tradeCategory=${encodeURIComponent(tradeCategory)}`);
+      const res = await fetch(`/api/zip-ads/slots?zip=${encodeURIComponent(checkZip)}&tradeCategory=${encodeURIComponent(checkTrade)}`);
       const data = await res.json();
       if (!res.ok || !data.success) {
         setCheckError(data?.error || 'Could not check availability. Please try again.');
@@ -62,6 +61,32 @@ export const VendorSignupForm: React.FC = () => {
       setStage('checking-form');
     }
   };
+
+  const checkAvailability = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await checkAvailabilityFor(zipCode, tradeCategory);
+  };
+
+  // Prefill from MyAdsPanel.tsx's "Renew" button, if that's how the vendor got here -- same
+  // stash-then-clear pattern as GuideAdsCheckout.tsx's renewal prefill. Runs the availability
+  // check immediately since the whole point of "renew" is getting back to the payment step fast,
+  // not re-typing a ZIP and trade category that were just active a moment ago.
+  useEffect(() => {
+    const raw = sessionStorage.getItem('br_renew_zip_ad');
+    if (!raw) return;
+    sessionStorage.removeItem('br_renew_zip_ad');
+    try {
+      const renew = JSON.parse(raw) as { zipCode: string; tradeCategory: string; businessName: string; phone: string; website: string | null; tagline: string | null };
+      setZipCode(renew.zipCode || '');
+      setTradeCategory(renew.tradeCategory || '');
+      setBusinessName(renew.businessName || '');
+      setPhone(renew.phone || '');
+      setWebsite(renew.website || '');
+      setTagline(renew.tagline || '');
+      checkAvailabilityFor(renew.zipCode, renew.tradeCategory);
+    } catch { /* malformed stash, ignore */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const startCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +110,7 @@ export const VendorSignupForm: React.FC = () => {
           website: website.trim() || undefined,
           tagline: tagline.trim() || undefined,
           contactEmail,
+          clerkUserId: user.uid,
         }),
       });
       const data = await res.json();

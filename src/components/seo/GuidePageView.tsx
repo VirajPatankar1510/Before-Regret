@@ -299,10 +299,11 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
         )}
 
         {/* Vendor ad slot: below Quick Answer, above the article body -- reader already has the
-            direct answer, hasn't started the deep-dive yet. Always renders something: the paying
-            vendor currently occupying this slot, or a recruitment CTA if it's unsold. See
-            src/server/guideAdsApi.ts and GuideAdSlot.tsx. */}
-        <GuideAdSlot articleId={article.id} position="top" guideTitle={article.title} />
+            direct answer, hasn't started the deep-dive yet. One slot per guide, not two -- see
+            GuideAdSlot.tsx for why the old top+bottom split was retired. Always renders
+            something: the paying vendor currently occupying this slot, or a recruitment CTA if
+            it's unsold. See src/server/guideAdsApi.ts and GuideAdSlot.tsx. */}
+        <GuideAdSlot articleId={article.id} guideTitle={article.title} />
 
         {/* Article Body */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm text-sm">
@@ -310,11 +311,6 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             {renderArticleMarkdown(article.bodyMarkdown)}
           </div>
         </div>
-
-        {/* Vendor ad slot: below the article body, above our own closing CTA -- deliberately not
-            adjacent to/inside ArticleClosingNote below, so a vendor ad never visually competes
-            with or gets mistaken for our own conversion element. */}
-        <GuideAdSlot articleId={article.id} position="bottom" guideTitle={article.title} />
 
         <ArticleClosingNote onNavigate={onNavigate} />
 
