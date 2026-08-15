@@ -15,8 +15,11 @@ import { requireVerifiedUser } from './clerkAuth.js';
 // (guide_ad_orders = checkout attempt, guide_ad_purchases = actually-sold inventory) and why
 // (article_id, position) is deliberately not unique.
 
-const PRICE_PER_SLOT_USD = 7.99;
-const SLOT_DURATION_DAYS = 30;
+// Exported so myAdsApi.ts can quote the real renewal price to the vendor before sending them to
+// PayPal -- the placement manager used to send them straight to a payment page with the amount
+// never shown anywhere in our own UI.
+export const PRICE_PER_SLOT_USD = 7.99;
+export const SLOT_DURATION_DAYS = 30;
 const SLOT_POSITION = 'top';
 
 function dbUnavailable(res: Response) {
@@ -208,6 +211,14 @@ export function registerGuideAdsRoutes(app: Express) {
         res.status(404).json({ success: false, error: 'Order not found.' });
         return;
       }
+      // A renewal order must never be captured here: its slots_json is '[]' (it claims no new
+      // inventory), so this route would happily take the vendor's money, insert zero purchases,
+      // and mark the order completed -- charged, nothing granted, no extension. The renew capture
+      // route has always had the mirror guard; this side was missing it.
+      if (order.renews_purchase_id) {
+        res.status(400).json({ success: false, error: 'This is a renewal order -- capture it through the renewal route.' });
+        return;
+      }
       // A page refresh (or the client re-firing the capture call on mount) lands here on the
       // second hit -- rebuild the same shape from what was actually persisted, rather than the
       // bare acknowledgement this used to return, so the success page still has real details to
@@ -232,7 +243,21 @@ export function registerGuideAdsRoutes(app: Express) {
       }
 
       const requestedArticleIds = JSON.parse(order.slots_json) as number[];
-      const captureResult = await capturePayPalOrder(orderId);
+
+      // Capture, then persist the capture id BEFORE doing anything else. Money moving at PayPal
+      // is the one step that can't be undone or replayed, so it has to leave a durable trace the
+      // moment it succeeds -- otherwise a failure anywhere below (a DB blip, a lost connection)
+      // left the order marked 'failed' with the charge already taken, and a retry would call
+      // PayPal again, get ORDER_ALREADY_CAPTURED, and fail forever. An order that already carries
+      // a capture id skips straight past the PayPal call and resumes where it left off.
+      let captureId: string = order.paypal_capture_id;
+      if (!captureId) {
+        const captureResult = await capturePayPalOrder(orderId);
+        captureId = captureResult.captureId;
+        await withDb((sql) => sql`
+          UPDATE guide_ad_orders SET paypal_capture_id = ${captureId}, updated_at = now() WHERE id = ${order.id}
+        `);
+      }
 
       // Computed in JS, not as a `now() + interval '${SLOT_DURATION_DAYS} days'` SQL literal --
       // the sql`` tagged template parameterizes every ${...} it's given, which breaks trying to
@@ -269,7 +294,7 @@ export function registerGuideAdsRoutes(app: Express) {
           }
         }
         await sql`
-          UPDATE guide_ad_orders SET status = 'completed', paypal_capture_id = ${captureResult.captureId}, updated_at = now()
+          UPDATE guide_ad_orders SET status = 'completed', paypal_capture_id = ${captureId}, updated_at = now()
           WHERE id = ${order.id}
         `;
       });
@@ -293,7 +318,7 @@ export function registerGuideAdsRoutes(app: Express) {
 
       res.json({
         success: true,
-        captureId: captureResult.captureId,
+        captureId,
         paidThrough: paidThrough.toISOString(),
         grantedGuides: toGuideList(grantedArticleIds),
         skippedGuides: toGuideList(skippedArticleIds),
@@ -301,7 +326,14 @@ export function registerGuideAdsRoutes(app: Express) {
     } catch (err: any) {
       console.error('[guide-ads] capture failed:', err);
       try {
-        await withDb((sql) => sql`UPDATE guide_ad_orders SET status = 'failed', updated_at = now() WHERE paypal_order_id = ${orderId}`);
+        // Never overwrite a completed order, and never mark an order failed once its payment has
+        // actually been captured -- 'failed' hides it from the vendor's order history, and an
+        // order holding a capture id represents real money that still needs its slots granted, so
+        // it has to stay in a retryable state rather than being written off.
+        await withDb((sql) => sql`
+          UPDATE guide_ad_orders SET status = 'failed', updated_at = now()
+          WHERE paypal_order_id = ${orderId} AND status <> 'completed' AND paypal_capture_id IS NULL
+        `);
       } catch { /* best effort */ }
       res.status(500).json({ success: false, error: err.message || 'Payment capture failed.' });
     }
@@ -328,10 +360,14 @@ export function registerGuideAdsRoutes(app: Express) {
       return;
     }
     try {
+      // active = true matters here, not just ownership: a placement pulled by an admin never
+      // renders, so letting a vendor pay to extend one would be taking money for nothing. The
+      // dashboard already hides those (its own query filters on active), but this endpoint is
+      // reachable directly and has to enforce the same thing itself.
       const owned = await withDb((sql) => sql`
         SELECT p.id, p.paid_through, o.contact_email
         FROM guide_ad_purchases p JOIN guide_ad_orders o ON o.id = p.order_id
-        WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
+        WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} AND p.active = true LIMIT 1
       `);
       const purchase = (owned as unknown as Array<{ id: number; paid_through: string; contact_email: string }>)[0];
       if (!purchase) {
@@ -411,33 +447,67 @@ export function registerGuideAdsRoutes(app: Express) {
         return;
       }
 
-      const captureResult = await capturePayPalOrder(orderId);
+      // Same capture-id-first rule as the checkout route above: persist the fact that money moved
+      // before touching anything else, and skip PayPal entirely on a retry that already has one.
+      let captureId: string = order.paypal_capture_id;
+      if (!captureId) {
+        const captureResult = await capturePayPalOrder(orderId);
+        captureId = captureResult.captureId;
+        await withDb((sql) => sql`
+          UPDATE guide_ad_orders SET paypal_capture_id = ${captureId}, updated_at = now() WHERE id = ${order.id}
+        `);
+      }
 
+      // Completing the order and extending the placement are one statement, not two, with the
+      // order's own status transition acting as the lock: the CTE only yields a row if this order
+      // wasn't already completed, so a concurrent (or retried) capture that loses the race updates
+      // zero purchase rows instead of stacking a second +30 days onto the same payment. Splitting
+      // these apart is what made a mid-sequence failure unrecoverable before.
+      //
       // GREATEST(paid_through, now()) rather than always adding to the stored paid_through -- if
       // payment took long enough that the placement slipped past expiry mid-checkout, extending
       // from a stale past date would under-credit the vendor for however long it sat expired.
       // Multiplying an interval literal by a parameterized count (rather than splicing
       // SLOT_DURATION_DAYS into a quoted interval string) sidesteps the same sql`` parameterization
       // issue noted in the regular capture route above.
+      //
+      // contact_edited resets here because the vendor is buying a fresh 30-day term: the one-edit
+      // allowance is per paid window, not per row for all time. Carrying the old lock forward left
+      // someone who fixed a typo in month one unable to correct a changed phone number ever again.
       const rows = await withDb((sql) => sql`
-        UPDATE guide_ad_purchases
-        SET paid_through = GREATEST(paid_through, now()) + (${SLOT_DURATION_DAYS} * interval '1 day')
-        WHERE id = ${order.renews_purchase_id}
-        RETURNING paid_through, article_id
+        WITH claimed AS (
+          UPDATE guide_ad_orders
+          SET status = 'completed', paypal_capture_id = ${captureId}, updated_at = now()
+          WHERE id = ${order.id} AND status <> 'completed'
+          RETURNING renews_purchase_id
+        )
+        UPDATE guide_ad_purchases p
+        SET paid_through = GREATEST(p.paid_through, now()) + (${SLOT_DURATION_DAYS} * interval '1 day'),
+            contact_edited = false
+        FROM claimed
+        WHERE p.id = claimed.renews_purchase_id
+        RETURNING p.paid_through, p.article_id
       `);
       const updated = (rows as unknown as Array<{ paid_through: string; article_id: number }>)[0];
 
-      await withDb((sql) => sql`
-        UPDATE guide_ad_orders SET status = 'completed', paypal_capture_id = ${captureResult.captureId}, updated_at = now()
-        WHERE id = ${order.id}
-      `);
+      // No row means another request completed this same order first -- report what's actually
+      // stored rather than pretending this call applied an extension it didn't.
+      if (!updated) {
+        const existing = await withDb((sql) => sql`
+          SELECT p.paid_through, a.slug, a.title FROM guide_ad_purchases p JOIN articles a ON a.id = p.article_id
+          WHERE p.id = ${order.renews_purchase_id} LIMIT 1
+        `);
+        const row = (existing as unknown as Array<{ paid_through: string; slug: string; title: string }>)[0];
+        res.json({ success: true, alreadyCaptured: true, captureId, paidThrough: row?.paid_through ?? null, slug: row?.slug, title: row?.title });
+        return;
+      }
 
       const articleRows = await withDb((sql) => sql`SELECT slug, title FROM articles WHERE id = ${updated.article_id} LIMIT 1`);
       const article = (articleRows as unknown as Array<{ slug: string; title: string }>)[0];
 
       res.json({
         success: true,
-        captureId: captureResult.captureId,
+        captureId,
         paidThrough: updated.paid_through,
         slug: article?.slug,
         title: article?.title,
@@ -445,7 +515,12 @@ export function registerGuideAdsRoutes(app: Express) {
     } catch (err: any) {
       console.error('[guide-ads] renew capture failed:', err);
       try {
-        await withDb((sql) => sql`UPDATE guide_ad_orders SET status = 'failed', updated_at = now() WHERE paypal_order_id = ${orderId}`);
+        // Same reasoning as the checkout capture route: an order whose payment already went
+        // through must stay retryable rather than being written off as failed.
+        await withDb((sql) => sql`
+          UPDATE guide_ad_orders SET status = 'failed', updated_at = now()
+          WHERE paypal_order_id = ${orderId} AND status <> 'completed' AND paypal_capture_id IS NULL
+        `);
       } catch { /* best effort */ }
       res.status(500).json({ success: false, error: err.message || 'Renewal payment capture failed.' });
     }

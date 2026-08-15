@@ -13,8 +13,10 @@ import { requireVerifiedUser } from './clerkAuth.js';
 // /api/vendor-interest routes, which only logged a submission to console and asked a human to
 // follow up manually -- this one actually takes payment and activates the slot itself.
 
-const PRICE_PER_SLOT_USD = 29;
-const SLOT_DURATION_DAYS = 30;
+// Exported so myAdsApi.ts can quote the real renewal price before sending a vendor to PayPal --
+// same reasoning as guideAdsApi.ts's exported constants.
+export const PRICE_PER_SLOT_USD = 29;
+export const SLOT_DURATION_DAYS = 30;
 
 function dbUnavailable(res: Response) {
   res.status(503).json({ success: false, error: 'The ad system is not configured yet.' });
@@ -191,6 +193,12 @@ export function registerZipAdsRoutes(app: Express) {
         res.status(404).json({ success: false, error: 'Order not found.' });
         return;
       }
+      // Same guard and reasoning as guideAdsApi.ts's checkout capture route -- a renewal order
+      // captured here would take the vendor's money and grant nothing.
+      if (order.renews_purchase_id) {
+        res.status(400).json({ success: false, error: 'This is a renewal order -- capture it through the renewal route.' });
+        return;
+      }
       // Same reload-safety reasoning as guideAdsApi.ts's capture route: rebuild real details from
       // what was persisted instead of the bare acknowledgement this used to return.
       if (order.status === 'completed') {
@@ -210,7 +218,17 @@ export function registerZipAdsRoutes(app: Express) {
         return;
       }
 
-      const captureResult = await capturePayPalOrder(orderId);
+      // Capture-id-first, same reasoning as guideAdsApi.ts's checkout capture route: the PayPal
+      // charge is the one irreversible step, so it leaves a durable trace immediately and a retry
+      // resumes past it instead of re-charging (and failing on ORDER_ALREADY_CAPTURED forever).
+      let captureId: string = order.paypal_capture_id;
+      if (!captureId) {
+        const captureResult = await capturePayPalOrder(orderId);
+        captureId = captureResult.captureId;
+        await withDb((sql) => sql`
+          UPDATE zip_ad_orders SET paypal_capture_id = ${captureId}, updated_at = now() WHERE id = ${order.id}
+        `);
+      }
 
       // Computed in JS, not a `now() + interval '${SLOT_DURATION_DAYS} days'` SQL literal -- the
       // sql`` tagged template parameterizes every ${...}, which breaks splicing a variable into a
@@ -240,14 +258,14 @@ export function registerZipAdsRoutes(app: Express) {
         `;
         granted = (inserted as unknown[]).length > 0;
         await sql`
-          UPDATE zip_ad_orders SET status = 'completed', paypal_capture_id = ${captureResult.captureId}, updated_at = now()
+          UPDATE zip_ad_orders SET status = 'completed', paypal_capture_id = ${captureId}, updated_at = now()
           WHERE id = ${order.id}
         `;
       });
 
       res.json({
         success: true,
-        captureId: captureResult.captureId,
+        captureId,
         granted,
         paidThrough: granted ? paidThrough.toISOString() : null,
         zipCode: order.zip_code,
@@ -256,7 +274,12 @@ export function registerZipAdsRoutes(app: Express) {
     } catch (err: any) {
       console.error('[zip-ads] capture failed:', err);
       try {
-        await withDb((sql) => sql`UPDATE zip_ad_orders SET status = 'failed', updated_at = now() WHERE paypal_order_id = ${orderId}`);
+        // Same reasoning as guideAdsApi.ts: never bury a completed order, and never write off one
+        // whose payment already went through -- it has to stay retryable.
+        await withDb((sql) => sql`
+          UPDATE zip_ad_orders SET status = 'failed', updated_at = now()
+          WHERE paypal_order_id = ${orderId} AND status <> 'completed' AND paypal_capture_id IS NULL
+        `);
       } catch { /* best effort */ }
       res.status(500).json({ success: false, error: err.message || 'Payment capture failed.' });
     }
@@ -281,10 +304,12 @@ export function registerZipAdsRoutes(app: Express) {
       return;
     }
     try {
+      // active = true for the same reason as guideAdsApi.ts's renew route: a pulled placement
+      // never renders, so charging to extend one would be taking money for nothing.
       const owned = await withDb((sql) => sql`
         SELECT p.id, p.paid_through, o.contact_email
         FROM zip_ad_purchases p JOIN zip_ad_orders o ON o.id = p.order_id
-        WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
+        WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} AND p.active = true LIMIT 1
       `);
       const purchase = (owned as unknown as Array<{ id: number; paid_through: string; contact_email: string }>)[0];
       if (!purchase) {
@@ -356,25 +381,45 @@ export function registerZipAdsRoutes(app: Express) {
         return;
       }
 
-      const captureResult = await capturePayPalOrder(orderId);
+      let captureId: string = order.paypal_capture_id;
+      if (!captureId) {
+        const captureResult = await capturePayPalOrder(orderId);
+        captureId = captureResult.captureId;
+        await withDb((sql) => sql`
+          UPDATE zip_ad_orders SET paypal_capture_id = ${captureId}, updated_at = now() WHERE id = ${order.id}
+        `);
+      }
 
-      // Same GREATEST(paid_through, now()) reasoning as guideAdsApi.ts's renew capture route.
+      // One statement, order-status transition as the lock, contact_edited reset for the new paid
+      // term -- see guideAdsApi.ts's renew capture route for the full reasoning behind all three.
       const rows = await withDb((sql) => sql`
-        UPDATE zip_ad_purchases
-        SET paid_through = GREATEST(paid_through, now()) + (${SLOT_DURATION_DAYS} * interval '1 day')
-        WHERE id = ${order.renews_purchase_id}
-        RETURNING paid_through, zip_code, trade_category
+        WITH claimed AS (
+          UPDATE zip_ad_orders
+          SET status = 'completed', paypal_capture_id = ${captureId}, updated_at = now()
+          WHERE id = ${order.id} AND status <> 'completed'
+          RETURNING renews_purchase_id
+        )
+        UPDATE zip_ad_purchases p
+        SET paid_through = GREATEST(p.paid_through, now()) + (${SLOT_DURATION_DAYS} * interval '1 day'),
+            contact_edited = false
+        FROM claimed
+        WHERE p.id = claimed.renews_purchase_id
+        RETURNING p.paid_through, p.zip_code, p.trade_category
       `);
       const updated = (rows as unknown as Array<{ paid_through: string; zip_code: string; trade_category: string }>)[0];
 
-      await withDb((sql) => sql`
-        UPDATE zip_ad_orders SET status = 'completed', paypal_capture_id = ${captureResult.captureId}, updated_at = now()
-        WHERE id = ${order.id}
-      `);
+      if (!updated) {
+        const existing = await withDb((sql) => sql`
+          SELECT paid_through, zip_code, trade_category FROM zip_ad_purchases WHERE id = ${order.renews_purchase_id} LIMIT 1
+        `);
+        const row = (existing as unknown as Array<{ paid_through: string; zip_code: string; trade_category: string }>)[0];
+        res.json({ success: true, alreadyCaptured: true, captureId, paidThrough: row?.paid_through ?? null, zipCode: row?.zip_code, tradeCategory: row?.trade_category });
+        return;
+      }
 
       res.json({
         success: true,
-        captureId: captureResult.captureId,
+        captureId,
         paidThrough: updated.paid_through,
         zipCode: updated.zip_code,
         tradeCategory: updated.trade_category,
@@ -382,7 +427,10 @@ export function registerZipAdsRoutes(app: Express) {
     } catch (err: any) {
       console.error('[zip-ads] renew capture failed:', err);
       try {
-        await withDb((sql) => sql`UPDATE zip_ad_orders SET status = 'failed', updated_at = now() WHERE paypal_order_id = ${orderId}`);
+        await withDb((sql) => sql`
+          UPDATE zip_ad_orders SET status = 'failed', updated_at = now()
+          WHERE paypal_order_id = ${orderId} AND status <> 'completed' AND paypal_capture_id IS NULL
+        `);
       } catch { /* best effort */ }
       res.status(500).json({ success: false, error: err.message || 'Renewal payment capture failed.' });
     }
