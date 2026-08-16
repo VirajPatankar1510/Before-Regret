@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ShieldCheck, ArrowRight, BookOpen } from 'lucide-react';
 import { Logo } from './Logo';
 import { ContentLink } from './home/ContentLink';
@@ -16,18 +16,23 @@ interface GuideSummary {
 
 export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
   const [guides, setGuides] = useState<GuideSummary[]>([]);
+  const footerRef = useRef<HTMLElement>(null);
 
-  // Deferred to idle rather than fired on mount. PageSpeed's network dependency tree showed this
-  // request as the tail of the homepage's longest critical chain (HTML -> JS bundle -> /api/guides,
-  // 1,810ms max latency) -- it can't start until the whole JS bundle has downloaded and executed,
-  // and then competes for bandwidth during the page's most contended window, all for four links in
-  // a footer that is below the fold on every viewport.
+  // Gated on the footer actually scrolling near the viewport, not on browser idle time. The prior
+  // requestIdleCallback version was a real improvement (it stopped this from blocking anything),
+  // but PageSpeed's network dependency tree still showed it chained right after the JS bundle as
+  // the site's longest critical path (1,416ms) -- because in a scripted Lighthouse run the main
+  // thread has nothing else competing for it, requestIdleCallback fires within milliseconds of
+  // load, which is indistinguishable from "fetch immediately" as far as the initial-navigation
+  // trace is concerned. An IntersectionObserver ties the request to something a synthetic,
+  // no-scroll page-load audit never does (scroll toward the footer), so it's absent from that
+  // trace entirely, not just lower-priority within it -- and for the real visitors who never
+  // scroll this far, the request now never fires at all.
   //
   // No SEO cost: these links have never existed in the static HTML. Effects don't run during
   // renderToString, and no prerender script renders Footer at all -- confirmed against the live
   // homepage, whose served HTML contains no footer guide links. They have always been
-  // client-rendered after this fetch; this only changes when it starts. Same requestIdleCallback +
-  // load-event fallback shape as the deferred gtag loader in index.html.
+  // client-rendered after this fetch; this only changes when it starts.
   useEffect(() => {
     let cancelled = false;
 
@@ -51,23 +56,30 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
         .catch(() => {});
     };
 
-    // Read off a local rather than testing `'requestIdleCallback' in window` directly -- that form
-    // narrows `window` itself to never in the branch below, where it's still needed.
-    // 3s timeout, not the 4s used for gtag: these are real navigation links a reader might
-    // actually want, so they should never be held back long on a page that simply stays busy.
-    const idle: ((cb: () => void, opts?: { timeout: number }) => number) | undefined =
-      (window as any).requestIdleCallback;
-    if (idle) {
-      const handle = idle(loadGuides, { timeout: 3000 });
+    const node = footerRef.current;
+    if (typeof IntersectionObserver === 'function' && node) {
+      // 600px rootMargin: starts the fetch while the footer is still a comfortable scroll away,
+      // so the links are populated well before a reader who does scroll this far actually arrives
+      // -- not so late it reads as a pop-in, not so early it degenerates back into "fires on
+      // basically every page load" the way idle time did.
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            loadGuides();
+            observer.disconnect();
+          }
+        },
+        { rootMargin: '600px 0px' }
+      );
+      observer.observe(node);
       return () => {
         cancelled = true;
-        (window as any).cancelIdleCallback?.(handle);
+        observer.disconnect();
       };
     }
 
-    // Safari has no requestIdleCallback. If the load event already fired (the common case for a
-    // client-side route change into a page that mounts Footer), listening for it would never fire
-    // again -- so run on the next tick instead.
+    // No IntersectionObserver (very old browsers only at this point) or no node to observe yet --
+    // fall back to firing on load rather than never fetching at all.
     if (document.readyState === 'complete') {
       const timer = setTimeout(loadGuides, 0);
       return () => {
@@ -83,7 +95,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
   }, []);
 
   return (
-    <footer className="bg-slate-950 text-white border-t border-slate-900 py-12 px-4 sm:px-6 lg:px-8">
+    <footer ref={footerRef} className="bg-slate-950 text-white border-t border-slate-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
         
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-slate-900">
