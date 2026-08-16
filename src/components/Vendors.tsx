@@ -14,7 +14,7 @@ interface VendorsProps {
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'Do you verify businesses before listing them?',
-    a: 'No -- this is self-serve. Business name, trade category, and contact details are self-reported at checkout, not independently verified.',
+    a: 'No -- this is self-serve. Business name, trade category, and contact details are self-reported at checkout, and you confirm they\'re accurate with a checkbox there, but nothing is independently verified on our end.',
   },
   {
     q: 'How many views or leads will I get?',
@@ -26,7 +26,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What happens when my placement expires?',
-    a: 'Your slot reopens automatically for other vendors. No reminder email is sent right now -- check My Placements or come back here to buy another window if you want to stay live.',
+    a: 'Your slot reopens automatically for other vendors.',
   },
   {
     q: 'Can I edit my listing after I’ve paid?',

@@ -23,7 +23,7 @@ interface AdvertiseCompareProps {
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'Do I need to be licensed or verified to advertise?',
-    a: 'No license or credential check happens before your placement goes live -- business name, trade category, and contact details are self-reported at checkout. Nothing gates you from buying a placement in any category listed.',
+    a: "No license or credential check happens before your placement goes live -- business name, trade category, and contact details are self-reported at checkout, confirmed accurate with a checkbox there. Nothing gates you from buying a placement in any category listed.",
   },
   {
     q: 'How many people will see my ad?',
@@ -35,7 +35,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What happens when my placement expires?',
-    a: "It simply stops showing and the slot reopens for other vendors. No reminder email is sent before that happens right now -- check My Placements or come back here to buy another window if you want to stay live.",
+    a: "It simply stops showing and the slot reopens for other vendors.",
   },
   {
     q: 'Can I edit my listing after I’ve paid?',
