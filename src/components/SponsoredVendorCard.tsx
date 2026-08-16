@@ -47,3 +47,21 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
     </div>
   );
 };
+
+interface SponsoredVendorCardsProps {
+  vendors: SponsoredVendor[] | null | undefined;
+}
+
+// Up to MAX_SLOTS_PER_ZIP_TRADE (2) vendors can now be attached to one spot -- see
+// CanonicalFinding.sponsoredVendors in types.ts for why. Renders nothing for an empty or missing
+// list, same principle as SponsoredVendorCard itself.
+export const SponsoredVendorCards: React.FC<SponsoredVendorCardsProps> = ({ vendors }) => {
+  if (!vendors || vendors.length === 0) return null;
+  return (
+    <div className="space-y-2">
+      {vendors.map((vendor) => (
+        <SponsoredVendorCard key={vendor.id} vendor={vendor} />
+      ))}
+    </div>
+  );
+};

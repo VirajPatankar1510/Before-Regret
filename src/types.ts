@@ -53,20 +53,24 @@ export interface CanonicalFinding {
   // most of its own entries as "NOT QUERIED" -- padding that made a thin report look thinner, not
   // fuller. Each finding now carries its own real, correct link instead.
   sourceUrl?: string;
-  // Set server-side when a real, paying vendor matches this finding's trade category for this
-  // ZIP (see FINDING_TRADE_CATEGORY in sponsoredVendors.ts). Replaces the old single
-  // report-level sponsoredVendor slot -- each finding gets its own contextual match instead of
-  // one generic slot for the whole report, which is what let paying vendors 2-20 in a ZIP never
-  // actually appear anywhere.
-  sponsoredVendor?: SponsoredVendor | null;
+  // Set server-side when real, paying vendors match this finding's trade category for this ZIP
+  // (see FINDING_TRADE_CATEGORY in sponsoredVendors.ts). Up to MAX_SLOTS_PER_ZIP_TRADE (2), not
+  // just the single earliest buyer -- the second vendor for a (zip, trade) pair used to pay the
+  // same $29 as the first and never appear anywhere, silently, for as long as the first stayed
+  // active. Attached at most once per trade category per report, at whichever finding or
+  // inspection-priority item matches it first in reading order (see attachSponsoredVendors in
+  // server.ts) -- a category that matches several items in one report (e.g. Home Inspector via
+  // three separate inspection priorities on an old house) used to show the same vendor's card
+  // repeatedly instead of once.
+  sponsoredVendors?: SponsoredVendor[];
 }
 
 // The engine (engine/inspectionPriorities.ts) is deliberately vendor-agnostic -- it's building-
 // science judgment, not a monetization concern. Vendor matching is applied on top, server-side,
-// same pattern as CanonicalFinding.sponsoredVendor above (see PRIORITY_TRADE_CATEGORY in
-// sponsoredVendors.ts).
+// same pattern and same dedup-across-the-report reasoning as CanonicalFinding.sponsoredVendors
+// above (see PRIORITY_TRADE_CATEGORY in sponsoredVendors.ts).
 export interface InspectionPriorityWithVendor extends InspectionPriority {
-  sponsoredVendor?: SponsoredVendor | null;
+  sponsoredVendors?: SponsoredVendor[];
 }
 
 export interface InspectionPrioritiesReportData {
@@ -77,16 +81,22 @@ export interface InspectionPrioritiesReportData {
   insuranceRedFlags: string[];
 }
 
+// Same vendor-attachment pattern as InspectionPriorityWithVendor above, for the one seller
+// question (septic_seller) that has a real trade match -- see SELLER_QUESTION_TRADE_CATEGORY in
+// sponsoredVendors.ts. Every other question in the script has no corresponding licensed trade, so
+// sponsoredVendors is simply absent on those.
+export interface SellerQuestionWithVendor extends SellerQuestion {
+  sponsoredVendors?: SponsoredVendor[];
+}
+
 // Computed server-side from the same (year built, county, state) triple as
 // InspectionPrioritiesReportData, plus the requester-declared property type (see
-// engine/sellerQuestions.ts). No vendor matching here -- these are questions to ask a seller,
-// not a licensed-trade referral surface -- so unlike InspectionPriorityWithVendor above, this
-// carries the engine's SellerQuestion shape unmodified.
+// engine/sellerQuestions.ts).
 export interface SellerQuestionsReportData {
   yearBuilt: number;
   eraLabel: string;
   regionLabel: string;
-  questions: SellerQuestion[];
+  questions: SellerQuestionWithVendor[];
 }
 
 
@@ -394,6 +404,14 @@ export interface PropertyReport {
   // this one is deterministic and grounded in the same era/region/property-type rules as the
   // Inspection Priorities section.
   sellerQuestionsScript?: SellerQuestionsReportData | null;
+
+  // Fixed, always-checked report slot for Moving Company vendors -- unlike every other trade
+  // category, Moving Company isn't tied to any specific finding or inspection topic (see the
+  // comment above SELLER_QUESTION_TRADE_CATEGORY in sponsoredVendors.ts for why), so it doesn't
+  // go through attachSponsoredVendors' per-item matching at all. Rendered once, near the top of
+  // the report (see PropertyReportView.tsx), and only when non-empty -- absent or empty renders
+  // nothing, never a placeholder.
+  movingCompanyVendors?: SponsoredVendor[];
 
   // Bottom Line Synthesis
   bottomLine: {
