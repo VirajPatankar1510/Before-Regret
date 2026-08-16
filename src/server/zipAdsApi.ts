@@ -292,10 +292,28 @@ export function registerZipAdsRoutes(app: Express) {
         // always grant all of them. This atomic per-ZIP claim is the defensive final check for
         // the one case a hold doesn't cover: the vendor took longer than HOLD_DURATION_MINUTES to
         // finish at PayPal, the hold lapsed, and someone else's checkout claimed the ZIP in that
-        // gap. Same WHERE-NOT-past-cap pattern as guideAdsApi.ts's capture route, just checked
-        // against real purchases only here -- once we're capturing, the only thing that matters
-        // is who actually holds the inventory, not who else might be mid-checkout.
+        // gap. Checked against real purchases only here -- once we're capturing, the only thing
+        // that matters is who actually holds the inventory, not who else might be mid-checkout.
         for (const zip of requestedZips) {
+          // This capture route can run more than once for the SAME order -- a page reload before
+          // the fetch resolves, PayPal's return redirect re-firing, ZipAdsCheckoutSuccess.tsx
+          // remounting. The `status === 'completed'` guard above only catches a retry that lands
+          // AFTER status has actually flipped; one that lands in the gap between paypal_capture_id
+          // being set and that UPDATE below would still reach this loop. Unlike guide ads' single
+          // WHERE NOT EXISTS (safe there only because guide ads sell exactly 1 slot per position,
+          // so "exists" and "at capacity" are the same test), zip ads sell up to
+          // MAX_SLOTS_PER_ZIP_TRADE (2) per pair, so a bare COUNT(*) < cap check doesn't block a
+          // second insert from this SAME order once it's already granted this ZIP once -- capacity
+          // has room for a legitimate second vendor. Checking "did this order already grant this
+          // ZIP" first, before touching capacity at all, is what actually makes a retry a no-op
+          // instead of a duplicate charge-for-one-payment.
+          const already = await sql`
+            SELECT id FROM zip_ad_purchases WHERE order_id = ${order.id} AND zip_code = ${zip} LIMIT 1
+          `;
+          if ((already as unknown[]).length > 0) {
+            grantedZips.push(zip);
+            continue;
+          }
           const inserted = await sql`
             INSERT INTO zip_ad_purchases (
               order_id, zip_code, trade_category, business_name, phone, website, tagline, paid_through

@@ -67,10 +67,18 @@ export function registerMyAdsRoutes(app: Express) {
         WHERE o.clerk_user_id = ${clerkUserId} AND o.status = 'completed'
         ORDER BY o.created_at DESC
       `);
+      // COALESCE(renews_order_id, id): a renewal order never inserts its own purchase rows -- it
+      // extends the ORIGINAL bundle order's rows in place (see zipAdsApi.ts's renew capture
+      // route), so joining on the renewal order's own id here always found nothing and every
+      // renewal read as "no ZIPs granted" against a real $29 charge. Falling back to the original
+      // order's id for a renewal (renews_order_id is NULL for a first-time purchase, so this is a
+      // no-op there) is the same fix guide ads already has via renews_purchase_id + renewed_title
+      // above, adapted for a bundle pointing at an order instead of a single purchase.
       const zipOrderRows = await withDb((sql) => sql`
         SELECT id, paypal_order_id, paypal_capture_id, amount_usd, status, trade_category,
                created_at, renews_order_id,
-               (SELECT array_agg(p.zip_code ORDER BY p.zip_code) FROM zip_ad_purchases p WHERE p.order_id = zip_ad_orders.id) AS granted_zips
+               (SELECT array_agg(p.zip_code ORDER BY p.zip_code) FROM zip_ad_purchases p
+                WHERE p.order_id = COALESCE(zip_ad_orders.renews_order_id, zip_ad_orders.id)) AS granted_zips
         FROM zip_ad_orders WHERE clerk_user_id = ${clerkUserId} AND status = 'completed'
         ORDER BY created_at DESC
       `);
