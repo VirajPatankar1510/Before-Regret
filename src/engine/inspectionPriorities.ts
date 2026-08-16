@@ -125,6 +125,23 @@ export const LANDSLIDE_SUSCEPTIBLE_STATES: Record<string, { label: string }> = {
   AR: { label: 'Arkansas' },
 };
 
+// Same coarse, state-level approximation and same reasoning as LANDSLIDE_SUSCEPTIBLE_STATES above
+// -- the actual USDA Forest Service / Agricultural Research Service Termite Infestation
+// Probability (TIP) map, adopted into the International Residential Code as Figure R301.2(7), is
+// drawn as a geographic contour that crosses state lines, not a state-by-state list. This is the
+// "moderate to heavy" zone and above: the warm, humid southern tier plus the Gulf Coast and
+// Pacific Southwest, where subterranean termite pressure is consistently documented as elevated.
+// The rule below states that hedge explicitly rather than implying per-address precision.
+export const TERMITE_PROBABILITY_STATES: Record<string, { label: string }> = {
+  CA: { label: 'California' }, AZ: { label: 'Arizona' }, NM: { label: 'New Mexico' },
+  TX: { label: 'Texas' }, OK: { label: 'Oklahoma' }, AR: { label: 'Arkansas' },
+  LA: { label: 'Louisiana' }, MS: { label: 'Mississippi' }, AL: { label: 'Alabama' },
+  GA: { label: 'Georgia' }, FL: { label: 'Florida' }, SC: { label: 'South Carolina' },
+  NC: { label: 'North Carolina' }, TN: { label: 'Tennessee' }, KY: { label: 'Kentucky' },
+  MO: { label: 'Missouri' }, KS: { label: 'Kansas' },
+  VA: { label: 'Virginia' }, WV: { label: 'West Virginia' },
+};
+
 /** Title-cases a raw county string ("king county" -> "King County") for the fallback label. */
 export function titleCaseCounty(county: string): string {
   return county
@@ -356,6 +373,36 @@ export const PRIORITY_RULES: PriorityRule[] = [
     typicalRepairCost: 'Roof $8,000 – $25,000+; HVAC $6,000 – $15,000; water heater $1,200 – $3,000',
     howToCheck:
       'Ask your inspector to record the manufacture date from the data plate on the furnace, condenser, and water heater, and to estimate remaining roof life.',
+  },
+
+  // --- Transfer-triggered, not era-driven: these are checks the standard applies specifically
+  // because ownership is changing, independent of the home's age. ---
+  {
+    id: 'chimney_level2',
+    minYear: 1800,
+    maxYear: CURRENT_YEAR,
+    title: 'If the home has a fireplace or wood-burning stove, get a Level 2 chimney inspection',
+    priority: 'medium',
+    eraBasis:
+      'NFPA 211, the national standard for chimneys, fireplaces, and solid-fuel-burning appliances, calls for a Level 2 inspection whenever a property changes ownership, regardless of the home\'s age. A Level 2 adds video scanning of the flue interior and examination of accessible attic, crawlspace, and basement chimney runs -- none of which a standard home inspection includes. Older masonry chimneys are more likely to have a deteriorated or unlined flue, but the transfer trigger applies to any chimney.',
+    costToCheck: '$250 – $600 for a Level 2 inspection with a video flue scan',
+    typicalRepairCost: 'Flue liner replacement $1,500 – $5,000; partial rebuild $1,500 – $8,000; full rebuild $10,000 – $30,000+',
+    howToCheck:
+      'Book a CSIA-certified chimney sweep for a Level 2 inspection -- this is a separate engagement from your general home inspection, which does not scope the flue interior.',
+  },
+  {
+    id: 'termite_wdi_inspection',
+    minYear: 1800,
+    maxYear: CURRENT_YEAR,
+    states: Object.keys(TERMITE_PROBABILITY_STATES),
+    title: 'Get a wood-destroying insect (WDI) report',
+    priority: 'medium',
+    eraBasis:
+      'Termite pressure is driven by regional climate and soil rather than construction era, so this is not specific to a home of any particular vintage. This state falls within a region the USDA Forest Service and Agricultural Research Service have broadly mapped as having elevated termite infestation probability, mapping adopted into the International Residential Code\'s termite infestation probability map. A WDI report is a separate inspection from a general home inspection, and some lenders require one in these regions.',
+    costToCheck: '$75 – $150 for a standalone WDI report',
+    typicalRepairCost: 'Treatment $1,200 – $5,000 depending on method; structural repair if damage is present $1,000 – $9,000+',
+    howToCheck:
+      'Hire a licensed pest control operator for a WDI/WDO report. Most general home inspections do not include one unless you ask.',
   },
 
   // --- Geology-driven, not era-driven; always ranked last ---
