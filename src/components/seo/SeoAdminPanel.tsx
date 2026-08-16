@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import {
   Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Send, Undo2, Trash2, AlertCircle, Sparkles,
   Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp, CloudLightning, BarChart3,
-  Library
+  Library, ShieldCheck, CheckCircle2
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
 import { extractCitedSourceCodes, findAdversarialCounterpartyFraming } from '../../server/articleGenerator';
 import { NEWS_TOPIC_PRESETS, type NewsTopicPreset } from '../../data/newsTopicPresets';
 import { STOPWORDS } from '../../utils/relatedGuides';
 import { buildPageTitle, TITLE_SUFFIX_MAX_LENGTH } from '../../utils/pageTitle';
+// Type-only -- contentAudit.ts's runtime code pulls in withDb/neon (server-only), so importing
+// anything but the type here would try to bundle the database driver into the client. The check
+// itself only ever runs server-side, hit via GET /api/admin/content-audit.
+import type { AuditReport } from '../../server/contentAudit';
 
 // Grouped once at module load, not per-render -- NEWS_TOPIC_PRESETS is a static import, so this
 // never needs to recompute. Preserves the data file's own category order (the order categories
@@ -292,6 +296,12 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // covered-county footprint -- capped server-side at 400 days regardless of what's entered here.
   const [countyEventLookbackDays, setCountyEventLookbackDays] = useState('14');
 
+  // Read-only content-quality scan (see src/server/contentAudit.ts) -- never writes anything, so
+  // there's no confirm step and no "undo" to think about, unlike every other button on this page.
+  const [contentAuditChecking, setContentAuditChecking] = useState(false);
+  const [contentAuditReport, setContentAuditReport] = useState<AuditReport | null>(null);
+  const [contentAuditError, setContentAuditError] = useState<string | null>(null);
+
   // Original data journalism report generator -- see src/server/countyComparisonApi.ts. Admin-
   // triggered (not event-triggered), meant to run occasionally, not on a schedule. A living
   // singleton page rather than a one-shot: comparisonStatus is what lets the button tell "no
@@ -531,6 +541,31 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     } finally {
       setCountyEventChecking(false);
     }
+  };
+
+  const runContentAuditCheck = async () => {
+    setContentAuditChecking(true);
+    setContentAuditError(null);
+    try {
+      const res = await fetch('/api/admin/content-audit');
+      const data = await res.json();
+      if (data?.success) {
+        setContentAuditReport(data.report);
+      } else {
+        setContentAuditError(data?.error || 'Could not run the audit.');
+      }
+    } catch {
+      setContentAuditError('Could not reach the server.');
+    } finally {
+      setContentAuditChecking(false);
+    }
+  };
+
+  // Same reasoning as openArticleBySlug just above -- articles is already loaded, so this is a
+  // client-side lookup, not another round trip.
+  const openArticleById = (id: number) => {
+    const article = articles?.find((a) => a.id === id);
+    if (article) openEditor(article);
   };
 
   const loadComparisonStatus = () => {
@@ -1040,6 +1075,87 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 )}
               </div>
             )}
+          </div>
+
+          {/* Read-only content-quality scan -- see src/server/contentAudit.ts. No AI involved:
+              pure regex/string checks against body_markdown already in the database, so a click
+              here costs nothing and can never hallucinate. Fixing a real finding is still a
+              deliberate follow-up edit, not something this button does on its own. */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Content quality audit</span>
+              </div>
+              <button
+                onClick={runContentAuditCheck}
+                disabled={contentAuditChecking}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0"
+              >
+                {contentAuditChecking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+                {contentAuditChecking ? 'Scanning…' : 'Run audit'}
+              </button>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Scans every published article for truncated bodies, non-code content trapped in a code
+              fence (renders as an unreadable box), tables missing their separator row (silently
+              breaks instead of rendering), malformed links, and citations that don't resolve to a
+              real source. Read-only -- nothing here writes to the database or changes a page. Click
+              any flagged article below to jump straight to it in the editor.
+            </p>
+            {contentAuditError && (
+              <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                <span>{contentAuditError}</span>
+              </p>
+            )}
+            {contentAuditReport && (() => {
+              const categories: Array<[keyof Omit<AuditReport, 'scanned'>, string]> = [
+                ['truncated', 'Truncated bodies'],
+                ['nonCodeFence', 'Non-code content in a code fence'],
+                ['malformedTable', 'Tables missing a separator row'],
+                ['brokenLink', 'Malformed links'],
+                ['unresolvedCitation', 'Unresolved citations'],
+                ['thin', 'Thin content (under 500 words)'],
+              ];
+              const totalFindings = categories.reduce((n, [key]) => n + contentAuditReport[key].length, 0);
+              return (
+                <div className="border-t border-slate-800 pt-3 space-y-3">
+                  <p className="text-xs text-slate-300">
+                    Scanned {contentAuditReport.scanned} published article{contentAuditReport.scanned === 1 ? '' : 's'}.{' '}
+                    {totalFindings === 0 ? (
+                      <span className="text-emerald-400 font-semibold inline-flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Clean -- no findings.
+                      </span>
+                    ) : (
+                      <span className="text-amber-400 font-semibold">{totalFindings} finding{totalFindings === 1 ? '' : 's'}.</span>
+                    )}
+                  </p>
+                  {categories.map(([key, label]) => {
+                    const findings = contentAuditReport[key];
+                    if (findings.length === 0) return null;
+                    return (
+                      <div key={key} className="space-y-1.5">
+                        <p className="text-[11px] font-bold uppercase tracking-wide text-amber-500">{label} ({findings.length})</p>
+                        <ul className="space-y-1">
+                          {findings.map((f, idx) => (
+                            <li key={`${f.id}-${idx}`} className="text-xs">
+                              <button
+                                onClick={() => openArticleById(f.id)}
+                                className="text-blue-400 hover:text-blue-300 font-semibold underline decoration-blue-400/40 hover:decoration-blue-300 cursor-pointer"
+                              >
+                                {f.title}
+                              </button>
+                              <span className="text-slate-500"> -- {f.detail}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
 
           {/* Original data journalism report -- see src/server/countyComparisonApi.ts. Ranks
