@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle, Lock } from 'lucide-react';
+import { Search, Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle, Lock, X } from 'lucide-react';
 import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
 import { useAuth } from '../context/AuthContext';
 
-type Stage = 'checking-form' | 'checking' | 'available' | 'full' | 'submitting';
+const ZIPS_PER_BUNDLE = 3;
 
-interface SlotAvailability {
-  slotsTotal: number;
-  slotsTaken: number;
-  slotsRemaining: number;
-  available: boolean;
-  pricePerSlotUsd: number;
+interface BundlePricing {
+  pricePerBundleUsd: number;
   slotDurationDays: number;
 }
 
-// Real self-serve checkout: check live slot availability for a (ZIP, trade) pair, collect
-// business details, then redirect to PayPal for actual payment. See src/server/zipAdsApi.ts.
-// Replaces the old interest-capture-only version of this form, which only logged a submission to
-// console and asked a human to follow up manually -- no payment ever happened there.
+// Real self-serve checkout: pick a trade category and ZIPS_PER_BUNDLE distinct ZIP codes, check
+// live availability for each (which now also reflects other vendors' in-progress holds -- see
+// zipAdsApi.ts's countActiveOrHeldSlots), collect business details, then redirect to PayPal for
+// actual payment. The checkout submission itself atomically claims all 3 ZIPs as a short-lived
+// hold before any payment happens, ticket-booking-app style, so a ZIP picked here can't be sold
+// to someone else while this vendor is mid-checkout at PayPal. See src/server/zipAdsApi.ts.
 export const VendorSignupForm: React.FC = () => {
   const { user, loading: authLoading, triggerClerkSignIn, getToken, requestClerkLoad } = useAuth();
 
@@ -27,63 +25,96 @@ export const VendorSignupForm: React.FC = () => {
     requestClerkLoad();
   }, [requestClerkLoad]);
 
-  const [stage, setStage] = useState<Stage>('checking-form');
   const [tradeCategory, setTradeCategory] = useState('');
-  const [zipCode, setZipCode] = useState('');
-  const [availability, setAvailability] = useState<SlotAvailability | null>(null);
+  const [zipInput, setZipInput] = useState('');
+  const [selectedZips, setSelectedZips] = useState<string[]>([]);
+  const [checking, setChecking] = useState(false);
   const [checkError, setCheckError] = useState<string | null>(null);
+  const [pricing, setPricing] = useState<BundlePricing | null>(null);
 
   const [businessName, setBusinessName] = useState('');
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
   const [tagline, setTagline] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
 
-  const checkAvailabilityFor = async (checkZip: string, checkTrade: string) => {
-    if (!checkTrade || !/^\d{5}$/.test(checkZip)) {
-      setCheckError('Pick a business type and enter a valid 5-digit ZIP code.');
+  // Checks one ZIP against live availability (real purchases + other vendors' in-progress holds)
+  // and adds it to the selection if open. tradeCategoryOverride exists only for the prefill effect
+  // below, which calls this right after setTradeCategory -- reading the tradeCategory state
+  // variable there would still see the pre-update value due to how state updates batch, so that
+  // one caller passes the value directly instead of relying on the closure.
+  const addZip = async (rawZip: string, tradeCategoryOverride?: string) => {
+    const trade = tradeCategoryOverride ?? tradeCategory;
+    const zip = rawZip.trim();
+    setCheckError(null);
+    if (!trade) {
+      setCheckError('Choose a business type first.');
       return;
     }
-    setCheckError(null);
-    setStage('checking');
+    if (!/^\d{5}$/.test(zip)) {
+      setCheckError('Enter a valid 5-digit ZIP code.');
+      return;
+    }
+    if (selectedZips.includes(zip)) {
+      setCheckError('You already added that ZIP code.');
+      return;
+    }
+    if (selectedZips.length >= ZIPS_PER_BUNDLE) return;
+    setChecking(true);
     try {
-      const res = await fetch(`/api/zip-ads/slots?zip=${encodeURIComponent(checkZip)}&tradeCategory=${encodeURIComponent(checkTrade)}`);
+      const res = await fetch(`/api/zip-ads/slots?zip=${encodeURIComponent(zip)}&tradeCategory=${encodeURIComponent(trade)}`);
       const data = await res.json();
       if (!res.ok || !data.success) {
         setCheckError(data?.error || 'Could not check availability. Please try again.');
-        setStage('checking-form');
         return;
       }
-      setAvailability(data);
-      setStage(data.available ? 'available' : 'full');
+      if (!data.available) {
+        setCheckError(`Both slots for ${trade} in ZIP ${zip} are already taken -- try a different ZIP.`);
+        return;
+      }
+      setSelectedZips((prev) => (prev.includes(zip) ? prev : [...prev, zip]));
+      setZipInput('');
+      setPricing((prev) => prev ?? { pricePerBundleUsd: data.pricePerBundleUsd, slotDurationDays: data.slotDurationDays });
     } catch {
       setCheckError('Could not check availability. Please try again.');
-      setStage('checking-form');
+    } finally {
+      setChecking(false);
     }
   };
 
-  const checkAvailability = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await checkAvailabilityFor(zipCode, tradeCategory);
+  const removeZip = (zip: string) => {
+    setSelectedZips((prev) => prev.filter((z) => z !== zip));
+    setCheckError(null);
   };
 
-  // Prefill from MyAdsPanel.tsx's "Renew" button, if that's how the vendor got here -- same
-  // stash-then-clear pattern as GuideAdsCheckout.tsx's renewal prefill. Runs the availability
-  // check immediately since the whole point of "renew" is getting back to the payment step fast,
-  // not re-typing a ZIP and trade category that were just active a moment ago.
+  const handleAddZipSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    addZip(zipInput);
+  };
+
+  // Prefill from MyAdsPanel.tsx's Expired-section "Buy again" -- a lapsed bundle's ZIPs may have
+  // been bought by someone else in the meantime, so every stashed ZIP is re-checked for real here
+  // rather than trusted; only the ones still open get carried into the selection, up to
+  // ZIPS_PER_BUNDLE. Same stash-then-clear pattern as GuideAdsCheckout.tsx's renewal prefill.
   useEffect(() => {
     const raw = sessionStorage.getItem('br_renew_zip_ad');
     if (!raw) return;
     sessionStorage.removeItem('br_renew_zip_ad');
     try {
-      const renew = JSON.parse(raw) as { zipCode: string; tradeCategory: string; businessName: string; phone: string; website: string | null; tagline: string | null };
-      setZipCode(renew.zipCode || '');
-      setTradeCategory(renew.tradeCategory || '');
-      setBusinessName(renew.businessName || '');
-      setPhone(renew.phone || '');
-      setWebsite(renew.website || '');
-      setTagline(renew.tagline || '');
-      checkAvailabilityFor(renew.zipCode, renew.tradeCategory);
+      const stash = JSON.parse(raw) as {
+        zipCodes: string[]; tradeCategory: string; businessName: string; phone: string; website: string | null; tagline: string | null;
+      };
+      setTradeCategory(stash.tradeCategory || '');
+      setBusinessName(stash.businessName || '');
+      setPhone(stash.phone || '');
+      setWebsite(stash.website || '');
+      setTagline(stash.tagline || '');
+      (async () => {
+        for (const zip of (stash.zipCodes || []).slice(0, ZIPS_PER_BUNDLE)) {
+          await addZip(zip, stash.tradeCategory);
+        }
+      })();
     } catch { /* malformed stash, ignore */ }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -94,16 +125,17 @@ export const VendorSignupForm: React.FC = () => {
     if (!user) return setSubmitErrors(['Please sign in first.']);
     if (!businessName.trim()) return setSubmitErrors(['Enter your business name.']);
     if (!phone.trim()) return setSubmitErrors(['Enter a phone number for readers to call.']);
+    if (selectedZips.length !== ZIPS_PER_BUNDLE) return setSubmitErrors([`Select ${ZIPS_PER_BUNDLE} ZIP codes first.`]);
 
     const contactEmail = user.email || `${user.uid}@beforeregret.com`;
 
-    setStage('submitting');
+    setSubmitting(true);
     // Verified session token, not the raw uid -- see clerkAuth.ts; the server no longer trusts a
     // client-sent clerkUserId for who an order gets attributed to.
     const token = await getToken();
     if (!token) {
       setSubmitErrors(['Your session has expired -- please sign in again.']);
-      setStage('available');
+      setSubmitting(false);
       return;
     }
     try {
@@ -113,7 +145,7 @@ export const VendorSignupForm: React.FC = () => {
         body: JSON.stringify({
           businessName: businessName.trim(),
           tradeCategory,
-          zipCode,
+          zipCodes: selectedZips,
           phone: phone.trim(),
           website: website.trim() || undefined,
           tagline: tagline.trim() || undefined,
@@ -123,88 +155,95 @@ export const VendorSignupForm: React.FC = () => {
       const data = await res.json();
       if (!res.ok || !data.success) {
         setSubmitErrors(data?.errors || [data?.error || 'Could not start checkout. Please try again.']);
-        setStage('available');
+        // Lost the race on one of the 3 (someone else's hold or purchase landed first) -- clear
+        // the selection rather than let a resubmit retry the exact same, now partly-taken set.
+        if (res.status === 409) setSelectedZips([]);
+        setSubmitting(false);
         return;
       }
       window.location.href = data.approvalUrl;
     } catch {
       setSubmitErrors(['Could not reach the server. Please try again.']);
-      setStage('available');
+      setSubmitting(false);
     }
   };
 
-  const resetSearch = () => {
-    setStage('checking-form');
-    setAvailability(null);
-    setCheckError(null);
-    setSubmitErrors([]);
-  };
+  const ready = selectedZips.length === ZIPS_PER_BUNDLE;
 
   return (
     <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
       <div className="space-y-2">
         <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Check Availability</div>
-        <h2 className="font-serif text-2xl font-bold text-slate-900">Claim Your ZIP Code</h2>
+        <h2 className="font-serif text-2xl font-bold text-slate-900">Claim Your {ZIPS_PER_BUNDLE} ZIP Codes</h2>
         <p className="text-xs sm:text-sm text-slate-600">
           Only {MAX_SLOTS_PER_ZIP_TRADE} businesses per trade category are shown per ZIP code, first come first served.
         </p>
       </div>
 
-      {(stage === 'checking-form' || stage === 'checking') && (
-        <form onSubmit={checkAvailability} className="flex flex-col sm:flex-row gap-3">
-          <select
-            value={tradeCategory}
-            onChange={(e) => setTradeCategory(e.target.value)}
-            className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-          >
-            <option value="">Select your business type...</option>
-            {TRADE_CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
+      <div className="space-y-3">
+        <select
+          value={tradeCategory}
+          onChange={(e) => setTradeCategory(e.target.value)}
+          disabled={selectedZips.length > 0}
+          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          <option value="">Select your business type...</option>
+          {TRADE_CATEGORIES.map((cat) => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+
+        {selectedZips.length > 0 && (
+          <ul className="space-y-2">
+            {selectedZips.map((zip) => (
+              <li key={zip} className="flex items-center justify-between gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-emerald-800">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span>ZIP {zip}</span>
+                </span>
+                <button type="button" onClick={() => removeZip(zip)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer" aria-label={`Remove ZIP ${zip}`}>
+                  <X className="w-4 h-4" />
+                </button>
+              </li>
             ))}
-          </select>
-          <input
-            type="text"
-            inputMode="numeric"
-            placeholder="ZIP code"
-            value={zipCode}
-            onChange={(e) => setZipCode(e.target.value.replace(/\D/g, '').slice(0, 5))}
-            className="sm:w-40 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-          />
-          <button
-            type="submit"
-            disabled={stage === 'checking'}
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-60 shrink-0"
-          >
-            {stage === 'checking' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-            <span>Check Availability</span>
-          </button>
-        </form>
-      )}
-      {checkError && <p className="text-xs text-red-600 font-medium">{checkError}</p>}
+          </ul>
+        )}
 
-      {stage === 'full' && availability && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-5 space-y-2">
-          <div className="flex items-center gap-2 text-red-800 font-bold text-sm">
-            <XCircle className="w-4 h-4 shrink-0" />
-            <span>Both slots taken for {tradeCategory} in ZIP {zipCode}</span>
-          </div>
-          <p className="text-xs text-red-700">
-            {availability.slotsTaken} of {availability.slotsTotal} slots are currently filled. Try a different ZIP code or business type.
+        {!ready && (
+          <form onSubmit={handleAddZipSubmit} className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="ZIP code"
+              value={zipInput}
+              onChange={(e) => setZipInput(e.target.value.replace(/\D/g, '').slice(0, 5))}
+              className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
+            />
+            <button
+              type="submit"
+              disabled={checking || !tradeCategory}
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-60 shrink-0"
+            >
+              {checking ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+              <span>Check &amp; Add ZIP ({selectedZips.length} of {ZIPS_PER_BUNDLE})</span>
+            </button>
+          </form>
+        )}
+        {checkError && (
+          <p className="flex items-start gap-1.5 text-xs text-red-600 font-medium">
+            <XCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" /><span>{checkError}</span>
           </p>
-          <button onClick={resetSearch} className="text-xs font-bold text-red-800 underline cursor-pointer">
-            Check another ZIP
-          </button>
-        </div>
-      )}
+        )}
+      </div>
 
-      {(stage === 'available' || stage === 'submitting') && availability && authLoading && (
+      {ready && authLoading && (
         <div className="bg-white border border-slate-200 rounded-2xl p-10 flex flex-col items-center justify-center gap-3 text-slate-400">
           <Loader2 className="w-6 h-6 animate-spin" />
           <p className="text-xs font-medium">Checking your account…</p>
         </div>
       )}
 
-      {(stage === 'available' || stage === 'submitting') && availability && !authLoading && !user && (
+      {ready && !authLoading && !user && (
         <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 text-center space-y-4">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-mono font-bold border border-blue-100">
             <Lock className="w-3.5 h-3.5 text-blue-600" />
@@ -225,11 +264,11 @@ export const VendorSignupForm: React.FC = () => {
         </div>
       )}
 
-      {(stage === 'available' || stage === 'submitting') && availability && !authLoading && user && (
+      {ready && !authLoading && user && (
         <div className="space-y-5">
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-2 text-emerald-800 text-sm font-bold">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>{availability.slotsRemaining} of {availability.slotsTotal} slots open for {tradeCategory} in ZIP {zipCode}</span>
+            <span>{tradeCategory} in ZIP {selectedZips.join(', ')} -- all {ZIPS_PER_BUNDLE} open</span>
           </div>
 
           <div className="flex items-center justify-end text-xs text-slate-500">
@@ -271,14 +310,15 @@ export const VendorSignupForm: React.FC = () => {
 
             <button
               type="submit"
-              disabled={stage === 'submitting'}
+              disabled={submitting}
               className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-60"
             >
-              {stage === 'submitting' ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
-              <span>Continue to PayPal -- ${availability.pricePerSlotUsd.toFixed(0)}</span>
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
+              <span>Continue to PayPal -- ${(pricing?.pricePerBundleUsd ?? 29).toFixed(0)}</span>
             </button>
             <p className="text-[11px] text-slate-500 text-center">
-              ${availability.pricePerSlotUsd.toFixed(0)} flat for {availability.slotDurationDays} days, no subscription and no auto-renewal. First come, first served; slot reopens automatically once it expires unless you buy another {availability.slotDurationDays}-day window.
+              ${(pricing?.pricePerBundleUsd ?? 29).toFixed(0)} flat for {ZIPS_PER_BUNDLE} ZIP codes, {pricing?.slotDurationDays ?? 30} days, no subscription and no auto-renewal.
+              First come, first served; each slot reopens automatically once it expires unless you buy another {pricing?.slotDurationDays ?? 30}-day window.
             </p>
           </form>
         </div>

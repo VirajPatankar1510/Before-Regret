@@ -43,7 +43,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can I buy both Topic Ads and Report Ads?',
-    a: "Yes, nothing stops you from buying both -- they reach different audiences (nationwide by topic vs. one ZIP code), so some vendors run both at once.",
+    a: "Yes, nothing stops you from buying both -- they reach different audiences (nationwide by topic vs. your selected ZIP codes), so some vendors run both at once.",
   },
 ];
 
@@ -107,7 +107,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             decision. Three steps, no jargon, sets up why the two cards below are worth reading. */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           {[
-            { icon: ListChecks, step: '1', title: 'Pick a plan', body: 'Topic Ads reach readers nationwide by subject. Report Ads target one ZIP code and trade. Compare both below.' },
+            { icon: ListChecks, step: '1', title: 'Pick a plan', body: 'Topic Ads reach readers nationwide by subject. Report Ads target 3 ZIP codes and one trade. Compare both below.' },
             { icon: CreditCard, step: '2', title: 'Add your business', body: 'Business name, phone, and trade category -- pay once through PayPal, no account setup beyond that.' },
             { icon: Zap, step: '3', title: "You're live", body: 'Your placement goes live within minutes and runs for a flat 30-day window, no auto-renewal.' },
           ].map(({ icon: Icon, step, title, body }) => (
@@ -203,7 +203,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               <p className="text-xs text-slate-500">Best for businesses with a specific local service area</p>
             </div>
             <div className="text-3xl font-black text-slate-900">
-              $29 <span className="text-sm font-normal text-slate-500">/ slot, 30 days</span>
+              $29 <span className="text-sm font-normal text-slate-500">/ 3 ZIP codes, 30 days</span>
             </div>
 
             <div className="space-y-1.5">
@@ -226,15 +226,15 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <ul className="text-xs sm:text-sm text-slate-600 space-y-2.5 flex-1">
               <li className="flex items-start gap-2">
                 <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Shown inside the actual property report for one specific ZIP code -- whoever is researching that exact address sees you</span>
+                <span>Shown inside the actual property report for each of your 3 chosen ZIP codes -- whoever is researching an address there sees you</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                <span>One ZIP code, one trade category per slot -- at most {MAX_SLOTS_PER_ZIP_TRADE} businesses shown per pair</span>
+                <span>Three ZIP codes, one trade category per bundle -- at most {MAX_SLOTS_PER_ZIP_TRADE} businesses shown per ZIP and trade pair</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Higher intent, tighter targeting -- a good fit if you only work within a specific ZIP code or metro area</span>
+                <span>Higher intent, tighter targeting -- a good fit if you only work within a specific set of ZIP codes or a metro area</span>
               </li>
             </ul>
             <button
@@ -263,7 +263,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
                 <tr>
                   <td className="py-2.5 px-2 text-slate-500 font-medium">Price</td>
                   <td className="py-2.5 px-2 font-bold text-slate-900">$7.99 / slot</td>
-                  <td className="py-2.5 px-2 font-bold text-slate-900">$29 / slot</td>
+                  <td className="py-2.5 px-2 font-bold text-slate-900">$29 / 3 ZIPs</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 px-2 text-slate-500 font-medium">Duration</td>
@@ -273,7 +273,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
                 <tr>
                   <td className="py-2.5 px-2 text-slate-500 font-medium">Where it appears</td>
                   <td className="py-2.5 px-2 text-slate-700">Educational articles, sitewide</td>
-                  <td className="py-2.5 px-2 text-slate-700">Inside the report for one ZIP code</td>
+                  <td className="py-2.5 px-2 text-slate-700">Inside the report, for each of 3 ZIP codes</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 px-2 text-slate-500 font-medium">Targeting</td>
@@ -283,7 +283,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
                 <tr>
                   <td className="py-2.5 px-2 text-slate-500 font-medium">Best for</td>
                   <td className="py-2.5 px-2 text-slate-700">Wide or multi-market service area</td>
-                  <td className="py-2.5 px-2 text-slate-700">One specific ZIP code or metro area</td>
+                  <td className="py-2.5 px-2 text-slate-700">Up to 3 specific ZIP codes or a metro area</td>
                 </tr>
               </tbody>
             </table>
@@ -293,8 +293,8 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
         <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 text-xs sm:text-sm text-slate-600">
           <span className="font-bold text-slate-900">Not sure which one? </span>
           If you'd take a customer from anywhere, Topic Ads reach more people for less per slot.
-          If you only serve one town or ZIP code, Report Ads put you in front of someone
-          researching that exact address instead of a general topic -- worth the higher price for that
+          If you only serve a few towns or ZIP codes, Report Ads put you in front of someone
+          researching an exact address there instead of a general topic -- worth the higher price for that
           precision. Nothing stops you from buying both.
         </div>
 

@@ -7,32 +7,45 @@ import { requireVerifiedUser } from './clerkAuth.js';
 
 // Self-serve, ZIP-targeted vendor ad slots inside reports: one vendor per (zip, trade category)
 // purchase, at most MAX_SLOTS_PER_ZIP_TRADE active at once per pair, $29 for a flat 30-day
-// window, no auto-renewal -- same no-subscription rationale as guideAdsApi.ts (a genuine PayPal
-// subscription is a separate Billing Plans + webhooks integration, not worth building before
-// anyone here has paid for anything once). Replaces the old /api/vendor-slots and
-// /api/vendor-interest routes, which only logged a submission to console and asked a human to
-// follow up manually -- this one actually takes payment and activates the slot itself.
+// window covering ZIPS_PER_BUNDLE (3) ZIP codes at once -- same no-subscription rationale as
+// guideAdsApi.ts (a genuine PayPal subscription is a separate Billing Plans + webhooks
+// integration, not worth building before anyone here has paid for anything once).
+//
+// Checkout uses a ticket-booking-app hold: the instant a vendor's 3 chosen ZIPs pass the
+// availability check, they're atomically claimed as a pending hold (see HOLD_DURATION_MINUTES)
+// before any PayPal order exists, so a second vendor can never start paying for a ZIP someone
+// else is already mid-checkout on. Capture (after the hold already reserved the spot) still runs
+// the same atomic per-ZIP claim as a defensive final check, for the rare case a hold lapsed
+// mid-payment -- see the capture route below for why that's still needed even with holds.
 
-// Exported so myAdsApi.ts can quote the real renewal price before sending a vendor to PayPal --
-// same reasoning as guideAdsApi.ts's exported constants.
-export const PRICE_PER_SLOT_USD = 29;
+export const PRICE_PER_BUNDLE_USD = 29;
 export const SLOT_DURATION_DAYS = 30;
+export const ZIPS_PER_BUNDLE = 3;
+const HOLD_DURATION_MINUTES = 15;
 
 function dbUnavailable(res: Response) {
   res.status(503).json({ success: false, error: 'The ad system is not configured yet.' });
 }
 
-// Shared by checkout, capture, and the availability endpoint -- all three need the same
-// definition of "how many active, unexpired vendors currently occupy this (zip, trade) pair" and
-// must never quietly diverge.
-async function countActiveSlots(zipCode: string, tradeCategory: string): Promise<number> {
+// Shared by the public availability endpoint and the checkout-time atomic claim -- both need the
+// same definition of "how many active, unexpired vendors OR live holds currently occupy this
+// (zip, trade) pair". A live hold counts exactly like a real purchase: it's another vendor's
+// zip_ad_orders row, still status='pending', whose hold_expires_at hasn't passed yet, that lists
+// this zip in its zip_codes_json.
+async function countActiveOrHeldSlots(zipCode: string, tradeCategory: string): Promise<number> {
   return withDb(async (sql) => {
-    const rows = await sql`
+    const purchased = await sql`
       SELECT COUNT(*)::int AS count FROM zip_ad_purchases
       WHERE zip_code = ${zipCode} AND trade_category = ${tradeCategory}
         AND active = true AND paid_through > now()
     `;
-    return (rows as unknown as Array<{ count: number }>)[0]?.count ?? 0;
+    const held = await sql`
+      SELECT COUNT(*)::int AS count FROM zip_ad_orders
+      WHERE trade_category = ${tradeCategory} AND status = 'pending' AND hold_expires_at > now()
+        AND zip_codes_json::jsonb ? ${zipCode}
+    `;
+    return ((purchased as unknown as Array<{ count: number }>)[0]?.count ?? 0)
+      + ((held as unknown as Array<{ count: number }>)[0]?.count ?? 0);
   });
 }
 
@@ -41,7 +54,8 @@ async function countActiveSlots(zipCode: string, tradeCategory: string): Promise
 // inspection-priority item -- up to ~14 calls per report. Doing that against a real database would
 // mean ~14 round trips per report instead of one. This fetches every active vendor for the ZIP in a
 // single query and builds an in-memory map that the existing per-item logic in server.ts can
-// consult synchronously.
+// consult synchronously. Unaffected by holds -- this only ever reads zip_ad_purchases, real sold
+// inventory, never a pending checkout.
 export async function fetchActiveZipVendors(zipCode: string | undefined | null): Promise<Map<string, SponsoredVendor[]>> {
   const map = new Map<string, SponsoredVendor[]>();
   if (!zipCode || !isDbConfigured()) return map;
@@ -80,14 +94,19 @@ export async function fetchActiveZipVendors(zipCode: string | undefined | null):
   return map;
 }
 
+function isValidZip(zip: unknown): zip is string {
+  return typeof zip === 'string' && /^\d{5}$/.test(zip);
+}
+
 export function registerZipAdsRoutes(app: Express) {
-  // --- Public: slot availability for a (zip, trade category) pair, checked before the checkout
-  // form reveals its remaining fields, and re-checked authoritatively at checkout and capture. ---
+  // --- Public: live availability for a (ZIP, trade category) pair -- reflects real purchases AND
+  // other vendors' in-progress holds, so this behaves like a real booking app ("someone else is
+  // checking out with this seat right now"), not just "sold" vs "open". ---
   app.get('/api/zip-ads/slots', async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     const zipCode = typeof req.query.zip === 'string' ? req.query.zip.trim() : '';
     const tradeCategory = typeof req.query.tradeCategory === 'string' ? req.query.tradeCategory.trim() : '';
-    if (!/^\d{5}$/.test(zipCode)) {
+    if (!isValidZip(zipCode)) {
       res.status(400).json({ success: false, error: 'A valid 5-digit ZIP code is required.' });
       return;
     }
@@ -96,7 +115,7 @@ export function registerZipAdsRoutes(app: Express) {
       return;
     }
     try {
-      const slotsTaken = await countActiveSlots(zipCode, tradeCategory);
+      const slotsTaken = await countActiveOrHeldSlots(zipCode, tradeCategory);
       const slotsRemaining = Math.max(0, MAX_SLOTS_PER_ZIP_TRADE - slotsTaken);
       res.json({
         success: true,
@@ -106,7 +125,8 @@ export function registerZipAdsRoutes(app: Express) {
         slotsTaken,
         slotsRemaining,
         available: slotsRemaining > 0,
-        pricePerSlotUsd: PRICE_PER_SLOT_USD,
+        pricePerBundleUsd: PRICE_PER_BUNDLE_USD,
+        zipsPerBundle: ZIPS_PER_BUNDLE,
         slotDurationDays: SLOT_DURATION_DAYS,
       });
     } catch (err: any) {
@@ -115,7 +135,7 @@ export function registerZipAdsRoutes(app: Express) {
     }
   });
 
-  // --- Start checkout for one (zip, trade category) slot ---------------------------------------
+  // --- Start checkout for a 3-ZIP bundle under one trade category -------------------------------
   // Availability checking (above) stays public, but the actual checkout write requires a verified
   // Clerk session -- same reasoning and same requireVerifiedUser middleware as guideAdsApi.ts.
   // This calls paypalService.ts directly rather than the generic /api/paypal/orders route, which
@@ -126,49 +146,77 @@ export function registerZipAdsRoutes(app: Express) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const { businessName, tradeCategory, zipCode, phone, website, tagline, contactEmail } = req.body || {};
+    const { businessName, tradeCategory, zipCodes, phone, website, tagline, contactEmail } = req.body || {};
     const errors: string[] = [];
     if (typeof businessName !== 'string' || !businessName.trim()) errors.push('Business name is required.');
     if (typeof tradeCategory !== 'string' || !(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) errors.push('Please choose a valid trade category.');
-    if (typeof zipCode !== 'string' || !/^\d{5}$/.test(zipCode)) errors.push('A valid 5-digit ZIP code is required.');
+    const zipList: string[] = Array.isArray(zipCodes) ? zipCodes.filter((z) => typeof z === 'string') : [];
+    const uniqueZips = Array.from(new Set(zipList));
+    if (uniqueZips.length !== ZIPS_PER_BUNDLE || !uniqueZips.every(isValidZip)) {
+      errors.push(`Select exactly ${ZIPS_PER_BUNDLE} different 5-digit ZIP codes.`);
+    }
     if (typeof phone !== 'string' || phone.trim().length < 7) errors.push('A valid phone number is required.');
     if (typeof contactEmail !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) errors.push('A valid contact email is required.');
     if (errors.length > 0) {
       res.status(400).json({ success: false, errors });
       return;
     }
+    const [zip1, zip2, zip3] = uniqueZips;
 
     try {
-      const slotsTaken = await countActiveSlots(zipCode, tradeCategory);
-      if (slotsTaken >= MAX_SLOTS_PER_ZIP_TRADE) {
-        res.status(409).json({
-          success: false,
-          error: `Both slots for ${tradeCategory} in ZIP ${zipCode} are already taken.`,
-        });
-        return;
-      }
-
-      const amount = PRICE_PER_SLOT_USD.toFixed(2);
+      const amount = PRICE_PER_BUNDLE_USD.toFixed(2);
       const appUrl = process.env.APP_URL || 'http://localhost:3000';
 
       const paypalOrder = await createPayPalOrder({
         amount,
         currency: 'USD',
         type: 'vendor_subscription',
-        description: `BeforeRegret ZIP ad -- ${tradeCategory} in ${zipCode} x 30 days`,
+        description: `BeforeRegret ZIP ad -- ${tradeCategory} in ${uniqueZips.join(', ')} x 30 days`,
         returnUrl: `${appUrl}/report-ads/success`,
         cancelUrl: `${appUrl}/report-ads`,
         userEmail: contactEmail,
       });
 
-      await withDb((sql) => sql`
+      // Atomic claim, ticket-booking-app style: this single statement is both the availability
+      // check AND the reservation, for all 3 ZIPs at once, so two vendors racing for the same
+      // last slot can never both pass. The WHERE clause repeats the same
+      // "real purchases + live holds < cap" test from countActiveOrHeldSlots above once per ZIP
+      // rather than calling that function three times beforehand -- a separate check-then-insert
+      // would reopen exactly the race this is built to close (see guideAdsApi.ts's capture route
+      // for the same reasoning applied to a simpler, single-item case).
+      const claimed = await withDb((sql) => sql`
         INSERT INTO zip_ad_orders (
-          paypal_order_id, business_name, trade_category, zip_code, phone, website, tagline, contact_email, amount_usd, status, clerk_user_id
-        ) VALUES (
-          ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${zipCode}, ${phone}, ${website || null}, ${tagline || null},
-          ${contactEmail}, ${amount}, 'pending', ${req.verifiedUserId as string}
+          paypal_order_id, business_name, trade_category, zip_code, zip_codes_json, phone, website,
+          tagline, contact_email, amount_usd, status, clerk_user_id, hold_expires_at
         )
+        SELECT ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${zip1}, ${JSON.stringify(uniqueZips)},
+               ${phone}, ${website || null}, ${tagline || null}, ${contactEmail}, ${amount}, 'pending',
+               ${req.verifiedUserId as string}, now() + (${HOLD_DURATION_MINUTES} * interval '1 minute')
+        WHERE (
+          (SELECT COUNT(*)::int FROM zip_ad_purchases WHERE zip_code = ${zip1} AND trade_category = ${tradeCategory} AND active = true AND paid_through > now())
+          + (SELECT COUNT(*)::int FROM zip_ad_orders WHERE trade_category = ${tradeCategory} AND status = 'pending' AND hold_expires_at > now() AND zip_codes_json::jsonb ? ${zip1})
+        ) < ${MAX_SLOTS_PER_ZIP_TRADE}
+        AND (
+          (SELECT COUNT(*)::int FROM zip_ad_purchases WHERE zip_code = ${zip2} AND trade_category = ${tradeCategory} AND active = true AND paid_through > now())
+          + (SELECT COUNT(*)::int FROM zip_ad_orders WHERE trade_category = ${tradeCategory} AND status = 'pending' AND hold_expires_at > now() AND zip_codes_json::jsonb ? ${zip2})
+        ) < ${MAX_SLOTS_PER_ZIP_TRADE}
+        AND (
+          (SELECT COUNT(*)::int FROM zip_ad_purchases WHERE zip_code = ${zip3} AND trade_category = ${tradeCategory} AND active = true AND paid_through > now())
+          + (SELECT COUNT(*)::int FROM zip_ad_orders WHERE trade_category = ${tradeCategory} AND status = 'pending' AND hold_expires_at > now() AND zip_codes_json::jsonb ? ${zip3})
+        ) < ${MAX_SLOTS_PER_ZIP_TRADE}
+        RETURNING id
       `);
+
+      // Nothing to undo at PayPal -- an order that's created but never approved/captured never
+      // charges anyone and simply expires on PayPal's own side. No cleanup needed here, same as
+      // every other abandoned/failed order in this codebase.
+      if ((claimed as unknown[]).length === 0) {
+        res.status(409).json({
+          success: false,
+          error: 'One or more of your ZIP codes was just taken by another advertiser -- please choose different ones.',
+        });
+        return;
+      }
 
       const approvalUrl = `https://www.${
         process.env.PAYPAL_MODE === 'live' ? 'paypal.com' : 'sandbox.paypal.com'
@@ -181,7 +229,7 @@ export function registerZipAdsRoutes(app: Express) {
     }
   });
 
-  // --- Public: capture payment and activate the slot if it's still available ------------------
+  // --- Public: capture payment and activate whichever ZIPs in the bundle are still available ---
   app.post('/api/zip-ads/checkout/:orderId/capture', async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     if (!isPayPalConfigured()) {
@@ -198,7 +246,7 @@ export function registerZipAdsRoutes(app: Express) {
       }
       // Same guard and reasoning as guideAdsApi.ts's checkout capture route -- a renewal order
       // captured here would take the vendor's money and grant nothing.
-      if (order.renews_purchase_id) {
+      if (order.renews_order_id) {
         res.status(400).json({ success: false, error: 'This is a renewal order -- capture it through the renewal route.' });
         return;
       }
@@ -206,16 +254,15 @@ export function registerZipAdsRoutes(app: Express) {
       // what was persisted instead of the bare acknowledgement this used to return.
       if (order.status === 'completed') {
         const purchaseRows = await withDb((sql) => sql`
-          SELECT paid_through FROM zip_ad_purchases WHERE order_id = ${order.id} ORDER BY created_at DESC LIMIT 1
+          SELECT zip_code, paid_through FROM zip_ad_purchases WHERE order_id = ${order.id} ORDER BY zip_code ASC
         `);
-        const purchase = (purchaseRows as unknown as Array<{ paid_through: string }>)[0];
+        const purchases = purchaseRows as unknown as Array<{ zip_code: string; paid_through: string }>;
         res.json({
           success: true,
           alreadyCaptured: true,
-          granted: Boolean(purchase),
+          grantedZips: purchases.map((p) => p.zip_code),
           captureId: order.paypal_capture_id,
-          paidThrough: purchase?.paid_through ?? null,
-          zipCode: order.zip_code,
+          paidThrough: purchases[0]?.paid_through ?? null,
           tradeCategory: order.trade_category,
         });
         return;
@@ -237,29 +284,34 @@ export function registerZipAdsRoutes(app: Express) {
       // sql`` tagged template parameterizes every ${...}, which breaks splicing a variable into a
       // quoted interval literal. A plain Date sidesteps that ambiguity entirely.
       const paidThrough = new Date(Date.now() + SLOT_DURATION_DAYS * 24 * 60 * 60 * 1000);
-      let granted = false;
+      const requestedZips = JSON.parse(order.zip_codes_json || '[]') as string[];
+      const grantedZips: string[] = [];
+      const skippedZips: string[] = [];
       await withDb(async (sql) => {
-        // The pre-capture availability check and the insert used to be two separate round trips,
-        // leaving a race window: two vendors' capture calls for the same (zip, trade) pair, close
-        // enough together, could both pass the COUNT(*) check before either INSERT landed and
-        // oversell past MAX_SLOTS_PER_ZIP_TRADE -- and neither PayPal charge could be undone by
-        // that point anyway. Folding the count into the INSERT's own WHERE makes Postgres
-        // evaluate "is there still room" and "claim it" as one atomic statement, so only inserts
-        // that land before the cap fills can ever succeed.
-        const inserted = await sql`
-          INSERT INTO zip_ad_purchases (
-            order_id, zip_code, trade_category, business_name, phone, website, tagline, paid_through
-          )
-          SELECT ${order.id}, ${order.zip_code}, ${order.trade_category}, ${order.business_name},
-                 ${order.phone}, ${order.website}, ${order.tagline}, ${paidThrough.toISOString()}
-          WHERE (
-            SELECT COUNT(*) FROM zip_ad_purchases
-            WHERE zip_code = ${order.zip_code} AND trade_category = ${order.trade_category}
-              AND active = true AND paid_through > now()
-          ) < ${MAX_SLOTS_PER_ZIP_TRADE}
-          RETURNING id
-        `;
-        granted = (inserted as unknown[]).length > 0;
+        // The hold already reserved these 3 ZIPs before payment started, so this should almost
+        // always grant all of them. This atomic per-ZIP claim is the defensive final check for
+        // the one case a hold doesn't cover: the vendor took longer than HOLD_DURATION_MINUTES to
+        // finish at PayPal, the hold lapsed, and someone else's checkout claimed the ZIP in that
+        // gap. Same WHERE-NOT-past-cap pattern as guideAdsApi.ts's capture route, just checked
+        // against real purchases only here -- once we're capturing, the only thing that matters
+        // is who actually holds the inventory, not who else might be mid-checkout.
+        for (const zip of requestedZips) {
+          const inserted = await sql`
+            INSERT INTO zip_ad_purchases (
+              order_id, zip_code, trade_category, business_name, phone, website, tagline, paid_through
+            )
+            SELECT ${order.id}, ${zip}, ${order.trade_category}, ${order.business_name},
+                   ${order.phone}, ${order.website}, ${order.tagline}, ${paidThrough.toISOString()}
+            WHERE (
+              SELECT COUNT(*) FROM zip_ad_purchases
+              WHERE zip_code = ${zip} AND trade_category = ${order.trade_category}
+                AND active = true AND paid_through > now()
+            ) < ${MAX_SLOTS_PER_ZIP_TRADE}
+            RETURNING id
+          `;
+          if ((inserted as unknown[]).length > 0) grantedZips.push(zip);
+          else skippedZips.push(zip);
+        }
         await sql`
           UPDATE zip_ad_orders SET status = 'completed', paypal_capture_id = ${captureId}, updated_at = now()
           WHERE id = ${order.id}
@@ -269,9 +321,9 @@ export function registerZipAdsRoutes(app: Express) {
       res.json({
         success: true,
         captureId,
-        granted,
-        paidThrough: granted ? paidThrough.toISOString() : null,
-        zipCode: order.zip_code,
+        grantedZips,
+        skippedZips,
+        paidThrough: grantedZips.length > 0 ? paidThrough.toISOString() : null,
         tradeCategory: order.trade_category,
       });
     } catch (err: any) {
@@ -288,64 +340,80 @@ export function registerZipAdsRoutes(app: Express) {
     }
   });
 
-  // --- Renew: extend a placement the signed-in vendor already owns, in place ------------------
+  // --- Renew: extend every ZIP in a bundle the signed-in vendor already owns, in place ----------
   // Same reasoning as guideAdsApi.ts's renew routes: the regular checkout flow's availability
-  // check counts the vendor's own active row toward MAX_SLOTS_PER_ZIP_TRADE, so renewing early
-  // through it would silently sell a second, duplicate listing instead of extending the first.
-  // This flow skips availability entirely -- ownership is the only check -- and extends
-  // paid_through on the existing row at capture time.
-  app.post('/api/zip-ads/renew/:purchaseId', requireVerifiedUser, async (req: Request, res: Response) => {
+  // check counts the vendor's own active rows toward MAX_SLOTS_PER_ZIP_TRADE, so renewing early
+  // through it would silently sell duplicate listings instead of extending the real ones. This
+  // flow skips availability entirely -- ownership is the only check -- and extends paid_through
+  // on every purchase row under the original order at capture time, together, since the bundle
+  // was sold and priced as one $29 unit rather than three independent ones. :orderId here is the
+  // DB id of the original bundle order (not a purchase id, and not a PayPal token).
+  app.post('/api/zip-ads/renew/:orderId', requireVerifiedUser, async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     if (!isPayPalConfigured()) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const purchaseId = parseInt(req.params.purchaseId, 10);
+    const originalOrderId = parseInt(req.params.orderId, 10);
     const clerkUserId = req.verifiedUserId as string;
-    if (!Number.isFinite(purchaseId)) {
+    if (!Number.isFinite(originalOrderId)) {
       res.status(400).json({ success: false, error: 'Invalid placement.' });
       return;
     }
     try {
-      // active = true for the same reason as guideAdsApi.ts's renew route: a pulled placement
-      // never renders, so charging to extend one would be taking money for nothing.
+      // Any one purchase row under the order is a representative source for business_name/phone/
+      // website/tagline -- all rows in a bundle carry identical values, since they're only ever
+      // written together at capture time (initial or renewal) and the one-time contact edit
+      // (myAdsApi.ts) is applied to a single placement, not per-ZIP within a bundle... actually it
+      // is applied per-purchase-row today, so this picks whichever the DB happens to return first.
+      // Good enough for a renewal prefill; the vendor can still fix any one field via the edit flow.
       const owned = await withDb((sql) => sql`
-        SELECT p.id, p.paid_through, o.contact_email
-        FROM zip_ad_purchases p JOIN zip_ad_orders o ON o.id = p.order_id
-        WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} AND p.active = true LIMIT 1
+        SELECT o.id AS order_id, o.zip_codes_json, o.trade_category, o.contact_email,
+               p.paid_through, p.business_name, p.phone, p.website, p.tagline
+        FROM zip_ad_orders o JOIN zip_ad_purchases p ON p.order_id = o.id
+        WHERE o.id = ${originalOrderId} AND o.clerk_user_id = ${clerkUserId} AND p.active = true
+        LIMIT 1
       `);
-      const purchase = (owned as unknown as Array<{ id: number; paid_through: string; contact_email: string }>)[0];
-      if (!purchase) {
+      const bundle = (owned as unknown as Array<{
+        order_id: number; zip_codes_json: string; trade_category: string; contact_email: string;
+        paid_through: string; business_name: string; phone: string; website: string | null; tagline: string | null;
+      }>)[0];
+      if (!bundle) {
         res.status(404).json({ success: false, error: 'Placement not found.' });
         return;
       }
-      // Once actually expired, one of the (up to) 2 slots for this (zip, trade) pair may already
-      // belong to someone else -- that case goes through the normal "Buy again" checkout flow
-      // instead (see MyAdsPanel.tsx's Expired section), which re-checks availability properly.
-      if (new Date(purchase.paid_through).getTime() <= Date.now()) {
+      // Once actually expired, one or more of the bundle's ZIPs may already belong to someone
+      // else -- that case goes through the normal "Buy again" checkout flow instead (see
+      // MyAdsPanel.tsx's Expired section), which re-checks availability (and re-claims a hold)
+      // properly for a fresh 3-ZIP pick.
+      if (new Date(bundle.paid_through).getTime() <= Date.now()) {
         res.status(409).json({ success: false, error: 'This placement has already expired -- buy it again from My Placements instead.' });
         return;
       }
 
       const appUrl = process.env.APP_URL || 'http://localhost:3000';
+      const zipCodes = JSON.parse(bundle.zip_codes_json || '[]') as string[];
       const paypalOrder = await createPayPalOrder({
-        amount: PRICE_PER_SLOT_USD.toFixed(2),
+        amount: PRICE_PER_BUNDLE_USD.toFixed(2),
         currency: 'USD',
         type: 'vendor_subscription',
         description: `BeforeRegret ZIP ad renewal -- ${SLOT_DURATION_DAYS} more days`,
         returnUrl: `${appUrl}/my-ads?renewed=zip`,
         cancelUrl: `${appUrl}/my-ads`,
-        userEmail: purchase.contact_email,
+        userEmail: bundle.contact_email,
       });
 
+      // No hold needed here (hold_expires_at left null) -- unlike a fresh checkout, a renewal
+      // never contends with another vendor for availability, so there's nothing to reserve.
       await withDb((sql) => sql`
         INSERT INTO zip_ad_orders (
-          paypal_order_id, business_name, trade_category, zip_code, phone, website, tagline,
-          contact_email, amount_usd, status, clerk_user_id, renews_purchase_id
+          paypal_order_id, business_name, trade_category, zip_code, zip_codes_json, phone, website, tagline,
+          contact_email, amount_usd, status, clerk_user_id, renews_order_id
+        ) VALUES (
+          ${paypalOrder.orderId}, ${bundle.business_name}, ${bundle.trade_category}, ${zipCodes[0] ?? ''}, ${bundle.zip_codes_json},
+          ${bundle.phone}, ${bundle.website}, ${bundle.tagline}, ${bundle.contact_email}, ${PRICE_PER_BUNDLE_USD.toFixed(2)},
+          'pending', ${clerkUserId}, ${originalOrderId}
         )
-        SELECT ${paypalOrder.orderId}, business_name, trade_category, zip_code, phone, website, tagline,
-               ${purchase.contact_email}, ${PRICE_PER_SLOT_USD.toFixed(2)}, 'pending', ${clerkUserId}, ${purchaseId}
-        FROM zip_ad_purchases WHERE id = ${purchaseId}
       `);
 
       const approvalUrl = `https://www.${
@@ -359,9 +427,10 @@ export function registerZipAdsRoutes(app: Express) {
     }
   });
 
-  // --- Public: capture a renewal payment and extend the existing placement --------------------
+  // --- Public: capture a renewal payment and extend every ZIP in the bundle --------------------
   // No requireVerifiedUser, same as the regular capture route above -- reached from PayPal's
-  // redirect back, identified by the unguessable orderId, not a fresh Authorization header.
+  // redirect back, identified by the unguessable orderId (a PayPal token here, not a DB id), not
+  // a fresh Authorization header.
   app.post('/api/zip-ads/renew/:orderId/capture', async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     if (!isPayPalConfigured()) {
@@ -372,15 +441,22 @@ export function registerZipAdsRoutes(app: Express) {
     try {
       const orderRows = await withDb((sql) => sql`SELECT * FROM zip_ad_orders WHERE paypal_order_id = ${orderId} LIMIT 1`);
       const order = (orderRows as unknown as any[])[0];
-      if (!order || !order.renews_purchase_id) {
+      if (!order || !order.renews_order_id) {
         res.status(404).json({ success: false, error: 'Renewal order not found.' });
         return;
       }
 
       if (order.status === 'completed') {
-        const rows = await withDb((sql) => sql`SELECT paid_through, zip_code, trade_category FROM zip_ad_purchases WHERE id = ${order.renews_purchase_id} LIMIT 1`);
-        const row = (rows as unknown as Array<{ paid_through: string; zip_code: string; trade_category: string }>)[0];
-        res.json({ success: true, alreadyCaptured: true, paidThrough: row?.paid_through ?? null, zipCode: row?.zip_code, tradeCategory: row?.trade_category });
+        const rows = await withDb((sql) => sql`
+          SELECT zip_code, trade_category, paid_through FROM zip_ad_purchases
+          WHERE order_id = ${order.renews_order_id} ORDER BY zip_code ASC
+        `);
+        const purchases = rows as unknown as Array<{ zip_code: string; trade_category: string; paid_through: string }>;
+        res.json({
+          success: true, alreadyCaptured: true, captureId: order.paypal_capture_id,
+          zips: purchases.map((p) => p.zip_code), tradeCategory: purchases[0]?.trade_category ?? order.trade_category,
+          paidThrough: purchases[0]?.paid_through ?? null,
+        });
         return;
       }
 
@@ -393,39 +469,48 @@ export function registerZipAdsRoutes(app: Express) {
         `);
       }
 
-      // One statement, order-status transition as the lock, contact_edited reset for the new paid
-      // term -- see guideAdsApi.ts's renew capture route for the full reasoning behind all three.
+      // Same order-status-transition-as-lock and contact_edited reset as guideAdsApi.ts's renew
+      // capture route -- except this UPDATE naturally touches every purchase row under the
+      // original order (up to ZIPS_PER_BUNDLE of them) in one statement, not just one, since
+      // p.order_id = claimed.renews_order_id can match more than one row.
       const rows = await withDb((sql) => sql`
         WITH claimed AS (
           UPDATE zip_ad_orders
           SET status = 'completed', paypal_capture_id = ${captureId}, updated_at = now()
           WHERE id = ${order.id} AND status <> 'completed'
-          RETURNING renews_purchase_id
+          RETURNING renews_order_id
         )
         UPDATE zip_ad_purchases p
         SET paid_through = GREATEST(p.paid_through, now()) + (${SLOT_DURATION_DAYS} * interval '1 day'),
             contact_edited = false
         FROM claimed
-        WHERE p.id = claimed.renews_purchase_id
-        RETURNING p.paid_through, p.zip_code, p.trade_category
+        WHERE p.order_id = claimed.renews_order_id
+        RETURNING p.zip_code, p.trade_category, p.paid_through
       `);
-      const updated = (rows as unknown as Array<{ paid_through: string; zip_code: string; trade_category: string }>)[0];
+      const updated = rows as unknown as Array<{ zip_code: string; trade_category: string; paid_through: string }>;
 
-      if (!updated) {
+      // No rows means another request already completed this same renewal order first -- report
+      // what's actually stored rather than pretending this call applied an extension it didn't.
+      if (updated.length === 0) {
         const existing = await withDb((sql) => sql`
-          SELECT paid_through, zip_code, trade_category FROM zip_ad_purchases WHERE id = ${order.renews_purchase_id} LIMIT 1
+          SELECT zip_code, trade_category, paid_through FROM zip_ad_purchases
+          WHERE order_id = ${order.renews_order_id} ORDER BY zip_code ASC
         `);
-        const row = (existing as unknown as Array<{ paid_through: string; zip_code: string; trade_category: string }>)[0];
-        res.json({ success: true, alreadyCaptured: true, captureId, paidThrough: row?.paid_through ?? null, zipCode: row?.zip_code, tradeCategory: row?.trade_category });
+        const purchases = existing as unknown as Array<{ zip_code: string; trade_category: string; paid_through: string }>;
+        res.json({
+          success: true, alreadyCaptured: true, captureId,
+          zips: purchases.map((p) => p.zip_code), tradeCategory: purchases[0]?.trade_category ?? order.trade_category,
+          paidThrough: purchases[0]?.paid_through ?? null,
+        });
         return;
       }
 
       res.json({
         success: true,
         captureId,
-        paidThrough: updated.paid_through,
-        zipCode: updated.zip_code,
-        tradeCategory: updated.trade_category,
+        zips: updated.map((r) => r.zip_code),
+        tradeCategory: updated[0].trade_category,
+        paidThrough: updated[0].paid_through,
       });
     } catch (err: any) {
       console.error('[zip-ads] renew capture failed:', err);

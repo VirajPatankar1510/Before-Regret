@@ -297,11 +297,36 @@ export async function ensureArticlesSchema(): Promise<void> {
   await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS clerk_user_id TEXT`;
   await sql`CREATE INDEX IF NOT EXISTS idx_zip_ad_orders_clerk_user ON zip_ad_orders(clerk_user_id)`;
 
-  // Same renewal-order marker and reasoning as guide_ad_orders.renews_purchase_id above.
+  // Superseded by renews_order_id below -- a bundle renewal extends every purchase under one
+  // order, not a single purchase row, so "which purchase does this renew" stopped being the right
+  // question the moment one order could cover more than one ZIP. Column kept, never dropped, so
+  // any historical row that used it stays readable.
   await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS renews_purchase_id INTEGER REFERENCES zip_ad_purchases(id)`;
 
   // Same one-edit-ever rule and reasoning as guide_ad_purchases.contact_edited above.
   await sql`ALTER TABLE zip_ad_purchases ADD COLUMN IF NOT EXISTS contact_edited BOOLEAN NOT NULL DEFAULT FALSE`;
+
+  // --- 3-ZIP bundle + booking-style hold, added when the product changed from 1 ZIP per $29
+  // purchase to 3. zip_code/trade_category above stay as-is (trade_category is still one value --
+  // a bundle is one trade across 3 ZIPs, not 3 independent trades -- and zip_code is populated
+  // with the first of the three for any code that still only reads the singular column); the
+  // real, authoritative list of what an order actually covers is zip_codes_json.
+  //
+  // hold_expires_at is the ticket-booking-app pattern: the instant a vendor's checkout passes the
+  // availability check, this same zip_ad_orders row -- while still status='pending' -- IS the
+  // reservation, for hold_expires_at's duration (see HOLD_DURATION_MINUTES in zipAdsApi.ts).
+  // Every availability check (the public slots endpoint, a new checkout's own availability check,
+  // and the atomic claim at checkout time) counts a live hold exactly like a real purchase, so a
+  // second vendor can never start paying for a ZIP someone else is already mid-checkout on. A
+  // hold that lapses (payment abandoned, or simply never finished) just stops counting -- nothing
+  // deletes the row, same as this codebase never cleans up any other failed/abandoned order.
+  await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS zip_codes_json TEXT NOT NULL DEFAULT '[]'`;
+  await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS hold_expires_at TIMESTAMPTZ`;
+  // The bundle-aware replacement for renews_purchase_id above -- points at the original order
+  // being renewed (whose zip_codes_json lists every ZIP in the bundle), not one purchase row, so
+  // a single renewal payment extends all of them together, matching how the bundle was sold and
+  // priced as one $29 unit rather than three.
+  await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS renews_order_id INTEGER REFERENCES zip_ad_orders(id)`;
 
   // backlink_leads: candidate forum threads (City-Data, Bogleheads, etc.) found by manually
   // running a search-based scan from the admin page -- see src/server/backlinksApi.ts. Deliberately
