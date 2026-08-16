@@ -55,7 +55,9 @@ export const FINDING_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGOR
 // engine/inspectionPriorities.ts). lead_paint_disclosure (a free, legally-required document
 // check, not a paid trade service) is deliberately left unmatched. asbestos_materials now maps to
 // 'Asbestos/Mold Abatement' -- left unmatched originally because that category didn't exist yet;
-// it's a direct fit now that it does.
+// it's a direct fit now that it does. chimney_level2 and termite_wdi_inspection are new rules
+// (see inspectionPriorities.ts) written specifically to give Chimney Sweep and Pest/Termite
+// Control a real report location -- both categories previously had no matching content anywhere.
 export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGORIES[number]>> = {
   knob_and_tube: 'Electrician',
   electrical_aluminum_wiring: 'Electrician',
@@ -70,6 +72,8 @@ export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGO
   systems_age: 'Home Inspector',
   radon_test: 'Radon Testing',
   asbestos_materials: 'Asbestos/Mold Abatement',
+  chimney_level2: 'Chimney Sweep',
+  termite_wdi_inspection: 'Pest/Termite Control',
 };
 
 // Same pattern again, for the Seller Questions script (see engine/sellerQuestions.ts). Only
