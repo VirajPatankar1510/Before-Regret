@@ -310,7 +310,6 @@ export interface SponsoredVendor {
   tradeCategory: string; // e.g. "Home Inspector", "Roofing Contractor", "Electrician"
   phone: string;
   website?: string;
-  tagline?: string; // short one-liner the vendor writes about themselves
   active: boolean;
 }
 

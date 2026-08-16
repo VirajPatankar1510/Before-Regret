@@ -7,6 +7,7 @@ import { ContactUs } from '../src/components/ContactUs';
 import { TermsConditions } from '../src/components/TermsConditions';
 import { PrivacyPolicy } from '../src/components/PrivacyPolicy';
 import { RefundPolicy } from '../src/components/RefundPolicy';
+import { Disclaimer } from '../src/components/Disclaimer';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 import type { PrerenderedRouteKey } from '../src/routeChunks.js';
 
@@ -106,6 +107,15 @@ const REFUNDS_BREADCRUMB: Record<string, any> = {
 // remain the source of truth for the client render -- kept in sync by hand, the same discipline
 // scripts/prerender-guides.tsx and scripts/prerender-homepage.tsx already rely on for their own
 // hand-copied values.
+const DISCLAIMER_BREADCRUMB: Record<string, any> = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Disclaimer', item: 'https://www.beforeregret.com/disclaimer/' },
+  ],
+};
+
 const PAGES: LegalPageConfig[] = [
   {
     outputPath: 'about',
@@ -179,6 +189,16 @@ const PAGES: LegalPageConfig[] = [
     jsonLd: [PRIVACY_BREADCRUMB],
     Component: PrivacyPolicy,
     routeKey: 'privacy',
+  },
+  {
+    outputPath: 'disclaimer',
+    title: 'Disclaimer | BeforeRegret',
+    description: 'Site-wide disclaimer covering professional advice, third-party government data, AI-generated content, and sponsored placements on BeforeRegret.',
+    canonicalUrl: 'https://www.beforeregret.com/disclaimer/',
+    robots: 'noindex, nofollow',
+    jsonLd: [DISCLAIMER_BREADCRUMB],
+    Component: Disclaimer,
+    routeKey: 'disclaimer',
   },
   {
     outputPath: 'refunds',

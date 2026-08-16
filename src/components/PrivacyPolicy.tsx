@@ -91,7 +91,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                     <span>B. Local Business Vendors (Subscribers)</span>
                   </h3>
                   <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
-                    <li>Business contact details (company name, account email address, business phone number, and an optional website and tagline) -- self-reported by the vendor at checkout, not independently verified by us.</li>
+                    <li>Business contact details (company name, account email address, business phone number, and an optional website) -- self-reported by the vendor at checkout, not independently verified by us.</li>
                     <li>Trade category and selected zip code placement choices.</li>
                     <li>Billing and invoice transaction records handled by our secure payment gateway.</li>
                   </ul>

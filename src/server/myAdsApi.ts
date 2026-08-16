@@ -31,7 +31,7 @@ export function registerMyAdsRoutes(app: Express) {
     try {
       const guideRows = await withDb((sql) => sql`
         SELECT p.id AS purchase_id, p.article_id, a.slug, a.title, p.business_name, p.trade_category,
-               p.phone, p.website, p.tagline, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id,
+               p.phone, p.website, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id,
                o.amount_usd, o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at
         FROM guide_ad_purchases p
         JOIN guide_ad_orders o ON o.id = p.order_id
@@ -42,7 +42,7 @@ export function registerMyAdsRoutes(app: Express) {
 
       const zipRows = await withDb((sql) => sql`
         SELECT p.id AS purchase_id, p.zip_code, p.trade_category, p.business_name, p.phone, p.website,
-               p.tagline, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id, o.amount_usd,
+               p.paid_through, p.created_at, p.contact_edited, o.id AS order_id, o.amount_usd,
                o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at
         FROM zip_ad_purchases p
         JOIN zip_ad_orders o ON o.id = p.order_id
@@ -85,13 +85,13 @@ export function registerMyAdsRoutes(app: Express) {
 
       type GuidePurchaseRow = {
         purchase_id: number; article_id: number; slug: string; title: string; business_name: string;
-        trade_category: string; phone: string; website: string | null; tagline: string | null;
+        trade_category: string; phone: string; website: string | null;
         paid_through: string; created_at: string; contact_edited: boolean; order_id: number; amount_usd: string;
         paypal_order_id: string; paypal_capture_id: string | null; order_created_at: string;
       };
       type ZipPurchaseRow = {
         purchase_id: number; zip_code: string; trade_category: string; business_name: string;
-        phone: string; website: string | null; tagline: string | null; paid_through: string;
+        phone: string; website: string | null; paid_through: string;
         created_at: string; contact_edited: boolean; order_id: number; amount_usd: string; paypal_order_id: string;
         paypal_capture_id: string | null; order_created_at: string;
       };
@@ -106,7 +106,6 @@ export function registerMyAdsRoutes(app: Express) {
         tradeCategory: r.trade_category,
         phone: r.phone,
         website: r.website,
-        tagline: r.tagline,
         paidThrough: r.paid_through,
         active: new Date(r.paid_through).getTime() > now,
         contactEdited: r.contact_edited,
@@ -119,7 +118,6 @@ export function registerMyAdsRoutes(app: Express) {
         businessName: r.business_name,
         phone: r.phone,
         website: r.website,
-        tagline: r.tagline,
         paidThrough: r.paid_through,
         active: new Date(r.paid_through).getTime() > now,
         contactEdited: r.contact_edited,
@@ -187,13 +185,13 @@ export function registerMyAdsRoutes(app: Express) {
   // Business name and trade category are locked -- they define what was sold and reviewed at
   // purchase time (see the adversarial-content-tripwire pattern this app already uses elsewhere:
   // letting the sold identity of a slot change post-purchase without review is the same class of
-  // gap). Phone/website/tagline are the only fields a vendor can update themselves, and only once
+  // gap). Phone and website are the only fields a vendor can update themselves, and only once
   // (contact_edited, enforced here server-side, not just hidden client-side once used).
   app.post('/api/my-ads/guide/:purchaseId', requireVerifiedUser, async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
     const purchaseId = parseInt(req.params.purchaseId, 10);
     const clerkUserId = req.verifiedUserId as string;
-    const { phone, website, tagline } = req.body || {};
+    const { phone, website } = req.body || {};
     if (!Number.isFinite(purchaseId)) {
       res.status(400).json({ success: false, error: 'Invalid request.' });
       return;
@@ -220,7 +218,7 @@ export function registerMyAdsRoutes(app: Express) {
       // kind of race the capture-time slot allocation guard does (see guideAdsApi.ts) -- two
       // near-simultaneous save clicks can't both land as "the" one allowed edit.
       const updated = await withDb((sql) => sql`
-        UPDATE guide_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null}, tagline = ${tagline?.trim() || null}, contact_edited = true
+        UPDATE guide_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null}, contact_edited = true
         WHERE id = ${purchaseId} AND contact_edited = false
         RETURNING id
       `);
@@ -240,7 +238,7 @@ export function registerMyAdsRoutes(app: Express) {
     if (!isDbConfigured()) return dbUnavailable(res);
     const purchaseId = parseInt(req.params.purchaseId, 10);
     const clerkUserId = req.verifiedUserId as string;
-    const { phone, website, tagline } = req.body || {};
+    const { phone, website } = req.body || {};
     if (!Number.isFinite(purchaseId)) {
       res.status(400).json({ success: false, error: 'Invalid request.' });
       return;
@@ -264,7 +262,7 @@ export function registerMyAdsRoutes(app: Express) {
         return;
       }
       const updated = await withDb((sql) => sql`
-        UPDATE zip_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null}, tagline = ${tagline?.trim() || null}, contact_edited = true
+        UPDATE zip_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null}, contact_edited = true
         WHERE id = ${purchaseId} AND contact_edited = false
         RETURNING id
       `);

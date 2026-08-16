@@ -21,9 +21,6 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
           <span>Sponsored · {vendor.tradeCategory}</span>
         </div>
         <h3 className="font-bold text-slate-900 text-base sm:text-lg">{vendor.businessName}</h3>
-        {vendor.tagline && (
-          <p className="text-xs sm:text-sm text-slate-600">{vendor.tagline}</p>
-        )}
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <a

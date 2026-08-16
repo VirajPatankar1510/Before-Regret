@@ -191,6 +191,16 @@ export async function ensureArticlesSchema(): Promise<void> {
   // PayPal integration here only does one-time orders anyway, and true subscriptions are a
   // separate integration (PayPal Billing Plans + webhooks) not worth building before anyone's
   // paid for anything once.
+  //
+  // NOTE ON `tagline`: the four ad tables below each still carry a `tagline` column, but nothing
+  // reads or writes it any more. It was a free-text line a vendor wrote about themselves that this
+  // site then published verbatim on its own pages -- and in practice what vendors wrote were
+  // licensure claims ("Licensed, insured, 20 years in the field") that BeforeRegret never verified
+  // and had no way to stand behind. Publishing an unverified credential claim as site content is a
+  // materially different exposure from a vendor privately warranting their own licensure under
+  // Terms 4.4, so the field was removed from both checkouts, the post-purchase edit flow, and both
+  // ad render components. The columns are deliberately left in place rather than dropped: dropping
+  // them destroys the historical record of what was actually sold and displayed at the time.
   await sql`
     CREATE TABLE IF NOT EXISTS guide_ad_orders (
       id SERIAL PRIMARY KEY,
@@ -199,7 +209,7 @@ export async function ensureArticlesSchema(): Promise<void> {
       trade_category TEXT NOT NULL,
       phone TEXT NOT NULL,
       website TEXT,
-      tagline TEXT,
+      tagline TEXT, -- RETIRED: no longer read or written (see note above); kept so existing rows aren't lost
       contact_email TEXT NOT NULL,
       slots_json TEXT NOT NULL,
       amount_usd NUMERIC(10,2) NOT NULL,
@@ -220,7 +230,7 @@ export async function ensureArticlesSchema(): Promise<void> {
       trade_category TEXT NOT NULL,
       phone TEXT NOT NULL,
       website TEXT,
-      tagline TEXT,
+      tagline TEXT, -- RETIRED: no longer read or written (see note above); kept so existing rows aren't lost
       paid_through TIMESTAMPTZ NOT NULL,
       active BOOLEAN NOT NULL DEFAULT TRUE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -229,7 +239,7 @@ export async function ensureArticlesSchema(): Promise<void> {
   await sql`CREATE INDEX IF NOT EXISTS idx_guide_ad_purchases_slot ON guide_ad_purchases(article_id, position)`;
 
   // A vendor gets exactly one pass at correcting their own contact info post-purchase -- unlimited
-  // self-edits would turn "phone/website/tagline" into an unreviewed second draft of what was
+  // self-edits would turn "phone/website" into an unreviewed second draft of what was
   // actually sold, drifting further from the identity a human approved at purchase time with every
   // edit. One edit covers the real case (a typo, a number that changed) without reopening that gap.
   await sql`ALTER TABLE guide_ad_purchases ADD COLUMN IF NOT EXISTS contact_edited BOOLEAN NOT NULL DEFAULT FALSE`;
@@ -249,6 +259,16 @@ export async function ensureArticlesSchema(): Promise<void> {
   // it's already theirs) and extend paid_through in place instead of inserting a new row.
   await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS renews_purchase_id INTEGER REFERENCES guide_ad_purchases(id)`;
 
+  // Clickwrap receipt for the checkout attestation. The checkbox itself was already required and
+  // enforced server-side, but the answer was validated and thrown away -- so for any existing
+  // order there is no way to show the vendor ever agreed to anything, which is exactly what a
+  // disputed Terms 4.4 licensure warranty would turn on. These two columns record which revision
+  // of the Terms was accepted (see src/data/legalVersions.ts) and when. Nullable by necessity:
+  // orders placed before this existed genuinely have no recorded assent, and inventing a default
+  // timestamp for them would fabricate a record rather than admit its absence.
+  await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS terms_version TEXT`;
+  await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMPTZ`;
+
   // zip_ad_orders / zip_ad_purchases: same split as guide_ad_orders/guide_ad_purchases above and
   // for the same reason (order = checkout attempt, purchase = actually-sold inventory, "who's
   // active right now" is always a live query never a status flag). One selection per order here
@@ -266,7 +286,7 @@ export async function ensureArticlesSchema(): Promise<void> {
       zip_code TEXT NOT NULL,
       phone TEXT NOT NULL,
       website TEXT,
-      tagline TEXT,
+      tagline TEXT, -- RETIRED: no longer read or written (see note above); kept so existing rows aren't lost
       contact_email TEXT NOT NULL,
       amount_usd NUMERIC(10,2) NOT NULL,
       status TEXT NOT NULL DEFAULT 'pending',
@@ -285,7 +305,7 @@ export async function ensureArticlesSchema(): Promise<void> {
       business_name TEXT NOT NULL,
       phone TEXT NOT NULL,
       website TEXT,
-      tagline TEXT,
+      tagline TEXT, -- RETIRED: no longer read or written (see note above); kept so existing rows aren't lost
       paid_through TIMESTAMPTZ NOT NULL,
       active BOOLEAN NOT NULL DEFAULT TRUE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -327,6 +347,10 @@ export async function ensureArticlesSchema(): Promise<void> {
   // a single renewal payment extends all of them together, matching how the bundle was sold and
   // priced as one $29 unit rather than three.
   await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS renews_order_id INTEGER REFERENCES zip_ad_orders(id)`;
+
+  // Clickwrap receipt -- same reasoning as guide_ad_orders.terms_version above.
+  await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS terms_version TEXT`;
+  await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMPTZ`;
 
   // Dedup ledger for the FEMA-declaration county-event drafter (see
   // src/server/femaDeclarationsService.ts / countyEventGenerator.ts). OpenFEMA has no "give me
