@@ -77,7 +77,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                   <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
                     <li>Property address and zip code search query inputs.</li>
                     <li>Account email address (required to claim your free report and track per-account usage).</li>
-                    <li>Technical session metadata (IP address, browser type, device OS) for rate limiting and security.</li>
+                    <li>Technical session metadata (IP address, browser type, device OS) for rate limiting, security, and to record your acceptance of our Terms of Service.</li>
                     <li>Inquiries sent to customer support via email.</li>
                     <li className="font-semibold text-slate-900">
                       For any report beyond your first free report, billing and payment card details are collected and processed directly by a PCI-DSS compliant third-party payment processor; Atmostellar does not store your full card number.
