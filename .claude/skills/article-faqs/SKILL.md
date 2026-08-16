@@ -82,8 +82,17 @@ classes this site has actually shipped and caught before: a truncated article bo
 content wrapped in a ``` fence (an ASCII table or flowchart, which renders as an unreadable
 monochrome box that requires horizontal scrolling on mobile — confirmed on real published pages
 more than once), a table missing a valid GFM separator row (silently falls through to garbled
-prose instead of rendering as a table), a broken `[text](url)` link, or a `[CODE]` citation that
-doesn't resolve against `src/data/knownSources.ts`.
+prose instead of rendering as a table), a malformed `[text](url)` link, an internal link to a guide
+or county that doesn't exist or isn't published, an external link that genuinely 404s or times out
+(a real HTTP check — the one part of this that isn't instant; a 401/403 is reported separately and
+hedged, since bot-protected sites like FEMA.gov block automated checks regardless of whether the
+link actually works for a real visitor — confirmed live against fema.gov with an actual browser
+before trusting that distinction), a `[CODE]` citation that doesn't resolve against
+`src/data/knownSources.ts`, or the one confirmed-bad "adversarial counterparty framing" pattern
+(describing a standard, disclosed practice — a fee, a lease clause — as if it were designed in bad
+faith; see `articleGenerator.ts`'s own comment for the real published mistake that pattern list
+came from) swept across every already-published article, not just whatever's currently open in the
+editor.
 
 If it finds something in one of this batch's articles, **fix it now, before writing that
 article's FAQs** — you cannot write a grounded FAQ against content that's still broken, and a
