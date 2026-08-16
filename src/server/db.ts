@@ -115,6 +115,38 @@ export async function ensureArticlesSchema(): Promise<void> {
   await sql`CREATE INDEX IF NOT EXISTS idx_transactions_paypal_order_id ON transactions(paypal_order_id)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status)`;
 
+  // terms_acceptances: the canonical "who agreed to which revision of the Terms, and when" ledger
+  // for CONSUMERS. The two ad checkouts record their own assent inline on the order row (see
+  // guide_ad_orders/zip_ad_orders.terms_version), because there a purchase always exists to hang
+  // it on. Consumers are different: the free report creates no order and no transaction row, so
+  // there is no per-user record anywhere to attach assent to -- hence a dedicated table rather
+  // than more columns somewhere.
+  //
+  // Why this exists at all: until it did, consumers never affirmatively agreed to anything. The
+  // Terms were reachable only from a footer link, which is browsewrap -- the weakest form of
+  // assent in US law, and routinely held insufficient to bind someone to terms they never saw.
+  // That matters most for any provision the Terms rely on being enforceable, since such a
+  // provision is only worth what you can prove the user accepted.
+  //
+  // UNIQUE on (clerk_user_id, terms_version) makes acceptance idempotent and, critically,
+  // preserves the FIRST acceptance timestamp for a given revision -- re-accepting the same text
+  // on a later visit must not overwrite the date you would actually rely on. A new TERMS_VERSION
+  // (see src/data/legalVersions.ts) naturally produces a new row rather than mutating the old one,
+  // so the history of what each user accepted stays intact across revisions.
+  await sql`
+    CREATE TABLE IF NOT EXISTS terms_acceptances (
+      id SERIAL PRIMARY KEY,
+      clerk_user_id TEXT NOT NULL,
+      user_email TEXT,
+      terms_version TEXT NOT NULL,
+      context TEXT NOT NULL,
+      ip_address TEXT,
+      user_agent TEXT,
+      accepted_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_terms_acceptances_user_version ON terms_acceptances(clerk_user_id, terms_version)`;
+
   // County research pages (see scripts/fetch-county-data.ts and src/server/countiesApi.ts).
   // data_complete is the enforcement point for the "no data, no page" rule: it's only ever set
   // true by the fetch script, and only when all four real data sources (EPA radon zone, Census

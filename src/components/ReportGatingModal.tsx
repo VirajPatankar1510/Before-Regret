@@ -26,10 +26,11 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
   targetAddress,
   onConfirmAndGenerate
 }) => {
-  const { user, loading, triggerClerkSignIn, requestClerkLoad } = useAuth();
+  const { user, loading, triggerClerkSignIn, requestClerkLoad, getToken } = useAuth();
 
   const [step, setStep] = useState<'AUTH_REQUIRED' | 'CLAIM_FREE' | 'PAYMENT_INTERCEPT' | 'PROCESSING' | 'PAYMENT'>('CLAIM_FREE');
   const [errorMessage, setErrorMessage] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // The report flow (search an address, then generate) never touches Navbar's Sign In button, so
   // this is often the FIRST thing that needs real auth state -- without this call, `loading`
@@ -69,6 +70,23 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
     return counts[email.toLowerCase().trim()] || 0;
   }
 
+  // Records that this user accepted the current Terms revision. Deliberately fire-and-forget with
+  // its own try/catch: the user has already been shown the terms and already acted on them, so a
+  // failed audit-log write must not block the report they came here for. A missing row is a gap in
+  // the record; a blocked purchase over a logging failure is a worse outcome. Errors surface in
+  // the server log (see termsApi.ts), not to the user.
+  const recordTermsAcceptance = async (context: 'free_report' | 'paid_report') => {
+    try {
+      const token = await getToken();
+      if (!token) return;
+      await fetch('/api/terms/accept', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ context, userEmail: user?.email || undefined }),
+      });
+    } catch { /* non-fatal by design -- see above */ }
+  };
+
   const handleClaimFreeReport = (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
@@ -76,12 +94,18 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
       return;
     }
     const activeEmail = user.email || `${user.uid}@beforeregret.com`;
+    void recordTermsAcceptance('free_report');
     handleProceedGeneration(activeEmail, false);
   };
 
   const handleProcessPayment = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
+    if (!termsAccepted) {
+      setErrorMessage('Please accept the Terms of Service to continue.');
+      return;
+    }
+    void recordTermsAcceptance('paid_report');
     setStep('PAYMENT');
   };
 
@@ -215,7 +239,18 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
               <span>Claim Free Property Report</span>
             </button>
 
-            <p className="text-[11px] text-slate-500 text-center font-normal">
+            {/* Sign-in-wrap notice, deliberately placed immediately below the action button rather
+                than in a corner: assent to terms is only as good as the notice a reasonable person
+                would actually have seen, and adjacency to the button being clicked is what makes
+                that the case. A checkbox here would add friction to the free top-of-funnel step;
+                the paid step below uses a real checkbox, where the friction is warranted. */}
+            <p className="text-[11px] text-slate-500 text-center font-normal leading-relaxed">
+              By generating this report you agree to our{' '}
+              <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>{' '}
+              and{' '}
+              <a href="/disclaimer" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Disclaimer</a>.
+              Reports are research material, not a home inspection or professional advice.
+              <br />
               No credit card required for your first report. Additional reports are $14.99 each.
             </p>
           </form>
@@ -267,13 +302,32 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
               </div>
             )}
 
+            {/* Real checkbox on the paid path, unchecked by default -- this is the strongest form
+                of assent available and the friction is warranted where money changes hands. */}
+            <label className="flex items-start gap-2.5 p-3 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] text-slate-600 cursor-pointer leading-relaxed">
+              <input
+                type="checkbox" checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="mt-0.5 w-3.5 h-3.5 shrink-0 accent-blue-600 cursor-pointer"
+              />
+              <span>
+                I agree to the{' '}
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>{' '}
+                and{' '}
+                <a href="/disclaimer" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Disclaimer</a>,
+                and understand this report is research material assembled from public data -- not a
+                home inspection, appraisal, or professional advice -- and that all sales are final.
+              </span>
+            </label>
+
             <div className="py-2">
               <div className="text-xs text-slate-600 text-center mb-3 font-medium">
                 Secure Payment Processing
               </div>
               <button
                 type="submit"
-                className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                disabled={!termsAccepted}
+                className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <CreditCard className="w-4 h-4" />
                 <span>Proceed to PayPal</span>

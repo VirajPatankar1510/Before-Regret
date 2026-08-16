@@ -30,6 +30,7 @@ import { registerQuestionQueueRoutes } from "./src/server/questionQueueApi.js";
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerMyAdsRoutes } from "./src/server/myAdsApi.js";
+import { registerTermsRoutes } from "./src/server/termsApi.js";
 import { registerCountyEventsRoutes } from "./src/server/countyEventsApi.js";
 import { registerCountyComparisonRoutes } from "./src/server/countyComparisonApi.js";
 import { registerCountyInsuranceRoutes } from "./src/server/countyInsuranceApi.js";
@@ -233,6 +234,12 @@ export async function createApp() {
   // purchase, expiry, and contact-detail edits. No traffic/visibility stats by design. See
   // src/server/myAdsApi.ts.
   registerMyAdsRoutes(app);
+
+  // --- Consumer Terms acceptance ledger (Neon-backed) -----------------------------------------
+  // Records that a signed-in consumer affirmatively accepted the current Terms revision, for the
+  // free-report and paid-report paths. See src/server/termsApi.ts for why this is its own
+  // endpoint rather than a field on the report-generation route.
+  registerTermsRoutes(app);
 
   // --- FEMA-declaration county-event drafter (Neon-backed) ------------------------------------
   // Checks OpenFEMA for new disaster declarations in counties BeforeRegret already covers with
