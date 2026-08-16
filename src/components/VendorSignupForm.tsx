@@ -53,7 +53,7 @@ export const VendorSignupForm: React.FC = () => {
       return;
     }
     if (!/^\d{5}$/.test(zip)) {
-      setCheckError('Enter a valid 5-digit ZIP code.');
+      setCheckError('Enter a 5-digit ZIP code.');
       return;
     }
     if (selectedZips.includes(zip)) {
