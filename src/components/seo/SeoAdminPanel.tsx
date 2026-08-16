@@ -561,11 +561,39 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     }
   };
 
-  // Same reasoning as openArticleBySlug just above -- articles is already loaded, so this is a
-  // client-side lookup, not another round trip.
-  const openArticleById = (id: number) => {
-    const article = articles?.find((a) => a.id === id);
-    if (article) openEditor(article);
+  // Deliberately NOT a plain client-side lookup like openArticleBySlug above -- articles is only
+  // loaded once, on mount, but the content audit can flag an article that was edited or published
+  // entirely outside this browser session (e.g. directly via the database, which is how every fix
+  // this skill makes actually lands -- see .claude/skills/article-faqs/). A stale local lookup
+  // would silently do nothing on click for exactly the articles someone is most likely to want to
+  // open right after fixing them elsewhere. Checking the loaded list first keeps the common case
+  // instant; the live GET only fires when that list genuinely doesn't have it yet.
+  const [openingArticleId, setOpeningArticleId] = useState<number | null>(null);
+  const openArticleById = async (id: number) => {
+    const cached = articles?.find((a) => a.id === id);
+    if (cached) {
+      openEditor(cached);
+      return;
+    }
+    setOpeningArticleId(id);
+    // contentAuditError, not actionError -- a failed lookup happens while still on the list view
+    // (openEditor/setView('edit') is only reached on success), and actionError only renders
+    // inside the editor view below, so it would set state a user could never actually see. This
+    // renders right inside the audit card the click came from instead.
+    setContentAuditError(null);
+    try {
+      const res = await fetch(`/api/admin/articles/${id}`);
+      const data = await res.json();
+      if (data?.success) {
+        openEditor(data.article);
+      } else {
+        setContentAuditError(data?.error || `Could not open article #${id} -- it may have been deleted.`);
+      }
+    } catch {
+      setContentAuditError('Could not reach the server.');
+    } finally {
+      setOpeningArticleId(null);
+    }
   };
 
   const loadComparisonStatus = () => {
@@ -1142,8 +1170,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                             <li key={`${f.id}-${idx}`} className="text-xs">
                               <button
                                 onClick={() => openArticleById(f.id)}
-                                className="text-blue-400 hover:text-blue-300 font-semibold underline decoration-blue-400/40 hover:decoration-blue-300 cursor-pointer"
+                                disabled={openingArticleId === f.id}
+                                className="text-blue-400 hover:text-blue-300 font-semibold underline decoration-blue-400/40 hover:decoration-blue-300 cursor-pointer disabled:opacity-60 disabled:cursor-wait inline-flex items-center gap-1"
                               >
+                                {openingArticleId === f.id && <Loader2 className="w-3 h-3 animate-spin" />}
                                 {f.title}
                               </button>
                               <span className="text-slate-500"> -- {f.detail}</span>
