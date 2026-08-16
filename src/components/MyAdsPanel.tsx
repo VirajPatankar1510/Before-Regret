@@ -11,7 +11,6 @@ interface GuidePlacement {
   tradeCategory: string;
   phone: string;
   website: string | null;
-  tagline: string | null;
   paidThrough: string;
   active: boolean;
   contactEdited: boolean;
@@ -25,7 +24,6 @@ interface ZipPlacement {
   businessName: string;
   phone: string;
   website: string | null;
-  tagline: string | null;
   paidThrough: string;
   active: boolean;
   contactEdited: boolean;
@@ -85,7 +83,6 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editPhone, setEditPhone] = useState('');
   const [editWebsite, setEditWebsite] = useState('');
-  const [editTagline, setEditTagline] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
@@ -198,11 +195,10 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const groupedActiveZips = useMemo(() => groupZipsByOrder(activeZips), [activeZips]);
   const groupedExpiredZips = useMemo(() => groupZipsByOrder(expiredZips), [expiredZips]);
 
-  const startEdit = (key: string, p: { phone: string; website: string | null; tagline: string | null }) => {
+  const startEdit = (key: string, p: { phone: string; website: string | null }) => {
     setEditingKey(key);
     setEditPhone(p.phone);
     setEditWebsite(p.website || '');
-    setEditTagline(p.tagline || '');
     setEditError(null);
   };
 
@@ -222,11 +218,11 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
       const res = await fetch(`/api/my-ads/guide/${purchaseId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ phone: editPhone.trim(), website: editWebsite.trim() || undefined, tagline: editTagline.trim() || undefined }),
+        body: JSON.stringify({ phone: editPhone.trim(), website: editWebsite.trim() || undefined }),
       });
       const data = await res.json();
       if (!data.success) { setEditError(data?.error || 'Could not save.'); setSavingEdit(false); return; }
-      setGuidePlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, tagline: editTagline.trim() || null, contactEdited: true } : p));
+      setGuidePlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, contactEdited: true } : p));
       setEditingKey(null);
     } catch {
       setEditError('Could not reach the server.');
@@ -246,11 +242,11 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
       const res = await fetch(`/api/my-ads/zip/${purchaseId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ phone: editPhone.trim(), website: editWebsite.trim() || undefined, tagline: editTagline.trim() || undefined }),
+        body: JSON.stringify({ phone: editPhone.trim(), website: editWebsite.trim() || undefined }),
       });
       const data = await res.json();
       if (!data.success) { setEditError(data?.error || 'Could not save.'); setSavingEdit(false); return; }
-      setZipPlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, tagline: editTagline.trim() || null, contactEdited: true } : p));
+      setZipPlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, contactEdited: true } : p));
       setEditingKey(null);
     } catch {
       setEditError('Could not reach the server.');
@@ -318,7 +314,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const renewGuide = (p: GuidePlacement) => {
     sessionStorage.setItem(RENEW_GUIDE_KEY, JSON.stringify({
       articleIds: [p.articleId], businessName: p.businessName, tradeCategory: p.tradeCategory,
-      phone: p.phone, website: p.website, tagline: p.tagline,
+      phone: p.phone, website: p.website,
     }));
     onNavigate('/topic-ads');
   };
@@ -331,7 +327,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     const [first] = group;
     sessionStorage.setItem(RENEW_ZIP_KEY, JSON.stringify({
       zipCodes: group.map((p) => p.zipCode), tradeCategory: first.tradeCategory, businessName: first.businessName,
-      phone: first.phone, website: first.website, tagline: first.tagline,
+      phone: first.phone, website: first.website,
     }));
     onNavigate('/report-ads');
   };
@@ -425,7 +421,6 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
       </p>
       <input type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="Phone" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs" />
       <input type="url" value={editWebsite} onChange={(e) => setEditWebsite(e.target.value)} placeholder="Website (optional)" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs" />
-      <input type="text" value={editTagline} onChange={(e) => setEditTagline(e.target.value)} placeholder="Tagline (optional)" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs" />
       {editError && <p className="text-xs text-rose-600">{editError}</p>}
       <div className="flex gap-2">
         <button type="button" onClick={onSave} disabled={savingEdit} className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg disabled:opacity-60">

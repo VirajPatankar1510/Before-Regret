@@ -65,7 +65,7 @@ dotenv.config();
 // server routing yet; a path added there needs adding here too.
 const KNOWN_STATIC_ROUTE_PREFIXES = [
   '/advertise', '/my-ads', '/topic-ads', '/report-ads',
-  '/about', '/support', '/terms', '/privacy', '/refunds', '/refund-policy',
+  '/about', '/support', '/terms', '/privacy', '/refunds', '/refund-policy', '/disclaimer',
   '/payment-success', '/payment-cancelled',
   '/admin/seo',
   '/guides/', '/counties/',

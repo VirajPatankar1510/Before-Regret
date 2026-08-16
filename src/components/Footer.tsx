@@ -163,6 +163,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                 <li><ContentLink href="/terms" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Terms of Service</ContentLink></li>
                 <li><ContentLink href="/privacy" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Privacy Policy</ContentLink></li>
                 <li><ContentLink href="/refunds" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Refund & Cancellation</ContentLink></li>
+                <li><ContentLink href="/disclaimer" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Disclaimer</ContentLink></li>
               </ul>
             </div>
           </div>

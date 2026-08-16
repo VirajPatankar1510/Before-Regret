@@ -12,7 +12,6 @@ interface ActiveVendor {
   tradeCategory: string;
   phone: string;
   website?: string;
-  tagline?: string;
 }
 
 // Self-serve vendor ad slot, open market, $7.99/30 days -- see src/server/guideAdsApi.ts. One
@@ -71,7 +70,6 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle 
             <div className="min-w-0">
               <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">{vendor.tradeCategory}</div>
               <div className="text-sm font-bold text-slate-900 mt-0.5">{vendor.businessName}</div>
-              {vendor.tagline && <p className="text-xs text-slate-600 mt-1 leading-relaxed">{vendor.tagline}</p>}
             </div>
           </div>
           <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">

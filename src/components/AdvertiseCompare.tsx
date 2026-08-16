@@ -39,7 +39,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can I edit my listing after I’ve paid?',
-    a: 'Yes -- phone, website, and tagline can be changed any time from My Placements. Business name and trade category are locked once purchased, since those define what was sold.',
+    a: 'Yes -- phone and website can be changed any time from My Placements. Business name and trade category are locked once purchased, since those define what was sold.',
   },
   {
     q: 'Can I buy both Topic Ads and Report Ads?',

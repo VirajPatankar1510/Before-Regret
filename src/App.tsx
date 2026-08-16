@@ -60,6 +60,7 @@ const ContactUs = lazy(() => routeChunkLoaders.support().then((m) => ({ default:
 const TermsConditions = lazy(() => routeChunkLoaders.terms().then((m) => ({ default: m.TermsConditions })));
 const PrivacyPolicy = lazy(() => routeChunkLoaders.privacy().then((m) => ({ default: m.PrivacyPolicy })));
 const RefundPolicy = lazy(() => routeChunkLoaders.refunds().then((m) => ({ default: m.RefundPolicy })));
+const Disclaimer = lazy(() => routeChunkLoaders.disclaimer().then((m) => ({ default: m.Disclaimer })));
 
 /** Shown only while a split chunk above is in flight -- never on a prerendered landing page. */
 const RouteChunkFallback: React.FC = () => (
@@ -143,7 +144,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
     countySlug?: string;
   }>({ type: 'none' });
@@ -223,6 +224,12 @@ export function App() {
 
     if (path === '/refunds/' || path.startsWith('/refunds') || path.startsWith('/refund-policy')) {
       setPseoRoute({ type: 'refunds' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    if (path === '/disclaimer/' || path.startsWith('/disclaimer')) {
+      setPseoRoute({ type: 'disclaimer' });
       setCurrentStep('PSEO');
       return true;
     }
@@ -572,6 +579,23 @@ export function App() {
             'itemListElement': [
               { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
               { '@type': 'ListItem', 'position': 2, 'name': 'Refund Policy', 'item': 'https://www.beforeregret.com/refunds/' }
+            ]
+          }
+        ]
+      });
+    } else if (pseoRoute.type === 'disclaimer') {
+      applyHeadSeo({
+        title: 'Disclaimer | BeforeRegret',
+        description: 'Site-wide disclaimer covering professional advice, third-party government data, AI-generated content, and sponsored placements on BeforeRegret.',
+        canonicalUrl: 'https://www.beforeregret.com/disclaimer/',
+        robotsDirective: 'noindex, nofollow',
+        jsonLdSchema: [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Disclaimer', 'item': 'https://www.beforeregret.com/disclaimer/' }
             ]
           }
         ]
@@ -931,6 +955,9 @@ export function App() {
             )}
             {pseoRoute.type === 'refunds' && (
               <RefundPolicy onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'disclaimer' && (
+              <Disclaimer onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'paymentSuccess' && (
               <PaymentSuccess />

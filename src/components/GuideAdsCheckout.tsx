@@ -72,7 +72,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [tradeCategory, setTradeCategory] = useState('');
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
-  const [tagline, setTagline] = useState('');
   const [attestedAccurate, setAttestedAccurate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -99,13 +98,12 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     if (!raw) return;
     sessionStorage.removeItem('br_renew_guide_ads');
     try {
-      const renew = JSON.parse(raw) as { articleIds: number[]; businessName: string; tradeCategory: string; phone: string; website: string | null; tagline: string | null };
+      const renew = JSON.parse(raw) as { articleIds: number[]; businessName: string; tradeCategory: string; phone: string; website: string | null };
       setSelected(new Set(renew.articleIds));
       setBusinessName(renew.businessName || '');
       setTradeCategory(renew.tradeCategory || '');
       setPhone(renew.phone || '');
       setWebsite(renew.website || '');
-      setTagline(renew.tagline || '');
     } catch { /* malformed stash, ignore */ }
   }, []);
 
@@ -169,7 +167,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     if (!tradeCategory) return setSubmitError('Choose a business type.');
     if (!phone.trim()) return setSubmitError('Enter a phone number for readers to call.');
     if (selectedCount === 0) return setSubmitError('Select at least one guide below.');
-    if (!attestedAccurate) return setSubmitError('Confirm the business information above is accurate before continuing.');
+    if (!attestedAccurate) return setSubmitError('Tick the confirmation box to accept the Terms of Service before continuing.');
     if (!user) return setSubmitError('Sign in to complete your purchase.');
 
     const contactEmail = user.email || `${user.uid}@beforeregret.com`;
@@ -193,7 +191,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           tradeCategory,
           phone: phone.trim(),
           website: website.trim() || undefined,
-          tagline: tagline.trim() || undefined,
           contactEmail,
           slots: Array.from(selected),
           attestedAccurate,
@@ -358,7 +355,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                 <div className="min-w-0">
                   <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">Electrician</div>
                   <div className="text-sm font-bold text-slate-900 mt-0.5">Example Electric Co.</div>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">Locally owned, same-day estimates</p>
                 </div>
               </div>
               <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">
@@ -403,11 +399,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                 onChange={(e) => setWebsite(e.target.value)}
                 className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm sm:col-span-2"
               />
-              <input
-                type="text" placeholder="One-line tagline shown next to your number (optional)" value={tagline}
-                onChange={(e) => setTagline(e.target.value)}
-                className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm sm:col-span-2"
-              />
             </div>
             <label className="flex items-start gap-2.5 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 cursor-pointer">
               <input
@@ -415,7 +406,11 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                 onChange={(e) => setAttestedAccurate(e.target.checked)}
                 className="mt-0.5 w-3.5 h-3.5 shrink-0 accent-blue-600 cursor-pointer"
               />
-              <span>I confirm the business name, phone number, and other details above are accurate and that I'm authorized to advertise this business. BeforeRegret does not independently verify this.</span>
+              <span>
+                I confirm the details above are accurate, that I'm authorized to advertise this
+                business, and that I hold any licenses and insurance my trade requires. I agree to the{' '}
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>.
+              </span>
             </label>
           </div>
 

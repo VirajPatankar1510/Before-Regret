@@ -35,7 +35,6 @@ export const VendorSignupForm: React.FC = () => {
   const [businessName, setBusinessName] = useState('');
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
-  const [tagline, setTagline] = useState('');
   const [attestedAccurate, setAttestedAccurate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
@@ -104,13 +103,12 @@ export const VendorSignupForm: React.FC = () => {
     sessionStorage.removeItem('br_renew_zip_ad');
     try {
       const stash = JSON.parse(raw) as {
-        zipCodes: string[]; tradeCategory: string; businessName: string; phone: string; website: string | null; tagline: string | null;
+        zipCodes: string[]; tradeCategory: string; businessName: string; phone: string; website: string | null;
       };
       setTradeCategory(stash.tradeCategory || '');
       setBusinessName(stash.businessName || '');
       setPhone(stash.phone || '');
       setWebsite(stash.website || '');
-      setTagline(stash.tagline || '');
       (async () => {
         for (const zip of (stash.zipCodes || []).slice(0, ZIPS_PER_BUNDLE)) {
           await addZip(zip, stash.tradeCategory);
@@ -127,7 +125,7 @@ export const VendorSignupForm: React.FC = () => {
     if (!businessName.trim()) return setSubmitErrors(['Enter your business name.']);
     if (!phone.trim()) return setSubmitErrors(['Enter a phone number for readers to call.']);
     if (selectedZips.length !== ZIPS_PER_BUNDLE) return setSubmitErrors([`Select ${ZIPS_PER_BUNDLE} ZIP codes first.`]);
-    if (!attestedAccurate) return setSubmitErrors(['Confirm the business information above is accurate before continuing.']);
+    if (!attestedAccurate) return setSubmitErrors(['Tick the confirmation box to accept the Terms of Service before continuing.']);
 
     const contactEmail = user.email || `${user.uid}@beforeregret.com`;
 
@@ -150,7 +148,6 @@ export const VendorSignupForm: React.FC = () => {
           zipCodes: selectedZips,
           phone: phone.trim(),
           website: website.trim() || undefined,
-          tagline: tagline.trim() || undefined,
           contactEmail,
           attestedAccurate,
         }),
@@ -294,19 +291,17 @@ export const VendorSignupForm: React.FC = () => {
               onChange={(e) => setWebsite(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
             />
-            <input
-              type="text" placeholder="Short tagline for your listing (optional)" value={tagline}
-              onChange={(e) => setTagline(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-            />
-
             <label className="flex items-start gap-2.5 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 cursor-pointer">
               <input
                 type="checkbox" checked={attestedAccurate}
                 onChange={(e) => setAttestedAccurate(e.target.checked)}
                 className="mt-0.5 w-3.5 h-3.5 shrink-0 accent-blue-600 cursor-pointer"
               />
-              <span>I confirm the business name, phone number, and other details above are accurate and that I'm authorized to advertise this business. BeforeRegret does not independently verify this.</span>
+              <span>
+                I confirm the details above are accurate, that I'm authorized to advertise this
+                business, and that I hold any licenses and insurance my trade requires. I agree to the{' '}
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>.
+              </span>
             </label>
 
             {submitErrors.length > 0 && (

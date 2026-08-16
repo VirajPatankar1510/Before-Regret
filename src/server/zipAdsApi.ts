@@ -5,6 +5,7 @@ import { isPayPalConfigured, createPayPalOrder, capturePayPalOrder } from './pay
 import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors.js';
 import type { SponsoredVendor } from '../types.js';
 import { requireVerifiedUser } from './clerkAuth.js';
+import { TERMS_VERSION } from '../data/legalVersions.js';
 
 // Self-serve, ZIP-targeted vendor ad slots inside reports: one vendor per (zip, trade category)
 // purchase, at most MAX_SLOTS_PER_ZIP_TRADE active at once per pair, $29 for a flat 30-day
@@ -62,13 +63,13 @@ export async function fetchActiveZipVendors(zipCode: string | undefined | null):
   if (!zipCode || !isDbConfigured()) return map;
   try {
     const rows = await withDb((sql) => sql`
-      SELECT id, zip_code, trade_category, business_name, phone, website, tagline
+      SELECT id, zip_code, trade_category, business_name, phone, website
       FROM zip_ad_purchases
       WHERE zip_code = ${zipCode} AND active = true AND paid_through > now()
       ORDER BY created_at ASC
     `);
     for (const row of rows as unknown as Array<{
-      id: number; zip_code: string; trade_category: string; business_name: string; phone: string; website: string | null; tagline: string | null;
+      id: number; zip_code: string; trade_category: string; business_name: string; phone: string; website: string | null;
     }>) {
       // All active vendors for a (zip, trade) pair now, not just the first -- ORDER BY created_at
       // ASC keeps earliest-purchased first within each list. Capped at MAX_SLOTS_PER_ZIP_TRADE as
@@ -83,7 +84,6 @@ export async function fetchActiveZipVendors(zipCode: string | undefined | null):
           tradeCategory: row.trade_category,
           phone: row.phone,
           website: row.website || undefined,
-          tagline: row.tagline || undefined,
           active: true,
         });
         map.set(row.trade_category, list);
@@ -151,7 +151,7 @@ export function registerZipAdsRoutes(app: Express) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const { businessName, tradeCategory, zipCodes, phone, website, tagline, contactEmail, attestedAccurate } = req.body || {};
+    const { businessName, tradeCategory, zipCodes, phone, website, contactEmail, attestedAccurate } = req.body || {};
     const errors: string[] = [];
     if (typeof businessName !== 'string' || !businessName.trim()) errors.push('Business name is required.');
     if (typeof tradeCategory !== 'string' || !(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) errors.push('Please choose a valid trade category.');
@@ -162,7 +162,7 @@ export function registerZipAdsRoutes(app: Express) {
     }
     if (typeof phone !== 'string' || phone.trim().length < 7) errors.push('A valid phone number is required.');
     if (typeof contactEmail !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) errors.push('A valid contact email is required.');
-    if (attestedAccurate !== true) errors.push('You must confirm the business information is accurate before checking out.');
+    if (attestedAccurate !== true) errors.push('You must accept the Terms of Service and confirm your business details before checking out.');
     if (errors.length > 0) {
       res.status(400).json({ success: false, errors });
       return;
@@ -193,11 +193,12 @@ export function registerZipAdsRoutes(app: Express) {
       const claimed = await withDb((sql) => sql`
         INSERT INTO zip_ad_orders (
           paypal_order_id, business_name, trade_category, zip_code, zip_codes_json, phone, website,
-          tagline, contact_email, amount_usd, status, clerk_user_id, hold_expires_at
+          contact_email, amount_usd, status, clerk_user_id, hold_expires_at, terms_version, terms_accepted_at
         )
         SELECT ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${zip1}, ${JSON.stringify(uniqueZips)},
-               ${phone}, ${website || null}, ${tagline || null}, ${contactEmail}, ${amount}, 'pending',
-               ${req.verifiedUserId as string}, now() + (${HOLD_DURATION_MINUTES} * interval '1 minute')
+               ${phone}, ${website || null}, ${contactEmail}, ${amount}, 'pending',
+               ${req.verifiedUserId as string}, now() + (${HOLD_DURATION_MINUTES} * interval '1 minute'),
+               ${TERMS_VERSION}, now()
         WHERE (
           (SELECT COUNT(*)::int FROM zip_ad_purchases WHERE zip_code = ${zip1} AND trade_category = ${tradeCategory} AND active = true AND paid_through > now())
           + (SELECT COUNT(*)::int FROM zip_ad_orders WHERE trade_category = ${tradeCategory} AND status = 'pending' AND hold_expires_at > now() AND zip_codes_json::jsonb ? ${zip1})
@@ -322,10 +323,10 @@ export function registerZipAdsRoutes(app: Express) {
           }
           const inserted = await sql`
             INSERT INTO zip_ad_purchases (
-              order_id, zip_code, trade_category, business_name, phone, website, tagline, paid_through
+              order_id, zip_code, trade_category, business_name, phone, website, paid_through
             )
             SELECT ${order.id}, ${zip}, ${order.trade_category}, ${order.business_name},
-                   ${order.phone}, ${order.website}, ${order.tagline}, ${paidThrough.toISOString()}
+                   ${order.phone}, ${order.website}, ${paidThrough.toISOString()}
             WHERE (
               SELECT COUNT(*) FROM zip_ad_purchases
               WHERE zip_code = ${zip} AND trade_category = ${order.trade_category}
@@ -386,21 +387,21 @@ export function registerZipAdsRoutes(app: Express) {
     }
     try {
       // Any one purchase row under the order is a representative source for business_name/phone/
-      // website/tagline -- all rows in a bundle carry identical values, since they're only ever
+      // website -- all rows in a bundle carry identical values, since they're only ever
       // written together at capture time (initial or renewal) and the one-time contact edit
       // (myAdsApi.ts) is applied to a single placement, not per-ZIP within a bundle... actually it
       // is applied per-purchase-row today, so this picks whichever the DB happens to return first.
       // Good enough for a renewal prefill; the vendor can still fix any one field via the edit flow.
       const owned = await withDb((sql) => sql`
         SELECT o.id AS order_id, o.zip_codes_json, o.trade_category, o.contact_email,
-               p.paid_through, p.business_name, p.phone, p.website, p.tagline
+               p.paid_through, p.business_name, p.phone, p.website
         FROM zip_ad_orders o JOIN zip_ad_purchases p ON p.order_id = o.id
         WHERE o.id = ${originalOrderId} AND o.clerk_user_id = ${clerkUserId} AND p.active = true
         LIMIT 1
       `);
       const bundle = (owned as unknown as Array<{
         order_id: number; zip_codes_json: string; trade_category: string; contact_email: string;
-        paid_through: string; business_name: string; phone: string; website: string | null; tagline: string | null;
+        paid_through: string; business_name: string; phone: string; website: string | null;
       }>)[0];
       if (!bundle) {
         res.status(404).json({ success: false, error: 'Placement not found.' });
@@ -431,11 +432,11 @@ export function registerZipAdsRoutes(app: Express) {
       // never contends with another vendor for availability, so there's nothing to reserve.
       await withDb((sql) => sql`
         INSERT INTO zip_ad_orders (
-          paypal_order_id, business_name, trade_category, zip_code, zip_codes_json, phone, website, tagline,
+          paypal_order_id, business_name, trade_category, zip_code, zip_codes_json, phone, website,
           contact_email, amount_usd, status, clerk_user_id, renews_order_id
         ) VALUES (
           ${paypalOrder.orderId}, ${bundle.business_name}, ${bundle.trade_category}, ${zipCodes[0] ?? ''}, ${bundle.zip_codes_json},
-          ${bundle.phone}, ${bundle.website}, ${bundle.tagline}, ${bundle.contact_email}, ${PRICE_PER_BUNDLE_USD.toFixed(2)},
+          ${bundle.phone}, ${bundle.website}, ${bundle.contact_email}, ${PRICE_PER_BUNDLE_USD.toFixed(2)},
           'pending', ${clerkUserId}, ${originalOrderId}
         )
       `);

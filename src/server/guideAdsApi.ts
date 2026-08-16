@@ -3,6 +3,7 @@ import { withDb, isDbConfigured } from './db.js';
 import { isPayPalConfigured, createPayPalOrder, capturePayPalOrder } from './paypalService.js';
 import { TRADE_CATEGORIES } from '../data/sponsoredVendors.js';
 import { requireVerifiedUser } from './clerkAuth.js';
+import { TERMS_VERSION } from '../data/legalVersions.js';
 
 // Self-serve vendor ad slots on guide pages: one slot per guide, open market (any business, any
 // guide, no trade-category matching required), $7.99 per slot for a flat 30-day window, no
@@ -86,7 +87,7 @@ export function registerGuideAdsRoutes(app: Express) {
     }
     try {
       const rows = await withDb((sql) => sql`
-        SELECT business_name, trade_category, phone, website, tagline
+        SELECT business_name, trade_category, phone, website
         FROM guide_ad_purchases
         WHERE article_id = ${articleId} AND position = ${SLOT_POSITION} AND active = true AND paid_through > now()
         ORDER BY created_at DESC LIMIT 1
@@ -104,7 +105,6 @@ export function registerGuideAdsRoutes(app: Express) {
           tradeCategory: row.trade_category,
           phone: row.phone,
           website: row.website,
-          tagline: row.tagline,
         },
       });
     } catch (err: any) {
@@ -128,7 +128,7 @@ export function registerGuideAdsRoutes(app: Express) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const { businessName, tradeCategory, phone, website, tagline, contactEmail, slots, attestedAccurate } = req.body;
+    const { businessName, tradeCategory, phone, website, contactEmail, slots, attestedAccurate } = req.body;
     if (!businessName || typeof businessName !== 'string') {
       res.status(400).json({ success: false, error: 'Business name is required.' });
       return;
@@ -150,7 +150,7 @@ export function registerGuideAdsRoutes(app: Express) {
       return;
     }
     if (attestedAccurate !== true) {
-      res.status(400).json({ success: false, error: 'You must confirm the business information is accurate before checking out.' });
+      res.status(400).json({ success: false, error: 'You must accept the Terms of Service and confirm your business details before checking out.' });
       return;
     }
 
@@ -180,10 +180,12 @@ export function registerGuideAdsRoutes(app: Express) {
 
       await withDb((sql) => sql`
         INSERT INTO guide_ad_orders (
-          paypal_order_id, business_name, trade_category, phone, website, tagline, contact_email, slots_json, amount_usd, status, clerk_user_id
+          paypal_order_id, business_name, trade_category, phone, website, contact_email, slots_json, amount_usd, status, clerk_user_id,
+          terms_version, terms_accepted_at
         ) VALUES (
-          ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${phone}, ${website || null}, ${tagline || null},
-          ${contactEmail}, ${JSON.stringify(slots)}, ${amount}, 'pending', ${req.verifiedUserId as string}
+          ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${phone}, ${website || null},
+          ${contactEmail}, ${JSON.stringify(slots)}, ${amount}, 'pending', ${req.verifiedUserId as string},
+          ${TERMS_VERSION}, now()
         )
       `);
 
@@ -281,10 +283,10 @@ export function registerGuideAdsRoutes(app: Express) {
           // "claim it" as one atomic statement, so only the first insert to arrive can ever win.
           const inserted = await sql`
             INSERT INTO guide_ad_purchases (
-              order_id, article_id, position, business_name, trade_category, phone, website, tagline, paid_through
+              order_id, article_id, position, business_name, trade_category, phone, website, paid_through
             )
             SELECT ${order.id}, ${articleId}, ${SLOT_POSITION}, ${order.business_name}, ${order.trade_category},
-                   ${order.phone}, ${order.website}, ${order.tagline}, ${paidThrough.toISOString()}
+                   ${order.phone}, ${order.website}, ${paidThrough.toISOString()}
             WHERE NOT EXISTS (
               SELECT 1 FROM guide_ad_purchases
               WHERE article_id = ${articleId} AND position = ${SLOT_POSITION} AND active = true AND paid_through > now()
@@ -401,10 +403,10 @@ export function registerGuideAdsRoutes(app: Express) {
 
       await withDb((sql) => sql`
         INSERT INTO guide_ad_orders (
-          paypal_order_id, business_name, trade_category, phone, website, tagline, contact_email,
+          paypal_order_id, business_name, trade_category, phone, website, contact_email,
           slots_json, amount_usd, status, clerk_user_id, renews_purchase_id
         )
-        SELECT ${paypalOrder.orderId}, business_name, trade_category, phone, website, tagline,
+        SELECT ${paypalOrder.orderId}, business_name, trade_category, phone, website,
                ${purchase.contact_email}, '[]', ${PRICE_PER_SLOT_USD.toFixed(2)}, 'pending', ${clerkUserId}, ${purchaseId}
         FROM guide_ad_purchases WHERE id = ${purchaseId}
       `);

@@ -30,7 +30,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can I edit my listing after I’ve paid?',
-    a: 'Yes -- phone, website, and tagline can be updated any time from My Placements. Business name and trade category are locked once purchased.',
+    a: 'Yes -- phone and website can be updated any time from My Placements. Business name and trade category are locked once purchased.',
   },
   {
     q: `Why only ${MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP and trade?`,
@@ -141,7 +141,6 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
                 <span>Sponsored -- Roof Inspection</span>
               </div>
               <h3 className="font-bold text-slate-900 text-base sm:text-lg">Apex Roofing &amp; Inspection LLC</h3>
-              <p className="text-xs sm:text-sm text-slate-600">Licensed &amp; insured, serving this ZIP code</p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <span className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl">

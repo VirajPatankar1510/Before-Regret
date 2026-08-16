@@ -1,0 +1,247 @@
+import React, { useEffect } from 'react';
+import { ArrowLeft, AlertTriangle, Database, Cpu, Megaphone, Scale, Link2, ShieldAlert } from 'lucide-react';
+
+interface DisclaimerProps {
+  onBackToHome: () => void;
+  onNavigate?: (path: string) => void;
+}
+
+// The site-wide disclaimer, deliberately its own page rather than another section buried inside
+// TermsConditions.tsx. Two reasons. First, conspicuousness: a disclaimer's protective value
+// depends on whether a reasonable person would actually have seen it, and a linked page in the
+// footer that a reader can reach in one click from anywhere is a materially stronger position than
+// clause 6(c) of a document nobody opens. Second, audience: the Terms are a contract with people
+// who transact (report buyers, ad vendors), while this page has to reach every visitor -- most of
+// whom never buy anything and are therefore never presented with the Terms at all.
+//
+// Scope note for whoever edits this next: every section below describes something this site
+// genuinely does. The AI section is here because reports and guides really are Gemini-generated
+// (see src/server/articleGenerator.ts); the advertiser section is here because ad placements
+// really are unverified self-reported businesses (see src/server/zipAdsApi.ts); the third-party
+// data section names the actual agencies the reports pull from. Do not add boilerplate for things
+// this site does not do -- an over-broad disclaimer that disclaims obviously-inapplicable things
+// reads as unconsidered and undercuts the parts that matter.
+export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate }) => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 font-sans text-slate-900">
+      <div className="max-w-4xl mx-auto space-y-8">
+
+        <div className="flex items-center justify-between border-b border-slate-200 pb-6">
+          <button
+            onClick={() => {
+              if (onNavigate) onNavigate('/');
+              else onBackToHome();
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition-all border border-slate-200 cursor-pointer shadow-xs"
+          >
+            <ArrowLeft className="w-4 h-4 text-slate-500" />
+            <span>Return to Home</span>
+          </button>
+          <span className="text-xs font-mono text-slate-500">Last Revised: August 17, 2026</span>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs space-y-8">
+
+          <div className="border-b border-slate-200 pb-6 space-y-3">
+            <p className="text-xs font-medium text-slate-400">
+              Expert property research guides for US home buyers. Uncover what matters before closing.
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Disclaimer
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              This disclaimer applies to the entire <strong>Before Regret</strong> website
+              (beforeregret.com), including all property research reports, guide articles, county
+              pages, comparison data, and sponsored placements. It is operated by <strong>Atmostellar</strong>{' '}
+              ("we", "us", "our"). It supplements, and does not replace, our{' '}
+              <a href="/terms" className="text-blue-600 hover:underline font-bold">Terms of Service</a> and{' '}
+              <a href="/privacy" className="text-blue-600 hover:underline font-bold">Privacy Policy</a>.
+            </p>
+          </div>
+
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 space-y-2">
+            <div className="font-bold flex items-center gap-1.5 text-amber-950">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>Read this first</span>
+            </div>
+            <p className="leading-relaxed">
+              Nothing on this website is professional advice, and nothing on it is a substitute for
+              having a qualified, licensed professional physically examine a property. Everything
+              here is preliminary research material intended to help you ask better questions and
+              know what to check. <strong>Do not make a purchase, sale, lease, financing, or
+              insurance decision based on this website alone.</strong>
+            </p>
+          </div>
+
+          <div className="prose prose-slate max-w-none text-xs sm:text-sm text-slate-700 leading-relaxed space-y-6">
+
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-slate-400 shrink-0" />
+                <span>1. No Professional Advice of Any Kind</span>
+              </h2>
+              <p>
+                The content on this website is provided for general informational and educational
+                purposes only. It does not constitute, and must not be relied upon as:
+              </p>
+              <ul className="list-disc pl-5 space-y-1.5">
+                <li><strong>A home inspection.</strong> We never physically visit, enter, or examine any property. No report we produce is a home inspection, a four-point inspection, a wind mitigation report, or any other inspection recognized by a lender or insurer.</li>
+                <li><strong>Engineering or environmental advice.</strong> Nothing here is a structural engineering assessment, a geotechnical report, an environmental site assessment, a radon measurement, a mold assessment, or a pest/WDO inspection.</li>
+                <li><strong>Legal advice.</strong> Nothing here is a title opinion, a survey, a lien or encumbrance search, a zoning determination, or advice about any contract, disclosure obligation, or dispute. We are not a law firm and no attorney-client relationship is created by using this site.</li>
+                <li><strong>Financial, investment, or tax advice.</strong> Nothing here is an appraisal, a valuation, a mortgage recommendation, or advice about whether any property is a sound investment. We are not licensed financial advisers, appraisers, mortgage brokers, or real estate brokers.</li>
+                <li><strong>Insurance advice.</strong> Statements about how insurers commonly treat a building material, system, or property condition are general industry description only. We are not licensed insurance producers or adjusters, we do not know your carrier's underwriting rules, and we cannot tell you whether any specific property will be insurable or at what price.</li>
+              </ul>
+              <p>
+                Always retain appropriately licensed professionals in the relevant jurisdiction
+                before acting. Where our content and a licensed professional's findings conflict,
+                <strong> rely on the professional.</strong>
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
+                <Database className="w-4 h-4 text-slate-400 shrink-0" />
+                <span>2. Third-Party and Government Data</span>
+              </h2>
+              <p>
+                Substantial portions of this site are assembled from public datasets published by
+                third parties, including the Federal Emergency Management Agency (FEMA), the
+                National Oceanic and Atmospheric Administration (NOAA), the U.S. Environmental
+                Protection Agency (EPA), the U.S. Geological Survey (USGS), the U.S. Census Bureau,
+                and county and municipal record systems.
+              </p>
+              <p>
+                We do not create, control, audit, or independently verify that data. It may be
+                incomplete, out of date, superseded, mis-geocoded, or wrong at the source, and the
+                agencies that publish it revise it on their own schedules without notice to us.
+                Risk scores, hazard ratings, radon zones, event counts, housing-era estimates, and
+                permit histories are <strong>area-level or classification-level indicators, not
+                statements about any individual property.</strong> A county-level or ZIP-level
+                figure tells you nothing definitive about a specific address within it.
+              </p>
+              <p>
+                All content is provided on an <strong>"AS IS"</strong> and <strong>"AS
+                AVAILABLE"</strong> basis, without warranty of any kind, express or implied,
+                including any implied warranty of merchantability, fitness for a particular purpose,
+                accuracy, or non-infringement.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
+                <Cpu className="w-4 h-4 text-slate-400 shrink-0" />
+                <span>3. AI-Generated and AI-Assisted Content</span>
+              </h2>
+              <p>
+                Property research reports and many guide articles on this site are generated or
+                drafted with the assistance of large language models, working from the public data
+                and editorial rules described above. We apply automated grounding checks and human
+                review to reduce errors, but <strong>AI-generated text can still be wrong,
+                incomplete, outdated, or confidently mistaken</strong> in ways that are not
+                immediately obvious to a reader.
+              </p>
+              <p>
+                Treat every specific figure, date, code reference, threshold, and cost estimate on
+                this site as a starting point to be verified against the cited primary source or a
+                licensed professional -- not as an established fact. If you spot something wrong,
+                please tell us at{' '}
+                <a href="mailto:hello@beforeregret.com" className="text-blue-600 hover:underline font-bold">hello@beforeregret.com</a>{' '}
+                and we will correct it.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
+                <Megaphone className="w-4 h-4 text-slate-400 shrink-0" />
+                <span>4. Sponsored Placements and Advertisers</span>
+              </h2>
+              <p>
+                This website carries paid advertising from local businesses, always labeled
+                "Sponsored" or "Ad". These placements are <strong>self-serve and sold without any
+                vetting process.</strong> The business name, trade category, phone number, and
+                website shown are supplied by the advertiser at checkout.
+              </p>
+              <p>
+                <strong>We do not verify any advertiser's licensing, insurance, bonding,
+                certifications, qualifications, background, complaint history, or work quality.</strong>{' '}
+                A business appearing on this site is not vetted, endorsed, recommended, certified,
+                or approved by us, and its placement here says nothing about its competence or
+                standing. Advertisers separately warrant to us that they hold the licenses and
+                insurance their trade requires, but we do not confirm that warranty and you should
+                not rely on it.
+              </p>
+              <p>
+                Before hiring anyone you find through this site, independently confirm their license
+                with your state or local licensing authority, request current proof of insurance,
+                and check references. Any agreement you enter into with an advertiser is solely
+                between you and that business. <strong>We are not a party to it and accept no
+                liability for their acts, omissions, workmanship, pricing, or conduct.</strong>
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
+                <Link2 className="w-4 h-4 text-slate-400 shrink-0" />
+                <span>5. External Links</span>
+              </h2>
+              <p>
+                This site links to external websites, including government portals, agency
+                databases, and advertiser websites, purely for convenience and reference. We do not
+                control those sites, do not endorse their content, and are not responsible for their
+                accuracy, availability, security, or privacy practices. Following an external link
+                is at your own risk and subject to that site's own terms.
+              </p>
+            </section>
+
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
+                <Scale className="w-4 h-4 text-slate-400 shrink-0" />
+                <span>6. No Guaranteed Outcomes; No Relationship Created</span>
+              </h2>
+              <p>
+                We make no guarantee that using this site will identify every defect, hazard,
+                encumbrance, or cost associated with a property, or that it will produce any
+                particular outcome in a transaction, negotiation, inspection, or insurance
+                application. <strong>The absence of a finding on this site is not evidence that a
+                problem does not exist</strong> -- it commonly means only that the public data we
+                could reach did not record one.
+              </p>
+              <p>
+                Using this website does not create any advisory, fiduciary, agency, brokerage, or
+                professional relationship between you and Atmostellar. We do not represent you in
+                any transaction and have no duty to act in your interest in one.
+              </p>
+              <p>
+                Your use of this site is governed by the limitations of liability and other terms
+                set out in our{' '}
+                <a href="/terms" className="text-blue-600 hover:underline font-bold">Terms of Service</a>,
+                which are incorporated into this disclaimer by reference. Nothing in this disclaimer
+                is intended to exclude or limit any liability that cannot lawfully be excluded or
+                limited under the law applicable to you, including rights you may hold under
+                consumer protection legislation in your jurisdiction.
+              </p>
+            </section>
+
+            <section className="space-y-2 pt-2 border-t border-slate-200">
+              <h2 className="text-base font-bold text-slate-900">7. Questions and Corrections</h2>
+              <p>
+                To report an inaccuracy, request a correction, or ask about anything on this page,
+                contact us at:
+              </p>
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-1">
+                <p className="font-bold text-slate-900">Atmostellar (Operating Entity for Before Regret)</p>
+                <p>Mumbai, Maharashtra, India</p>
+                <p>Support Email: <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a></p>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
