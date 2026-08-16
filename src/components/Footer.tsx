@@ -164,7 +164,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
               already draw on this API (county housing-age/insurance-cost comparisons, the era x
               defect reference library) -- this is the one, site-wide place that notice lives,
               rather than repeating it on every page that happens to use Census data. */}
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-slate-400">
             This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau.
           </p>
         </div>
