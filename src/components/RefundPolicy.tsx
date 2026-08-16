@@ -83,9 +83,9 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                 2. Business Vendor Placements Overview
               </h2>
               <p>
-                Atmostellar offers two self-serve, one-time-payment placement products for local business vendors (contractors, home inspectors, pest control specialists, environmental remediation specialists): a <strong>Topic Ad</strong>, shown on educational guide articles across the site, and a <strong>Report Ad</strong>, shown as a sponsored placement ("Need help verifying this?" section) inside property reports for one specific zip code and trade category. Neither is a subscription -- each is a single, one-time charge for a fixed 30-day placement window, with no automatic renewal or re-billing of any kind.
+                Atmostellar offers two self-serve, one-time-payment placement products for local business vendors (contractors, home inspectors, pest control specialists, environmental remediation specialists): a <strong>Topic Ad</strong>, shown on educational guide articles across the site, and a <strong>Report Ad</strong>, shown as a sponsored placement ("Need help verifying this?" section) inside property reports for a bundle of three zip codes within one trade category. Neither is a subscription -- each is a single, one-time charge for a fixed 30-day placement window, with no automatic renewal or re-billing of any kind.
               </p>
-              <p>Pricing is a flat rate per slot, with no tiers or bundles:</p>
+              <p>Pricing is a flat rate per slot, with no tiers:</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto">
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl text-center space-y-1">
@@ -94,13 +94,13 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                   <p className="text-xs text-blue-800 font-medium">One-time charge, no auto-renewal</p>
                 </div>
                 <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Report Ad, Per Zip + Trade</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Report Ad, 3 Zips + Trade</span>
                   <div className="text-lg font-black text-emerald-900">$29 <span className="text-xs font-normal text-emerald-600">/ 30 days</span></div>
                   <p className="text-xs text-emerald-800 font-medium">One-time charge, no auto-renewal</p>
                 </div>
               </div>
               <p className="text-xs text-slate-500">
-                A separate one-time purchase, charged separately at the same flat rate, is required for each additional slot a vendor wishes to appear in. To keep a placement active beyond its 30-day window, the vendor must return and purchase another window -- nothing renews automatically.
+                A separate one-time purchase, charged separately at the same flat rate, is required for each additional slot or bundle a vendor wishes to appear in. To keep a placement active beyond its 30-day window, the vendor must return and purchase another window -- nothing renews automatically.
               </p>
               <div className="flex items-start gap-2 text-xs text-slate-500 pt-1">
                 <CreditCard className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />

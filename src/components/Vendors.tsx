@@ -96,7 +96,7 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
             </div>
             <h3 className="font-extrabold text-base text-slate-900">Prominent, Not Buried</h3>
             <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              Your placement appears near the top of every report generated for your ZIP code -- right after the summary, not scattered in a directory or buried at the bottom of the page.
+              Your placement appears near the top of every report generated for any of your ZIP codes -- right after the summary, not scattered in a directory or buried at the bottom of the page.
             </p>
           </div>
 
@@ -180,18 +180,19 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
           <div className="text-center space-y-2 max-w-2xl mx-auto">
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">Simple, Flat Pricing</h2>
             <p className="text-xs sm:text-sm text-slate-600">
-              One ZIP code, one trade category, one price. No tiers, no bundles, no subscription.
+              Three ZIP codes, one trade category, one price. No tiers, no subscription.
             </p>
           </div>
 
           <div className="max-w-sm mx-auto border-2 border-blue-600 rounded-2xl p-8 space-y-5 bg-white shadow-md text-center">
-            <div className="text-xs font-bold text-blue-600 uppercase tracking-wider font-mono">Per ZIP Code, Per Trade</div>
-            <div className="text-4xl font-black text-slate-900">$29 <span className="text-sm font-normal text-slate-500">/ 30 days</span></div>
-            <div className="text-xs text-slate-500">Less than $1/day</div>
+            <div className="text-xs font-bold text-blue-600 uppercase tracking-wider font-mono">Per Bundle, Per Trade</div>
+            <div className="text-4xl font-black text-slate-900">$29 <span className="text-sm font-normal text-slate-500">for 3 ZIP codes / 30 days</span></div>
+            <div className="text-xs text-slate-500">Less than $1/day, across all 3 ZIP codes</div>
             <ul className="text-xs text-slate-600 space-y-2 pt-3 border-t border-slate-200 text-left">
+              <li className="flex items-center gap-2">✓ Pick any 3 ZIP codes at checkout, one trade category</li>
               <li className="flex items-center gap-2">✓ Only {MAX_SLOTS_PER_ZIP_TRADE} businesses shown per trade category, per ZIP</li>
               <li className="flex items-center gap-2">✓ First come, first served</li>
-              <li className="flex items-center gap-2">✓ Pay once, no auto-renewal -- buy another window any time to keep your slot</li>
+              <li className="flex items-center gap-2">✓ Pay once, no auto-renewal -- buy another window any time to keep your slots</li>
               <li className="flex items-center gap-2">✓ No refunds once payment completes</li>
             </ul>
           </div>

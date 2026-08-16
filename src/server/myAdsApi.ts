@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireVerifiedUser } from './clerkAuth.js';
 import { PRICE_PER_SLOT_USD as GUIDE_PRICE_USD, SLOT_DURATION_DAYS as RENEWAL_DAYS } from './guideAdsApi.js';
-import { PRICE_PER_SLOT_USD as ZIP_PRICE_USD } from './zipAdsApi.js';
+import { PRICE_PER_BUNDLE_USD as ZIP_PRICE_USD, ZIPS_PER_BUNDLE } from './zipAdsApi.js';
 
 // The vendor-facing placement manager (/my-ads) -- deliberately not called a "dashboard" anywhere
 // in its copy, since it carries zero traffic/impression stats by design (this app doesn't
@@ -68,8 +68,9 @@ export function registerMyAdsRoutes(app: Express) {
         ORDER BY o.created_at DESC
       `);
       const zipOrderRows = await withDb((sql) => sql`
-        SELECT id, paypal_order_id, paypal_capture_id, amount_usd, status, zip_code, trade_category,
-               created_at, renews_purchase_id
+        SELECT id, paypal_order_id, paypal_capture_id, amount_usd, status, trade_category,
+               created_at, renews_order_id,
+               (SELECT array_agg(p.zip_code ORDER BY p.zip_code) FROM zip_ad_purchases p WHERE p.order_id = zip_ad_orders.id) AS granted_zips
         FROM zip_ad_orders WHERE clerk_user_id = ${clerkUserId} AND status = 'completed'
         ORDER BY created_at DESC
       `);
@@ -104,6 +105,7 @@ export function registerMyAdsRoutes(app: Express) {
       }));
       const zipPlacements = (zipRows as unknown as ZipPurchaseRow[]).map((r) => ({
         purchaseId: r.purchase_id,
+        orderId: r.order_id,
         zipCode: r.zip_code,
         tradeCategory: r.trade_category,
         businessName: r.business_name,
@@ -133,19 +135,28 @@ export function registerMyAdsRoutes(app: Express) {
         })),
         ...(zipOrderRows as unknown as Array<{
           id: number; paypal_order_id: string; paypal_capture_id: string | null; amount_usd: string;
-          status: string; zip_code: string; trade_category: string; created_at: string;
-          renews_purchase_id: number | null;
-        }>).map((o) => ({
-          type: 'zip' as const,
-          orderId: o.id,
-          paypalOrderId: o.paypal_order_id,
-          paypalCaptureId: o.paypal_capture_id,
-          amountUsd: o.amount_usd,
-          createdAt: o.created_at,
-          // Prefixed so a renewal is distinguishable from the original purchase -- otherwise the
-          // two render as identical rows, same text and same amount, impossible to reconcile.
-          description: `${o.renews_purchase_id ? 'Renewal -- ' : ''}${o.trade_category} in ZIP ${o.zip_code}`,
-        })),
+          status: string; trade_category: string; created_at: string;
+          renews_order_id: number | null; granted_zips: string[] | null;
+        }>).map((o) => {
+          // granted_zips (from zip_ad_purchases) is what was actually granted, not what was
+          // requested -- an order that lost every ZIP to the availability race still charged the
+          // vendor and belongs in history (same reasoning as guideAdsApi.ts's capture route), so
+          // this falls back to a plain description rather than an empty ZIP list when nothing
+          // ended up granted.
+          const zips = o.granted_zips ?? [];
+          const zipsLabel = zips.length > 0 ? `ZIP ${zips.join(', ')}` : 'no ZIPs granted';
+          return {
+            type: 'zip' as const,
+            orderId: o.id,
+            paypalOrderId: o.paypal_order_id,
+            paypalCaptureId: o.paypal_capture_id,
+            amountUsd: o.amount_usd,
+            createdAt: o.created_at,
+            // Prefixed so a renewal is distinguishable from the original purchase -- otherwise the
+            // two render as identical rows, same text and same amount, impossible to reconcile.
+            description: `${o.renews_order_id ? 'Renewal -- ' : ''}${o.trade_category} in ${zipsLabel}`,
+          };
+        }),
       ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
       // Renewal pricing travels with the placements so the dashboard can state the amount before
@@ -156,7 +167,7 @@ export function registerMyAdsRoutes(app: Express) {
         guidePlacements,
         zipPlacements,
         orders,
-        renewal: { guidePriceUsd: GUIDE_PRICE_USD, zipPriceUsd: ZIP_PRICE_USD, days: RENEWAL_DAYS },
+        renewal: { guidePriceUsd: GUIDE_PRICE_USD, zipPriceUsd: ZIP_PRICE_USD, days: RENEWAL_DAYS, zipsPerBundle: ZIPS_PER_BUNDLE },
       });
     } catch (err: any) {
       console.error('[my-ads] load failed:', err);
