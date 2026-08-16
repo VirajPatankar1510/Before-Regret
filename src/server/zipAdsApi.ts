@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from 'express';
+import zipcodes from 'zipcodes';
 import { withDb, isDbConfigured } from './db.js';
 import { isPayPalConfigured, createPayPalOrder, capturePayPalOrder } from './paypalService.js';
 import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors.js';
@@ -94,8 +95,12 @@ export async function fetchActiveZipVendors(zipCode: string | undefined | null):
   return map;
 }
 
+// Format alone (5 digits) admits plenty of numbers USPS never assigned -- 00000, 11111, 99999 --
+// which would let a vendor pay for a slot no report can ever be generated in. zipcodes.lookup
+// carries USPS's actual ZIP roster (incl. city/state/country), so this rejects anything that
+// isn't a real, currently-assigned US ZIP code.
 function isValidZip(zip: unknown): zip is string {
-  return typeof zip === 'string' && /^\d{5}$/.test(zip);
+  return typeof zip === 'string' && /^\d{5}$/.test(zip) && zipcodes.lookup(zip)?.country === 'US';
 }
 
 export function registerZipAdsRoutes(app: Express) {
@@ -107,7 +112,7 @@ export function registerZipAdsRoutes(app: Express) {
     const zipCode = typeof req.query.zip === 'string' ? req.query.zip.trim() : '';
     const tradeCategory = typeof req.query.tradeCategory === 'string' ? req.query.tradeCategory.trim() : '';
     if (!isValidZip(zipCode)) {
-      res.status(400).json({ success: false, error: 'A valid 5-digit ZIP code is required.' });
+      res.status(400).json({ success: false, error: 'Enter a real, currently-assigned 5-digit U.S. ZIP code.' });
       return;
     }
     if (!(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) {
@@ -153,7 +158,7 @@ export function registerZipAdsRoutes(app: Express) {
     const zipList: string[] = Array.isArray(zipCodes) ? zipCodes.filter((z) => typeof z === 'string') : [];
     const uniqueZips = Array.from(new Set(zipList));
     if (uniqueZips.length !== ZIPS_PER_BUNDLE || !uniqueZips.every(isValidZip)) {
-      errors.push(`Select exactly ${ZIPS_PER_BUNDLE} different 5-digit ZIP codes.`);
+      errors.push(`Select exactly ${ZIPS_PER_BUNDLE} different, real U.S. ZIP codes.`);
     }
     if (typeof phone !== 'string' || phone.trim().length < 7) errors.push('A valid phone number is required.');
     if (typeof contactEmail !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) errors.push('A valid contact email is required.');

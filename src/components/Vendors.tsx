@@ -198,8 +198,11 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
           </div>
         </div>
 
-        {/* FAQ -- right before the form, so the honest answers (no verification, no view
-            guarantee, no refunds) land just before the moment of filling it in, not after. */}
+        {/* Vendor Signup Form -- above the FAQ, so the primary action (claiming ZIPs) is what
+            greets someone ready to buy, with the honest answers (no verification, no view
+            guarantee, no refunds) right underneath for anyone who scrolls down still unsure. */}
+        <VendorSignupForm />
+
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-1">
           <h2 className="font-serif text-xl font-bold text-slate-900 mb-4">Questions before you buy</h2>
           {FAQ_ITEMS.map((item, idx) => {
@@ -221,12 +224,6 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
               </div>
             );
           })}
-        </div>
-
-        {/* Vendor Signup Form */}
-        <div className="space-y-2">
-          <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider text-center">Ready when you are</div>
-          <VendorSignupForm />
         </div>
 
         {/* Disclaimer / What is NOT Guaranteed */}
