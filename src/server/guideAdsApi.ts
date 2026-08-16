@@ -128,7 +128,7 @@ export function registerGuideAdsRoutes(app: Express) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const { businessName, tradeCategory, phone, website, tagline, contactEmail, slots } = req.body;
+    const { businessName, tradeCategory, phone, website, tagline, contactEmail, slots, attestedAccurate } = req.body;
     if (!businessName || typeof businessName !== 'string') {
       res.status(400).json({ success: false, error: 'Business name is required.' });
       return;
@@ -147,6 +147,10 @@ export function registerGuideAdsRoutes(app: Express) {
     }
     if (!isValidArticleIdList(slots)) {
       res.status(400).json({ success: false, error: 'Select at least one guide page.' });
+      return;
+    }
+    if (attestedAccurate !== true) {
+      res.status(400).json({ success: false, error: 'You must confirm the business information is accurate before checking out.' });
       return;
     }
 

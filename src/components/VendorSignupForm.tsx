@@ -36,6 +36,7 @@ export const VendorSignupForm: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
   const [tagline, setTagline] = useState('');
+  const [attestedAccurate, setAttestedAccurate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
 
@@ -126,6 +127,7 @@ export const VendorSignupForm: React.FC = () => {
     if (!businessName.trim()) return setSubmitErrors(['Enter your business name.']);
     if (!phone.trim()) return setSubmitErrors(['Enter a phone number for readers to call.']);
     if (selectedZips.length !== ZIPS_PER_BUNDLE) return setSubmitErrors([`Select ${ZIPS_PER_BUNDLE} ZIP codes first.`]);
+    if (!attestedAccurate) return setSubmitErrors(['Confirm the business information above is accurate before continuing.']);
 
     const contactEmail = user.email || `${user.uid}@beforeregret.com`;
 
@@ -150,6 +152,7 @@ export const VendorSignupForm: React.FC = () => {
           website: website.trim() || undefined,
           tagline: tagline.trim() || undefined,
           contactEmail,
+          attestedAccurate,
         }),
       });
       const data = await res.json();
@@ -296,6 +299,15 @@ export const VendorSignupForm: React.FC = () => {
               onChange={(e) => setTagline(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
             />
+
+            <label className="flex items-start gap-2.5 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 cursor-pointer">
+              <input
+                type="checkbox" checked={attestedAccurate}
+                onChange={(e) => setAttestedAccurate(e.target.checked)}
+                className="mt-0.5 w-3.5 h-3.5 shrink-0 accent-blue-600 cursor-pointer"
+              />
+              <span>I confirm the business name, phone number, and other details above are accurate and that I'm authorized to advertise this business. BeforeRegret does not independently verify this.</span>
+            </label>
 
             {submitErrors.length > 0 && (
               <ul className="text-xs text-red-600 font-medium space-y-0.5 flex flex-col">

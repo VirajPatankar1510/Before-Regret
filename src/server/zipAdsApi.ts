@@ -112,7 +112,7 @@ export function registerZipAdsRoutes(app: Express) {
     const zipCode = typeof req.query.zip === 'string' ? req.query.zip.trim() : '';
     const tradeCategory = typeof req.query.tradeCategory === 'string' ? req.query.tradeCategory.trim() : '';
     if (!isValidZip(zipCode)) {
-      res.status(400).json({ success: false, error: 'Enter a real, currently-assigned 5-digit U.S. ZIP code.' });
+      res.status(400).json({ success: false, error: 'Enter a valid U.S. ZIP.' });
       return;
     }
     if (!(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) {
@@ -151,7 +151,7 @@ export function registerZipAdsRoutes(app: Express) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const { businessName, tradeCategory, zipCodes, phone, website, tagline, contactEmail } = req.body || {};
+    const { businessName, tradeCategory, zipCodes, phone, website, tagline, contactEmail, attestedAccurate } = req.body || {};
     const errors: string[] = [];
     if (typeof businessName !== 'string' || !businessName.trim()) errors.push('Business name is required.');
     if (typeof tradeCategory !== 'string' || !(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) errors.push('Please choose a valid trade category.');
@@ -162,6 +162,7 @@ export function registerZipAdsRoutes(app: Express) {
     }
     if (typeof phone !== 'string' || phone.trim().length < 7) errors.push('A valid phone number is required.');
     if (typeof contactEmail !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) errors.push('A valid contact email is required.');
+    if (attestedAccurate !== true) errors.push('You must confirm the business information is accurate before checking out.');
     if (errors.length > 0) {
       res.status(400).json({ success: false, errors });
       return;

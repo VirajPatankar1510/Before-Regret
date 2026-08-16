@@ -21,7 +21,7 @@ interface GuideAdsCheckoutProps {
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'Do you verify businesses before listing them?',
-    a: 'No -- this is self-serve. Business name, trade category, and contact details are self-reported at checkout, not independently verified.',
+    a: 'No -- this is self-serve. Business name, trade category, and contact details are self-reported at checkout, and you confirm they\'re accurate with a checkbox there, but nothing is independently verified on our end.',
   },
   {
     q: 'How many people will see my ad?',
@@ -33,7 +33,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What happens when my placement expires?',
-    a: 'It stops showing and the slot reopens for other vendors. No reminder email is sent right now -- check My Placements or come back to buy another window if you want to stay live.',
+    a: 'It stops showing and the slot reopens for other vendors.',
   },
   {
     q: 'Can I edit my phone or website after I’ve paid?',
@@ -73,6 +73,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
   const [tagline, setTagline] = useState('');
+  const [attestedAccurate, setAttestedAccurate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -168,6 +169,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     if (!tradeCategory) return setSubmitError('Choose a business type.');
     if (!phone.trim()) return setSubmitError('Enter a phone number for readers to call.');
     if (selectedCount === 0) return setSubmitError('Select at least one guide below.');
+    if (!attestedAccurate) return setSubmitError('Confirm the business information above is accurate before continuing.');
     if (!user) return setSubmitError('Sign in to complete your purchase.');
 
     const contactEmail = user.email || `${user.uid}@beforeregret.com`;
@@ -194,6 +196,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           tagline: tagline.trim() || undefined,
           contactEmail,
           slots: Array.from(selected),
+          attestedAccurate,
         }),
       });
       const data = await res.json();
@@ -406,6 +409,14 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                 className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm sm:col-span-2"
               />
             </div>
+            <label className="flex items-start gap-2.5 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 cursor-pointer">
+              <input
+                type="checkbox" checked={attestedAccurate}
+                onChange={(e) => setAttestedAccurate(e.target.checked)}
+                className="mt-0.5 w-3.5 h-3.5 shrink-0 accent-blue-600 cursor-pointer"
+              />
+              <span>I confirm the business name, phone number, and other details above are accurate and that I'm authorized to advertise this business. BeforeRegret does not independently verify this.</span>
+            </label>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-3">
