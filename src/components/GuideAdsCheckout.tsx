@@ -325,7 +325,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             </div>
             <h3 className="font-extrabold text-base text-slate-900">Lowest Cost Per Slot</h3>
             <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              ${pricePerSlot.toFixed(2)} vs. $29 for a Report Ad -- a good fit if you serve customers across many
+              ${pricePerSlot.toFixed(2)} -- a good fit if you serve customers across many
               cities or the whole country.
             </p>
           </div>
@@ -336,7 +336,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             what actually renders on a live guide page. */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
           <div className="space-y-2">
-            <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Visual Placement Preview</div>
             <h2 className="font-serif text-2xl font-bold text-slate-900">How Your Listing Appears</h2>
             <p className="text-xs sm:text-sm text-slate-600">
               This is exactly what your placement looks like on a guide page, right after the reader's Quick Answer:
