@@ -125,7 +125,6 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
         {/* Visual Example of Sponsored Block */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
           <div className="space-y-2">
-            <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Visual Placement Preview</div>
             <h2 className="font-serif text-2xl font-bold text-slate-900">How Placements Appear in Reports</h2>
             <p className="text-xs sm:text-sm text-slate-600">
               This is exactly what your placement looks like inside a real report -- same component, same fields:
