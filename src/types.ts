@@ -1,6 +1,14 @@
 import type { InspectionPriority } from './engine/inspectionPriorities';
 import type { SellerQuestion } from './engine/sellerQuestions';
 
+// A published guide's title + real URL -- shared by any generator that needs to cite an actual
+// BeforeRegret guide by name (countyEventGenerator.ts, defectReferenceGenerator.ts) rather than
+// invent one.
+export interface GuideReference {
+  title: string;
+  url: string;
+}
+
 export type ViewState =
   | 'HOME'
   | 'RESEARCHING'

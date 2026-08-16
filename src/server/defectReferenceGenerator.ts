@@ -11,7 +11,7 @@
 
 import { Type, type Schema } from '@google/genai';
 import { PRIORITY_RULES, PriorityRule } from '../engine/inspectionPriorities.js';
-import { GuideReference } from './backlinkReplyGenerator.js';
+import { GuideReference } from '../types.js';
 
 // The subset of PRIORITY_RULES that are genuine material/system defects with a real era window,
 // as opposed to region-driven rules (foundation type, landslide, radon) or general age-based

@@ -43,7 +43,6 @@ const ZipAdsCheckoutSuccess = lazy(() => import('./components/ZipAdsCheckoutSucc
 const AdvertiseCompare = lazy(() => import('./components/AdvertiseCompare').then((m) => ({ default: m.AdvertiseCompare })));
 const MyAdsPanel = lazy(() => import('./components/MyAdsPanel').then((m) => ({ default: m.MyAdsPanel })));
 const SeoAdminPanel = lazy(() => import('./components/seo/SeoAdminPanel').then((m) => ({ default: m.SeoAdminPanel })));
-const BacklinksAdminPanel = lazy(() => import('./components/admin/BacklinksAdminPanel').then((m) => ({ default: m.BacklinksAdminPanel })));
 const AdminGate = lazy(() => import('./components/admin/AdminGate').then((m) => ({ default: m.AdminGate })));
 const PaymentSuccess = lazy(() => import('./components/PaymentSuccess').then((m) => ({ default: m.PaymentSuccess })));
 const PaymentCancelled = lazy(() => import('./components/PaymentCancelled').then((m) => ({ default: m.PaymentCancelled })));
@@ -144,7 +143,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'adminBacklinks' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
     countySlug?: string;
   }>({ type: 'none' });
@@ -236,12 +235,6 @@ export function App() {
 
     if (path === '/payment-cancelled/' || path.startsWith('/payment-cancelled')) {
       setPseoRoute({ type: 'paymentCancelled' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path.startsWith('/admin/backlinks')) {
-      setPseoRoute({ type: 'adminBacklinks' });
       setCurrentStep('PSEO');
       return true;
     }
@@ -639,13 +632,6 @@ export function App() {
         canonicalUrl: 'https://www.beforeregret.com/admin/seo',
         robotsDirective: 'noindex, nofollow'
       });
-    } else if (pseoRoute.type === 'adminBacklinks') {
-      applyHeadSeo({
-        title: 'Backlink Leads | BeforeRegret',
-        description: 'Internal queue for candidate forum threads and drafted replies.',
-        canonicalUrl: 'https://www.beforeregret.com/admin/backlinks',
-        robotsDirective: 'noindex, nofollow'
-      });
     } else if (pseoRoute.type === 'notFound') {
       applyHeadSeo({
         title: 'Page Not Found | BeforeRegret',
@@ -917,11 +903,6 @@ export function App() {
             {pseoRoute.type === 'admin' && (
               <AdminGate>
                 <SeoAdminPanel onNavigate={handleNavigate} />
-              </AdminGate>
-            )}
-            {pseoRoute.type === 'adminBacklinks' && (
-              <AdminGate>
-                <BacklinksAdminPanel onNavigate={handleNavigate} />
               </AdminGate>
             )}
             {pseoRoute.type === 'guidesIndex' && (

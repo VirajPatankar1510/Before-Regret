@@ -58,8 +58,8 @@ export const REPORT_GENERATION_MODELS: string[] = CONTENT_GENERATION_DEDICATED_M
   : [GEMINI_MODEL, ...CONTENT_GENERATION_DEDICATED_MODELS];
 
 // CONTENT_GENERATION_MODELS: the two content-dedicated models first, GEMINI_MODEL as fallback --
-// used by every OTHER Gemini call in this codebase (articles, comparison reports, backlink
-// replies, etc.) via generateContentWithFallback/generateContentStreamWithFallback below. Mirror
+// used by every OTHER Gemini call in this codebase (articles, comparison reports, county events,
+// etc.) via generateContentWithFallback/generateContentStreamWithFallback below. Mirror
 // image of REPORT_GENERATION_MODELS above -- same three models, opposite priority order.
 export const CONTENT_GENERATION_MODELS: string[] = CONTENT_GENERATION_DEDICATED_MODELS.includes(GEMINI_MODEL)
   ? CONTENT_GENERATION_DEDICATED_MODELS

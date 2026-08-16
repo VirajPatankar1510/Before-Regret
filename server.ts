@@ -30,7 +30,6 @@ import { registerQuestionQueueRoutes } from "./src/server/questionQueueApi.js";
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerMyAdsRoutes } from "./src/server/myAdsApi.js";
-import { registerBacklinksRoutes } from "./src/server/backlinksApi.js";
 import { registerCountyEventsRoutes } from "./src/server/countyEventsApi.js";
 import { registerCountyComparisonRoutes } from "./src/server/countyComparisonApi.js";
 import { registerCountyInsuranceRoutes } from "./src/server/countyInsuranceApi.js";
@@ -68,7 +67,7 @@ const KNOWN_STATIC_ROUTE_PREFIXES = [
   '/advertise', '/my-ads', '/topic-ads', '/report-ads',
   '/about', '/support', '/terms', '/privacy', '/refunds', '/refund-policy',
   '/payment-success', '/payment-cancelled',
-  '/admin/backlinks', '/admin/seo',
+  '/admin/seo',
   '/guides/', '/counties/',
   '/insights/', '/report/', '/reports/',
 ];
@@ -234,11 +233,6 @@ export async function createApp() {
   // purchase, expiry, and contact-detail edits. No traffic/visibility stats by design. See
   // src/server/myAdsApi.ts.
   registerMyAdsRoutes(app);
-
-  // --- Backlink lead queue (Neon-backed) -----------------------------------------------------
-  // Admin-only. Stores candidate forum threads found by a manual/assisted search scan, plus a
-  // drafted reply, for the admin to review and post by hand. See src/server/backlinksApi.ts.
-  registerBacklinksRoutes(app);
 
   // --- FEMA-declaration county-event drafter (Neon-backed) ------------------------------------
   // Checks OpenFEMA for new disaster declarations in counties BeforeRegret already covers with
