@@ -53,8 +53,9 @@ export const FINDING_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGOR
 
 // Same pattern as FINDING_TRADE_CATEGORY, for the era-based inspection priority items (see
 // engine/inspectionPriorities.ts). lead_paint_disclosure (a free, legally-required document
-// check, not a paid trade service) and asbestos_materials (no trade category fits well -- it's a
-// specialist consultant, not one of the categories listed here) are deliberately left unmatched.
+// check, not a paid trade service) is deliberately left unmatched. asbestos_materials now maps to
+// 'Asbestos/Mold Abatement' -- left unmatched originally because that category didn't exist yet;
+// it's a direct fit now that it does.
 export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGORIES[number]>> = {
   knob_and_tube: 'Electrician',
   electrical_aluminum_wiring: 'Electrician',
@@ -68,4 +69,20 @@ export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGO
   eifs_stucco: 'Home Inspector',
   systems_age: 'Home Inspector',
   radon_test: 'Radon Testing',
+  asbestos_materials: 'Asbestos/Mold Abatement',
 };
+
+// Same pattern again, for the Seller Questions script (see engine/sellerQuestions.ts). Only
+// septic_seller has a real trade match today -- the rest of that script's questions (permit
+// history, flood history, HOA, etc.) don't correspond to a licensed trade a vendor here sells.
+export const SELLER_QUESTION_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGORIES[number]>> = {
+  septic_seller: 'Well & Septic Services',
+};
+
+// Moving Company is deliberately NOT matched here or anywhere in FINDING_TRADE_CATEGORY /
+// PRIORITY_TRADE_CATEGORY above -- unlike every other category, it isn't tied to a specific
+// defect or inspection topic, it's relevant to literally every buyer regardless of what the
+// report finds. It gets its own fixed, always-checked report slot instead (see
+// PropertyReport.movingCompanyVendors in types.ts and the render in PropertyReportView.tsx),
+// positioned once near the top of the report rather than competing for a topic-relevant spot it
+// doesn't have.

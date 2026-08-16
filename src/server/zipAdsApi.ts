@@ -42,8 +42,8 @@ async function countActiveSlots(zipCode: string, tradeCategory: string): Promise
 // mean ~14 round trips per report instead of one. This fetches every active vendor for the ZIP in a
 // single query and builds an in-memory map that the existing per-item logic in server.ts can
 // consult synchronously.
-export async function fetchActiveZipVendors(zipCode: string | undefined | null): Promise<Map<string, SponsoredVendor>> {
-  const map = new Map<string, SponsoredVendor>();
+export async function fetchActiveZipVendors(zipCode: string | undefined | null): Promise<Map<string, SponsoredVendor[]>> {
+  const map = new Map<string, SponsoredVendor[]>();
   if (!zipCode || !isDbConfigured()) return map;
   try {
     const rows = await withDb((sql) => sql`
@@ -55,11 +55,13 @@ export async function fetchActiveZipVendors(zipCode: string | undefined | null):
     for (const row of rows as unknown as Array<{
       id: number; zip_code: string; trade_category: string; business_name: string; phone: string; website: string | null; tagline: string | null;
     }>) {
-      // First paying vendor for a (zip, trade) pair wins the single display slot if more than one
-      // is active at once -- ORDER BY created_at ASC above plus "set only if absent" here keeps
-      // that deterministic rather than picking whichever row the DB happens to return last.
-      if (!map.has(row.trade_category)) {
-        map.set(row.trade_category, {
+      // All active vendors for a (zip, trade) pair now, not just the first -- ORDER BY created_at
+      // ASC keeps earliest-purchased first within each list. Capped at MAX_SLOTS_PER_ZIP_TRADE as
+      // a defensive match to what checkout/renewal actually enforce as sellable inventory; the
+      // query itself can never return more than that many active rows for one pair anyway.
+      const list = map.get(row.trade_category) ?? [];
+      if (list.length < MAX_SLOTS_PER_ZIP_TRADE) {
+        list.push({
           id: String(row.id),
           zipCode: row.zip_code,
           businessName: row.business_name,
@@ -69,6 +71,7 @@ export async function fetchActiveZipVendors(zipCode: string | undefined | null):
           tagline: row.tagline || undefined,
           active: true,
         });
+        map.set(row.trade_category, list);
       }
     }
   } catch (err) {

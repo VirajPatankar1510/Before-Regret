@@ -9,7 +9,7 @@ import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
 import { fetchNeighborhoodContextFinding } from "./src/engine/neighborhoodContext.js";
 import { getInspectionPriorities } from "./src/engine/inspectionPriorities.js";
 import { getSellerQuestions } from "./src/engine/sellerQuestions.js";
-import { FINDING_TRADE_CATEGORY, PRIORITY_TRADE_CATEGORY } from "./src/data/sponsoredVendors.js";
+import { FINDING_TRADE_CATEGORY, PRIORITY_TRADE_CATEGORY, SELLER_QUESTION_TRADE_CATEGORY } from "./src/data/sponsoredVendors.js";
 import {
   isAdminConfigured,
   verifyPassword,
@@ -976,10 +976,17 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
 
         let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
         cleanedReport = stripInternalMetadata(cleanedReport);
-        attachSponsoredVendors(cleanedReport, zipVendorMap);
+        // One Set shared across all three calls below so a trade category is attached at most
+        // once across the whole report, regardless of which section matches it first -- see the
+        // comment on attachSponsoredVendors for why.
+        const seenVendorCategories = new Set<string>();
+        attachSponsoredVendors(cleanedReport, zipVendorMap, seenVendorCategories);
         attachFindingSourceUrls(cleanedReport, resolvedMeta.county, resolvedMeta.city);
-        cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, zipVendorMap);
-        cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType);
+        cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, zipVendorMap, seenVendorCategories);
+        cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType, zipVendorMap, seenVendorCategories);
+        // Moving Company is a fixed, always-checked slot, not routed through the per-item matching
+        // above -- see the comment on PropertyReport.movingCompanyVendors in types.ts.
+        cleanedReport.movingCompanyVendors = zipVendorMap.get('Moving Company') ?? [];
 
         if (!cleanedReport.id) {
           cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -998,10 +1005,12 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
 
     let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
-    attachSponsoredVendors(cleanedReport, zipVendorMap);
+    const seenVendorCategories = new Set<string>();
+    attachSponsoredVendors(cleanedReport, zipVendorMap, seenVendorCategories);
     attachFindingSourceUrls(cleanedReport, resolvedMeta.county, resolvedMeta.city);
-    cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, zipVendorMap);
-    cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType);
+    cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, zipVendorMap, seenVendorCategories);
+    cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType, zipVendorMap, seenVendorCategories);
+    cleanedReport.movingCompanyVendors = zipVendorMap.get('Moving Company') ?? [];
 
     if (!cleanedReport.id) {
       cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -1440,16 +1449,29 @@ function validateAndFixReportContradictions(report: any, liveFindings: any[] = [
   return report;
 }
 
-// Attaches a real, paying vendor to each finding whose trade category matches, for this specific
+// Attaches real, paying vendors to each finding whose trade category matches, for this specific
 // ZIP -- contextual, per-finding placement instead of one generic report-level slot. zipVendorMap
 // is fetched once per report (see fetchActiveZipVendors in src/server/zipAdsApi.ts) rather than
-// queried here per finding, keyed by trade category. Mutates report.canonicalFindings in place;
-// safe to call after validateAndFixReportContradictions has populated that array.
-function attachSponsoredVendors(report: any, zipVendorMap: Map<string, any>) {
+// queried here per finding, keyed by trade category, holding up to MAX_SLOTS_PER_ZIP_TRADE
+// vendors per category rather than just one.
+//
+// seenCategories is shared across this call and the two below it (buildInspectionPrioritiesForReport,
+// buildSellerQuestionsForReport), called in that order -- findings, then inspection priorities,
+// then seller questions, matching top-to-bottom reading order in the report. A trade category is
+// only ever attached at the FIRST place it matches; every later match for the same category in
+// the same report gets an empty list. Without this, a category matching several items in one
+// report (Home Inspector alone can match a finding plus three separate inspection-priority items
+// on an old house) showed the same vendor's card repeatedly instead of once, and now that up to 2
+// vendors can be attached together, would have shown both of them repeatedly too.
+//
+// Mutates report.canonicalFindings in place; safe to call after validateAndFixReportContradictions
+// has populated that array.
+function attachSponsoredVendors(report: any, zipVendorMap: Map<string, any[]>, seenCategories: Set<string>) {
   if (!report || !Array.isArray(report.canonicalFindings)) return report;
   for (const finding of report.canonicalFindings) {
     const tradeCategory = FINDING_TRADE_CATEGORY[finding.id as keyof typeof FINDING_TRADE_CATEGORY];
-    finding.sponsoredVendor = tradeCategory ? zipVendorMap.get(tradeCategory) || null : null;
+    finding.sponsoredVendors = tradeCategory && !seenCategories.has(tradeCategory) ? zipVendorMap.get(tradeCategory) ?? [] : [];
+    if (tradeCategory) seenCategories.add(tradeCategory);
   }
   return report;
 }
@@ -1487,13 +1509,13 @@ function attachFindingSourceUrls(report: any, county: string, city?: string) {
 }
 
 // Computes the era-based inspection priorities (engine/inspectionPriorities.ts) for this
-// (year built, county) pair and attaches a per-item vendor match, same pattern as
-// attachSponsoredVendors above but for priority items instead of findings, consulting the same
-// pre-fetched zipVendorMap rather than querying per item. yearBuilt is requester-declared and
-// unvalidated at this point -- coerced defensively; the engine itself fails closed to null only
-// for a missing/implausible year built, since national rules now cover every US county (see
-// src/engine/inspectionPriorities.ts).
-function buildInspectionPrioritiesForReport(rawYearBuilt: unknown, county: string, state: string, zipVendorMap: Map<string, any>) {
+// (year built, county) pair and attaches a per-item vendor match, same pattern (and same shared
+// seenCategories dedup -- see attachSponsoredVendors above) as attachSponsoredVendors but for
+// priority items instead of findings, consulting the same pre-fetched zipVendorMap rather than
+// querying per item. yearBuilt is requester-declared and unvalidated at this point -- coerced
+// defensively; the engine itself fails closed to null only for a missing/implausible year built,
+// since national rules now cover every US county (see src/engine/inspectionPriorities.ts).
+function buildInspectionPrioritiesForReport(rawYearBuilt: unknown, county: string, state: string, zipVendorMap: Map<string, any[]>, seenCategories: Set<string>) {
   const yearBuilt = typeof rawYearBuilt === 'number' ? rawYearBuilt : parseInt(String(rawYearBuilt ?? ''), 10);
   const result = getInspectionPriorities(yearBuilt, county, state);
   if (!result) return null;
@@ -1501,26 +1523,36 @@ function buildInspectionPrioritiesForReport(rawYearBuilt: unknown, county: strin
     ...result,
     priorities: result.priorities.map((item) => {
       const tradeCategory = PRIORITY_TRADE_CATEGORY[item.id as keyof typeof PRIORITY_TRADE_CATEGORY];
-      return {
-        ...item,
-        sponsoredVendor: tradeCategory ? zipVendorMap.get(tradeCategory) || null : null,
-      };
+      const sponsoredVendors = tradeCategory && !seenCategories.has(tradeCategory) ? zipVendorMap.get(tradeCategory) ?? [] : [];
+      if (tradeCategory) seenCategories.add(tradeCategory);
+      return { ...item, sponsoredVendors };
     }),
   };
 }
 
 // Companion to buildInspectionPrioritiesForReport above, same (year built, county, state) inputs
-// plus the requester-declared property type. No vendor attachment step here -- unlike inspection
-// priorities, seller questions have no per-item trade category to match a sponsored vendor
-// against. declaredPropertyType is requester-declared and unvalidated at this point, same as
-// rawYearBuilt; narrowed to the engine's exact union or null rather than trusted as-is.
-function buildSellerQuestionsForReport(rawYearBuilt: unknown, county: string, state: string, rawDeclaredPropertyType: unknown) {
+// plus the requester-declared property type, plus the same zipVendorMap/seenCategories vendor
+// attachment (see SELLER_QUESTION_TRADE_CATEGORY in sponsoredVendors.ts -- only septic_seller has
+// a real trade match; every other question has no sponsoredVendors set). declaredPropertyType is
+// requester-declared and unvalidated at this point, same as rawYearBuilt; narrowed to the
+// engine's exact union or null rather than trusted as-is.
+function buildSellerQuestionsForReport(rawYearBuilt: unknown, county: string, state: string, rawDeclaredPropertyType: unknown, zipVendorMap: Map<string, any[]>, seenCategories: Set<string>) {
   const yearBuilt = typeof rawYearBuilt === 'number' ? rawYearBuilt : parseInt(String(rawYearBuilt ?? ''), 10);
   const declaredPropertyType =
     rawDeclaredPropertyType === 'single_family' || rawDeclaredPropertyType === 'condo_or_multifamily' || rawDeclaredPropertyType === 'other'
       ? rawDeclaredPropertyType
       : null;
-  return getSellerQuestions(yearBuilt, county, state, declaredPropertyType);
+  const result = getSellerQuestions(yearBuilt, county, state, declaredPropertyType);
+  if (!result) return null;
+  return {
+    ...result,
+    questions: result.questions.map((item) => {
+      const tradeCategory = SELLER_QUESTION_TRADE_CATEGORY[item.id as keyof typeof SELLER_QUESTION_TRADE_CATEGORY];
+      const sponsoredVendors = tradeCategory && !seenCategories.has(tradeCategory) ? zipVendorMap.get(tradeCategory) ?? [] : [];
+      if (tradeCategory) seenCategories.add(tradeCategory);
+      return { ...item, sponsoredVendors };
+    }),
+  };
 }
 
 function stripInternalMetadata(report: any) {

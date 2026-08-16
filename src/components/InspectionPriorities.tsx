@@ -2,7 +2,7 @@ import React from 'react';
 import { ClipboardCheck, Info, ShieldAlert } from 'lucide-react';
 import { getInspectionPriorities, PriorityLevel } from '../engine/inspectionPriorities';
 import { InspectionPrioritiesReportData, InspectionPriorityWithVendor } from '../types';
-import { SponsoredVendorCard } from './SponsoredVendorCard';
+import { SponsoredVendorCards } from './SponsoredVendorCard';
 
 interface InspectionPrioritiesProps {
   yearBuilt?: number | null;
@@ -10,7 +10,7 @@ interface InspectionPrioritiesProps {
   state?: string | null;
   // If provided, skip client-side computation and render this directly. Used by the paid report,
   // which computes server-side so it can attach a real, trade-matched vendor per item (vendor
-  // data lives server-side only -- same reason CanonicalFinding.sponsoredVendor is set server-side
+  // data lives server-side only -- same reason CanonicalFinding.sponsoredVendors is set server-side
   // rather than computed here). Takes precedence over yearBuilt/county when present.
   precomputed?: InspectionPrioritiesReportData | null;
 }
@@ -73,12 +73,10 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
             {item.howToCheck}
           </p>
 
-          {/* Contextual vendor match for this item's trade category, if a real vendor has
+          {/* Contextual vendor match(es) for this item's trade category, if a real vendor has
               paid for it in this ZIP -- only ever present on the server-precomputed
               (paid report) path; absent entirely when computed client-side. */}
-          {(item as InspectionPriorityWithVendor).sponsoredVendor && (
-            <SponsoredVendorCard vendor={(item as InspectionPriorityWithVendor).sponsoredVendor} />
-          )}
+          <SponsoredVendorCards vendors={(item as InspectionPriorityWithVendor).sponsoredVendors} />
         </div>
       </div>
     );

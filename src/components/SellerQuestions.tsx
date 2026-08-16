@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { MessageCircleQuestion, Info, Copy, Check } from 'lucide-react';
 import { getSellerQuestions, QuestionPriority, DeclaredPropertyType } from '../engine/sellerQuestions';
-import { SellerQuestionsReportData } from '../types';
+import { SellerQuestionsReportData, SellerQuestionWithVendor } from '../types';
+import { SponsoredVendorCards } from './SponsoredVendorCard';
 
 interface SellerQuestionsProps {
   yearBuilt?: number | null;
@@ -79,6 +80,11 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
             <span className="font-bold text-slate-900">Listen for: </span>
             {item.whatToListenFor}
           </p>
+
+          {/* Only septic_seller ever carries a vendor match (see SELLER_QUESTION_TRADE_CATEGORY
+              in sponsoredVendors.ts) -- only present on the server-precomputed (paid report)
+              path, same as InspectionPriorities.tsx. */}
+          <SponsoredVendorCards vendors={(item as SellerQuestionWithVendor).sponsoredVendors} />
         </div>
       </div>
     );

@@ -10,7 +10,7 @@ import { LeadMarketplaceWidget } from './LeadMarketplaceWidget';
 import { SourceRegistryModal } from './SourceRegistryModal';
 import { OFFICIAL_SOURCE_REGISTRY } from '../data/sourceRegistry';
 import { ErrorReportingModal } from './ErrorReportingModal';
-import { SponsoredVendorCard } from './SponsoredVendorCard';
+import { SponsoredVendorCards } from './SponsoredVendorCard';
 import { InspectionPriorities } from './InspectionPriorities';
 import { SellerQuestions } from './SellerQuestions';
 
@@ -234,11 +234,9 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         </div>
       </div>
 
-      {/* Contextual vendor match for this specific finding's trade category, if a real
+      {/* Contextual vendor match(es) for this specific finding's trade category, if a real
           vendor has paid for it in this ZIP -- renders nothing otherwise. */}
-      {finding.sponsoredVendor && (
-        <SponsoredVendorCard vendor={finding.sponsoredVendor} />
-      )}
+      <SponsoredVendorCards vendors={finding.sponsoredVendors} />
     </div>
   );
 
@@ -330,6 +328,14 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </span>
           </div>
         </section>
+
+        {/* Moving Company is the one trade category not tied to any specific finding or
+            inspection topic -- see the comment on PropertyReport.movingCompanyVendors in
+            types.ts -- so it gets a fixed slot right below the address instead of competing for a
+            topic-relevant spot it doesn't have. SponsoredVendorCards renders nothing at all when
+            the list is empty or absent, same as every other sponsored slot in this report -- no
+            placeholder, no "advertise here" pitch shown to a reader. */}
+        <SponsoredVendorCards vendors={report.movingCompanyVendors} />
 
         {/* SECTION: DETAILED FINDINGS */}
         <section id="section-findings" className="space-y-6">
@@ -492,9 +498,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                       {finding.suggestedNextStep}
                     </p>
 
-                    {finding.sponsoredVendor && (
-                      <SponsoredVendorCard vendor={finding.sponsoredVendor} />
-                    )}
+                    <SponsoredVendorCards vendors={finding.sponsoredVendors} />
                   </div>
                 ))}
               </div>
