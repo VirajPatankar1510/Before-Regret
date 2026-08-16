@@ -83,11 +83,12 @@ content wrapped in a ``` fence (an ASCII table or flowchart, which renders as an
 monochrome box that requires horizontal scrolling on mobile — confirmed on real published pages
 more than once), a table missing a valid GFM separator row (silently falls through to garbled
 prose instead of rendering as a table), a malformed `[text](url)` link, an internal link to a guide
-or county that doesn't exist or isn't published, an external link that genuinely 404s or times out
-(a real HTTP check — the one part of this that isn't instant; a 401/403 is reported separately and
-hedged, since bot-protected sites like FEMA.gov block automated checks regardless of whether the
-link actually works for a real visitor — confirmed live against fema.gov with an actual browser
-before trusting that distinction), a `[CODE]` citation that doesn't resolve against
+or county that doesn't exist or isn't published, an external link that genuinely 404s, 5xx's, or
+times out (a real HTTP check — the one part of this that isn't instant; a 401/403 is deliberately
+NOT reported at all, not even hedged — confirmed live against fema.gov with an actual browser, not
+just curl, that bot-protected `.gov` and enterprise sites block automated checks regardless of
+whether the link actually works for a real visitor, and even a hedged false alarm on the very first
+real run trains a human to stop trusting the finding count), a `[CODE]` citation that doesn't resolve against
 `src/data/knownSources.ts`, or the one confirmed-bad "adversarial counterparty framing" pattern
 (describing a standard, disclosed practice — a fee, a lease clause — as if it were designed in bad
 faith; see `articleGenerator.ts`'s own comment for the real published mistake that pattern list

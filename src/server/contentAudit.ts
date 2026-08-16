@@ -79,13 +79,15 @@ function collectLinks(rows: ArticleRow[]): Map<string, ArticleRow[]> {
   return byUrl;
 }
 
-// A 403/401 is genuinely ambiguous in a way 404/5xx aren't: confirmed live (checked with a real
-// browser, not just curl) that FEMA.gov returns "Access Denied" to this environment's automated
-// traffic regardless of User-Agent, for a URL that a human visitor can load fine. Bot-protected
-// .gov and enterprise sites do this routinely -- an ASN/IP-reputation block, not a statement about
-// the resource. Reporting that with the same confidence as a real 404 would make the audit cry
-// wolf on the very first real run and erode trust in every other finding it reports. 404/5xx/DNS
-// failure/timeout stay confident claims; 401/403 are downgraded to "verify manually."
+// A 401/403 is not treated as a finding at all, not even a hedged one: confirmed live (a real
+// browser, not just curl, from this tool's own infrastructure -- unrelated to Vercel's IP range or
+// any one visitor's location) that FEMA.gov returns "Access Denied" to automated traffic
+// regardless of User-Agent, for a URL a human visitor loads fine. Bot-protected .gov and
+// enterprise sites do this routinely -- an ASN/IP-reputation block, not a statement about the
+// resource -- and it isn't reliable enough signal to distinguish from a genuinely dead link.
+// Surfacing it, even hedged, still reads as "the audit found 7 problems" and trains a human to
+// stop trusting the count. 404/5xx/DNS failure/timeout are real, actionable signals and stay
+// findings; 401/403 is silently not one.
 async function checkExternalUrl(url: string, timeoutMs: number): Promise<string | null> {
   const browserHeaders = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -99,10 +101,7 @@ async function checkExternalUrl(url: string, timeoutMs: number): Promise<string 
     if (!res.ok) {
       res = await fetch(url, { method: 'GET', redirect: 'follow', headers: browserHeaders, signal: AbortSignal.timeout(timeoutMs) });
     }
-    if (res.ok) return null;
-    if (res.status === 401 || res.status === 403) {
-      return `External link returned HTTP ${res.status} -- likely this site blocking automated checks, not necessarily a dead link; verify manually`;
-    }
+    if (res.ok || res.status === 401 || res.status === 403) return null;
     return `External link returned HTTP ${res.status}`;
   } catch (err: any) {
     const reason = err?.name === 'TimeoutError' || err?.name === 'AbortError' ? 'timed out' : (err?.message || 'unreachable');
