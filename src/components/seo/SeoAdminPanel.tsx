@@ -8,7 +8,7 @@ import { KNOWN_SOURCES } from '../../data/knownSources';
 import { extractCitedSourceCodes, findAdversarialCounterpartyFraming } from '../../server/articleGenerator';
 import { NEWS_TOPIC_PRESETS, type NewsTopicPreset } from '../../data/newsTopicPresets';
 import { STOPWORDS } from '../../utils/relatedGuides';
-import { buildPageTitle } from '../../utils/pageTitle';
+import { buildPageTitle, TITLE_SUFFIX_MAX_LENGTH } from '../../utils/pageTitle';
 
 // Grouped once at module load, not per-render -- NEWS_TOPIC_PRESETS is a static import, so this
 // never needs to recompute. Preserves the data file's own category order (the order categories
@@ -1948,17 +1948,17 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Title</label>
             {/* Only the bare title itself needs a hard warning here -- the " | BeforeRegret
                 Guides" suffix that ends up in the real <title> tag is added automatically only
-                when it still fits under 70 chars (see src/utils/pageTitle.ts), so a title that's
-                fine on its own is always safe regardless of the suffix. A title over 70 on its
-                own is the one case that fallback can't fix, since dropping the suffix doesn't
-                help -- that has to be shortened here. */}
+                when it still fits under TITLE_SUFFIX_MAX_LENGTH chars (see src/utils/pageTitle.ts),
+                so a title that's fine on its own is always safe regardless of the suffix. A title
+                over that limit on its own is the one case that fallback can't fix, since dropping
+                the suffix doesn't help -- that has to be shortened here. */}
             <span
               className={`text-xs font-mono flex items-center gap-1 ${
-                draft.title.length > 70 ? 'text-rose-400' : 'text-slate-500'
+                draft.title.length > TITLE_SUFFIX_MAX_LENGTH ? 'text-rose-400' : 'text-slate-500'
               }`}
             >
-              {draft.title.length > 70 && <AlertCircle className="w-3 h-3" />}
-              <span>{draft.title.length}/70</span>
+              {draft.title.length > TITLE_SUFFIX_MAX_LENGTH && <AlertCircle className="w-3 h-3" />}
+              <span>{draft.title.length}/{TITLE_SUFFIX_MAX_LENGTH}</span>
             </span>
           </div>
           <input
@@ -1985,8 +1985,8 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             return (
               <p className="text-[11px] text-slate-500">
                 Search results will show: <span className="text-slate-300 font-medium">&ldquo;{rendered}&rdquo;</span>
-                {suffixDropped && draft.title.length <= 70 && (
-                  <span> (brand suffix dropped -- wouldn't fit under 70 chars with it)</span>
+                {suffixDropped && draft.title.length <= TITLE_SUFFIX_MAX_LENGTH && (
+                  <span> (brand suffix dropped -- wouldn't fit under {TITLE_SUFFIX_MAX_LENGTH} chars with it)</span>
                 )}
               </p>
             );
