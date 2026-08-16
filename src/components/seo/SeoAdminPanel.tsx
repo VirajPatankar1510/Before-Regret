@@ -1127,9 +1127,12 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             <p className="text-[11px] text-slate-500 leading-relaxed">
               Scans every published article for truncated bodies, non-code content trapped in a code
               fence (renders as an unreadable box), tables missing their separator row (silently
-              breaks instead of rendering), malformed links, and citations that don't resolve to a
-              real source. Read-only -- nothing here writes to the database or changes a page. Click
-              any flagged article below to jump straight to it in the editor.
+              breaks instead of rendering), malformed links, internal links to a guide or county
+              that doesn't exist, external links that actually 404 or time out (a real HTTP check --
+              this is the one part of the scan that isn't instant), citations that don't resolve to a
+              real source, and the one confirmed-bad accusatory-framing pattern this site has caught
+              before. Read-only -- nothing here writes to the database or changes a page. Click any
+              flagged article below to jump straight to it in the editor.
             </p>
             {contentAuditError && (
               <p className="text-xs text-rose-400 font-medium flex items-start gap-1.5">
@@ -1143,7 +1146,9 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 ['nonCodeFence', 'Non-code content in a code fence'],
                 ['malformedTable', 'Tables missing a separator row'],
                 ['brokenLink', 'Malformed links'],
+                ['deadLink', 'Dead or unreachable links'],
                 ['unresolvedCitation', 'Unresolved citations'],
+                ['adversarialFraming', 'Adversarial framing of a disclosed practice'],
                 ['thin', 'Thin content (under 500 words)'],
               ];
               const totalFindings = categories.reduce((n, [key]) => n + contentAuditReport[key].length, 0);
