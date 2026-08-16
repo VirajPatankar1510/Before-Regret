@@ -7,6 +7,7 @@ import { logGeminiUsage } from './geminiUsageTracker.js';
 import type { GenerateContentResponseUsageMetadata } from '@google/genai';
 import { submitUrlsToIndexNow } from '../utils/indexNowService.js';
 import { triggerRedeploy } from './deployHookService.js';
+import { runContentAudit } from './contentAudit.js';
 
 // Real read/write path for editorial articles, replacing the static EDITORIAL_GUIDES_DATASET
 // array and the fake SeoAdminPanel "publish" button that only ever changed local React state.
@@ -312,6 +313,21 @@ export function registerArticleRoutes(app: Express) {
     } catch (err: any) {
       console.error('[articles] list failed:', err);
       res.status(500).json({ success: false, error: 'Could not load articles.' });
+    }
+  });
+
+  // --- Admin: read-only content-quality scan (truncation, code-fenced tables, broken links,
+  // unresolved citations) -- see contentAudit.ts, the same module the article-faqs skill's CLI
+  // script uses, so a click here and a terminal run check for identically the same things. Never
+  // writes to the database; fixing a real finding is still a deliberate, separate edit. ------------
+  app.get('/api/admin/content-audit', requireAdmin, async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    try {
+      const report = await runContentAudit();
+      res.json({ success: true, report });
+    } catch (err: any) {
+      console.error('[content-audit] scan failed:', err);
+      res.status(500).json({ success: false, error: 'Could not run the content audit.' });
     }
   });
 
