@@ -1,9 +1,41 @@
 ---
 name: article-faqs
-description: Write hand-authored FAQ question-and-answer pairs for BeforeRegret published guide articles, grounded strictly in each article's own body text and verified against the real database before saving. Use this whenever the user wants to add, write, generate, backfill, or improve FAQs / FAQ schema / FAQPage structured data on guide articles, asks about the faq_json column or the FAQ accordion on guide pages, or wants article Q&A content written for SEO or AI answer engines -- including when they just say "do the next batch", "continue the FAQs", or name a batch size. Applies to the articles table in this repo, not the hardcoded marketing FAQs in Vendors.tsx or AdvertiseCompare.tsx.
+description: Write hand-authored FAQ question-and-answer pairs for BeforeRegret published guide articles, grounded strictly in each article's own body text and verified against the real database before saving -- and, on every batch, run a read-only content-quality audit (truncated articles, ASCII tables/diagrams wrapped in code fences, broken links, unresolved citations) and fix anything real it finds. Use this whenever the user wants to add, write, generate, backfill, or improve FAQs / FAQ schema / FAQPage structured data on guide articles, asks about the faq_json column or the FAQ accordion on guide pages, wants article Q&A content written for SEO or AI answer engines, or wants a formatting/quality/mistake check across published articles -- including when they just say "do the next batch", "continue the FAQs", name a batch size, or ask for "a final check". Applies to the articles table in this repo, not the hardcoded marketing FAQs in Vendors.tsx or AdvertiseCompare.tsx.
 ---
 
 # Writing article FAQs
+
+## Guardrails -- read this before touching any article
+
+Every fix this skill makes -- FAQs, truncation repairs, table conversions, anything -- is a
+database edit to already-published, already-indexed content. The rule that keeps that safe:
+
+**A page's `slug` is its URL, and its URL is what carries its accumulated ranking authority and
+backlinks. Never write to `slug` or `status` on a published article, for any reason, in any script
+this skill runs.** Body content can and should be corrected; the address that content lives at
+never moves. (`PUT /api/admin/articles/:id` already enforces this at the API layer for `slug` --
+see `src/server/articlesApi.ts` -- but a raw SQL fix bypasses that route entirely, so the discipline
+has to hold here too.)
+
+**Never touch `title` or `meta_description` as a side effect of a content-quality fix.** Those are
+separate, deliberate tasks with their own reasoning (see `src/utils/pageTitle.ts`'s 60-character
+budget) -- never bundle a title edit into a truncation or formatting fix just because you're
+already in the row.
+
+**Fixes are surgical, not rewrites.** Complete a sentence that was cut off. Convert a broken table
+to a real one. Don't "improve" surrounding prose that wasn't actually broken -- a defect gets
+fixed, working content stays exactly as it was. This is also why every fix in this skill's history
+verifies the *exact* current stored text before writing and aborts if it doesn't match (see the
+pattern in `content-audit.ts` fixes below): a targeted fix that might be aimed at stale content is
+worse than no fix at all.
+
+**Why this is safe rather than risky for SEO in the first place:** correcting a sentence that ends
+mid-word, or a table that renders as an unreadable monochrome box, is a content **correction** that
+search engines and answer engines reward, not a content **change** that resets anything -- the
+page's topic, thesis, and keyword targeting are untouched, only a real defect is removed.
+`updated_at` changing is a genuine freshness signal, not a risk. Adding `faq_json` only adds
+structured data on top of what's already there. None of this touches the one thing that actually
+carries authority: the URL.
 
 ## What this is for
 
@@ -38,13 +70,45 @@ This writes `.tmp-faq-batch.txt` (the full source to read) and `.tmp-faq-draft.j
 fill in). It selects articles that still have no FAQs, so batches never overlap and you can stop and
 resume freely — there is no offset to track.
 
-**2. Read the whole batch file.** Not a skim. You cannot write a grounded FAQ for an article you
+**2. Audit the batch before writing anything.** Run the content-quality scan scoped to this
+batch's ids (printed by step 1):
+
+```bash
+npx tsx .claude/skills/article-faqs/scripts/content-audit.ts 27 28 29 30
+```
+
+This is read-only — it never writes to the database, only reports. It checks the specific defect
+classes this site has actually shipped and caught before: a truncated article body, non-code
+content wrapped in a ``` fence (an ASCII table or flowchart, which renders as an unreadable
+monochrome box that requires horizontal scrolling on mobile — confirmed on real published pages
+more than once), a table missing a valid GFM separator row (silently falls through to garbled
+prose instead of rendering as a table), a broken `[text](url)` link, or a `[CODE]` citation that
+doesn't resolve against `src/data/knownSources.ts`.
+
+If it finds something in one of this batch's articles, **fix it now, before writing that
+article's FAQs** — you cannot write a grounded FAQ against content that's still broken, and a
+truncated ending is exactly the kind of thing a good FAQ might otherwise need to reference. Fixing
+means: read the affected article's real stored content in full, understand what the missing or
+broken piece should say using only facts already established elsewhere in that same article (never
+introduce something new — same grounding rule as FAQs themselves), write a small script that
+selects the exact current text, **asserts it matches before writing anything** (abort with a clear
+error if it doesn't — the article may have changed since you read it), makes the surgical fix, and
+prints the new tail/section back so you can confirm it reads naturally. This mirrors the two real
+fixes already made this way: article `id=28`'s cut-off closing section, and `id=38`'s mid-word
+truncation — both fixed by writing a one-off verification script rather than a blind UPDATE.
+
+A finding outside the current batch is just useful context, not a blocker — note it, and either
+fix it in the same sitting if it's quick, or mention it to the user for later. The full corpus can
+also be swept anytime with no arguments (`content-audit.ts` with no ids), which is worth doing
+occasionally as a standalone check independent of any FAQ batch.
+
+**3. Read the whole batch file.** Not a skim. You cannot write a grounded FAQ for an article you
 have only partially read, because the whole point is knowing what the article does and doesn't say.
 
-**3. Fill in `.tmp-faq-draft.json`** with 3 Q&A pairs per article (2 is acceptable if an article
+**4. Fill in `.tmp-faq-draft.json`** with 3 Q&A pairs per article (2 is acceptable if an article
 genuinely has only two non-redundant angles; more than 4 usually means padding).
 
-**4. Verify, then save:**
+**5. Verify, then save:**
 
 ```bash
 npx tsx .claude/skills/article-faqs/scripts/faq-save.ts --dry-run   # check only
@@ -55,10 +119,11 @@ The save script re-reads each article's real stored body and refuses to write an
 fails. Fix what it reports and re-run — do not work around it. It is checking the exact failure
 modes that matter here, and a check that fires is the script doing its job, not an obstacle.
 
-**5. Clean up** `.tmp-faq-batch.txt` and `.tmp-faq-draft.json` when the batch is saved.
+**6. Clean up** `.tmp-faq-batch.txt` and `.tmp-faq-draft.json` when the batch is saved.
 
-Guide pages are statically prerendered at build time, so newly saved FAQs are not visible on the
-live site until the next deploy. A DB-only change needs `git commit --allow-empty` to trigger one.
+Guide pages are statically prerendered at build time, so newly saved FAQs (and any content-audit
+fix) are not visible on the live site until the next deploy. A DB-only change needs
+`git commit --allow-empty` to trigger one.
 
 ## What makes a good FAQ here
 
