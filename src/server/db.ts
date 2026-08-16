@@ -328,28 +328,6 @@ export async function ensureArticlesSchema(): Promise<void> {
   // priced as one $29 unit rather than three.
   await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS renews_order_id INTEGER REFERENCES zip_ad_orders(id)`;
 
-  // backlink_leads: candidate forum threads (City-Data, Bogleheads, etc.) found by manually
-  // running a search-based scan from the admin page -- see src/server/backlinksApi.ts. Deliberately
-  // just a queue, not a live scanner: the forums that are actually reachable (unlike Reddit, which
-  // blocks both search indexing and direct navigation outright) still block automated page-fetching,
-  // so a human reads the real thread and either pastes it in for a drafted reply or writes one
-  // directly -- draft_answer is never auto-posted anywhere, only stored for the admin to copy.
-  await sql`
-    CREATE TABLE IF NOT EXISTS backlink_leads (
-      id SERIAL PRIMARY KEY,
-      source TEXT NOT NULL,
-      title TEXT NOT NULL,
-      url TEXT NOT NULL,
-      topic_snippet TEXT NOT NULL DEFAULT '',
-      status TEXT NOT NULL DEFAULT 'new',
-      draft_answer TEXT NOT NULL DEFAULT '',
-      county_slug TEXT,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-    )
-  `;
-  await sql`CREATE INDEX IF NOT EXISTS idx_backlink_leads_status ON backlink_leads(status)`;
-
   // Dedup ledger for the FEMA-declaration county-event drafter (see
   // src/server/femaDeclarationsService.ts / countyEventGenerator.ts). OpenFEMA has no "give me
   // only what's new" cursor -- every check re-fetches a wide recent window, so this table is what

@@ -1,6 +1,6 @@
 // Builds the prompt for AI-drafted "what this FEMA declaration means for homes in this county"
 // articles (see POST /api/admin/county-events/check). Same anti-fabrication posture as
-// articleGenerator.ts and backlinkReplyGenerator.ts, adapted for a specific, higher-stakes
+// articleGenerator.ts, adapted for a specific, higher-stakes
 // grounding requirement: every article here is triggered by a real disaster, so overclaiming
 // urgency or certainty isn't just a style problem, it's the exact failure mode that would corrode
 // the trust this site's whole $14.99 report depends on (see the "staleness and false urgency"
@@ -10,7 +10,7 @@
 // and so can the reader.
 
 import { Type, type Schema } from '@google/genai';
-import { GuideReference } from './backlinkReplyGenerator.js';
+import { GuideReference } from '../types.js';
 
 export const COUNTY_EVENT_SYSTEM_INSTRUCTION = `You are drafting an article for BeforeRegret, a US property research platform, about a real FEMA disaster declaration that just landed in a county BeforeRegret already covers with real federal data. The article is a draft for a human to review and publish themselves -- nothing you write is ever published automatically.
 
