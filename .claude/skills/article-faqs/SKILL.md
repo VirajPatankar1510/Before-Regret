@@ -20,14 +20,18 @@ closed-book is what makes the output trustworthy, and the save script mechanical
 
 ## Workflow
 
-Run everything from the repo root. The scripts live inside the repo so Node resolves
-`dotenv/config` and `@neondatabase/serverless` by walking up to the repo's `node_modules` — a copy
-parked in `/tmp` cannot, and will fail on import.
+**Run everything from the `Before-Regret` repo root**, not from a parent directory — `cd` there
+first if the session started somewhere else. The scripts live inside the repo so Node resolves
+`dotenv/config` and `@neondatabase/serverless` by walking up to the repo's `node_modules`; a copy
+parked in `/tmp`, or a shell sitting in the repo's parent, cannot resolve them and will fail on
+import.
 
-**1. Pull a batch** (default 10 articles; pass a number to change it):
+**1. Pull a batch** (default 10 articles; pass a number to change it). 3–4 articles per batch tends
+to produce better FAQs than 10, because step 2 requires reading each article in full and a smaller
+batch keeps that honest:
 
 ```bash
-npx tsx .claude/skills/article-faqs/scripts/faq-fetch.ts 10
+npx tsx .claude/skills/article-faqs/scripts/faq-fetch.ts 4
 ```
 
 This writes `.tmp-faq-batch.txt` (the full source to read) and `.tmp-faq-draft.json` (a skeleton to
