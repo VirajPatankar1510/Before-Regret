@@ -37,7 +37,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
           {/* Document Header */}
           <div className="border-b border-slate-200 pb-6 space-y-3">
             <p className="text-xs font-medium text-slate-400">
-              Property research guides for US home buyers, built from public records. Know what to check before closing.
+              Property research guides for US home buyers, built from public records.
             </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Terms of Service

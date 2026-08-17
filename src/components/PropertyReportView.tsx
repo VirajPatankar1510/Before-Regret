@@ -511,7 +511,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             has to stay somewhere on every report. */}
         <div data-print-block className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-[11px] text-slate-500 leading-relaxed">
           <span className="font-bold text-slate-700 block uppercase font-mono tracking-wider mb-1">Disclaimer</span>
-          BeforeRegret links you to official public sources -- it does not perform physical engineering inspections, legal title searches, or property valuations. Nothing on this page is a confirmed record until you verify it directly with the source agency, and physical building conditions should be confirmed with a licensed home inspector before closing.
+          BeforeRegret links you to official public sources -- it does not perform physical engineering inspections, legal title searches, or property valuations. Findings marked <strong>Not Yet Verified</strong> are research leads, not established facts: confirm each one directly with the source agency before relying on it. Findings marked <strong>Confirmed</strong> reflect a live query run against a government API for this address at the time this report was generated, and may change as those agencies update their data. Physical building conditions should always be confirmed with a licensed home inspector before closing.
         </div>
 
       </main>
