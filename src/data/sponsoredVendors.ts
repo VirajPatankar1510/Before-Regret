@@ -69,7 +69,13 @@ export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGO
   foundation_posttension: 'General Contractor',
   pier_and_beam: 'Home Inspector',
   eifs_stucco: 'Home Inspector',
-  systems_age: 'Home Inspector',
+  // roof_age / hvac_age (see the split rationale on the rule itself in
+  // engine/inspectionPriorities.ts) give Roof Inspection and HVAC Inspection their first real
+  // placement anywhere in the report -- previously neither category matched anything except its
+  // permanently-unverified finding (f_roof / f_hvac), which meant their ads only ever rendered in
+  // the bottom "Records You Still Need to Pull" section.
+  roof_age: 'Roof Inspection',
+  hvac_age: 'HVAC Inspection',
   radon_test: 'Radon Testing',
   asbestos_materials: 'Asbestos/Mold Abatement',
   chimney_level2: 'Chimney Sweep',

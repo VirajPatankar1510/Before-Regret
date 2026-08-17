@@ -360,19 +360,43 @@ export const PRIORITY_RULES: PriorityRule[] = [
       'Ask your inspector whether the cladding is traditional hard-coat stucco or synthetic EIFS. If it is EIFS, consider a specialist moisture survey before your option period ends.',
   },
 
-  // --- Applies to essentially any home old enough for systems to have cycled ---
+  // --- Applies to essentially any home old enough for systems to have cycled. Split into two
+  // trade-specific rules (roof, HVAC) rather than one combined "systems_age" rule -- the combined
+  // version covered real ground but had no vendor category it could ever be matched to (there is
+  // no "Roof Inspection" or "HVAC Inspection" match anywhere else in this file or in
+  // src/engine/sellerQuestions.ts), which meant a Roof Inspection or HVAC Inspection ad could only
+  // ever attach to the corresponding report finding (f_roof / f_hvac in reportFallback.ts) -- both
+  // permanently 'NOT YET VERIFIED' since this site has no live permit-record integration, which
+  // renders at the very bottom of the report, in "Records You Still Need to Pull," not here in the
+  // mid-report Inspection Priorities section. Both rules below carry exactly the figures already
+  // published in the combined rule; nothing new is asserted. Water heater age (8 to 12 years, no
+  // matching trade category on this site) now rides along inside the HVAC rule rather than
+  // standing alone. ---
   {
-    id: 'systems_age',
+    id: 'roof_age',
     minYear: 1800,
     maxYear: CURRENT_YEAR - 12,
-    title: 'Get the age of the roof, HVAC, and water heater in writing',
+    title: 'Get the age and remaining life of the roof in writing',
     priority: 'medium',
     eraBasis:
-      'Major systems have finite service lives — roughly 15 to 25 years for a roof depending on material, 15 to 20 for HVAC equipment, and 8 to 12 for a conventional tank water heater. In a home of this age at least one of these is typically at or past its first replacement cycle.',
-    costToCheck: 'Included in a general inspection — ask for the age and remaining life of each',
-    typicalRepairCost: 'Roof $8,000 – $25,000+; HVAC $6,000 – $15,000; water heater $1,200 – $3,000',
+      'Roofing materials have a finite service life — roughly 15 to 25 years depending on material — and a home of this age is old enough that the roof is commonly at or past its first replacement cycle.',
+    costToCheck: 'Included in a general inspection — ask your inspector to estimate remaining roof life and note the material and condition',
+    typicalRepairCost: 'Full replacement $8,000 – $25,000+',
     howToCheck:
-      'Ask your inspector to record the manufacture date from the data plate on the furnace, condenser, and water heater, and to estimate remaining roof life.',
+      'Ask your inspector for the roof material, its estimated age, and remaining service life, and ask the seller for any replacement receipts or warranty documentation.',
+  },
+  {
+    id: 'hvac_age',
+    minYear: 1800,
+    maxYear: CURRENT_YEAR - 12,
+    title: 'Get the age of the HVAC system and water heater in writing',
+    priority: 'medium',
+    eraBasis:
+      'HVAC equipment has a finite service life — roughly 15 to 20 years — and a conventional tank water heater typically lasts 8 to 12 years. A home of this age commonly has at least one of these at or past its first replacement cycle.',
+    costToCheck: 'Included in a general inspection — ask for the manufacture date on the furnace, condenser, and water heater data plates',
+    typicalRepairCost: 'HVAC replacement $6,000 – $15,000; water heater replacement $1,200 – $3,000',
+    howToCheck:
+      'Ask your inspector to record the manufacture date from the data plate on the furnace, condenser, and water heater.',
   },
 
   // --- Transfer-triggered, not era-driven: these are checks the standard applies specifically
