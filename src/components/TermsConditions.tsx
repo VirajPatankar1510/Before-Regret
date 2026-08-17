@@ -37,7 +37,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
           {/* Document Header */}
           <div className="border-b border-slate-200 pb-6 space-y-3">
             <p className="text-xs font-medium text-slate-400">
-              Expert property research guides for US home buyers. Uncover what matters before closing.
+              Property research guides for US home buyers, built from public records. Know what to check before closing.
             </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Terms of Service
@@ -128,7 +128,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                   <strong>3.3 Duty to Independently Confirm:</strong> BeforeRegret reports are preliminary discovery tools only. They are not a substitute for physical site visits, structural inspections, environmental testing, or legal title searches. Consumers expressly agree that they remain solely responsible for independently confirming all hazard classifications, building permit histories, and property characteristics with qualified, licensed professionals prior to making any financial, leasing, or purchasing commitment.
                 </p>
                 <p>
-                  <strong>3.4 No Refunds on Report Purchases:</strong> Report purchases are only charged after a property address has been confirmed eligible and the report is generated and delivered immediately upon payment. <strong>All report purchases are final and non-refundable.</strong> See our Cancellation & Refund Policy for full detail.
+                  <strong>3.4 No Refunds on Report Purchases:</strong> Report purchases are only charged after a property address has been confirmed eligible and the report is generated and delivered immediately upon payment. <strong>All report purchases are final and non-refundable.</strong> This does not limit any refund, cancellation, or withdrawal right you hold under a mandatory provision of consumer protection law that cannot be derogated from by agreement (see 8.1(b)), nor your right to dispute a charge with your card issuer. See our Cancellation &amp; Refund Policy for full detail.
                 </p>
               </div>
             </section>
@@ -148,7 +148,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                 </p>
 
                 <p>
-                  <strong>4.3 Placement Expiration & Early Removal:</strong> A placement runs for the fixed 30-day window it was purchased for and then expires automatically -- there is no recurring payment to cancel. A vendor may also have an active placement removed before it expires at any time by contacting <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>. Upon expiration, or upon early removal at the vendor's request, the slot becomes immediately available to other vendors on a first-come, first-served basis. <strong>All payments are final. No refunds, partial refunds, or credits are issued under any circumstance</strong>, including early removal at the vendor's request or removal by Atmostellar as described in Section 4.4. See our Cancellation & Refund Policy for full detail.
+                  <strong>4.3 Placement Expiration & Early Removal:</strong> A placement runs for the fixed 30-day window it was purchased for and then expires automatically -- there is no recurring payment to cancel. A vendor may also have an active placement removed before it expires at any time by contacting <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>. Upon expiration, or upon early removal at the vendor's request, the slot becomes immediately available to other vendors on a first-come, first-served basis. <strong>All payments are final, and no refunds, partial refunds, or credits are issued</strong> -- including on early removal at the vendor's own request, or on removal by Atmostellar for vendor breach as described in Section 4.4. <strong>One exception:</strong> if Atmostellar ends a placement early for its own administrative, technical, or business reasons, not attributable to any fault of the vendor, the unused portion of the 30-day window is refunded pro-rata and automatically -- see our Cancellation &amp; Refund Policy. Nothing in this paragraph limits a right you hold under a mandatory provision of consumer protection law that cannot be derogated from by agreement (see 8.1(b)).
                 </p>
 
                 <p>

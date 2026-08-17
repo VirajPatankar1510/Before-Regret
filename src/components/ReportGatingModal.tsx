@@ -213,7 +213,9 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
               <span className="font-bold truncate">{targetAddress}</span>
             </div>
 
-            {/* Verified Account Banner */}
+            {/* Signed-in account banner. Deliberately NOT labelled "Verified" -- all this reflects is a
+                completed Clerk sign-in, and calling it verification implies we checked the person
+                or their credentials, which we do not. */}
             <div className="p-3 bg-emerald-50/80 border border-emerald-200 rounded-2xl flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -222,7 +224,7 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
                     {user.email || user.displayName || 'Authenticated User'}
                   </div>
                   <div className="text-[10px] text-emerald-700 font-medium">
-                    Verified Account
+                    Signed In
                   </div>
                 </div>
               </div>

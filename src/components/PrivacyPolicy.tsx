@@ -28,7 +28,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
             <span>Return to Home</span>
           </button>
 
-          <span className="text-xs font-mono text-slate-500">Effective Date: August 3, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Effective Date: August 17, 2026</span>
         </div>
 
         {/* Content Pane */}
@@ -37,7 +37,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
           {/* Header */}
           <div className="border-b border-slate-200 pb-6 space-y-3">
             <p className="text-xs font-medium text-slate-400">
-              Expert property research guides for US home buyers. Uncover what matters before closing.
+              Property research guides for US home buyers, built from public records. Know what to check before closing.
             </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Privacy Policy
