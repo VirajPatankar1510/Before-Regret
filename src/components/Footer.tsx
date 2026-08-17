@@ -109,7 +109,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
               </div>
             </div>
             <p className="text-xs text-slate-400 max-w-md">
-              Property research guides for US home buyers, built from public records. Know what to check before closing.
+              Property research guides for US home buyers, built from public records.
             </p>
           </div>
 

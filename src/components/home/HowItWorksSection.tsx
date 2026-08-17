@@ -47,7 +47,7 @@ export const HowItWorksSection: React.FC = () => {
                 We validate and check what we can
               </h3>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Verified against Census records, live seismic hazard data, and era- and county-specific research.
+                Your address is validated against the US Census geocoder, and we run a live USGS seismic query for its coordinates. Everything else is era- and county-specific research, flagged for you to confirm at the source.
               </p>
             </div>
 
