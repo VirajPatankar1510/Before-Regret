@@ -169,15 +169,54 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               <p>
                 We retain vendor registration and receipt records for the duration of the active placement plus required legal tax retention periods. Consumer search logs are retained in aggregated, non-personally-identifiable form for system optimization.
               </p>
+              {/* Added when consumer Terms acceptance began being recorded (see
+                  src/server/termsApi.ts). Disclosing this specifically matters: it is a record
+                  ABOUT the user, kept deliberately and long-term, and the deletion carve-out below
+                  is meaningless unless the reader first knows the record exists. */}
+              <p>
+                <strong>Terms acceptance records.</strong> When you accept our Terms of Service, we
+                record that acceptance: your account identifier and email address, which revision of
+                the Terms you accepted, the date and time, and the IP address and browser user-agent
+                at that moment. This is kept as evidence of the agreement between us, for as long as
+                that agreement could give rise to a claim.
+              </p>
               <p>
                 <strong>Your Data Rights:</strong> You have the right to request access to, correction of, or permanent deletion of your personal information stored by Atmostellar. To submit a data privacy request, email <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>. Privacy requests are fulfilled within 14 business days.
               </p>
+              <p>
+                <strong>One limit on deletion, stated plainly.</strong> We may retain the Terms
+                acceptance record described above, and records of payments, after other data is
+                deleted, where retention is necessary to establish, exercise, or defend a legal
+                claim, or to meet a tax or accounting obligation. Deleting the record of an agreement
+                would remove the evidence of what each side agreed to, which does not serve either
+                of us. Everything not needed for those purposes is deleted on request.
+              </p>
             </section>
 
-            {/* Section 8 */}
+            {/* Section 8 -- short pointer to Terms Section 7, not a restatement of it, for the same
+                reason the Disclaimer and Refund Policy carry the same pointer: the operative clause
+                should have exactly one home. */}
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
+                8. Disputes About Privacy
+              </h2>
+              <p>
+                Contact us first -- most concerns are resolved directly, and{' '}
+                <a href="/terms" className="text-blue-600 font-bold hover:underline">section 7.1 of our Terms of Service</a>{' '}
+                requires both sides to attempt informal resolution for 60 days before any formal
+                proceeding. Beyond that, a claim relating to this policy is subject to the binding
+                individual arbitration agreement and class action waiver in{' '}
+                <a href="/terms" className="text-blue-600 font-bold hover:underline">section 7 of the Terms</a>,
+                which control over this summary, with the same <strong>small claims</strong> carve-out
+                and the same <strong>30-day opt-out</strong>. None of this limits any right you have
+                to complain to a data protection authority in your jurisdiction.
+              </p>
+            </section>
+
+            {/* Section 9 */}
             <section className="space-y-2 pt-2 border-t border-slate-200">
               <h2 className="text-base font-bold text-slate-900">
-                8. Privacy Contact Point
+                9. Privacy Contact Point
               </h2>
               <p>
                 For any privacy concerns, data deletion requests, or questions regarding this policy, please reach out to:
