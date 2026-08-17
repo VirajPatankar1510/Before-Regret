@@ -80,7 +80,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                     <li>Technical session metadata (IP address, browser type, device OS) for rate limiting, security, and to record your acceptance of our Terms of Service.</li>
                     <li>Inquiries sent to customer support via email.</li>
                     <li className="font-semibold text-slate-900">
-                      For any report beyond your first free report, billing and payment card details are collected and processed directly by a PCI-DSS compliant third-party payment processor; Atmostellar does not store your full card number.
+                      For any report beyond your first free report, payment is taken through <strong>PayPal</strong>, a PCI-DSS compliant third-party payment processor. You are redirected to PayPal's own checkout to pay, PayPal handles your payment details under its own privacy policy, and Atmostellar receives only a confirmation that payment succeeded — never your card number.
                     </li>
                   </ul>
                 </div>
@@ -107,10 +107,10 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                 <span>3. Payment Card Handling & Processor Security</span>
               </h2>
               <p className="text-xs text-emerald-900 leading-relaxed">
-                Vendor placement fees are processed entirely through a PCI-DSS Level 1 compliant secure third-party payment processor.
+                Both consumer report purchases and vendor placement fees are processed entirely through <strong>PayPal</strong>, a PCI-DSS Level 1 compliant third-party payment processor. Payment happens on PayPal's own checkout, not on this site, and is subject to PayPal's privacy policy in addition to this one.
               </p>
               <p className="text-xs font-bold text-emerald-950 bg-white p-3 rounded-xl border border-emerald-200">
-                Atmostellar NEVER stores, transmits, or sees full payment card numbers, credit card CVVs, or bank credentials directly on our servers. All financial data is encrypted and tokenized by the third-party payment gateway.
+                Atmostellar NEVER stores, transmits, or sees full payment card numbers, credit card CVVs, or bank credentials on our servers — we never handle them at all. We receive from PayPal only the transaction identifier and a confirmation that the payment succeeded, which we store against your order.
               </p>
             </section>
 

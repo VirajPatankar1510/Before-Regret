@@ -98,7 +98,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               </p>
               <div className="flex items-start gap-2 text-xs text-slate-500 pt-1">
                 <CreditCard className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                <p>Card details are collected and processed directly by a PCI-DSS compliant third-party payment processor; Atmostellar does not store your full card number.</p>
+                <p>Payment is taken through PayPal, a PCI-DSS compliant third-party payment processor. You pay on PayPal's own checkout and Atmostellar never receives or stores your card number.</p>
               </div>
             </section>
 
@@ -129,7 +129,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               </p>
               <div className="flex items-start gap-2 text-xs text-slate-500 pt-1">
                 <CreditCard className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                <p>Card details are collected and processed directly by a PCI-DSS compliant third-party payment processor; Atmostellar does not store your full card number.</p>
+                <p>Payment is taken through PayPal, a PCI-DSS compliant third-party payment processor. You pay on PayPal's own checkout and Atmostellar never receives or stores your card number.</p>
               </div>
             </section>
 

@@ -74,12 +74,19 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle 
             <div className="min-w-0">
               <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">{vendor.tradeCategory}</div>
               <div className="text-sm font-bold text-slate-900 mt-0.5">{vendor.businessName}</div>
+              {/* Disclosure deliberately outside the licenceNumber conditional -- see the same
+                  block in SponsoredVendorCard.tsx for why. Short version: the licence-exempt trade
+                  category has no number, and nesting the caveat inside the number meant those
+                  placements carried no disclosure at all. */}
               {vendor.licenceNumber && (
-                <div className="text-[10px] text-slate-500 mt-0.5">
-                  <span className="font-mono">Licence #{vendor.licenceNumber}</span>
-                  <span> · provided by the advertiser, not verified by us</span>
+                <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
+                  Licence #{vendor.licenceNumber}
                 </div>
               )}
+              <div className="text-[10px] text-slate-500 mt-0.5">
+                Paid placement. Details supplied by the advertiser and not verified by us --{' '}
+                <a href="/disclaimer" className="underline hover:text-slate-700">check any licence yourself</a>.
+              </div>
             </div>
           </div>
           <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">

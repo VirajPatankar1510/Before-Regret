@@ -21,19 +21,27 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
           <span>Sponsored · {vendor.tradeCategory}</span>
         </div>
         <h3 className="font-bold text-slate-900 text-base sm:text-lg">{vendor.businessName}</h3>
-        {/* Printed because several states require a contractor's licence number to appear in the
-            advertisement itself, and because a reader who wants to check the licence needs the
-            number to check it with. The "not verified by us" half is not boilerplate softening --
-            this site runs no check against any licensing board, and presenting a self-reported
-            number as though it had been validated would be a worse misrepresentation than showing
-            no number at all. Absent for the licence-exempt trade category and for placements sold
-            before this field existed, so it renders conditionally. */}
+        {/* The licence number is printed because several states require a contractor's licence
+            number to appear in the advertisement itself, and because a reader who wants to check
+            the licence needs the number to check it with.
+
+            The "not verified by us" line is now UNCONDITIONAL, and that is the point of this
+            block's shape. It used to be nested inside the licenceNumber check, which meant the two
+            cases with no number -- the licence-exempt trade category (Chimney Sweep) and placements
+            sold before the field existed -- rendered a business name and a phone number with no
+            disclosure of any kind on the card. A reader saw an unqualified listing on a research
+            site and had to reach the Disclaimer page to learn nothing about it had been checked.
+            The disclosure has to survive the absence of the number, so it lives outside the
+            conditional. Do not re-nest it. */}
         {vendor.licenceNumber && (
           <p className="text-[11px] text-slate-500 font-mono">
             Licence #{vendor.licenceNumber}
-            <span className="font-sans not-italic"> · provided by the advertiser, not verified by us</span>
           </p>
         )}
+        <p className="text-[11px] text-slate-500">
+          Paid placement. Details supplied by the advertiser and not verified by us --{' '}
+          <a href="/disclaimer" className="underline hover:text-slate-700">check any licence yourself</a>.
+        </p>
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <a
