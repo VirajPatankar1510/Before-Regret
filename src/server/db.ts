@@ -242,6 +242,15 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_generated_reports_clerk_user_id ON generated_reports(clerk_user_id)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_generated_reports_created_at ON generated_reports(created_at)`;
+  // Free vs paid, and the price actually charged. Added because the table could not answer the one
+  // question the business most needs from it: what share of people who take the free report ever
+  // buy a second. Without this column every report looked identical here, so the free-to-paid
+  // conversion rate -- the input any revenue projection is most sensitive to -- was unmeasurable,
+  // and the transactions table can't substitute (it only has rows once PayPal is involved, so free
+  // reports leave no trace there at all). price_usd is stored rather than derived from is_paid so a
+  // future price change doesn't silently rewrite the history of what past buyers were charged.
+  await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS is_paid BOOLEAN NOT NULL DEFAULT FALSE`;
+  await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS price_usd NUMERIC(10,2)`;
 
   // Vendor ad slots on guide pages (see src/server/guideAdsApi.ts). Two tables, not one:
   // guide_ad_orders is the checkout attempt (one row per PayPal order, holding the pending slot
@@ -522,6 +531,8 @@ export interface GeneratedReportInput {
   attestedAccurate: boolean;
   ipAddress: string | null;
   userAgent: string | null;
+  isPaid: boolean;
+  priceUsd: number | null;
 }
 
 // Fire-and-forget from the caller's perspective (see server.ts) -- a failed write here must never
@@ -535,11 +546,12 @@ export async function saveGeneratedReportInputs(data: GeneratedReportInput): Pro
       INSERT INTO generated_reports (
         report_id, clerk_user_id, formatted_address, city, state, zip_code, county,
         declared_property_type, declared_year_built, declared_unit_number, attested_accurate,
-        ip_address, user_agent
+        ip_address, user_agent, is_paid, price_usd
       ) VALUES (
         ${data.reportId}, ${data.clerkUserId}, ${data.formattedAddress}, ${data.city}, ${data.state},
         ${data.zipCode}, ${data.county}, ${data.declaredPropertyType}, ${data.declaredYearBuilt},
-        ${data.declaredUnitNumber}, ${data.attestedAccurate}, ${data.ipAddress}, ${data.userAgent}
+        ${data.declaredUnitNumber}, ${data.attestedAccurate}, ${data.ipAddress}, ${data.userAgent},
+        ${data.isPaid}, ${data.priceUsd}
       )
       ON CONFLICT (report_id) DO NOTHING
     `;
