@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireVerifiedUser } from './clerkAuth.js';
+import { requiresLicenceNumber } from '../data/sponsoredVendors.js';
 import { PRICE_PER_SLOT_USD as GUIDE_PRICE_USD, SLOT_DURATION_DAYS as RENEWAL_DAYS } from './guideAdsApi.js';
 import { PRICE_PER_BUNDLE_USD as ZIP_PRICE_USD, ZIPS_PER_BUNDLE } from './zipAdsApi.js';
 
@@ -31,7 +32,7 @@ export function registerMyAdsRoutes(app: Express) {
     try {
       const guideRows = await withDb((sql) => sql`
         SELECT p.id AS purchase_id, p.article_id, a.slug, a.title, p.business_name, p.trade_category,
-               p.phone, p.website, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id,
+               p.phone, p.website, p.licence_number, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id,
                o.amount_usd, o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at
         FROM guide_ad_purchases p
         JOIN guide_ad_orders o ON o.id = p.order_id
@@ -42,7 +43,7 @@ export function registerMyAdsRoutes(app: Express) {
 
       const zipRows = await withDb((sql) => sql`
         SELECT p.id AS purchase_id, p.zip_code, p.trade_category, p.business_name, p.phone, p.website,
-               p.paid_through, p.created_at, p.contact_edited, o.id AS order_id, o.amount_usd,
+               p.licence_number, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id, o.amount_usd,
                o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at
         FROM zip_ad_purchases p
         JOIN zip_ad_orders o ON o.id = p.order_id
@@ -85,13 +86,13 @@ export function registerMyAdsRoutes(app: Express) {
 
       type GuidePurchaseRow = {
         purchase_id: number; article_id: number; slug: string; title: string; business_name: string;
-        trade_category: string; phone: string; website: string | null;
+        trade_category: string; phone: string; website: string | null; licence_number: string | null;
         paid_through: string; created_at: string; contact_edited: boolean; order_id: number; amount_usd: string;
         paypal_order_id: string; paypal_capture_id: string | null; order_created_at: string;
       };
       type ZipPurchaseRow = {
         purchase_id: number; zip_code: string; trade_category: string; business_name: string;
-        phone: string; website: string | null; paid_through: string;
+        phone: string; website: string | null; licence_number: string | null; paid_through: string;
         created_at: string; contact_edited: boolean; order_id: number; amount_usd: string; paypal_order_id: string;
         paypal_capture_id: string | null; order_created_at: string;
       };
@@ -106,6 +107,11 @@ export function registerMyAdsRoutes(app: Express) {
         tradeCategory: r.trade_category,
         phone: r.phone,
         website: r.website,
+        // Surfaced so a vendor can see the licence number being published in their name. It was
+        // collected and printed in the ad but never shown back to them, which made the "keep it
+        // current" warranty in Terms 4.4 impossible to actually honour -- you cannot correct a
+        // value you cannot see.
+        licenceNumber: r.licence_number || null,
         paidThrough: r.paid_through,
         active: new Date(r.paid_through).getTime() > now,
         contactEdited: r.contact_edited,
@@ -118,6 +124,11 @@ export function registerMyAdsRoutes(app: Express) {
         businessName: r.business_name,
         phone: r.phone,
         website: r.website,
+        // Surfaced so a vendor can see the licence number being published in their name. It was
+        // collected and printed in the ad but never shown back to them, which made the "keep it
+        // current" warranty in Terms 4.4 impossible to actually honour -- you cannot correct a
+        // value you cannot see.
+        licenceNumber: r.licence_number || null,
         paidThrough: r.paid_through,
         active: new Date(r.paid_through).getTime() > now,
         contactEdited: r.contact_edited,
@@ -191,7 +202,7 @@ export function registerMyAdsRoutes(app: Express) {
     if (!isDbConfigured()) return dbUnavailable(res);
     const purchaseId = parseInt(req.params.purchaseId, 10);
     const clerkUserId = req.verifiedUserId as string;
-    const { phone, website } = req.body || {};
+    const { phone, website, licenceNumber } = req.body || {};
     if (!Number.isFinite(purchaseId)) {
       res.status(400).json({ success: false, error: 'Invalid request.' });
       return;
@@ -202,10 +213,13 @@ export function registerMyAdsRoutes(app: Express) {
     }
     try {
       const owned = await withDb((sql) => sql`
-        SELECT p.id, p.contact_edited FROM guide_ad_purchases p JOIN guide_ad_orders o ON o.id = p.order_id
+        SELECT p.id, p.contact_edited, p.trade_category, p.licence_number
+        FROM guide_ad_purchases p JOIN guide_ad_orders o ON o.id = p.order_id
         WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
       `);
-      const ownedRow = (owned as unknown as Array<{ id: number; contact_edited: boolean }>)[0];
+      const ownedRow = (owned as unknown as Array<{
+        id: number; contact_edited: boolean; trade_category: string; licence_number: string | null;
+      }>)[0];
       if (!ownedRow) {
         res.status(404).json({ success: false, error: 'Placement not found.' });
         return;
@@ -217,8 +231,36 @@ export function registerMyAdsRoutes(app: Express) {
       // contact_edited = false in the WHERE, not just the earlier SELECT above, closes the same
       // kind of race the capture-time slot allocation guard does (see guideAdsApi.ts) -- two
       // near-simultaneous save clicks can't both land as "the" one allowed edit.
+
+      // Licence number is editable, but only inside the SAME one-time edit that governs phone and
+      // website -- deliberately not a freely-mutable field. The comment on this route already
+      // explains why the sold identity of a placement must not drift post-purchase without review,
+      // and a licence number is much closer to identity than to contact details: freely mutable, it
+      // would let a vendor buy a slot with a valid number and then swap in anything. Bounded to one
+      // change keeps the legitimate case (a licence renewed under a new number, or a typo at
+      // checkout) fixable, which it previously was not -- Terms 4.4 has the vendor warrant the
+      // number is current while the product gave them no way to make it so.
+      //
+      // An ABSENT licenceNumber field means "leave it alone", not "clear it". That distinction
+      // matters: a client that predates this field would otherwise silently wipe the licence off a
+      // live ad on an unrelated phone edit.
+      const licenceProvided = typeof licenceNumber === 'string';
+      const trimmedLicence = licenceProvided ? licenceNumber.trim() : '';
+      if (licenceProvided && requiresLicenceNumber(ownedRow.trade_category)) {
+        if (trimmedLicence.length < 3) {
+          res.status(400).json({ success: false, error: 'A licence, registration, or certification number is required for this trade category.' });
+          return;
+        }
+        if (trimmedLicence.length > 60) {
+          res.status(400).json({ success: false, error: 'That licence number looks too long -- please enter just the number.' });
+          return;
+        }
+      }
+      const nextLicence = licenceProvided ? (trimmedLicence || null) : ownedRow.licence_number;
+
       const updated = await withDb((sql) => sql`
-        UPDATE guide_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null}, contact_edited = true
+        UPDATE guide_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null},
+                           licence_number = ${nextLicence}, contact_edited = true
         WHERE id = ${purchaseId} AND contact_edited = false
         RETURNING id
       `);
@@ -238,7 +280,7 @@ export function registerMyAdsRoutes(app: Express) {
     if (!isDbConfigured()) return dbUnavailable(res);
     const purchaseId = parseInt(req.params.purchaseId, 10);
     const clerkUserId = req.verifiedUserId as string;
-    const { phone, website } = req.body || {};
+    const { phone, website, licenceNumber } = req.body || {};
     if (!Number.isFinite(purchaseId)) {
       res.status(400).json({ success: false, error: 'Invalid request.' });
       return;
@@ -249,10 +291,13 @@ export function registerMyAdsRoutes(app: Express) {
     }
     try {
       const owned = await withDb((sql) => sql`
-        SELECT p.id, p.contact_edited FROM zip_ad_purchases p JOIN zip_ad_orders o ON o.id = p.order_id
+        SELECT p.id, p.contact_edited, p.trade_category, p.licence_number
+        FROM zip_ad_purchases p JOIN zip_ad_orders o ON o.id = p.order_id
         WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
       `);
-      const ownedRow = (owned as unknown as Array<{ id: number; contact_edited: boolean }>)[0];
+      const ownedRow = (owned as unknown as Array<{
+        id: number; contact_edited: boolean; trade_category: string; licence_number: string | null;
+      }>)[0];
       if (!ownedRow) {
         res.status(404).json({ success: false, error: 'Placement not found.' });
         return;
@@ -261,8 +306,36 @@ export function registerMyAdsRoutes(app: Express) {
         res.status(409).json({ success: false, error: 'You\'ve already used your one edit for this placement. Contact support if you need another change.' });
         return;
       }
+
+      // Licence number is editable, but only inside the SAME one-time edit that governs phone and
+      // website -- deliberately not a freely-mutable field. The comment on this route already
+      // explains why the sold identity of a placement must not drift post-purchase without review,
+      // and a licence number is much closer to identity than to contact details: freely mutable, it
+      // would let a vendor buy a slot with a valid number and then swap in anything. Bounded to one
+      // change keeps the legitimate case (a licence renewed under a new number, or a typo at
+      // checkout) fixable, which it previously was not -- Terms 4.4 has the vendor warrant the
+      // number is current while the product gave them no way to make it so.
+      //
+      // An ABSENT licenceNumber field means "leave it alone", not "clear it". That distinction
+      // matters: a client that predates this field would otherwise silently wipe the licence off a
+      // live ad on an unrelated phone edit.
+      const licenceProvided = typeof licenceNumber === 'string';
+      const trimmedLicence = licenceProvided ? licenceNumber.trim() : '';
+      if (licenceProvided && requiresLicenceNumber(ownedRow.trade_category)) {
+        if (trimmedLicence.length < 3) {
+          res.status(400).json({ success: false, error: 'A licence, registration, or certification number is required for this trade category.' });
+          return;
+        }
+        if (trimmedLicence.length > 60) {
+          res.status(400).json({ success: false, error: 'That licence number looks too long -- please enter just the number.' });
+          return;
+        }
+      }
+      const nextLicence = licenceProvided ? (trimmedLicence || null) : ownedRow.licence_number;
+
       const updated = await withDb((sql) => sql`
-        UPDATE zip_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null}, contact_edited = true
+        UPDATE zip_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null},
+                           licence_number = ${nextLicence}, contact_edited = true
         WHERE id = ${purchaseId} AND contact_edited = false
         RETURNING id
       `);
