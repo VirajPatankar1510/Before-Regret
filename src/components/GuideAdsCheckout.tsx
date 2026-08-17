@@ -600,31 +600,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             )}
           </div>
 
-          {/* FAQ -- right before the total/CTA, so the honest answers (no verification, no view
-              guarantee, no refunds) land just before the moment of paying rather than after. */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-1">
-            <h2 className="text-sm font-bold text-slate-900 mb-2">Questions before you buy</h2>
-            {FAQ_ITEMS.map((item, idx) => {
-              const isOpen = openFaq === idx;
-              return (
-                <div key={item.q} className="border-t border-slate-100 first:border-t-0 py-2.5">
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    aria-expanded={isOpen}
-                    className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
-                  >
-                    <span className="text-xs sm:text-sm font-bold text-slate-900">{item.q}</span>
-                    <ChevronDown className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {isOpen && (
-                    <p className="text-xs text-slate-600 leading-relaxed mt-2">{item.a}</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
           <div className="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
             <div>
               <div className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Total</div>
@@ -670,6 +645,32 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
               <span>{submitError}</span>
             </div>
           )}
+
+          {/* FAQ, now below the total/CTA rather than above it -- the honest answers (no
+              verification, no view guarantee, no refunds) still exist on the page, just after the
+              price and button instead of immediately before them. */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-1">
+            <h2 className="text-sm font-bold text-slate-900 mb-2">Questions before you buy</h2>
+            {FAQ_ITEMS.map((item, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <div key={item.q} className="border-t border-slate-100 first:border-t-0 py-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    aria-expanded={isOpen}
+                    className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
+                  >
+                    <span className="text-xs sm:text-sm font-bold text-slate-900">{item.q}</span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {isOpen && (
+                    <p className="text-xs text-slate-600 leading-relaxed mt-2">{item.a}</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </form>
       </div>
     </div>
