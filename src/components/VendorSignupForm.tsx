@@ -105,11 +105,13 @@ export const VendorSignupForm: React.FC = () => {
     try {
       const stash = JSON.parse(raw) as {
         zipCodes: string[]; tradeCategory: string; businessName: string; phone: string; website: string | null;
+        licenceNumber?: string | null;
       };
       setTradeCategory(stash.tradeCategory || '');
       setBusinessName(stash.businessName || '');
       setPhone(stash.phone || '');
       setWebsite(stash.website || '');
+      setLicenceNumber(stash.licenceNumber || '');
       (async () => {
         for (const zip of (stash.zipCodes || []).slice(0, ZIPS_PER_BUNDLE)) {
           await addZip(zip, stash.tradeCategory);

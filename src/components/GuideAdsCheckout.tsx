@@ -99,12 +99,13 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     if (!raw) return;
     sessionStorage.removeItem('br_renew_guide_ads');
     try {
-      const renew = JSON.parse(raw) as { articleIds: number[]; businessName: string; tradeCategory: string; phone: string; website: string | null };
+      const renew = JSON.parse(raw) as { articleIds: number[]; businessName: string; tradeCategory: string; phone: string; website: string | null; licenceNumber?: string | null };
       setSelected(new Set(renew.articleIds));
       setBusinessName(renew.businessName || '');
       setTradeCategory(renew.tradeCategory || '');
       setPhone(renew.phone || '');
       setWebsite(renew.website || '');
+      setLicenceNumber(renew.licenceNumber || '');
     } catch { /* malformed stash, ignore */ }
   }, []);
 

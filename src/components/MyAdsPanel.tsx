@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Loader2, Lock, ExternalLink, Pencil, Check, X, RotateCcw, Receipt, MapPin, BookOpen, CreditCard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { requiresLicenceNumber } from '../data/sponsoredVendors';
 
 interface GuidePlacement {
   purchaseId: number;
@@ -11,6 +12,7 @@ interface GuidePlacement {
   tradeCategory: string;
   phone: string;
   website: string | null;
+  licenceNumber: string | null;
   paidThrough: string;
   active: boolean;
   contactEdited: boolean;
@@ -24,6 +26,7 @@ interface ZipPlacement {
   businessName: string;
   phone: string;
   website: string | null;
+  licenceNumber: string | null;
   paidThrough: string;
   active: boolean;
   contactEdited: boolean;
@@ -83,6 +86,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editPhone, setEditPhone] = useState('');
   const [editWebsite, setEditWebsite] = useState('');
+  const [editLicence, setEditLicence] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
@@ -195,10 +199,11 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const groupedActiveZips = useMemo(() => groupZipsByOrder(activeZips), [activeZips]);
   const groupedExpiredZips = useMemo(() => groupZipsByOrder(expiredZips), [expiredZips]);
 
-  const startEdit = (key: string, p: { phone: string; website: string | null }) => {
+  const startEdit = (key: string, p: { phone: string; website: string | null; licenceNumber: string | null }) => {
     setEditingKey(key);
     setEditPhone(p.phone);
     setEditWebsite(p.website || '');
+    setEditLicence(p.licenceNumber || '');
     setEditError(null);
   };
 
@@ -218,11 +223,11 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
       const res = await fetch(`/api/my-ads/guide/${purchaseId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ phone: editPhone.trim(), website: editWebsite.trim() || undefined }),
+        body: JSON.stringify({ phone: editPhone.trim(), website: editWebsite.trim() || undefined, licenceNumber: editLicence.trim() }),
       });
       const data = await res.json();
       if (!data.success) { setEditError(data?.error || 'Could not save.'); setSavingEdit(false); return; }
-      setGuidePlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, contactEdited: true } : p));
+      setGuidePlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, licenceNumber: editLicence.trim() || null, contactEdited: true } : p));
       setEditingKey(null);
     } catch {
       setEditError('Could not reach the server.');
@@ -242,11 +247,11 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
       const res = await fetch(`/api/my-ads/zip/${purchaseId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ phone: editPhone.trim(), website: editWebsite.trim() || undefined }),
+        body: JSON.stringify({ phone: editPhone.trim(), website: editWebsite.trim() || undefined, licenceNumber: editLicence.trim() }),
       });
       const data = await res.json();
       if (!data.success) { setEditError(data?.error || 'Could not save.'); setSavingEdit(false); return; }
-      setZipPlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, contactEdited: true } : p));
+      setZipPlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, phone: editPhone.trim(), website: editWebsite.trim() || null, licenceNumber: editLicence.trim() || null, contactEdited: true } : p));
       setEditingKey(null);
     } catch {
       setEditError('Could not reach the server.');
@@ -314,7 +319,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const renewGuide = (p: GuidePlacement) => {
     sessionStorage.setItem(RENEW_GUIDE_KEY, JSON.stringify({
       articleIds: [p.articleId], businessName: p.businessName, tradeCategory: p.tradeCategory,
-      phone: p.phone, website: p.website,
+      phone: p.phone, website: p.website, licenceNumber: p.licenceNumber,
     }));
     onNavigate('/topic-ads');
   };
@@ -327,7 +332,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     const [first] = group;
     sessionStorage.setItem(RENEW_ZIP_KEY, JSON.stringify({
       zipCodes: group.map((p) => p.zipCode), tradeCategory: first.tradeCategory, businessName: first.businessName,
-      phone: first.phone, website: first.website,
+      phone: first.phone, website: first.website, licenceNumber: first.licenceNumber,
     }));
     onNavigate('/report-ads');
   };
@@ -413,7 +418,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     );
   };
 
-  const editForm = (onSave: () => void) => (
+  const editForm = (onSave: () => void, tradeCategory: string) => (
     <div className="mt-3 space-y-2 bg-slate-50 border border-slate-200 rounded-xl p-3">
       <p className="flex items-center gap-1 text-[11px] font-semibold text-amber-700">
         <Lock className="w-3 h-3 shrink-0" />
@@ -421,6 +426,22 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
       </p>
       <input type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="Phone" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs" />
       <input type="url" value={editWebsite} onChange={(e) => setEditWebsite(e.target.value)} placeholder="Website (optional)" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs" />
+      {/* Same rule as checkout (requiresLicenceNumber), so the two cannot disagree about which
+          categories need a number -- and so the one edit a vendor gets is enough to correct a
+          licence that was renewed or mistyped, which is what Terms 4.4 assumes they can do. */}
+      {requiresLicenceNumber(tradeCategory) && (
+        <div className="space-y-1">
+          <input
+            type="text" value={editLicence} onChange={(e) => setEditLicence(e.target.value)}
+            placeholder="Licence / registration number" maxLength={60}
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
+          />
+          <p className="text-[10px] text-slate-500 leading-relaxed">
+            Shown in your ad exactly as typed. We don't verify it with any licensing board -- you're
+            confirming it's current and correct.
+          </p>
+        </div>
+      )}
       {editError && <p className="text-xs text-rose-600">{editError}</p>}
       <div className="flex gap-2">
         <button type="button" onClick={onSave} disabled={savingEdit} className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg disabled:opacity-60">
@@ -476,6 +497,12 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                           <span>{p.title}</span><ExternalLink className="w-3 h-3 shrink-0" />
                         </a>
                         <p className="text-xs text-slate-500 mt-1">{p.businessName} &middot; {p.tradeCategory} &middot; {p.phone}</p>
+                        {/* Shown so the vendor can see the licence number being published in their
+                            name -- it was collected and printed in the ad but never surfaced back,
+                            which made the "keep it current" warranty impossible to act on. */}
+                        {p.licenceNumber && (
+                          <p className="text-[11px] text-slate-400 mt-0.5 font-mono">Licence #{p.licenceNumber}</p>
+                        )}
                       </div>
                       <div className="text-right shrink-0">
                         <div className={`text-xs font-bold ${left <= 5 ? 'text-amber-600' : 'text-emerald-600'}`}>{left} day{left === 1 ? '' : 's'} left</div>
@@ -494,7 +521,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                       )}
                       {renewControl(key, renewal?.guidePriceUsd, () => startGuideRenew(p))}
                     </div>
-                    {editingKey === key && editForm(() => saveGuideEdit(p.purchaseId))}
+                    {editingKey === key && editForm(() => saveGuideEdit(p.purchaseId), p.tradeCategory)}
                   </div>
                 );
               })}
@@ -516,6 +543,9 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                         </div>
                         <p className="text-sm font-bold text-slate-900 mt-0.5">{first.tradeCategory}</p>
                         <p className="text-xs text-slate-500 mt-1">{first.businessName} &middot; {first.phone}</p>
+                        {first.licenceNumber && (
+                          <p className="text-[11px] text-slate-400 mt-0.5 font-mono">Licence #{first.licenceNumber}</p>
+                        )}
                       </div>
                       <div className="text-right shrink-0">
                         <div className={`text-xs font-bold ${left <= 5 ? 'text-amber-600' : 'text-emerald-600'}`}>{left} day{left === 1 ? '' : 's'} left</div>
@@ -547,7 +577,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                         </li>
                       ))}
                     </ul>
-                    {editingRow && editForm(() => saveZipEdit(editingRow.purchaseId))}
+                    {editingRow && editForm(() => saveZipEdit(editingRow.purchaseId), editingRow.tradeCategory)}
 
                     <div className="mt-3">
                       {renewControl(
