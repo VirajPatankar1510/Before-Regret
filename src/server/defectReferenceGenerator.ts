@@ -15,7 +15,7 @@ import { GuideReference } from '../types.js';
 
 // The subset of PRIORITY_RULES that are genuine material/system defects with a real era window,
 // as opposed to region-driven rules (foundation type, landslide, radon) or general age-based
-// maintenance rules (systems_age) that don't fit the "defect by era" framing. Matches the doc that
+// maintenance rules (roof_age, hvac_age) that don't fit the "defect by era" framing. Matches the doc that
 // scoped this feature: knob-and-tube, aluminum wiring, recalled panel brands, cast iron sewer,
 // galvanized supply, polybutylene, lead paint, asbestos.
 export const DEFECT_RULE_IDS = [
