@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ArrowLeft, AlertTriangle, Database, Cpu, Megaphone, Scale, Link2, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Database, Cpu, Megaphone, Scale, Link2, ShieldAlert, Gavel } from 'lucide-react';
 
 interface DisclaimerProps {
   onBackToHome: () => void;
@@ -59,7 +59,9 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
               pages, comparison data, and sponsored placements. It is operated by <strong>Atmostellar</strong>{' '}
               ("we", "us", "our"). It supplements, and does not replace, our{' '}
               <a href="/terms" className="text-blue-600 hover:underline font-bold">Terms of Service</a> and{' '}
-              <a href="/privacy" className="text-blue-600 hover:underline font-bold">Privacy Policy</a>.
+              <a href="/privacy" className="text-blue-600 hover:underline font-bold">Privacy Policy</a>.{' '}
+              <strong>Those Terms include a binding individual arbitration agreement and a class
+              action waiver, which you may opt out of within 30 days</strong> -- see section 7 below.
             </p>
           </div>
 
@@ -221,13 +223,57 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
                 <a href="/terms" className="text-blue-600 hover:underline font-bold">Terms of Service</a>,
                 which are incorporated into this disclaimer by reference. Nothing in this disclaimer
                 is intended to exclude or limit any liability that cannot lawfully be excluded or
-                limited under the law applicable to you, including rights you may hold under
-                consumer protection legislation in your jurisdiction.
+                limited under the law applicable to you. In particular, and consistent with section
+                8.1(b) of the Terms, nothing here deprives you of the protection of any mandatory
+                provision of the consumer protection law of the place where you habitually reside
+                that cannot be derogated from by agreement.
+              </p>
+            </section>
+
+            {/* Kept deliberately short and pointed at the Terms rather than restating them. This
+                page is not the contract -- Section 7 of the Terms is -- and two texts describing
+                the same arbitration agreement in slightly different words is how they drift apart.
+                What this section is genuinely for is NOTICE: an arbitration agreement is enforced
+                on the strength of the notice a reasonable person actually had, and this is a
+                footer-linked page a visitor can reach from anywhere, including the many who never
+                transact and are therefore never shown the Terms at a checkout. */}
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
+                <Gavel className="w-4 h-4 text-slate-400 shrink-0" />
+                <span>7. How Disputes Are Resolved</span>
+              </h2>
+              <p>
+                <strong>Most disputes between you and Atmostellar must be resolved by individual,
+                binding arbitration rather than in court, and you and Atmostellar each waive the
+                right to a jury trial and to participate in a class action.</strong> The full terms
+                are set out in{' '}
+                <a href="/terms" className="text-blue-600 hover:underline font-bold">section 7 of our Terms of Service</a>{' '}
+                and control over this summary.
+              </p>
+              <p>
+                In outline: before either side may start an arbitration it must first send a written
+                notice of the dispute and attempt to resolve it informally for 60 days. Claims in{' '}
+                <strong>small claims court</strong>, and claims for injunctive relief over
+                intellectual property, are excluded from arbitration entirely.
+              </p>
+              <p>
+                <strong>You may opt out of arbitration.</strong> Email{' '}
+                <a href="mailto:hello@beforeregret.com" className="text-blue-600 hover:underline font-bold">hello@beforeregret.com</a>{' '}
+                with the subject line <strong>"Arbitration Opt-Out"</strong> within 30 days of first
+                accepting the Terms, stating your name and account email. Opting out costs you
+                nothing and changes nothing else about your account, your pricing, or your access.
+              </p>
+              <p>
+                For any consumer dispute that is not arbitrated, jurisdiction is{' '}
+                <strong>non-exclusive</strong>: you may bring your claim either where Atmostellar is
+                registered or in the courts of the place where you habitually reside, and Atmostellar
+                will bring any claim against you only where you reside. Different rules apply to
+                business advertisers -- see sections 8.2 and 8.3 of the Terms.
               </p>
             </section>
 
             <section className="space-y-2 pt-2 border-t border-slate-200">
-              <h2 className="text-base font-bold text-slate-900">7. Questions and Corrections</h2>
+              <h2 className="text-base font-bold text-slate-900">8. Questions and Corrections</h2>
               <p>
                 To report an inaccuracy, request a correction, or ask about anything on this page,
                 contact us at:
