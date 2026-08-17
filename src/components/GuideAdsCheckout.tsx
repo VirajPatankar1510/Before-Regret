@@ -436,6 +436,15 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
+              {/* Lower-urgency version of the same hint in VendorSignupForm.tsx: here the licence
+                  field itself materializes in this same view the moment a category is picked, so
+                  there's no separate later step to be caught off guard by -- this just names it a
+                  beat earlier, right as the category is chosen. */}
+              {tradeCategory && requiresLicenceNumber(tradeCategory) && (
+                <p className="text-[11px] text-slate-500 sm:col-span-2 -mt-1">
+                  You'll need a licence, registration, or certification number for {tradeCategory}.
+                </p>
+              )}
               <input
                 type="tel" placeholder="Phone number readers will call" value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -446,8 +455,11 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                 onChange={(e) => setWebsite(e.target.value)}
                 className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm sm:col-span-2"
               />
-              {/* Same field, same rules and same honesty as the ZIP-ad form -- see the comment on
-                  the licence input in VendorSignupForm.tsx. */}
+              {/* Same field and same rules as the ZIP-ad form -- see the comment on the licence
+                  input in VendorSignupForm.tsx, including why the helper text below deliberately
+                  omits "we don't verify this": that fact belongs on the public-facing card, not
+                  here, where saying it out loud only advertises the gap to the one party who could
+                  exploit it. */}
               {tradeCategory && requiresLicenceNumber(tradeCategory) && (
                 <div className="sm:col-span-2 space-y-1.5">
                   <input
@@ -458,9 +470,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                     className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm"
                   />
                   <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Required for {tradeCategory}. <strong>Shown in your ad</strong> exactly as typed.
-                    We do not verify it with any licensing board -- you are confirming it is current
-                    and correct (Terms 4.4). Movers may enter a USDOT or MC number.
+                    Required for {tradeCategory}. <strong>Appears in your ad</strong> exactly as
+                    typed. You are confirming it is current, valid for this trade, and held by this
+                    business -- a false or expired number means removal without refund (Terms 4.4).
+                    Movers may enter a USDOT or MC number.
                   </p>
                 </div>
               )}
