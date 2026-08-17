@@ -71,6 +71,24 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               <p>
                 <strong>No Refunds:</strong> Because payment is only collected after address eligibility is confirmed and the report is generated and delivered immediately upon payment, <strong>all report purchases are final and non-refundable.</strong>
               </p>
+              {/* Savings clause. Without it, "final and non-refundable" is an unqualified statement
+                  that a consumer has no refund rights at all -- which is not true everywhere, since
+                  refund and withdrawal rights are among the most commonly non-waivable consumer
+                  protections. An absolute term that overstates the position is the same failure mode
+                  as the old exclusive-forum clause: it invites being struck rather than trimmed, and
+                  telling a consumer they have no rights they in fact hold can itself be treated as a
+                  deceptive practice. Mirrors Terms 8.1(b). */}
+              <p>
+                <strong>Your statutory rights are unaffected.</strong> Nothing in this policy limits
+                or waives any refund, cancellation, or withdrawal right you hold under a mandatory
+                provision of the consumer protection law of the place where you habitually reside
+                that cannot be derogated from by agreement, and nothing here affects your right to
+                dispute a charge with your card issuer or payment provider. Where such a right
+                applies, it prevails over this policy to the extent of the conflict. If you believe
+                you hold such a right, contact us at{' '}
+                <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>{' '}
+                and we will assess it in good faith.
+              </p>
               <div className="flex items-start gap-2 text-xs text-slate-500 pt-1">
                 <CreditCard className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                 <p>Card details are collected and processed directly by a PCI-DSS compliant third-party payment processor; Atmostellar does not store your full card number.</p>
@@ -212,10 +230,38 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               </div>
             </section>
 
-            {/* Section 6 */}
+            {/* Section 6 -- billing disputes. Kept as a short pointer to Terms Section 7 rather
+                than a restatement: a billing disagreement IS a dispute under that section, and a
+                refund policy that described the arbitration process in its own words would be a
+                second, drifting copy of the operative clause. */}
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
+                6. If You Disagree With a Billing Decision
+              </h2>
+              <p>
+                Contact us first -- most billing questions are resolved directly, and{' '}
+                <a href="/terms" className="text-blue-600 font-bold hover:underline">section 7.1 of our Terms of Service</a>{' '}
+                requires both sides to attempt informal resolution for 60 days before starting any
+                formal proceeding.
+              </p>
+              <p>
+                If that does not resolve it, <strong>billing and refund disputes are subject to the
+                binding individual arbitration agreement and class action waiver in{' '}
+                <a href="/terms" className="text-blue-600 font-bold hover:underline">section 7 of the Terms</a></strong>,
+                which control over this summary. Claims brought in <strong>small claims court</strong>{' '}
+                are excluded from arbitration, and you may <strong>opt out of arbitration entirely</strong>{' '}
+                within 30 days of first accepting the Terms by emailing{' '}
+                <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>{' '}
+                with the subject line "Arbitration Opt-Out". For a consumer dispute that is not
+                arbitrated, jurisdiction is <strong>non-exclusive</strong> -- you may bring your claim
+                where you habitually reside (Terms section 8.2).
+              </p>
+            </section>
+
+            {/* Section 7 */}
             <section className="space-y-2 pt-2 border-t border-slate-200">
               <h2 className="text-base font-bold text-slate-900">
-                6. Billing Support & Inquiries
+                7. Billing Support & Inquiries
               </h2>
               <p>
                 If you have questions regarding a report purchase, a vendor placement receipt, or billing status, please contact our support team:
