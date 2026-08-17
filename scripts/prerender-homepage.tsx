@@ -225,6 +225,23 @@ async function run() {
   // in src/components/Hero.tsx. Without this the booted app would briefly render the content
   // sections empty and then pop them in once /api/homepage resolved, undoing the whole point of
   // prerendering them.
+  //
+  // Injected at the END OF <body>, not into <head>, and that placement is the whole point of this
+  // comment. This blob is the single largest thing on the homepage -- 134 articles + 100 counties,
+  // ~58KB, 59% of the total HTML at time of writing -- and it grows with every article published.
+  // In <head> it sat entirely BEFORE the hero markup in byte order, so the parser had to stream and
+  // chew through ~70KB before it even reached the LCP element (measured: hero-bg div at byte 69,972
+  // of 100,003). Desktop hides that completely; under Lighthouse's mobile profile (4x CPU slowdown,
+  // Slow 4G) it showed up as 1,790ms of "element render delay" -- the dominant slice of a 4.5s LCP,
+  // and the reason an earlier attempt at inlining the hero's critical CSS moved nothing: the
+  // bottleneck was never the CSS rule, it was the parser's distance to the element.
+  //
+  // Safe at end-of-body because nothing reads it during parse. useHomeData() reads it from inside a
+  // useState lazy initializer (so: at React mount), and the app bundle is <script type="module">,
+  // which is deferred and therefore executes only after the document is fully parsed. A plain
+  // <script> like this one executes the moment the parser hits it, which is still strictly before
+  // any deferred module. Even if that ordering ever broke, useHomeData falls back to
+  // GET /api/homepage rather than rendering empty.
   const preloadScript = `<script>window.__PRELOADED_HOME__=${escapeJsonForScriptTag(data)}</script>`;
 
   // Inline the .hero-bg background-image rule itself, ahead of everything else in <head>. The
@@ -277,10 +294,21 @@ async function run() {
     `<link rel="preload" as="image" href="/hero-bg-mobile.webp" type="image/webp" fetchpriority="high" media="(max-width: 500px) and (orientation: portrait)" />\n  ` +
     `<link rel="preload" as="image" href="/hero-bg.webp" type="image/webp" fetchpriority="high" media="not all and (max-width: 500px) and (orientation: portrait)" />`;
 
+  // preloadScript is deliberately NOT in this <head> group -- see its own comment above. faqScript
+  // stays in <head>: it's JSON-LD for crawlers, small, and belongs with the other metadata.
   const html = template
     .replace('<head>', `<head>\n    ${criticalStyleTag}`)
-    .replace('</head>', `${heroPreload}\n  ${faqScript}\n  ${preloadScript}\n  </head>`)
-    .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`);
+    .replace('</head>', `${heroPreload}\n  ${faqScript}\n  </head>`)
+    .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
+    .replace('</body>', `  ${preloadScript}\n  </body>`);
+
+  if (!html.includes('__PRELOADED_HOME__')) {
+    // A silent failure here would ship a homepage whose content sections render empty until
+    // /api/homepage resolves -- exactly the flash this preload exists to prevent -- so fail the
+    // build instead. Guards against index.html losing its </body> tag in some future refactor.
+    console.error('[prerender-homepage] Failed to inject __PRELOADED_HOME__ -- no </body> in the template?');
+    process.exit(1);
+  }
 
   fs.writeFileSync(templatePath, html, 'utf8');
   console.log(
