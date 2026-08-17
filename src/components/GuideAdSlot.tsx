@@ -12,6 +12,10 @@ interface ActiveVendor {
   tradeCategory: string;
   phone: string;
   website?: string;
+  // Advertiser-supplied, republished verbatim, never validated against a licensing board -- same
+  // field and same caveat as SponsoredVendor.licenceNumber in types.ts. Optional: absent for the
+  // licence-exempt category and for placements sold before the field existed.
+  licenceNumber?: string;
 }
 
 // Self-serve vendor ad slot, open market, $7.99/30 days -- see src/server/guideAdsApi.ts. One
@@ -70,6 +74,12 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle 
             <div className="min-w-0">
               <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">{vendor.tradeCategory}</div>
               <div className="text-sm font-bold text-slate-900 mt-0.5">{vendor.businessName}</div>
+              {vendor.licenceNumber && (
+                <div className="text-[10px] text-slate-500 mt-0.5">
+                  <span className="font-mono">Licence #{vendor.licenceNumber}</span>
+                  <span> · provided by the advertiser, not verified by us</span>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">

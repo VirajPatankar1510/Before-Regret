@@ -383,6 +383,27 @@ export async function ensureArticlesSchema(): Promise<void> {
   await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS clerk_user_id TEXT`;
   await sql`CREATE INDEX IF NOT EXISTS idx_zip_ad_orders_clerk_user ON zip_ad_orders(clerk_user_id)`;
 
+  // Advertiser-supplied licence / registration / certification number, added to all four ad tables
+  // at once so an order and the purchase it becomes carry the same value. See
+  // requiresLicenceNumber() in src/data/sponsoredVendors.ts for which trade categories must supply
+  // one and why the publisher (not just the advertiser) has an interest in collecting it.
+  //
+  // Nullable rather than NOT NULL, for two reasons that are both about not lying: existing rows
+  // predate the field and there is no honest value to backfill them with, and the one exempt
+  // category legitimately has nothing to put here. Enforcement therefore lives at the checkout
+  // routes, which reject a missing number for a category that requires one, rather than in the
+  // column constraint -- the same division as the rest of this schema, where the DB stores what
+  // happened and the route decides what is allowed to happen.
+  //
+  // This is stored and displayed EXACTLY as the vendor typed it and is never validated against any
+  // state licensing board -- no such integration exists here, and every surface that prints it says
+  // so. That honesty is the point: an unverified number presented as verified would be a worse
+  // position than collecting nothing at all.
+  await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS licence_number TEXT`;
+  await sql`ALTER TABLE zip_ad_purchases ADD COLUMN IF NOT EXISTS licence_number TEXT`;
+  await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS licence_number TEXT`;
+  await sql`ALTER TABLE guide_ad_purchases ADD COLUMN IF NOT EXISTS licence_number TEXT`;
+
   // Superseded by renews_order_id below -- a bundle renewal extends every purchase under one
   // order, not a single purchase row, so "which purchase does this renew" stopped being the right
   // question the moment one order could cover more than one ZIP. Column kept, never dropped, so

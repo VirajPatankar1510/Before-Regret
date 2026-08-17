@@ -35,6 +35,41 @@ export const TRADE_CATEGORIES = [
   'Moving Company',
 ] as const;
 
+// Trades for which a licence, registration, or certification number must be supplied at checkout
+// and displayed on the placement.
+//
+// Why this exists: this site sells ZIP-targeted advertising to contractor-tier trades and, until
+// now, collected no credential identifier of any kind. Several states regulate contractor
+// ADVERTISING specifically -- requiring a licence number to appear in the ad, and restricting the
+// publication of ads for unlicensed persons -- and some of those provisions reach the publisher of
+// the advertisement, not only the advertiser. California is the strictest and this site sells into
+// California ZIPs. Collecting the number and printing it converts the placement from "an ad for a
+// business whose licensure is entirely unknown to the publisher" into "an ad carrying the
+// advertiser's own stated licence number", which is the posture the statutes are written around.
+//
+// Expressed as an exemption set rather than an inclusion list because the honest default is that
+// these trades ARE licensed somewhere they are sold: electrical, general contracting, abatement,
+// pest control, well/septic, HVAC, plumbing-adjacent sewer work, roofing, home inspection and radon
+// measurement all carry a state licence, certification, or registration in a large share of states,
+// and interstate movers carry a USDOT/MC number. Defaulting to "required" means a trade added to
+// TRADE_CATEGORIES later inherits the safe behaviour without anyone remembering this file.
+//
+// Chimney Sweep is the single exemption: chimney work is generally not a state-licensed trade, and
+// the recognised credential (CSIA certification) is voluntary and privately issued, so demanding a
+// "licence number" there would invite vendors to type something meaningless into a field this site
+// then publishes.
+//
+// NOT a legal opinion and not per-state accurate: this is a deliberately conservative default that
+// counsel should confirm against the specific states being sold into. Erring toward collecting a
+// number costs a vendor one form field; erring the other way is the exposure described above.
+export const LICENCE_EXEMPT_CATEGORIES: ReadonlySet<string> = new Set<string>([
+  'Chimney Sweep',
+]);
+
+export function requiresLicenceNumber(tradeCategory: string): boolean {
+  return !LICENCE_EXEMPT_CATEGORIES.has(tradeCategory);
+}
+
 // Matches a specific report finding's trade category, not just its ZIP. Report findings today
 // are a small, fixed set (see validateAndFixReportContradictions in server.ts) -- this maps each
 // finding id to whichever paid trade category it's actually relevant to, so a report can carry a

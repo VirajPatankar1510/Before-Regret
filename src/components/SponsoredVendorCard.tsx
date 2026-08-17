@@ -21,6 +21,19 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
           <span>Sponsored · {vendor.tradeCategory}</span>
         </div>
         <h3 className="font-bold text-slate-900 text-base sm:text-lg">{vendor.businessName}</h3>
+        {/* Printed because several states require a contractor's licence number to appear in the
+            advertisement itself, and because a reader who wants to check the licence needs the
+            number to check it with. The "not verified by us" half is not boilerplate softening --
+            this site runs no check against any licensing board, and presenting a self-reported
+            number as though it had been validated would be a worse misrepresentation than showing
+            no number at all. Absent for the licence-exempt trade category and for placements sold
+            before this field existed, so it renders conditionally. */}
+        {vendor.licenceNumber && (
+          <p className="text-[11px] text-slate-500 font-mono">
+            Licence #{vendor.licenceNumber}
+            <span className="font-sans not-italic"> · provided by the advertiser, not verified by us</span>
+          </p>
+        )}
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <a
