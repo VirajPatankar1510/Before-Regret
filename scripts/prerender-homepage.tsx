@@ -160,40 +160,47 @@ function escapeJsonForScriptTag(value: unknown): string {
   return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
-// Pulls the .hero-bg background-image rule -- base JPEG plus its two @supports(image-set())
-// fallbacks (desktop WebP, mobile-crop WebP) -- out of the real built CSS, verbatim, byte for
-// byte including Lightning CSS's own -webkit-image-set() autoprefixing. Extracted from the build
-// output rather than hand-duplicated here so this can never quietly drift out of sync with
-// src/index.css; if that file's hero-bg rule shape ever changes, this throws instead of silently
-// inlining something stale.
-function extractHeroBgCriticalCss(builtCss: string): string {
-  const marker = '.hero-bg{background-image:url(/hero-bg.jpg)}';
-  const start = builtCss.indexOf(marker);
-  if (start === -1) {
-    throw new Error(
-      '[prerender-homepage] Could not find the .hero-bg base rule in the built CSS -- src/index.css may have changed shape.'
-    );
+// Inlines the ENTIRE built stylesheet into the homepage and removes its <link>, so the homepage
+// ships with zero render-blocking stylesheet requests.
+//
+// This replaces an earlier attempt that inlined only the .hero-bg background-image rule. That
+// attempt did nothing measurable, and the reason is worth recording so it isn't repeated: the LCP
+// element is
+//   <div class="hero-bg absolute inset-0 bg-cover bg-center bg-scroll md:bg-fixed">
+// inside a section carrying min-h-[85vh] flex flex-col justify-center. Every one of those layout
+// utilities lives in the built stylesheet, not in the hand-inlined snippet -- so the browser had
+// the image URL early but not the rules giving the element its ~690px of height. An element with
+// no computed size cannot paint and cannot become an LCP candidate, so the early URL bought
+// nothing. Above-the-fold markup needs its LAYOUT rules inlined, not just its paint rules.
+//
+// Why the whole file rather than a critical subset: this is Tailwind v4 output -- 71 @property
+// registrations, 5 cascade @layers, 33 :where() wrappers, 73 @supports blocks. A hand-rolled
+// subset extractor across that is very easy to get subtly wrong, and the failure mode is silent
+// visual breakage across the highest-traffic page rather than a build error. The whole file is
+// 76KB raw but only ~13KB gzipped, against a homepage already ~24KB gzipped, and inlining removes
+// a full request round trip that Lighthouse measured as 150ms of render-blocking on Slow 4G.
+// Correctness beats the last few KB here.
+//
+// Deliberately homepage-only. Guide and county pages (235 of them) keep the external stylesheet so
+// it stays cacheable across a browsing session; only the single highest-value entry point trades
+// cacheability for a faster first paint.
+//
+// Honest scope note: this targets FCP and the render-blocking round trip. It does NOT address the
+// ~1.6s "element render delay", which is React's createRoot() discarding the prerendered DOM and
+// re-mounting the hero (see the comment in src/main.tsx that says so outright). That needs
+// hydrateRoot and a prerender that matches what React renders -- a separate, larger change.
+function inlineStylesheet(html: string, distPath: string): string {
+  const linkMatch = html.match(/<link[^>]*rel="stylesheet"[^>]*href="(\/assets\/index-[^"]+\.css)"[^>]*>/);
+  if (!linkMatch) {
+    throw new Error('[prerender-homepage] Could not find the main stylesheet <link> in dist/index.html.');
   }
-  let cursor = start + marker.length;
-  // The two @supports() fallbacks immediately follow the base rule in src/index.css -- consume
-  // each via brace-depth counting (rather than a hardcoded end marker) so the @media block
-  // nested inside the mobile-crop @supports doesn't end the match early.
-  while (builtCss.startsWith('@supports', cursor)) {
-    let depth = 0;
-    let i = cursor;
-    for (; i < builtCss.length; i++) {
-      if (builtCss[i] === '{') depth++;
-      else if (builtCss[i] === '}') {
-        depth--;
-        if (depth === 0) {
-          i++;
-          break;
-        }
-      }
-    }
-    cursor = i;
-  }
-  return builtCss.slice(start, cursor);
+  const cssPath = path.join(distPath, linkMatch[1]);
+  const css = fs.readFileSync(cssPath, 'utf8');
+  // </style> inside CSS content would terminate the tag early. Tailwind output has no reason to
+  // contain it, but a content: "..." string legitimately could, so this is escaped rather than
+  // assumed safe.
+  const safeCss = css.replace(/<\/style>/gi, '<\\/style>');
+  return html.replace(linkMatch[0], `<style>${safeCss}</style>`);
 }
 
 async function run() {
@@ -244,25 +251,6 @@ async function run() {
   // GET /api/homepage rather than rendering empty.
   const preloadScript = `<script>window.__PRELOADED_HOME__=${escapeJsonForScriptTag(data)}</script>`;
 
-  // Inline the .hero-bg background-image rule itself, ahead of everything else in <head>. The
-  // preload hints below get the image *bytes* onto the wire early, but the browser still can't
-  // paint them as this div's background until it has parsed the rule that says to -- and that
-  // rule normally only exists in the external stylesheet <link>, which PageSpeed measured
-  // (Aug 17 2026 mobile run) taking 1,160ms on its own to arrive under throttled mobile network,
-  // behind the JS bundle on the same critical path. Lighthouse's LCP breakdown attributed 1,520ms
-  // of "element render delay" to exactly this gap -- the image was already downloaded, the page
-  // just had nowhere to put it yet. A `<style>` tag parses synchronously with the surrounding
-  // HTML, so placing this before every other <head> entry (fonts, JS module, the stylesheet link
-  // itself) removes that stylesheet round-trip from the hero photo's critical path entirely. The
-  // real stylesheet still declares the same rule once it loads; this doesn't replace it, just
-  // gets there first with an identical value, so there's no risk of the two ever disagreeing.
-  const cssHrefMatch = template.match(/href="(\/assets\/index-[^"]+\.css)"/);
-  if (!cssHrefMatch) {
-    throw new Error('[prerender-homepage] Could not find the main CSS asset link in dist/index.html.');
-  }
-  const builtCss = fs.readFileSync(path.join(distPath, cssHrefMatch[1]), 'utf8');
-  const criticalStyleTag = `<style>${extractHeroBgCriticalCss(builtCss)}</style>`;
-
   // Preload the hero photo. It's the homepage's LCP element, but it's a CSS background-image on a
   // div that only exists once React has booted -- the static markup above deliberately renders a
   // plain bg-slate-950 hero instead. So without this hint the browser can't even discover the
@@ -296,17 +284,33 @@ async function run() {
 
   // preloadScript is deliberately NOT in this <head> group -- see its own comment above. faqScript
   // stays in <head>: it's JSON-LD for crawlers, small, and belongs with the other metadata.
-  const html = template
-    .replace('<head>', `<head>\n    ${criticalStyleTag}`)
-    .replace('</head>', `${heroPreload}\n  ${faqScript}\n  </head>`)
-    .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
-    .replace('</body>', `  ${preloadScript}\n  </body>`);
+  // inlineStylesheet runs last so it operates on the finished document and can't be undone by a
+  // later replace re-introducing the <link>.
+  // heroPreload goes at the TOP of <head>, not the bottom, and that ordering is load-bearing once
+  // the stylesheet is inlined below: inlining puts ~76KB of CSS into <head>, and anything after it
+  // is 76KB further from the preload scanner. Injected at the end of <head> (as it was before this
+  // change) the image preload landed at byte ~83,000 instead of ~7,900, which would have given back
+  // the resource-load-delay improvement measured the day before (410ms -> 220ms) to buy a smaller
+  // saving elsewhere. First bytes of <head> is the only correct home for it.
+  const html = inlineStylesheet(
+    template
+      .replace('<head>', `<head>\n    ${heroPreload}`)
+      .replace('</head>', `${faqScript}\n  </head>`)
+      .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`)
+      .replace('</body>', `  ${preloadScript}\n  </body>`),
+    distPath
+  );
 
+  // Both assertions guard against a silent no-op shipping to production: a missed preload injection
+  // renders the content sections empty until /api/homepage resolves (the exact flash the preload
+  // exists to prevent), and a surviving stylesheet <link> means the homepage still blocks render on
+  // a request this whole change exists to remove. Failing the build is the cheaper outcome.
   if (!html.includes('__PRELOADED_HOME__')) {
-    // A silent failure here would ship a homepage whose content sections render empty until
-    // /api/homepage resolves -- exactly the flash this preload exists to prevent -- so fail the
-    // build instead. Guards against index.html losing its </body> tag in some future refactor.
     console.error('[prerender-homepage] Failed to inject __PRELOADED_HOME__ -- no </body> in the template?');
+    process.exit(1);
+  }
+  if (/<link[^>]*rel="stylesheet"[^>]*\/assets\/index-[^"]+\.css/.test(html)) {
+    console.error('[prerender-homepage] Stylesheet <link> survived inlining -- the homepage would still block render.');
     process.exit(1);
   }
 
