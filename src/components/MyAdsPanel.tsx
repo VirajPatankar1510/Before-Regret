@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Loader2, Lock, ExternalLink, Pencil, Check, X, RotateCcw, Receipt, MapPin, BookOpen, CreditCard } from 'lucide-react';
+import { Loader2, Lock, ExternalLink, Pencil, Check, X, RotateCcw, Receipt, MapPin, BookOpen, CreditCard, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { requiresLicenceNumber } from '../data/sponsoredVendors';
 
@@ -87,6 +87,13 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const [editPhone, setEditPhone] = useState('');
   const [editWebsite, setEditWebsite] = useState('');
   const [editLicence, setEditLicence] = useState('');
+  // Separate from the edit-form state above on purpose: backfilling a missing required licence
+  // number is its own action (see /api/my-ads/<kind>/:id/licence), available even when the one-time
+  // contact edit has been used, so it must not share that form's open/closed state.
+  const [licenceKey, setLicenceKey] = useState<string | null>(null);
+  const [licenceValue, setLicenceValue] = useState('');
+  const [licenceError, setLicenceError] = useState('');
+  const [savingLicence, setSavingLicence] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
@@ -198,6 +205,90 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   };
   const groupedActiveZips = useMemo(() => groupZipsByOrder(activeZips), [activeZips]);
   const groupedExpiredZips = useMemo(() => groupZipsByOrder(expiredZips), [expiredZips]);
+
+  const saveLicence = async (kind: 'guide' | 'zip', purchaseId: number) => {
+    setLicenceError('');
+    if (licenceValue.trim().length < 3) return setLicenceError('Enter your licence, registration, or certification number.');
+    setSavingLicence(true);
+    try {
+      const token = await getToken();
+      if (!token) { setSavingLicence(false); return setLicenceError('Your session has expired -- please sign in again.'); }
+      const res = await fetch(`/api/my-ads/${kind}/${purchaseId}/licence`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ licenceNumber: licenceValue.trim() }),
+      });
+      const data = await res.json();
+      if (!data.success) { setSavingLicence(false); return setLicenceError(data?.error || 'Could not save your licence number.'); }
+      const saved = licenceValue.trim();
+      if (kind === 'guide') {
+        setGuidePlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, licenceNumber: saved } : p));
+      } else {
+        setZipPlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, licenceNumber: saved } : p));
+      }
+      setLicenceKey(null);
+      setLicenceValue('');
+    } catch {
+      setLicenceError('Could not reach the server.');
+    } finally {
+      setSavingLicence(false);
+    }
+  };
+
+  // Renewal is blocked server-side until a required number is present (see the guard in
+  // zipAdsApi.ts / guideAdsApi.ts), so the prompt is shown up front rather than only after the
+  // vendor clicks Renew and gets an error back.
+  const licencePrompt = (kind: 'guide' | 'zip', purchaseId: number, tradeCategory: string, current: string | null) => {
+    if (!requiresLicenceNumber(tradeCategory) || (current || '').trim()) return null;
+    const key = `licence-${kind}-${purchaseId}`;
+    if (licenceKey !== key) {
+      return (
+        <div className="mt-3 flex flex-wrap items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
+          <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+          <p className="text-[11px] text-amber-900 flex-1 min-w-[12rem]">
+            No licence number on file. {tradeCategory} now requires one, and this placement can't be
+            renewed until it's added.
+          </p>
+          <button
+            type="button"
+            onClick={() => { setLicenceKey(key); setLicenceValue(''); setLicenceError(''); }}
+            className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-lg"
+          >
+            <span>Add licence number</span>
+          </button>
+        </div>
+      );
+    }
+    return (
+      <div className="mt-3 space-y-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
+        <p className="text-[11px] text-amber-900">
+          Shown in your ad exactly as typed. We don't verify it with any licensing board -- you're
+          confirming it's current and correct. This doesn't use up your one placement edit.
+        </p>
+        <input
+          type="text" value={licenceValue} onChange={(e) => setLicenceValue(e.target.value)}
+          placeholder="Licence / registration number" maxLength={60} autoFocus
+          className="w-full px-3 py-2 border border-amber-300 rounded-lg text-xs"
+        />
+        {licenceError && <p className="text-xs text-rose-600">{licenceError}</p>}
+        <div className="flex gap-2">
+          <button
+            type="button" onClick={() => saveLicence(kind, purchaseId)} disabled={savingLicence}
+            className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-lg disabled:opacity-60"
+          >
+            {savingLicence ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+            <span>Save</span>
+          </button>
+          <button
+            type="button" onClick={() => { setLicenceKey(null); setLicenceError(''); }}
+            className="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg"
+          >
+            <X className="w-3 h-3" /><span>Cancel</span>
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   const startEdit = (key: string, p: { phone: string; website: string | null; licenceNumber: string | null }) => {
     setEditingKey(key);
@@ -522,6 +613,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                       {renewControl(key, renewal?.guidePriceUsd, () => startGuideRenew(p))}
                     </div>
                     {editingKey === key && editForm(() => saveGuideEdit(p.purchaseId), p.tradeCategory)}
+                    {licencePrompt('guide', p.purchaseId, p.tradeCategory, p.licenceNumber)}
                   </div>
                 );
               })}
@@ -578,6 +670,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                       ))}
                     </ul>
                     {editingRow && editForm(() => saveZipEdit(editingRow.purchaseId), editingRow.tradeCategory)}
+                    {licencePrompt('zip', first.purchaseId, first.tradeCategory, first.licenceNumber)}
 
                     <div className="mt-3">
                       {renewControl(
