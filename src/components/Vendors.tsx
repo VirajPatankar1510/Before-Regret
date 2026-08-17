@@ -94,9 +94,9 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
               <Target className="w-5 h-5" />
             </div>
-            <h3 className="font-extrabold text-base text-slate-900">Prominent, Not Buried</h3>
+            <h3 className="font-extrabold text-base text-slate-900">Matched to Real Findings</h3>
             <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              Your placement appears near the top of every report generated for any of your ZIP codes -- right after the summary, not scattered in a directory or buried at the bottom of the page.
+              Your placement appears inside the report itself, next to the specific finding, inspection priority, or seller question that matches your trade category for that property -- not in a static directory. Where exactly it lands depends on what the report actually covers for that address.
             </p>
           </div>
 
