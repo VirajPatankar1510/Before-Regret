@@ -62,12 +62,45 @@ export function registerKeywordResearchRoutes(app: Express) {
       })(),
     ]);
 
+    // Flat merged list, deduplicated by query text. This exists because the admin panel renders a
+    // single ranked list and sorts it on click -- returning only the structured `sources` object
+    // silently emptied that list, since it reads `data.rows`. Merging here rather than reshaping
+    // the UI keeps one ranking pass over all three sources, which is what an editor actually wants:
+    // the best phrasing regardless of which upstream happened to surface it.
+    //
+    // First writer wins on a duplicate, and the order below is the precedence: Search Console rows
+    // carry real impressions and a live position and are strictly more informative than the same
+    // string arriving from a source that knows neither. Autocomplete rows report impressions 0
+    // because that is the truth -- Google's suggest endpoint returns no volume at all, and a
+    // fabricated number here would flow straight into the panel's ranking as if it were measured.
+    const merged = new Map<string, Record<string, unknown>>();
+    const add = (rows: any[], source: string) => {
+      for (const r of rows) {
+        const key = String(r.query || '').trim().toLowerCase();
+        if (!key || merged.has(key)) continue;
+        merged.set(key, {
+          query: r.query,
+          impressions: typeof r.impressions === 'number' ? r.impressions : 0,
+          clicks: r.clicks,
+          ctr: r.ctr,
+          position: r.position,
+          broadImpressions: r.broadImpressions,
+          source,
+          isQuestion: r.isQuestion === true,
+        });
+      }
+    };
+    add(searchConsole.rows, 'search-console');
+    add(autocomplete.rows, 'autocomplete');
+    add(bing.rows, 'bing');
+
     res.json({
       success: true,
       seedTerm,
       // Retained so existing callers that read `configured` keep working: true when at least one
       // source produced something usable.
       configured: searchConsole.configured || bing.configured || autocomplete.rows.length > 0,
+      rows: [...merged.values()],
       sources: { searchConsole, autocomplete, bing },
     });
   });
