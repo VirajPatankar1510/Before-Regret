@@ -14,7 +14,7 @@ interface VendorsProps {
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'Do you verify businesses before listing them?',
-    a: 'No -- this is self-serve. Business name, trade category, contact details, and your licence or registration number are all self-reported at checkout, and you confirm they\'re accurate with a checkbox there. Your licence number is printed in the ad exactly as you enter it, but nothing is checked against a licensing board on our end -- we say so plainly next to it, so readers know to verify it themselves.',
+    a: 'No -- this is self-serve. Business name, trade category, contact details, and your licence or registration number are all self-reported at checkout, and you confirm they\'re accurate with a checkbox there. Your licence number is printed in the ad exactly as you enter it, but nothing is checked against a licensing board on our end -- every placement carries a line saying so, whether or not it shows a number, so readers know to verify it themselves.',
   },
   {
     q: 'How many views or leads will I get?',

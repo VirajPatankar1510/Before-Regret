@@ -16,4 +16,13 @@
 // with a 30-day opt-out). A substantive change, hence a new version rather than an edit in place --
 // anyone whose acceptance is on file against an earlier string did NOT agree to arbitration, and
 // this constant is what makes that distinction provable per-user.
-export const TERMS_VERSION = '2026-08-17';
+// 2026-08-18: narrowed 3.6 (it previously purported to bar chargebacks and correction requests,
+// contradicting 3.4 two paragraphs above it, which expressly preserved them); added 3.7 (FCRA
+// prohibited uses), 6.2 (liability that cannot lawfully be limited), 7.2A (a court, not the
+// arbitrator, decides formation), 7.6(c) (public injunctive relief carve-out), and a General
+// Provisions entire-agreement/precedence clause. Replaced the bare "modify at any time" clause
+// with a prospective one that promises material changes will not apply retroactively -- a promise
+// that is only keepable BECAUSE this constant is recorded per acceptance. Nearly every change is
+// a narrowing in the user's favour, but 9's modification clause now binds the company, so it is a
+// substantive revision either way and gets its own version string.
+export const TERMS_VERSION = '2026-08-18';

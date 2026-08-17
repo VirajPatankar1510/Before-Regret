@@ -28,7 +28,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
             <span>Return to Home</span>
           </button>
 
-          <span className="text-xs font-mono text-slate-500">Last Revised: August 17, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Last Revised: August 18, 2026</span>
         </div>
 
         {/* Content Pane */}
@@ -119,7 +119,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               </h2>
               <div className="space-y-2 text-xs text-slate-600">
                 <p>
-                  <strong>3.1 Report Pricing & Payment:</strong> Your first property insight report is free, with no payment information required. Each additional report is a one-time purchase of $14.99 USD — a single, non-recurring charge, not a subscription. Card details for paid reports are collected and processed directly by a PCI-DSS compliant third-party payment processor; Atmostellar does not store your full card number. Using or viewing a report does not establish a contractual or fiduciary advisory relationship between you and Atmostellar.
+                  <strong>3.1 Report Pricing & Payment:</strong> Your first property insight report is free, with no payment information required. Each additional report is a one-time purchase of $14.99 USD — a single, non-recurring charge, not a subscription. Payment is taken through <strong>PayPal</strong>, a PCI-DSS compliant third-party payment processor: you complete the payment on PayPal's own checkout, and Atmostellar never receives or stores your card number. Using or viewing a report does not establish a contractual or fiduciary advisory relationship between you and Atmostellar.
                 </p>
                 <p>
                   <strong>3.2 As-Is Provision & Non-Diagnostic Stance:</strong> Property research reports assemble raw or aggregated public data provided by third-party government and municipal agencies. All reports are provided strictly on an <strong>"AS-IS"</strong> and <strong>"AS-AVAILABLE"</strong> basis without warranty of any kind. Atmostellar makes no guarantees regarding the completeness, accuracy, timeliness, or real-time status of public records.
@@ -134,7 +134,10 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                   <strong>3.5 Accuracy of Information You Provide:</strong> Certain fields used to generate your report -- including declared property type, year built, and unit number -- are supplied directly by you at the time of request. Atmostellar has no live integration with any county assessor or permitting authority and does not independently verify these self-declared fields before a report is generated. You represent and warrant that everything you submit is true, accurate, and describes the property you actually intend to research. A report built from an inaccurate or false input reflects that input, not an error by Atmostellar, and Atmostellar is not responsible for report content driven by information you supplied incorrectly, whether by mistake or on purpose.
                 </p>
                 <p>
-                  <strong>3.6 Misrepresentation and Fraudulent Claims:</strong> No refund request, chargeback dispute, correction demand, or financial or legal claim of any kind may be based on report content where the underlying declared property type, year built, unit number, or address detail was inaccurate, false, or misleading as supplied by you. Atmostellar may deny any such refund request or dispute response on this basis and may independently review the property and account records available to it in doing so. <strong>If you knowingly submit false or misleading information in order to manufacture an inaccurate report and then use it to dispute a charge, seek a refund, or assert a financial or legal claim against Atmostellar, you agree to indemnify and hold Atmostellar harmless from any resulting losses and reasonable legal fees</strong>, and Atmostellar may suspend or terminate your access to the platform.
+                  <strong>3.6 Effect of Inaccurate Input; Remedies:</strong> Where a materially inaccurate or false field you supplied caused a report to describe a different property, or to apply a property classification that does not match the property you intended to research, your remedy for that specific mismatch is correction, regeneration of the report against corrected inputs, or a refund determined under our Cancellation &amp; Refund Policy, after we review the request. That limitation reaches only report content actually driven by the inaccurate input — it does not apply to any error independent of what you supplied, and Atmostellar remains responsible for its own errors. <strong>Nothing in this paragraph restricts your right to dispute a charge with your card issuer, to ask us to correct anything you believe is wrong (see section 9 of our <a href="/disclaimer" className="text-blue-600 font-bold hover:underline">Disclaimer</a>), or to assert any right or remedy that applicable consumer protection law does not permit to be waived.</strong> If you knowingly submit false information in order to manufacture an inaccurate report and then use that report to seek a refund or to assert a financial or legal claim against Atmostellar, you agree to indemnify Atmostellar for losses and reasonable legal fees actually and reasonably incurred as a direct result, and Atmostellar may suspend or terminate your access to the platform.
+                </p>
+                <p>
+                  <strong>3.7 Permitted Use; Prohibited Uses:</strong> Reports are for your own use in researching a property you are considering buying, renting, or otherwise dealing with. <strong>BeforeRegret reports are not consumer reports, and Atmostellar is not a consumer reporting agency, as those terms are used in the United States Fair Credit Reporting Act (15 U.S.C. § 1681 et seq.).</strong> You may not use a report, or any part of one, as a factor in establishing any individual's eligibility for credit, insurance, employment, housing or tenancy, or for any other purpose regulated by the FCRA, and you may not use one to screen a tenant, applicant, borrower, employee, or insured. A report describes a property and the public data recorded about the area around it; it is not a background report about any person, and it contains no information about any individual. You also may not resell, redistribute, or republish reports commercially, or use automated means to extract the platform's content in bulk, without our prior written permission.
                 </p>
               </div>
             </section>
@@ -158,7 +161,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                 </p>
 
                 <p>
-                  <strong>4.4 Vendor Licensure & Removal Rights:</strong> Vendors warrant that they hold valid, active state/local licenses and liability insurance required for their trade category. For every trade category other than those where no state licensing regime generally exists, the vendor <strong>must supply a licence, registration, or certification number at checkout</strong>, and warrants that the number supplied is genuine, current, held by the business named in the placement, and valid for the trade category and locations selected. <strong>That number is published in the placement exactly as the vendor entered it. Atmostellar does not verify it against any licensing board, registry, or authority, and makes no representation that it is valid</strong> — verification remains the reader's responsibility, as stated in our <a href="/disclaimer" className="text-blue-600 font-bold hover:underline">Disclaimer</a>. Supplying a false, expired, borrowed, or otherwise invalid number is a breach of these Terms and grounds for immediate removal without refund under 4.3. Atmostellar explicitly reserves the right to immediately suspend or remove a vendor's sponsored placement without notice if: (a) the vendor's professional licensure or registration expires, is suspended, or is revoked; (b) unresolved consumer fraud or quality complaints are filed; (c) the licence number supplied proves false or invalid; or (d) the vendor breaches these Terms.
+                  <strong>4.4 Vendor Licensure & Removal Rights:</strong> Vendors warrant that they hold valid, active state/local licenses and liability insurance required for their trade category. For every trade category other than <strong>Chimney Sweep</strong> — currently the only category treated as exempt, because chimney work is generally not a state-licensed trade and the recognised credential for it is voluntary and privately issued — the vendor <strong>must supply a licence, registration, or certification number at checkout</strong>, and warrants that the number supplied is genuine, current, held by the business named in the placement, and valid for the trade category and locations selected. <strong>That number is published in the placement exactly as the vendor entered it. Atmostellar does not verify it against any licensing board, registry, or authority, and makes no representation that it is valid</strong> — verification remains the reader's responsibility, as stated in our <a href="/disclaimer" className="text-blue-600 font-bold hover:underline">Disclaimer</a>. No licence number is published for the exempt category, and every sponsored placement states on its face that the business details shown are advertiser-supplied and not verified by us, whether or not a number appears. Supplying a false, expired, borrowed, or otherwise invalid number is a breach of these Terms and grounds for immediate removal without refund under 4.3. Atmostellar explicitly reserves the right to immediately suspend or remove a vendor's sponsored placement without notice if: (a) the vendor's professional licensure or registration expires, is suspended, or is revoked; (b) unresolved consumer fraud or quality complaints are filed; (c) the licence number supplied proves false or invalid; or (d) the vendor breaches these Terms.
                 </p>
 
                 <p>
@@ -183,7 +186,25 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                 6. Limitation of Liability
               </h2>
               <p>
-                To the maximum extent permitted by applicable law, in no event shall Atmostellar, its directors, officers, employees, or agents be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, real estate transaction losses, data errors, or business interruption, arising out of or in connection with your use of Before Regret. Atmostellar's total aggregate liability for any claims under these Terms shall not exceed the total fees actually paid by you to Atmostellar in the three (3) months preceding the claim, or $100 in the case of free report consumers.
+                <strong>6.1 Exclusions and Cap.</strong> To the maximum extent permitted by applicable law, in no event shall Atmostellar, its directors, officers, employees, or agents be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, real estate transaction losses, data errors, or business interruption, arising out of or in connection with your use of Before Regret. Atmostellar's total aggregate liability for any claims under these Terms shall not exceed the total fees actually paid by you to Atmostellar in the three (3) months preceding the claim, or $100 in the case of free report consumers.
+              </p>
+              {/* 6.2 exists because 6.1 alone reads as an attempt to cap everything, including
+                  things no jurisdiction lets a company cap. A limitation clause with no carve-outs
+                  invites a court to strike the whole clause rather than trim it; naming the
+                  exclusions is what keeps the cap in 6.1 doing its actual job for ordinary claims.
+                  This mirrors the savings language already in section 6 of the Disclaimer, so the
+                  two documents cannot drift apart on the point. */}
+              <p>
+                <strong>6.2 What Cannot Be Limited.</strong> Nothing in these Terms excludes or limits
+                any liability that cannot lawfully be excluded or limited. In particular, the
+                exclusions and the cap in 6.1 <strong>do not apply to</strong>: fraud or fraudulent
+                misrepresentation; willful misconduct; gross negligence, death, or personal injury,
+                in any jurisdiction where liability for those cannot lawfully be limited; or any
+                other liability that applicable law does not permit us to limit — including, for
+                consumers, any mandatory provision described in 8.1(b). Where applicable law does not
+                permit the exclusion of implied warranties or of incidental or consequential damages,
+                the exclusions in 6.1 apply only so far as that law allows, and our liability is
+                limited to the least amount that law permits rather than excluded.
               </p>
             </section>
 
@@ -230,9 +251,25 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                   commerce, and the United States Federal Arbitration Act (9 U.S.C. §§ 1 et seq.) governs
                   the interpretation and enforcement of this Section 7</strong>, notwithstanding the
                   governing law specified in Section 8, which continues to apply to the substance of the
-                  parties' other rights and obligations. The arbitrator, and not any court, shall decide
-                  all threshold questions of arbitrability, except that a court shall decide whether 7.5
-                  is enforceable.
+                  parties' other rights and obligations.
+                </p>
+
+                {/* Formation is carved out to a court deliberately. Sending "was there ever an
+                    agreement?" to the arbitrator is circular -- the arbitrator's authority is the
+                    very thing in question -- and courts decide formation for that reason. The
+                    previous wording sent ALL threshold questions to the arbitrator, which is the
+                    aggressive posture and the one most likely to get the whole delegation struck.
+                    Conceding formation to a court costs little (the acceptance records in
+                    terms_acceptances are what answer it) and makes the rest of the delegation far
+                    more defensible. */}
+                <p>
+                  <strong>7.2A Who Decides What.</strong> <strong>A court, and not the arbitrator,
+                  shall decide any dispute about whether an agreement to arbitrate was formed at
+                  all</strong> — including whether you were given reasonably conspicuous notice of
+                  this Section and affirmatively accepted it — and shall decide whether 7.5 is
+                  enforceable. Once formation is established, the arbitrator shall decide all
+                  remaining threshold questions of arbitrability, including the scope, applicability,
+                  interpretation, and validity of this Section.
                 </p>
 
                 <p>
@@ -283,7 +320,14 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                   (a) either party bringing an individual claim in <strong>small claims court</strong>, so
                   long as it remains an individual claim in that forum; or (b) either party seeking
                   injunctive or other equitable relief in a court of competent jurisdiction to prevent
-                  actual or threatened infringement or misappropriation of intellectual property rights.
+                  actual or threatened infringement or misappropriation of intellectual property
+                  rights; or <strong>(c)</strong> either party bringing a claim for{' '}
+                  <strong>public injunctive relief</strong>, or for any other remedy, that applicable
+                  law does not permit to be waived or to be resolved in arbitration. A claim within
+                  (c) may be brought in a court of competent jurisdiction. Where one dispute contains
+                  both a claim within (c) and claims subject to this Section, the claims subject to
+                  this Section shall be arbitrated individually and the remainder shall proceed in
+                  court, unless applicable law requires a different result.
                 </p>
 
                 <p>
@@ -407,8 +451,19 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                 9. General Provisions
               </h2>
               <ul className="list-disc pl-5 space-y-1.5">
-                <li><strong>Severability:</strong> If any provision of these Terms is held invalid or unenforceable, that provision shall be severed and the remaining provisions shall continue in full force.</li>
-                <li><strong>Modifications:</strong> Atmostellar reserves the right to modify these Terms at any time. Updated Terms will be published on the platform with a revised effective date.</li>
+                <li><strong>Severability:</strong> If any provision of these Terms is held invalid or unenforceable, that provision shall be severed and the remaining provisions shall continue in full force. This is subject to 7.5, which is expressly non-severable.</li>
+                {/* The old text here was a bare "we may modify at any time", which is the clause
+                    courts have repeatedly refused to enforce against a customer who was never told
+                    (Douglas v. Talk America being the standard example). The promise below is one
+                    this codebase can actually keep rather than boilerplate: TERMS_VERSION in
+                    src/data/legalVersions.ts is recorded against every acceptance in the
+                    terms_acceptances table and on every vendor order row, so "which text did this
+                    person agree to, and when" is an answerable question per user. Do not weaken
+                    this paragraph without also removing that infrastructure -- promising versioned,
+                    non-retroactive change while keeping no record would be worse than the clause it
+                    replaced. */}
+                <li><strong>Modifications:</strong> We may update these Terms by publishing a revised version with a new effective date. For <strong>material</strong> changes — including changes to Section 6 (liability), Section 7 (arbitration and class action waiver), Section 8 (governing law and forum), pricing, refunds, or how we use your data — we will give reasonable advance notice to account holders at their account email, and <strong>the change will not apply to any dispute or transaction that arose before its effective date.</strong> Where applicable law requires it, we will ask you to affirmatively accept the revised Terms before you continue. Every revision carries a version identifier that is recorded against your acceptance, so the exact text you agreed to and the date you agreed to it remain on file. If you do not accept a material change you may stop using the platform; the version you accepted continues to govern your earlier transactions to the extent the law requires.</li>
+                <li><strong>Entire Agreement &amp; Order of Precedence:</strong> These Terms, together with our <a href="/privacy" className="text-blue-600 font-bold hover:underline">Privacy Policy</a>, <a href="/refunds" className="text-blue-600 font-bold hover:underline">Cancellation &amp; Refund Policy</a>, and <a href="/disclaimer" className="text-blue-600 font-bold hover:underline">Disclaimer</a>, form the entire agreement between you and Atmostellar regarding the platform and supersede any earlier understanding about it. Where they conflict: an order confirmation or product-specific checkout screen controls for that transaction only; the Privacy Policy controls on how personal data is handled; the Disclaimer controls on the limitations of information published on the site; and these Terms control on everything else. <strong>No page on this site overrides a right or remedy that applicable law makes mandatory.</strong></li>
                 <li><strong>Age Requirement:</strong> You must be at least 18 years of age to use this platform or purchase a placement as a business vendor.</li>
               </ul>
             </section>

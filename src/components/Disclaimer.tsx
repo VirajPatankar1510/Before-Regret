@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ArrowLeft, AlertTriangle, Database, Cpu, Megaphone, Scale, Link2, ShieldAlert, Gavel } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Database, Cpu, Megaphone, Scale, Link2, ShieldAlert, Gavel, UserX } from 'lucide-react';
 
 interface DisclaimerProps {
   onBackToHome: () => void;
@@ -41,7 +41,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
             <ArrowLeft className="w-4 h-4 text-slate-500" />
             <span>Return to Home</span>
           </button>
-          <span className="text-xs font-mono text-slate-500">Last Revised: August 17, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Last Revised: August 18, 2026</span>
         </div>
 
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs space-y-8">
@@ -61,7 +61,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
               <a href="/terms" className="text-blue-600 hover:underline font-bold">Terms of Service</a> and{' '}
               <a href="/privacy" className="text-blue-600 hover:underline font-bold">Privacy Policy</a>.{' '}
               <strong>Those Terms include a binding individual arbitration agreement and a class
-              action waiver, which you may opt out of within 30 days</strong> -- see section 7 below.
+              action waiver, which you may opt out of within 30 days</strong> -- see section 8 below.
             </p>
           </div>
 
@@ -197,10 +197,36 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
               </p>
             </section>
 
+            {/* Stated on this page as well as in Terms 3.7 deliberately. The Terms bind whoever
+                accepted them; this page is reachable by anyone, including someone who found a
+                county or guide page through search and never generated a report. A use restriction
+                is only useful if the person about to misuse the thing has actually seen it. */}
+            <section className="space-y-2">
+              <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
+                <UserX className="w-4 h-4 text-slate-400 shrink-0" />
+                <span>5. Not a Consumer Report -- Prohibited Uses</span>
+              </h2>
+              <p>
+                <strong>Nothing on this site is a consumer report, and we are not a consumer
+                reporting agency, as those terms are used in the U.S. Fair Credit Reporting Act
+                (15 U.S.C. § 1681 et seq.).</strong> Our reports describe a property and the public
+                data recorded about the area around it. They contain no information about any
+                individual, and they are not background checks.
+              </p>
+              <p>
+                You must not use anything from this site as a factor in deciding any person's
+                eligibility for <strong>credit, insurance, employment, housing or tenancy</strong>,
+                or for any other purpose the FCRA regulates -- including screening a tenant,
+                applicant, borrower, employee, or insured. If you need information for a decision
+                like that, obtain it from a consumer reporting agency operating under the FCRA,
+                which carries obligations to the person being screened that we do not.
+              </p>
+            </section>
+
             <section className="space-y-2">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
                 <Link2 className="w-4 h-4 text-slate-400 shrink-0" />
-                <span>5. External Links</span>
+                <span>6. External Links</span>
               </h2>
               <p>
                 This site links to external websites, including government portals, agency
@@ -214,7 +240,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
             <section className="space-y-2">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
                 <Scale className="w-4 h-4 text-slate-400 shrink-0" />
-                <span>6. No Guaranteed Outcomes; No Relationship Created</span>
+                <span>7. No Guaranteed Outcomes; No Relationship Created</span>
               </h2>
               <p>
                 We make no guarantee that using this site will identify every defect, hazard,
@@ -231,10 +257,15 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
                 independently verify these fields before a report is generated. <strong>The
                 accuracy of anything derived from those fields is bounded by the accuracy of what
                 you told us.</strong> A report built from an inaccurate or false self-declared
-                input reflects that input, not an error on our part, and cannot be relied on --
-                or disputed -- as though we had verified it independently. See section 3.5 and 3.6
-                of our{' '}
+                input reflects that input, not an error on our part, and cannot be relied on as
+                though we had verified it independently. Where a wrong input is what produced the
+                mismatch, the remedy for it is correction, regeneration, or a refund under our{' '}
+                <a href="/refunds" className="text-blue-600 hover:underline font-bold">Refund Policy</a>{' '}
+                -- see sections 3.5 and 3.6 of our{' '}
                 <a href="/terms" className="text-blue-600 hover:underline font-bold">Terms of Service</a>.
+                <strong> None of this affects your right to ask us to correct something, to dispute
+                a charge with your card issuer, or to rely on any consumer protection right the law
+                does not let you sign away.</strong>
               </p>
               <p>
                 Using this website does not create any advisory, fiduciary, agency, brokerage, or
@@ -264,7 +295,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
             <section className="space-y-2">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center gap-2">
                 <Gavel className="w-4 h-4 text-slate-400 shrink-0" />
-                <span>7. How Disputes Are Resolved</span>
+                <span>8. How Disputes Are Resolved</span>
               </h2>
               <p>
                 <strong>Most disputes between you and Atmostellar must be resolved by individual,
@@ -297,7 +328,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
             </section>
 
             <section className="space-y-2 pt-2 border-t border-slate-200">
-              <h2 className="text-base font-bold text-slate-900">8. Questions and Corrections</h2>
+              <h2 className="text-base font-bold text-slate-900">9. Questions and Corrections</h2>
               <p>
                 To report an inaccuracy, request a correction, or ask about anything on this page,
                 contact us at:
