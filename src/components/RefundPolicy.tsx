@@ -28,7 +28,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
             <span>Return to Home</span>
           </button>
 
-          <span className="text-xs font-mono text-slate-500">Effective Date: August 3, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Effective Date: August 17, 2026</span>
         </div>
 
         {/* Content Pane */}
@@ -37,7 +37,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
           {/* Document Header */}
           <div className="border-b border-slate-200 pb-6 space-y-3">
             <p className="text-xs font-medium text-slate-400">
-              Expert property research guides for US home buyers. Uncover what matters before closing.
+              Property research guides for US home buyers, built from public records. Know what to check before closing.
             </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Cancellation & Refund Policy
@@ -167,13 +167,30 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                   </p>
                 </div>
 
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl text-xs space-y-1.5">
-                  <h3 className="font-bold text-blue-950 flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />
-                    <span>Removal for Atmostellar Administrative Reasons (NO REFUND)</span>
+                {/* Changed from "no refund" to pro-rata. The previous version kept a vendor's full
+                    payment when WE ended a placement early for our own reasons, expressly "not
+                    attributable to any fault of the vendor" -- charging for 30 days, delivering
+                    fewer, and keeping the difference by our own choice. That is a failure of
+                    consideration and the single hardest clause on this site to defend; it is also
+                    the one a small claims judge would go to first. Pro-rating costs almost nothing
+                    in practice because this case should essentially never occur, and removing an
+                    indefensible term strengthens every defensible one around it. */}
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs space-y-1.5">
+                  <h3 className="font-bold text-emerald-950 flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Removal for Atmostellar Administrative Reasons (PRO-RATA REFUND)</span>
                   </h3>
-                  <p className="text-blue-900 leading-relaxed">
-                    If Atmostellar removes or terminates a vendor's sponsored placement prior to the end of its 30-day window for internal administrative, technical, or business restructuring reasons not attributable to any fault of the vendor, the placement is discontinued for the remainder of that window. Consistent with our all-sales-final billing policy, <strong>no refund or credit is issued</strong> in this case either.
+                  <p className="text-emerald-900 leading-relaxed">
+                    If Atmostellar removes or terminates a vendor's sponsored placement before the end
+                    of its 30-day window for internal administrative, technical, or business
+                    restructuring reasons <strong>not attributable to any fault of the vendor</strong>,
+                    we will <strong>refund the unused portion of that window on a pro-rata daily
+                    basis</strong> -- calculated from the day the placement stopped showing through
+                    the end of the paid term. You do not need to request it: we issue the refund to
+                    the original payment method, and email you, within{' '}
+                    <strong>10 business days</strong> of the removal. This is the one case where the
+                    all-sales-final rule does not apply, because the placement ended by our decision
+                    rather than yours.
                   </p>
                 </div>
               </div>
@@ -223,7 +240,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                     <tr>
                       <td className="p-3 font-semibold text-slate-900">Atmostellar Removal (Administrative / No Vendor Fault)</td>
                       <td className="p-3">Immediate removal</td>
-                      <td className="p-3 text-rose-700 font-bold">No refund</td>
+                      <td className="p-3 text-emerald-700 font-bold">Pro-rata refund of unused days (automatic, within 10 business days)</td>
                     </tr>
                   </tbody>
                 </table>

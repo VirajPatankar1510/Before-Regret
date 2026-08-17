@@ -69,7 +69,7 @@ ${message}`;
         <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl space-y-4 relative overflow-hidden">
           <div className="relative z-10 max-w-2xl space-y-3">
             <p className="text-xs font-medium text-slate-400">
-              Expert property research guides for US home buyers. Uncover what matters before closing.
+              Property research guides for US home buyers, built from public records. Know what to check before closing.
             </p>
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
               How Can We Help You?
@@ -166,7 +166,7 @@ ${message}`;
                 <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
                 <h3 className="font-bold text-emerald-950 text-base">Inquiry Dispatched</h3>
                 <p className="text-xs text-emerald-800 leading-relaxed">
-                  Your email client has been opened with your pre-formatted message addressed to <strong>hello@beforeregret.com</strong>. Our team will review your message and reply within 1–2 business days.
+                  Your email client has been opened with your pre-formatted message addressed to <strong>hello@beforeregret.com</strong>. We'll review your message and aim to reply within 1–2 business days.
                 </p>
                 <button
                   onClick={() => setIsSubmitted(false)}

@@ -127,7 +127,7 @@ export const ErrorReportingModal: React.FC<ErrorReportingModalProps> = ({
 
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-[11px] text-blue-900 flex items-center gap-2">
               <Clock className="w-4 h-4 text-blue-600 shrink-0" />
-              <span><strong>Guaranteed Review Turnaround:</strong> 1–2 business days review by data research staff.</span>
+              <span><strong>Review turnaround:</strong> we aim to review reported issues within 1–2 business days.</span>
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-2">
