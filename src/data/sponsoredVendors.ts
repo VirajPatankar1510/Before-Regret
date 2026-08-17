@@ -67,6 +67,13 @@ export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGO
   polybutylene_supply: 'Home Inspector',
   foundation_pre_posttension: 'General Contractor',
   foundation_posttension: 'General Contractor',
+  // foundation_type_general is the region-agnostic sibling of the two rules above (same "hire a
+  // structural engineer" howToCheck, same topic, just outside the 13 expansive-soil counties) --
+  // grouping it with the same trade keeps the foundation family coherent rather than splitting it
+  // across two categories for no reason tied to the content itself. Side benefit: General
+  // Contractor's other mapping (f_seismic) depends on a live USGS API call that returns null on
+  // failure, with no other national fallback; this one is pure code, so it can't fail the same way.
+  foundation_type_general: 'General Contractor',
   pier_and_beam: 'Home Inspector',
   eifs_stucco: 'Home Inspector',
   // roof_age / hvac_age (see the split rationale on the rule itself in
@@ -80,6 +87,11 @@ export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGO
   asbestos_materials: 'Asbestos/Mold Abatement',
   chimney_level2: 'Chimney Sweep',
   termite_wdi_inspection: 'Pest/Termite Control',
+  // pest_inspection_general is the honest, non-elevated-risk sibling of the rule above, for the 31
+  // states/DC outside TERMITE_PROBABILITY_STATES -- without it, Pest/Termite Control had a hard
+  // geographic wall with literally zero placement anywhere in a report for most of the country, a
+  // worse gap than Roof/HVAC/Electrician ever had (they at least always had a fallback finding).
+  pest_inspection_general: 'Pest/Termite Control',
 };
 
 // Same pattern again, for the Seller Questions script (see engine/sellerQuestions.ts). Only

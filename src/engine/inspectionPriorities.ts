@@ -428,6 +428,30 @@ export const PRIORITY_RULES: PriorityRule[] = [
     howToCheck:
       'Hire a licensed pest control operator for a WDI/WDO report. Most general home inspections do not include one unless you ask.',
   },
+  // Region-agnostic fallback for outside the 19 termite-probability states above -- same pattern as
+  // foundation_type_general's relationship to the expansive-soil-county rules. Pest/Termite Control
+  // previously had ZERO placement anywhere in a report for any property outside those 19 states --
+  // a harder gap than Roof/HVAC/Electrician ever had, since none of them had a hard geographic wall;
+  // they always had at least the fallback finding at the bottom. Deliberately does NOT claim
+  // elevated regional risk (the honest opposite of termite_wdi_inspection's eraBasis) -- it states
+  // plainly that this area isn't one of the identified elevated-risk regions, and offers the
+  // inspection as ordinary due diligence rather than manufacturing urgency the map doesn't support.
+  // Excluded inside the termite-probability states themselves (see the states filter in
+  // getInspectionPriorities below) so a report never shows this alongside the more specific,
+  // regionally-grounded rule it would otherwise duplicate.
+  {
+    id: 'pest_inspection_general',
+    minYear: 1800,
+    maxYear: CURRENT_YEAR,
+    title: 'Consider a general pest and wood-destroying-insect inspection',
+    priority: 'lower',
+    eraBasis:
+      'Termite and wood-destroying-insect pressure varies significantly by region, and this area does not fall within the USDA/IRC termite infestation probability map\'s identified elevated-risk zone. A general pest inspection is still routine, low-cost due diligence in any region, and some lenders require a WDI report for certain loan types regardless of location.',
+    costToCheck: '$75 – $150 for a standalone pest/WDI inspection',
+    typicalRepairCost: 'Treatment $1,200 – $5,000 depending on method; structural repair if damage is present $1,000 – $9,000+',
+    howToCheck:
+      'Ask your lender whether a WDI report is required for your loan type. If not, a pest control operator can still perform one for extra assurance -- it is a separate inspection from a general home inspection.',
+  },
 
   // --- Geology-driven, not era-driven; always ranked last ---
   {
@@ -506,6 +530,14 @@ export function getInspectionPriorities(
   // cover the topic, so drop the generic one to avoid showing two foundation items side by side.
   if (soilRegion) {
     matched = matched.filter((rule) => rule.id !== 'foundation_type_general');
+  }
+  // Same pattern for termite probability: pest_inspection_general has no `states` restriction, so
+  // the base filter above always lets it through. Inside the termite-probability states,
+  // termite_wdi_inspection already covers the topic with the region-specific version, so drop the
+  // generic one there too -- otherwise a report in, say, Texas would show both the "elevated risk"
+  // rule and the "not elevated risk" rule side by side, which is worse than showing neither.
+  if (TERMITE_PROBABILITY_STATES[normalizedState]) {
+    matched = matched.filter((rule) => rule.id !== 'pest_inspection_general');
   }
   if (matched.length === 0) return null;
 
