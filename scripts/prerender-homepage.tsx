@@ -160,6 +160,42 @@ function escapeJsonForScriptTag(value: unknown): string {
   return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
+// Pulls the .hero-bg background-image rule -- base JPEG plus its two @supports(image-set())
+// fallbacks (desktop WebP, mobile-crop WebP) -- out of the real built CSS, verbatim, byte for
+// byte including Lightning CSS's own -webkit-image-set() autoprefixing. Extracted from the build
+// output rather than hand-duplicated here so this can never quietly drift out of sync with
+// src/index.css; if that file's hero-bg rule shape ever changes, this throws instead of silently
+// inlining something stale.
+function extractHeroBgCriticalCss(builtCss: string): string {
+  const marker = '.hero-bg{background-image:url(/hero-bg.jpg)}';
+  const start = builtCss.indexOf(marker);
+  if (start === -1) {
+    throw new Error(
+      '[prerender-homepage] Could not find the .hero-bg base rule in the built CSS -- src/index.css may have changed shape.'
+    );
+  }
+  let cursor = start + marker.length;
+  // The two @supports() fallbacks immediately follow the base rule in src/index.css -- consume
+  // each via brace-depth counting (rather than a hardcoded end marker) so the @media block
+  // nested inside the mobile-crop @supports doesn't end the match early.
+  while (builtCss.startsWith('@supports', cursor)) {
+    let depth = 0;
+    let i = cursor;
+    for (; i < builtCss.length; i++) {
+      if (builtCss[i] === '{') depth++;
+      else if (builtCss[i] === '}') {
+        depth--;
+        if (depth === 0) {
+          i++;
+          break;
+        }
+      }
+    }
+    cursor = i;
+  }
+  return builtCss.slice(start, cursor);
+}
+
 async function run() {
   const distPath = path.join(process.cwd(), 'dist');
   const templatePath = path.join(distPath, 'index.html');
@@ -190,6 +226,25 @@ async function run() {
   // sections empty and then pop them in once /api/homepage resolved, undoing the whole point of
   // prerendering them.
   const preloadScript = `<script>window.__PRELOADED_HOME__=${escapeJsonForScriptTag(data)}</script>`;
+
+  // Inline the .hero-bg background-image rule itself, ahead of everything else in <head>. The
+  // preload hints below get the image *bytes* onto the wire early, but the browser still can't
+  // paint them as this div's background until it has parsed the rule that says to -- and that
+  // rule normally only exists in the external stylesheet <link>, which PageSpeed measured
+  // (Aug 17 2026 mobile run) taking 1,160ms on its own to arrive under throttled mobile network,
+  // behind the JS bundle on the same critical path. Lighthouse's LCP breakdown attributed 1,520ms
+  // of "element render delay" to exactly this gap -- the image was already downloaded, the page
+  // just had nowhere to put it yet. A `<style>` tag parses synchronously with the surrounding
+  // HTML, so placing this before every other <head> entry (fonts, JS module, the stylesheet link
+  // itself) removes that stylesheet round-trip from the hero photo's critical path entirely. The
+  // real stylesheet still declares the same rule once it loads; this doesn't replace it, just
+  // gets there first with an identical value, so there's no risk of the two ever disagreeing.
+  const cssHrefMatch = template.match(/href="(\/assets\/index-[^"]+\.css)"/);
+  if (!cssHrefMatch) {
+    throw new Error('[prerender-homepage] Could not find the main CSS asset link in dist/index.html.');
+  }
+  const builtCss = fs.readFileSync(path.join(distPath, cssHrefMatch[1]), 'utf8');
+  const criticalStyleTag = `<style>${extractHeroBgCriticalCss(builtCss)}</style>`;
 
   // Preload the hero photo. It's the homepage's LCP element, but it's a CSS background-image on a
   // div that only exists once React has booted -- the static markup above deliberately renders a
@@ -223,6 +278,7 @@ async function run() {
     `<link rel="preload" as="image" href="/hero-bg.webp" type="image/webp" fetchpriority="high" media="not all and (max-width: 500px) and (orientation: portrait)" />`;
 
   const html = template
+    .replace('<head>', `<head>\n    ${criticalStyleTag}`)
     .replace('</head>', `${heroPreload}\n  ${faqScript}\n  ${preloadScript}\n  </head>`)
     .replace('<div id="root"></div>', `<div id="root">${bodyHtml}</div>`);
 
