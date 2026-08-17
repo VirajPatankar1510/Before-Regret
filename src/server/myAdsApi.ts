@@ -349,4 +349,107 @@ export function registerMyAdsRoutes(app: Express) {
       res.status(500).json({ success: false, error: 'Could not save your changes.' });
     }
   });
+
+  // --- Backfill a MISSING required licence number -------------------------------------------
+  //
+  // Deliberately separate from the one-time contact edit above, and deliberately NOT gated on
+  // contact_edited. The reason is the renewal guard in zipAdsApi.ts / guideAdsApi.ts: a placement
+  // sold before licence numbers existed cannot renew until it has one, and if supplying that number
+  // consumed (or required) the one-time edit allowance, any vendor who had already used their edit
+  // would be permanently unable to renew without a human intervening. That is a support ticket
+  // manufactured by our own schema change, for a vendor who did nothing wrong.
+  //
+  // What keeps this safe despite being unbounded: it can only ever move a placement from NO licence
+  // number to HAVING one. The WHERE clause requires the stored value to be null or blank, so it
+  // physically cannot overwrite an existing number, and it touches no other column. The identity-
+  // drift concern that justifies the one-time gate on phone/website/licence-changes therefore does
+  // not apply -- there is no prior value to drift away from. Changing an existing number still goes
+  // through the one-time edit.
+  const backfillLicence = async (
+    kind: 'guide' | 'zip',
+    req: Request,
+    res: Response
+  ) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    const purchaseId = parseInt(req.params.purchaseId, 10);
+    const clerkUserId = req.verifiedUserId as string;
+    const { licenceNumber } = req.body || {};
+    if (!Number.isFinite(purchaseId)) {
+      res.status(400).json({ success: false, error: 'Invalid request.' });
+      return;
+    }
+    const trimmed = typeof licenceNumber === 'string' ? licenceNumber.trim() : '';
+    if (trimmed.length < 3) {
+      res.status(400).json({ success: false, error: 'Enter your licence, registration, or certification number.' });
+      return;
+    }
+    if (trimmed.length > 60) {
+      res.status(400).json({ success: false, error: 'That licence number looks too long -- please enter just the number.' });
+      return;
+    }
+    try {
+      // Two spelled-out queries per statement rather than one with an interpolated table name.
+      // Dynamic SQL identifiers have no precedent anywhere else in this codebase, and this is not
+      // the code to introduce the pattern in -- the duplication is three lines and buys certainty.
+      type OwnedRow = { id: number; trade_category: string; licence_number: string | null };
+      const owned = kind === 'guide'
+        ? await withDb((sql) => sql`
+            SELECT p.id, p.trade_category, p.licence_number
+            FROM guide_ad_purchases p JOIN guide_ad_orders o ON o.id = p.order_id
+            WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
+          `)
+        : await withDb((sql) => sql`
+            SELECT p.id, p.trade_category, p.licence_number
+            FROM zip_ad_purchases p JOIN zip_ad_orders o ON o.id = p.order_id
+            WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
+          `);
+      const row = (owned as unknown as OwnedRow[])[0];
+      if (!row) {
+        res.status(404).json({ success: false, error: 'Placement not found.' });
+        return;
+      }
+      if ((row.licence_number || '').trim()) {
+        // Already has one -- this route is only for filling a gap. Pointed at the right path rather
+        // than silently succeeding, so the one-time-edit rule stays the single way to CHANGE a number.
+        res.status(409).json({
+          success: false,
+          error: 'This placement already has a licence number. Use Edit to change it.',
+        });
+        return;
+      }
+      if (!requiresLicenceNumber(row.trade_category)) {
+        res.status(400).json({
+          success: false,
+          error: `A licence number is not required for ${row.trade_category}.`,
+        });
+        return;
+      }
+      // The null/blank test is repeated in the WHERE, not just the SELECT above, for the same
+      // reason the one-time edit repeats contact_edited = false: two concurrent submits must not
+      // both land, and only the first should win.
+      const updated = kind === 'guide'
+        ? await withDb((sql) => sql`
+            UPDATE guide_ad_purchases SET licence_number = ${trimmed}
+            WHERE id = ${purchaseId} AND coalesce(btrim(licence_number), '') = ''
+            RETURNING id
+          `)
+        : await withDb((sql) => sql`
+            UPDATE zip_ad_purchases SET licence_number = ${trimmed}
+            WHERE id = ${purchaseId} AND coalesce(btrim(licence_number), '') = ''
+            RETURNING id
+          `);
+      if ((updated as unknown[]).length === 0) {
+        res.status(409).json({ success: false, error: 'This placement already has a licence number. Use Edit to change it.' });
+        return;
+      }
+      res.json({ success: true, licenceNumber: trimmed });
+    } catch (err: any) {
+      console.error(`[my-ads] ${kind} licence backfill failed:`, err);
+      res.status(500).json({ success: false, error: 'Could not save your licence number.' });
+    }
+  };
+
+  app.post('/api/my-ads/guide/:purchaseId/licence', requireVerifiedUser, (req, res) => backfillLicence('guide', req, res));
+  app.post('/api/my-ads/zip/:purchaseId/licence', requireVerifiedUser, (req, res) => backfillLicence('zip', req, res));
+
 }

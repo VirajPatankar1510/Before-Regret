@@ -389,13 +389,35 @@ export function registerGuideAdsRoutes(app: Express) {
       // dashboard already hides those (its own query filters on active), but this endpoint is
       // reachable directly and has to enforce the same thing itself.
       const owned = await withDb((sql) => sql`
-        SELECT p.id, p.paid_through, o.contact_email
+        SELECT p.id, p.paid_through, p.trade_category, p.licence_number, o.contact_email
         FROM guide_ad_purchases p JOIN guide_ad_orders o ON o.id = p.order_id
         WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} AND p.active = true LIMIT 1
       `);
-      const purchase = (owned as unknown as Array<{ id: number; paid_through: string; contact_email: string }>)[0];
+      const purchase = (owned as unknown as Array<{
+        id: number; paid_through: string; trade_category: string; licence_number: string | null; contact_email: string;
+      }>)[0];
       if (!purchase) {
         res.status(404).json({ success: false, error: 'Placement not found.' });
+        return;
+      }
+      // Renewal is the one path that could keep an unlicensed ad live indefinitely: it copies the
+      // stored vendor details forward without going through the checkout form, so a placement sold
+      // before licence numbers existed (or in a category that later became licence-required) would
+      // renew forever with an empty number -- exactly the situation collecting the number was meant
+      // to end. Blocked here rather than silently allowed.
+      //
+      // The vendor is not stuck and does not need support: POST /api/my-ads/<kind>/:id/licence
+      // backfills a MISSING required number regardless of whether the one-time contact edit has
+      // been used (see myAdsApi.ts -- it can only ever go from absent to present, never change an
+      // existing number, which is why it is safe to leave outside that allowance).
+      if (requiresLicenceNumber(purchase.trade_category) && !(purchase.licence_number || '').trim()) {
+        res.status(409).json({
+          success: false,
+          error: 'This placement has no licence number on file, which is now required for ' +
+            `${purchase.trade_category}. Add it to this placement first (use "Add licence number" on ` +
+            'the placement), then renew.',
+          needsLicenceNumber: true,
+        });
         return;
       }
       // Renewal only makes sense while still genuinely active -- once actually expired, the slot

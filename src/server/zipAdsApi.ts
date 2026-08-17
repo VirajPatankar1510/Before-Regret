@@ -428,6 +428,26 @@ export function registerZipAdsRoutes(app: Express) {
         res.status(404).json({ success: false, error: 'Placement not found.' });
         return;
       }
+      // Renewal is the one path that could keep an unlicensed ad live indefinitely: it copies the
+      // stored vendor details forward without going through the checkout form, so a placement sold
+      // before licence numbers existed (or in a category that later became licence-required) would
+      // renew forever with an empty number -- exactly the situation collecting the number was meant
+      // to end. Blocked here rather than silently allowed.
+      //
+      // The vendor is not stuck and does not need support: POST /api/my-ads/<kind>/:id/licence
+      // backfills a MISSING required number regardless of whether the one-time contact edit has
+      // been used (see myAdsApi.ts -- it can only ever go from absent to present, never change an
+      // existing number, which is why it is safe to leave outside that allowance).
+      if (requiresLicenceNumber(bundle.trade_category) && !(bundle.licence_number || '').trim()) {
+        res.status(409).json({
+          success: false,
+          error: 'This placement has no licence number on file, which is now required for ' +
+            `${bundle.trade_category}. Add it to this placement first (use "Add licence number" on ` +
+            'the placement), then renew.',
+          needsLicenceNumber: true,
+        });
+        return;
+      }
       // Once actually expired, one or more of the bundle's ZIPs may already belong to someone
       // else -- that case goes through the normal "Buy again" checkout flow instead (see
       // MyAdsPanel.tsx's Expired section), which re-checks availability (and re-claims a hold)
