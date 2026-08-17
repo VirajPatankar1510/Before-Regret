@@ -56,6 +56,11 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
 // to PayPal" step requires it. Gating the whole page behind sign-in used to mean a vendor clicking
 // GuideAdSlot.tsx's "Are you in the X business?" CTA landed on a login screen instead of the thing
 // they clicked, before ever seeing what's for sale.
+// sessionStorage keys for the form-state-survives-a-real-navigation stash -- see the restore
+// effect below for why both exist and why order matters when checking them.
+const AUTH_STASH_KEY = 'br_pending_guide_ads_signup';
+const RENEW_STASH_KEY = 'br_renew_guide_ads';
+
 export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }) => {
   const { user, loading: authLoading, triggerClerkSignIn, getToken, requestClerkLoad } = useAuth();
 
@@ -90,23 +95,51 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     requestClerkLoad();
   }, [requestClerkLoad]);
 
-  // Prefill from MyAdsPanel.tsx's "Renew" button, if that's how the vendor got here -- stashed in
-  // sessionStorage rather than a URL param since it also carries the previous business details,
-  // not just which guide to re-select. Read once and cleared immediately so a later plain visit
-  // to this page (or a back-button return) doesn't silently resurrect stale form state.
+  // Two distinct reasons a vendor can land back on this page with the browser having done a full
+  // navigation away and back -- both wipe every useState here, since a real navigation (not
+  // client-side routing) remounts the whole SPA from scratch:
+  //
+  // 1. AUTH_STASH_KEY -- clicking "Sign In to Pay" below. This form deliberately renders in full,
+  //    guide selection AND every business-details field, before sign-in is required (see this
+  //    file's own top comment on why) -- so unlike the ZIP-ad form, a vendor here can fill in
+  //    EVERYTHING and then lose all of it. openSignIn()'s completion redirect
+  //    (forceRedirectUrl/afterSignInUrl in AuthContext.tsx) navigates the real browser even for an
+  //    in-modal email/password signup, not only an OAuth provider hop, so this is the ordinary path,
+  //    not an edge case. Before this stash existed, a vendor who picked guides, wrote their business
+  //    details and licence number, and then signed up, came back to a blank form with no error
+  //    shown -- nothing failed, so there was nothing to explain, which is exactly what made it read
+  //    as a bug rather than a crash.
+  //
+  // 2. RENEW_STASH_KEY -- MyAdsPanel.tsx's "Renew" button.
+  //
+  // Same restore logic either way; checked in this order (auth stash first) because it reflects
+  // the action the vendor took most recently if, somehow, both were ever present at once. Unlike
+  // the ZIP form's restore, guide selection is NOT re-validated against live availability here --
+  // matching the pre-existing renewal behavior this is built on, and an acceptable gap, since a
+  // slot taken out from under a stashed selection just fails at submit the same way it always could.
   useEffect(() => {
-    const raw = sessionStorage.getItem('br_renew_guide_ads');
-    if (!raw) return;
-    sessionStorage.removeItem('br_renew_guide_ads');
-    try {
-      const renew = JSON.parse(raw) as { articleIds: number[]; businessName: string; tradeCategory: string; phone: string; website: string | null; licenceNumber?: string | null };
-      setSelected(new Set(renew.articleIds));
-      setBusinessName(renew.businessName || '');
-      setTradeCategory(renew.tradeCategory || '');
-      setPhone(renew.phone || '');
-      setWebsite(renew.website || '');
-      setLicenceNumber(renew.licenceNumber || '');
-    } catch { /* malformed stash, ignore */ }
+    const restore = (raw: string) => {
+      const stash = JSON.parse(raw) as {
+        articleIds: number[]; businessName: string; tradeCategory: string; phone: string;
+        website: string | null; licenceNumber?: string | null;
+      };
+      setSelected(new Set(stash.articleIds));
+      setBusinessName(stash.businessName || '');
+      setTradeCategory(stash.tradeCategory || '');
+      setPhone(stash.phone || '');
+      setWebsite(stash.website || '');
+      setLicenceNumber(stash.licenceNumber || '');
+    };
+    const authRaw = sessionStorage.getItem(AUTH_STASH_KEY);
+    if (authRaw) {
+      sessionStorage.removeItem(AUTH_STASH_KEY);
+      try { restore(authRaw); } catch { /* malformed stash, ignore */ }
+      return;
+    }
+    const renewRaw = sessionStorage.getItem(RENEW_STASH_KEY);
+    if (!renewRaw) return;
+    sessionStorage.removeItem(RENEW_STASH_KEY);
+    try { restore(renewRaw); } catch { /* malformed stash, ignore */ }
   }, []);
 
   useEffect(() => {
@@ -128,7 +161,15 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   // Clerk is already loading by the time this is clickable (see the mount effect above) -- the
   // button itself is disabled while authLoading is true, so triggerClerkSignIn() only ever fires
   // once clerkInstanceRef is actually populated.
+  //
+  // Stashed before triggering, not after -- there is no "after" to hook: openSignIn()'s redirect
+  // is a real browser navigation, so nothing here runs again until this component remounts from
+  // scratch (see the restore effect above). Written unconditionally: an empty selection with blank
+  // fields just restores to the same empty, blank state, which costs nothing.
   const handleSignInClick = () => {
+    sessionStorage.setItem(AUTH_STASH_KEY, JSON.stringify({
+      articleIds: Array.from(selected), businessName, tradeCategory, phone, website, licenceNumber,
+    }));
     triggerClerkSignIn();
   };
 
