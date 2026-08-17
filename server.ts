@@ -635,7 +635,7 @@ export async function createApp() {
     // returns null rather than throwing on failure, so one being unavailable never blocks the
     // report or the other finding.
     // zipVendorMap is fetched once here (single query for every active vendor in this ZIP) and
-    // threaded through to both attachSponsoredVendors and buildInspectionPrioritiesForReport below
+    // threaded through to the attachSponsoredVendorsTo*Findings pair and buildInspectionPrioritiesForReport below
     // -- avoids querying per finding / per inspection-priority item (up to ~14 round trips
     // otherwise). See fetchActiveZipVendors in src/server/zipAdsApi.ts.
     const [liveSeismicFinding, liveNeighborhoodFinding, zipVendorMap] = await Promise.all([
@@ -977,14 +977,17 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
 
         let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
         cleanedReport = stripInternalMetadata(cleanedReport);
-        // One Set shared across all three calls below so a trade category is attached at most
-        // once across the whole report, regardless of which section matches it first -- see the
-        // comment on attachSponsoredVendors for why.
+        // One Set shared across all four calls below so a trade category is attached at most once
+        // across the whole report, regardless of which section matches it first. Order matters,
+        // not just the shared Set -- see attachSponsoredVendorsToPendingFindings's comment for why
+        // the pending-findings pass specifically has to run last, after every more-prominent
+        // section has had first refusal on a category.
         const seenVendorCategories = new Set<string>();
-        attachSponsoredVendors(cleanedReport, zipVendorMap, seenVendorCategories);
+        attachSponsoredVendorsToResolvedFindings(cleanedReport, zipVendorMap, seenVendorCategories);
         attachFindingSourceUrls(cleanedReport, resolvedMeta.county, resolvedMeta.city);
         cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, zipVendorMap, seenVendorCategories);
         cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType, zipVendorMap, seenVendorCategories);
+        attachSponsoredVendorsToPendingFindings(cleanedReport, zipVendorMap, seenVendorCategories);
         // Moving Company is a fixed, always-checked slot, not routed through the per-item matching
         // above -- see the comment on PropertyReport.movingCompanyVendors in types.ts.
         cleanedReport.movingCompanyVendors = zipVendorMap.get('Moving Company') ?? [];
@@ -1007,10 +1010,11 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
     const seenVendorCategories = new Set<string>();
-    attachSponsoredVendors(cleanedReport, zipVendorMap, seenVendorCategories);
+    attachSponsoredVendorsToResolvedFindings(cleanedReport, zipVendorMap, seenVendorCategories);
     attachFindingSourceUrls(cleanedReport, resolvedMeta.county, resolvedMeta.city);
     cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, zipVendorMap, seenVendorCategories);
     cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType, zipVendorMap, seenVendorCategories);
+    attachSponsoredVendorsToPendingFindings(cleanedReport, zipVendorMap, seenVendorCategories);
     cleanedReport.movingCompanyVendors = zipVendorMap.get('Moving Company') ?? [];
 
     if (!cleanedReport.id) {
@@ -1456,20 +1460,53 @@ function validateAndFixReportContradictions(report: any, liveFindings: any[] = [
 // queried here per finding, keyed by trade category, holding up to MAX_SLOTS_PER_ZIP_TRADE
 // vendors per category rather than just one.
 //
-// seenCategories is shared across this call and the two below it (buildInspectionPrioritiesForReport,
-// buildSellerQuestionsForReport), called in that order -- findings, then inspection priorities,
-// then seller questions, matching top-to-bottom reading order in the report. A trade category is
-// only ever attached at the FIRST place it matches; every later match for the same category in
-// the same report gets an empty list. Without this, a category matching several items in one
-// report (Home Inspector alone can match a finding plus three separate inspection-priority items
-// on an old house) showed the same vendor's card repeatedly instead of once, and now that up to 2
-// vendors can be attached together, would have shown both of them repeatedly too.
+// seenCategories is shared across this call and the three others in the same family
+// (attachSponsoredVendorsToPendingFindings below, buildInspectionPrioritiesForReport,
+// buildSellerQuestionsForReport). A trade category is only ever attached at the FIRST place it
+// matches; every later match for the same category in the same report gets an empty list. Without
+// this, a category matching several items in one report (Home Inspector alone can match a finding
+// plus three separate inspection-priority items on an old house) showed the same vendor's card
+// repeatedly instead of once, and now that up to 2 vendors can be attached together, would have
+// shown both of them repeatedly too.
+//
+// THIS pass only ever looks at RESOLVED findings (status !== 'NOT YET VERIFIED') -- see the
+// twin function below for why that split exists and matters for match order, not just dedup.
 //
 // Mutates report.canonicalFindings in place; safe to call after validateAndFixReportContradictions
-// has populated that array.
-function attachSponsoredVendors(report: any, zipVendorMap: Map<string, any[]>, seenCategories: Set<string>) {
+// has populated that array and normalized every status.
+function attachSponsoredVendorsToResolvedFindings(report: any, zipVendorMap: Map<string, any[]>, seenCategories: Set<string>) {
   if (!report || !Array.isArray(report.canonicalFindings)) return report;
   for (const finding of report.canonicalFindings) {
+    if (finding.status === 'NOT YET VERIFIED') continue; // attached last -- see the pending-findings pass below
+    const tradeCategory = FINDING_TRADE_CATEGORY[finding.id as keyof typeof FINDING_TRADE_CATEGORY];
+    finding.sponsoredVendors = tradeCategory && !seenCategories.has(tradeCategory) ? zipVendorMap.get(tradeCategory) ?? [] : [];
+    if (tradeCategory) seenCategories.add(tradeCategory);
+  }
+  return report;
+}
+
+// Attaches vendors to PENDING findings (status === 'NOT YET VERIFIED', e.g. f_roof/f_elec/f_hvac
+// today) -- deliberately run LAST in the call sequence below, after the resolved-findings pass
+// above AND after buildInspectionPrioritiesForReport/buildSellerQuestionsForReport, rather than
+// first as this whole family used to run in one undivided array-order pass.
+//
+// Why this matters, concretely: PropertyReportView.tsx only gives a resolved finding a full card
+// near the top of "Detailed Findings"; a NOT YET VERIFIED finding instead renders in the compact
+// "Records You Still Need to Pull" list, which sits second-to-last on the page, directly above the
+// legal disclaimer. f_roof and f_hvac have no other placement anywhere in the report's content
+// model -- neither a resolved finding, an inspection-priority item, nor a seller question ever
+// maps to Roof Inspection or HVAC Inspection -- so those two land here regardless of call order.
+// Electrician is different: it's ALSO matched by three inspection-priority rules (knob-and-tube,
+// aluminum wiring, panel brand) that render in the middle of the report when they apply. Under the
+// old single-pass, array-order matching, f_elec (permanently NOT YET VERIFIED, since this site has
+// no live permit-record integration yet) always came first and claimed Electrician for the bottom
+// section, before the priorities pass -- which might have placed it far more prominently -- ever
+// ran. Running this pass last gives every more-prominent section first refusal on a category, and
+// a pending finding only keeps a category nothing else claimed.
+function attachSponsoredVendorsToPendingFindings(report: any, zipVendorMap: Map<string, any[]>, seenCategories: Set<string>) {
+  if (!report || !Array.isArray(report.canonicalFindings)) return report;
+  for (const finding of report.canonicalFindings) {
+    if (finding.status !== 'NOT YET VERIFIED') continue; // already handled by the resolved-findings pass
     const tradeCategory = FINDING_TRADE_CATEGORY[finding.id as keyof typeof FINDING_TRADE_CATEGORY];
     finding.sponsoredVendors = tradeCategory && !seenCategories.has(tradeCategory) ? zipVendorMap.get(tradeCategory) ?? [] : [];
     if (tradeCategory) seenCategories.add(tradeCategory);
@@ -1511,7 +1548,7 @@ function attachFindingSourceUrls(report: any, county: string, city?: string) {
 
 // Computes the era-based inspection priorities (engine/inspectionPriorities.ts) for this
 // (year built, county) pair and attaches a per-item vendor match, same pattern (and same shared
-// seenCategories dedup -- see attachSponsoredVendors above) as attachSponsoredVendors but for
+// seenCategories dedup -- see attachSponsoredVendorsToResolvedFindings above) as that pair but for
 // priority items instead of findings, consulting the same pre-fetched zipVendorMap rather than
 // querying per item. yearBuilt is requester-declared and unvalidated at this point -- coerced
 // defensively; the engine itself fails closed to null only for a missing/implausible year built,
