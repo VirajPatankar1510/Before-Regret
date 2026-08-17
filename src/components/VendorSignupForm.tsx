@@ -234,6 +234,15 @@ export const VendorSignupForm: React.FC = () => {
           ))}
         </select>
 
+        {/* Surfaced here, before the vendor spends effort picking 3 ZIPs, rather than only at the
+            business-details step later where the licence field itself first appears -- so it's not
+            a surprise requirement dropped on someone who's already invested time in the flow. */}
+        {tradeCategory && requiresLicenceNumber(tradeCategory) && (
+          <p className="text-[11px] text-slate-500 px-1">
+            You'll need a licence, registration, or certification number for {tradeCategory} to complete checkout.
+          </p>
+        )}
+
         {selectedZips.length > 0 && (
           <ul className="space-y-2">
             {selectedZips.map((zip) => (
@@ -345,10 +354,17 @@ export const VendorSignupForm: React.FC = () => {
                   maxLength={60}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
                 />
+                {/* Deliberately does NOT tell the advertiser "we don't verify this" -- that fact
+                    belongs on the public-facing card (SponsoredVendorCard.tsx), where a reader
+                    needs it to know to check the number themselves. Here, saying it out loud to
+                    the person about to type the number only advertises the gap to the one party
+                    who could exploit it. Same underlying facts, aimed at deterrence instead:
+                    published verbatim, a warranted representation, and a stated consequence. */}
                 <p className="text-[11px] text-slate-500 leading-relaxed px-1">
-                  Required for {tradeCategory}. This is <strong>shown in your ad</strong> exactly as
-                  you type it. We do not verify it with any licensing board -- you are confirming it
-                  is current and correct (Terms 4.4). Movers may enter a USDOT or MC number.
+                  Required for {tradeCategory}. This <strong>appears in your ad</strong> exactly as
+                  you type it. You are confirming it is current, valid for this trade, and held by
+                  this business -- a false or expired number means removal without refund (Terms
+                  4.4). Movers may enter a USDOT or MC number.
                 </p>
               </div>
             )}

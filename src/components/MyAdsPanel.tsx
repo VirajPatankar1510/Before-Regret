@@ -262,8 +262,9 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     return (
       <div className="mt-3 space-y-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
         <p className="text-[11px] text-amber-900">
-          Shown in your ad exactly as typed. We don't verify it with any licensing board -- you're
-          confirming it's current and correct. This doesn't use up your one placement edit.
+          Appears in your ad exactly as typed. You're confirming it's current, valid for this
+          trade, and held by this business -- a false or expired number means removal without
+          refund (Terms 4.4). This doesn't use up your one placement edit.
         </p>
         <input
           type="text" value={licenceValue} onChange={(e) => setLicenceValue(e.target.value)}
@@ -528,8 +529,9 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
           />
           <p className="text-[10px] text-slate-500 leading-relaxed">
-            Shown in your ad exactly as typed. We don't verify it with any licensing board -- you're
-            confirming it's current and correct.
+            Appears in your ad exactly as typed. You're confirming it's current, valid for this
+            trade, and held by this business -- a false or expired number means removal without
+            refund (Terms 4.4).
           </p>
         </div>
       )}
