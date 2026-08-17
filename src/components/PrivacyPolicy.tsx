@@ -167,7 +167,28 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                 7. Data Retention & User Rights
               </h2>
               <p>
-                We retain vendor registration and receipt records for the duration of the active placement plus required legal tax retention periods. Consumer search logs are retained in aggregated, non-personally-identifiable form for system optimization.
+                We retain vendor registration and receipt records for the duration of the active placement plus required legal tax retention periods.
+              </p>
+              {/* This paragraph replaced a sentence claiming consumer search logs were retained only
+                  "in aggregated, non-personally-identifiable form." That was accurate when written
+                  and stopped being accurate the moment the generated_reports table landed (see
+                  db.ts): that table stores a specific address alongside an IP, a user-agent, and an
+                  account identifier, which is neither aggregated nor non-identifiable. Leaving the
+                  old sentence in place would have been an affirmative misstatement about our own
+                  practices in the document a regulator reads first -- a materially worse position
+                  than disclosing the record plainly, which is what this now does. Modelled directly
+                  on the Terms-acceptance paragraph below, which solved the same problem. */}
+              <p>
+                <strong>Report request records.</strong> When you generate a property report, we keep
+                a record of that request: the address you researched, the property type, year built,
+                and unit number you entered, your account identifier where you were signed in, and
+                the IP address and browser user-agent at that moment. This is a record about you, not
+                an anonymous statistic, and we keep it deliberately for two reasons: it is the
+                evidence of what was actually submitted if a report is later disputed as inaccurate
+                (see sections 3.5 and 3.6 of our{' '}
+                <a href="/terms" className="text-blue-600 font-bold hover:underline">Terms of Service</a>),
+                and it is what lets us investigate abuse of the free-report allowance. We retain it
+                for <strong>three years</strong> from the date of the request, then delete it.
               </p>
               {/* Added when consumer Terms acceptance began being recorded (see
                   src/server/termsApi.ts). Disclosing this specifically matters: it is a record
@@ -185,11 +206,14 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               </p>
               <p>
                 <strong>One limit on deletion, stated plainly.</strong> We may retain the Terms
-                acceptance record described above, and records of payments, after other data is
-                deleted, where retention is necessary to establish, exercise, or defend a legal
-                claim, or to meet a tax or accounting obligation. Deleting the record of an agreement
-                would remove the evidence of what each side agreed to, which does not serve either
-                of us. Everything not needed for those purposes is deleted on request.
+                acceptance record and the report request record described above, and records of
+                payments, after other data is deleted, where retention is necessary to establish,
+                exercise, or defend a legal claim, or to meet a tax or accounting obligation.
+                Deleting the record of an agreement, or of what was submitted to produce a report,
+                would remove the evidence of what each side actually did, which does not serve
+                either of us. Everything not needed for those purposes is deleted on request, and
+                the report request record is deleted outright once the three-year period above has
+                run.
               </p>
             </section>
 

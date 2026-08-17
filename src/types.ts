@@ -223,19 +223,7 @@ export interface DirectSourceLink {
   description: string;
 }
 
-export interface PropertyRecordItem {
-  id: string;
-  label: string;
-  value: string;
-  confidence: ConfidenceLevel;
-  detail?: string;
-}
 
-export interface PropertyRecordsSplit {
-  confirmed?: PropertyRecordItem[];
-  verified?: PropertyRecordItem[];
-  unknown: PropertyRecordItem[];
-}
 
 export interface SellerQuestionCard {
   id: string;
@@ -262,14 +250,6 @@ export interface SourceReference {
   description: string;
 }
 
-export interface PermitLifespanItem {
-  id: string;
-  system: string;
-  standardLifespanYears?: string;
-  permitStatus: string;
-  eraExpectation?: string;
-  confidence: ConfidenceLevel;
-}
 
 export interface DisclosureLeverItem {
   id: string;
@@ -444,9 +424,12 @@ export interface PropertyReport {
   environmentalTopics?: ThreePartFinding[];
   environmentalDataFreshness?: string;
   nearbyEssentials?: NearbyEssentialsSection;
-  propertyRecordsSplit?: PropertyRecordsSplit;
-  recordsDataFreshness?: string;
-  permitLifespanMatrix?: PermitLifespanItem[];
+  // propertyRecordsSplit / recordsDataFreshness / permitLifespanMatrix removed -- see the REMOVED
+  // note in server.ts's generateStructuredPropertyReport. They only ever carried hardcoded
+  // 'Verified Record' assertions (active parcel, final CO, on-file panel, zero code violations)
+  // against record systems this app has no integration with, and nothing rendered them. Kept out of
+  // this interface deliberately: while they were declared here, any new records UI could have bound
+  // to them and published those claims for real without anyone writing a false statement.
   insuranceConsiderations?: InsuranceConsiderationItem[];
   insuranceDataFreshness?: string;
   sellerQuestions?: SellerQuestionCard[];

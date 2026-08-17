@@ -69,6 +69,7 @@ dotenv.config();
 const KNOWN_STATIC_ROUTE_PREFIXES = [
   '/advertise', '/my-ads', '/topic-ads', '/report-ads',
   '/about', '/support', '/terms', '/privacy', '/refunds', '/refund-policy', '/disclaimer',
+  '/accessibility',
   '/payment-success', '/payment-cancelled',
   '/admin/seo',
   '/guides/', '/counties/',
@@ -640,10 +641,13 @@ export async function createApp() {
         rejectionReason: gateResult.message,
         blockedAtLayer: gateResult.blockedAtLayer,
         headerInfo: { address: fullAddr },
-        propertyInfo: { address: fullAddr, city: city || '', state: state || '', zipCode: zipCode || '', county: county || '', propertyType: 'Not Verified', estimatedSqFt: 0 },
-        leadWidgets: []
+        propertyInfo: { address: fullAddr, city: city || '', state: state || '', zipCode: zipCode || '', county: county || '', propertyType: 'Not Verified', estimatedSqFt: 0 }
+        // leadWidgets: [] dropped -- nothing reads it (it isn't in CLIENT_REPORT_FIELDS, and no
+        // component references it), and an always-empty array is not worth serializing.
       };
-      res.json({ success: true, report: blockedReport });
+      // Projected like the two success paths, so this route has exactly one shape of response body
+      // and no path can quietly return a field the client contract doesn't include.
+      res.json({ success: true, report: projectReportForClient(blockedReport) });
       return;
     }
 
@@ -890,40 +894,6 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
                     required: ["title", "confidence", "whatWeFound", "whyItMatters", "suggestedNextStep"]
                   }
                 },
-                propertyRecordsSplit: {
-                  type: Type.OBJECT,
-                  properties: {
-                    verified: {
-                      type: Type.ARRAY,
-                      items: {
-                        type: Type.OBJECT,
-                        properties: {
-                          id: { type: Type.STRING },
-                          label: { type: Type.STRING },
-                          value: { type: Type.STRING },
-                          confidence: { type: Type.STRING },
-                          detail: { type: Type.STRING }
-                        },
-                        required: ["label", "value", "confidence"]
-                      }
-                    },
-                    unknown: {
-                      type: Type.ARRAY,
-                      items: {
-                        type: Type.OBJECT,
-                        properties: {
-                          id: { type: Type.STRING },
-                          label: { type: Type.STRING },
-                          value: { type: Type.STRING },
-                          confidence: { type: Type.STRING },
-                          detail: { type: Type.STRING }
-                        },
-                        required: ["label", "value", "confidence"]
-                      }
-                    }
-                  },
-                  required: ["verified", "unknown"]
-                },
                 sellerQuestions: {
                   type: Type.ARRAY,
                   items: {
@@ -974,7 +944,6 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
                 "whatWeFound",
                 "topPriorities",
                 "environmentalTopics",
-                "propertyRecordsSplit",
                 "sellerQuestions",
                 "visitChecklist",
                 "sourceReferences"
@@ -1013,13 +982,8 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
             ...fallbackReport.whatWeFound,
             ...(parsedReport.whatWeFound || {})
           },
-          propertyRecordsSplit: {
-            ...fallbackReport.propertyRecordsSplit,
-            ...(parsedReport.propertyRecordsSplit || {})
-          },
           sellerQuestions: Array.isArray(parsedReport.sellerQuestions) && parsedReport.sellerQuestions.length > 0 ? parsedReport.sellerQuestions : fallbackReport.sellerQuestions,
           visitChecklist: Array.isArray(parsedReport.visitChecklist) && parsedReport.visitChecklist.length > 0 ? parsedReport.visitChecklist : fallbackReport.visitChecklist,
-          permitLifespanMatrix: Array.isArray(parsedReport.permitLifespanMatrix) && parsedReport.permitLifespanMatrix.length > 0 ? parsedReport.permitLifespanMatrix : fallbackReport.permitLifespanMatrix,
           disclosureLevers: Array.isArray(parsedReport.disclosureLevers) && parsedReport.disclosureLevers.length > 0 ? parsedReport.disclosureLevers : fallbackReport.disclosureLevers
         };
 
@@ -1043,12 +1007,15 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
         if (!cleanedReport.id) {
           cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
         }
-        reportsStore.set(cleanedReport.id, cleanedReport);
+        // Projected before it is stored, not just before it is sent, so the copy GET
+        // /api/report/:reportId serves later is the same clean object -- see CLIENT_REPORT_FIELDS.
+        const clientReport = projectReportForClient(cleanedReport);
+        reportsStore.set(cleanedReport.id, clientReport);
         persistDeclaredInputs(cleanedReport.id);
 
         res.json({
           success: true,
-          report: cleanedReport
+          report: clientReport
         });
         return;
       } catch (err: any) {
@@ -1069,13 +1036,16 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     if (!cleanedReport.id) {
       cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     }
-    reportsStore.set(cleanedReport.id, cleanedReport);
+    // Same projection as the Gemini path above -- this is the path that most needs it, since the
+    // fallback generator is where the hardcoded "Verified Record" constants live.
+    const clientFallbackReport = projectReportForClient(cleanedReport);
+    reportsStore.set(cleanedReport.id, clientFallbackReport);
     persistDeclaredInputs(cleanedReport.id);
 
     // Fallback high-quality structured decision guide report
     res.json({
       success: true,
-      report: cleanedReport
+      report: clientFallbackReport
     });
   });
 
@@ -1489,16 +1459,56 @@ function validateAndFixReportContradictions(report: any, liveFindings: any[] = [
     }
   }
 
-  // Normalize status values without inventing confirmation: anything not already an honest
-  // 'NOT YET VERIFIED' is preserved only if it's a real CONFIRMED/NO RECORD value; unknown or
-  // missing statuses fail closed to 'NOT YET VERIFIED' rather than defaulting to a confirmed claim.
+  // Status normalization, default-deny.
+  //
+  // The previous version of this block preserved 'CONFIRMED RECORD' whenever a finding simply
+  // claimed it, and only failed closed on an *unrecognized* status. That trusted the wrong party:
+  // on the Gemini path, canonicalFindings is model output, and the report prompt explicitly asks
+  // the model to state what "the permit archive" shows (e.g. "Most recent roofing permit on file:
+  // November 2008") -- against an archive this app has never been connected to. A model that
+  // complied by inventing a plausible date AND labelling it 'CONFIRMED RECORD' would have had both
+  // the claim and the badge published verbatim, as a specific factual assertion about a real,
+  // identifiable address. That is the highest-severity content failure this system can produce:
+  // wrong about a named property, harmful in both directions (a buyer walks, or a seller is
+  // implied to have unpermitted work), and entirely invisible to the reader.
+  //
+  // So confirmation is now something only an executed fetch can grant, never something the content
+  // layer can assert about itself. liveFindings are the findings produced by a real HTTP call that
+  // actually happened for this address on this request (seismicHazard.ts, neighborhoodContext.ts);
+  // their ids are the only ids eligible for a verified-sounding status. Everything else -- model
+  // output, the fallback template, and any finding type added to this system in future -- fails
+  // closed. That inversion is the point: a new finding id added later is safe by default rather
+  // than safe only if someone remembers to add it to a list here.
+  const liveQueriedIds = new Set(
+    (liveFindings || []).filter((f: any) => f && f.id).map((f: any) => f.id)
+  );
+
   (report.canonicalFindings || []).forEach((f: any) => {
     const rawStatus = (f.status || '').toUpperCase();
-    let status = 'NOT YET VERIFIED';
-    if (rawStatus === 'CONFIRMED RECORD' || rawStatus === 'NO RECORD FOUND' || rawStatus === 'NOT YET VERIFIED') {
-      status = rawStatus;
+    const wasLiveQueried = liveQueriedIds.has(f.id);
+
+    // 'NO RECORD FOUND' is deliberately gated behind wasLiveQueried too, not treated as the safe
+    // option because it asserts no defect. It asserts that a record system was searched and came
+    // back empty -- which, with no integration, is both untrue and specifically damaging to the
+    // seller ("no permit found" reads as unpermitted work). An honest "we have not checked" is the
+    // only claim available when nothing was checked.
+    const mayClaimVerified = wasLiveQueried && (rawStatus === 'CONFIRMED RECORD' || rawStatus === 'NO RECORD FOUND');
+    f.status = mayClaimVerified ? rawStatus : 'NOT YET VERIFIED';
+
+    // Downgrading the badge alone is not enough. If the text still reads "Most recent roofing
+    // permit on file: November 2008", the fabrication is still published -- just under a different
+    // label, which is arguably worse because the two now contradict each other. Only the two
+    // property-specific assertion fields are replaced; whyItMatters, suggestedNextStep and
+    // actionItem are general education about the system in question, carry no address-specific
+    // claim, and stay as written so the downgrade costs the reader nothing useful.
+    if (!mayClaimVerified && rawStatus === 'CONFIRMED RECORD') {
+      console.warn(
+        `[report-integrity] Finding '${f.id || 'unknown'}' claimed CONFIRMED RECORD without a live data source; ` +
+        `downgraded and its property-specific text replaced.`
+      );
+      f.summaryText = 'BeforeRegret does not yet have a live, verified connection to a record source for this finding at this address.';
+      f.whatWeFound = 'Not yet independently verified for this address.';
     }
-    f.status = status;
   });
 
   return report;
@@ -1641,6 +1651,53 @@ function buildSellerQuestionsForReport(rawYearBuilt: unknown, county: string, st
       return { ...item, sponsoredVendors };
     }),
   };
+}
+
+// The complete set of report fields anything in this app actually reads. Derived, not guessed:
+// PropertyReportView.tsx is the only consumer of a report object anywhere in src/, and these are
+// exactly the properties it accesses (verified by grepping every `report.<field>` across App.tsx
+// and every component).
+//
+// Everything the report generator produces beyond this list was dead payload -- serialized into the
+// generate-report response and into GET /api/report/:reportId, stored in reportsStore, and rendered
+// by nothing. That would be merely wasteful if the dead fields were inert, but they were not: the
+// fallback generator hardcoded, identically for every address in the country, "Zero Active Code
+// Violations" and "Certificate of Occupancy on file" and "Property sits outside FEMA designated
+// 100-year flood risk zones" and "Low Flood Hazard Designation (Zone X)", each stamped
+// confidence: 'Verified Record', plus a nearbyEssentials block asserting precise distances ("within
+// 4.2 miles", "within 0.5 miles") attributed by name to HIFLD, a City Planning Board docket, and a
+// State DOT capital program. This app queries none of those systems for any address.
+//
+// A projection is the fix rather than deleting each constant because it is a boundary rather than a
+// list of exceptions: any field added to a report in future -- by a new fallback section, a new
+// Gemini schema property, or a merge that reintroduces an old one -- is invisible to clients until
+// it is named here deliberately. That inverts the failure mode. Previously the dangerous default was
+// silent exposure; now the dangerous thing requires an explicit edit to this array, next to this
+// comment. Flood zone is the sharpest example of why that matters: it decides whether a lender
+// mandates flood insurance, so "Zone X, Verified Record" about a house actually in Zone AE is a
+// specific, checkable, expensive misrepresentation, and it was one keystroke of UI away from being
+// published for every property this site has ever reported on.
+const CLIENT_REPORT_FIELDS = [
+  'id',
+  'headerInfo',
+  'propertyInfo',
+  'canonicalFindings',
+  'inspectionPriorities',
+  'sellerQuestionsScript',
+  'movingCompanyVendors',
+  // The three fields the blocked/non-residential path returns instead of a real report.
+  'isNonResidential',
+  'rejectionReason',
+  'blockedAtLayer',
+] as const;
+
+function projectReportForClient(report: any) {
+  if (!report) return report;
+  const projected: Record<string, any> = {};
+  for (const field of CLIENT_REPORT_FIELDS) {
+    if (report[field] !== undefined) projected[field] = report[field];
+  }
+  return projected;
 }
 
 function stripInternalMetadata(report: any) {
@@ -2102,51 +2159,30 @@ function generateStructuredPropertyReport(
     };
   }
 
-  let propertyRecordsSplitVerified = [];
-  let propertyRecordsSplitUnknown = [];
-  let permitLifespanMatrix = [];
-
-  if (meta.isMultiFamilyOrApartment) {
-    propertyRecordsSplitVerified = [
-      { id: 'v1', label: 'Municipal Parcel Record', value: 'Active Parcel Filing', confidence: 'Verified Record' as const, detail: 'Confirmed via Municipal Parcel & Building Department Records' },
-      { id: 'v2', label: 'Certificate of Occupancy', value: 'Final CO On File', confidence: 'Verified Record' as const, detail: 'Passed all municipal building code, electrical, and plumbing clearances' },
-      { id: 'v3', label: 'Code Enforcement History', value: 'Zero Active Violations', confidence: 'Verified Record' as const, detail: 'Clean municipal code enforcement history on file' },
-      { id: 'v4', label: 'Utility Infrastructure', value: 'High-Capacity Public Mains', confidence: 'Verified Record' as const, detail: 'Connected to public municipal water, sewer, and grid power' }
-    ];
-    propertyRecordsSplitUnknown = [
-      { id: 'u1', label: 'Utility Sub-metering Terms', value: 'To Be Verified in Lease/HOA', confidence: 'No Record Found' as const, detail: 'Confirm individual unit sub-metering vs ratio billing (RUBS)' },
-      { id: 'u2', label: 'Management Disclosures', value: 'HOA / Lease Disclosures Needed', confidence: 'No Record Found' as const, detail: 'Obtain building rules, master insurance policies, and fee breakdown' },
-      { id: 'u3', label: 'Shared Wall STC Rating', value: 'Acoustic Test Unlisted', confidence: 'No Record Found' as const, detail: 'Observe acoustic sound isolation during walkthrough' },
-      { id: 'u4', label: 'Assigned Parking & Storage', value: 'Management Disclosures Needed', confidence: 'No Record Found' as const, detail: 'Confirm dedicated parking, storage, and guest space allocations' }
-    ];
-    permitLifespanMatrix = [
-      { id: 'pl1', system: 'Municipal Certificate of Occupancy', permitStatus: 'Final CO Verified On File', confidence: 'Verified Record' as const },
-      { id: 'pl2', system: 'Central HVAC & Climate Control', permitStatus: 'Permit Unconfirmed in Digitized Archive', confidence: 'No Record Found' as const },
-      { id: 'pl3', system: 'Electrical Sub-Panels & Service', permitStatus: 'Service Filing Verified', confidence: 'Verified Record' as const },
-      { id: 'pl4', system: 'Shared Wall Partition Assembly', permitStatus: 'Acoustic Rating Unlisted', confidence: 'No Record Found' as const },
-      { id: 'pl5', system: 'Domestic Water Heating System', permitStatus: 'Permit Log Unconfirmed', confidence: 'No Record Found' as const }
-    ];
-  } else {
-    propertyRecordsSplitVerified = [
-      { id: 'v1', label: 'County Assessor Tax Parcel', value: 'Active Parcel ID', confidence: 'Verified Record' as const, detail: 'Confirmed via County Tax Assessor parcel records' },
-      { id: 'v2', label: 'Electrical Panel Status', value: 'Breaker Panel Record On File', confidence: 'Verified Record' as const, detail: 'Electrical service on file with city building department' },
-      { id: 'v3', label: 'Open Code Violations', value: 'Zero Active Violations', confidence: 'Verified Record' as const, detail: 'Clean municipal code compliance history' },
-      { id: 'v4', label: 'Utility Service Connections', value: 'Public Water & Sewer Active', confidence: 'Verified Record' as const, detail: 'Connected to public municipal utility infrastructure' }
-    ];
-    propertyRecordsSplitUnknown = [
-      { id: 'u1', label: 'Roof Replacement Filing', value: 'Unconfirmed in Digitized Records', confidence: 'No Record Found' as const, detail: 'Verify installation date with physical inspection or seller invoices' },
-      { id: 'u2', label: 'HVAC Compressor Permit', value: 'Permit Log Unconfirmed', confidence: 'No Record Found' as const, detail: 'Check dataplate on outdoor condenser during walkthrough' },
-      { id: 'u3', label: 'Interior Remodeling Permits', value: 'Unrecorded in Public Database', confidence: 'No Record Found' as const, detail: 'Verify any unpermitted interior alterations' },
-      { id: 'u4', label: 'Sewer Line Pipe Material', value: 'Unspecified in Assessor File', confidence: 'No Record Found' as const, detail: 'Perform sewer scope camera inspection during walkthrough' }
-    ];
-    permitLifespanMatrix = [
-      { id: 'pl1', system: 'Roofing Shingles & Flashing', permitStatus: 'Permit unconfirmed in digitized log', confidence: 'No Record Found' as const },
-      { id: 'pl2', system: 'Central AC & Heat Pump Compressor', permitStatus: 'Permit unconfirmed in digitized log', confidence: 'No Record Found' as const },
-      { id: 'pl3', system: 'Electrical Breaker Panel', permitStatus: 'Electrical Permit Filing Recorded', confidence: 'Verified Record' as const },
-      { id: 'pl4', system: 'Domestic Water Heater Tank', permitStatus: 'Unrecorded in public permit log', confidence: 'No Record Found' as const },
-      { id: 'pl5', system: 'Main Sewer Lateral Waste Line', permitStatus: 'Public Utility Connection Active', confidence: 'Verified Record' as const }
-    ];
-  }
+  // REMOVED: propertyRecordsSplit (verified/unknown) and permitLifespanMatrix.
+  //
+  // These were hardcoded arrays asserting, for EVERY address this app has ever produced a
+  // fallback report for, that the property had a 'Verified Record' confirming an active parcel
+  // filing, a final Certificate of Occupancy, an on-file electrical panel record, active public
+  // water and sewer, and -- worst of the set -- 'Zero Active Violations / Clean municipal code
+  // compliance history'. Not one of those claims was backed by a data source: this app has no
+  // assessor, permit, code-enforcement, or utility integration of any kind (see the note on
+  // validateAndFixReportContradictions). They were literal constants dressed as findings.
+  //
+  // Why deleting rather than relabelling: nothing renders either field (grepped across
+  // src/components -- no consumer existed), so they were pure payload, reaching the client in the
+  // generate-report response and GET /api/report/:reportId while being invisible in the UI. That
+  // made them a latent trap rather than a visible bug -- the first person to build a records
+  // section against the existing PropertyReport type would have shipped 'Zero Active Violations'
+  // to real buyers about real houses without writing a single false statement themselves. An
+  // unverifiable claim that no longer exists cannot be rendered by accident later.
+  //
+  // 'Zero Active Violations' specifically is the claim that made this urgent: open code violations
+  // run with the property, can carry liens or forced remediation, and can block a closing. Telling
+  // a buyer there are none -- as a 'Verified Record', about a named address, from no source -- is an
+  // affirmative misrepresentation that the site-wide 'as is' disclaimers would struggle to cover,
+  // and it is simultaneously damaging to the seller in the inverse case. The corresponding request
+  // for these fields has also been dropped from the Gemini response schema and its required list.
 
   let sellerQuestions = [];
   let disclosureLevers = [];
@@ -2372,12 +2408,9 @@ function generateStructuredPropertyReport(
         }
       ]
     },
-    recordsDataFreshness: 'Municipal Building Permits & Tax Assessor Registry as of July 2026',
-    propertyRecordsSplit: {
-      verified: propertyRecordsSplitVerified,
-      unknown: propertyRecordsSplitUnknown
-    },
-    permitLifespanMatrix,
+    // recordsDataFreshness removed with the two fields below it: 'Municipal Building Permits & Tax
+    // Assessor Registry as of July 2026' asserted a dated snapshot of two record systems this app
+    // has never queried, which is the same fabrication as the fields it labelled. Also unrendered.
     insuranceDataFreshness: 'Buyer Insurance Shopping Guidance as of 2026',
     insuranceConsiderations: [
       {

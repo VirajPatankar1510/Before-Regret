@@ -33,6 +33,7 @@ export const routeChunkLoaders = {
   privacy: () => import('./components/PrivacyPolicy'),
   refunds: () => import('./components/RefundPolicy'),
   disclaimer: () => import('./components/Disclaimer'),
+  accessibility: () => import('./components/Accessibility'),
 } as const;
 
 export type PrerenderedRouteKey = keyof typeof routeChunkLoaders;
@@ -60,6 +61,7 @@ export const routeChunkSources: Record<PrerenderedRouteKey, string> = {
   privacy: 'src/components/PrivacyPolicy.tsx',
   refunds: 'src/components/RefundPolicy.tsx',
   disclaimer: 'src/components/Disclaimer.tsx',
+  accessibility: 'src/components/Accessibility.tsx',
 };
 
 /**
@@ -83,6 +85,7 @@ export function prerenderedRouteForPath(pathname: string): PrerenderedRouteKey |
   if (path.startsWith('/privacy')) return 'privacy';
   if (path.startsWith('/refunds') || path.startsWith('/refund-policy')) return 'refunds';
   if (path.startsWith('/disclaimer')) return 'disclaimer';
+  if (path.startsWith('/accessibility')) return 'accessibility';
 
   if (path.startsWith('/guides/')) {
     // parts.length >= 2 means /guides/<slug>/; bare /guides/ is the hub index.
