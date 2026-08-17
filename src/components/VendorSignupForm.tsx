@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle, Lock, X } from 'lucide-react';
-import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
+import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber } from '../data/sponsoredVendors';
 import { useAuth } from '../context/AuthContext';
 
 const ZIPS_PER_BUNDLE = 3;
@@ -35,6 +35,7 @@ export const VendorSignupForm: React.FC = () => {
   const [businessName, setBusinessName] = useState('');
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
+  const [licenceNumber, setLicenceNumber] = useState('');
   const [attestedAccurate, setAttestedAccurate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
@@ -125,6 +126,11 @@ export const VendorSignupForm: React.FC = () => {
     if (!businessName.trim()) return setSubmitErrors(['Enter your business name.']);
     if (!phone.trim()) return setSubmitErrors(['Enter a phone number for readers to call.']);
     if (selectedZips.length !== ZIPS_PER_BUNDLE) return setSubmitErrors([`Select ${ZIPS_PER_BUNDLE} ZIP codes first.`]);
+    // Same rule as the server enforces (requiresLicenceNumber) -- checked here only so the vendor
+    // sees the problem before being sent to PayPal, never as the actual gate.
+    if (requiresLicenceNumber(tradeCategory) && licenceNumber.trim().length < 3) {
+      return setSubmitErrors([`A licence, registration, or certification number is required for ${tradeCategory}.`]);
+    }
     if (!attestedAccurate) return setSubmitErrors(['Tick the confirmation box to accept the Terms of Service before continuing.']);
 
     const contactEmail = user.email || `${user.uid}@beforeregret.com`;
@@ -148,6 +154,7 @@ export const VendorSignupForm: React.FC = () => {
           zipCodes: selectedZips,
           phone: phone.trim(),
           website: website.trim() || undefined,
+          licenceNumber: licenceNumber.trim() || undefined,
           contactEmail,
           attestedAccurate,
         }),
@@ -291,6 +298,26 @@ export const VendorSignupForm: React.FC = () => {
               onChange={(e) => setWebsite(e.target.value)}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
             />
+            {/* Rendered only for categories that need one, so the licence-exempt trade never sees a
+                field it cannot honestly fill. The helper text states plainly that the number is
+                published and unverified -- a vendor should know their number will appear in the ad
+                before they type it, and should not read the request as us vouching for it. */}
+            {tradeCategory && requiresLicenceNumber(tradeCategory) && (
+              <div className="space-y-1.5">
+                <input
+                  type="text" required placeholder="State licence / registration number"
+                  value={licenceNumber}
+                  onChange={(e) => setLicenceNumber(e.target.value)}
+                  maxLength={60}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
+                />
+                <p className="text-[11px] text-slate-500 leading-relaxed px-1">
+                  Required for {tradeCategory}. This is <strong>shown in your ad</strong> exactly as
+                  you type it. We do not verify it with any licensing board -- you are confirming it
+                  is current and correct (Terms 4.4). Movers may enter a USDOT or MC number.
+                </p>
+              </div>
+            )}
             <label className="flex items-start gap-2.5 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 cursor-pointer">
               <input
                 type="checkbox" checked={attestedAccurate}

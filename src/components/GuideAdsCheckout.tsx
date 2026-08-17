@@ -3,7 +3,7 @@ import {
   ArrowLeft, Loader2, AlertCircle, CheckSquare, Square, Lock, Search, Megaphone, Globe,
   ListChecks, CircleDollarSign, Phone, ExternalLink, ChevronDown, CreditCard, ShieldCheck, XCircle,
 } from 'lucide-react';
-import { TRADE_CATEGORIES } from '../data/sponsoredVendors';
+import { TRADE_CATEGORIES, requiresLicenceNumber } from '../data/sponsoredVendors';
 import { guessTradeCategoryFromTitle } from '../data/guideAdCategoryGuess';
 import { useAuth } from '../context/AuthContext';
 
@@ -21,7 +21,7 @@ interface GuideAdsCheckoutProps {
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'Do you verify businesses before listing them?',
-    a: 'No -- this is self-serve. Business name, trade category, and contact details are self-reported at checkout, and you confirm they\'re accurate with a checkbox there, but nothing is independently verified on our end.',
+    a: 'No -- this is self-serve. Business name, trade category, contact details, and your licence or registration number are all self-reported at checkout, and you confirm they\'re accurate with a checkbox there. Your licence number is printed in the ad exactly as you enter it, but nothing is checked against a licensing board on our end -- we say so plainly next to it, so readers know to verify it themselves.',
   },
   {
     q: 'How many people will see my ad?',
@@ -72,6 +72,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [tradeCategory, setTradeCategory] = useState('');
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
+  const [licenceNumber, setLicenceNumber] = useState('');
   const [attestedAccurate, setAttestedAccurate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -167,6 +168,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     if (!tradeCategory) return setSubmitError('Choose a business type.');
     if (!phone.trim()) return setSubmitError('Enter a phone number for readers to call.');
     if (selectedCount === 0) return setSubmitError('Select at least one guide below.');
+    // Mirrors the server check in guideAdsApi.ts -- surfaced early, but the server is the gate.
+    if (requiresLicenceNumber(tradeCategory) && licenceNumber.trim().length < 3) {
+      return setSubmitError(`A licence, registration, or certification number is required for ${tradeCategory}.`);
+    }
     if (!attestedAccurate) return setSubmitError('Tick the confirmation box to accept the Terms of Service before continuing.');
     if (!user) return setSubmitError('Sign in to complete your purchase.');
 
@@ -191,6 +196,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           tradeCategory,
           phone: phone.trim(),
           website: website.trim() || undefined,
+          licenceNumber: licenceNumber.trim() || undefined,
           contactEmail,
           slots: Array.from(selected),
           attestedAccurate,
@@ -398,6 +404,24 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                 onChange={(e) => setWebsite(e.target.value)}
                 className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm sm:col-span-2"
               />
+              {/* Same field, same rules and same honesty as the ZIP-ad form -- see the comment on
+                  the licence input in VendorSignupForm.tsx. */}
+              {tradeCategory && requiresLicenceNumber(tradeCategory) && (
+                <div className="sm:col-span-2 space-y-1.5">
+                  <input
+                    type="text" required placeholder="State licence / registration number"
+                    value={licenceNumber}
+                    onChange={(e) => setLicenceNumber(e.target.value)}
+                    maxLength={60}
+                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm"
+                  />
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Required for {tradeCategory}. <strong>Shown in your ad</strong> exactly as typed.
+                    We do not verify it with any licensing board -- you are confirming it is current
+                    and correct (Terms 4.4). Movers may enter a USDOT or MC number.
+                  </p>
+                </div>
+              )}
             </div>
             <label className="flex items-start gap-2.5 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 cursor-pointer">
               <input

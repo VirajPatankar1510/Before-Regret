@@ -14,7 +14,7 @@ interface VendorsProps {
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'Do you verify businesses before listing them?',
-    a: 'No -- this is self-serve. Business name, trade category, and contact details are self-reported at checkout, and you confirm they\'re accurate with a checkbox there, but nothing is independently verified on our end.',
+    a: 'No -- this is self-serve. Business name, trade category, contact details, and your licence or registration number are all self-reported at checkout, and you confirm they\'re accurate with a checkbox there. Your licence number is printed in the ad exactly as you enter it, but nothing is checked against a licensing board on our end -- we say so plainly next to it, so readers know to verify it themselves.',
   },
   {
     q: 'How many views or leads will I get?',
@@ -158,8 +158,9 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
           <div className="space-y-2">
             <h2 className="font-serif text-2xl font-bold text-slate-900">Available Trade Categories</h2>
             <p className="text-xs sm:text-sm text-slate-600">
-              Any business in these categories can buy a placement -- trade and business details are self-reported
-              at checkout, not independently verified by us.
+              Any business in these categories can buy a placement -- trade and business details, including
+              your licence or registration number, are self-reported at checkout and not independently
+              verified by us.
             </p>
           </div>
 
