@@ -318,7 +318,7 @@ export const VendorSignupForm: React.FC = () => {
         <div className="space-y-5">
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-2 text-emerald-800 text-sm font-bold">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>{tradeCategory} in ZIP {selectedZips.join(', ')} -- all {ZIPS_PER_BUNDLE} open</span>
+            <span>{tradeCategory} in ZIP {selectedZips.join(', ')} -- all {ZIPS_PER_BUNDLE} available</span>
           </div>
 
           <div className="flex items-center justify-end text-xs text-slate-500">
