@@ -310,16 +310,88 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               </div>
             </section>
 
-            {/* Section 8 */}
+            {/* Section 8 -- Governing law and forum.
+
+                DEVELOPER NOTE (deliberately a code comment, not published copy). The previous
+                version of this section carried a visible "Legal Jurisdiction Note" conceding that
+                "formal legal confirmation regarding Indian vs. US jurisdiction for US-based
+                consumer and vendor contracts is recommended." That is an admission against
+                interest published inside the contract itself: counsel arguing the forum clause is
+                invalid would quote it verbatim. The underlying concern was real and is preserved
+                here for whoever maintains this file, but it does not belong in front of users.
+
+                What changed and why: the old clause put EVERY dispute, including a US consumer's
+                $14.99 claim, under the exclusive jurisdiction of Mumbai courts. A clause like that
+                tends to fail precisely when it matters -- a forum no consumer can practically
+                reach reads as denying a remedy, and an overreaching clause invites a court to
+                strike it wholesale rather than trim it. It also bound Atmostellar to sue its own
+                US vendors in Mumbai, which was never the intent.
+
+                The fix is scope, not relocation. Consumers get a NON-EXCLUSIVE forum and keep
+                their home-jurisdiction rights (8.1(b), 8.2); business vendors, who are
+                sophisticated parties dealing at arm's length, keep the tighter exclusive clause
+                where it is far more readily enforced (8.3).
+
+                What this does NOT do: it does not give the company the benefit of US law, and it
+                does not create a US contracting entity. Choosing a US state's law while having no
+                US entity, office, or bank account would be a thin "substantial relationship" for
+                choice-of-law purposes and could be challenged on its own. If and when a US entity
+                is formed, 8.1 and 8.4 are the paragraphs that change. */}
             <section className="space-y-2">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
-                8. Governing Law, Jurisdiction & Legal Note
+                8. Governing Law & Forum for Disputes Not Subject to Arbitration
               </h2>
-              <p>
-                These Terms shall be governed by, construed, and enforced in accordance with the laws of India, without regard to its conflict of law principles. Any dispute or claim arising out of or relating to these Terms shall be subject to the exclusive jurisdiction of the courts located in Mumbai, Maharashtra, India.
-              </p>
-              <div className="p-3 bg-slate-100 rounded-xl text-[11px] text-slate-600 font-mono">
-                <strong>Legal Jurisdiction Note:</strong> Governing law and jurisdiction are specified based on Atmostellar's corporate registration in Mumbai, Maharashtra, India. Prior to US commercial scaling, formal legal confirmation regarding Indian vs. US jurisdiction for US-based consumer and vendor contracts is recommended.
+              <div className="space-y-2.5 text-xs text-slate-600">
+                <p>
+                  <strong>8.1 Governing Law.</strong> These Terms, and any dispute arising out of or
+                  relating to them or to your use of the platform, are governed by the laws of{' '}
+                  <strong>India</strong>, without regard to its conflict of law principles. This is
+                  subject to two express exceptions:
+                </p>
+                <ul className="list-disc pl-5 space-y-1.5">
+                  <li>
+                    <strong>(a)</strong> As stated in <strong>7.2</strong>, the United States Federal
+                    Arbitration Act governs the interpretation and enforcement of Section 7
+                    (arbitration and class action waiver), not the law specified above.
+                  </li>
+                  <li>
+                    <strong>(b)</strong> If you are a consumer, this choice of law{' '}
+                    <strong>does not deprive you of the protection of any mandatory provision of the
+                    consumer protection law of the country, state, or province in which you
+                    habitually reside</strong> that cannot be derogated from by agreement. Where such
+                    a provision conflicts with these Terms, that provision prevails to the extent of
+                    the conflict, and the remainder of these Terms continues to apply.
+                  </li>
+                </ul>
+
+                <p>
+                  <strong>8.2 Consumer Disputes -- Non-Exclusive Forum.</strong> This paragraph applies
+                  to any consumer dispute not resolved by arbitration -- because it falls within the
+                  small claims or intellectual property exceptions in 7.6, because you opted out
+                  under 7.7, or because Section 7 is held not to apply. <strong>Jurisdiction for such
+                  disputes is non-exclusive.</strong> You may bring your claim either in the courts of
+                  Mumbai, Maharashtra, India, or in the courts of the place where you habitually
+                  reside. <strong>Atmostellar submits to the jurisdiction of the courts of your place
+                  of residence for this purpose and will not object to venue there on grounds of forum
+                  non conveniens.</strong> Atmostellar will bring any claim it has against you only in
+                  the courts of your place of residence.
+                </p>
+
+                <p>
+                  <strong>8.3 Business and Vendor Disputes -- Exclusive Forum.</strong> If you are a
+                  business purchasing a sponsored placement, or otherwise contracting with Atmostellar
+                  other than as a consumer, then any dispute not subject to Section 7 shall be brought
+                  exclusively in the courts located in <strong>Mumbai, Maharashtra, India</strong>, and
+                  you consent to the personal jurisdiction of those courts. Paragraph 8.1(b) and
+                  paragraph 8.2 do not apply to you.
+                </p>
+
+                <p>
+                  <strong>8.4 Contracting Party.</strong> Your agreement is with <strong>Atmostellar</strong>,
+                  a corporate entity registered in Mumbai, Maharashtra, India, which operates the Before
+                  Regret platform. Atmostellar has no United States subsidiary or affiliate, and no US
+                  entity is a party to these Terms.
+                </p>
               </div>
             </section>
 
