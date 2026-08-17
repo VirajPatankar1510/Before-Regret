@@ -65,6 +65,10 @@ interface KeywordRow {
   ctr?: number;
   position?: number;
   broadImpressions?: number;
+  /** Which upstream surfaced this -- see src/server/keywordResearchApi.ts. */
+  source?: 'search-console' | 'autocomplete' | 'bing';
+  /** True when the phrasing is question-shaped, i.e. a direct FAQ candidate. */
+  isQuestion?: boolean;
 }
 
 // Shape returned by GET /api/admin/news-coverage (see src/server/newsCoverageApi.ts).
@@ -1885,7 +1889,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
 
             {keywordConfigured === false && (
               <p className="text-[11px] text-slate-500">
-                Not connected yet -- set BING_WEBMASTER_API_KEY to enable this (reports real search interest even for topics this site hasn't covered yet, unlike Search Console).
+                No sources connected. Google autocomplete needs no key and should always return phrasings; Search Console (GSC_* vars) adds real positions, and Bing (BING_WEBMASTER_API_KEY) adds a cross-check.
               </p>
             )}
             {keywordError && <p className="text-[11px] text-rose-400">{keywordError}</p>}
@@ -1952,7 +1956,9 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                   >
                     <span className="text-xs text-slate-300 truncate">{row.query}</span>
                     <span className="text-[10px] font-mono text-slate-500 shrink-0">
-                      {row.impressions} impr{row.position != null ? ` · pos ${row.position.toFixed(1)}` : ''}
+                      {row.source === 'autocomplete'
+                        ? `google suggest${row.isQuestion ? ' · question' : ''}`
+                        : `${row.impressions} impr${row.position != null ? ` · pos ${row.position.toFixed(1)}` : ''}`}
                     </span>
                   </button>
                 ))}
