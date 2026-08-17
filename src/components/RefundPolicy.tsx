@@ -71,6 +71,13 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               <p>
                 <strong>No Refunds:</strong> Because payment is only collected after address eligibility is confirmed and the report is generated and delivered immediately upon payment, <strong>all report purchases are final and non-refundable.</strong>
               </p>
+              <p>
+                <strong>No Refunds for Inaccurate Self-Declared Input:</strong> A refund request
+                cannot be based on report content that follows from a property type, year built, or
+                unit number you supplied incorrectly at request time -- these fields are not
+                independently verified before a report is generated. See sections 3.5 and 3.6 of our{' '}
+                <a href="/terms" className="text-blue-600 font-bold hover:underline">Terms of Service</a>.
+              </p>
               {/* Savings clause. Without it, "final and non-refundable" is an unqualified statement
                   that a consumer has no refund rights at all -- which is not true everywhere, since
                   refund and withdrawal rights are among the most commonly non-waivable consumer

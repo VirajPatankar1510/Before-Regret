@@ -11,6 +11,7 @@ import {
   PropertyReport
 } from './types';
 import { createFallbackSummary, createFallbackReport } from './utils/reportFallback';
+import { useAuth } from './context/AuthContext';
 
 import { applyHeadSeo } from './utils/headSeo';
 import { routeChunkLoaders } from './routeChunks';
@@ -70,6 +71,8 @@ const RouteChunkFallback: React.FC = () => (
 );
 
 export function App() {
+  const { getToken } = useAuth();
+
   // Session state restoration to continue where left off after auth login/signup
   const [currentStep, setCurrentStep] = useState<'HOME' | 'RESEARCHING' | 'SUMMARY' | 'REPORT' | 'PSEO'>(() => {
     try {
@@ -766,9 +769,17 @@ export function App() {
     setIsLoading(true);
 
     try {
+      // Best-effort only -- see optionalVerifiedUserId in server.ts. ReportGatingModal already
+      // requires Clerk sign-in before this function can ever be reached, so a token is normally
+      // available; a null here just means the audit row this call feeds (generated_reports, see
+      // db.ts) is saved without an attributable user rather than the request being blocked.
+      const authToken = await getToken().catch(() => null);
       const res = await fetch('/api/property/generate-report', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+        },
         body: JSON.stringify({
           address: activeProperty.formattedAddress || activeProperty.displayName,
           city: activeProperty.city,
@@ -781,6 +792,11 @@ export function App() {
           yearBuilt: activeProperty.yearBuilt,
           usefulSourcesCount: summaryData?.usefulSourcesFound || 18,
           price: isPaid ? 14.99 : 0,
+          // ReportGatingModal requires assent before onConfirmAndGenerate is ever called -- the
+          // real "I agree" checkbox on the paid path, the click-to-generate passive notice on the
+          // free path (see that file's own comment on why the free path deliberately has no
+          // checkbox). By the time this fetch fires, that assent has already happened.
+          attestedAccurate: true,
           userEmail: userEmail,
           isPaid: isPaid
         })

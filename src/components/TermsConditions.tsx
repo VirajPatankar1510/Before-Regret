@@ -130,6 +130,12 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                 <p>
                   <strong>3.4 No Refunds on Report Purchases:</strong> Report purchases are only charged after a property address has been confirmed eligible and the report is generated and delivered immediately upon payment. <strong>All report purchases are final and non-refundable.</strong> This does not limit any refund, cancellation, or withdrawal right you hold under a mandatory provision of consumer protection law that cannot be derogated from by agreement (see 8.1(b)), nor your right to dispute a charge with your card issuer. See our Cancellation &amp; Refund Policy for full detail.
                 </p>
+                <p>
+                  <strong>3.5 Accuracy of Information You Provide:</strong> Certain fields used to generate your report -- including declared property type, year built, and unit number -- are supplied directly by you at the time of request. Atmostellar has no live integration with any county assessor or permitting authority and does not independently verify these self-declared fields before a report is generated. You represent and warrant that everything you submit is true, accurate, and describes the property you actually intend to research. A report built from an inaccurate or false input reflects that input, not an error by Atmostellar, and Atmostellar is not responsible for report content driven by information you supplied incorrectly, whether by mistake or on purpose.
+                </p>
+                <p>
+                  <strong>3.6 Misrepresentation and Fraudulent Claims:</strong> No refund request, chargeback dispute, correction demand, or financial or legal claim of any kind may be based on report content where the underlying declared property type, year built, unit number, or address detail was inaccurate, false, or misleading as supplied by you. Atmostellar may deny any such refund request or dispute response on this basis and may independently review the property and account records available to it in doing so. <strong>If you knowingly submit false or misleading information in order to manufacture an inaccurate report and then use it to dispute a charge, seek a refund, or assert a financial or legal claim against Atmostellar, you agree to indemnify and hold Atmostellar harmless from any resulting losses and reasonable legal fees</strong>, and Atmostellar may suspend or terminate your access to the platform.
+                </p>
               </div>
             </section>
 

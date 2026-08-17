@@ -209,6 +209,40 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_gemini_usage_created_at ON gemini_usage_log(created_at)`;
 
+  // Durable record of what a requester actually declared when a property report was generated
+  // (see POST /api/property/generate-report in server.ts). Same rationale as gemini_usage_log
+  // just above: reports themselves lived only in an in-process `reportsStore` Map, which a
+  // serverless instance loses on every cold start or redeploy -- fine for serving the report back
+  // during that session, not fine as the only record of what was submitted. declared_property_type
+  // and declared_year_built are requester-self-reported and never independently verified (see
+  // Terms 3.5-3.6 and Disclaimer section 6); this table exists so that claim is provable later --
+  // if a report is disputed as "wrong" weeks after the fact, this is the evidence of what was
+  // actually typed, not just whatever the disputing party now says they entered. clerk_user_id is
+  // nullable: the generate-report endpoint captures it best-effort from an Authorization header
+  // when the client sends one, but was never gated on having one, so it can't be required here
+  // without breaking every historical and unauthenticated row.
+  await sql`
+    CREATE TABLE IF NOT EXISTS generated_reports (
+      id SERIAL PRIMARY KEY,
+      report_id TEXT UNIQUE NOT NULL,
+      clerk_user_id TEXT,
+      formatted_address TEXT NOT NULL,
+      city TEXT,
+      state TEXT,
+      zip_code TEXT,
+      county TEXT,
+      declared_property_type TEXT,
+      declared_year_built INTEGER,
+      declared_unit_number TEXT,
+      attested_accurate BOOLEAN NOT NULL DEFAULT FALSE,
+      ip_address TEXT,
+      user_agent TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_generated_reports_clerk_user_id ON generated_reports(clerk_user_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_generated_reports_created_at ON generated_reports(created_at)`;
+
   // Vendor ad slots on guide pages (see src/server/guideAdsApi.ts). Two tables, not one:
   // guide_ad_orders is the checkout attempt (one row per PayPal order, holding the pending slot
   // selection as JSON until captured); guide_ad_purchases is the actual sold inventory (one row
@@ -451,6 +485,44 @@ export async function ensureArticlesSchema(): Promise<void> {
 export async function withDb<T>(fn: (sql: NeonQueryFunction<false, false>) => Promise<T>): Promise<T> {
   await ensureArticlesSchema();
   return fn(getSql());
+}
+
+export interface GeneratedReportInput {
+  reportId: string;
+  clerkUserId: string | null;
+  formattedAddress: string;
+  city: string | null;
+  state: string | null;
+  zipCode: string | null;
+  county: string | null;
+  declaredPropertyType: string | null;
+  declaredYearBuilt: number | null;
+  declaredUnitNumber: string | null;
+  attestedAccurate: boolean;
+  ipAddress: string | null;
+  userAgent: string | null;
+}
+
+// Fire-and-forget from the caller's perspective (see server.ts) -- a failed write here must never
+// block report delivery, the same "log the fact, don't gate on it" posture as gemini_usage_log.
+// ON CONFLICT DO NOTHING rather than erroring: the fallback-report code path in server.ts can call
+// this after already having called it once for the same reportId in rare retry scenarios, and the
+// first write is the one worth keeping (closer to the moment of submission).
+export async function saveGeneratedReportInputs(data: GeneratedReportInput): Promise<void> {
+  await withDb(async (sql) => {
+    await sql`
+      INSERT INTO generated_reports (
+        report_id, clerk_user_id, formatted_address, city, state, zip_code, county,
+        declared_property_type, declared_year_built, declared_unit_number, attested_accurate,
+        ip_address, user_agent
+      ) VALUES (
+        ${data.reportId}, ${data.clerkUserId}, ${data.formattedAddress}, ${data.city}, ${data.state},
+        ${data.zipCode}, ${data.county}, ${data.declaredPropertyType}, ${data.declaredYearBuilt},
+        ${data.declaredUnitNumber}, ${data.attestedAccurate}, ${data.ipAddress}, ${data.userAgent}
+      )
+      ON CONFLICT (report_id) DO NOTHING
+    `;
+  });
 }
 
 export async function createTransaction(data: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>): Promise<Transaction> {

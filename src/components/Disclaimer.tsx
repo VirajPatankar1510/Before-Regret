@@ -213,6 +213,18 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
                 could reach did not record one.
               </p>
               <p>
+                Some report fields -- including the declared property type, year built, and unit
+                number -- are supplied by you when you request a report. We have no live
+                integration with any county assessor or permitting authority and do not
+                independently verify these fields before a report is generated. <strong>The
+                accuracy of anything derived from those fields is bounded by the accuracy of what
+                you told us.</strong> A report built from an inaccurate or false self-declared
+                input reflects that input, not an error on our part, and cannot be relied on --
+                or disputed -- as though we had verified it independently. See section 3.5 and 3.6
+                of our{' '}
+                <a href="/terms" className="text-blue-600 hover:underline font-bold">Terms of Service</a>.
+              </p>
+              <p>
                 Using this website does not create any advisory, fiduciary, agency, brokerage, or
                 professional relationship between you and Atmostellar. We do not represent you in
                 any transaction and have no duty to act in your interest in one.

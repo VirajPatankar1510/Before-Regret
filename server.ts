@@ -51,8 +51,10 @@ import {
   updateTransaction,
   getTransaction,
   isDbConfigured,
-  withDb
+  withDb,
+  saveGeneratedReportInputs
 } from "./src/server/db.js";
+import { isClerkBackendConfigured } from "./src/server/clerkAuth.js";
 
 dotenv.config();
 
@@ -121,6 +123,27 @@ export async function createApp() {
 
   function requestIp(req: Request): string {
     return String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim();
+  }
+
+  // Best-effort identity capture for generate-report, NOT a gate -- unlike requireVerifiedUser
+  // (clerkAuth.ts), a missing, expired, or unverifiable token here never blocks the request. The
+  // client always requires Clerk sign-in before this endpoint is reachable at all (see
+  // ReportGatingModal.tsx), but the endpoint itself has never enforced that server-side, and
+  // adding a hard requirement now would 401 every existing report-generation caller that doesn't
+  // yet send the header. This only upgrades the audit row saved by saveGeneratedReportInputs from
+  // anonymous to attributable when a valid token happens to be present.
+  async function optionalVerifiedUserId(req: Request): Promise<string | null> {
+    if (!isClerkBackendConfigured()) return null;
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    if (!token) return null;
+    try {
+      const { verifyToken } = await import('@clerk/backend');
+      const verified = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY as string });
+      return verified.sub;
+    } catch {
+      return null;
+    }
   }
 
   // Step 1 of 2: password only. Deliberately does NOT set the real session cookie -- a correct
@@ -600,7 +623,7 @@ export async function createApp() {
 
   // 2. Full AI Property Report Generation Endpoint (Gemini 3.6 Flash)
   app.post(["/api/property/generate-report", "/api/generate-report"], async (req, res) => {
-    const { address, city, state, zipCode, county, propertyType, usefulSourcesCount, price, declaredPropertyType, unitNumber, yearBuilt } = req.body;
+    const { address, city, state, zipCode, county, propertyType, usefulSourcesCount, price, declaredPropertyType, unitNumber, yearBuilt, attestedAccurate } = req.body;
 
     const fullAddr = formattedAddress(address, city, state, zipCode);
 
@@ -638,7 +661,7 @@ export async function createApp() {
     // threaded through to the attachSponsoredVendorsTo*Findings pair and buildInspectionPrioritiesForReport below
     // -- avoids querying per finding / per inspection-priority item (up to ~14 round trips
     // otherwise). See fetchActiveZipVendors in src/server/zipAdsApi.ts.
-    const [liveSeismicFinding, liveNeighborhoodFinding, zipVendorMap] = await Promise.all([
+    const [liveSeismicFinding, liveNeighborhoodFinding, zipVendorMap, requesterClerkUserId] = await Promise.all([
       fetchSeismicHazardFinding(gateResult.layer1.lat as number, gateResult.layer1.lon as number),
       fetchNeighborhoodContextFinding(
         gateResult.layer1.lat as number,
@@ -646,7 +669,32 @@ export async function createApp() {
         typeof yearBuilt === 'number' ? yearBuilt : parseInt(String(yearBuilt ?? ''), 10) || null
       ),
       fetchActiveZipVendors(resolvedMeta.zipCode),
+      optionalVerifiedUserId(req),
     ]);
+
+    // Best-effort audit record of exactly what was declared for this report (see
+    // saveGeneratedReportInputs in db.ts and Terms 3.5-3.6) -- fire-and-forget, same "log the
+    // fact, don't gate on it" posture as gemini_usage_log and the capacityCheck reservation above.
+    // Called once here, before either the Gemini-success or fallback path below, so both are
+    // covered without duplicating the call at each reportsStore.set() site.
+    const persistDeclaredInputs = (reportId: string) => {
+      if (!isDbConfigured()) return;
+      void saveGeneratedReportInputs({
+        reportId,
+        clerkUserId: requesterClerkUserId,
+        formattedAddress: resolvedMeta.formattedAddress,
+        city: resolvedMeta.city || null,
+        state: resolvedMeta.state || null,
+        zipCode: resolvedMeta.zipCode || null,
+        county: resolvedMeta.county || null,
+        declaredPropertyType: declaredPropertyType || null,
+        declaredYearBuilt: typeof yearBuilt === 'number' ? yearBuilt : parseInt(String(yearBuilt ?? ''), 10) || null,
+        declaredUnitNumber: unitNumber || null,
+        attestedAccurate: attestedAccurate === true,
+        ipAddress: requestIp(req),
+        userAgent: (req.headers['user-agent'] as string) || null,
+      }).catch((err) => console.error('[generate-report] Failed to persist declared inputs:', err));
+    };
 
     const fallbackReport = generateStructuredPropertyReport(
       resolvedMeta.formattedAddress,
@@ -996,6 +1044,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
           cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
         }
         reportsStore.set(cleanedReport.id, cleanedReport);
+        persistDeclaredInputs(cleanedReport.id);
 
         res.json({
           success: true,
@@ -1021,6 +1070,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
       cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     }
     reportsStore.set(cleanedReport.id, cleanedReport);
+    persistDeclaredInputs(cleanedReport.id);
 
     // Fallback high-quality structured decision guide report
     res.json({
