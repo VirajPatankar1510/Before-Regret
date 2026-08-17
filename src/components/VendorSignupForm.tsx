@@ -300,7 +300,9 @@ export const VendorSignupForm: React.FC = () => {
               <span>
                 I confirm the details above are accurate, that I'm authorized to advertise this
                 business, and that I hold any licenses and insurance my trade requires. I agree to the{' '}
-                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>.
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>,
+                which include a binding individual arbitration agreement and class action waiver
+                (Section 7) that I may opt out of within 30 days.
               </span>
             </label>
 

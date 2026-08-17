@@ -249,7 +249,9 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
               <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>{' '}
               and{' '}
               <a href="/disclaimer" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Disclaimer</a>.
-              Reports are research material, not a home inspection or professional advice.
+              Reports are research material, not a home inspection or professional advice. The Terms
+              include a binding arbitration agreement and class action waiver you may opt out of
+              within 30 days.
               <br />
               No credit card required for your first report. Additional reports are $14.99 each.
             </p>
@@ -317,6 +319,8 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
                 <a href="/disclaimer" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Disclaimer</a>,
                 and understand this report is research material assembled from public data -- not a
                 home inspection, appraisal, or professional advice -- and that all sales are final.
+                The Terms include a binding individual arbitration agreement and class action waiver
+                (Section 7), which I may opt out of within 30 days.
               </span>
             </label>
 

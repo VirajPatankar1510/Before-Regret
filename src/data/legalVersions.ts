@@ -12,4 +12,8 @@
 // when". Bump this string in the SAME commit that changes the substance of TermsConditions.tsx,
 // and update "Last Revised" there to match -- a version that silently lags the text it names is
 // worse than no version at all, because it attests to the wrong document.
-export const TERMS_VERSION = '2026-08-03';
+// 2026-08-17: added Section 7 (binding individual arbitration + class action waiver, FAA-governed,
+// with a 30-day opt-out). A substantive change, hence a new version rather than an edit in place --
+// anyone whose acceptance is on file against an earlier string did NOT agree to arbitration, and
+// this constant is what makes that distinction provable per-user.
+export const TERMS_VERSION = '2026-08-17';
