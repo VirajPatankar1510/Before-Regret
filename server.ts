@@ -36,6 +36,7 @@ import { registerCountyComparisonRoutes } from "./src/server/countyComparisonApi
 import { registerCountyInsuranceRoutes } from "./src/server/countyInsuranceApi.js";
 import { registerDefectReferenceRoutes } from "./src/server/defectReferenceApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
+import { registerFunnelRoutes } from "./src/server/funnelApi.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
 import { REPORT_GENERATION_MODELS, generateContentWithFallback } from "./src/server/geminiModel.js";
 import { logGeminiUsage } from "./src/server/geminiUsageTracker.js";
@@ -293,6 +294,7 @@ export async function createApp() {
   // only caller is your own frontend. This is the version meant to be published, crawled, and
   // linked from llms.txt and robots.txt. See src/server/publicApiV1.ts.
   registerPublicApiV1Routes(app);
+  registerFunnelRoutes(app);
 
   // Master Sitemap Index Endpoint (/sitemap.xml and /sitemaps/sitemap-index.xml)
   app.get(["/sitemap.xml", "/sitemaps/sitemap-index.xml"], async (req, res) => {
@@ -624,7 +626,7 @@ export async function createApp() {
 
   // 2. Full AI Property Report Generation Endpoint (Gemini 3.6 Flash)
   app.post(["/api/property/generate-report", "/api/generate-report"], async (req, res) => {
-    const { address, city, state, zipCode, county, propertyType, usefulSourcesCount, price, declaredPropertyType, unitNumber, yearBuilt, attestedAccurate } = req.body;
+    const { address, city, state, zipCode, county, propertyType, usefulSourcesCount, price, declaredPropertyType, unitNumber, yearBuilt, attestedAccurate, isPaid } = req.body;
 
     const fullAddr = formattedAddress(address, city, state, zipCode);
 
@@ -695,6 +697,12 @@ export async function createApp() {
         declaredYearBuilt: typeof yearBuilt === 'number' ? yearBuilt : parseInt(String(yearBuilt ?? ''), 10) || null,
         declaredUnitNumber: unitNumber || null,
         attestedAccurate: attestedAccurate === true,
+        // isPaid is what the client reports, but price is the corroborating figure -- a paid report
+        // is only ever sent with price 14.99 (see ReportGatingModal's PAYMENT_INTERCEPT path), so
+        // treating a nonzero price as paid too means a client that sends one field and not the
+        // other still lands in the right bucket rather than silently undercounting revenue.
+        isPaid: isPaid === true || Number(price) > 0,
+        priceUsd: Number.isFinite(Number(price)) ? Number(price) : null,
         ipAddress: requestIp(req),
         userAgent: (req.headers['user-agent'] as string) || null,
       }).catch((err) => console.error('[generate-report] Failed to persist declared inputs:', err));
