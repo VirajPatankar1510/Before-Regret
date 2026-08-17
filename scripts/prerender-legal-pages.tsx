@@ -8,6 +8,7 @@ import { TermsConditions } from '../src/components/TermsConditions';
 import { PrivacyPolicy } from '../src/components/PrivacyPolicy';
 import { RefundPolicy } from '../src/components/RefundPolicy';
 import { Disclaimer } from '../src/components/Disclaimer';
+import { Accessibility } from '../src/components/Accessibility';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 import type { PrerenderedRouteKey } from '../src/routeChunks.js';
 
@@ -116,6 +117,15 @@ const DISCLAIMER_BREADCRUMB: Record<string, any> = {
   ],
 };
 
+const ACCESSIBILITY_BREADCRUMB: Record<string, any> = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Accessibility Statement', item: 'https://www.beforeregret.com/accessibility/' },
+  ],
+};
+
 const PAGES: LegalPageConfig[] = [
   {
     outputPath: 'about',
@@ -199,6 +209,20 @@ const PAGES: LegalPageConfig[] = [
     jsonLd: [DISCLAIMER_BREADCRUMB],
     Component: Disclaimer,
     routeKey: 'disclaimer',
+  },
+  {
+    // The one page in this file that is deliberately indexable. The rest are noindex because they
+    // are contract text nobody searches for; an accessibility statement is the opposite -- it is
+    // what someone looks for when they need to report a barrier, and a demand-letter recipient's
+    // first question is whether it was publicly findable.
+    outputPath: 'accessibility',
+    title: 'Accessibility Statement | BeforeRegret',
+    description: 'How BeforeRegret approaches accessibility, what is in place, known limitations, and how to report a barrier.',
+    canonicalUrl: 'https://www.beforeregret.com/accessibility/',
+    robots: 'index, follow',
+    jsonLd: [ACCESSIBILITY_BREADCRUMB],
+    Component: Accessibility,
+    routeKey: 'accessibility',
   },
   {
     outputPath: 'refunds',

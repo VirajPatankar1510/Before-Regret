@@ -525,6 +525,25 @@ export async function saveGeneratedReportInputs(data: GeneratedReportInput): Pro
   });
 }
 
+// The Privacy Policy commits to deleting report request records after three years ("Report request
+// records" in section 7). That sentence is only true if something actually enforces it -- an
+// unenforced retention promise is the same category of misstatement as having no disclosure at all,
+// just harder to notice. This is that enforcement. Deliberately a single set-based DELETE rather
+// than a batched loop: the table gains at most one row per generated report, so the daily delete
+// volume is tiny and there is no long-running-transaction concern to design around.
+export const REPORT_REQUEST_RETENTION_YEARS = 3;
+
+export async function purgeExpiredReportRequestRecords(): Promise<number> {
+  return withDb(async (sql) => {
+    const rows = await sql`
+      DELETE FROM generated_reports
+      WHERE created_at < now() - ${`${REPORT_REQUEST_RETENTION_YEARS} years`}::interval
+      RETURNING id
+    `;
+    return rows.length;
+  });
+}
+
 export async function createTransaction(data: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>): Promise<Transaction> {
   return withDb(async (sql) => {
     const result = await sql`

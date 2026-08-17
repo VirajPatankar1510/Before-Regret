@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from 'express';
-import { withDb, isDbConfigured } from './db.js';
+import { withDb, isDbConfigured, purgeExpiredReportRequestRecords } from './db.js';
 import { hasValidSession } from './adminAuth.js';
 import { isQuotaError, generateContentWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
@@ -114,6 +114,20 @@ export function registerCountyEventsRoutes(app: Express) {
       res.status(503).json({ success: false, error: 'The database is not configured yet.' });
       return;
     }
+
+    // Data-retention enforcement, deliberately piggybacked on this already-scheduled daily cron
+    // rather than given its own vercel.json entry: cron count is a plan-limited resource, and this
+    // route is already guaranteed to run once a day. Runs BEFORE the GEMINI_API_KEY check below --
+    // the Privacy Policy's three-year deletion promise (see purgeExpiredReportRequestRecords in
+    // db.ts) must be kept whether or not AI generation happens to be configured, and that check
+    // returns 503 and aborts the handler. Fire-and-forget with its own catch for the same reason
+    // the write side is: a failed purge must be visible in the log, not fatal to the cron run.
+    void purgeExpiredReportRequestRecords()
+      .then((deleted) => {
+        if (deleted > 0) console.log(`[retention] Purged ${deleted} report request record(s) past the retention window.`);
+      })
+      .catch((err) => console.error('[retention] Failed to purge expired report request records:', err));
+
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       res.status(503).json({ success: false, error: 'AI generation is not configured on this server (missing GEMINI_API_KEY).' });

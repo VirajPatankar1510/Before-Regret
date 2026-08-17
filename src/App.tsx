@@ -62,6 +62,7 @@ const TermsConditions = lazy(() => routeChunkLoaders.terms().then((m) => ({ defa
 const PrivacyPolicy = lazy(() => routeChunkLoaders.privacy().then((m) => ({ default: m.PrivacyPolicy })));
 const RefundPolicy = lazy(() => routeChunkLoaders.refunds().then((m) => ({ default: m.RefundPolicy })));
 const Disclaimer = lazy(() => routeChunkLoaders.disclaimer().then((m) => ({ default: m.Disclaimer })));
+const Accessibility = lazy(() => routeChunkLoaders.accessibility().then((m) => ({ default: m.Accessibility })));
 
 /** Shown only while a split chunk above is in flight -- never on a prerendered landing page. */
 const RouteChunkFallback: React.FC = () => (
@@ -147,7 +148,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
     guideSlug?: string;
     countySlug?: string;
   }>({ type: 'none' });
@@ -233,6 +234,12 @@ export function App() {
 
     if (path === '/disclaimer/' || path.startsWith('/disclaimer')) {
       setPseoRoute({ type: 'disclaimer' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    if (path === '/accessibility/' || path.startsWith('/accessibility')) {
+      setPseoRoute({ type: 'accessibility' });
       setCurrentStep('PSEO');
       return true;
     }
@@ -599,6 +606,25 @@ export function App() {
             'itemListElement': [
               { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
               { '@type': 'ListItem', 'position': 2, 'name': 'Disclaimer', 'item': 'https://www.beforeregret.com/disclaimer/' }
+            ]
+          }
+        ]
+      });
+    } else if (pseoRoute.type === 'accessibility') {
+      // indexable, unlike the other legal pages: the point of an accessibility statement is that
+      // someone looking for how to report a barrier can actually find it, including via search.
+      applyHeadSeo({
+        title: 'Accessibility Statement | BeforeRegret',
+        description: 'How BeforeRegret approaches accessibility, what is in place, known limitations, and how to report a barrier.',
+        canonicalUrl: 'https://www.beforeregret.com/accessibility/',
+        robotsDirective: 'index, follow',
+        jsonLdSchema: [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Accessibility Statement', 'item': 'https://www.beforeregret.com/accessibility/' }
             ]
           }
         ]
@@ -974,6 +1000,9 @@ export function App() {
             )}
             {pseoRoute.type === 'disclaimer' && (
               <Disclaimer onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'accessibility' && (
+              <Accessibility onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'paymentSuccess' && (
               <PaymentSuccess />
