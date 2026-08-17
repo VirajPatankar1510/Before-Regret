@@ -94,17 +94,30 @@ export const VendorSignupForm: React.FC = () => {
     addZip(zipInput);
   };
 
-  // Prefill from MyAdsPanel.tsx's Expired-section "Buy again" -- a lapsed bundle's ZIPs may have
-  // been bought by someone else in the meantime, so every stashed ZIP is re-checked for real here
-  // rather than trusted; only the ones still open get carried into the selection, up to
-  // ZIPS_PER_BUNDLE. Same stash-then-clear pattern as GuideAdsCheckout.tsx's renewal prefill.
+  // Two distinct reasons a vendor can land back on this page with the browser having done a full
+  // navigation away and back -- both wipe every useState in this component, since a real navigation
+  // (not client-side routing) remounts the whole SPA from scratch:
+  //
+  // 1. RENEW_STASH_KEY -- MyAdsPanel.tsx's Expired-section "Buy again".
+  // 2. AUTH_STASH_KEY -- clicking "Sign In / Sign Up" below. openSignIn()'s completion redirect
+  //    (forceRedirectUrl/afterSignInUrl in AuthContext.tsx) navigates the real browser, including
+  //    for an in-modal email/password signup, not just an OAuth provider hop -- so this is not an
+  //    edge case, it is what happens on the ordinary path every time. Before this stash existed, a
+  //    vendor who picked all 3 ZIPs and then signed up came back to a blank form and had to redo the
+  //    availability check from scratch, silently -- nothing here failed, so there was nothing to
+  //    show an error for, which is what made it read as a bug rather than a crash.
+  //
+  // Both are re-checked for real via addZip() rather than trusted, same reasoning either way: a ZIP
+  // can be bought by someone else in the time the vendor spent at Clerk, so only the ones still open
+  // get carried into the selection. Checked in this order (auth stash first) because it reflects the
+  // action the vendor took most recently if, somehow, both were ever present at once.
+  const AUTH_STASH_KEY = 'br_pending_zip_signup';
+  const RENEW_STASH_KEY = 'br_renew_zip_ad';
+
   useEffect(() => {
-    const raw = sessionStorage.getItem('br_renew_zip_ad');
-    if (!raw) return;
-    sessionStorage.removeItem('br_renew_zip_ad');
-    try {
+    const restore = (raw: string) => {
       const stash = JSON.parse(raw) as {
-        zipCodes: string[]; tradeCategory: string; businessName: string; phone: string; website: string | null;
+        zipCodes: string[]; tradeCategory: string; businessName?: string; phone?: string; website?: string | null;
         licenceNumber?: string | null;
       };
       setTradeCategory(stash.tradeCategory || '');
@@ -117,7 +130,17 @@ export const VendorSignupForm: React.FC = () => {
           await addZip(zip, stash.tradeCategory);
         }
       })();
-    } catch { /* malformed stash, ignore */ }
+    };
+    const authRaw = sessionStorage.getItem(AUTH_STASH_KEY);
+    if (authRaw) {
+      sessionStorage.removeItem(AUTH_STASH_KEY);
+      try { restore(authRaw); } catch { /* malformed stash, ignore */ }
+      return;
+    }
+    const renewRaw = sessionStorage.getItem(RENEW_STASH_KEY);
+    if (!renewRaw) return;
+    sessionStorage.removeItem(RENEW_STASH_KEY);
+    try { restore(renewRaw); } catch { /* malformed stash, ignore */ }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -178,6 +201,15 @@ export const VendorSignupForm: React.FC = () => {
   };
 
   const ready = selectedZips.length === ZIPS_PER_BUNDLE;
+
+  // This button only ever renders once `ready` is true (see below), so tradeCategory and all
+  // ZIPS_PER_BUNDLE zips are guaranteed non-empty here -- nothing else in this form can be filled
+  // in yet, since the business-details fields are themselves gated behind `user` being truthy.
+  // See the restore effect above for why this stash exists at all.
+  const handleSignInClick = () => {
+    sessionStorage.setItem(AUTH_STASH_KEY, JSON.stringify({ zipCodes: selectedZips, tradeCategory }));
+    triggerClerkSignIn();
+  };
 
   return (
     <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
@@ -264,7 +296,7 @@ export const VendorSignupForm: React.FC = () => {
           </p>
           <button
             type="button"
-            onClick={() => triggerClerkSignIn()}
+            onClick={handleSignInClick}
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition-all cursor-pointer"
           >
             <Lock className="w-4 h-4" />
