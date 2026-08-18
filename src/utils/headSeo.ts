@@ -59,8 +59,20 @@ export function applyHeadSeo({
   setMetaTag('name', 'twitter:description', description);
   setMetaTag('name', 'twitter:image', ogImage);
 
-  // Remove existing dynamic JSON-LD scripts
-  const existingScripts = document.querySelectorAll('script[type="application/ld+json"][data-seo="dynamic"]');
+  // Remove existing JSON-LD scripts before re-injecting: both our own previously-injected
+  // "dynamic" scripts AND the "prerendered" block the prerender scripts (prerender-guides /
+  // -counties / -legal-pages / -advertise / -homepage) bake into the static HTML.
+  //
+  // The prerendered removal is load-bearing: without it, a guide or county page ends up with TWO
+  // identical Article/BreadcrumbList(/FAQPage) groups in the *rendered* DOM -- the prerendered one
+  // a JS-less crawler reads, plus this identical dynamic one appended on mount -- because Googlebot
+  // executes JS and sees both. Raw static HTML is unaffected (still exactly one page-specific block
+  // until React boots), so non-JS crawlers keep their block; JS-rendering crawlers now see exactly
+  // one. The global Organization/WebSite block carries no data-seo attribute and is intentionally
+  // left in place by this selector.
+  const existingScripts = document.querySelectorAll(
+    'script[type="application/ld+json"][data-seo="dynamic"], script[type="application/ld+json"][data-seo="prerendered"]'
+  );
   existingScripts.forEach(el => el.remove());
 
   // Inject JSON-LD Schema if provided
