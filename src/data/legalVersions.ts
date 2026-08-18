@@ -25,4 +25,29 @@
 // that is only keepable BECAUSE this constant is recorded per acceptance. Nearly every change is
 // a narrowing in the user's favour, but 9's modification clause now binds the company, so it is a
 // substantive revision either way and gets its own version string.
-export const TERMS_VERSION = '2026-08-18';
+// 2026-08-18.2: reworked Section 7 after a clause-by-clause review of the arbitration and
+// choice-of-law provisions. Renumbered it (the 7.2A stopgap was already compounding), and:
+//   - 7.5  Atmostellar pays AAA fees for consumer claims <= $10k. A ~$225 consumer filing fee
+//          against a $14.99 product is a deterrent rather than a forum, which is the
+//          effective-vindication problem in its plainest form.
+//   - 7.6  Atmostellar pays any award or judgment within 30 days without the user having to
+//          enforce it. This is the important one. 8.4 says there is no US entity and no US
+//          assets, so before this paragraph a consumer who WON had to enforce in India -- New
+//          York Convention for an award, fresh suit under CPC s.13 for a US judgment, since the
+//          US is not a s.44A reciprocating territory. Either costs multiples of the 6.1 cap. An
+//          uncollectable remedy is the substantive half of unconscionability and would have put
+//          the whole of Section 7 at risk.
+//   - 7.7  reconciled against 7.8: a claim excluded under 7.8 no longer trips the
+//          non-severability trigger. Those two paragraphs previously gave opposite answers for a
+//          mixed claim seeking damages plus public injunctive relief -- a defect introduced by
+//          the 2026-08-18 revision's own McGill carve-out.
+//   - 7.4  the custom mass-arbitration protocol is gone, replaced by one sentence adopting the
+//          AAA Mass Arbitration Supplementary Rules. See the deletion note in
+//          TermsConditions.tsx for why it was net-negative at this site's size.
+//   - 7.9  now states that opt-outs are recorded -- newly true, see arbitration_opt_outs in
+//          src/server/db.ts. Do not weaken that sentence while the table exists, and do not drop
+//          the table while the sentence does.
+// Every change here either binds Atmostellar (7.5, 7.6) or widens a user's options (7.8), so
+// nobody is disadvantaged by the new version -- but they are substantive promises and must be
+// attributable to a revision, hence a distinct string rather than editing 2026-08-18 in place.
+export const TERMS_VERSION = '2026-08-18.2';
