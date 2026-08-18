@@ -9,6 +9,7 @@ import { PricingSection } from '../src/components/home/PricingSection';
 import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
 import { HOMEPAGE_FAQS } from '../src/components/home/FaqSection';
 import { GuideCardsSection } from '../src/components/home/GuideCardsSection';
+import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { isDbConfigured } from '../src/server/db.js';
 import { loadHomepageData } from '../src/server/homepageApi.js';
 import { HomeData, buildGuideClusters, pickResearchPages } from '../src/utils/homeContent.js';
@@ -140,6 +141,19 @@ function HomeStaticBody({ data }: { data: HomeData }) {
       </section>
 
       <ClosingCtaSection onScrollToSearch={noop} />
+
+      {/* This link -- specifically /counties/, and every guide/legal link alongside it -- was
+          entirely absent from the homepage's static HTML before this. Real Search Console data
+          found 106 URLs stuck in "Discovered - currently not indexed," heavily concentrated in the
+          county section, which had no path in from the one page every crawl of this domain starts
+          at. See StaticFooterLinks.tsx for the full story -- this was a known, considered gap in
+          the code ("no SEO cost") that real index-coverage data proved wrong. */}
+      <StaticFooterLinks
+        guides={data.articles
+          .filter((a) => (a.articleType ?? 'guide') === 'guide')
+          .slice(0, 4)
+          .map((a): FooterGuideSummary => ({ slug: a.slug, title: a.title }))}
+      />
     </div>
   );
 }
