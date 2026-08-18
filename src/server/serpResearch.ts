@@ -32,29 +32,39 @@
 
 // QUOTA, and why this route needs its own message instead of the shared per-model one.
 //
-// Google Search grounding is metered SEPARATELY from the per-model request allowance, and the two
-// run out independently. Verified directly against the REST API, same key, same minute:
+// This was misdiagnosed twice before the measurements below were taken, so the reasoning is
+// recorded in full rather than the conclusion alone.
 //
-//   gemini-3.5-flash, plain request                 -> 200
-//   gemini-3.5-flash, same request + google_search  -> 429
-//   gemini-3.6-flash, plain request                 -> 200
-//   gemini-3.6-flash, same request + google_search  -> 429
-//   gemini-2.5-flash, plain request                 -> 429, and this one names its quota:
-//       GenerateRequestsPerDayPerProjectPerModel-FreeTier, quotaValue "20"
+// A 429 on a grounded request has TWO distinct causes that look identical from the status code:
 //
-// So the model-quota 429 arrives with a quotaMetric/quotaValue naming exactly what was hit, while
-// the grounding 429 arrives with no violation details at all -- indistinguishable from the other
-// by status code alone, and pointing at a different, project-wide allowance.
+//   1. The model's own daily cap is spent. Arrives WITH a QuotaFailure detail naming it exactly
+//      (GenerateRequestsPerDayPerProjectPerModel-FreeTier, quotaValue "20").
+//   2. The model cannot do grounded search on this project at all. Arrives with NO detail.
 //
-// The practical consequence, and the reason this is written down: the admin panel's "X of 20 left"
-// counters track model requests, so when the grounding allowance is what's exhausted, this feature
-// fails hard while those counters still show plenty remaining and never move. That is not a bug in
-// the counters -- a grounded call rejected at the quota gate never reaches the model, spends no
-// model quota, and correctly logs nothing. Reusing the generic "quota used up on every fallback
-// model" copy here sends someone straight to those counters to check a number that cannot explain
-// what they are seeing. Confirmed live: that is exactly what happened.
+// Measured against the REST API, all within one minute:
+//
+//   gemini-2.5-flash  plain -> 429 WITH the quotaValue "20" detail (cap genuinely spent)
+//   gemini-3.5-flash  plain -> 200   |  + google_search -> 429, no detail
+//   gemini-3.6-flash  plain -> 200   |  + google_search -> 429, no detail
+//
+// Case 2 is what the 3.x models are hitting, and it is not exhaustion: tool-name spelling was
+// ruled out (google_search / googleSearch / googleSearchRetrieval behave identically), and the
+// first grounded request ever sent to 3.5-flash was already a 429 -- when exactly one grounded
+// call had been made project-wide, far too few to drain any pool. Grounded requests to
+// gemini-2.5-flash worked repeatedly on the same key until its own 20/day ran out.
+//
+// So the accurate statement is NOT "the grounding allowance is used up" -- an earlier version of
+// this message said exactly that, and it was wrong. It is: grounded search runs only on the models
+// in SEARCH_GROUNDING_MODELS, and those models' own daily caps are what gate this feature.
+//
+// The consequence worth keeping in the copy: the admin panel's "X of 20 left" bars are per model,
+// so the bar for a model that cannot ground at all is irrelevant here, and the only bar that
+// matters is the one for the grounding model. Someone reading "15 left" off the wrong bar
+// concludes the app is broken.
+import { SEARCH_GROUNDING_MODELS } from './geminiModel.js';
+
 export const SERP_RESEARCH_QUOTA_EXHAUSTED_MESSAGE =
-  "Google Search grounding's daily free-tier allowance is used up. That's a separate, project-wide limit from the per-model counters below -- those can still show calls remaining while this is exhausted, because a grounded call rejected at the quota gate never reaches the model. Ordinary Generate (no search) may still work. Resets tomorrow, or enable billing on the Gemini API project to remove the cap.";
+  `Out of daily quota on the only model that can run a grounded search here (${SEARCH_GROUNDING_MODELS.join(', ')}). Live search doesn't work on every model -- the others return the same 429 for a grounded request even with model quota to spare, so only that model's own bar below is the one that matters for this button. Ordinary Generate (no search) still works on the other models. Resets at midnight Pacific, or enable billing on the Gemini API project to remove the cap.`;
 
 export const SERP_RESEARCH_SYSTEM_INSTRUCTION = `You are a search strategist doing competitive reconnaissance for a US property-research publisher before it writes an article. You are not writing the article. You are reporting what is already ranking, what answer is already winning, and where the specific, exploitable gaps are.
 

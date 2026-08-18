@@ -65,6 +65,51 @@ export const CONTENT_GENERATION_MODELS: string[] = CONTENT_GENERATION_DEDICATED_
   ? CONTENT_GENERATION_DEDICATED_MODELS
   : [...CONTENT_GENERATION_DEDICATED_MODELS, GEMINI_MODEL];
 
+// SEARCH_GROUNDING_MODELS: the models that can actually run a Google Search grounded request on
+// THIS project. Deliberately a separate, much shorter list than CONTENT_GENERATION_MODELS above,
+// because grounding support is not a property of the API -- it varies by model and tier, and the
+// failure mode when a model lacks it is indistinguishable from quota exhaustion.
+//
+// Measured directly against the REST API, all within the same minute:
+//
+//   gemini-2.5-flash  plain -> 429 (QuotaFailure: GenerateRequestsPerDayPerProjectPerModel
+//                                   -FreeTier, quotaValue "20" -- its own daily cap, genuinely spent)
+//   gemini-3.5-flash  plain -> 200      | + google_search -> 429, NO quota detail
+//   gemini-3.6-flash  plain -> 200      | + google_search -> 429, NO quota detail
+//
+// The 3.x rejections are not exhaustion. Three independent lines of evidence:
+//
+//   - Tool-name spelling is not the cause: google_search, googleSearch and googleSearchRetrieval
+//     all behave identically.
+//   - The very first grounded request ever sent to gemini-3.5-flash was already a 429, at a point
+//     when exactly ONE grounded call had been made across the whole project. No pool was drained.
+//   - Decisive: gemini-3.7-flash, gemini-3-flash-preview, gemini-3.5-flash-lite and
+//     gemini-flash-lite-latest -- models this project had never called at all that day, so each
+//     holding a full untouched allowance -- every one returned 429 on a grounded request, again
+//     with no quota detail. A model with full quota cannot be out of quota.
+//
+// Meanwhile grounded requests on gemini-2.5-flash succeeded repeatedly on the same key until its
+// own 20/day model cap ran out (that rejection DID carry the QuotaFailure detail). The conclusion
+// the evidence supports: on this free-tier project, grounding works on 2.5-flash and is simply
+// unavailable across the 3.x family.
+//
+// Practical consequence worth knowing: live search research is capped at 2.5-flash's 20 calls/day,
+// and article generation can eat into the same pool -- though only after 3.5/3.6-flash are
+// themselves exhausted, since those lead the content cascade and handle generation fine.
+//
+// Why this list exists rather than reusing the content cascade: sending a grounded request to a
+// model that cannot ground it burns a round trip to return a 429 that means "not supported" while
+// reading as "you're out of quota" -- which is exactly how this was misdiagnosed twice, once as a
+// network blip and once as an exhausted grounding allowance. Ordering also matters: with 3.5-flash
+// first in the content cascade, every research call started with a guaranteed failure.
+//
+// GEMINI_GROUNDING_MODELS overrides it. Worth reaching for the moment Google enables grounding on
+// the 3.x models or billing is enabled on the project -- this list is a snapshot of what was true
+// when measured, not a permanent fact about the API.
+export const SEARCH_GROUNDING_MODELS: string[] = process.env.GEMINI_GROUNDING_MODELS
+  ? process.env.GEMINI_GROUNDING_MODELS.split(',').map((m) => m.trim()).filter(Boolean)
+  : ['gemini-2.5-flash'];
+
 /**
  * True when an error from @google/genai is a quota-exhaustion 429 rather than a transient fault.
  * Worth distinguishing because the two need opposite advice: a transient error is worth retrying

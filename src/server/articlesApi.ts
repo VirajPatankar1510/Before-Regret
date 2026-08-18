@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
 import { buildArticlePrompt } from './articleGenerator.js';
-import { GEMINI_MODEL, CONTENT_GENERATION_MODELS, REPORT_GENERATION_MODELS, DAILY_FREE_TIER_LIMIT_PER_MODEL, isQuotaError, EmptyModelResponseError, generateContentWithFallback, generateContentStreamWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
+import { GEMINI_MODEL, CONTENT_GENERATION_MODELS, REPORT_GENERATION_MODELS, SEARCH_GROUNDING_MODELS, DAILY_FREE_TIER_LIMIT_PER_MODEL, isQuotaError, EmptyModelResponseError, generateContentWithFallback, generateContentStreamWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
 import { SERP_RESEARCH_SYSTEM_INSTRUCTION, SERP_RESEARCH_QUOTA_EXHAUSTED_MESSAGE, buildSerpResearchPrompt, extractGroundingFacts } from './serpResearch.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
 import type { GenerateContentResponseUsageMetadata } from '@google/genai';
@@ -214,7 +214,13 @@ export function registerArticleRoutes(app: Express) {
               tools: [{ googleSearch: {} }],
             },
           },
-          CONTENT_GENERATION_MODELS,
+          // NOT CONTENT_GENERATION_MODELS -- see SEARCH_GROUNDING_MODELS in geminiModel.ts. Most of
+          // the content cascade cannot run a grounded request on this project at all, and answers
+          // one with a 429 that reads exactly like quota exhaustion. Cascading through it spent a
+          // round trip per model collecting failures that mean "not supported" before reaching the
+          // one model that works -- and, because the content cascade leads with gemini-3.5-flash,
+          // every single research call began with a guaranteed failure.
+          SEARCH_GROUNDING_MODELS,
           (model, err) => {
             if (err instanceof EmptyModelResponseError) emptyResponseModels.push(model);
             else if (isQuotaError(err)) quotaExhaustedModels.push(model);
@@ -449,6 +455,9 @@ export function registerArticleRoutes(app: Express) {
           allTime: { tokens: Number(row.all_time_tokens), costUsd: row.all_time_cost_usd === null ? null : Number(row.all_time_cost_usd), calls: Number(row.all_time_calls) },
           reportModel: GEMINI_MODEL,
           contentModels: CONTENT_GENERATION_MODELS,
+          // Which model(s) the "Run live search research" button can actually use, so the panel can
+          // point at the one bar that gates it instead of leaving someone to read the wrong one.
+          groundingModels: SEARCH_GROUNDING_MODELS,
           quotaByModel,
           publishedArticleCount,
           recent: (recent as unknown as Array<{ created_at: string; source: string; model: string; total_tokens: number; estimated_cost_usd: number | null }>),

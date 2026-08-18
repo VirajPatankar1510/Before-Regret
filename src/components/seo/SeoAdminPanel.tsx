@@ -88,6 +88,11 @@ interface GeminiUsageSummary {
   // free property report; contentModels is the cascading chain every other Gemini call uses.
   reportModel: string;
   contentModels: string[];
+  // Models that can actually run a grounded Google Search request -- a much shorter list than
+  // contentModels, because most of that cascade can't, and rejects a grounded request with a 429
+  // that is indistinguishable from quota exhaustion. Optional so an older cached response (or a
+  // server not yet redeployed) renders without it rather than throwing.
+  groundingModels?: string[];
   // Per-model "calls used today" against the free tier's 20/day cap, in priority order (report's
   // own model first) -- see DAILY_FREE_TIER_LIMIT_PER_MODEL in geminiModel.ts for the caveat that
   // this is computed from this app's own logged calls, not read back from a live quota API.
@@ -1589,9 +1594,18 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                   <p className="text-[10px] text-slate-500 leading-relaxed">
                     Counts only calls this app logged. Calls made with the same API key elsewhere, or logged while the database was unreachable, still spend quota but never appear here — so this can only ever read <span className="text-slate-400">higher</span> than what's really left. A 429 from Gemini is the authority, not this number.
                   </p>
-                  <p className="text-[10px] text-slate-500 leading-relaxed">
-                    These count <span className="text-slate-400">model requests only</span>. "Run live search research" also draws on Google Search grounding's separate, project-wide allowance, which isn't tracked here — it can be exhausted while every bar below still shows calls remaining.
-                  </p>
+                  {/* Names the one bar that gates the research button. Measured, not assumed: a
+                      grounded request to gemini-3.5-flash or gemini-3.6-flash returns 429 with no
+                      quota detail at the same moment a plain request to the same model returns
+                      200, and the very first grounded call ever sent to 3.5-flash was already a
+                      429 -- so it is unsupported there, not exhausted. Without this line the
+                      natural move is to read a healthy bar for a model that cannot ground at all
+                      and conclude the feature is broken. */}
+                  {geminiUsage.groundingModels && geminiUsage.groundingModels.length > 0 && (
+                    <p className="text-[10px] text-slate-500 leading-relaxed">
+                      "Run live search research" only works on <span className="text-slate-400">{geminiUsage.groundingModels.join(', ')}</span> — the other models reject a grounded request even with quota to spare, so that bar is the only one that gates it.
+                    </p>
+                  )}
                   <div className="grid grid-cols-3 gap-2">
                     {geminiUsage.quotaByModel.map((q) => {
                       const pctLeft = q.remaining / q.dailyLimit;
