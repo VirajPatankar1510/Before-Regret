@@ -149,6 +149,10 @@ export function registerArticleRoutes(app: Express) {
       res.status(400).json({ success: false, error: 'Enter a topic or exact title first -- there is nothing to research yet.' });
       return;
     }
+    // The "Additional topic/question to cover" field, when filled in. Researched as a second search
+    // inside the same call -- see buildSerpResearchPrompt for why that section is worth the search
+    // and why it doesn't cost an extra request.
+    const additionalTopic = typeof req.body?.additionalTopic === 'string' ? req.body.additionalTopic.trim() : '';
 
     try {
       const { GoogleGenAI } = await import('@google/genai');
@@ -203,7 +207,7 @@ export function registerArticleRoutes(app: Express) {
         attempt = await generateContentWithFallback(
           groundedClient,
           {
-            contents: buildSerpResearchPrompt(query),
+            contents: buildSerpResearchPrompt(query, additionalTopic),
             config: {
               systemInstruction: SERP_RESEARCH_SYSTEM_INSTRUCTION,
               temperature: 0.2,

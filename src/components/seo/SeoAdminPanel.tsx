@@ -224,6 +224,15 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // whether the search tool really fired (a brief written from the model's own memory of the web,
   // with no live retrieval behind it, is a guess about the SERP and is labelled as one in the UI
   // rather than silently presented as research).
+  // What the current brief was actually researched against, kept separate from the live input
+  // values. A brief is a snapshot of one query's competitive landscape at one moment; editing the
+  // title or the additional question afterwards doesn't update it, and silently sending a brief
+  // about a different question would aim the article at the wrong competitors -- the exact failure
+  // the feature exists to prevent. Recorded rather than auto-cleared on every keystroke, because
+  // discarding a call that cost real grounded-search quota over a one-character typo fix would be
+  // worse; the UI warns instead and leaves the choice with the writer.
+  const [serpBriefQuery, setSerpBriefQuery] = useState('');
+  const [serpBriefAdditionalTopic, setSerpBriefAdditionalTopic] = useState('');
   const [serpBrief, setSerpBrief] = useState('');
   const [serpSourceDomains, setSerpSourceDomains] = useState<string[]>([]);
   const [serpQueries, setSerpQueries] = useState<string[]>([]);
@@ -803,6 +812,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // available without it.
   const runSerpResearch = async () => {
     const query = (exactTitleInput.trim() || topicInput.trim());
+    const additionalTopic = additionalTopicInput.trim();
     if (!query || serpResearching) return;
     setSerpResearching(true);
     setSerpError('');
@@ -810,13 +820,18 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       const res = await fetch('/api/admin/articles/serp-research', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query }),
+        // The additional question gets its own search inside the same call. Without it, the one
+        // section the writer specifically asked for was the only part of the article written with
+        // no competitive read behind it.
+        body: JSON.stringify({ query, additionalTopic }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data?.success) {
         setSerpError(data?.error || 'Search research failed. Try again.');
         return;
       }
+      setSerpBriefQuery(query);
+      setSerpBriefAdditionalTopic(additionalTopic);
       setSerpBrief(data.brief || '');
       setSerpSourceDomains(Array.isArray(data.sourceDomains) ? data.sourceDomains : []);
       setSerpQueries(Array.isArray(data.searchQueries) ? data.searchQueries : []);
@@ -830,6 +845,8 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   };
 
   const clearSerpResearch = () => {
+    setSerpBriefQuery('');
+    setSerpBriefAdditionalTopic('');
     setSerpBrief('');
     setSerpSourceDomains([]);
     setSerpQueries([]);
@@ -1701,6 +1718,15 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // "What Is a TPR Valve and Why Do Inspectors Always Check It?" shares most of the seed's few
   // significant words, which is exactly the strong-overlap signal bestTitleOverlap (above) is
   // designed to catch.
+  // A brief already fetched, but for different input than what's in the fields now. Both halves
+  // count: the additional question gets its own search inside the brief, so adding, changing or
+  // clearing it leaves the brief just as out of date as editing the title does. Exact string
+  // compare on purpose -- anything fuzzier would have to decide how much drift is "still fine,"
+  // and there's no honest threshold for that when the answer is one grounded-search call away.
+  const serpQueryNow = exactTitleInput.trim() || topicInput.trim();
+  const serpBriefIsStale = Boolean(serpBrief) &&
+    (serpQueryNow !== serpBriefQuery || additionalTopicInput.trim() !== serpBriefAdditionalTopic);
+
   const titleToCheckForDuplicates = exactTitleInput.trim() || topicInput.trim() || draft.title.trim();
   const otherArticles = articles ? articles.filter((a) => a.id !== draft.id) : [];
   const titleOverlap = titleToCheckForDuplicates
@@ -2328,7 +2354,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               </p>
             ) : (
               <p className="text-[11px] text-slate-500">
-                Runs a live Google search for "{(exactTitleInput.trim() || topicInput.trim()).slice(0, 70)}", reads what's currently ranking, and writes a brief on how to beat it. Costs one extra Gemini call from the same daily quota as Generate.
+                Runs a live Google search for "{serpQueryNow.slice(0, 70)}"{additionalTopicInput.trim() ? <> and a second one for "{additionalTopicInput.trim().slice(0, 70)}"</> : null}, reads what's currently ranking, and writes a brief on how to beat it. Costs one extra Gemini call from the same daily quota as Generate.
               </p>
             )}
             {serpError && (
@@ -2336,20 +2362,40 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             )}
 
             {serpBrief && (
-              <div className="rounded-xl border border-emerald-800/60 bg-emerald-950/30 overflow-hidden">
+              <div className={`rounded-xl border overflow-hidden ${serpBriefIsStale ? 'border-amber-800/60 bg-amber-950/25' : 'border-emerald-800/60 bg-emerald-950/30'}`}>
                 <button
                   type="button"
                   onClick={() => setSerpBriefOpen((v) => !v)}
                   className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left cursor-pointer"
                 >
-                  <span className="text-xs font-bold text-emerald-200 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                    Brief ready — will be sent with Generate
+                  <span className={`text-xs font-bold flex items-center gap-1.5 ${serpBriefIsStale ? 'text-amber-200' : 'text-emerald-200'}`}>
+                    {serpBriefIsStale
+                      ? <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      : <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+                    {serpBriefIsStale ? 'Brief is out of date — still sent with Generate' : 'Brief ready — will be sent with Generate'}
                   </span>
                   {serpBriefOpen ? <ChevronUp className="w-3.5 h-3.5 text-emerald-300 shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 text-emerald-300 shrink-0" />}
                 </button>
                 {serpBriefOpen && (
                   <div className="px-3 pb-3 space-y-2.5">
+                    {/* Warns rather than blocks or auto-discards. A stale brief is still mostly
+                        useful after a small title edit, and throwing away a call that spent real
+                        grounded-search quota would be the worse failure -- but sending it silently
+                        would point the article at a different question's competitors, which is the
+                        precise thing this feature exists to prevent. Showing the exact strings it
+                        was researched against lets the writer judge in a glance whether the drift
+                        matters. */}
+                    {serpBriefIsStale && (
+                      <div className="p-2.5 bg-amber-950/40 border border-amber-800/60 rounded-lg text-[11px] text-amber-200 space-y-1">
+                        <div className="flex items-start gap-2">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                          <span>The fields above changed since this was researched. It'll still be sent as-is — re-run it if the difference matters.</span>
+                        </div>
+                        <div className="pl-5 text-amber-300/70">
+                          Researched: "{serpBriefQuery}"{serpBriefAdditionalTopic ? <> + "{serpBriefAdditionalTopic}"</> : <> (no additional question)</>}
+                        </div>
+                      </div>
+                    )}
                     {/* Deliberately loud, and deliberately not phrased as a nitpick: without the
                         search tool actually firing, the "brief" is the model describing the web
                         from memory. That reads identically to a real one and would silently steer
