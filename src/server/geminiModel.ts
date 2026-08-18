@@ -88,7 +88,27 @@ export function isQuotaError(err: unknown): boolean {
 // succeeding -- but neither matched isQuotaError, so withModelFallback used to rethrow
 // immediately on the FIRST model instead of trying the other two, surfacing a generic "AI
 // generation failed" to the user for what was really a one-model, one-moment blip.
+/**
+ * A 200 response carrying no usable text. Confirmed live on gemini-2.5-flash with the Google
+ * Search grounding tool enabled: finishReason STOP, no error, and candidates[0].content.parts
+ * undefined entirely -- the identical request had returned a full 7,800-character answer minutes
+ * earlier. Nothing about it looks like a failure to the SDK, so it reaches the call site as a
+ * perfectly successful response that happens to say nothing.
+ *
+ * Call sites that can detect this throw it so the cascade below treats it like any other transient
+ * per-model fault. That matters more than it sounds: retrying the SAME model was the obvious first
+ * fix and it does not work (reported live -- the user saw the empty result twice in a row). Moving
+ * to the next model does, because the models fail independently.
+ */
+export class EmptyModelResponseError extends Error {
+  constructor(public readonly model: string) {
+    super(`${model} returned a response with no text content`);
+    this.name = 'EmptyModelResponseError';
+  }
+}
+
 function isTransientModelError(err: unknown): boolean {
+  if (err instanceof EmptyModelResponseError) return true;
   if (isQuotaError(err)) return true;
   const status = (err as { status?: number })?.status;
   if (status === 503) return true;
@@ -118,7 +138,8 @@ export interface ModelFallbackResult<T> {
  */
 async function withModelFallback<T>(
   models: string[],
-  attempt: (model: string) => Promise<T>
+  attempt: (model: string) => Promise<T>,
+  onAttemptError?: (model: string, err: unknown) => void
 ): Promise<ModelFallbackResult<T>> {
   let lastErr: unknown;
   for (const model of models) {
@@ -126,6 +147,7 @@ async function withModelFallback<T>(
       return { result: await attempt(model), model };
     } catch (err) {
       lastErr = err;
+      onAttemptError?.(model, err);
       if (!isTransientModelError(err)) throw err;
     }
   }
@@ -136,13 +158,22 @@ interface GenerateContentClient {
   models: { generateContent: (params: any) => Promise<any> };
 }
 
-/** generateContent with automatic cascade through CONTENT_GENERATION_MODELS on quota exhaustion. */
+/**
+ * generateContent with automatic cascade through CONTENT_GENERATION_MODELS on quota exhaustion.
+ *
+ * onAttemptError sees every failed model in the chain, not just the last one. Without it, a chain
+ * where the first model is quota-exhausted and the second returns an empty response surfaces only
+ * the second failure -- so the user is told "empty response" when the actionable fact is that
+ * their daily quota is gone. Which failure a caller reports changes what the user does next, so
+ * the caller needs all of them, not the survivor.
+ */
 export async function generateContentWithFallback(
   ai: GenerateContentClient,
   params: { contents: any; config?: any },
-  models: string[] = CONTENT_GENERATION_MODELS
+  models: string[] = CONTENT_GENERATION_MODELS,
+  onAttemptError?: (model: string, err: unknown) => void
 ): Promise<ModelFallbackResult<any>> {
-  return withModelFallback(models, (model) => ai.models.generateContent({ ...params, model }));
+  return withModelFallback(models, (model) => ai.models.generateContent({ ...params, model }), onAttemptError);
 }
 
 interface GenerateContentStreamClient {

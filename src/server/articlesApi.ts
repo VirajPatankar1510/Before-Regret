@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
 import { buildArticlePrompt } from './articleGenerator.js';
-import { GEMINI_MODEL, CONTENT_GENERATION_MODELS, REPORT_GENERATION_MODELS, DAILY_FREE_TIER_LIMIT_PER_MODEL, isQuotaError, generateContentWithFallback, generateContentStreamWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
+import { GEMINI_MODEL, CONTENT_GENERATION_MODELS, REPORT_GENERATION_MODELS, DAILY_FREE_TIER_LIMIT_PER_MODEL, isQuotaError, EmptyModelResponseError, generateContentWithFallback, generateContentStreamWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
 import { SERP_RESEARCH_SYSTEM_INSTRUCTION, buildSerpResearchPrompt, extractGroundingFacts } from './serpResearch.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
 import type { GenerateContentResponseUsageMetadata } from '@google/genai';
@@ -163,42 +163,77 @@ export function registerArticleRoutes(app: Express) {
       // its 0.8.
       // Not streamed: the brief is short and is shown as one block, and the grounding metadata
       // (the real retrieved domains) is only readable off the assembled response.
-      const runResearch = () =>
-        generateContentWithFallback(ai, {
-          contents: buildSerpResearchPrompt(query),
-          config: {
-            systemInstruction: SERP_RESEARCH_SYSTEM_INSTRUCTION,
-            temperature: 0.2,
-            tools: [{ googleSearch: {} }],
+      // Turns an empty grounded response into a thrown, cascade-visible fault. Without this
+      // wrapper the empty case looks like a success to withModelFallback, so the chain stops on
+      // the first model that returns nothing instead of trying the next one -- and retrying the
+      // SAME model, which was the first fix attempted here, does not work (reported live: the
+      // empty result came back twice in a row). Different models fail independently; moving on is
+      // what actually recovers. See EmptyModelResponseError in geminiModel.ts for what this
+      // response literally looks like on the wire.
+      const groundedClient = {
+        models: {
+          generateContent: async (params: any) => {
+            const result = await ai.models.generateContent(params);
+            if (!(typeof result.text === 'string' && result.text.trim())) {
+              throw new EmptyModelResponseError(params.model);
+            }
+            return result;
           },
-        });
+        },
+      };
 
-      let { result: response, model: usedModel } = await runResearch();
+      // Which models failed and how. Needed because the two failure modes here call for opposite
+      // advice -- "wait until tomorrow or enable billing" vs "try again now" -- and a cascade that
+      // hits one of each would otherwise report only whichever came last. Confirmed live: with the
+      // first model quota-exhausted and the second returning an empty grounded response, the
+      // surfaced error blamed a passing network blip and never mentioned that the day's quota was
+      // gone, which is the fact that actually determines what to do next.
+      const quotaExhaustedModels: string[] = [];
+      const emptyResponseModels: string[] = [];
+
+      let attempt: { result: any; model: string };
+      try {
+        attempt = await generateContentWithFallback(
+          groundedClient,
+          {
+            contents: buildSerpResearchPrompt(query),
+            config: {
+              systemInstruction: SERP_RESEARCH_SYSTEM_INSTRUCTION,
+              temperature: 0.2,
+              tools: [{ googleSearch: {} }],
+            },
+          },
+          CONTENT_GENERATION_MODELS,
+          (model, err) => {
+            if (err instanceof EmptyModelResponseError) emptyResponseModels.push(model);
+            else if (isQuotaError(err)) quotaExhaustedModels.push(model);
+          }
+        );
+      } catch (err) {
+        // Every model in the chain failed. Report the most actionable cause, not the last one: an
+        // exhausted daily quota is a hard stop that retrying cannot clear, so it outranks an empty
+        // response even when an empty response is what the chain happened to end on.
+        if (quotaExhaustedModels.length > 0) {
+          console.error('[articles] serp research: quota exhausted on', quotaExhaustedModels.join(', '));
+          res.status(429).json({ success: false, error: contentQuotaExhaustedMessage() });
+          return;
+        }
+        if (emptyResponseModels.length > 0) {
+          console.error('[articles] serp research: empty response from', emptyResponseModels.join(', '));
+          res.status(502).json({
+            success: false,
+            error: `Every model (${emptyResponseModels.join(', ')}) came back with no content at all. The grounded-search pass does this intermittently -- try again in a moment, and check the Gemini usage panel below if it keeps happening.`,
+          });
+          return;
+        }
+        throw err;
+      }
+
+      const { result: response, model: usedModel } = attempt;
       logGeminiUsage('serp_research', usedModel, response.usageMetadata);
 
-      // Observed live, twice in a row, during a window where this machine's outbound network was
-      // also timing out on unrelated Neon calls: a 200 response with finishReason STOP and no text
-      // at all. It isn't a quota error and it isn't a thrown fault, so nothing in
-      // withModelFallback's transient-error handling sees it -- the empty string just falls
-      // through as if the model had genuinely answered with nothing. The identical request
-      // succeeded on the next attempt with a full 7k-character brief, so one bounded retry is the
-      // proportionate response. Deliberately ONE retry, not a loop: if the second attempt is also
-      // empty, something other than a blip is wrong and burning more of a 20/day allowance on it
-      // helps nobody.
-      if (!(typeof response.text === 'string' && response.text.trim())) {
-        console.warn('[articles] serp research returned empty text on', usedModel, '-- retrying once');
-        ({ result: response, model: usedModel } = await runResearch());
-        logGeminiUsage('serp_research', usedModel, response.usageMetadata);
-      }
-
+      // Guaranteed non-empty by groundedClient above -- kept as a type-narrowing read, not a check.
       const brief = typeof response.text === 'string' ? response.text.trim() : '';
-      if (!brief) {
-        res.status(502).json({
-          success: false,
-          error: 'The model returned an empty response twice. This is usually a passing network blip -- try again in a moment.',
-        });
-        return;
-      }
       const { sourceDomains, searchQueries } = extractGroundingFacts(response);
       // An empty searchQueries list means the model answered from its own weights without the
       // grounding tool ever firing -- the brief would then be a guess about the SERP dressed up as
