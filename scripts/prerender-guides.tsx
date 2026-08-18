@@ -8,7 +8,8 @@ import { resolveKnownSource } from '../src/data/knownSources';
 import { ArticleClosingNote } from '../src/components/seo/ArticleClosingNote';
 import { pickRelatedGuides, GuideSummary } from '../src/utils/relatedGuides';
 import { buildPageTitle } from '../src/utils/pageTitle';
-import { pickCountiesForGuide, CountyTopicInput, GUIDE_TOPICS } from '../src/utils/countyGuideTopics.js';
+import { pickCountiesForGuide, CountyTopicInput, GUIDE_TOPICS, permitGuideCountySlug } from '../src/utils/countyGuideTopics.js';
+import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 import type { PrerenderedRouteKey } from '../src/routeChunks.js';
 
@@ -193,10 +194,17 @@ function GuideStaticBody({
   article,
   relatedGuides,
   relevantCounties,
+  permitCounty,
+  footerGuides,
 }: {
   article: Article;
   relatedGuides: GuideSummary[];
   relevantCounties: Array<{ slug: string; countyName: string; stateAbbrev: string }>;
+  /** Set only for the "How to Check Building Permits in X" series -- the one real county this
+   *  specific guide is about, not a relevance guess. See permitGuideCountySlug in
+   *  countyGuideTopics.ts. */
+  permitCounty?: { slug: string; countyName: string; stateAbbrev: string };
+  footerGuides: FooterGuideSummary[];
 }) {
   const wordCount = article.bodyMarkdown.trim().split(/\s+/).filter(Boolean).length;
   const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 220));
@@ -256,6 +264,27 @@ function GuideStaticBody({
         </div>
 
         <ArticleClosingNote onNavigate={noNav} />
+
+        {/* Real-identity match, not a relevance guess -- this guide is ABOUT permitCounty, so it
+            renders above the fuzzy "Related Guides"/"Where This Comes Up" lists below, not mixed
+            into either. See permitGuideCountySlug in countyGuideTopics.ts for why this needed its
+            own mechanism: the era/topic system that powers those two sections never matches a
+            process guide like this one. */}
+        {permitCounty && (
+          <a
+            href={`/county/${permitCounty.slug}/`}
+            className="flex items-center justify-between gap-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-3xl p-6 sm:p-8 transition-colors"
+          >
+            <span>
+              <span className="block text-[11px] font-bold uppercase tracking-wide text-blue-700 mb-1">
+                County data for this guide
+              </span>
+              <span className="block text-sm font-bold text-blue-950">
+                See {permitCounty.countyName} County, {permitCounty.stateAbbrev} property research →
+              </span>
+            </span>
+          </a>
+        )}
 
         {relatedGuides.length > 0 && (
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
@@ -338,6 +367,8 @@ function GuideStaticBody({
           </a>
         </p>
       </div>
+
+      <StaticFooterLinks guides={footerGuides} />
     </div>
   );
 }
@@ -345,7 +376,7 @@ function GuideStaticBody({
 // Mirrors GuidesIndexView.tsx -- the hub every guide should be reachable from with one click,
 // baked to real HTML at dist/guides/index.html so a crawler that doesn't run JS sees the same
 // list and the same real <a href> links to all 27 (now more) guides that a browser would.
-function GuidesIndexStaticBody({ guides }: { guides: GuideSummary[] }) {
+function GuidesIndexStaticBody({ guides, footerGuides }: { guides: GuideSummary[]; footerGuides: FooterGuideSummary[] }) {
   return (
     <div className="bg-slate-50 min-h-screen pb-16">
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
@@ -384,6 +415,8 @@ function GuidesIndexStaticBody({ guides }: { guides: GuideSummary[] }) {
           ))}
         </div>
       </div>
+
+      <StaticFooterLinks guides={footerGuides} />
     </div>
   );
 }
@@ -441,6 +474,13 @@ async function run() {
     publishedAt: r.published_at,
   }));
 
+  // Same "evergreen guides only, first 4" selection Footer.tsx's own live fetch applies -- see
+  // StaticFooterLinks.tsx for why this list needs a static twin at all now.
+  const footerGuides: FooterGuideSummary[] = rows
+    .filter((r) => (r.article_type ?? 'guide') === 'guide')
+    .slice(0, 4)
+    .map((r) => ({ slug: r.slug, title: r.title }));
+
   // Powers the "Where This Comes Up" section -- links a guide about a housing-era defect (knob
   // and tube, FPE panels, polybutylene, etc.) to the verified counties where that era actually
   // makes up a real share of the housing stock. See src/utils/countyGuideTopics.ts for why this
@@ -464,6 +504,11 @@ async function run() {
     yearBuiltBuckets: JSON.parse(c.census_year_built_json || '{}'),
     totalUnits: c.census_total_units,
   }));
+  // Keyed lookup for the direct permit-guide<->county pairing below -- countyRows/counties above
+  // is already the verified, data_complete=true set, so a slug that isn't in this map means that
+  // county doesn't have a real page to link to yet, and permitCounty is correctly left undefined
+  // rather than pointing at a URL that 404s.
+  const countyBySlug = new Map(counties.map((c) => [c.slug, c]));
 
   let written = 0;
   const llmsGuides: Array<{ slug: string; title: string; metaDescription: string; canonicalUrl: string }> = [];
@@ -472,8 +517,16 @@ async function run() {
     const canonicalUrl = `https://www.beforeregret.com/guides/${article.slug}/`;
     const relatedGuides = pickRelatedGuides(article.slug, article.title, allGuideSummaries);
     const relevantCounties = pickCountiesForGuide(article.slug, counties);
+    const permitCountySlug = permitGuideCountySlug(article.slug);
+    const permitCounty = permitCountySlug ? countyBySlug.get(permitCountySlug) : undefined;
     const bodyHtml = renderToStaticMarkup(
-      <GuideStaticBody article={article} relatedGuides={relatedGuides} relevantCounties={relevantCounties} />
+      <GuideStaticBody
+        article={article}
+        relatedGuides={relatedGuides}
+        relevantCounties={relevantCounties}
+        permitCounty={permitCounty}
+        footerGuides={footerGuides}
+      />
     );
 
     // Embedded verbatim so GuidePageView.tsx's mount effect can use it directly instead of
@@ -504,7 +557,7 @@ async function run() {
 
   // The hub page (dist/guides/index.html) -- see GuidesIndexView.tsx for the client-rendered twin.
   const indexCanonicalUrl = 'https://www.beforeregret.com/guides/';
-  const indexBodyHtml = renderToStaticMarkup(<GuidesIndexStaticBody guides={allGuideSummaries} />);
+  const indexBodyHtml = renderToStaticMarkup(<GuidesIndexStaticBody guides={allGuideSummaries} footerGuides={footerGuides} />);
   const indexJsonLd: Record<string, any>[] = [
     {
       '@context': 'https://schema.org',

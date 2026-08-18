@@ -3,8 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { withDb, isDbConfigured } from '../src/server/db.js';
-import { pickGuidesForCounty, GuideLink } from '../src/utils/countyGuideTopics.js';
+import { pickGuidesForCounty, GuideLink, findPermitGuideForCounty, PermitGuideLink } from '../src/utils/countyGuideTopics.js';
 import { computeCountyRankings, CountyMetricInput, CountyRankings } from '../src/utils/countyRankings.js';
+import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 
 // Static HTML generator for county research pages, mirroring scripts/prerender-guides.tsx exactly
@@ -77,7 +78,19 @@ const RADON_ZONE_TEXT: Record<number, string> = {
   3: 'Zone 3 -- low potential. EPA predicts an average indoor radon screening level below 2 pCi/L for this county.',
 };
 
-function CountyStaticBody({ row, rankings }: { row: CountyRow; rankings: CountyRankings }) {
+function CountyStaticBody({
+  row,
+  rankings,
+  permitGuide,
+  footerGuides,
+}: {
+  row: CountyRow;
+  rankings: CountyRankings;
+  /** The "How to Check Building Permits" guide about THIS county, if one exists -- see
+   *  findPermitGuideForCounty in countyGuideTopics.ts. Not every county has one. */
+  permitGuide?: PermitGuideLink;
+  footerGuides: FooterGuideSummary[];
+}) {
   const yearBuilt = JSON.parse(row.census_year_built_json || '{}') as Record<string, number>;
   // All of them, not a top-N slice -- see the matching comment in CountyPageView.tsx. This also
   // fixes a real accuracy bug: totalStorms below sums this same array, so when it was capped at 8
@@ -261,6 +274,23 @@ function CountyStaticBody({ row, rankings }: { row: CountyRow; rankings: CountyR
           </section>
         )}
 
+        {/* Real-identity match, not a relevance guess -- rendered above the era-based list below
+            because it's a stronger, more specific link: this guide is ABOUT this county, not
+            merely relevant to its housing stock. See findPermitGuideForCounty. */}
+        {permitGuide && (
+          <a
+            href={`/guides/${permitGuide.slug}/`}
+            className="flex items-center justify-between gap-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-3xl p-6 sm:p-8 transition-colors"
+          >
+            <span>
+              <span className="block text-[11px] font-bold uppercase tracking-wide text-blue-700 mb-1">
+                Permit search guide for this county
+              </span>
+              <span className="block text-sm font-bold text-blue-950">{permitGuide.title} →</span>
+            </span>
+          </a>
+        )}
+
         {relatedGuides.length > 0 && (
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
             <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">
@@ -294,6 +324,8 @@ function CountyStaticBody({ row, rankings }: { row: CountyRow; rankings: CountyR
           This page reports what these four public agencies have published for {row.county_name} County as a whole -- it is not an assessment of any specific address or property, and does not replace a licensed home inspection, radon test, or insurance review for a specific home. Data last checked {new Date(row.fetched_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.
         </p>
       </div>
+
+      <StaticFooterLinks guides={footerGuides} />
     </div>
   );
 }
@@ -328,7 +360,7 @@ function buildJsonLd(row: CountyRow, canonicalUrl: string): Record<string, any>[
 // dist/counties/index.html so a crawler that doesn't run JS sees the same grouped list and the
 // same real <a href> links to all 31 (now more) counties a browser would. Before this existed, 20
 // of 31 county pages had zero inbound links anywhere on the site.
-function CountiesIndexStaticBody({ rows }: { rows: CountyRow[] }) {
+function CountiesIndexStaticBody({ rows, footerGuides }: { rows: CountyRow[]; footerGuides: FooterGuideSummary[] }) {
   const grouped = Array.from(
     rows
       .reduce((map, r) => {
@@ -398,6 +430,8 @@ function CountiesIndexStaticBody({ rows }: { rows: CountyRow[] }) {
           ))}
         </div>
       </div>
+
+      <StaticFooterLinks guides={footerGuides} />
     </div>
   );
 }
@@ -449,6 +483,24 @@ async function run() {
     FROM county_data WHERE data_complete = true
   `)) as unknown as CountyRow[];
 
+  // This script never queried the articles table before -- it had no way to know a guide existed
+  // at all, let alone link to one. Two things need it now: the direct permit-guide<->county
+  // pairing (findPermitGuideForCounty, real-identity match, not a relevance guess) and the footer
+  // nav's evergreen-guides list (see StaticFooterLinks.tsx for why that link needed a static twin
+  // in the first place).
+  const guideRows = (await withDb((sql) => sql`
+    SELECT slug, title, article_type FROM articles WHERE status = 'published' ORDER BY published_at DESC
+  `)) as unknown as Array<{ slug: string; title: string; article_type: string | null }>;
+  // Every guide permitGuideCountySlug can ever match -- both the direct-slug guides and the 5
+  // NYC-borough/Seattle aliases -- shares this one prefix, so filtering here is a correctness-free
+  // way to keep findPermitGuideForCounty's search small rather than scanning all 140+ guides per
+  // county.
+  const permitGuides = guideRows.filter((g) => g.slug.startsWith('check-building-permits-'));
+  const footerGuides: FooterGuideSummary[] = guideRows
+    .filter((g) => (g.article_type ?? 'guide') === 'guide')
+    .slice(0, 4)
+    .map((g) => ({ slug: g.slug, title: g.title }));
+
   // Every covered county's minimal fields, computed once outside the loop -- ranking one county
   // needs every county's numbers in hand, and re-deriving this per iteration would be the same
   // fixed cost 31+ times over for no benefit. See src/utils/countyRankings.ts.
@@ -472,7 +524,10 @@ async function run() {
     const canonicalUrl = `https://www.beforeregret.com/county/${row.slug}/`;
     const title = `${row.county_name} County, ${row.state_abbrev} Property Research | BeforeRegret`;
     const description = `Real, sourced data for ${row.county_name} County, ${row.state_abbrev}: EPA radon zone, Census housing-age distribution, FEMA natural hazard risk, and recorded NOAA storm history.`;
-    const bodyHtml = renderToStaticMarkup(<CountyStaticBody row={row} rankings={rankings} />);
+    const permitGuide = findPermitGuideForCounty(row.slug, permitGuides);
+    const bodyHtml = renderToStaticMarkup(
+      <CountyStaticBody row={row} rankings={rankings} permitGuide={permitGuide} footerGuides={footerGuides} />
+    );
     const jsonLdScript = `<script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(buildJsonLd(row, canonicalUrl))}</script>`;
     // Embedded verbatim so CountyPageView.tsx's mount effect can use it directly instead of
     // re-fetching over the network on first paint -- same fix, same reasoning, as
@@ -507,7 +562,7 @@ async function run() {
   const indexCanonicalUrl = 'https://www.beforeregret.com/counties/';
   const indexTitle = 'County Property Research | BeforeRegret';
   const indexDescription = `Real EPA radon, Census housing-age, FEMA hazard, and NOAA storm data for ${titleCasedRows.length} US counties -- every figure sourced, nothing estimated.`;
-  const indexBodyHtml = renderToStaticMarkup(<CountiesIndexStaticBody rows={titleCasedRows} />);
+  const indexBodyHtml = renderToStaticMarkup(<CountiesIndexStaticBody rows={titleCasedRows} footerGuides={footerGuides} />);
   const indexJsonLd: Record<string, any>[] = [
     {
       '@context': 'https://schema.org',

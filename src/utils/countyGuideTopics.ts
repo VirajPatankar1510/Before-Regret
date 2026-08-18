@@ -155,3 +155,51 @@ export function pickCountiesForGuide(
     .slice(0, 3)
     .map((s) => ({ slug: s.county.slug, countyName: s.county.countyName, stateAbbrev: s.county.stateAbbrev }));
 }
+
+// A second, unrelated kind of guide<->county link, added alongside the era-topic system above --
+// not a threshold match at all, a real-identity one. The "How to Check Building Permits in X
+// County" series is ABOUT one specific county each, by name, and none of them carry a housing-era
+// topic (they're process guides, not defect guides), so GUIDE_TOPICS/pickCountiesForGuide above
+// never fires for them. That left every one of these guides and its own named county page with no
+// link to each other at all -- confirmed live: the permit guide for a county and that county's own
+// page didn't reference one another anywhere on the site, despite being the most obviously related
+// pair possible.
+//
+// Most permit-guide slugs already encode their target county's slug directly
+// (check-building-permits-<county-slug>), so the match is usually just string surgery. The five
+// exceptions are US municipalities that sit inside a differently-named county -- verified against
+// the real county_data rows, not guessed: Manhattan -> New York County, Brooklyn -> Kings County,
+// Queens -> Queens County, the Bronx -> Bronx County, Seattle -> King County, WA.
+const PERMIT_GUIDE_COUNTY_ALIASES: Record<string, string> = {
+  'check-building-permits-manhattan-ny': 'new-york-county-ny',
+  'check-building-permits-brooklyn-ny': 'kings-county-ny',
+  'check-building-permits-queens-ny': 'queens-county-ny',
+  'check-building-permits-bronx-ny': 'bronx-county-ny',
+  'check-building-permits-seattle-wa': 'king-county-wa',
+};
+
+const PERMIT_GUIDE_SLUG_PREFIX = 'check-building-permits-';
+
+/** The one county slug a "How to Check Building Permits in X" guide is actually about, or
+ *  undefined for every other guide (including one of this series whose target county isn't yet a
+ *  verified county_data row -- this deliberately does not guess a match for that case). */
+export function permitGuideCountySlug(guideSlug: string): string | undefined {
+  if (PERMIT_GUIDE_COUNTY_ALIASES[guideSlug]) return PERMIT_GUIDE_COUNTY_ALIASES[guideSlug];
+  if (guideSlug.startsWith(PERMIT_GUIDE_SLUG_PREFIX)) return guideSlug.slice(PERMIT_GUIDE_SLUG_PREFIX.length);
+  return undefined;
+}
+
+export interface PermitGuideLink {
+  slug: string;
+  title: string;
+}
+
+// County-page direction: given the full published-guide list, which permit guide (if any) is
+// about THIS county. Built from the real guide corpus rather than a hardcoded title, so a county
+// page never shows a stale title if the guide's own title is ever edited.
+export function findPermitGuideForCounty(
+  countySlug: string,
+  guides: Array<{ slug: string; title: string }>
+): PermitGuideLink | undefined {
+  return guides.find((g) => permitGuideCountySlug(g.slug) === countySlug);
+}

@@ -9,6 +9,8 @@ import { PrivacyPolicy } from '../src/components/PrivacyPolicy';
 import { RefundPolicy } from '../src/components/RefundPolicy';
 import { Disclaimer } from '../src/components/Disclaimer';
 import { Accessibility } from '../src/components/Accessibility';
+import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
+import { withDb, isDbConfigured } from '../src/server/db.js';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 import type { PrerenderedRouteKey } from '../src/routeChunks.js';
 
@@ -299,9 +301,25 @@ async function run() {
   // exactly what these pages need to build on top of, same as every other prerender script.
   const template = fs.readFileSync(shellPath, 'utf8');
 
+  // Same evergreen-guides selection every other prerender script uses for StaticFooterLinks --
+  // see that component for why these eight pages, five of them noindex, still need it: /about and
+  // /accessibility are indexable and were linking nowhere onward, and even the noindex four are
+  // real pages a visitor (or an AI answer engine, which reads noindex pages fine) can land on and
+  // get stuck with no path to the rest of the site.
+  const footerGuides: FooterGuideSummary[] = isDbConfigured()
+    ? ((await withDb((sql) => sql`
+        SELECT slug, title FROM articles WHERE status = 'published' AND article_type = 'guide' ORDER BY published_at DESC LIMIT 4
+      `)) as unknown as FooterGuideSummary[])
+    : [];
+
   for (const page of PAGES) {
     const bodyHtml = renderToStaticMarkup(
-      React.createElement(page.Component, { onBackToHome: noop })
+      React.createElement(
+        React.Fragment,
+        null,
+        React.createElement(page.Component, { onBackToHome: noop }),
+        React.createElement(StaticFooterLinks, { guides: footerGuides })
+      )
     );
     const html = applyHeadReplacements(template, page).replace(
       '<div id="root"></div>',
