@@ -4,10 +4,12 @@ Allow: /
 Allow: /guides/
 Allow: /counties/
 Allow: /about
+Allow: /accessibility
 Allow: /support
 Allow: /terms
 Allow: /privacy
 Allow: /refunds
+Allow: /disclaimer
 
 Disallow: /report/
 Disallow: /admin
