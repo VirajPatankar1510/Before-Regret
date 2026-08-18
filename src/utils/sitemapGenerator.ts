@@ -153,6 +153,11 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       // canonical URL without inlinks.
       { loc: `${BASE_URL}/about/`, lastmod: today, changefreq: 'monthly', priority: '0.7' },
       { loc: `${BASE_URL}/accessibility/`, lastmod: today, changefreq: 'monthly', priority: '0.5' },
+      // Newly indexable (scripts/prerender-advertise.tsx) -- the vendor-acquisition page, not a
+      // legal page, but the same rule applies: only list it here once it is genuinely 'index,
+      // follow' and has real prerendered content to back that up. /topic-ads and /report-ads, the
+      // two checkout pages this page routes to, stay noindex and are correctly absent.
+      { loc: `${BASE_URL}/advertise/`, lastmod: today, changefreq: 'monthly', priority: '0.6' },
     ];
   } else if (cleanName === 'sitemap-guides' && isDbConfigured()) {
     try {
