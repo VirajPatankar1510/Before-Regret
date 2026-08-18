@@ -2,7 +2,8 @@ import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
 import { buildArticlePrompt } from './articleGenerator.js';
-import { GEMINI_MODEL, CONTENT_GENERATION_MODELS, REPORT_GENERATION_MODELS, DAILY_FREE_TIER_LIMIT_PER_MODEL, isQuotaError, generateContentStreamWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
+import { GEMINI_MODEL, CONTENT_GENERATION_MODELS, REPORT_GENERATION_MODELS, DAILY_FREE_TIER_LIMIT_PER_MODEL, isQuotaError, generateContentWithFallback, generateContentStreamWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
+import { SERP_RESEARCH_SYSTEM_INSTRUCTION, buildSerpResearchPrompt, extractGroundingFacts } from './serpResearch.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
 import type { GenerateContentResponseUsageMetadata } from '@google/genai';
 import { submitUrlsToIndexNow } from '../utils/indexNowService.js';
@@ -128,6 +129,99 @@ export function registerArticleRoutes(app: Express) {
     }
   });
 
+  // --- Admin: pre-generation SERP research ------------------------------------------------------
+  // Deliberately its own route and its own button rather than a hidden step inside /generate, for
+  // three reasons: it costs a second Gemini call (free-tier quota is 20/day/model, so silently
+  // doubling every generation's cost would halve how many articles can be drafted in a day); the
+  // brief is worth a human reading before it steers an article, since it's the one input here
+  // derived from live third-party pages rather than from this codebase's own verified data; and
+  // one brief is reusable across several regeneration attempts at the same title.
+  // See serpResearch.ts for what this can and cannot actually observe -- in particular that it
+  // reads Google's search results, NOT the AI Overview, which no API exposes.
+  app.post('/api/admin/articles/serp-research', requireAdmin, async (req: Request, res: Response) => {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      res.status(503).json({ success: false, error: 'AI research is not configured on this server (missing GEMINI_API_KEY).' });
+      return;
+    }
+    const query = typeof req.body?.query === 'string' ? req.body.query.trim() : '';
+    if (!query) {
+      res.status(400).json({ success: false, error: 'Enter a topic or exact title first -- there is nothing to research yet.' });
+      return;
+    }
+
+    try {
+      const { GoogleGenAI } = await import('@google/genai');
+      const ai = new GoogleGenAI({
+        apiKey,
+        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
+      });
+
+      // Low temperature on purpose: this pass reports what search actually returned. Creativity
+      // here would show up as invented competitor coverage, which is worse than useless -- it would
+      // steer the article toward filling a gap that doesn't exist. The article call itself keeps
+      // its 0.8.
+      // Not streamed: the brief is short and is shown as one block, and the grounding metadata
+      // (the real retrieved domains) is only readable off the assembled response.
+      const runResearch = () =>
+        generateContentWithFallback(ai, {
+          contents: buildSerpResearchPrompt(query),
+          config: {
+            systemInstruction: SERP_RESEARCH_SYSTEM_INSTRUCTION,
+            temperature: 0.2,
+            tools: [{ googleSearch: {} }],
+          },
+        });
+
+      let { result: response, model: usedModel } = await runResearch();
+      logGeminiUsage('serp_research', usedModel, response.usageMetadata);
+
+      // Observed live, twice in a row, during a window where this machine's outbound network was
+      // also timing out on unrelated Neon calls: a 200 response with finishReason STOP and no text
+      // at all. It isn't a quota error and it isn't a thrown fault, so nothing in
+      // withModelFallback's transient-error handling sees it -- the empty string just falls
+      // through as if the model had genuinely answered with nothing. The identical request
+      // succeeded on the next attempt with a full 7k-character brief, so one bounded retry is the
+      // proportionate response. Deliberately ONE retry, not a loop: if the second attempt is also
+      // empty, something other than a blip is wrong and burning more of a 20/day allowance on it
+      // helps nobody.
+      if (!(typeof response.text === 'string' && response.text.trim())) {
+        console.warn('[articles] serp research returned empty text on', usedModel, '-- retrying once');
+        ({ result: response, model: usedModel } = await runResearch());
+        logGeminiUsage('serp_research', usedModel, response.usageMetadata);
+      }
+
+      const brief = typeof response.text === 'string' ? response.text.trim() : '';
+      if (!brief) {
+        res.status(502).json({
+          success: false,
+          error: 'The model returned an empty response twice. This is usually a passing network blip -- try again in a moment.',
+        });
+        return;
+      }
+      const { sourceDomains, searchQueries } = extractGroundingFacts(response);
+      // An empty searchQueries list means the model answered from its own weights without the
+      // grounding tool ever firing -- the brief would then be a guess about the SERP dressed up as
+      // an observation of it, which is exactly the failure this whole feature exists to avoid.
+      // Surfaced to the admin rather than silently returned as if it were researched.
+      res.json({
+        success: true,
+        brief,
+        sourceDomains,
+        searchQueries,
+        grounded: searchQueries.length > 0,
+        model: usedModel,
+      });
+    } catch (err: any) {
+      console.error('[articles] serp research failed:', err);
+      if (isQuotaError(err)) {
+        res.status(429).json({ success: false, error: contentQuotaExhaustedMessage() });
+      } else {
+        res.status(500).json({ success: false, error: 'Search research failed. Try again.' });
+      }
+    }
+  });
+
   // --- Admin: AI-assisted draft, streamed live into the editor ---------------------------------
   // Streams raw text chunks as they arrive from Gemini (not full SSE framing -- there's only one
   // event type here, so a plain streamed response body is enough; the client reads it with
@@ -167,6 +261,11 @@ export function registerArticleRoutes(app: Express) {
     // writer makes with a checkbox in the admin UI, distinct from whether the field is filled in.
     const additionalTopic = typeof req.body?.additionalTopic === 'string' ? req.body.additionalTopic : '';
     const additionalTopicExact = req.body?.additionalTopicExact === true;
+    // The brief from /serp-research above, if the writer ran it and kept it. Capped because it's
+    // the one prompt input this app doesn't generate itself -- it's model output about third-party
+    // pages, round-tripped through the browser, so an unbounded string here would let a very long
+    // brief crowd out the hard rules it's supposed to be subordinate to.
+    const serpBrief = typeof req.body?.serpBrief === 'string' ? req.body.serpBrief.trim().slice(0, 6000) : '';
 
     // Best-effort: if the DB read fails for any reason, generation still proceeds without the
     // duplicate-content guard rather than blocking the whole feature on it.
@@ -190,7 +289,7 @@ export function registerArticleRoutes(app: Express) {
         apiKey,
         httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
       });
-      const { systemInstruction, contents } = buildArticlePrompt(topic, existingTitles, exactTitle, relatedKeywords, additionalTopic, additionalTopicExact);
+      const { systemInstruction, contents } = buildArticlePrompt(topic, existingTitles, exactTitle, relatedKeywords, additionalTopic, additionalTopicExact, serpBrief);
 
       // Cascades through CONTENT_GENERATION_MODELS (gemini-3.5-flash, then gemini-2.5-flash) on
       // quota exhaustion -- see geminiModel.ts. Deliberately not GEMINI_MODEL: that model is

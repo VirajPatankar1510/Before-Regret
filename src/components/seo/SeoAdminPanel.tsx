@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Send, Undo2, Trash2, AlertCircle, Sparkles,
   Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp, CloudLightning, BarChart3,
-  Library, ShieldCheck, CheckCircle2
+  Library, ShieldCheck, CheckCircle2, Search
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
 import { extractCitedSourceCodes, findAdversarialCounterpartyFraming } from '../../server/articleGenerator';
@@ -215,6 +215,22 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // Title should not silently drop it.
   const [additionalTopicInput, setAdditionalTopicInput] = useState('');
   const [additionalTopicExact, setAdditionalTopicExact] = useState(false);
+
+  // Pre-generation SERP research (see src/server/serpResearch.ts). Its own explicit step rather
+  // than something Generate does invisibly: it spends a second Gemini call from the same 20/day
+  // free-tier allowance, and the brief it produces is the one generation input derived from live
+  // third-party pages rather than from this app's own verified data -- so it's worth a human
+  // reading before it steers an article. serpBrief is what actually gets sent; serpGrounded records
+  // whether the search tool really fired (a brief written from the model's own memory of the web,
+  // with no live retrieval behind it, is a guess about the SERP and is labelled as one in the UI
+  // rather than silently presented as research).
+  const [serpBrief, setSerpBrief] = useState('');
+  const [serpSourceDomains, setSerpSourceDomains] = useState<string[]>([]);
+  const [serpQueries, setSerpQueries] = useState<string[]>([]);
+  const [serpGrounded, setSerpGrounded] = useState(true);
+  const [serpResearching, setSerpResearching] = useState(false);
+  const [serpError, setSerpError] = useState('');
+  const [serpBriefOpen, setSerpBriefOpen] = useState(false);
 
   // The pasted-list-of-titles backlog (see src/server/questionQueueApi.ts), so exact titles can
   // come from one bulk paste instead of a manually-maintained spreadsheet. Always sorted
@@ -456,6 +472,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     setAdditionalTopicInput('');
     setAdditionalTopicExact(false);
     setOverrideAdditionalTopicSimilarWarning(false);
+    // Same reasoning as the additional-topic clear directly above, and more urgent: a brief is
+    // research about one specific query, and carrying it into a different article's generation
+    // would aim that article at a competitive landscape belonging to someone else's topic.
+    clearSerpResearch();
     setImportedQuestionId(null);
     setPreviousAttempts([]);
     // Defaulted to this article's own title, not left blank -- the common case opening this is a
@@ -776,6 +796,48 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     };
   };
 
+  // Researches whatever the article is currently aimed at -- exact title if there is one, since
+  // that's the literal query a searcher would type, otherwise the topic seed. Never both: the
+  // server searches the string it's given, and concatenating them would search a phrase nobody
+  // types. Failure is non-blocking by design; the brief is an enhancement, and Generate stays
+  // available without it.
+  const runSerpResearch = async () => {
+    const query = (exactTitleInput.trim() || topicInput.trim());
+    if (!query || serpResearching) return;
+    setSerpResearching(true);
+    setSerpError('');
+    try {
+      const res = await fetch('/api/admin/articles/serp-research', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        setSerpError(data?.error || 'Search research failed. Try again.');
+        return;
+      }
+      setSerpBrief(data.brief || '');
+      setSerpSourceDomains(Array.isArray(data.sourceDomains) ? data.sourceDomains : []);
+      setSerpQueries(Array.isArray(data.searchQueries) ? data.searchQueries : []);
+      setSerpGrounded(data.grounded !== false);
+      setSerpBriefOpen(true);
+    } catch {
+      setSerpError('Lost connection while researching.');
+    } finally {
+      setSerpResearching(false);
+    }
+  };
+
+  const clearSerpResearch = () => {
+    setSerpBrief('');
+    setSerpSourceDomains([]);
+    setSerpQueries([]);
+    setSerpGrounded(true);
+    setSerpError('');
+    setSerpBriefOpen(false);
+  };
+
   // overrideTopic/overrideExactTitle/overrideHints let the keyword-list click handler below fire
   // generation immediately with the value it just picked, rather than setting state and hoping a
   // same-tick read of topicInput/seoKeywordHints sees it -- React state updates aren't synchronous,
@@ -802,6 +864,9 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           relatedKeywords: keywordHints,
           additionalTopic: additionalTopicInput.trim(),
           additionalTopicExact,
+          // Empty unless the writer ran (and kept) the research step above -- the prompt is
+          // byte-identical to the pre-feature version when this is blank.
+          serpBrief,
         }),
       });
       if (!res.ok || !res.body) {
@@ -2206,6 +2271,97 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               <p className="text-[11px] text-amber-400">
                 This is very close to the article's own main title/topic -- the subheading would likely just restate the headline. Consider a narrower or more specific angle.
               </p>
+            )}
+          </div>
+
+          {/* Optional pre-generation step. Placed immediately above Generate because that's the
+              order it's meant to be used in, and left entirely skippable -- Generate behaves
+              exactly as it always did when no brief has been fetched. See serpResearch.ts for the
+              two limits the copy here is careful about: this reads Google's search results, not
+              the AI Overview (no API exposes that), and the retrieved set is not a verified
+              rank-1/2/3 ordering. */}
+          <div className="border-t border-indigo-900/60 pt-3 space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+                Research the competition first <span className="text-slate-500 font-normal normal-case">— optional</span>
+              </label>
+              {serpBrief && (
+                <button
+                  type="button"
+                  onClick={clearSerpResearch}
+                  className="text-[11px] text-slate-500 hover:text-slate-300 underline underline-offset-2 cursor-pointer"
+                >
+                  discard brief
+                </button>
+              )}
+            </div>
+            <button
+              onClick={runSerpResearch}
+              disabled={serpResearching || generating || hasExistingContent || !(exactTitleInput.trim() || topicInput.trim())}
+              className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs rounded-xl transition-all cursor-pointer disabled:opacity-50"
+            >
+              {serpResearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
+              <span>{serpResearching ? 'Searching Google...' : serpBrief ? 'Re-run research' : 'Run live search research'}</span>
+            </button>
+            {!(exactTitleInput.trim() || topicInput.trim()) ? (
+              <p className="text-[11px] text-slate-500">
+                Fill in Exact title or Topic above first — that's the query this searches.
+              </p>
+            ) : (
+              <p className="text-[11px] text-slate-500">
+                Runs a live Google search for "{(exactTitleInput.trim() || topicInput.trim()).slice(0, 70)}", reads what's currently ranking, and writes a brief on how to beat it. Costs one extra Gemini call from the same daily quota as Generate.
+              </p>
+            )}
+            {serpError && (
+              <p className="text-[11px] text-rose-400">{serpError}</p>
+            )}
+
+            {serpBrief && (
+              <div className="rounded-xl border border-emerald-800/60 bg-emerald-950/30 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setSerpBriefOpen((v) => !v)}
+                  className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left cursor-pointer"
+                >
+                  <span className="text-xs font-bold text-emerald-200 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    Brief ready — will be sent with Generate
+                  </span>
+                  {serpBriefOpen ? <ChevronUp className="w-3.5 h-3.5 text-emerald-300 shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 text-emerald-300 shrink-0" />}
+                </button>
+                {serpBriefOpen && (
+                  <div className="px-3 pb-3 space-y-2.5">
+                    {/* Deliberately loud, and deliberately not phrased as a nitpick: without the
+                        search tool actually firing, the "brief" is the model describing the web
+                        from memory. That reads identically to a real one and would silently steer
+                        an article using an imagined competitive landscape. */}
+                    {!serpGrounded && (
+                      <div className="p-2.5 bg-amber-950/40 border border-amber-800/60 rounded-lg text-[11px] text-amber-200 flex items-start gap-2">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                        <span>
+                          No live search actually ran for this — the model answered from its own training data, so treat this as a guess about the SERP, not an observation of it. Re-running usually fixes it.
+                        </span>
+                      </div>
+                    )}
+                    {serpQueries.length > 0 && (
+                      <p className="text-[11px] text-slate-400">
+                        <span className="text-slate-500">Searched:</span> {serpQueries.map((q) => `"${q}"`).join(', ')}
+                      </p>
+                    )}
+                    {serpSourceDomains.length > 0 && (
+                      <p className="text-[11px] text-slate-400">
+                        <span className="text-slate-500">Pages retrieved (not a ranked 1-2-3 order):</span> {serpSourceDomains.join(', ')}
+                      </p>
+                    )}
+                    <pre className="text-[11px] text-slate-300 whitespace-pre-wrap font-sans leading-relaxed max-h-96 overflow-y-auto">
+                      {serpBrief}
+                    </pre>
+                    <p className="text-[11px] text-slate-500">
+                      Sent to the writer as strategy only. Nothing in it counts as a source — no figure from these pages can be repeated and none of them can be cited, same hard rules as always.
+                    </p>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
