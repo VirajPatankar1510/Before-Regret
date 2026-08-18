@@ -111,7 +111,8 @@ export function buildArticlePrompt(
   exactTitle: string = '',
   relatedKeywords: string[] = [],
   additionalTopic: string = '',
-  additionalTopicExact: boolean = false
+  additionalTopicExact: boolean = false,
+  serpBrief: string = ''
 ): { systemInstruction: string; contents: string } {
   const trimmedTopic = topicSeed.trim();
   const trimmedExactTitle = exactTitle.trim();
@@ -201,7 +202,42 @@ export function buildArticlePrompt(
       : `\n\nThe article must also include one dedicated ## subheading, placed wherever it fits the article's natural flow, that specifically covers this topic/question -- phrase the subheading itself as the specific, searchable long-tail question a reader would actually type (the same standard the main title uses), refining the wording below into the best subheading phrasing for it rather than repeating it verbatim if a better phrasing exists, and weave in genuinely relevant SEO keywords naturally rather than stuffing them: "${trimmedAdditionalTopic}"\n\nThat section must genuinely and specifically cover it: real mechanisms, real specifics, hedged the same as HARD RULE 5 requires everywhere else -- not one throwaway sentence added just to check a box. This site's content-quality check flags any article under 500 words as thin content, and a padded or superficial subsection here is exactly the kind of writing that produces that failure, so treat this subsection as needing the same depth and specificity as any other section, not an afterthought. This subheading is IN ADDITION to the article's normal structure and does not replace or change the title, angle, or any other section required elsewhere in this prompt.${additionalTopicDuplicateGuard}`
     : '';
 
-  const contents = `${topicInstruction}${existingTitlesBlock}${relatedKeywordsBlock}${additionalTopicBlock}
+  // Competitive brief from the pre-generation SERP research pass (see serpResearch.ts and the
+  // /api/admin/articles/serp-research route). Optional -- an empty string leaves this prompt
+  // byte-for-byte identical to what it was before the feature existed.
+  //
+  // The framing below is doing most of the work here, and every clause of it is load-bearing:
+  //
+  // - It is STRATEGY input, not SOURCE material. The brief is a model's summary of third-party
+  //   commercial pages. Nothing in it is verified, and the pages it summarises are frequently
+  //   insurer marketing and contractor lead-gen posts. If a figure from one of them were treated as
+  //   a fact, this feature would become the single largest fabrication vector in the whole app --
+  //   it would launder an unverified competitor claim into a published article that looks
+  //   researched. HARD RULES 1 and 8 already forbid that; this says so again at the point of
+  //   temptation, because the temptation is created right here and nowhere else.
+  // - It must not become a template. "Here is what the top pages do" is a direct invitation to
+  //   mirror their structure and paraphrase their coverage, which is exactly what HARD RULE 7
+  //   forbids and, separately, what would guarantee the result is one more near-identical page in a
+  //   set of near-identical pages -- the opposite of the point.
+  // - Gaps are candidates, not a checklist. A gap the brief names may exist because the question is
+  //   genuinely unanswerable, or answerable only with a specific figure this site cannot verify, or
+  //   only with personalized advice HARD RULE 3 forbids. Filling such a gap "because the brief said
+  //   nobody covers it" is how an article ends up making the one claim it has no business making.
+  //   Some gaps are moats, not openings.
+  const serpBriefBlock = serpBrief
+    ? `\n\nCOMPETITIVE BRIEF -- what is already ranking for this query. This came from a live Google Search pass run just before this request. Read it as strategy, under these limits:
+
+${serpBrief}
+
+How to use that brief:
+- It is competitive intelligence about COVERAGE and ANGLE only. It is NOT a source. Nothing in it is verified: the pages it describes are largely commercial (insurer marketing, contractor lead-generation), and the brief itself is a summary of them, not a checked record. Do not repeat any statistic, dollar figure, percentage, date, or study result that appears in it. HARD RULES 1 and 8 apply to it in full -- a number is not citable because a competitor published it, and none of these pages may be cited at all.
+- Do not mirror their structure, reuse their section order, or paraphrase their explanations. HARD RULE 7 still binds. The point of knowing what they did is to write something different and better, not to produce a smoother version of the same page.
+- Beat the consensus answer at its own job. The reader arriving from search has, in effect, already been given that answer. The article earns the click and the ranking by being more specific, more directly useful, and more honest about the parts the consensus answer smooths over -- especially where it hedges into saying nothing, or answers a general question when the reader's real question is narrower.
+- The gaps are candidates, not a checklist. Cover the ones this site can genuinely answer within the hard rules. Deliberately skip any gap that could only be filled by inventing a figure, by giving personalized insurance/legal/financial advice, or by making a claim about a specific property -- a gap can exist precisely because it cannot honestly be filled, and the right move there is to say clearly why the question doesn't have a general answer and what the reader should ask a licensed professional instead. That explanation is itself more useful than the confident non-answer the competing pages give.
+- Own the pre-purchase angle. Where those pages are written for someone who already owns the home and has a problem now, this article is for someone deciding whether to buy. That difference in reader is usually the single largest real gap available, and it does not require a single unverifiable claim to exploit.`
+    : '';
+
+  const contents = `${topicInstruction}${existingTitlesBlock}${relatedKeywordsBlock}${additionalTopicBlock}${serpBriefBlock}
 
 SEO approach for this article:
 - Target ONE specific, long-tail search query. Long-tail (specific, lower-competition, high buyer-intent) is what a newer site can realistically rank for -- not a broad head term.
@@ -212,7 +248,7 @@ SEO approach for this article:
 - Demonstrate real expertise with specific mechanisms, eras, and regulations.
 - End with one clear, concrete next step the reader can act on today.
 
-Quick answer: write a 2-3 sentence direct, self-contained answer to the exact question the title asks -- the kind of summary Google could lift directly into a featured snippet or AI Overview. Lead with the concrete answer in the first few words -- "Yes, you can get homeowners insurance with polybutylene plumbing, but it's often difficult" not "Obtaining insurance can be difficult." Being concrete is about clarity, not certainty: still hedge the specifics in the rest of the sentence, but don't open with a vague qualifier when a direct answer is possible. It must follow the same hard rules as the rest of the article (hedged, no invented figures, no personalized advice) and should make sense read completely on its own, without the rest of the article. Confirmed live: Google frequently shows this Quick Answer as the actual search-result snippet instead of the META text below -- that's normal snippet-generation behavior, not something META can override, so this is worth writing for that placement specifically. State the direct answer clearly (that's what earns the featured-snippet/AI-Overview placement), but stop there -- leave the specific mechanism, numbers, or step-by-step process to the article body. A snippet that already tells the full story gives someone no reason to click through even when it wins the placement.
+Quick answer: write a 2-3 sentence direct, self-contained answer to the exact question the title asks -- the kind of summary Google could lift directly into a featured snippet or AI Overview. Lead with the concrete answer in the first few words -- "Yes, you can get homeowners insurance with polybutylene plumbing, but it's often difficult" not "Obtaining insurance can be difficult." Being concrete is about clarity, not certainty: still hedge the specifics in the rest of the sentence, but don't open with a vague qualifier when a direct answer is possible. It must follow the same hard rules as the rest of the article (hedged, no invented figures, no personalized advice) and should make sense read completely on its own, without the rest of the article. Confirmed live: Google frequently shows this Quick Answer as the actual search-result snippet instead of the META text below -- that's normal snippet-generation behavior, not something META can override, so this is worth writing for that placement specifically. State the direct answer clearly (that's what earns the featured-snippet/AI-Overview placement), but stop there -- leave the specific mechanism, numbers, or step-by-step process to the article body. A snippet that already tells the full story gives someone no reason to click through even when it wins the placement.${serpBrief ? ' This is the single sentence-for-sentence place where the competitive brief above matters most: the consensus answer it quotes is what currently occupies that placement, so write this Quick Answer to be a strictly better candidate for it -- answering the same question more directly, or answering the narrower question the searcher actually had, without borrowing its wording and without asserting anything the hard rules would not otherwise allow.' : ''}
 
 Citations: when a specific claim rests on one of these organizations, cite it inline immediately after the sentence, in square brackets, like this: "...has documented breaker failure-to-trip issues [CPSC]." That's it -- just the bracketed code, no extra punctuation or formatting. You may cite an organization ONLY by its short code from this approved list below, and only when it's genuinely relevant to a specific claim -- not on every paragraph. Do not use any organization not on this list, and never write a URL yourself -- the code is all that's needed, the real link is added separately, both inline and in a references list at the end.
 ${sourcesListBlock}
