@@ -9,3 +9,7 @@ coverage/
 scripts/outreach-log.json
 scripts/draft-topics-log.json
 .cache/
+# Scratch output from the repo's own tooling -- the article-faqs skill's .tmp-faq-batch.txt /
+# .tmp-faq-draft.json, and scripts/serp-batch-test.ts's two comparison files. All are working
+# artefacts read once and thrown away; none belong in a commit.
+.tmp-*
