@@ -1556,6 +1556,25 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                   <div className="text-[10px] uppercase tracking-wide text-slate-500 font-semibold">
                     Free-tier quota left today <span className="normal-case font-normal">(estimated from calls logged here)</span>
                   </div>
+                  {/* Two separate honesty notes, because they answer two different confusions.
+                      First, the direction of the error: "estimated" alone reads as "roughly right
+                      either way," when the bias is strictly one-way -- every unlogged path (a call
+                      made with the same key outside this app, a log INSERT that hit a database
+                      outage) spends real quota without moving this number, so it can only
+                      overstate. Second, and the one that actually cost time: the research button
+                      is gated by Google Search grounding's own project-wide allowance, which is
+                      metered separately from these per-model counters and runs out on its own
+                      schedule. Verified directly against the API -- a plain request to
+                      gemini-3.5-flash returned 200 while the identical request with google_search
+                      returned 429, same key, same minute. Without this line the panel looks broken
+                      ("research fails but it says 15 left"); with it, the number is understood for
+                      what it measures. See the quota note at the top of serpResearch.ts. */}
+                  <p className="text-[10px] text-slate-500 leading-relaxed">
+                    Counts only calls this app logged. Calls made with the same API key elsewhere, or logged while the database was unreachable, still spend quota but never appear here — so this can only ever read <span className="text-slate-400">higher</span> than what's really left. A 429 from Gemini is the authority, not this number.
+                  </p>
+                  <p className="text-[10px] text-slate-500 leading-relaxed">
+                    These count <span className="text-slate-400">model requests only</span>. "Run live search research" also draws on Google Search grounding's separate, project-wide allowance, which isn't tracked here — it can be exhausted while every bar below still shows calls remaining.
+                  </p>
                   <div className="grid grid-cols-3 gap-2">
                     {geminiUsage.quotaByModel.map((q) => {
                       const pctLeft = q.remaining / q.dailyLimit;

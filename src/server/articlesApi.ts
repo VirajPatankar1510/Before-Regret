@@ -3,7 +3,7 @@ import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
 import { buildArticlePrompt } from './articleGenerator.js';
 import { GEMINI_MODEL, CONTENT_GENERATION_MODELS, REPORT_GENERATION_MODELS, DAILY_FREE_TIER_LIMIT_PER_MODEL, isQuotaError, EmptyModelResponseError, generateContentWithFallback, generateContentStreamWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
-import { SERP_RESEARCH_SYSTEM_INSTRUCTION, buildSerpResearchPrompt, extractGroundingFacts } from './serpResearch.js';
+import { SERP_RESEARCH_SYSTEM_INSTRUCTION, SERP_RESEARCH_QUOTA_EXHAUSTED_MESSAGE, buildSerpResearchPrompt, extractGroundingFacts } from './serpResearch.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
 import type { GenerateContentResponseUsageMetadata } from '@google/genai';
 import { submitUrlsToIndexNow } from '../utils/indexNowService.js';
@@ -175,6 +175,13 @@ export function registerArticleRoutes(app: Express) {
           generateContent: async (params: any) => {
             const result = await ai.models.generateContent(params);
             if (!(typeof result.text === 'string' && result.text.trim())) {
+              // Log BEFORE throwing. An empty response is still a request that reached Google,
+              // still spent one of that model's 20/day, and still comes back with real
+              // usageMetadata (the reproduced case billed ~1,000 thinking tokens for no output).
+              // Throwing first would leave the admin panel's "X of 20 left" counting only the
+              // calls that happened to succeed, so the number would drift further from reality
+              // exactly when things are going wrong and an accurate count matters most.
+              logGeminiUsage('serp_research', params.model, result.usageMetadata);
               throw new EmptyModelResponseError(params.model);
             }
             return result;
@@ -215,7 +222,11 @@ export function registerArticleRoutes(app: Express) {
         // response even when an empty response is what the chain happened to end on.
         if (quotaExhaustedModels.length > 0) {
           console.error('[articles] serp research: quota exhausted on', quotaExhaustedModels.join(', '));
-          res.status(429).json({ success: false, error: contentQuotaExhaustedMessage() });
+          // Deliberately NOT contentQuotaExhaustedMessage() -- see the quota note at the top of
+          // serpResearch.ts. A 429 on a grounded call is usually the search-grounding allowance,
+          // not the per-model one, and the generic message sends someone to check model counters
+          // that will still show calls remaining and will never explain the failure.
+          res.status(429).json({ success: false, error: SERP_RESEARCH_QUOTA_EXHAUSTED_MESSAGE });
           return;
         }
         if (emptyResponseModels.length > 0) {
@@ -250,7 +261,7 @@ export function registerArticleRoutes(app: Express) {
     } catch (err: any) {
       console.error('[articles] serp research failed:', err);
       if (isQuotaError(err)) {
-        res.status(429).json({ success: false, error: contentQuotaExhaustedMessage() });
+        res.status(429).json({ success: false, error: SERP_RESEARCH_QUOTA_EXHAUSTED_MESSAGE });
       } else {
         res.status(500).json({ success: false, error: 'Search research failed. Try again.' });
       }
