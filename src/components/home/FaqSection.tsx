@@ -56,6 +56,9 @@ export const FaqSection: React.FC = () => {
               >
                 <button
                   onClick={() => setOpenIdx(isOpen ? null : idx)}
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-panel-${idx}`}
+                  id={`faq-trigger-${idx}`}
                   className="w-full p-6 text-left flex items-center justify-between gap-4 font-sans text-lg font-bold text-slate-900 cursor-pointer hover:bg-slate-50/80 transition-colors"
                 >
                   <span>{faq.q}</span>
@@ -63,7 +66,12 @@ export const FaqSection: React.FC = () => {
                 </button>
 
                 {isOpen && (
-                  <div className="px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 font-sans">
+                  <div
+                    id={`faq-panel-${idx}`}
+                    role="region"
+                    aria-labelledby={`faq-trigger-${idx}`}
+                    className="px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 font-sans"
+                  >
                     {faq.a}
                   </div>
                 )}

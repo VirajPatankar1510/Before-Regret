@@ -584,8 +584,16 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         <form onSubmit={handleMapSearch} className="flex items-center gap-2 relative">
           <div className="relative flex-1 flex items-center bg-slate-950 border border-slate-700 focus-within:border-blue-500 rounded-xl px-3 py-2 transition-all">
             <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
+            {/* aria-label, not a visible <label>: this is the homepage's primary conversion control
+                and its design is a placeholder-only search field, but a placeholder is not an
+                accessible name (it vanishes on input and is skipped by some screen readers), so the
+                field previously had no programmatic label at all. autoComplete lets browsers offer a
+                saved street address. */}
             <input
               type="text"
+              id="address-search-input"
+              aria-label="Full street address to research"
+              autoComplete="street-address"
               value={mapSearchQuery}
               onChange={(e) => {
                 setMapSearchQuery(e.target.value);
