@@ -1257,6 +1257,66 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     res.status(404).json({ error: `API endpoint ${req.method} ${req.path} not found.` });
   });
 
+  // --- Legacy URLs still indexed from the pre-pivot product ---------------------------------
+  //
+  // Found by scripts/gsc-page-coverage.ts, not by guesswork: Search Console's page dimension
+  // reported 19 URLs earning impressions that are not in this site's published list, and a direct
+  // HTTP check confirmed which of them 404. They still rank -- several at positions 3 to 5, better
+  // than almost every page currently written -- so real people are clicking them and landing on an
+  // error page.
+  //
+  // They split into two groups that need OPPOSITE treatment, which is the whole reason this is a
+  // hand-maintained table rather than one blanket rule:
+  //
+  // 1. Old legal URLs that have a genuine successor on today's site. A searcher looking for this
+  //    site's privacy policy still wants a privacy policy, and one exists at a different path.
+  //    301 preserves whatever ranking those URLs hold and, more importantly, answers the request.
+  //
+  // 2. Pages from the previous product entirely -- this codebase used to be an India-focused
+  //    resident/housing-society Q&A platform (see the catch-all handler's comment below, and
+  //    /become-expert, which that fix already addressed). Nothing on a US property-research site
+  //    succeeds "find an expert" or "will I regret". Redirecting these somewhere plausible would
+  //    be worse than the 404: Google treats an irrelevant redirect as a soft 404 anyway, and a
+  //    reader clicking "will I regret" does not want a county page. 410 Gone states the honest
+  //    fact -- this is permanently removed, stop asking -- and is the one signal that gets a URL
+  //    dropped from the index faster than repeated 404s.
+  //
+  // Deliberately NOT in vercel.json: it cannot express 410, so splitting the table across two
+  // files would leave half the legacy URLs handled somewhere the other half is not. Registered
+  // before the dev/prod split so `npm run dev` behaves the same as production.
+  // Targets carry a trailing slash on purpose. These legal pages are prerendered as
+  // dist/<name>/index.html, so express.static answers a slash-less request with its own 301 to the
+  // slash form -- redirecting to '/privacy' would therefore produce a two-hop chain
+  // (/privacy-policy -> /privacy -> /privacy/). Verified: with the slash, it is a single hop.
+  const LEGACY_REDIRECTS: Record<string, string> = {
+    '/privacy-policy': '/privacy/',
+    '/terms-and-conditions': '/terms/',
+    '/legal-disclaimer': '/disclaimer/',
+  };
+  // No successor exists for any of these. /shipping-policy is included deliberately: this site
+  // sells digital property reports and has nothing to ship, so pointing it at a refunds or terms
+  // page would be inventing a relationship that does not exist.
+  const LEGACY_GONE = new Set([
+    '/become-expert', '/become-resident', '/court', '/explore', '/will-i-regret',
+    '/shipping-policy',
+    '/guides/breadwinner-resentment-income-disparity',
+    '/guides/red-flag-evaluation-boundary-matrix',
+  ]);
+  // Every /expert/* path from the old platform, including its /ask sub-pages. A prefix rather than
+  // a list because the indexed set (exp_amit, exp_rahul, exp_sneha, plus /ask variants) is clearly
+  // a sample of a larger generated space, and the current site has no /expert route at all.
+  const LEGACY_GONE_PREFIX = '/expert/';
+
+  app.use((req, res, next) => {
+    const p = req.path.replace(/\/+$/, '') || '/';
+    const target = LEGACY_REDIRECTS[p];
+    if (target) return res.redirect(301, target);
+    if (LEGACY_GONE.has(p) || p.startsWith(LEGACY_GONE_PREFIX)) {
+      return res.status(410).type('text/plain').send('Gone -- this page was part of a previous version of this site and has been permanently removed.');
+    }
+    next();
+  });
+
   // Vite Integration for Dev / Static Assets in Prod
   // Dynamic import: vite is dev-only tooling with heavy transitive deps (esbuild, rollup) that
   // has no reason to load in production, and especially not inside a Vercel serverless function
