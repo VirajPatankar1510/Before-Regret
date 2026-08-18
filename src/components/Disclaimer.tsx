@@ -58,8 +58,8 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
               (beforeregret.com), including all property research reports, guide articles, county
               pages, comparison data, and sponsored placements. It is operated by <strong>Atmostellar</strong>{' '}
               ("we", "us", "our"). It supplements, and does not replace, our{' '}
-              <a href="/terms" className="text-blue-600 hover:underline font-bold">Terms of Service</a> and{' '}
-              <a href="/privacy" className="text-blue-600 hover:underline font-bold">Privacy Policy</a>.{' '}
+              <a href="/terms/" className="text-blue-600 hover:underline font-bold">Terms of Service</a> and{' '}
+              <a href="/privacy/" className="text-blue-600 hover:underline font-bold">Privacy Policy</a>.{' '}
               <strong>Those Terms include a binding individual arbitration agreement and a class
               action waiver, which you may opt out of within 30 days</strong> -- see section 8 below.
             </p>
@@ -260,9 +260,9 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
                 input reflects that input, not an error on our part, and cannot be relied on as
                 though we had verified it independently. Where a wrong input is what produced the
                 mismatch, the remedy for it is correction, regeneration, or a refund under our{' '}
-                <a href="/refunds" className="text-blue-600 hover:underline font-bold">Refund Policy</a>{' '}
+                <a href="/refunds/" className="text-blue-600 hover:underline font-bold">Refund Policy</a>{' '}
                 -- see sections 3.5 and 3.6 of our{' '}
-                <a href="/terms" className="text-blue-600 hover:underline font-bold">Terms of Service</a>.
+                <a href="/terms/" className="text-blue-600 hover:underline font-bold">Terms of Service</a>.
                 <strong> None of this affects your right to ask us to correct something, to dispute
                 a charge with your card issuer, or to rely on any consumer protection right the law
                 does not let you sign away.</strong>
@@ -275,7 +275,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
               <p>
                 Your use of this site is governed by the limitations of liability and other terms
                 set out in our{' '}
-                <a href="/terms" className="text-blue-600 hover:underline font-bold">Terms of Service</a>,
+                <a href="/terms/" className="text-blue-600 hover:underline font-bold">Terms of Service</a>,
                 which are incorporated into this disclaimer by reference. Nothing in this disclaimer
                 is intended to exclude or limit any liability that cannot lawfully be excluded or
                 limited under the law applicable to you. In particular, and consistent with section
@@ -302,7 +302,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
                 binding arbitration rather than in court, and you and Atmostellar each waive the
                 right to a jury trial and to participate in a class action.</strong> The full terms
                 are set out in{' '}
-                <a href="/terms" className="text-blue-600 hover:underline font-bold">section 7 of our Terms of Service</a>{' '}
+                <a href="/terms/" className="text-blue-600 hover:underline font-bold">section 7 of our Terms of Service</a>{' '}
                 and control over this summary.
               </p>
               <p>

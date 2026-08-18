@@ -76,7 +76,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                 cannot be based on report content that follows from a property type, year built, or
                 unit number you supplied incorrectly at request time -- these fields are not
                 independently verified before a report is generated. See sections 3.5 and 3.6 of our{' '}
-                <a href="/terms" className="text-blue-600 font-bold hover:underline">Terms of Service</a>.
+                <a href="/terms/" className="text-blue-600 font-bold hover:underline">Terms of Service</a>.
               </p>
               {/* Savings clause. Without it, "final and non-refundable" is an unqualified statement
                   that a consumer has no refund rights at all -- which is not true everywhere, since
@@ -264,14 +264,14 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               </h2>
               <p>
                 Contact us first -- most billing questions are resolved directly, and{' '}
-                <a href="/terms" className="text-blue-600 font-bold hover:underline">section 7.1 of our Terms of Service</a>{' '}
+                <a href="/terms/" className="text-blue-600 font-bold hover:underline">section 7.1 of our Terms of Service</a>{' '}
                 requires both sides to attempt informal resolution for 60 days before starting any
                 formal proceeding.
               </p>
               <p>
                 If that does not resolve it, <strong>billing and refund disputes are subject to the
                 binding individual arbitration agreement and class action waiver in{' '}
-                <a href="/terms" className="text-blue-600 font-bold hover:underline">section 7 of the Terms</a></strong>,
+                <a href="/terms/" className="text-blue-600 font-bold hover:underline">section 7 of the Terms</a></strong>,
                 which control over this summary. Claims brought in <strong>small claims court</strong>{' '}
                 are excluded from arbitration, and you may <strong>opt out of arbitration entirely</strong>{' '}
                 within 30 days of first accepting the Terms by emailing{' '}

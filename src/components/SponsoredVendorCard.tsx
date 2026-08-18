@@ -40,7 +40,7 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
         )}
         <p className="text-[11px] text-slate-500">
           Paid placement. Details supplied by the advertiser and not verified by us --{' '}
-          <a href="/disclaimer" className="underline hover:text-slate-700">check any licence yourself</a>.
+          <a href="/disclaimer/" className="underline hover:text-slate-700">check any licence yourself</a>.
         </p>
       </div>
       <div className="flex items-center gap-2 shrink-0">
