@@ -147,6 +147,51 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_terms_acceptances_user_version ON terms_acceptances(clerk_user_id, terms_version)`;
 
+  // arbitration_opt_outs: the other half of the terms_acceptances ledger, and until now the
+  // missing half.
+  //
+  // Terms 7.9 gives every user 30 days to reject the arbitration agreement by email, and that
+  // right is published in six places (Terms 7.9, Disclaimer, Privacy Policy, Refund Policy, and
+  // both acceptance controls). Nothing recorded it. terms_acceptances proved who agreed; no table
+  // anywhere proved who declined, so the opt-out was a promise with no mechanism behind it.
+  //
+  // Two distinct problems that creates, both worth stating because they pull in opposite
+  // directions. The first is evidential and runs against the company: a 30-day opt-out is a large
+  // part of why a consumer arbitration clause survives an unconscionability challenge at all, and
+  // an opt-out nobody can show was honoured argues against the very clause it exists to
+  // legitimise. The second is operational and is worse: without a record you cannot tell whether
+  // a given user opted out, so you could one day move to compel arbitration against someone who
+  // validly declined. That is a filing you cannot take back.
+  //
+  // received_at vs recorded_at is the load-bearing distinction here and must not be collapsed.
+  // The 30-day clock in 7.9 runs to the moment the USER SENT their email, not to whenever an
+  // operator got round to transcribing it. Storing only an insertion timestamp would make every
+  // late transcription look like a late opt-out, which is precisely backwards -- the delay would
+  // be ours and the prejudice theirs. received_at is therefore supplied by the recorder from the
+  // email itself and is NOT defaulted to now().
+  //
+  // clerk_user_id is nullable on purpose: the email may arrive from an address that resolves to
+  // no account, or to an account created later. An opt-out is valid when sent, so it must be
+  // recordable against the email alone. The unique index is on the email, not the user id, for
+  // the same reason.
+  await sql`
+    CREATE TABLE IF NOT EXISTS arbitration_opt_outs (
+      id SERIAL PRIMARY KEY,
+      user_email TEXT NOT NULL,
+      clerk_user_id TEXT,
+      terms_version TEXT NOT NULL,
+      received_at TIMESTAMPTZ NOT NULL,
+      recorded_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      recorded_by TEXT,
+      raw_message TEXT,
+      notes TEXT
+    )
+  `;
+  // Idempotent per (email, revision): re-recording the same opt-out must not create a second row
+  // or move received_at, on the same reasoning as terms_acceptances -- the first record is the one
+  // that matters. Email is lowercased by the route before insert so the index is meaningful.
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_arbitration_opt_outs_email_version ON arbitration_opt_outs(user_email, terms_version)`;
+
   // County research pages (see scripts/fetch-county-data.ts and src/server/countiesApi.ts).
   // data_complete is the enforcement point for the "no data, no page" rule: it's only ever set
   // true by the fetch script, and only when all four real data sources (EPA radon zone, Census

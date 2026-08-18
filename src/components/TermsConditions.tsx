@@ -71,7 +71,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               <strong className="text-white">Section 7 of these Terms requires most disputes to be resolved by individual,
               binding arbitration rather than in court, and waives your right to a jury trial and to
               participate in a class action.</strong>{' '}
-              Small claims court and intellectual property claims are excluded.{' '}
+              Small claims court, intellectual property, and public-injunction claims are excluded.{' '}
               <strong className="text-white">You may opt out of arbitration within 30 days of first accepting these Terms
               by emailing hello@beforeregret.com with the subject "Arbitration Opt-Out"</strong> --
               opting out costs you nothing and changes nothing else about your account. Please read
@@ -208,12 +208,33 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               </p>
             </section>
 
-            {/* Section 7 -- Arbitration. Placed immediately before Governing Law because the two
-                interact: 7.2 makes the FEDERAL ARBITRATION ACT govern this section specifically,
-                independent of Section 8's general India choice-of-law. That separation is
-                deliberate and load-bearing -- FAA coverage is what makes the class waiver in 7.5
-                enforceable under Concepcion, and it would not follow from a clause that simply
-                inherited Indian law. */}
+            {/* Section 7 -- Arbitration.
+
+                Placed immediately before Governing Law because the two interact: 7.2 makes the
+                FEDERAL ARBITRATION ACT govern this section specifically, independent of Section 8's
+                general India choice-of-law. That separation is deliberate and load-bearing -- FAA
+                coverage is what makes the class waiver in 7.7 enforceable under Concepcion, and it
+                would not follow from a clause that simply inherited Indian law.
+
+                RENUMBERED 2026-08-18. The previous revision appended a "7.2A" rather than renumber,
+                which was expedient and then immediately started to compound as more paragraphs were
+                added. Every internal cross-reference below was updated with it. The only references
+                to a specific subsection from OUTSIDE this file are to 7.1 (PrivacyPolicy.tsx and
+                RefundPolicy.tsx, both pointing at the informal-resolution step), and 7.1 did not
+                move; everything else external points at "Section 7" as a whole. Verify that still
+                holds before renumbering again.
+
+                DELETED in the same revision: a custom mass-arbitration protocol that batched
+                demands into groups of fifty, ran a bellwether round, then required a global
+                mediation before any further batch proceeded -- all with no outer time limit, and no
+                tiebreaker for the "selected equally by each side" bellwether step. Stacked on 7.1's
+                60 days it described a process a claimant might wait years inside, which is the
+                shape courts read as deterrence regardless of the paragraph's stated intent. It
+                defended against 25+ coordinated demands, which is not a live risk at this site's
+                traffic and will not be for years. It is now one sentence in 7.4 adopting AAA's own
+                rules. Reinstate a custom protocol only with counsel, drafted against the AAA rules
+                in force at that time -- a bespoke procedure that conflicts with them is also what
+                gets a clause refused by the administrator. */}
             <section className="space-y-3 bg-amber-50/40 p-5 rounded-2xl border border-amber-200">
               <h2 className="text-base font-bold text-slate-900 border-b border-amber-200 pb-2">
                 7. Binding Individual Arbitration & Class Action Waiver
@@ -224,7 +245,9 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                 disputes between you and Atmostellar to be resolved by individual, binding
                 arbitration rather than in court. It waives your right to a jury trial and your
                 right to participate in a class action or class-wide arbitration. You may opt out
-                of this Section within 30 days -- see 7.7.
+                of this Section within 30 days -- see 7.9. Atmostellar pays the arbitration fees
+                for consumer claims (7.5) and will satisfy any award you win without requiring you
+                to enforce it (7.6).
               </div>
 
               <div className="space-y-2.5 text-xs text-slate-600">
@@ -238,12 +261,13 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                   relief you seek. A Notice submitted on behalf of multiple people, or one that does not
                   contain this information for each individual, does not satisfy this requirement.
                   Completion of this process is a <strong>condition precedent</strong> to commencing arbitration,
-                  and any applicable limitation period is tolled while it runs.
+                  and any applicable limitation period is tolled while it runs. This paragraph does not
+                  apply to a claim brought in small claims court under 7.8(a).
                 </p>
 
                 <p>
                   <strong>7.2 Agreement to Arbitrate; Federal Arbitration Act.</strong> Except for the
-                  disputes described in 7.6, you and Atmostellar agree that any dispute, claim, or
+                  disputes described in 7.8, you and Atmostellar agree that any dispute, claim, or
                   controversy arising out of or relating to these Terms, the platform, a report, or a
                   sponsored placement -- whether based in contract, tort, statute, fraud, or any other
                   legal theory -- shall be resolved exclusively by <strong>final and binding individual
@@ -256,24 +280,24 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
 
                 {/* Formation is carved out to a court deliberately. Sending "was there ever an
                     agreement?" to the arbitrator is circular -- the arbitrator's authority is the
-                    very thing in question -- and courts decide formation for that reason. The
-                    previous wording sent ALL threshold questions to the arbitrator, which is the
+                    very thing in question -- and courts decide formation for that reason. An
+                    earlier draft sent ALL threshold questions to the arbitrator, which is the
                     aggressive posture and the one most likely to get the whole delegation struck.
                     Conceding formation to a court costs little (the acceptance records in
                     terms_acceptances are what answer it) and makes the rest of the delegation far
                     more defensible. */}
                 <p>
-                  <strong>7.2A Who Decides What.</strong> <strong>A court, and not the arbitrator,
+                  <strong>7.3 Who Decides What.</strong> <strong>A court, and not the arbitrator,
                   shall decide any dispute about whether an agreement to arbitrate was formed at
                   all</strong> — including whether you were given reasonably conspicuous notice of
-                  this Section and affirmatively accepted it — and shall decide whether 7.5 is
+                  this Section and affirmatively accepted it — and shall decide whether 7.7 is
                   enforceable. Once formation is established, the arbitrator shall decide all
                   remaining threshold questions of arbitrability, including the scope, applicability,
                   interpretation, and validity of this Section.
                 </p>
 
                 <p>
-                  <strong>7.3 Arbitration Procedure.</strong> The arbitration shall be administered by the{' '}
+                  <strong>7.4 Arbitration Procedure.</strong> The arbitration shall be administered by the{' '}
                   <strong>American Arbitration Association ("AAA")</strong> under its Consumer Arbitration
                   Rules (for consumers) or Commercial Arbitration Rules (for business vendors), as then in
                   effect, except as modified by this Section. If the AAA is unavailable or declines to
@@ -282,41 +306,80 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                   arbitrator. A consumer claimant may elect to proceed by telephone, videoconference, or
                   document submission, or in person in the county of their residence. The arbitrator shall
                   issue a reasoned written decision, and judgment on the award may be entered in any court
-                  of competent jurisdiction.
+                  of competent jurisdiction. If a large number of substantially similar demands are filed
+                  against Atmostellar at or about the same time, the parties shall follow the{' '}
+                  <strong>AAA Mass Arbitration Supplementary Rules</strong> as then in effect;{' '}
+                  <strong>the parties have not agreed to any batching, bellwether, staging, or
+                  sequencing procedure beyond those rules</strong>, and none shall be implied.
+                </p>
+
+                {/* 7.5 and 7.6 exist because the rest of Section 7 was, in practical terms,
+                    unreachable for the claim sizes this site generates.
+
+                    7.5: AAA's Consumer Rules cap the consumer filing fee, but the cap is currently
+                    around $225 against a $14.99 product. A forum that costs fifteen times the claim
+                    is a deterrent, not a venue, and that is the effective-vindication problem
+                    courts look for. Paying the fees costs nothing unless someone actually files.
+
+                    7.6 is the more important of the two and the reason it is phrased as an
+                    unconditional undertaking rather than a best-efforts statement. 8.4 states
+                    plainly that Atmostellar has no US entity and no US assets. Without this
+                    paragraph, a consumer who WON -- in arbitration, or in their home court under
+                    8.2 -- would have nothing in the United States to attach, and would have to
+                    enforce in India: an arbitral award under the New York Convention, or a US
+                    judgment by fresh suit under CPC s.13, since the US is not a s.44A reciprocating
+                    territory. Either route costs multiples of the 6.1 cap. A clause whose remedy
+                    cannot be collected is the substantive half of unconscionability, and it would
+                    have infected the enforceability of this whole Section. Do not weaken 7.6 to
+                    "commercially reasonable efforts" or condition it on residence or forum -- the
+                    unconditional form is the entire point, and it only ever costs money in the case
+                    where Atmostellar has already lost. */}
+                <p>
+                  <strong>7.5 Costs of Arbitration.</strong> For any consumer claim seeking{' '}
+                  <strong>$10,000 or less</strong>, <strong>Atmostellar will pay all AAA filing,
+                  administrative, and arbitrator fees</strong>, including any portion the AAA rules
+                  would otherwise allocate to you. <strong>You will never be required to pay more to
+                  bring a claim in arbitration than you would pay to file the same claim in a court
+                  where you reside.</strong> Atmostellar may seek reimbursement of fees it has
+                  advanced only where the arbitrator determines that a claim or a specific request
+                  for relief was frivolous or brought for an improper purpose. Nothing in this
+                  Section limits the arbitrator's authority to award costs or attorneys' fees where
+                  a statute applicable to your claim provides for them; the arbitrator has the same
+                  power to award them as a court would have.
                 </p>
 
                 <p>
-                  <strong>7.4 Coordinated and Mass Filings; Batching.</strong> If twenty-five (25) or more
-                  demands for arbitration raising substantially similar claims are filed against
-                  Atmostellar by or with the assistance of the same or coordinated counsel, the parties
-                  agree the demands shall be administered under the <strong>AAA Mass Arbitration
-                  Supplementary Rules</strong> (or the administrator's equivalent procedures), as then in
-                  effect, and shall be <strong>batched into groups of no more than fifty (50)</strong> for
-                  all purposes, including the assessment of filing and administrative fees. The parties
-                  shall first arbitrate a representative <strong>bellwether</strong> batch selected equally
-                  by each side; the remaining demands shall be stayed, with all limitation periods tolled,
-                  pending its conclusion. Following the bellwether awards, the parties shall engage in a
-                  single global mediation before any further batch proceeds. This provision is intended to
-                  make resolution of large numbers of similar claims efficient for both sides, not to
-                  delay or deny any individual claim.
+                  <strong>7.6 Payment of Awards; No Enforcement Proceedings Required.</strong> If an
+                  arbitrator issues an award in your favour, or a court enters a judgment in your
+                  favour under Section 8, <strong>Atmostellar will pay it in full within thirty (30)
+                  days of that award or judgment becoming final, without requiring you to commence
+                  any enforcement, recognition, or execution proceeding in any country.</strong> This
+                  undertaking is given because Atmostellar is an Indian company with no United States
+                  entity or assets (see 8.4), and it exists so that a remedy you obtain is one you
+                  can actually collect. It is an unconditional obligation of Atmostellar and does not
+                  depend on where you reside, where the award was made, or which forum decided the
+                  claim.
                 </p>
 
                 <p>
-                  <strong>7.5 Class Action Waiver; Non-Severability of this Provision.</strong>{' '}
+                  <strong>7.7 Class Action Waiver; Non-Severability of this Provision.</strong>{' '}
                   <strong>YOU AND ATMOSTELLAR AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN AN
                   INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS,
                   COLLECTIVE, CONSOLIDATED, PRIVATE ATTORNEY GENERAL, OR REPRESENTATIVE PROCEEDING.</strong>{' '}
                   The arbitrator may award relief only in favour of the individual party seeking it and only
                   to the extent necessary to provide relief on that party's individual claim, and may not
-                  preside over any form of class or consolidated proceeding. <strong>If this paragraph 7.5
+                  preside over any form of class or consolidated proceeding. <strong>If this paragraph 7.7
                   is found to be unenforceable or invalid as to any claim or any part of a claim, then the
                   entirety of this Section 7 shall be null and void as to that claim, which shall instead
                   proceed in court under Section 8.</strong> This non-severability is deliberate: the
-                  parties have not agreed to class-wide arbitration and shall not be compelled to it.
+                  parties have not agreed to class-wide arbitration and shall not be compelled to it.{' '}
+                  <strong>For the avoidance of doubt, a claim excluded from this Section 7 by 7.8 is not
+                  subject to this paragraph 7.7, and the exclusion of such a claim neither renders this
+                  paragraph unenforceable nor triggers the preceding sentence.</strong>
                 </p>
 
                 <p>
-                  <strong>7.6 Exceptions.</strong> This Section 7 does not apply to, and does not prevent:
+                  <strong>7.8 Exceptions.</strong> This Section 7 does not apply to, and does not prevent:
                   (a) either party bringing an individual claim in <strong>small claims court</strong>, so
                   long as it remains an individual claim in that forum; or (b) either party seeking
                   injunctive or other equitable relief in a court of competent jurisdiction to prevent
@@ -331,31 +394,35 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                 </p>
 
                 <p>
-                  <strong>7.7 Your Right to Opt Out (30 Days).</strong> <strong>You may reject this Section 7
+                  <strong>7.9 Your Right to Opt Out (30 Days).</strong> <strong>You may reject this Section 7
                   and it will not apply to you.</strong> To opt out, send an email to{' '}
                   <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>{' '}
                   with the subject line <strong>"Arbitration Opt-Out"</strong> within <strong>thirty (30)
                   days</strong> of the date you first accepted these Terms, stating your full name and the
                   account email address you used. The opt-out must be sent by you personally for yourself
-                  alone; a submission made on behalf of multiple people is not effective. Opting out affects
-                  only this Section 7 -- the remainder of these Terms continues to apply, and{' '}
+                  alone; a submission made on behalf of multiple people is not effective.{' '}
+                  <strong>We record every opt-out we receive against your account, with the date received
+                  and the revision of these Terms it applies to, and we will confirm it to you by
+                  reply.</strong> If you opt out and later believe we have not honoured it, write to the
+                  same address and we will provide the record. Opting out affects only this Section 7 --
+                  the remainder of these Terms continues to apply, and{' '}
                   <strong>opting out will not affect your access to the platform, your pricing, or how you
                   are treated in any way.</strong>
                 </p>
 
                 <p>
-                  <strong>7.8 Jury Trial Waiver.</strong> Where a dispute proceeds in court under 7.5 or
-                  7.6, to the fullest extent permitted by applicable law <strong>you and Atmostellar each
+                  <strong>7.10 Jury Trial Waiver.</strong> Where a dispute proceeds in court under 7.7 or
+                  7.8, to the fullest extent permitted by applicable law <strong>you and Atmostellar each
                   waive any right to a trial by jury</strong>.
                 </p>
 
                 <p>
-                  <strong>7.9 Survival and Local Law.</strong> This Section 7 survives termination of your
+                  <strong>7.11 Survival and Local Law.</strong> This Section 7 survives termination of your
                   relationship with Atmostellar. Nothing in this Section is intended to waive, limit, or
                   displace any right or remedy that cannot lawfully be waived under the consumer protection
                   law of your jurisdiction, and to the extent any part of this Section is held to conflict
                   with such a right, that part shall be limited only so far as necessary and the remainder
-                  shall continue in force -- subject always to 7.5, which is non-severable.
+                  shall continue in force -- subject always to 7.7, which is non-severable.
                 </p>
               </div>
             </section>
@@ -417,14 +484,17 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                 <p>
                   <strong>8.2 Consumer Disputes -- Non-Exclusive Forum.</strong> This paragraph applies
                   to any consumer dispute not resolved by arbitration -- because it falls within the
-                  small claims or intellectual property exceptions in 7.6, because you opted out
-                  under 7.7, or because Section 7 is held not to apply. <strong>Jurisdiction for such
+                  exceptions in 7.8, because you opted out under 7.9, or because Section 7 is held
+                  not to apply. <strong>Jurisdiction for such
                   disputes is non-exclusive.</strong> You may bring your claim either in the courts of
                   Mumbai, Maharashtra, India, or in the courts of the place where you habitually
                   reside. <strong>Atmostellar submits to the jurisdiction of the courts of your place
                   of residence for this purpose and will not object to venue there on grounds of forum
                   non conveniens.</strong> Atmostellar will bring any claim it has against you only in
-                  the courts of your place of residence.
+                  the courts of your place of residence. <strong>Atmostellar's undertaking in 7.6 to
+                  satisfy an award or judgment in your favour within thirty days, without requiring
+                  you to bring enforcement proceedings anywhere, applies to a judgment obtained under
+                  this paragraph.</strong>
                 </p>
 
                 <p>
@@ -451,7 +521,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                 9. General Provisions
               </h2>
               <ul className="list-disc pl-5 space-y-1.5">
-                <li><strong>Severability:</strong> If any provision of these Terms is held invalid or unenforceable, that provision shall be severed and the remaining provisions shall continue in full force. This is subject to 7.5, which is expressly non-severable.</li>
+                <li><strong>Severability:</strong> If any provision of these Terms is held invalid or unenforceable, that provision shall be severed and the remaining provisions shall continue in full force. This is subject to 7.7, which is expressly non-severable.</li>
                 {/* The old text here was a bare "we may modify at any time", which is the clause
                     courts have repeatedly refused to enforce against a customer who was never told
                     (Douglas v. Talk America being the standard example). The promise below is one

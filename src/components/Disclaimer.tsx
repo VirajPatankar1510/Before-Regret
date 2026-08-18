@@ -307,15 +307,29 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
               </p>
               <p>
                 In outline: before either side may start an arbitration it must first send a written
-                notice of the dispute and attempt to resolve it informally for 60 days. Claims in{' '}
-                <strong>small claims court</strong>, and claims for injunctive relief over
-                intellectual property, are excluded from arbitration entirely.
+                notice of the dispute and attempt to resolve it informally for 60 days. Three kinds
+                of claim are excluded from arbitration entirely -- claims in{' '}
+                <strong>small claims court</strong>, claims for injunctive relief over intellectual
+                property, and claims for <strong>public injunctive relief</strong> or any other
+                remedy the law does not allow to be given up.
+              </p>
+              <p>
+                Two things worth knowing before you weigh any of this.{' '}
+                <strong>We pay the arbitration fees</strong> for consumer claims of $10,000 or less,
+                and you will never pay more to arbitrate than it would cost you to file the same
+                claim in your local court. And <strong>if you win, we pay you</strong> -- within 30
+                days of the award or judgment becoming final, without you having to bring
+                enforcement proceedings anywhere. We are an Indian company with no US assets, so
+                that promise is in the Terms deliberately: a remedy you cannot collect is not a
+                remedy. See sections 7.5 and 7.6.
               </p>
               <p>
                 <strong>You may opt out of arbitration.</strong> Email{' '}
                 <a href="mailto:hello@beforeregret.com" className="text-blue-600 hover:underline font-bold">hello@beforeregret.com</a>{' '}
                 with the subject line <strong>"Arbitration Opt-Out"</strong> within 30 days of first
-                accepting the Terms, stating your name and account email. Opting out costs you
+                accepting the Terms, stating your name and account email. <strong>We log every
+                opt-out we receive, with the date you sent it</strong>, and will confirm it back to
+                you -- ask us at any time and we will show you the record. Opting out costs you
                 nothing and changes nothing else about your account, your pricing, or your access.
               </p>
               <p>

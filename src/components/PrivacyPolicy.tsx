@@ -202,6 +202,18 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                 at that moment. This is kept as evidence of the agreement between us, for as long as
                 that agreement could give rise to a claim.
               </p>
+              {/* The mirror of the paragraph above, and disclosed for the same reason. An opt-out
+                  ledger is a record kept ABOUT a user that they never see, created by an email they
+                  sent -- exactly the kind of quiet retention a privacy policy exists to surface.
+                  See arbitration_opt_outs in src/server/db.ts. */}
+              <p>
+                <strong>Arbitration opt-out records.</strong> If you email us to opt out of the
+                arbitration agreement in section 7.9 of the Terms, we record that too: your email
+                address, the revision of the Terms you are rejecting, the date you sent it, and a
+                copy of your message. We keep this <strong>so that your opt-out can be proved later
+                by either of us</strong> -- a right nobody can evidence is not much of a right. It is
+                retained on the same basis, and for the same reason, as the acceptance record above.
+              </p>
               <p>
                 <strong>Your Data Rights:</strong> You have the right to request access to, correction of, or permanent deletion of your personal information stored by Atmostellar. To submit a data privacy request, email <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>. Privacy requests are fulfilled within 14 business days.
               </p>
