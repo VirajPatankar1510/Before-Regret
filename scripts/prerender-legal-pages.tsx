@@ -46,13 +46,28 @@ import type { PrerenderedRouteKey } from '../src/routeChunks.js';
 // buttons render inert here (onClick handlers aren't serialized to static HTML, and these pages
 // have no other outbound links worth preserving as crawlable <a href>s) -- an accepted, minor
 // trade-off given four of these five pages are also being marked noindex.
+//
+// ROBOTS: the noindex pages are 'noindex, follow', NOT 'noindex, nofollow'. That distinction is
+// load-bearing and was wrong until an Ahrefs site audit surfaced it. These pages carry
+// StaticFooterLinks, added specifically to fix the crawl-priority problem behind the ~106 URLs
+// sitting in Search Console's "Discovered -- currently not indexed": /terms/ alone renders 26
+// internal links, including /guides/, /counties/ and four individual guides. Under 'nofollow' a
+// crawler is instructed to follow none of them, so the internal-linking fix was switched off on
+// exactly the pages it had just been added to. 'noindex, follow' keeps the original intent --
+// contract text stays out of the results -- while letting the link graph actually work.
+//
+// The four noindex pages are also no longer listed in sitemap-pages.xml (see
+// src/utils/sitemapGenerator.ts): submitting a URL for indexing while telling Google not to index
+// it is a contradiction Search Console reports as an error, and it spends crawl budget this site
+// cannot spare. /accessibility/ took their place there, being the one page here that is
+// deliberately indexable.
 
 interface LegalPageConfig {
   outputPath: string;
   title: string;
   description: string;
   canonicalUrl: string;
-  robots: 'index, follow' | 'noindex, nofollow';
+  robots: 'index, follow' | 'noindex, follow';
   jsonLd: Record<string, any>[];
   Component: React.FC<{ onBackToHome: () => void; onNavigate?: (path: string) => void }>;
   /** Which lazy route chunk this page needs on boot -- see scripts/lib/routeChunkPreload.ts. */
@@ -153,7 +168,7 @@ const PAGES: LegalPageConfig[] = [
     title: 'BeforeRegret Support & Property Research FAQ',
     description: 'Frequently asked questions regarding BeforeRegret public property record research, data sources, municipal permit checks, and report coverage.',
     canonicalUrl: 'https://www.beforeregret.com/support/',
-    robots: 'noindex, nofollow',
+    robots: 'noindex, follow',
     jsonLd: [
       {
         '@context': 'https://schema.org',
@@ -187,7 +202,7 @@ const PAGES: LegalPageConfig[] = [
     title: 'Terms of Service | BeforeRegret Property Intelligence',
     description: 'Terms of service and user agreement for BeforeRegret public record property research and automated synthesis tools.',
     canonicalUrl: 'https://www.beforeregret.com/terms/',
-    robots: 'noindex, nofollow',
+    robots: 'noindex, follow',
     jsonLd: [TERMS_BREADCRUMB],
     Component: TermsConditions,
     routeKey: 'terms',
@@ -197,7 +212,7 @@ const PAGES: LegalPageConfig[] = [
     title: 'Privacy Policy | BeforeRegret Property Intelligence',
     description: 'Privacy policy detailing data handling, user anonymity, and secure public record lookup protocols at BeforeRegret.',
     canonicalUrl: 'https://www.beforeregret.com/privacy/',
-    robots: 'noindex, nofollow',
+    robots: 'noindex, follow',
     jsonLd: [PRIVACY_BREADCRUMB],
     Component: PrivacyPolicy,
     routeKey: 'privacy',
@@ -207,7 +222,7 @@ const PAGES: LegalPageConfig[] = [
     title: 'Disclaimer | BeforeRegret',
     description: 'Site-wide disclaimer covering professional advice, third-party government data, AI-generated content, and sponsored placements on BeforeRegret.',
     canonicalUrl: 'https://www.beforeregret.com/disclaimer/',
-    robots: 'noindex, nofollow',
+    robots: 'noindex, follow',
     jsonLd: [DISCLAIMER_BREADCRUMB],
     Component: Disclaimer,
     routeKey: 'disclaimer',
@@ -231,7 +246,7 @@ const PAGES: LegalPageConfig[] = [
     title: 'Refund Policy & Satisfaction Guarantee | BeforeRegret',
     description: 'BeforeRegret refund policy and customer support commitments for property research report orders.',
     canonicalUrl: 'https://www.beforeregret.com/refunds/',
-    robots: 'noindex, nofollow',
+    robots: 'noindex, follow',
     jsonLd: [REFUNDS_BREADCRUMB],
     Component: RefundPolicy,
     routeKey: 'refunds',
@@ -247,7 +262,7 @@ const PAGES: LegalPageConfig[] = [
     title: 'Refund Policy & Satisfaction Guarantee | BeforeRegret',
     description: 'BeforeRegret refund policy and customer support commitments for property research report orders.',
     canonicalUrl: 'https://www.beforeregret.com/refunds/',
-    robots: 'noindex, nofollow',
+    robots: 'noindex, follow',
     jsonLd: [REFUNDS_BREADCRUMB],
     Component: RefundPolicy,
     routeKey: 'refunds',

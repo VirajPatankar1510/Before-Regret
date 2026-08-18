@@ -137,15 +137,22 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       { loc: `${BASE_URL}/`, lastmod: today, changefreq: 'daily', priority: '1.0' },
       { loc: `${BASE_URL}/guides/`, lastmod: today, changefreq: 'weekly', priority: '0.8' },
       { loc: `${BASE_URL}/counties/`, lastmod: today, changefreq: 'weekly', priority: '0.8' },
-      // Real trust/process content, not legal boilerplate -- given the same priority as the
-      // guides hub, unlike support/terms/privacy/refunds below which are 0.5 (and noindex on the
-      // page itself for support/terms/privacy -- see App.tsx). This one needs to actually be
-      // found and crawled.
+      // Only indexable pages belong here. /support/, /terms/, /privacy/ and /refunds/ used to be
+      // listed and are all 'noindex' (see scripts/prerender-legal-pages.tsx) -- submitting a URL
+      // for indexing while the page itself tells Google not to index it is a contradiction, which
+      // Search Console reports as "Submitted URL marked 'noindex'" and an Ahrefs site audit
+      // flagged as "Noindex page in sitemap". Removing them is not a demotion: a sitemap is a
+      // crawl request, and on a site with ~106 URLs stuck in "Discovered -- currently not indexed"
+      // there is no crawl budget to spend asking Google to fetch pages it has been told to ignore.
+      // Those pages are still reachable, still crawlable, and now 'noindex, follow' so their
+      // footer links still count.
+      //
+      // /accessibility/ is the inverse case and was the mistake in the other direction: it is the
+      // one legal page deliberately set 'index, follow', and it was missing from this list
+      // entirely -- an indexable page with no sitemap entry, which the same audit caught as a
+      // canonical URL without inlinks.
       { loc: `${BASE_URL}/about/`, lastmod: today, changefreq: 'monthly', priority: '0.7' },
-      { loc: `${BASE_URL}/support/`, lastmod: today, changefreq: 'weekly', priority: '0.8' },
-      { loc: `${BASE_URL}/terms/`, lastmod: '2026-06-01', changefreq: 'monthly', priority: '0.5' },
-      { loc: `${BASE_URL}/privacy/`, lastmod: '2026-06-01', changefreq: 'monthly', priority: '0.5' },
-      { loc: `${BASE_URL}/refunds/`, lastmod: '2026-06-01', changefreq: 'monthly', priority: '0.5' },
+      { loc: `${BASE_URL}/accessibility/`, lastmod: today, changefreq: 'monthly', priority: '0.5' },
     ];
   } else if (cleanName === 'sitemap-guides' && isDbConfigured()) {
     try {
@@ -253,6 +260,14 @@ export async function generateXmlSitemap(): Promise<string> {
 }
 
 // 3. Robots.txt Generator
+//
+// The noindex legal pages (/support, /terms, /privacy, /refunds, /disclaimer) are deliberately
+// ALLOWED here, and must stay that way. Disallowing them would be the obvious-looking "tidy up"
+// and would break two things at once: a crawler that cannot fetch a page never sees its noindex
+// tag, so the page can still end up indexed from inbound links, and it certainly cannot follow
+// that page's links -- which now matters, because those pages carry the footer link block feeding
+// the guide and county URLs. robots.txt controls CRAWLING; the meta tag controls INDEXING. These
+// pages need to be crawled precisely so the noindex is seen and the links are followed.
 export function generateRobotsTxt(): string {
   return `# BeforeRegret Robots.txt
 User-agent: *
@@ -260,10 +275,12 @@ Allow: /
 Allow: /guides/
 Allow: /counties/
 Allow: /about
+Allow: /accessibility
 Allow: /support
 Allow: /terms
 Allow: /privacy
 Allow: /refunds
+Allow: /disclaimer
 
 Disallow: /report/
 Disallow: /admin
