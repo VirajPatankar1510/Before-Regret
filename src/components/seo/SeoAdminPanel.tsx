@@ -274,6 +274,18 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // different, unrelated title typed afterward.
   const [overrideSimilarWarning, setOverrideSimilarWarning] = useState(false);
 
+  // Same escape-hatch pattern as overrideSimilarWarning, one field over: the additional topic is
+  // itself a specific, standalone question, and it's entirely possible to type in one that already
+  // has its own whole article elsewhere on the site (e.g. asking for a sump-pump subheading when
+  // "Does Homeowners Insurance Cover a Failed Sump Pump?" already exists as a published guide) --
+  // that's a wasted subheading at best, and duplicate-content risk at worst. Kept as its own
+  // independent override rather than reusing overrideSimilarWarning, because the two warnings can
+  // fire independently (a fine, original main title paired with a duplicate additional topic, or
+  // vice versa) and conflating them would let dismissing one silently dismiss the other. Reset on
+  // any edit to the additional-topic field, same as the main-title warning is reset on its own
+  // inputs, so it never silently survives past the text that triggered it.
+  const [overrideAdditionalTopicSimilarWarning, setOverrideAdditionalTopicSimilarWarning] = useState(false);
+
   // Same escape-hatch pattern as overrideSimilarWarning above, for a different real bug: a
   // generation stream that errors out mid-response (or gets published while still streaming --
   // see the generating-disabled wiring on the Publish/Update buttons below) leaves a real,
@@ -437,6 +449,13 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     setSlugManuallyEdited(false);
     setTopicInput('');
     setExactTitleInput('');
+    // Additional-topic wasn't cleared here before -- a real gap, not a deliberate choice: opening
+    // a different article left a previous draft's subheading question sitting in the field, ready
+    // to be silently carried into an unrelated article's generation. topicInput/exactTitleInput
+    // were always cleared for exactly this reason; this field needs the same treatment.
+    setAdditionalTopicInput('');
+    setAdditionalTopicExact(false);
+    setOverrideAdditionalTopicSimilarWarning(false);
     setImportedQuestionId(null);
     setPreviousAttempts([]);
     // Defaulted to this article's own title, not left blank -- the common case opening this is a
@@ -1607,6 +1626,31 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     ? otherArticles[titleOverlap.matchIndex]
     : undefined;
 
+  // Same check, run a second time against the additional-topic field -- it's a full, specific
+  // question in its own right, and nothing stopped someone typing in one that already has its own
+  // dedicated article elsewhere (only the main-title check existed before this). Deliberately its
+  // own independent computation against the same otherArticles list, not folded into titleOverlap
+  // above: the two fields can each be fine or each be a duplicate independently, and the warnings
+  // below need to say which one is the problem, not just that "something" overlaps.
+  const additionalTopicTrimmed = additionalTopicInput.trim();
+  const additionalTopicOverlap = additionalTopicTrimmed
+    ? bestTitleOverlap(additionalTopicTrimmed, otherArticles.map((a) => a.title))
+    : undefined;
+  const additionalTopicSimilarExisting = additionalTopicOverlap && additionalTopicOverlap.score > 0.5
+    ? otherArticles[additionalTopicOverlap.matchIndex]
+    : undefined;
+
+  // A second, cheaper check on the same field: does the additional topic just restate the
+  // article's OWN main title/topic? Not a duplicate-content risk (nothing else on the site
+  // overlaps), so it doesn't block Generate the way additionalTopicSimilarExisting does -- but a
+  // subheading that repeats the headline question wastes the slot and reads as padding to a
+  // reader, which is exactly what this feature exists to avoid. Reuses bestTitleOverlap against a
+  // single-element list rather than a second formula, since "how much does A overlap B" is the
+  // same computation regardless of what B's source is.
+  const additionalTopicRedundantWithMainTitle = additionalTopicTrimmed && titleToCheckForDuplicates
+    ? (bestTitleOverlap(additionalTopicTrimmed, [titleToCheckForDuplicates])?.score ?? 0) > 0.5
+    : false;
+
   // A complete article body always ends in sentence-terminating punctuation (the generation
   // prompt asks it to close with a concrete next step, not a dangling list item or table row) --
   // a stream cut off mid-word leaves the last line with no terminal punctuation at all, which is
@@ -2101,7 +2145,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             <input
               type="text"
               value={additionalTopicInput}
-              onChange={(e) => setAdditionalTopicInput(e.target.value)}
+              onChange={(e) => {
+                setAdditionalTopicInput(e.target.value);
+                setOverrideAdditionalTopicSimilarWarning(false);
+              }}
               placeholder="e.g. Does title insurance cover boundary disputes?"
               disabled={generating || hasExistingContent}
               className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
@@ -2123,11 +2170,53 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 Adds one ## section specifically covering this. Same no-thin-content standard as the rest of the article -- the target word count widens to 1,500-2,100 to give it real room rather than squeezing the main content.
               </p>
             )}
+
+            {/* Blocking, same severity and mechanism as the main-title similarExisting warning
+                above -- this field is a full standalone question, and typing in one that already
+                has its own article elsewhere is exactly the same duplicate-content risk. */}
+            {additionalTopicSimilarExisting && !overrideAdditionalTopicSimilarWarning && (
+              <div className="p-3 bg-amber-950/40 border border-amber-800/60 rounded-xl text-xs text-amber-200 flex items-start gap-2">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                <div>
+                  <span>This additional topic looks similar to an existing article: </span>
+                  <button
+                    type="button"
+                    onClick={() => openEditor(additionalTopicSimilarExisting)}
+                    className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
+                  >
+                    "{additionalTopicSimilarExisting.title}"
+                  </button>
+                  <span> ({additionalTopicSimilarExisting.status === 'published' ? 'live' : 'draft'}). Pick a narrower angle for the subheading, or </span>
+                  <button
+                    type="button"
+                    onClick={() => setOverrideAdditionalTopicSimilarWarning(true)}
+                    className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
+                  >
+                    it's genuinely a different angle, use it anyway
+                  </button>
+                  <span>.</span>
+                </div>
+              </div>
+            )}
+
+            {/* Informational only, not blocking -- restating the main title isn't a site-wide
+                duplicate-content problem, just a wasted subheading, so there's nothing to "open
+                and edit instead" and no override needed to proceed. */}
+            {additionalTopicRedundantWithMainTitle && !additionalTopicSimilarExisting && (
+              <p className="text-[11px] text-amber-400">
+                This is very close to the article's own main title/topic -- the subheading would likely just restate the headline. Consider a narrower or more specific angle.
+              </p>
+            )}
           </div>
 
           <button
             onClick={() => generateWithAi()}
-            disabled={generating || hasExistingContent || (!!similarExisting && !overrideSimilarWarning)}
+            disabled={
+              generating ||
+              hasExistingContent ||
+              (!!similarExisting && !overrideSimilarWarning) ||
+              (!!additionalTopicSimilarExisting && !overrideAdditionalTopicSimilarWarning)
+            }
             className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer disabled:opacity-50"
           >
             {generating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
@@ -2141,6 +2230,11 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           {similarExisting && overrideSimilarWarning && !hasExistingContent && (
             <p className="text-[11px] text-slate-500">
               Proceeding despite the similar-title warning above.
+            </p>
+          )}
+          {additionalTopicSimilarExisting && !overrideAdditionalTopicSimilarWarning && !hasExistingContent && (
+            <p className="text-[11px] text-amber-400">
+              Also blocked on the additional topic above until you change it or click "use it anyway."
             </p>
           )}
 
