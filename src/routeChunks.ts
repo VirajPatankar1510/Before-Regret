@@ -1,4 +1,4 @@
-// The nine route components that have prerendered HTML on disk, and the one piece of logic that
+// The route components that have prerendered HTML on disk, and the one piece of logic that
 // decides which of them (if any) the current URL needs.
 //
 // Why this file exists at all: these nine used to be static imports in App.tsx, deliberately, and
@@ -34,6 +34,12 @@ export const routeChunkLoaders = {
   refunds: () => import('./components/RefundPolicy'),
   disclaimer: () => import('./components/Disclaimer'),
   accessibility: () => import('./components/Accessibility'),
+  // Added when /advertise gained a real prerender (scripts/prerender-advertise.tsx) and became
+  // indexable -- without an entry here, main.tsx would mount before this chunk resolves, and the
+  // React.lazy() boundary in App.tsx would blank the prerendered page to a spinner for exactly as
+  // long as the download takes. Same regression this whole file exists to prevent for the other
+  // routes below.
+  advertise: () => import('./components/AdvertiseCompare'),
 } as const;
 
 export type PrerenderedRouteKey = keyof typeof routeChunkLoaders;
@@ -62,6 +68,7 @@ export const routeChunkSources: Record<PrerenderedRouteKey, string> = {
   refunds: 'src/components/RefundPolicy.tsx',
   disclaimer: 'src/components/Disclaimer.tsx',
   accessibility: 'src/components/Accessibility.tsx',
+  advertise: 'src/components/AdvertiseCompare.tsx',
 };
 
 /**
@@ -86,6 +93,7 @@ export function prerenderedRouteForPath(pathname: string): PrerenderedRouteKey |
   if (path.startsWith('/refunds') || path.startsWith('/refund-policy')) return 'refunds';
   if (path.startsWith('/disclaimer')) return 'disclaimer';
   if (path.startsWith('/accessibility')) return 'accessibility';
+  if (path.startsWith('/advertise')) return 'advertise'; // mirrors App.tsx's own check exactly
 
   if (path.startsWith('/guides/')) {
     // parts.length >= 2 means /guides/<slug>/; bare /guides/ is the hub index.

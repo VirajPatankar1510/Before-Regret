@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Wrench, MapPin, Check, Megaphone, Phone, ShieldCheck, CreditCard, XCircle, ListChecks, Zap, ChevronDown } from 'lucide-react';
 import { MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
+import { ContentLink } from './home/ContentLink';
 
 interface AdvertiseCompareProps {
   onNavigate: (path: string) => void;
@@ -20,7 +21,21 @@ interface AdvertiseCompareProps {
 // instead. (2) The term "guide page" -- it's this codebase's internal name for the underlying
 // content type, not something a vendor buying an ad slot needs to know; the vendor just needs to
 // know their ad reaches nationwide readers of educational content vs. one ZIP code's report.
-const FAQ_ITEMS: Array<{ q: string; a: string }> = [
+//
+// This page is now prerendered (scripts/prerender-advertise.tsx) and indexable -- an Ahrefs crawl
+// found it had neither: no static render meant a crawler saw an empty <div id="root">, the
+// homepage's own <title>, and zero outgoing links, and the client code separately set
+// 'noindex, nofollow'. Both are fixed. That second fact is why the "Return to Home" button and
+// both product CTAs below are ContentLink, not <button onClick>: a button has no href and is
+// invisible to anything reading raw HTML, which is exactly what made "no outgoing links" true even
+// once real content exists. ContentLink renders a genuine <a href> always and only intercepts the
+// click for SPA routing when onNavigate is supplied -- the same component Footer.tsx and the
+// homepage's content sections already use for this identical reason.
+//
+// Exported so scripts/prerender-advertise.tsx can build this page's FAQPage JSON-LD directly from
+// this array rather than a hand-copied duplicate -- the same drift risk buildCountyMeta in
+// prerender-counties.tsx was written to avoid, here avoided by sharing the source instead.
+export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'Do I need to be licensed or verified to advertise?',
     a: "No independent credential check happens before your placement goes live. For every trade category except chimney sweeping you must supply a licence, registration, or certification number at checkout, and it is printed in your ad exactly as you enter it -- but we do not verify it with any licensing board. Every placement carries a line telling readers that its details are advertiser-supplied and unverified -- including placements in the licence-exempt chimney category, which show no number at all. Business name, trade category, and contact details are likewise self-reported and confirmed accurate with a checkbox there.",
@@ -58,13 +73,14 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
         <div className="flex items-center justify-between border-b border-slate-200 pb-6">
-          <button
-            onClick={() => onNavigate('/')}
+          <ContentLink
+            href="/"
+            onNavigate={onNavigate}
             className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition-all border border-slate-200 cursor-pointer shadow-xs"
           >
             <ArrowLeft className="w-4 h-4 text-slate-500" />
             <span>Return to Home</span>
-          </button>
+          </ContentLink>
           <span className="text-xs font-mono font-bold text-slate-500 bg-slate-200/80 px-3 py-1 rounded-full">
             Advertise With Us
           </span>
@@ -179,13 +195,14 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
                 <span>Lowest cost per slot -- a good fit if you serve customers across many cities or the whole country</span>
               </li>
             </ul>
-            <button
-              onClick={() => onNavigate('/topic-ads')}
+            <ContentLink
+              href="/topic-ads"
+              onNavigate={onNavigate}
               className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all cursor-pointer"
             >
               <span>Advertise by Topic</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </ContentLink>
           </div>
 
           {/* Report Ads */}
@@ -237,13 +254,14 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
                 <span>Higher intent, tighter targeting -- a good fit if you only work within a specific set of ZIP codes or a metro area</span>
               </li>
             </ul>
-            <button
-              onClick={() => onNavigate('/report-ads')}
+            <ContentLink
+              href="/report-ads"
+              onNavigate={onNavigate}
               className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-all cursor-pointer"
             >
               <span>Advertise by ZIP Code</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </ContentLink>
           </div>
         </div>
 
@@ -303,7 +321,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             abruptly on the comparison table. */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-1">
           <h2 className="font-serif text-xl font-bold text-slate-900 mb-4">Questions before you buy</h2>
-          {FAQ_ITEMS.map((item, idx) => {
+          {ADVERTISE_FAQ_ITEMS.map((item, idx) => {
             const isOpen = openFaq === idx;
             return (
               <div key={item.q} className="border-t border-slate-100 first:border-t-0 py-3">

@@ -644,11 +644,17 @@ export function App() {
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'advertiseCompare') {
+      // Indexable on purpose, unlike the two checkout pages it routes to (topic-ads, report-ads
+      // below stay noindex, nofollow -- payment flows with nothing for a searcher to find). This
+      // is the actual acquisition page: someone searching "advertise on beforeregret" or "list my
+      // business beforeregret" should be able to find it directly, not only reach it via a link
+      // buried in a guide's ad slot. See scripts/prerender-advertise.tsx for the matching
+      // build-time static render -- these values must stay in sync with that file by hand.
       applyHeadSeo({
         title: 'Advertise With Us | BeforeRegret',
         description: 'Compare Topic Ads and Report Ads to find the right fit for your business.',
         canonicalUrl: 'https://www.beforeregret.com/advertise/',
-        robotsDirective: 'noindex, nofollow'
+        robotsDirective: 'index, follow'
       });
     } else if (pseoRoute.type === 'guideAds') {
       applyHeadSeo({
