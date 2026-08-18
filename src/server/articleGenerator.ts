@@ -109,10 +109,13 @@ export function buildArticlePrompt(
   topicSeed: string,
   existingTitles: string[] = [],
   exactTitle: string = '',
-  relatedKeywords: string[] = []
+  relatedKeywords: string[] = [],
+  additionalTopic: string = '',
+  additionalTopicExact: boolean = false
 ): { systemInstruction: string; contents: string } {
   const trimmedTopic = topicSeed.trim();
   const trimmedExactTitle = exactTitle.trim();
+  const trimmedAdditionalTopic = additionalTopic.trim();
 
   // Two distinct modes, not one input doing double duty. The original version always told the
   // model to "refine" whatever was typed into the single title/topic field -- so an already-
@@ -160,14 +163,39 @@ export function buildArticlePrompt(
     ? `\n\nReal related search phrases people actually use around this topic (from live Bing/Search Console data, ranked by real search interest) -- weave in the ones that genuinely fit naturally into the article's headers, quick answer, or body wording, in the vocabulary real searchers use. Skip any that don't fit the specific angle above rather than forcing them in, and never list them out mechanically or stuff them in just to include them:\n${relatedKeywords.map((k) => `- ${k}`).join('\n')}`
     : '';
 
-  const contents = `${topicInstruction}${existingTitlesBlock}${relatedKeywordsBlock}
+  // "Additional topic/question to cover" -- a second, narrower ask layered on top of whichever
+  // mode above chose the article's actual title and angle. This does NOT change the title or the
+  // article's main angle; it requires one genuine ## subheading somewhere in the body that covers
+  // a specific thing the writer wants covered (a question their own audience keeps asking, a
+  // competitor angle, a regulatory wrinkle) that the model might not otherwise think to include.
+  //
+  // Two modes, mirroring exact-title vs topic-seed above for the same reason: sometimes the writer
+  // already has the exact subheading phrasing they want (a real, verified question, a specific
+  // term their audience searches), and "refining" it would replace their specific input with the
+  // model's guess. Other times they only know the underlying topic and want the model to phrase it
+  // as an SEO-shaped question, the same treatment the main title gets in topic-seed mode.
+  //
+  // The no-thin-content instruction below is deliberately specific about WHY, not just THAT: this
+  // site's real content-quality gate (contentAudit.ts, run by the article-faqs skill and the admin
+  // panel's own audit button) flags any article under 500 words as thin, and a subheading added
+  // only to check a box -- one throwaway sentence, no real mechanism or specific -- is exactly the
+  // kind of padding that produces a thin article, or a padded one that hits the word count without
+  // saying anything. Telling the model the actual downstream check gives it a concrete standard to
+  // write against instead of a vague "make it good" instruction.
+  const additionalTopicBlock = trimmedAdditionalTopic
+    ? additionalTopicExact
+      ? `\n\nThe article must also include one dedicated ## subheading, placed wherever it fits the article's natural flow, using this EXACT wording as the subheading text -- verbatim, character for character, not rephrased, reworded, or "optimized": "${trimmedAdditionalTopic}"\n\nThat section must genuinely and specifically cover it: real mechanisms, real specifics, hedged the same as HARD RULE 5 requires everywhere else -- not one throwaway sentence added just to check a box. This site's content-quality check flags any article under 500 words as thin content, and a padded or superficial subsection here is exactly the kind of writing that produces that failure, so treat this subsection as needing the same depth and specificity as any other section, not an afterthought. This subheading is IN ADDITION to the article's normal structure and does not replace or change the title, angle, or any other section required elsewhere in this prompt.`
+      : `\n\nThe article must also include one dedicated ## subheading, placed wherever it fits the article's natural flow, that specifically covers this topic/question -- phrase the subheading itself as the specific, searchable long-tail question a reader would actually type (the same standard the main title uses), refining the wording below into the best subheading phrasing for it rather than repeating it verbatim if a better phrasing exists, and weave in genuinely relevant SEO keywords naturally rather than stuffing them: "${trimmedAdditionalTopic}"\n\nThat section must genuinely and specifically cover it: real mechanisms, real specifics, hedged the same as HARD RULE 5 requires everywhere else -- not one throwaway sentence added just to check a box. This site's content-quality check flags any article under 500 words as thin content, and a padded or superficial subsection here is exactly the kind of writing that produces that failure, so treat this subsection as needing the same depth and specificity as any other section, not an afterthought. This subheading is IN ADDITION to the article's normal structure and does not replace or change the title, angle, or any other section required elsewhere in this prompt.`
+    : '';
+
+  const contents = `${topicInstruction}${existingTitlesBlock}${relatedKeywordsBlock}${additionalTopicBlock}
 
 SEO approach for this article:
 - Target ONE specific, long-tail search query. Long-tail (specific, lower-competition, high buyer-intent) is what a newer site can realistically rank for -- not a broad head term.
 - Structure with markdown headers (## for sections) and short paragraphs (2-4 sentences) so it's scannable.
 - For emphasis, use **double asterisks** only. Never use a single asterisk (*like this*) for italics or as a label -- it won't render correctly.
 - Never put a \`\`\` code fence around anything except genuine code -- not a sequence of steps, not a set of named options, and not a comparison table, regardless of whether you draw it with +---+ box-art or plain | pipe characters. Confirmed on three published articles now: a fixed-width block inside a code fence renders as a monospace box that requires horizontal scrolling on a phone and (for the box-art case) loses all its syntax-highlighting color, rendering flat black-and-white even though the rest of the page is in color -- both are real, published defects, not a style preference. Each structure has one correct markdown form and no other: a sequence of steps is a numbered list; a set of named options is a bullet list with a bold label per item; a comparison across several named things and the same few attributes (a table, full stop -- if you are about to write column headers and rows, this is what you are making) is a real GFM markdown table: a header row, a \`|---|---|\` separator row, then data rows, with NO \`\`\` fence around any part of it. If you catch yourself typing a \`\`\` fence and the content inside is not a programming language, stop and rewrite it as one of the three markdown forms above instead.
-- Target 1,200-1,800 words: long enough to fully and specifically answer the question, never padded to hit a number.
+- Target ${trimmedAdditionalTopic ? '1,500-2,100' : '1,200-1,800'} words: long enough to fully and specifically answer the question, never padded to hit a number.${trimmedAdditionalTopic ? ' This range is widened from the usual 1,200-1,800 specifically to give the required additional subheading below its own real room -- do not hit it by shrinking or thinning any other section, and do not treat the extra length as a license to pad either; earn it with genuine depth in the additional subsection.' : ''}
 - Demonstrate real expertise with specific mechanisms, eras, and regulations.
 - End with one clear, concrete next step the reader can act on today.
 

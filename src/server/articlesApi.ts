@@ -161,6 +161,12 @@ export function registerArticleRoutes(app: Express) {
           .filter((k: unknown): k is string => typeof k === 'string' && k.trim().length > 0)
           .slice(0, 10)
       : [];
+    // "Additional topic/question to cover" -- see buildArticlePrompt in articleGenerator.ts for
+    // what this does to the prompt. additionalTopicExact is carried as its own explicit boolean
+    // rather than inferred from the string, because exact-vs-refine is a real yes/no choice the
+    // writer makes with a checkbox in the admin UI, distinct from whether the field is filled in.
+    const additionalTopic = typeof req.body?.additionalTopic === 'string' ? req.body.additionalTopic : '';
+    const additionalTopicExact = req.body?.additionalTopicExact === true;
 
     // Best-effort: if the DB read fails for any reason, generation still proceeds without the
     // duplicate-content guard rather than blocking the whole feature on it.
@@ -184,7 +190,7 @@ export function registerArticleRoutes(app: Express) {
         apiKey,
         httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
       });
-      const { systemInstruction, contents } = buildArticlePrompt(topic, existingTitles, exactTitle, relatedKeywords);
+      const { systemInstruction, contents } = buildArticlePrompt(topic, existingTitles, exactTitle, relatedKeywords, additionalTopic, additionalTopicExact);
 
       // Cascades through CONTENT_GENERATION_MODELS (gemini-3.5-flash, then gemini-2.5-flash) on
       // quota exhaustion -- see geminiModel.ts. Deliberately not GEMINI_MODEL: that model is
