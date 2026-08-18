@@ -1,3 +1,1003 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://www.beforeregret.com/county/providence-county-ri/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/providence-county-ri-hazard-map.svg</image:loc>
+      <image:title>Providence County, RI real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/jefferson-county-al/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/jefferson-county-al-hazard-map.svg</image:loc>
+      <image:title>Jefferson County, AL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/tulsa-county-ok/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/tulsa-county-ok-hazard-map.svg</image:loc>
+      <image:title>Tulsa County, OK real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/bernalillo-county-nm/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/bernalillo-county-nm-hazard-map.svg</image:loc>
+      <image:title>Bernalillo County, NM real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/utah-county-ut/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/utah-county-ut-hazard-map.svg</image:loc>
+      <image:title>Utah County, UT real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/will-county-il/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/will-county-il-hazard-map.svg</image:loc>
+      <image:title>Will County, IL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/davidson-county-tn/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/davidson-county-tn-hazard-map.svg</image:loc>
+      <image:title>Davidson County, TN real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/hudson-county-nj/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/hudson-county-nj-hazard-map.svg</image:loc>
+      <image:title>Hudson County, NJ real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/lake-county-il/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/lake-county-il-hazard-map.svg</image:loc>
+      <image:title>Lake County, IL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/denver-county-co/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/denver-county-co-hazard-map.svg</image:loc>
+      <image:title>Denver County, CO real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/jackson-county-mo/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/jackson-county-mo-hazard-map.svg</image:loc>
+      <image:title>Jackson County, MO real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/norfolk-county-ma/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/norfolk-county-ma-hazard-map.svg</image:loc>
+      <image:title>Norfolk County, MA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/el-paso-county-co/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/el-paso-county-co-hazard-map.svg</image:loc>
+      <image:title>El Paso County, CO real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/san-mateo-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/san-mateo-county-ca-hazard-map.svg</image:loc>
+      <image:title>San Mateo County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/monroe-county-ny/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/monroe-county-ny-hazard-map.svg</image:loc>
+      <image:title>Monroe County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/polk-county-fl/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/polk-county-fl-hazard-map.svg</image:loc>
+      <image:title>Polk County, FL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/dekalb-county-ga/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/dekalb-county-ga-hazard-map.svg</image:loc>
+      <image:title>Dekalb County, GA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/cobb-county-ga/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/cobb-county-ga-hazard-map.svg</image:loc>
+      <image:title>Cobb County, GA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/jefferson-county-ky/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/jefferson-county-ky-hazard-map.svg</image:loc>
+      <image:title>Jefferson County, KY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/suffolk-county-ma/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/suffolk-county-ma-hazard-map.svg</image:loc>
+      <image:title>Suffolk County, MA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/san-joaquin-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/san-joaquin-county-ca-hazard-map.svg</image:loc>
+      <image:title>San Joaquin County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/lee-county-fl/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/lee-county-fl-hazard-map.svg</image:loc>
+      <image:title>Lee County, FL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/oklahoma-county-ok/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/oklahoma-county-ok-hazard-map.svg</image:loc>
+      <image:title>Oklahoma County, OK real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/multnomah-county-or/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/multnomah-county-or-hazard-map.svg</image:loc>
+      <image:title>Multnomah County, OR real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/essex-county-ma/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/essex-county-ma-hazard-map.svg</image:loc>
+      <image:title>Essex County, MA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/hamilton-county-oh/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/hamilton-county-oh-hazard-map.svg</image:loc>
+      <image:title>Hamilton County, OH real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/snohomish-county-wa/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/snohomish-county-wa-hazard-map.svg</image:loc>
+      <image:title>Snohomish County, WA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/san-francisco-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/san-francisco-county-ca-hazard-map.svg</image:loc>
+      <image:title>San Francisco County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/ventura-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/ventura-county-ca-hazard-map.svg</image:loc>
+      <image:title>Ventura County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/baltimore-county-md/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/baltimore-county-md-hazard-map.svg</image:loc>
+      <image:title>Baltimore County, MD real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/essex-county-nj/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/essex-county-nj-hazard-map.svg</image:loc>
+      <image:title>Essex County, NJ real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/montgomery-county-pa/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/montgomery-county-pa-hazard-map.svg</image:loc>
+      <image:title>Montgomery County, PA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/middlesex-county-nj/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/middlesex-county-nj-hazard-map.svg</image:loc>
+      <image:title>Middlesex County, NJ real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/worcester-county-ma/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/worcester-county-ma-hazard-map.svg</image:loc>
+      <image:title>Worcester County, MA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/el-paso-county-tx/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/el-paso-county-tx-hazard-map.svg</image:loc>
+      <image:title>El Paso County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/macomb-county-mi/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/macomb-county-mi-hazard-map.svg</image:loc>
+      <image:title>Macomb County, MI real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/hidalgo-county-tx/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/hidalgo-county-tx-hazard-map.svg</image:loc>
+      <image:title>Hidalgo County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/kern-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/kern-county-ca-hazard-map.svg</image:loc>
+      <image:title>Kern County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/shelby-county-tn/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/shelby-county-tn-hazard-map.svg</image:loc>
+      <image:title>Shelby County, TN real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/milwaukee-county-wi/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/milwaukee-county-wi-hazard-map.svg</image:loc>
+      <image:title>Milwaukee County, WI real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/dupage-county-il/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/dupage-county-il-hazard-map.svg</image:loc>
+      <image:title>Dupage County, IL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/pierce-county-wa/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/pierce-county-wa-hazard-map.svg</image:loc>
+      <image:title>Pierce County, WA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/erie-county-ny/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/erie-county-ny-hazard-map.svg</image:loc>
+      <image:title>Erie County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/pinellas-county-fl/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/pinellas-county-fl-hazard-map.svg</image:loc>
+      <image:title>Pinellas County, FL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/prince-georges-county-md/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/prince-georges-county-md-hazard-map.svg</image:loc>
+      <image:title>Prince George's County, MD real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/fort-bend-county-tx/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/fort-bend-county-tx-hazard-map.svg</image:loc>
+      <image:title>Fort Bend County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/bergen-county-nj/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/bergen-county-nj-hazard-map.svg</image:loc>
+      <image:title>Bergen County, NJ real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/honolulu-county-hi/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/honolulu-county-hi-hazard-map.svg</image:loc>
+      <image:title>Honolulu County, HI real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/st-louis-county-mo/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/st-louis-county-mo-hazard-map.svg</image:loc>
+      <image:title>St. Louis County, MO real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/marion-county-in/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/marion-county-in-hazard-map.svg</image:loc>
+      <image:title>Marion County, IN real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/westchester-county-ny/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/westchester-county-ny-hazard-map.svg</image:loc>
+      <image:title>Westchester County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/gwinnett-county-ga/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/gwinnett-county-ga-hazard-map.svg</image:loc>
+      <image:title>Gwinnett County, GA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/fresno-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/fresno-county-ca-hazard-map.svg</image:loc>
+      <image:title>Fresno County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/duval-county-fl/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/duval-county-fl-hazard-map.svg</image:loc>
+      <image:title>Duval County, FL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/denton-county-tx/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/denton-county-tx-hazard-map.svg</image:loc>
+      <image:title>Denton County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/montgomery-county-md/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/montgomery-county-md-hazard-map.svg</image:loc>
+      <image:title>Montgomery County, MD real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/pima-county-az/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/pima-county-az-hazard-map.svg</image:loc>
+      <image:title>Pima County, AZ real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/fairfax-county-va/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/fairfax-county-va-hazard-map.svg</image:loc>
+      <image:title>Fairfax County, VA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/contra-costa-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/contra-costa-county-ca-hazard-map.svg</image:loc>
+      <image:title>Contra Costa County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/salt-lake-county-ut/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/salt-lake-county-ut-hazard-map.svg</image:loc>
+      <image:title>Salt Lake County, UT real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/allegheny-county-pa/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/allegheny-county-pa-hazard-map.svg</image:loc>
+      <image:title>Allegheny County, PA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/cuyahoga-county-oh/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/cuyahoga-county-oh-hazard-map.svg</image:loc>
+      <image:title>Cuyahoga County, OH real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/mecklenburg-county-nc/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/mecklenburg-county-nc-hazard-map.svg</image:loc>
+      <image:title>Mecklenburg County, NC real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/wake-county-nc/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/wake-county-nc-hazard-map.svg</image:loc>
+      <image:title>Wake County, NC real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/hennepin-county-mn/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/hennepin-county-mn-hazard-map.svg</image:loc>
+      <image:title>Hennepin County, MN real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/oakland-county-mi/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/oakland-county-mi-hazard-map.svg</image:loc>
+      <image:title>Oakland County, MI real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/collin-county-tx/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/collin-county-tx-hazard-map.svg</image:loc>
+      <image:title>Collin County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/franklin-county-oh/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/franklin-county-oh-hazard-map.svg</image:loc>
+      <image:title>Franklin County, OH real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/nassau-county-ny/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/nassau-county-ny-hazard-map.svg</image:loc>
+      <image:title>Nassau County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/bronx-county-ny/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/bronx-county-ny-hazard-map.svg</image:loc>
+      <image:title>Bronx County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/orange-county-fl/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/orange-county-fl-hazard-map.svg</image:loc>
+      <image:title>Orange County, FL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/suffolk-county-ny/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/suffolk-county-ny-hazard-map.svg</image:loc>
+      <image:title>Suffolk County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/hillsborough-county-fl/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/hillsborough-county-fl-hazard-map.svg</image:loc>
+      <image:title>Hillsborough County, FL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/philadelphia-county-pa/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/philadelphia-county-pa-hazard-map.svg</image:loc>
+      <image:title>Philadelphia County, PA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/palm-beach-county-fl/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/palm-beach-county-fl-hazard-map.svg</image:loc>
+      <image:title>Palm Beach County, FL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/sacramento-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/sacramento-county-ca-hazard-map.svg</image:loc>
+      <image:title>Sacramento County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/alameda-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/alameda-county-ca-hazard-map.svg</image:loc>
+      <image:title>Alameda County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/new-york-county-ny/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/new-york-county-ny-hazard-map.svg</image:loc>
+      <image:title>New York County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/middlesex-county-ma/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/middlesex-county-ma-hazard-map.svg</image:loc>
+      <image:title>Middlesex County, MA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/broward-county-fl/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/broward-county-fl-hazard-map.svg</image:loc>
+      <image:title>Broward County, FL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/san-bernardino-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/san-bernardino-county-ca-hazard-map.svg</image:loc>
+      <image:title>San Bernardino County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/queens-county-ny/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/queens-county-ny-hazard-map.svg</image:loc>
+      <image:title>Queens County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/riverside-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/riverside-county-ca-hazard-map.svg</image:loc>
+      <image:title>Riverside County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/kings-county-ny/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/kings-county-ny-hazard-map.svg</image:loc>
+      <image:title>Kings County, NY real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/wayne-county-mi/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/wayne-county-mi-hazard-map.svg</image:loc>
+      <image:title>Wayne County, MI real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/fulton-county-ga/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/fulton-county-ga-hazard-map.svg</image:loc>
+      <image:title>Fulton County, GA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/clark-county-nv/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/clark-county-nv-hazard-map.svg</image:loc>
+      <image:title>Clark County, NV real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/miami-dade-county-fl/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/miami-dade-county-fl-hazard-map.svg</image:loc>
+      <image:title>Miami-Dade County, FL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/king-county-wa/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/king-county-wa-hazard-map.svg</image:loc>
+      <image:title>King County, WA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/cook-county-il/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/cook-county-il-hazard-map.svg</image:loc>
+      <image:title>Cook County, IL real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/maricopa-county-az/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/maricopa-county-az-hazard-map.svg</image:loc>
+      <image:title>Maricopa County, AZ real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/santa-clara-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/santa-clara-county-ca-hazard-map.svg</image:loc>
+      <image:title>Santa Clara County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/orange-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/orange-county-ca-hazard-map.svg</image:loc>
+      <image:title>Orange County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/san-diego-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/san-diego-county-ca-hazard-map.svg</image:loc>
+      <image:title>San Diego County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/los-angeles-county-ca/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/los-angeles-county-ca-hazard-map.svg</image:loc>
+      <image:title>Los Angeles County, CA real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/tarrant-county-tx/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/tarrant-county-tx-hazard-map.svg</image:loc>
+      <image:title>Tarrant County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/bexar-county-tx/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/bexar-county-tx-hazard-map.svg</image:loc>
+      <image:title>Bexar County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/dallas-county-tx/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/dallas-county-tx-hazard-map.svg</image:loc>
+      <image:title>Dallas County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/harris-county-tx/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/harris-county-tx-hazard-map.svg</image:loc>
+      <image:title>Harris County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.beforeregret.com/county/travis-county-tx/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://www.beforeregret.com/api/images/travis-county-tx-hazard-map.svg</image:loc>
+      <image:title>Travis County, TX real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)</image:title>
+    </image:image>
+  </url>
 </urlset>
