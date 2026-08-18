@@ -192,6 +192,48 @@ export async function ensureArticlesSchema(): Promise<void> {
   // that matters. Email is lowercased by the route before insert so the index is meaningful.
   await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_arbitration_opt_outs_email_version ON arbitration_opt_outs(user_email, terms_version)`;
 
+  // serp_research_briefs: durable storage for the pre-generation competitive briefs produced by
+  // /api/admin/articles/serp-research (see src/server/serpResearch.ts).
+  //
+  // Existed nowhere before this. A brief lived only in React state in the admin panel, so a page
+  // refresh, switching to another article and back, or a dev-server reload destroyed it -- and a
+  // brief is not cheap to replace. Grounded search runs on exactly one model on this project
+  // (SEARCH_GROUNDING_MODELS in geminiModel.ts), and that model's free-tier cap is 20 requests a
+  // day, so every lost brief costs 5% of a day's entire research capacity. Several were lost that
+  // way in a single afternoon of testing.
+  //
+  // Keyed by the QUERY, not by article id, and deliberately so. The article a brief was fetched
+  // for may be a throwaway draft that gets deleted, while the research itself stays valid -- it is
+  // a description of what ranks for a search phrase, which has nothing to do with which draft row
+  // happened to be open. Keying by query also makes the cache do double duty: researching the same
+  // title again later, from any draft, costs nothing.
+  //
+  // additional_topic is part of the key, not a detail hanging off it: it adds its own second search
+  // and its own section to the brief, so a brief fetched without it genuinely is not the same brief
+  // and must not be served for a request that includes it. Empty string, never NULL, so the unique
+  // index actually constrains the no-additional-topic case (NULLs do not compare equal in a unique
+  // index, which would silently permit unlimited duplicate rows for exactly the commonest request).
+  //
+  // No TTL and no expiry sweep. Search results drift slowly and unevenly, and there is no honest
+  // number of days after which a brief flips from good to bad -- so rather than invent one and
+  // silently re-spend a scarce call when it elapses, fetched_at is returned to the client and shown
+  // as the brief's age. Staleness becomes a judgement the writer makes with the date in front of
+  // them, and re-running is always explicit and never automatic.
+  await sql`
+    CREATE TABLE IF NOT EXISTS serp_research_briefs (
+      id SERIAL PRIMARY KEY,
+      query TEXT NOT NULL,
+      additional_topic TEXT NOT NULL DEFAULT '',
+      brief TEXT NOT NULL,
+      source_domains_json TEXT NOT NULL DEFAULT '[]',
+      search_queries_json TEXT NOT NULL DEFAULT '[]',
+      grounded BOOLEAN NOT NULL DEFAULT true,
+      model TEXT NOT NULL DEFAULT '',
+      fetched_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_serp_research_briefs_query ON serp_research_briefs(query, additional_topic)`;
+
   // County research pages (see scripts/fetch-county-data.ts and src/server/countiesApi.ts).
   // data_complete is the enforcement point for the "no data, no page" rule: it's only ever set
   // true by the fetch script, and only when all four real data sources (EPA radon zone, Census

@@ -242,6 +242,12 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [serpSourceDomains, setSerpSourceDomains] = useState<string[]>([]);
   const [serpQueries, setSerpQueries] = useState<string[]>([]);
   const [serpGrounded, setSerpGrounded] = useState(true);
+  // Whether the brief on screen came from storage (no quota spent) or a fresh grounded call, and
+  // when it was originally researched. Both are shown rather than hidden: a stored brief is a real
+  // saving worth seeing, and its age is the only basis anyone has for judging whether to spend a
+  // call re-running it -- there's no honest expiry rule to apply on their behalf.
+  const [serpCached, setSerpCached] = useState(false);
+  const [serpFetchedAt, setSerpFetchedAt] = useState('');
   const [serpResearching, setSerpResearching] = useState(false);
   const [serpError, setSerpError] = useState('');
   const [serpBriefOpen, setSerpBriefOpen] = useState(false);
@@ -815,7 +821,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // server searches the string it's given, and concatenating them would search a phrase nobody
   // types. Failure is non-blocking by design; the brief is an enhancement, and Generate stays
   // available without it.
-  const runSerpResearch = async () => {
+  // refresh = true is the only way to spend a grounded call when a stored brief already exists for
+  // these exact inputs. Everything else -- first click, click after a page refresh, coming back
+  // tomorrow -- is served from storage for free.
+  const runSerpResearch = async (refresh: boolean = false) => {
     const query = (exactTitleInput.trim() || topicInput.trim());
     const additionalTopic = additionalTopicInput.trim();
     if (!query || serpResearching) return;
@@ -828,7 +837,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
         // The additional question gets its own search inside the same call. Without it, the one
         // section the writer specifically asked for was the only part of the article written with
         // no competitive read behind it.
-        body: JSON.stringify({ query, additionalTopic }),
+        body: JSON.stringify({ query, additionalTopic, refresh }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data?.success) {
@@ -837,6 +846,8 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       }
       setSerpBriefQuery(query);
       setSerpBriefAdditionalTopic(additionalTopic);
+      setSerpCached(data.cached === true);
+      setSerpFetchedAt(typeof data.fetchedAt === 'string' ? data.fetchedAt : '');
       setSerpBrief(data.brief || '');
       setSerpSourceDomains(Array.isArray(data.sourceDomains) ? data.sourceDomains : []);
       setSerpQueries(Array.isArray(data.searchQueries) ? data.searchQueries : []);
@@ -852,6 +863,8 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const clearSerpResearch = () => {
     setSerpBriefQuery('');
     setSerpBriefAdditionalTopic('');
+    setSerpCached(false);
+    setSerpFetchedAt('');
     setSerpBrief('');
     setSerpSourceDomains([]);
     setSerpQueries([]);
@@ -2354,13 +2367,19 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 </button>
               )}
             </div>
+            {/* Must be a wrapping arrow, not `onClick={runSerpResearch}` -- a bare handler
+                reference passes React's click event as the first argument, and an event object is
+                truthy, so every click would have forced a live re-run and defeated the cache
+                entirely. With a brief already on screen this button means "go and look again",
+                which is the one action that deliberately spends a call; with no brief it prefers
+                whatever is stored and costs nothing. */}
             <button
-              onClick={runSerpResearch}
+              onClick={() => runSerpResearch(Boolean(serpBrief))}
               disabled={serpResearching || generating || hasExistingContent || !(exactTitleInput.trim() || topicInput.trim())}
               className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs rounded-xl transition-all cursor-pointer disabled:opacity-50"
             >
               {serpResearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
-              <span>{serpResearching ? 'Searching Google...' : serpBrief ? 'Re-run research' : 'Run live search research'}</span>
+              <span>{serpResearching ? 'Searching Google...' : serpBrief ? 'Re-run against live search' : 'Run live search research'}</span>
             </button>
             {!(exactTitleInput.trim() || topicInput.trim()) ? (
               <p className="text-[11px] text-slate-500">
@@ -2368,7 +2387,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               </p>
             ) : (
               <p className="text-[11px] text-slate-500">
-                Runs a live Google search for "{serpQueryNow.slice(0, 70)}"{additionalTopicInput.trim() ? <> and a second one for "{additionalTopicInput.trim().slice(0, 70)}"</> : null}, reads what's currently ranking, and writes a brief on how to beat it. Costs one extra Gemini call from the same daily quota as Generate.
+                Runs a live Google search for "{serpQueryNow.slice(0, 70)}"{additionalTopicInput.trim() ? <> and a second one for "{additionalTopicInput.trim().slice(0, 70)}"</> : null}, reads what's currently ranking, and writes a brief on how to beat it. Briefs are saved per query — researching the same thing again, or reloading this page, costs nothing. Only "Re-run against live search" spends a call.
               </p>
             )}
             {serpError && (
@@ -2386,7 +2405,11 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                     {serpBriefIsStale
                       ? <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                       : <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
-                    {serpBriefIsStale ? 'Brief is out of date — still sent with Generate' : 'Brief ready — will be sent with Generate'}
+                    {serpBriefIsStale
+                      ? 'Brief is out of date — still sent with Generate'
+                      : serpCached
+                      ? 'Saved brief loaded — no quota spent'
+                      : 'Brief ready — will be sent with Generate'}
                   </span>
                   {serpBriefOpen ? <ChevronUp className="w-3.5 h-3.5 text-emerald-300 shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 text-emerald-300 shrink-0" />}
                 </button>
@@ -2421,6 +2444,18 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                           No live search actually ran for this — the model answered from its own training data, so treat this as a guess about the SERP, not an observation of it. Re-running usually fixes it.
                         </span>
                       </div>
+                    )}
+                    {/* The research date, shown whenever it's known, because it is the only basis
+                        anyone has for deciding whether to spend one of the day's 20 calls
+                        re-running this. No expiry is enforced -- search results drift slowly and
+                        unevenly, and there's no honest cutoff at which a brief stops being useful,
+                        so the date goes in front of the writer instead of a rule being invented
+                        for them. */}
+                    {serpFetchedAt && (
+                      <p className="text-[11px] text-slate-400">
+                        <span className="text-slate-500">Researched:</span> {new Date(serpFetchedAt).toLocaleString()}
+                        {serpCached && <span className="text-slate-500"> · loaded from saved research, no Gemini call used</span>}
+                      </p>
                     )}
                     {serpQueries.length > 0 && (
                       <p className="text-[11px] text-slate-400">

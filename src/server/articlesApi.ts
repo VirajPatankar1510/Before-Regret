@@ -153,6 +153,45 @@ export function registerArticleRoutes(app: Express) {
     // inside the same call -- see buildSerpResearchPrompt for why that section is worth the search
     // and why it doesn't cost an extra request.
     const additionalTopic = typeof req.body?.additionalTopic === 'string' ? req.body.additionalTopic.trim() : '';
+    // Explicit "research this again against live search" from the writer -- the only path that
+    // spends a call when a stored brief already exists. Never inferred from the brief's age: with
+    // 20 grounded calls a day, deciding on someone's behalf that their saved research has gone off
+    // is not a call this route gets to make silently.
+    const forceRefresh = req.body?.refresh === true;
+
+    // Serve the stored brief before touching Gemini. This is the whole point of the cache: a page
+    // refresh, or coming back to an article tomorrow, costs nothing instead of 5% of the day's
+    // research capacity. Best-effort -- a database failure here must degrade to "do the research"
+    // rather than failing the request, which is why it's a try/catch around only the read.
+    if (!forceRefresh && isDbConfigured()) {
+      try {
+        const cached = await withDb((sql) => sql`
+          SELECT brief, source_domains_json, search_queries_json, grounded, model, fetched_at
+          FROM serp_research_briefs
+          WHERE query = ${query} AND additional_topic = ${additionalTopic}
+          LIMIT 1
+        `) as unknown as Array<{
+          brief: string; source_domains_json: string; search_queries_json: string;
+          grounded: boolean; model: string; fetched_at: string;
+        }>;
+        if (cached.length > 0) {
+          const row = cached[0];
+          res.json({
+            success: true,
+            brief: row.brief,
+            sourceDomains: JSON.parse(row.source_domains_json || '[]'),
+            searchQueries: JSON.parse(row.search_queries_json || '[]'),
+            grounded: row.grounded,
+            model: row.model,
+            cached: true,
+            fetchedAt: row.fetched_at,
+          });
+          return;
+        }
+      } catch (err) {
+        console.error('[articles] serp brief cache read failed (falling through to live research):', err);
+      }
+    }
 
     try {
       const { GoogleGenAI } = await import('@google/genai');
@@ -233,9 +272,9 @@ export function registerArticleRoutes(app: Express) {
         if (quotaExhaustedModels.length > 0) {
           console.error('[articles] serp research: quota exhausted on', quotaExhaustedModels.join(', '));
           // Deliberately NOT contentQuotaExhaustedMessage() -- see the quota note at the top of
-          // serpResearch.ts. A 429 on a grounded call is usually the search-grounding allowance,
-          // not the per-model one, and the generic message sends someone to check model counters
-          // that will still show calls remaining and will never explain the failure.
+          // serpResearch.ts. That generic message names the whole content cascade, but most of
+          // those models cannot run a grounded request at all, so it points at bars in the usage
+          // panel that have nothing to do with why this failed.
           res.status(429).json({ success: false, error: SERP_RESEARCH_QUOTA_EXHAUSTED_MESSAGE });
           return;
         }
@@ -260,13 +299,48 @@ export function registerArticleRoutes(app: Express) {
       // grounding tool ever firing -- the brief would then be a guess about the SERP dressed up as
       // an observation of it, which is exactly the failure this whole feature exists to avoid.
       // Surfaced to the admin rather than silently returned as if it were researched.
+      const grounded = searchQueries.length > 0;
+
+      // Store before responding, so the call that was just spent survives a page refresh. Awaited
+      // rather than fired and forgotten: the whole value of this table is that the brief is on disk
+      // by the time the writer can lose it, and a write that hasn't landed yet protects nothing.
+      // Still non-fatal -- a storage failure must not throw away a brief that was successfully
+      // fetched, so the response goes out either way.
+      //
+      // ON CONFLICT overwrites rather than DO NOTHING: reaching here for an existing key means the
+      // writer explicitly asked to re-run against live search, and the newer read of the SERP is
+      // the one they wanted. fetched_at moves with it, so the age shown always describes the brief
+      // actually being served.
+      let fetchedAt = new Date().toISOString();
+      if (isDbConfigured()) {
+        try {
+          const saved = await withDb((sql) => sql`
+            INSERT INTO serp_research_briefs (query, additional_topic, brief, source_domains_json, search_queries_json, grounded, model)
+            VALUES (${query}, ${additionalTopic}, ${brief}, ${JSON.stringify(sourceDomains)}, ${JSON.stringify(searchQueries)}, ${grounded}, ${usedModel})
+            ON CONFLICT (query, additional_topic) DO UPDATE SET
+              brief = EXCLUDED.brief,
+              source_domains_json = EXCLUDED.source_domains_json,
+              search_queries_json = EXCLUDED.search_queries_json,
+              grounded = EXCLUDED.grounded,
+              model = EXCLUDED.model,
+              fetched_at = now()
+            RETURNING fetched_at
+          `) as unknown as Array<{ fetched_at: string }>;
+          if (saved.length > 0) fetchedAt = saved[0].fetched_at;
+        } catch (err) {
+          console.error('[articles] serp brief save failed (brief still returned, just not cached):', err);
+        }
+      }
+
       res.json({
         success: true,
         brief,
         sourceDomains,
         searchQueries,
-        grounded: searchQueries.length > 0,
+        grounded,
         model: usedModel,
+        cached: false,
+        fetchedAt,
       });
     } catch (err: any) {
       console.error('[articles] serp research failed:', err);
