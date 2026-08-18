@@ -29,6 +29,15 @@ export interface SearchConsoleQueryRow {
   position: number;
 }
 
+/** One row of the `page` dimension: a full canonical URL, not a slug. */
+export interface SearchConsolePageRow {
+  page: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
 export function isSearchConsoleConfigured(): boolean {
   return Boolean(
     process.env.GSC_SERVICE_ACCOUNT_EMAIL &&
@@ -138,5 +147,67 @@ export async function fetchTopSearchQueries(seedTerm?: string): Promise<SearchCo
   // The API's default sort is by clicks -- re-sorted by impressions here, since a query with real
   // search interest but a low ranking (few clicks) is exactly the useful signal for topic
   // research, and clicks-first ordering buries it under queries the site already ranks well for.
+  return rows.sort((a, b) => b.impressions - a.impressions);
+}
+
+/**
+ * Per-URL performance over a window, using the `page` dimension.
+ *
+ * Answers a question nothing else in this codebase can: which individual pages earn any search
+ * impressions at all. fetchTopSearchQueries above reports what the SITE ranks for in aggregate,
+ * which says nothing about whether a given one of ~250 published URLs has ever been shown.
+ *
+ * THE IMPORTANT PROPERTY, and the reason callers must not treat this as a page list: Search
+ * Console only returns rows for pages that had at least one impression in the window. A page with
+ * zero impressions is not a row with zeroes -- it is ABSENT. So the interesting set (pages Google
+ * has never shown to anyone) can only be found by subtracting these rows from the site's own list
+ * of published URLs. See scripts/gsc-page-coverage.ts, which does exactly that.
+ *
+ * Paginates because the default rowLimit is far below the number of URLs this site publishes, and
+ * a silently truncated response would read as "these pages have no impressions" -- the same
+ * absence that genuinely means zero. Two different facts must not collapse into one.
+ */
+export async function fetchPagePerformance(days: number = 90): Promise<SearchConsolePageRow[]> {
+  const siteUrl = process.env.GSC_SITE_URL!;
+  const accessToken = await getAccessToken();
+
+  const endDate = new Date();
+  const startDate = new Date(endDate.getTime() - days * 24 * 60 * 60 * 1000);
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+  const PAGE_SIZE = 5000; // well under the API's 25000 ceiling, comfortably above this site's URL count
+  const rows: SearchConsolePageRow[] = [];
+
+  for (let startRow = 0; ; startRow += PAGE_SIZE) {
+    const res = await fetch(
+      `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`,
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          startDate: iso(startDate),
+          endDate: iso(endDate),
+          dimensions: ['page'],
+          rowLimit: PAGE_SIZE,
+          startRow,
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      throw new Error(`Search Console page query failed (${res.status}): ${errBody}`);
+    }
+
+    const json = (await res.json()) as {
+      rows?: Array<{ keys: string[]; clicks: number; impressions: number; ctr: number; position: number }>;
+    };
+    const batch = json.rows || [];
+    for (const r of batch) {
+      rows.push({ page: r.keys[0], clicks: r.clicks, impressions: r.impressions, ctr: r.ctr, position: r.position });
+    }
+    if (batch.length < PAGE_SIZE) break;
+  }
+
   return rows.sort((a, b) => b.impressions - a.impressions);
 }
