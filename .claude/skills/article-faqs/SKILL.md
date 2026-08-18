@@ -131,9 +131,35 @@ modes that matter here, and a check that fires is the script doing its job, not 
 
 **6. Clean up** `.tmp-faq-batch.txt` and `.tmp-faq-draft.json` when the batch is saved.
 
-Guide pages are statically prerendered at build time, so newly saved FAQs (and any content-audit
-fix) are not visible on the live site until the next deploy. A DB-only change needs
-`git commit --allow-empty` to trigger one.
+**7. Deploy, then verify live.** Guide pages are statically prerendered at build time, so newly
+saved FAQs (and any content-audit fix) are not visible on the live site until the next deploy. A
+DB-only change has no source diff, so it needs `git commit --allow-empty` to trigger one. Once
+pushed:
+
+```bash
+npx tsx .claude/skills/article-faqs/scripts/faq-verify-live.ts 57 67 71 72
+```
+
+It reads the expected questions from the **database**, fetches each live guide URL, and asserts
+every saved FAQ appears both in the page's `FAQPage` JSON-LD and in the visible accordion. It polls
+until the deploy lands (five minutes by default) and exits non-zero if anything is genuinely
+missing.
+
+**Do not hand-roll this check with `curl | grep`.** That is not a style preference — the ad-hoc
+version produced a confident false alarm on a real batch, reporting one Question entity per page
+where there were four, and nearly got a schema bug filed against a deploy that was fine. It was
+wrong three ways at once, and each is easy to repeat:
+
+- It grepped for `"question":"…"`. schema.org's `Question` type has no `question` property — it uses
+  `name` (see the FAQPage block in `scripts/prerender-guides.tsx`). The pattern could never match.
+- Even the corrected `grep -o '"name":"[^"]*'` truncates at the first escaped quote: a real title
+  came back as `What Does \` because the name contained `\"`. Article 52 has exactly this shape.
+- A single-shot fetch cannot survive a Vercel rollout, where old and new builds are served side by
+  side and two identical requests seconds apart legitimately differ — which is precisely what
+  happened: the same command returned 1, then 4.
+
+The script parses the JSON-LD rather than pattern-matching it, decodes HTML entities before
+comparing body text, and retries. Use it.
 
 ## What makes a good FAQ here
 
