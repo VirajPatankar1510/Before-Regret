@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { withDb, isDbConfigured } from '../src/server/db.js';
 import { pickGuidesForCounty, GuideLink, findPermitGuideForCounty, PermitGuideLink } from '../src/utils/countyGuideTopics.js';
@@ -330,9 +331,121 @@ function CountyStaticBody({
   );
 }
 
+// FEMA short codes -> human labels. Third copy in this repo, and deliberately so: the same
+// 18-entry table is already duplicated in countyHazardSvg.ts, whose own comment explains the
+// reasoning (a small, stable static lookup is cheaper to keep in sync by hand than to restructure
+// the import graph for a build script, a server module and a client component).
+const HAZARD_LABELS: Record<string, string> = {
+  AVLN: 'Avalanche', CFLD: 'Coastal Flooding', CWAV: 'Cold Wave', DRGT: 'Drought',
+  ERQK: 'Earthquake', HAIL: 'Hail', HWAV: 'Heat Wave', HRCN: 'Hurricane',
+  ISTM: 'Ice Storm', LNDS: 'Landslide', LTNG: 'Lightning', IFLD: 'Inland Flooding',
+  SWND: 'Strong Wind', TRND: 'Tornado', TSUN: 'Tsunami', VLCN: 'Volcanic Activity',
+  WFIR: 'Wildfire', WNTW: 'Winter Weather',
+};
+
+// Same buckets and labels as pickDominantEraYear in countyEventsApi.ts. Not imported from there
+// because that module pulls in the Gemini client and route registration, none of which a build
+// script should drag in to compute one string.
+const ERA_LABELS: Record<string, string> = {
+  built2020OrLater: '2020 or later', built2010to2019: '2010s', built2000to2009: '2000s',
+  built1990to1999: '1990s', built1980to1989: '1980s', built1970to1979: '1970s',
+  built1960to1969: '1960s', built1950to1959: '1950s', built1940to1949: '1940s',
+  built1939OrEarlier: 'before 1940',
+};
+
+const TITLE_MAX = 60;   // Google truncates around 60 -- same budget src/utils/pageTitle.ts uses.
+const DESC_MAX = 158;   // Descriptions get cut around 160; leave a character of headroom.
+
+function dominantEraLabel(bucketsJson: string): string | null {
+  let buckets: Record<string, number>;
+  try { buckets = JSON.parse(bucketsJson || '{}'); } catch { return null; }
+  let bestKey: string | null = null;
+  let bestCount = 0;
+  for (const [key, count] of Object.entries(buckets)) {
+    if (typeof count === 'number' && count > bestCount && key in ERA_LABELS) {
+      bestCount = count;
+      bestKey = key;
+    }
+  }
+  return bestKey ? ERA_LABELS[bestKey] : null;
+}
+
+/**
+ * Per-county title and meta description, built from that county's own data.
+ *
+ * WHY THIS REPLACED A TEMPLATE. Every one of the 100 county pages previously carried the identical
+ * description -- "Real, sourced data for {County}, {ST}: EPA radon zone, Census housing-age
+ * distribution, FEMA natural hazard risk, and recorded NOAA storm history" -- byte-for-byte the
+ * same apart from the county name, and a title differing only in the same two words. Measured
+ * against Search Console's page dimension (scripts/gsc-page-coverage.ts), 0 of those 100 pages had
+ * ever earned a single impression. Near-identical metadata is not the only reason for that, but it
+ * gives Google nothing to tell one page from another, and it is the part that was fixable here.
+ *
+ * Every value comes from that county's stored record -- FEMA National Risk Index rating, its
+ * highest-scoring hazard, EPA radon zone, dominant Census housing decade. Nothing is invented, and
+ * a county missing a field simply omits that clause.
+ *
+ * A hazard is only named when FEMA rates it Relatively High or Very High. The top-scoring hazard
+ * of a genuinely low-risk county is still its top hazard, but putting "Avalanche" in the title of
+ * a county FEMA rates Very Low for avalanche would advertise a risk the source does not support --
+ * the same overclaiming the article rules forbid in body copy.
+ *
+ * Both title and description degrade rather than truncate: clauses are added only while the result
+ * still fits, so a long county name loses the last detail instead of shipping a title Google cuts
+ * mid-word. Verified across all 100 counties by scripts/check-county-meta.ts.
+ */
+export function buildCountyMeta(row: CountyRow): { title: string; description: string } {
+  const place = `${row.county_name} County, ${row.state_abbrev}`;
+
+  const hazards = Object.entries(
+    JSON.parse(row.fema_hazards_json || '{}') as Record<string, { rating: string; score: number | null }>
+  ).sort((a, b) => (b[1].score ?? 0) - (a[1].score ?? 0));
+  const top = hazards[0];
+  const notableHazard =
+    top && (top[1].rating === 'Very High' || top[1].rating === 'Relatively High')
+      ? HAZARD_LABELS[top[0]] || null
+      : null;
+
+  const era = dominantEraLabel(row.census_year_built_json);
+  const zone = row.radon_zone;
+
+  // Richest title that fits, falling back a step at a time.
+  const titleCandidates = [
+    notableHazard && zone ? `${place} Radon Zone ${zone} & ${notableHazard} Risk` : null,
+    notableHazard ? `${place} ${notableHazard} & Property Risk Data` : null,
+    zone ? `${place} Property Risk: Radon Zone ${zone}` : null,
+    era ? `${place} Property Research: ${era} Homes` : null,
+    `${place} Property Research`,
+  ].filter((t): t is string => Boolean(t));
+  const title = titleCandidates.find((t) => t.length <= TITLE_MAX) ?? titleCandidates[titleCandidates.length - 1];
+
+  // Description: add clauses while they still fit, so the least important detail drops first.
+  const clauses = [
+    row.fema_risk_rating ? `FEMA risk ${row.fema_risk_rating}` : null,
+    notableHazard ? `top hazard ${notableHazard}` : null,
+    zone ? `EPA Radon Zone ${zone}` : null,
+    era ? `most homes built ${era}` : null,
+  ].filter((c): c is string => Boolean(c));
+
+  let description = `${place}: `;
+  const kept: string[] = [];
+  for (const clause of clauses) {
+    const next = `${place}: ${[...kept, clause].join(', ')}.`;
+    if (next.length <= DESC_MAX) kept.push(clause);
+  }
+  description = kept.length > 0
+    ? `${place}: ${kept.join(', ')}.`
+    : `Real, sourced property risk data for ${place}.`;
+
+  // Only if there is genuine room left -- this sentence is the least important thing on the line.
+  const withSources = `${description} Census, FEMA, EPA and NOAA sources.`;
+  if (withSources.length <= DESC_MAX) description = withSources;
+
+  return { title, description };
+}
+
 function buildJsonLd(row: CountyRow, canonicalUrl: string): Record<string, any>[] {
-  const title = `${row.county_name} County, ${row.state_abbrev} Property Research | BeforeRegret`;
-  const description = `Real, sourced data for ${row.county_name} County, ${row.state_abbrev}: EPA radon zone, Census housing-age distribution, FEMA natural hazard risk, and recorded NOAA storm history.`;
+  const { title, description } = buildCountyMeta(row);
   return [
     {
       '@context': 'https://schema.org',
@@ -522,8 +635,10 @@ async function run() {
     titleCasedRows.push(row);
     const rankings = computeCountyRankings(row.slug, rankingInputs);
     const canonicalUrl = `https://www.beforeregret.com/county/${row.slug}/`;
-    const title = `${row.county_name} County, ${row.state_abbrev} Property Research | BeforeRegret`;
-    const description = `Real, sourced data for ${row.county_name} County, ${row.state_abbrev}: EPA radon zone, Census housing-age distribution, FEMA natural hazard risk, and recorded NOAA storm history.`;
+    // Same helper the JSON-LD uses, so the <title> and the structured data's headline cannot drift
+    // apart -- they were two independent template literals before, which is exactly how that kind
+    // of mismatch gets introduced silently.
+    const { title, description } = buildCountyMeta(row);
     const permitGuide = findPermitGuideForCounty(row.slug, permitGuides);
     const bodyHtml = renderToStaticMarkup(
       <CountyStaticBody row={row} rankings={rankings} permitGuide={permitGuide} footerGuides={footerGuides} />
@@ -602,7 +717,16 @@ async function run() {
   console.log('[prerender-counties] Wrote static HTML for the counties hub to dist/counties/index.html');
 }
 
-run().catch((err) => {
-  console.error('[prerender-counties] Failed:', err);
-  process.exit(1);
-});
+// Only prerender when this file is executed directly, not when another module imports it.
+// buildCountyMeta above is a pure function worth testing on its own, and
+// scripts/check-county-meta.ts imports it to run every county through the real implementation
+// rather than a copy. Without this guard that import would kick off a full prerender as a side
+// effect -- which is exactly what happened on the first run, failing on a missing Vite manifest
+// because no build had run yet.
+const invokedDirectly = process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
+if (invokedDirectly) {
+  run().catch((err) => {
+    console.error('[prerender-counties] Failed:', err);
+    process.exit(1);
+  });
+}
