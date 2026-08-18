@@ -8,6 +8,7 @@ import { PricingSection } from './home/PricingSection';
 import { FaqSection } from './home/FaqSection';
 import { ClosingCtaSection } from './home/ClosingCtaSection';
 import { GuideCardsSection } from './home/GuideCardsSection';
+import { CountyLinksSection } from './home/CountyLinksSection';
 import { HomeData, buildGuideClusters, pickResearchPages } from '../utils/homeContent';
 
 interface HeroProps {
@@ -180,6 +181,12 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
         totalGuides={homeData.articles.length}
         onNavigate={onNavigate}
       />
+
+      {/* 5b. COUNTY DIRECTORY -- every covered county page linked directly from the homepage, the
+          internal-linking fix for county pages stuck in "Discovered - not indexed" (see
+          CountyLinksSection.tsx). Sits right after the guide library, before the FAQ, mirroring the
+          exact position in scripts/prerender-homepage.tsx so the static and client renders match. */}
+      <CountyLinksSection counties={homeData.counties} onNavigate={onNavigate} />
 
       {/* 6. FREQUENTLY ASKED QUESTIONS */}
       <FaqSection />

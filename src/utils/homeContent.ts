@@ -27,6 +27,41 @@ export interface HomeCounty {
   censusTotalUnits: number | null;
 }
 
+// county_data stores county_name all-caps (the form FEMA/NOAA/Census use for matching, e.g. "LOS
+// ANGELES"), so every reader-facing use has to title-case it. The same helper with the same
+// override map already lives inline in CountiesIndexView.tsx and CountyPageView.tsx; this is the
+// homepage's copy, placed here (not imported from a component) so BOTH Hero.tsx and
+// scripts/prerender-homepage.tsx -- which must render byte-identical county links -- share one
+// definition without either pulling in a React component. The two overrides are the only US
+// counties in the covered set whose correct casing isn't a plain word-initial-caps of the
+// lowercased form.
+const COUNTY_TITLE_CASE_OVERRIDES: Record<string, string> = {
+  DUPAGE: 'DuPage',
+  DEKALB: 'DeKalb',
+};
+
+export function formatCountyName(value: string): string {
+  if (COUNTY_TITLE_CASE_OVERRIDES[value]) return COUNTY_TITLE_CASE_OVERRIDES[value];
+  return value
+    .toLowerCase()
+    .replace(/(^|[\s-])([a-z])/g, (_, sep, letter) => sep + letter.toUpperCase());
+}
+
+/**
+ * Every covered county, sorted for a reader-facing A-Z directory: by formatted name, then state as
+ * a tiebreaker (two "Orange County"s in different states sort together but stay deterministic).
+ * Used by the homepage county-links section so the crawler-facing static render and the booted
+ * client render agree on order, same contract as buildGuideClusters/pickResearchPages above.
+ */
+export function sortCountiesForDirectory(counties: HomeCounty[]): HomeCounty[] {
+  return [...counties].sort((a, b) => {
+    const an = formatCountyName(a.countyName);
+    const bn = formatCountyName(b.countyName);
+    if (an !== bn) return an.localeCompare(bn);
+    return a.stateAbbrev.localeCompare(b.stateAbbrev);
+  });
+}
+
 export interface HomeData {
   articles: HomeArticle[];
   counties: HomeCounty[];
