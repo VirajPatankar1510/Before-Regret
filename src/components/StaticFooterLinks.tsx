@@ -58,14 +58,14 @@ export function StaticFooterLinks({ guides }: StaticFooterLinksProps) {
             <span>Legal &amp; Support</span>
           </div>
           <ul className="space-y-2">
-            <li><a href="/about" className="hover:text-white font-bold text-blue-300 block py-1.5">About &amp; Methodology</a></li>
-            <li><a href="/advertise" className="hover:text-white font-bold text-blue-300 block py-1.5">Advertise With Us</a></li>
-            <li><a href="/support" className="hover:text-white font-medium text-slate-300 block py-1.5">Customer Support</a></li>
-            <li><a href="/terms" className="hover:text-white text-slate-400 block py-1.5">Terms of Service</a></li>
-            <li><a href="/privacy" className="hover:text-white text-slate-400 block py-1.5">Privacy Policy</a></li>
-            <li><a href="/refunds" className="hover:text-white text-slate-400 block py-1.5">Refund &amp; Cancellation</a></li>
-            <li><a href="/disclaimer" className="hover:text-white text-slate-400 block py-1.5">Disclaimer</a></li>
-            <li><a href="/accessibility" className="hover:text-white text-slate-400 block py-1.5">Accessibility</a></li>
+            <li><a href="/about/" className="hover:text-white font-bold text-blue-300 block py-1.5">About &amp; Methodology</a></li>
+            <li><a href="/advertise/" className="hover:text-white font-bold text-blue-300 block py-1.5">Advertise With Us</a></li>
+            <li><a href="/support/" className="hover:text-white font-medium text-slate-300 block py-1.5">Customer Support</a></li>
+            <li><a href="/terms/" className="hover:text-white text-slate-400 block py-1.5">Terms of Service</a></li>
+            <li><a href="/privacy/" className="hover:text-white text-slate-400 block py-1.5">Privacy Policy</a></li>
+            <li><a href="/refunds/" className="hover:text-white text-slate-400 block py-1.5">Refund &amp; Cancellation</a></li>
+            <li><a href="/disclaimer/" className="hover:text-white text-slate-400 block py-1.5">Disclaimer</a></li>
+            <li><a href="/accessibility/" className="hover:text-white text-slate-400 block py-1.5">Accessibility</a></li>
           </ul>
         </div>
       </div>

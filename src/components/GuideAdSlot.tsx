@@ -85,7 +85,7 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle 
               )}
               <div className="text-[10px] text-slate-500 mt-0.5">
                 Paid placement. Details supplied by the advertiser and not verified by us --{' '}
-                <a href="/disclaimer" className="underline hover:text-slate-700">check any licence yourself</a>.
+                <a href="/disclaimer/" className="underline hover:text-slate-700">check any licence yourself</a>.
               </div>
             </div>
           </div>
@@ -111,7 +111,7 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle 
       <span className="absolute top-2 right-3 text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-white px-2 py-0.5 rounded">
         Ad
       </span>
-      <a href="/advertise" className="flex items-center gap-3 pr-10 group">
+      <a href="/advertise/" className="flex items-center gap-3 pr-10 group">
         <div className="shrink-0 w-9 h-9 rounded-full bg-white flex items-center justify-center">
           <Wrench className="w-4 h-4 text-blue-600" />
         </div>

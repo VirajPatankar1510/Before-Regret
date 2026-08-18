@@ -187,7 +187,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                 an anonymous statistic, and we keep it deliberately for two reasons: it is the
                 evidence of what was actually submitted if a report is later disputed as inaccurate
                 (see sections 3.5 and 3.6 of our{' '}
-                <a href="/terms" className="text-blue-600 font-bold hover:underline">Terms of Service</a>),
+                <a href="/terms/" className="text-blue-600 font-bold hover:underline">Terms of Service</a>),
                 and it is what lets us investigate abuse of the free-report allowance. We retain it
                 for <strong>three years</strong> from the date of the request, then delete it.
               </p>
@@ -239,11 +239,11 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               </h2>
               <p>
                 Contact us first -- most concerns are resolved directly, and{' '}
-                <a href="/terms" className="text-blue-600 font-bold hover:underline">section 7.1 of our Terms of Service</a>{' '}
+                <a href="/terms/" className="text-blue-600 font-bold hover:underline">section 7.1 of our Terms of Service</a>{' '}
                 requires both sides to attempt informal resolution for 60 days before any formal
                 proceeding. Beyond that, a claim relating to this policy is subject to the binding
                 individual arbitration agreement and class action waiver in{' '}
-                <a href="/terms" className="text-blue-600 font-bold hover:underline">section 7 of the Terms</a>,
+                <a href="/terms/" className="text-blue-600 font-bold hover:underline">section 7 of the Terms</a>,
                 which control over this summary, with the same <strong>small claims</strong> carve-out
                 and the same <strong>30-day opt-out</strong>. None of this limits any right you have
                 to complain to a data protection authority in your jurisdiction.

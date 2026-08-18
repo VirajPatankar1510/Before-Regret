@@ -248,9 +248,9 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
                 the paid step below uses a real checkbox, where the friction is warranted. */}
             <p className="text-[11px] text-slate-500 text-center font-normal leading-relaxed">
               By generating this report you agree to our{' '}
-              <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>{' '}
+              <a href="/terms/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>{' '}
               and{' '}
-              <a href="/disclaimer" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Disclaimer</a>,
+              <a href="/disclaimer/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Disclaimer</a>,
               and confirm the property type, year built, and unit number you entered are accurate --
               we use them exactly as given and cannot verify them independently (Terms 3.5-3.6).
               Reports are research material, not a home inspection or professional advice. The Terms
@@ -318,9 +318,9 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
               />
               <span>
                 I agree to the{' '}
-                <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>{' '}
+                <a href="/terms/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>{' '}
                 and{' '}
-                <a href="/disclaimer" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Disclaimer</a>,
+                <a href="/disclaimer/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Disclaimer</a>,
                 and understand this report is research material assembled from public data -- not a
                 home inspection, appraisal, or professional advice -- and that all sales are final.
                 I confirm the property type, year built, and unit number I entered are accurate; these
