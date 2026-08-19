@@ -12,6 +12,7 @@ Allow: /refunds
 Allow: /disclaimer
 
 Disallow: /report/
+Disallow: /insights/
 Disallow: /admin
 Disallow: /api/
 Allow: /api/images/
