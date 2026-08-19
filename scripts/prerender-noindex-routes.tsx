@@ -28,7 +28,19 @@ interface NoindexRoute {
   canonical: string;
 }
 
-// Mirrors src/App.tsx: pseoRoute.type === 'guideAds' (/topic-ads) and === 'vendors' (/report-ads).
+// Mirrors src/App.tsx: pseoRoute.type === 'guideAds' (/topic-ads) and === 'vendors' (/report-ads),
+// plus the post-checkout confirmations and the signed-in placement dashboard below.
+//
+// Every route here ALREADY sets 'noindex, nofollow' client-side via applyHeadSeo (see the
+// pseoRoute branches in src/App.tsx) -- so a JS-rendering crawler has always seen the right
+// directive. What this script fixes is the raw HTML those routes serve BEFORE the JS runs, which
+// otherwise falls through to dist/shell.html's homepage title and 'index, follow'. The two layers
+// must agree; that is the whole point of the file.
+//
+// Only FIXED, enumerable paths belong here -- one static shell is written per directory below.
+// The per-report routes (/report/<id>, /insights/<id>) deliberately are NOT in this list and never
+// can be: their ids are unbounded and unknown at build time, so they are covered by robots.txt
+// Disallow instead (see generateRobotsTxt in src/utils/sitemapGenerator.ts for that reasoning).
 const ROUTES: NoindexRoute[] = [
   {
     dir: 'topic-ads',
@@ -43,6 +55,41 @@ const ROUTES: NoindexRoute[] = [
     description:
       'Vendor marketplace for home inspectors, contractors, and specialists to reach property buyers.',
     canonical: 'https://www.beforeregret.com/report-ads/',
+  },
+  // Post-checkout confirmations. Titles match the 'vendorsSuccess' / 'guideAdsSuccess' branches in
+  // App.tsx. A confirmation page is the classic never-index case: it is meaningless without the
+  // transaction that produced it, and a searcher landing on one has arrived at a dead end.
+  {
+    dir: 'report-ads/success',
+    title: 'Payment Confirmation | BeforeRegret',
+    description: 'Confirmation of a completed BeforeRegret report ad placement purchase.',
+    canonical: 'https://www.beforeregret.com/report-ads/success/',
+  },
+  {
+    dir: 'topic-ads/success',
+    title: 'Payment Confirmation | BeforeRegret',
+    description: 'Confirmation of a completed BeforeRegret topic ad placement purchase.',
+    canonical: 'https://www.beforeregret.com/topic-ads/success/',
+  },
+  {
+    dir: 'payment-success',
+    title: 'Payment Confirmation | BeforeRegret',
+    description: 'Confirmation of a completed BeforeRegret payment.',
+    canonical: 'https://www.beforeregret.com/payment-success/',
+  },
+  {
+    dir: 'payment-cancelled',
+    title: 'Payment Cancelled | BeforeRegret',
+    description: 'A BeforeRegret payment was cancelled before completing.',
+    canonical: 'https://www.beforeregret.com/payment-cancelled/',
+  },
+  // Signed-in advertiser dashboard ('myAds' in App.tsx) -- per-user content behind Clerk auth,
+  // with nothing a search visitor could act on.
+  {
+    dir: 'my-ads',
+    title: 'My Placements | BeforeRegret',
+    description: 'Manage your active BeforeRegret ad placements.',
+    canonical: 'https://www.beforeregret.com/my-ads/',
   },
 ];
 
