@@ -76,44 +76,32 @@ Rules for this task:
 
 /**
  * @param query           the article's own title/topic -- the query a searcher would actually type.
- * @param additionalTopic the "Additional topic/question to cover" field, when the writer filled it
- *                        in. Researched as a SECOND search inside the SAME call rather than a
- *                        separate request: the grounding tool runs multiple queries per call (the
- *                        returned webSearchQueries is an array), so this costs no extra quota, and
- *                        on this free tier the grounded-search allowance is the scarcer resource of
- *                        the two. It also keeps the two halves in one brief, which is what the
- *                        writer actually reads.
+ * @param additionalTopic DISCONNECTED (see note below) -- accepted for call-site compatibility but
+ *                        no longer used. Every call researches exactly the main query with a single
+ *                        Google search.
  *
- *                        Worth being explicit about why this is researched at all: that field
- *                        becomes a real ## section in the finished article, competing for its own
- *                        long-tail query. Researching only the main title left that section written
- *                        blind against whatever already ranks for it -- the one part of the article
- *                        the writer specifically asked for was the one part with no competitive
- *                        read behind it.
+ * WHY DISCONNECTED: this used to also run a second Google search, inside the same call, for the
+ * "Additional topic/question to cover" field, on the reasoning that the grounding tool can run
+ * multiple queries per call so it wouldn't cost extra *request* quota. That reasoning was about the
+ * generate_content_free_tier_requests metric specifically. It did not rule out a separate,
+ * unlabeled throttle on grounding/search volume itself -- and after this was wired in, grounded
+ * calls on gemini-2.5-flash started 429'ing with a RetryInfo.retryDelay that never cleanly reset
+ * even after minutes of zero traffic (see scripts/serp-batch-test.ts's fix commit for the diagnostic
+ * that found this). That symptom is consistent with a rolling search-volume window, not the
+ * documented 20/day request cap. Since doubling the searches per call is the one change on this path
+ * that plausibly doubles pressure on such a window, it was disconnected rather than kept as a
+ * suspect. If Google's docs ever confirm search volume isn't separately throttled, this can be
+ * re-connected by restoring the additionalTopic branch this comment replaced (see git history).
  */
 export function buildSerpResearchPrompt(query: string, additionalTopic: string = ''): string {
+  void additionalTopic;
   const trimmed = query.trim();
-  const trimmedAdditional = additionalTopic.trim();
-
-  // Kept as its own trailing section rather than merged into the four below, so the main query's
-  // consensus answer and gap list stay uncontaminated by a second, narrower question's results --
-  // those four sections are what the article's title, angle and Quick Answer are written against.
-  const additionalBlock = trimmedAdditional
-    ? `\n\nAFTER those four sections, run a SECOND, separate Google search for this narrower question, which the article must also cover in its own dedicated section:
-
-"${trimmedAdditional}"
-
-Then add exactly one more section:
-
-THE ADDITIONAL QUESTION
-What the retrieved pages say about this narrower question specifically, what the incumbent answer to it is, and what they leave unanswered about it. Keep this about the narrower question, not the main topic -- if the search returns much the same pages as the main query, say so, and say whether they treat this question seriously or mention it in passing. If the results are thin or the question is barely covered anywhere, say that plainly: an under-served question is the single best reason to write the section, and knowing that is worth more than a padded summary.`
-    : '';
 
   return `Search Google for this exact query and study what comes back:
 
 "${trimmed}"
 
-Then produce a brief in EXACTLY the four sections below, using these exact headings, with nothing before or after${trimmedAdditional ? ' them except the one further section described at the end' : ''}:
+Then produce a brief in EXACTLY the four sections below, using these exact headings, with nothing before or after them:
 
 CONSENSUS ANSWER
 The answer the retrieved pages converge on -- written as the 2-4 sentence summary a search engine would synthesise from them and show above the results. Write it as the current incumbent answer, the one a new article has to beat. Then, in one or two additional sentences, name what is weak about it specifically: what it glosses over, over-generalises, hedges into meaninglessness, or gets close to but never actually answers.
@@ -127,7 +115,7 @@ WHAT THEY ALL MISS
 The concrete, specific gaps across the whole retrieved set -- the follow-up questions a real reader would still have after reading every one of these pages. Be specific enough that each gap could become its own section heading. Prioritise gaps that matter to someone researching a property BEFORE they buy it, since that is this publisher's actual audience and it is frequently not the audience these pages are written for.
 
 HOW TO WIN THIS QUERY
-The specific, actionable strategy: what angle the new article should take, which of the gaps above it should own, what the opening direct answer needs to say to be more useful than the consensus answer above, and what structure would serve a reader better than what these pages do. Be concrete and opinionated. Do not suggest keyword stuffing, do not suggest writing longer for its own sake, and do not suggest anything that would require inventing a statistic to pull off.${additionalBlock}`;
+The specific, actionable strategy: what angle the new article should take, which of the gaps above it should own, what the opening direct answer needs to say to be more useful than the consensus answer above, and what structure would serve a reader better than what these pages do. Be concrete and opinionated. Do not suggest keyword stuffing, do not suggest writing longer for its own sake, and do not suggest anything that would require inventing a statistic to pull off.`;
 }
 
 export interface SerpResearchResult {
