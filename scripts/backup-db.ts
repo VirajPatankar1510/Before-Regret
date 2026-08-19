@@ -117,6 +117,25 @@ async function main() {
     process.exit(1);
   }
   console.log(`[backup] verified. Written to ${outDir}`);
+
+  // --prune N keeps only the N newest backups in the destination. Deliberately runs ONLY after the
+  // verification above passed: deleting good history immediately after a bad run is the one way a
+  // retention policy can turn a failure into data loss. Directory names are ISO-ish timestamps, so
+  // a lexical sort is chronological.
+  const pruneIdx = process.argv.indexOf('--prune');
+  const keep = pruneIdx !== -1 ? parseInt(process.argv[pruneIdx + 1] ?? '', 10) : NaN;
+  if (Number.isFinite(keep) && keep > 0) {
+    const existing = fs.readdirSync(baseDir)
+      .filter((d) => d.startsWith('beforeregret_') && fs.statSync(path.join(baseDir, d)).isDirectory())
+      .sort();
+    const doomed = existing.slice(0, Math.max(0, existing.length - keep));
+    for (const d of doomed) {
+      fs.rmSync(path.join(baseDir, d), { recursive: true, force: true });
+      console.log(`[backup] pruned old backup: ${d}`);
+    }
+    console.log(`[backup] retention: keeping newest ${keep}, ${existing.length - doomed.length} held`);
+  }
+
   console.log('[backup] NOTE: contains real user data. Keep it as protected as the database itself.');
 }
 
