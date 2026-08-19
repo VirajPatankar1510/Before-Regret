@@ -273,6 +273,19 @@ export async function generateXmlSitemap(): Promise<string> {
 // that page's links -- which now matters, because those pages carry the footer link block feeding
 // the guide and county URLs. robots.txt controls CRAWLING; the meta tag controls INDEXING. These
 // pages need to be crawled precisely so the noindex is seen and the links are followed.
+//
+// /report/ and /insights/ are the deliberate exception to that reasoning, and the difference is
+// UNBOUNDEDNESS, not sensitivity. Both serve generated per-property reports keyed by an id
+// (/insights/<reportId> -- see App.tsx's pathname.startsWith('/insights/') branch), so the URL
+// space under them grows with every report a visitor generates and has no fixed member list. The
+// noindex-via-prerender approach used for the fixed commercial routes (scripts/prerender-noindex-
+// routes.tsx) cannot reach them at all: that script writes one static shell per KNOWN directory,
+// and there is no way to enumerate report ids at build time. Disallow is the only mechanism that
+// covers the whole pattern. The usual cost of Disallow -- a crawler never sees the noindex, so an
+// inbound-linked URL can still be indexed url-only -- is acceptable here precisely because these
+// pages carry no footer link block worth following and nothing a searcher should ever land on.
+// /insights/ was missing while its sibling /report/ was already listed, which is the inconsistency
+// this line closes, not a new policy.
 export function generateRobotsTxt(): string {
   return `# BeforeRegret Robots.txt
 User-agent: *
@@ -288,6 +301,7 @@ Allow: /refunds
 Allow: /disclaimer
 
 Disallow: /report/
+Disallow: /insights/
 Disallow: /admin
 Disallow: /api/
 Allow: /api/images/
