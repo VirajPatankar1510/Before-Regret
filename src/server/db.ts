@@ -208,11 +208,15 @@ export async function ensureArticlesSchema(): Promise<void> {
   // happened to be open. Keying by query also makes the cache do double duty: researching the same
   // title again later, from any draft, costs nothing.
   //
-  // additional_topic is part of the key, not a detail hanging off it: it adds its own second search
-  // and its own section to the brief, so a brief fetched without it genuinely is not the same brief
-  // and must not be served for a request that includes it. Empty string, never NULL, so the unique
-  // index actually constrains the no-additional-topic case (NULLs do not compare equal in a unique
-  // index, which would silently permit unlimited duplicate rows for exactly the commonest request).
+  // additional_topic used to add its own second search and its own section to the brief, which is
+  // why it was made part of the key rather than a detail hanging off it. That second search is now
+  // DISCONNECTED (see the DISCONNECTED note atop buildSerpResearchPrompt in serpResearch.ts) --
+  // articlesApi.ts's serp-research route always writes '' here now, so in practice every row's key
+  // is just the query. The column and the composite key are left in place rather than migrated away,
+  // since dropping them buys nothing and a schema change is not something to do as a side effect of
+  // a quota investigation. Empty string, never NULL, so the unique index actually constrains the
+  // common case (NULLs do not compare equal in a unique index, which would silently permit unlimited
+  // duplicate rows otherwise).
   //
   // No TTL and no expiry sweep. Search results drift slowly and unevenly, and there is no honest
   // number of days after which a brief flips from good to bad -- so rather than invent one and

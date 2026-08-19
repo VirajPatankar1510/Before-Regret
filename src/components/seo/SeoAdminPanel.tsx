@@ -826,7 +826,6 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // tomorrow -- is served from storage for free.
   const runSerpResearch = async (refresh: boolean = false) => {
     const query = (exactTitleInput.trim() || topicInput.trim());
-    const additionalTopic = additionalTopicInput.trim();
     if (!query || serpResearching) return;
     setSerpResearching(true);
     setSerpError('');
@@ -834,10 +833,10 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       const res = await fetch('/api/admin/articles/serp-research', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // The additional question gets its own search inside the same call. Without it, the one
-        // section the writer specifically asked for was the only part of the article written with
-        // no competitive read behind it.
-        body: JSON.stringify({ query, additionalTopic, refresh }),
+        // The "Additional topic/question to cover" field is DISCONNECTED from research (see the
+        // DISCONNECTED note atop buildSerpResearchPrompt in serpResearch.ts) -- it no longer gets a
+        // search of its own, so it is deliberately not sent here.
+        body: JSON.stringify({ query, refresh }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data?.success) {
@@ -845,7 +844,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
         return;
       }
       setSerpBriefQuery(query);
-      setSerpBriefAdditionalTopic(additionalTopic);
+      setSerpBriefAdditionalTopic('');
       setSerpCached(data.cached === true);
       setSerpFetchedAt(typeof data.fetchedAt === 'string' ? data.fetchedAt : '');
       setSerpBrief(data.brief || '');
@@ -1745,14 +1744,14 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // "What Is a TPR Valve and Why Do Inspectors Always Check It?" shares most of the seed's few
   // significant words, which is exactly the strong-overlap signal bestTitleOverlap (above) is
   // designed to catch.
-  // A brief already fetched, but for different input than what's in the fields now. Both halves
-  // count: the additional question gets its own search inside the brief, so adding, changing or
-  // clearing it leaves the brief just as out of date as editing the title does. Exact string
-  // compare on purpose -- anything fuzzier would have to decide how much drift is "still fine,"
-  // and there's no honest threshold for that when the answer is one grounded-search call away.
+  // A brief already fetched, but for a different query than what's in the title/topic fields now.
+  // The additional-question field is DISCONNECTED from research (see the DISCONNECTED note atop
+  // buildSerpResearchPrompt in serpResearch.ts) and no longer affects the brief, so editing it must
+  // NOT mark an otherwise-current brief stale. Exact string compare on the query on purpose --
+  // anything fuzzier would have to decide how much drift is "still fine," and there's no honest
+  // threshold for that when the answer is one grounded-search call away.
   const serpQueryNow = exactTitleInput.trim() || topicInput.trim();
-  const serpBriefIsStale = Boolean(serpBrief) &&
-    (serpQueryNow !== serpBriefQuery || additionalTopicInput.trim() !== serpBriefAdditionalTopic);
+  const serpBriefIsStale = Boolean(serpBrief) && serpQueryNow !== serpBriefQuery;
 
   const titleToCheckForDuplicates = exactTitleInput.trim() || topicInput.trim() || draft.title.trim();
   const otherArticles = articles ? articles.filter((a) => a.id !== draft.id) : [];
@@ -2387,7 +2386,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               </p>
             ) : (
               <p className="text-[11px] text-slate-500">
-                Runs a live Google search for "{serpQueryNow.slice(0, 70)}"{additionalTopicInput.trim() ? <> and a second one for "{additionalTopicInput.trim().slice(0, 70)}"</> : null}, reads what's currently ranking, and writes a brief on how to beat it. Briefs are saved per query — researching the same thing again, or reloading this page, costs nothing. Only "Re-run against live search" spends a call.
+                Runs a live Google search for "{serpQueryNow.slice(0, 70)}", reads what's currently ranking, and writes a brief on how to beat it. Briefs are saved per query — researching the same thing again, or reloading this page, costs nothing. Only "Re-run against live search" spends a call.
               </p>
             )}
             {serpError && (
@@ -2429,7 +2428,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                           <span>The fields above changed since this was researched. It'll still be sent as-is — re-run it if the difference matters.</span>
                         </div>
                         <div className="pl-5 text-amber-300/70">
-                          Researched: "{serpBriefQuery}"{serpBriefAdditionalTopic ? <> + "{serpBriefAdditionalTopic}"</> : <> (no additional question)</>}
+                          Researched: "{serpBriefQuery}"
                         </div>
                       </div>
                     )}

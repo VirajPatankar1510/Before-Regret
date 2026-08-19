@@ -149,10 +149,13 @@ export function registerArticleRoutes(app: Express) {
       res.status(400).json({ success: false, error: 'Enter a topic or exact title first -- there is nothing to research yet.' });
       return;
     }
-    // The "Additional topic/question to cover" field, when filled in. Researched as a second search
-    // inside the same call -- see buildSerpResearchPrompt for why that section is worth the search
-    // and why it doesn't cost an extra request.
-    const additionalTopic = typeof req.body?.additionalTopic === 'string' ? req.body.additionalTopic.trim() : '';
+    // The "Additional topic/question to cover" field is DISCONNECTED from research (see the
+    // DISCONNECTED note atop buildSerpResearchPrompt in serpResearch.ts) -- it no longer triggers a
+    // second search, so it is not read here. Always '' so every brief for a given query shares one
+    // cache row regardless of what's currently typed in that field, instead of needlessly
+    // fragmenting the cache (and spending calls re-researching identical content) the way keying on
+    // a value that no longer affects the prompt would.
+    const additionalTopic = '';
     // Explicit "research this again against live search" from the writer -- the only path that
     // spends a call when a stored brief already exists. Never inferred from the brief's age: with
     // 20 grounded calls a day, deciding on someone's behalf that their saved research has gone off
