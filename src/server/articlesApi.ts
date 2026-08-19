@@ -394,6 +394,14 @@ export function registerArticleRoutes(app: Express) {
     // writer makes with a checkbox in the admin UI, distinct from whether the field is filled in.
     const additionalTopic = typeof req.body?.additionalTopic === 'string' ? req.body.additionalTopic : '';
     const additionalTopicExact = req.body?.additionalTopicExact === true;
+    // Reference material the writer pasted in for that one subheading -- see
+    // additionalTopicReferenceBlock in articleGenerator.ts for what this does to the prompt.
+    // Capped for the same reason serpBrief is capped below: it's writer-supplied free text with no
+    // upper bound from the UI, and an unbounded paste could crowd out the hard rules it must stay
+    // subordinate to.
+    const additionalTopicContent = typeof req.body?.additionalTopicContent === 'string'
+      ? req.body.additionalTopicContent.trim().slice(0, 4000)
+      : '';
     // The brief from /serp-research above, if the writer ran it and kept it. Capped because it's
     // the one prompt input this app doesn't generate itself -- it's model output about third-party
     // pages, round-tripped through the browser, so an unbounded string here would let a very long
@@ -422,7 +430,7 @@ export function registerArticleRoutes(app: Express) {
         apiKey,
         httpOptions: { headers: { 'User-Agent': 'aistudio-build' } },
       });
-      const { systemInstruction, contents } = buildArticlePrompt(topic, existingTitles, exactTitle, relatedKeywords, additionalTopic, additionalTopicExact, serpBrief);
+      const { systemInstruction, contents } = buildArticlePrompt(topic, existingTitles, exactTitle, relatedKeywords, additionalTopic, additionalTopicExact, serpBrief, additionalTopicContent);
 
       // Cascades through CONTENT_GENERATION_MODELS (gemini-3.5-flash, then gemini-2.5-flash) on
       // quota exhaustion -- see geminiModel.ts. Deliberately not GEMINI_MODEL: that model is

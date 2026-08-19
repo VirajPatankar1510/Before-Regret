@@ -112,7 +112,8 @@ export function buildArticlePrompt(
   relatedKeywords: string[] = [],
   additionalTopic: string = '',
   additionalTopicExact: boolean = false,
-  serpBrief: string = ''
+  serpBrief: string = '',
+  additionalTopicContent: string = ''
 ): { systemInstruction: string; contents: string } {
   const trimmedTopic = topicSeed.trim();
   const trimmedExactTitle = exactTitle.trim();
@@ -202,6 +203,27 @@ export function buildArticlePrompt(
       : `\n\nThe article must also include one dedicated ## subheading, placed wherever it fits the article's natural flow, that specifically covers this topic/question -- phrase the subheading itself as the specific, searchable long-tail question a reader would actually type (the same standard the main title uses), refining the wording below into the best subheading phrasing for it rather than repeating it verbatim if a better phrasing exists, and weave in genuinely relevant SEO keywords naturally rather than stuffing them: "${trimmedAdditionalTopic}"\n\nThat section must genuinely and specifically cover it: real mechanisms, real specifics, hedged the same as HARD RULE 5 requires everywhere else -- not one throwaway sentence added just to check a box. This site's content-quality check flags any article under 500 words as thin content, and a padded or superficial subsection here is exactly the kind of writing that produces that failure, so treat this subsection as needing the same depth and specificity as any other section, not an afterthought. This subheading is IN ADDITION to the article's normal structure and does not replace or change the title, angle, or any other section required elsewhere in this prompt.${additionalTopicDuplicateGuard}`
     : '';
 
+  // Optional reference material for that ONE subheading, pasted directly by the writer -- distinct
+  // from additionalTopicExact above, which only ever controls the subheading's WORDING. This
+  // controls its FACTUAL BASIS: without it, the model has to research or generalize the subheading
+  // from nothing but the question itself, which is exactly how a padded, vague subsection happens.
+  // Gated on trimmedAdditionalTopic being present too -- pasted content with no subheading to
+  // attach it to has nowhere to go and is silently ignored rather than surfaced as a confusing
+  // half-applied instruction.
+  //
+  // Deliberately NOT treated like a KNOWN_SOURCES citation and NOT treated like the SERP brief
+  // below. It differs from both: unlike the SERP brief (a model's summary of unverified third-party
+  // pages), this is text the writer chose to paste in themselves, so the model is told to actually
+  // use it as fact rather than hold it at arm's length. Unlike a KNOWN_SOURCES entry, it has no
+  // registered [CODE], so nothing drawn from it may be attributed with a bracket citation -- HARD
+  // RULE 8 only permits citing the codes in that list, and this material was never checked against
+  // it. Scoped hard to the one subheading so a writer pasting reference material for a narrow
+  // point can't accidentally rewrite the rest of the article around it.
+  const trimmedAdditionalTopicContent = additionalTopicContent.trim();
+  const additionalTopicReferenceBlock = trimmedAdditionalTopic && trimmedAdditionalTopicContent
+    ? `\n\nReference material for that subheading specifically, supplied directly by the writer (not retrieved from the web, not checked against KNOWN_SOURCES):\n"""\n${trimmedAdditionalTopicContent}\n"""\n\nUse this as the factual basis for that one subheading only -- draw the real mechanism, figures, and specifics for that section from it rather than inventing or generalizing your own. Do not attach a [CODE] citation to anything drawn from it, since it did not come through this site's known-sources list. Do not repeat, reference, or draw on it anywhere else in the article outside that one subheading. If it conflicts with something else already established in this prompt, note the conflict within that subheading's own text rather than silently picking one side.`
+    : '';
+
   // Competitive brief from the pre-generation SERP research pass (see serpResearch.ts and the
   // /api/admin/articles/serp-research route). Optional -- an empty string leaves this prompt
   // byte-for-byte identical to what it was before the feature existed.
@@ -237,7 +259,7 @@ How to use that brief:
 - Own the pre-purchase angle. Where those pages are written for someone who already owns the home and has a problem now, this article is for someone deciding whether to buy. That difference in reader is usually the single largest real gap available, and it does not require a single unverifiable claim to exploit.`
     : '';
 
-  const contents = `${topicInstruction}${existingTitlesBlock}${relatedKeywordsBlock}${additionalTopicBlock}${serpBriefBlock}
+  const contents = `${topicInstruction}${existingTitlesBlock}${relatedKeywordsBlock}${additionalTopicBlock}${additionalTopicReferenceBlock}${serpBriefBlock}
 
 SEO approach for this article:
 - Target ONE specific, long-tail search query. Long-tail (specific, lower-competition, high buyer-intent) is what a newer site can realistically rank for -- not a broad head term.
