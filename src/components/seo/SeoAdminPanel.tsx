@@ -214,12 +214,18 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // on the model happening to think of it. additionalTopicExact is the checkbox: checked means use
   // this wording verbatim as the subheading itself, same distinction exact-title vs topic-seed
   // makes for the main title -- unchecked lets the model refine the wording into the best SEO
-  // subheading phrasing (see buildArticlePrompt in articleGenerator.ts for what each mode sends).
+  // subheading phrasing. additionalTopicContent is a separate, later addition: free text the
+  // writer pastes in as reference material (a quoted passage, specific figures, exact wording)
+  // that the model draws THAT subheading's facts from, instead of researching or inventing them
+  // -- the exact checkbox only ever controlled the subheading's WORDING, never its content, so
+  // this needed its own field rather than overloading the checkbox's meaning. (See
+  // buildArticlePrompt in articleGenerator.ts for what each of the three actually sends.)
   // Deliberately does not reset when topicInput/exactTitleInput change -- this is an addition
   // layered on top of either mode, not tied to one of them, so switching between Topic and Exact
   // Title should not silently drop it.
   const [additionalTopicInput, setAdditionalTopicInput] = useState('');
   const [additionalTopicExact, setAdditionalTopicExact] = useState(false);
+  const [additionalTopicContent, setAdditionalTopicContent] = useState('');
 
   // Pre-generation SERP research (see src/server/serpResearch.ts). Its own explicit step rather
   // than something Generate does invisibly: it spends a second Gemini call from the same 20/day
@@ -496,6 +502,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     // were always cleared for exactly this reason; this field needs the same treatment.
     setAdditionalTopicInput('');
     setAdditionalTopicExact(false);
+    setAdditionalTopicContent('');
     setOverrideAdditionalTopicSimilarWarning(false);
     // Same reasoning as the additional-topic clear directly above, and more urgent: a brief is
     // research about one specific query, and carrying it into a different article's generation
@@ -903,6 +910,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           relatedKeywords: keywordHints,
           additionalTopic: additionalTopicInput.trim(),
           additionalTopicExact,
+          additionalTopicContent: additionalTopicContent.trim(),
           // Empty unless the writer ran (and kept) the research step above -- the prompt is
           // byte-identical to the pre-feature version when this is blank.
           serpBrief,
@@ -2293,81 +2301,6 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             )}
           </div>
 
-          {/* Additive on top of Topic or Exact title above, not an alternative to either -- see
-              the additionalTopicInput/additionalTopicExact comment near the top of this component
-              and buildArticlePrompt in articleGenerator.ts for what the checkbox actually changes
-              in the prompt (verbatim subheading vs. model-refined SEO phrasing of it). */}
-          <div className="border-t border-indigo-900/60 pt-3 space-y-1.5">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
-              Additional topic/question to cover <span className="text-slate-500 font-normal normal-case">— optional, adds one subheading</span>
-            </label>
-            <input
-              type="text"
-              value={additionalTopicInput}
-              onChange={(e) => {
-                setAdditionalTopicInput(e.target.value);
-                setOverrideAdditionalTopicSimilarWarning(false);
-              }}
-              placeholder="e.g. Does title insurance cover boundary disputes?"
-              disabled={generating || hasExistingContent}
-              className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
-            />
-            <label className="flex items-start gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={additionalTopicExact}
-                onChange={(e) => setAdditionalTopicExact(e.target.checked)}
-                disabled={generating || hasExistingContent}
-                className="mt-0.5 accent-indigo-500 cursor-pointer disabled:opacity-60"
-              />
-              <span className="text-[11px] text-slate-400 leading-relaxed">
-                Use this exact wording as the subheading, unchanged. Unchecked: the model refines it into the best SEO-phrased subheading, the same treatment Exact title above gets for the main headline.
-              </span>
-            </label>
-            {additionalTopicInput.trim() && (
-              <p className="text-[11px] text-slate-500">
-                Adds one ## section specifically covering this. Same no-thin-content standard as the rest of the article -- the target word count widens to 1,500-2,100 to give it real room rather than squeezing the main content.
-              </p>
-            )}
-
-            {/* Blocking, same severity and mechanism as the main-title similarExisting warning
-                above -- this field is a full standalone question, and typing in one that already
-                has its own article elsewhere is exactly the same duplicate-content risk. */}
-            {additionalTopicSimilarExisting && !overrideAdditionalTopicSimilarWarning && (
-              <div className="p-3 bg-amber-950/40 border border-amber-800/60 rounded-xl text-xs text-amber-200 flex items-start gap-2">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                <div>
-                  <span>This additional topic looks similar to an existing article: </span>
-                  <button
-                    type="button"
-                    onClick={() => openEditor(additionalTopicSimilarExisting)}
-                    className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
-                  >
-                    "{additionalTopicSimilarExisting.title}"
-                  </button>
-                  <span> ({additionalTopicSimilarExisting.status === 'published' ? 'live' : 'draft'}). Pick a narrower angle for the subheading, or </span>
-                  <button
-                    type="button"
-                    onClick={() => setOverrideAdditionalTopicSimilarWarning(true)}
-                    className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
-                  >
-                    it's genuinely a different angle, use it anyway
-                  </button>
-                  <span>.</span>
-                </div>
-              </div>
-            )}
-
-            {/* Informational only, not blocking -- restating the main title isn't a site-wide
-                duplicate-content problem, just a wasted subheading, so there's nothing to "open
-                and edit instead" and no override needed to proceed. */}
-            {additionalTopicRedundantWithMainTitle && !additionalTopicSimilarExisting && (
-              <p className="text-[11px] text-amber-400">
-                This is very close to the article's own main title/topic -- the subheading would likely just restate the headline. Consider a narrower or more specific angle.
-              </p>
-            )}
-          </div>
-
           {/* Optional pre-generation step. Placed immediately above Generate because that's the
               order it's meant to be used in, and left entirely skippable -- Generate behaves
               exactly as it always did when no brief has been fetched. See serpResearch.ts for the
@@ -2514,6 +2447,111 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               </div>
             )}
           </div>
+
+          {/* Positioned after the research brief, not before it, so this doubles as the natural
+              place to ask "does the brief leave anything out you want covered?" once there's
+              something to react to. Stays visible once anything here has a value, even if the
+              brief is later discarded, so a typed answer never keeps being sent while invisible
+              in the UI. Additive on top of Topic or Exact title above, not an alternative to
+              either -- see the additionalTopicInput/additionalTopicExact/additionalTopicContent
+              comment near the top of this component and buildArticlePrompt in
+              articleGenerator.ts for what each field actually changes in the prompt (verbatim
+              subheading vs. model-refined SEO phrasing; pasted content as that subheading's
+              factual basis). */}
+          {(serpBrief || additionalTopicInput.trim() || additionalTopicContent.trim()) && (
+            <div className="border-t border-indigo-900/60 pt-3 space-y-1.5">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">
+                Anything the brief missed? <span className="text-slate-500 font-normal normal-case">— optional, adds one subheading</span>
+              </label>
+              <input
+                type="text"
+                value={additionalTopicInput}
+                onChange={(e) => {
+                  setAdditionalTopicInput(e.target.value);
+                  setOverrideAdditionalTopicSimilarWarning(false);
+                }}
+                placeholder="e.g. Does title insurance cover boundary disputes?"
+                disabled={generating || hasExistingContent}
+                className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
+              />
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={additionalTopicExact}
+                  onChange={(e) => setAdditionalTopicExact(e.target.checked)}
+                  disabled={generating || hasExistingContent}
+                  className="mt-0.5 accent-indigo-500 cursor-pointer disabled:opacity-60"
+                />
+                <span className="text-[11px] text-slate-400 leading-relaxed">
+                  Use this exact wording as the subheading, unchanged. Unchecked: the model refines it into the best SEO-phrased subheading, the same treatment Exact title above gets for the main headline.
+                </span>
+              </label>
+              {additionalTopicInput.trim() && (
+                <p className="text-[11px] text-slate-500">
+                  Adds one ## section specifically covering this. Same no-thin-content standard as the rest of the article -- the target word count widens to 1,500-2,100 to give it real room rather than squeezing the main content.
+                </p>
+              )}
+
+              {/* Optional -- lets the writer paste real reference material (a quoted passage,
+                  specific figures, exact wording) for the model to build that one subheading's
+                  facts around, instead of leaving it to invent or generalize them. Never affects
+                  the rest of the article and is never cited with a [CODE] marker, since it didn't
+                  come through KNOWN_SOURCES -- see the additionalTopicReferenceBlock comment in
+                  articleGenerator.ts for the exact instruction this produces. */}
+              {additionalTopicInput.trim() && (
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">
+                    Content to include <span className="text-slate-500 font-normal normal-case">— optional, paste reference material for that subheading</span>
+                  </label>
+                  <textarea
+                    value={additionalTopicContent}
+                    onChange={(e) => setAdditionalTopicContent(e.target.value)}
+                    placeholder="Paste the specific facts, figures, or wording you want that section built around..."
+                    disabled={generating || hasExistingContent}
+                    rows={4}
+                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-xs placeholder:text-slate-600 focus:outline-none disabled:opacity-60 resize-y"
+                  />
+                </div>
+              )}
+
+              {/* Blocking, same severity and mechanism as the main-title similarExisting warning
+                  above -- this field is a full standalone question, and typing in one that already
+                  has its own article elsewhere is exactly the same duplicate-content risk. */}
+              {additionalTopicSimilarExisting && !overrideAdditionalTopicSimilarWarning && (
+                <div className="p-3 bg-amber-950/40 border border-amber-800/60 rounded-xl text-xs text-amber-200 flex items-start gap-2">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                  <div>
+                    <span>This additional topic looks similar to an existing article: </span>
+                    <button
+                      type="button"
+                      onClick={() => openEditor(additionalTopicSimilarExisting)}
+                      className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
+                    >
+                      "{additionalTopicSimilarExisting.title}"
+                    </button>
+                    <span> ({additionalTopicSimilarExisting.status === 'published' ? 'live' : 'draft'}). Pick a narrower angle for the subheading, or </span>
+                    <button
+                      type="button"
+                      onClick={() => setOverrideAdditionalTopicSimilarWarning(true)}
+                      className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
+                    >
+                      it's genuinely a different angle, use it anyway
+                    </button>
+                    <span>.</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Informational only, not blocking -- restating the main title isn't a site-wide
+                  duplicate-content problem, just a wasted subheading, so there's nothing to "open
+                  and edit instead" and no override needed to proceed. */}
+              {additionalTopicRedundantWithMainTitle && !additionalTopicSimilarExisting && (
+                <p className="text-[11px] text-amber-400">
+                  This is very close to the article's own main title/topic -- the subheading would likely just restate the headline. Consider a narrower or more specific angle.
+                </p>
+              )}
+            </div>
+          )}
 
           <button
             onClick={() => generateWithAi()}
