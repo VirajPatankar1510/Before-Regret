@@ -13,3 +13,7 @@ scripts/draft-topics-log.json
 # .tmp-faq-draft.json, and scripts/serp-batch-test.ts's two comparison files. All are working
 # artefacts read once and thrown away; none belong in a commit.
 .tmp-*
+
+# Database backups written by scripts/backup-db.ts. Contain real user data
+# (transactions, terms acceptances, generated reports) -- never commit them.
+backups/
