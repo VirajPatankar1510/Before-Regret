@@ -632,12 +632,40 @@ export function registerArticleRoutes(app: Express) {
     // on its own output isn't guaranteed to be a no-op forever. Only normalize once we know
     // below that the raw value actually differs from what's stored.
     const rawSlugInput = typeof req.body?.slug === 'string' ? req.body.slug : undefined;
+    // Optimistic concurrency token: the updated_at the client held when it loaded this article.
+    //
+    // This route replaces the WHOLE document from whatever the browser has in memory -- including
+    // faq_json, which the admin editor sends back on every save (see updateArticle in
+    // SeoAdminPanel.tsx). That makes any edit made elsewhere between page load and clicking Update
+    // silently disappear, last-write-wins, with nothing shown to either party.
+    //
+    // Not hypothetical: the article-faqs skill writes faq_json straight to the database, outside
+    // this route entirely. An article left open in the editor before a batch runs, then saved after
+    // it, would overwrite every FAQ that batch just wrote with the empty list the browser loaded
+    // earlier. Two admin tabs on the same article do the same thing to each other.
+    //
+    // Optional on purpose: when absent the check is skipped, so callers that legitimately have no
+    // prior version to compare (publishNow's first save on a fresh draft, any scripted caller)
+    // behave exactly as before. Only a client that actually sends a token gets protected by it.
+    const expectedUpdatedAt = typeof req.body?.expectedUpdatedAt === 'string' ? req.body.expectedUpdatedAt : undefined;
 
     try {
       const result = await withDb(async (sql) => {
         const existingRows = await sql`SELECT * FROM articles WHERE id = ${id} LIMIT 1`;
         const existing = existingRows[0] as ArticleRow | undefined;
         if (!existing) return { error: 'not_found' as const };
+
+        // Compared as epoch milliseconds rather than as strings: the value round-trips through
+        // JSON and back, and postgres/driver formatting of the same instant is not guaranteed to
+        // be byte-identical to what was handed out earlier. Comparing the parsed instants tests
+        // what actually matters -- whether the row changed -- instead of how it was serialised.
+        if (expectedUpdatedAt !== undefined) {
+          const expectedMs = new Date(expectedUpdatedAt).getTime();
+          const actualMs = new Date(existing.updated_at as unknown as string).getTime();
+          if (Number.isFinite(expectedMs) && Number.isFinite(actualMs) && expectedMs !== actualMs) {
+            return { error: 'stale' as const, current: existing };
+          }
+        }
 
         // Web address changes only apply pre-publish -- once an article is live, its URL is a
         // real link someone might have already shared or Google might already have crawled.
@@ -685,6 +713,16 @@ export function registerArticleRoutes(app: Express) {
       if ('error' in result) {
         if (result.error === 'not_found') {
           res.status(404).json({ success: false, error: 'Article not found.' });
+        } else if (result.error === 'stale') {
+          // Returns the server's current copy alongside the refusal so the client can show what
+          // actually changed (and reload it) rather than leaving the writer guessing what they
+          // would have destroyed.
+          res.status(409).json({
+            success: false,
+            stale: true,
+            error: 'This article changed since you opened it -- saving now would overwrite those changes. Reload to get the current version, then re-apply your edit.',
+            article: toApiShape(result.current),
+          });
         } else {
           res.status(409).json({ success: false, error: "Can't change the web address of a published article. Unpublish it first if you need to change it." });
         }
