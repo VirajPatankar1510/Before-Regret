@@ -23,12 +23,26 @@ export function isDeployHookConfigured(): boolean {
 // request timeout, so this deliberately doesn't wait for the deploy to finish -- it only confirms
 // Vercel accepted the trigger.
 export async function triggerRedeploy(reason: string): Promise<void> {
-  if (!isDeployHookConfigured()) return;
+  // Logged rather than returned silently. The silent version cost a 15-minute controlled
+  // experiment to diagnose: an article published to the database sat serving dist/shell.html --
+  // homepage title, canonical pointing at the homepage -- and there was no way to tell from
+  // outside whether the hook had fired slowly, failed, or was never configured at all. One line
+  // here distinguishes "not configured" from "fired and we are waiting" instantly.
+  if (!isDeployHookConfigured()) {
+    console.warn(`[deploy-hook] VERCEL_DEPLOY_HOOK_URL is not set -- skipping redeploy (${reason}). The static page for this change will keep serving stale content until some other deploy runs.`);
+    return;
+  }
   try {
     const res = await fetch(process.env.VERCEL_DEPLOY_HOOK_URL as string, { method: 'POST' });
     if (!res.ok) {
       console.warn(`[deploy-hook] Trigger failed (${reason}): ${res.status} ${await res.text()}`);
+      return;
     }
+    // Success is worth logging too, with the expectation attached. Measured on this project:
+    // a hook-triggered build took ~14.5 minutes to go live, versus 40-80 seconds for the same
+    // build triggered by a git push. So "nothing has changed yet" is normal for far longer than
+    // it looks, and knowing the trigger was accepted is what stops that from reading as failure.
+    console.log(`[deploy-hook] Redeploy triggered (${reason}). Vercel accepted it; the new build typically takes several minutes to go live.`);
   } catch (err) {
     console.warn(`[deploy-hook] Trigger failed (${reason}):`, err);
   }
