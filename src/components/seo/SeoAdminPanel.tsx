@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Plus, Loader2, FileText, Globe, Clock, ArrowLeft, Send, Undo2, Trash2, AlertCircle, Sparkles,
   Link2, Lock, MessageCircleQuestion, Gauge, ChevronDown, ChevronUp, CloudLightning, BarChart3,
-  Library, ShieldCheck, CheckCircle2, Search
+  Library, ShieldCheck, CheckCircle2, Search, Copy, Check
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
 import { extractCitedSourceCodes, findAdversarialCounterpartyFraming } from '../../server/articleGenerator';
@@ -280,6 +280,11 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [keywordLoading, setKeywordLoading] = useState(false);
   const [keywordConfigured, setKeywordConfigured] = useState<boolean | null>(null);
   const [keywordError, setKeywordError] = useState('');
+  // Which row's per-item copy button was just clicked, so only that one row flips to the
+  // "Copied!" checkmark rather than every row in the list. Keyed on the query string itself
+  // (unique per row -- see the .map key below) rather than an index, so it survives the list
+  // re-sorting or filtering between the click and the timeout clearing it.
+  const [copiedKeyword, setCopiedKeyword] = useState<string | null>(null);
   // Real search phrases sent alongside the next generate call so the article's own wording
   // reflects how people actually search this topic -- set when a keyword-list row is picked
   // (see the click handler below), cleared on manual typing so a stale list from a previous
@@ -2095,8 +2100,8 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             {keywordResults.length > 0 && (
               <div className="space-y-1 max-h-48 overflow-y-auto">
                 {keywordResults.map((row) => (
+                  <div key={row.query} className="flex items-center gap-1.5">
                   <button
-                    key={row.query}
                     disabled={generating || hasExistingContent}
                     onClick={() => {
                       // Picking a result only fills in Topic + the hint list below -- it does NOT
@@ -2148,7 +2153,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                       setImportedQuestionId(null);
                       setSeoKeywordHints(hints);
                     }}
-                    className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 bg-slate-900/60 hover:bg-slate-800 border border-slate-800 rounded-lg text-left cursor-pointer disabled:opacity-50"
+                    className="flex-1 min-w-0 flex items-center justify-between gap-2 px-2.5 py-1.5 bg-slate-900/60 hover:bg-slate-800 border border-slate-800 rounded-lg text-left cursor-pointer disabled:opacity-50"
                   >
                     <span className="text-xs text-slate-300 truncate">{row.query}</span>
                     <span className="text-[10px] font-mono text-slate-500 shrink-0">
@@ -2157,6 +2162,24 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                         : `${row.impressions} impr${row.position != null ? ` · pos ${row.position.toFixed(1)}` : ''}`}
                     </span>
                   </button>
+                  {/* Copies just this row's raw query text -- separate from the button above,
+                      which instead picks the row into Topic + rebuilds the hint list. Sibling
+                      button rather than nested, since a button can't contain another button. */}
+                  <button
+                    type="button"
+                    title="Copy this query"
+                    onClick={() => {
+                      navigator.clipboard.writeText(row.query);
+                      setCopiedKeyword(row.query);
+                      setTimeout(() => setCopiedKeyword((current) => (current === row.query ? null : current)), 2000);
+                    }}
+                    className="shrink-0 p-1.5 text-slate-500 hover:text-indigo-400 hover:bg-slate-800 border border-slate-800 rounded-lg cursor-pointer"
+                  >
+                    {copiedKeyword === row.query
+                      ? <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                  </div>
                 ))}
               </div>
             )}
