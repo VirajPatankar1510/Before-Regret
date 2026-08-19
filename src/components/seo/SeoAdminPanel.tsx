@@ -192,6 +192,11 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  // The server's current copy of the article, held only after a save was refused because this tab's
+  // version was stale (see the 409 branch in updateArticle). Kept in its own state rather than
+  // written straight into draft so the writer's unsaved edits survive the conflict and reloading
+  // stays their explicit choice.
+  const [staleServerCopy, setStaleServerCopy] = useState<Article | null>(null);
   // Tracks whether the admin has hand-edited the web address field -- once true, typing in the
   // title or generating with AI stops auto-updating the slug, so a deliberate custom address
   // never gets silently overwritten.
@@ -493,6 +498,9 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const openEditor = (article: Article) => {
     setDraft(article);
     setActionError(null);
+    // Belongs to the article that was open, not to this one -- carrying it over would show a
+    // conflict banner for a document the writer is no longer editing.
+    setStaleServerCopy(null);
     setSlugManuallyEdited(false);
     setTopicInput('');
     setExactTitleInput('');
@@ -1021,6 +1029,13 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           sources: draft.sources,
           faqItems: draft.faqItems,
           slug: draft.slug,
+          // Deliberately no expectedUpdatedAt here, unlike updateArticle below. This is the
+          // draft -> published transition, and the concrete clobbering hazard that check exists for
+          // does not reach drafts: the article-faqs skill writes faq_json only WHERE status =
+          // 'published'. Sending a token on this path would add a failure mode to the
+          // generate-then-publish flow without closing a risk that actually exists here. Two tabs
+          // editing the same draft can still race -- unchanged from before, and much lower stakes
+          // than overwriting a live page's FAQs.
         }),
       });
       const saveData = await saveRes.json();
@@ -1075,12 +1090,24 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           sources: draft.sources,
           faqItems: draft.faqItems,
           slug: draft.slug,
+          // Concurrency token -- see expectedUpdatedAt in the PUT route. This request sends the
+          // whole document from this tab's memory, faqItems included, so without it any edit made
+          // elsewhere since this article was opened (another tab, or the article-faqs skill writing
+          // faq_json straight to the database) would be silently overwritten.
+          expectedUpdatedAt: draft.updatedAt,
         }),
       });
       const data = await res.json();
       if (data?.success) {
         setDraft(data.article);
+        setStaleServerCopy(null);
         loadArticles();
+      } else if (res.status === 409 && data?.stale && data?.article) {
+        // Deliberately does NOT auto-overwrite the editor with the server copy: that would throw
+        // away whatever the writer just typed to fix someone else's problem. The server version is
+        // surfaced for comparison and reloading it stays an explicit choice.
+        setStaleServerCopy(data.article);
+        setActionError(data.error || 'This article changed since you opened it.');
       } else {
         setActionError(data?.error || 'Could not save your changes.');
       }
@@ -1881,6 +1908,60 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           <div className="p-4 bg-rose-950/60 border border-rose-800 rounded-xl text-sm text-rose-200 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{actionError}</span>
+          </div>
+        )}
+
+        {/* Shown only after the server refused a save because this tab's copy was stale. Names the
+            specific fields that differ, because "something changed" is not enough to decide with --
+            an FAQ count that moved (the article-faqs skill writing faq_json directly) calls for a
+            different response than a body someone else rewrote in another tab. Reloading is an
+            explicit button rather than automatic: it discards whatever is currently in the editor,
+            which is the writer's call to make, not this component's. */}
+        {staleServerCopy && draft && (
+          <div className="p-4 bg-amber-950/50 border border-amber-700 rounded-xl text-sm text-amber-100 space-y-2.5">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-bold">Someone (or something) else changed this article while it was open here.</p>
+                {(() => {
+                  const diffs: string[] = [];
+                  if (staleServerCopy.title !== draft.title) diffs.push('title');
+                  if (staleServerCopy.metaDescription !== draft.metaDescription) diffs.push('meta description');
+                  if (staleServerCopy.quickAnswer !== draft.quickAnswer) diffs.push('quick answer');
+                  if (staleServerCopy.bodyMarkdown !== draft.bodyMarkdown) diffs.push('article body');
+                  if (staleServerCopy.faqItems.length !== draft.faqItems.length) {
+                    diffs.push(`FAQs (${draft.faqItems.length} here vs ${staleServerCopy.faqItems.length} saved)`);
+                  }
+                  return (
+                    <p className="text-amber-200/90">
+                      {diffs.length > 0
+                        ? <>Differs on: <strong>{diffs.join(', ')}</strong>. Your save was blocked so those changes aren&rsquo;t overwritten.</>
+                        : <>The saved version moved on, though the visible fields still match. Your save was blocked to be safe.</>}
+                    </p>
+                  );
+                })()}
+              </div>
+            </div>
+            <div className="flex items-center gap-2 pl-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setDraft(staleServerCopy);
+                  setStaleServerCopy(null);
+                  setActionError(null);
+                }}
+                className="px-3 py-1.5 bg-amber-700 hover:bg-amber-600 text-white font-bold text-xs rounded-lg cursor-pointer"
+              >
+                Load the saved version (discards edits here)
+              </button>
+              <button
+                type="button"
+                onClick={() => setStaleServerCopy(null)}
+                className="text-xs text-amber-300/80 hover:text-amber-100 underline underline-offset-2 cursor-pointer"
+              >
+                Keep editing
+              </button>
+            </div>
           </div>
         )}
 
