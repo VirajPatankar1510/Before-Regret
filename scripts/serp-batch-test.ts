@@ -81,14 +81,45 @@ async function main() {
   const model = SEARCH_GROUNDING_MODELS[0];
   const ai = new GoogleGenAI({ apiKey, httpOptions: { headers: { 'User-Agent': 'aistudio-build' } } });
 
+  // A 429 on this model is NOT automatically a spent daily cap. The free tier also enforces a
+  // short-window burst throttle that comes back as 429 with the SAME misleading
+  // "...PerDayPerProjectPerModel..." quotaId but a RetryInfo.retryDelay of only ~20s -- proven by
+  // a diagnostic where a single wait-and-retry succeeded on a "quota exhausted" key. A rejected 429
+  // does not consume the daily allowance, so honoring Google's own retryDelay (bounded) costs
+  // nothing and is what keeps two back-to-back grounded calls -- exactly what this script makes --
+  // from being misread as the day being over. A genuinely spent daily cap still surfaces: its
+  // retryDelay is hours, so it exceeds MAX_RETRY_WAIT and is rethrown rather than waited out.
+  const MAX_RETRY_WAIT_S = 90;
+  const parseRetrySeconds = (err: any): number | null => {
+    const msg = String(err?.message ?? '');
+    const m = msg.match(/retry in ([\d.]+)s/i) || msg.match(/"retryDelay":\s*"(\d+)s"/);
+    return m ? Math.ceil(parseFloat(m[1])) : null;
+  };
+  const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
   const call = async (contents: string) => {
-    const r: any = await ai.models.generateContent({
-      model,
-      contents,
-      config: { systemInstruction: SERP_RESEARCH_SYSTEM_INSTRUCTION, temperature: 0.2, tools: [{ googleSearch: {} }] },
-    });
-    const text = typeof r.text === 'string' ? r.text : '';
-    return { text, facts: extractGroundingFacts(r), usage: r.usageMetadata, finish: r.candidates?.[0]?.finishReason };
+    for (let attempt = 1; ; attempt++) {
+      try {
+        const r: any = await ai.models.generateContent({
+          model,
+          contents,
+          config: { systemInstruction: SERP_RESEARCH_SYSTEM_INSTRUCTION, temperature: 0.2, tools: [{ googleSearch: {} }] },
+        });
+        const text = typeof r.text === 'string' ? r.text : '';
+        return { text, facts: extractGroundingFacts(r), usage: r.usageMetadata, finish: r.candidates?.[0]?.finishReason };
+      } catch (err: any) {
+        const retry = parseRetrySeconds(err);
+        // Retry only a short-window 429 (bounded retryDelay), and only a couple of times. A missing
+        // retryDelay, an over-long one (the real daily reset), or a non-429 falls straight through.
+        if (err?.status === 429 && retry !== null && retry <= MAX_RETRY_WAIT_S && attempt <= 3) {
+          const wait = retry + 5;
+          console.log(`   429 short-window throttle (retryDelay ${retry}s); waiting ${wait}s and retrying (attempt ${attempt})...`);
+          await sleep(wait * 1000);
+          continue;
+        }
+        throw err;
+      }
+    }
   };
 
   console.log(`model: ${model}\n`);
@@ -145,6 +176,11 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error('\nFAILED:', err?.status === 429 ? '429 -- quota is exhausted; the reset is 00:00 Pacific.' : err);
+  // A short-window 429 is already waited out and retried inside call(). Reaching here with a 429
+  // means the retryDelay was too long to be a burst throttle -- i.e. the daily cap really is spent
+  // and won't clear until the 00:00 Pacific reset. Any other error prints as-is.
+  console.error('\nFAILED:', err?.status === 429
+    ? '429 after bounded retry -- the retryDelay was hours, so the daily cap is genuinely spent; reset is 00:00 Pacific.'
+    : err);
   process.exit(1);
 });
