@@ -2489,11 +2489,25 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                         <span className="text-slate-500">Pages retrieved (not a ranked 1-2-3 order):</span> {serpSourceDomains.join(', ')}
                       </p>
                     )}
-                    <pre className="text-[11px] text-slate-300 whitespace-pre-wrap font-sans leading-relaxed max-h-96 overflow-y-auto">
-                      {serpBrief}
-                    </pre>
+                    {/* Editable on purpose: the writer may know a topic or question the live
+                        search pass didn't surface (or want to fold in something from a different
+                        brief) and there's no reason that has to go through Gemini to reach the
+                        article prompt. Plain textarea bound straight to serpBrief -- whatever is
+                        typed here is verbatim what gets sent with Generate (see the serpBrief
+                        field in the generate call below), same as the fetched text always was.
+                        Edits are client-side only and are not written back to the saved-brief
+                        cache, so "Re-run against live search" still overwrites with a fresh fetch
+                        rather than silently keeping a hand-edited version around under the same
+                        cache key. */}
+                    <textarea
+                      value={serpBrief}
+                      onChange={(e) => setSerpBrief(e.target.value)}
+                      disabled={generating || hasExistingContent}
+                      rows={14}
+                      className="w-full text-[11px] text-slate-300 whitespace-pre-wrap font-sans leading-relaxed max-h-96 overflow-y-auto bg-slate-950/40 border border-slate-800 focus:border-emerald-600 rounded-lg p-2 resize-y focus:outline-none disabled:opacity-60"
+                    />
                     <p className="text-[11px] text-slate-500">
-                      Sent to the writer as strategy only. Nothing in it counts as a source — no figure from these pages can be repeated and none of them can be cited, same hard rules as always.
+                      Editable — add a topic or question the search missed and it's sent exactly as typed. Still strategy only: nothing in it counts as a source, no figure from these pages can be repeated and none of them can be cited, same hard rules as always.
                     </p>
                   </div>
                 )}
