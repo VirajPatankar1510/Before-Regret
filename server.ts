@@ -1265,40 +1265,40 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
   // than almost every page currently written -- so real people are clicking them and landing on an
   // error page.
   //
-  // They split into two groups that need OPPOSITE treatment, which is the whole reason this is a
-  // hand-maintained table rather than one blanket rule:
+  // These split into two groups: pages from the previous product entirely, and old legal URLs
+  // that duplicate a page that still exists today. Both groups now get the SAME treatment (410),
+  // which is a deliberate reversal of this table's original design -- worth recording why.
   //
-  // 1. Old legal URLs that have a genuine successor on today's site. A searcher looking for this
-  //    site's privacy policy still wants a privacy policy, and one exists at a different path.
-  //    301 preserves whatever ranking those URLs hold and, more importantly, answers the request.
+  // The legal duplicates were originally 301-redirected to their successor (/privacy-policy ->
+  // /privacy/, etc.) on the reasoning that a searcher wanting this site's privacy policy still
+  // wants a privacy policy, and 301 answers that request while consolidating ranking onto the
+  // real page. That reasoning turned out to be wrong in practice: scripts/gsc-page-coverage.ts
+  // kept showing the OLD duplicate URLs earning impressions -- /privacy-policy, /terms-and-
+  // conditions, /legal-disclaimer, /refund-policy -- while their canonical successors earned
+  // fewer or none, meaning Google had indexed the duplicate as the canonical URL and a 301 alone
+  // was not making it let go. On a site crawled at only ~3 pages/day, waiting for Google to
+  // re-crawl a redirect, notice it, and re-canonicalize is slow, and every crawl spent on a
+  // duplicate legal page is a crawl not spent on real content. 410 is the stronger, faster signal
+  // for "this exact URL is gone" -- it does not ask Google to transfer anything, it tells Google
+  // to drop the URL from the index outright, which is what's actually wanted here since the real
+  // page already exists at its own URL and was never the one with the ranking problem.
   //
-  // 2. Pages from the previous product entirely -- this codebase used to be an India-focused
-  //    resident/housing-society Q&A platform (see the catch-all handler's comment below, and
-  //    /become-expert, which that fix already addressed). Nothing on a US property-research site
-  //    succeeds "find an expert" or "will I regret". Redirecting these somewhere plausible would
-  //    be worse than the 404: Google treats an irrelevant redirect as a soft 404 anyway, and a
-  //    reader clicking "will I regret" does not want a county page. 410 Gone states the honest
-  //    fact -- this is permanently removed, stop asking -- and is the one signal that gets a URL
-  //    dropped from the index faster than repeated 404s.
+  // The previous-product pages (this codebase used to be an India-focused resident/housing-society
+  // Q&A platform -- see the catch-all handler's comment below) never had a successor to redirect
+  // to in the first place. Nothing on a US property-research site answers "find an expert" or
+  // "will I regret". /shipping-policy is included deliberately: this site sells digital property
+  // reports and has nothing to ship, so pointing it at a refunds or terms page would be inventing
+  // a relationship that does not exist. Redirecting any of these somewhere plausible would be
+  // worse than 410: Google treats an irrelevant redirect as a soft 404 anyway, and a reader
+  // clicking "will I regret" does not want a county page.
   //
   // Deliberately NOT in vercel.json: it cannot express 410, so splitting the table across two
   // files would leave half the legacy URLs handled somewhere the other half is not. Registered
   // before the dev/prod split so `npm run dev` behaves the same as production.
-  // Targets carry a trailing slash on purpose. These legal pages are prerendered as
-  // dist/<name>/index.html, so express.static answers a slash-less request with its own 301 to the
-  // slash form -- redirecting to '/privacy' would therefore produce a two-hop chain
-  // (/privacy-policy -> /privacy -> /privacy/). Verified: with the slash, it is a single hop.
-  const LEGACY_REDIRECTS: Record<string, string> = {
-    '/privacy-policy': '/privacy/',
-    '/terms-and-conditions': '/terms/',
-    '/legal-disclaimer': '/disclaimer/',
-  };
-  // No successor exists for any of these. /shipping-policy is included deliberately: this site
-  // sells digital property reports and has nothing to ship, so pointing it at a refunds or terms
-  // page would be inventing a relationship that does not exist.
   const LEGACY_GONE = new Set([
     '/become-expert', '/become-resident', '/court', '/explore', '/will-i-regret',
     '/shipping-policy',
+    '/privacy-policy', '/terms-and-conditions', '/legal-disclaimer', '/refund-policy',
     '/guides/breadwinner-resentment-income-disparity',
     '/guides/red-flag-evaluation-boundary-matrix',
   ]);
@@ -1309,8 +1309,6 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
 
   app.use((req, res, next) => {
     const p = req.path.replace(/\/+$/, '') || '/';
-    const target = LEGACY_REDIRECTS[p];
-    if (target) return res.redirect(301, target);
     if (LEGACY_GONE.has(p) || p.startsWith(LEGACY_GONE_PREFIX)) {
       return res.status(410).type('text/plain').send('Gone -- this page was part of a previous version of this site and has been permanently removed.');
     }
