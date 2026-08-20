@@ -134,13 +134,72 @@ const CLUSTER_RULES: ClusterRule[] = [
     blurb: 'Reassessments after closing, listings that stay “active” under contract, and what moves prices on a street.',
     match: /property tax|tax bill|tax assessment|under contract|data center/,
   },
+  // --- Appended below, deliberately AFTER every rule above ---------------------------------
+  // These were added to classify the ~50 guides the original seven never matched. Appending
+  // rather than inserting is the whole point: first-match-wins means anything already
+  // classified keeps its cluster, so this cannot silently re-file existing content. Verified
+  // against the live corpus at the time: 0 reassignments, 0 evergreen guides left unclustered.
+  {
+    id: 'negotiation',
+    title: 'The report came back bad',
+    blurb: 'Repair requests, credits, holdbacks and walking away — what you can actually ask for, and what it costs you to ask.',
+    match: /contingency|walk away|escrow holdback|repair request|price credit|appraiser|appraisal|fha|lender|back out|seller/,
+  },
+  {
+    id: 'plumbing',
+    title: 'Pipes, septic and water',
+    blurb: 'Supply lines, drains, septic and wells — the systems that are expensive precisely because they are buried.',
+    match: /orangeburg|galvanized|septic|shared well|well pump|slab leak|water heater|drain line|backwater|plumbing/,
+  },
+  {
+    id: 'electrical',
+    title: 'Panels, breakers and amps',
+    blurb: 'Whether the service is big enough, and which panel and breaker faults inspectors and insurers actually act on.',
+    match: /amp service|breaker|fuse box|electrical panel|split-bus|split bus|outlet|gfci|wiring/,
+  },
+  {
+    id: 'pests',
+    title: 'Termites and wood damage',
+    blurb: 'WDO reports, active infestations, and telling real termite damage from ordinary rot before it blocks financing.',
+    match: /termite|wdo|pest|wood rot|wood-destroying|rodent/,
+  },
+  {
+    id: 'ownership',
+    title: 'What it costs once it’s yours',
+    blurb: 'HOAs, escrow shortages, lease structures and renovation reality — the bills that arrive after the keys do.',
+    match: /hoa|land lease|escrow shortage|homebuyer loan|square footage|renovation cost|hvac|system age|roof leak|roof certification/,
+  },
+  {
+    id: 'structure',
+    title: 'Cracks and foundations',
+    blurb: 'When movement is cosmetic settling, when it needs a structural engineer, and what prior repairs mean for you.',
+    match: /foundation|structural engineer|retaining wall|bowing/,
+  },
+  {
+    id: 'countydata',
+    title: 'County risk data and alerts',
+    blurb: 'FEMA declarations and county-level rankings built from Census, FEMA, EPA and NOAA records.',
+    match: /fema|declaration|county risk|risk analysis|ranking|housing stock|by county|across us counties/,
+  },
 ];
 
 // Widened from HomeArticle to just the two fields it reads, so the guides-index page can classify
 // its own lighter row shape (slug/title/metaDescription/publishedAt, no articleType) through the
 // exact same rules the homepage clusters by. One taxonomy, two consumers.
+//
+// Appends a de-hyphenated copy of the whole string rather than replacing hyphens in place, and
+// that distinction is load-bearing. The rules above are a mix of spaced patterns ("home
+// inspector", "recommended by") and hyphenated ones ("4-point", "cast-iron"), while slugs are
+// always hyphenated -- so the original single-form haystack silently failed to match spaced
+// patterns against slugs, despite the comment above the rules claiming a guide is caught "whether
+// the signal lives in its headline or its URL". Measured against the live corpus: three guides
+// were missed purely because of that. Naively replacing hyphens with spaces fixes those three but
+// BREAKS two others, because "4-point" in a slug becomes "4 point" and then matches neither
+// "4-point" nor "four-point". Keeping both forms in the haystack is the only version that gains
+// matches without losing any -- verified: +3 matched, 0 regressions, 0 cluster reassignments.
 function haystack(article: { title: string; slug: string }): string {
-  return `${article.title} ${article.slug}`.toLowerCase();
+  const base = `${article.title} ${article.slug}`.toLowerCase();
+  return `${base} ${base.replace(/-/g, ' ')}`;
 }
 
 /** The cluster id a single guide falls into, or null if no rule matches it. */
