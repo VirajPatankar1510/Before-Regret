@@ -56,6 +56,7 @@ import {
   saveGeneratedReportInputs
 } from "./src/server/db.js";
 import { isClerkBackendConfigured } from "./src/server/clerkAuth.js";
+import { detectAiCrawler, logAiCrawlerVisit } from "./src/server/aiCrawlerLog.js";
 
 dotenv.config();
 
@@ -93,6 +94,22 @@ export async function createApp() {
 
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+  // --- AI crawler visibility logging -------------------------------------------------------
+  // Passive only: never blocks, redirects, or alters the response for any request, including a
+  // matched one -- this observes, it does not gate (robots.txt already allows every AI crawler
+  // this recognizes). Registered before every other route so it sees traffic to legacy/410 URLs
+  // and API routes too, not just guide/county pages -- an AI crawler hitting a dead URL is itself
+  // a useful signal (stale link data somewhere upstream of this site). The match check is a cheap
+  // substring scan against a short list, so this costs nothing on the ~100% of requests that
+  // aren't from a recognized AI crawler; logAiCrawlerVisit is fire-and-forget and swallows its own
+  // errors, so a DB hiccup here can never fail or slow the real response.
+  app.use((req, _res, next) => {
+    const ua = req.headers['user-agent'] || '';
+    const bot = detectAiCrawler(ua);
+    if (bot) void logAiCrawlerVisit(bot, req.path, ua);
+    next();
+  });
 
   // --- Admin authentication ---------------------------------------------------------------
   // Guards /admin/*. Before this existed, the pSEO control panel at /admin/seo was reachable by

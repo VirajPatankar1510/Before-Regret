@@ -600,6 +600,25 @@ export async function ensureArticlesSchema(): Promise<void> {
     )
   `;
 
+  // Passive record of which AI crawlers actually fetch this site -- see aiCrawlerLog.ts for the
+  // user-agent matching this is fed from. The question "does an AI answer engine cite us" has no
+  // real answer until the prerequisite question is answered first: "does its crawler even come
+  // here." Search Console reports nothing about AI Overviews, AI Mode, or any answer-engine
+  // citation -- this table is the only visibility this app has into that at all. bot_name is the
+  // canonical name resolved from the user-agent (GPTBot, ClaudeBot, PerplexityBot, etc.), not the
+  // raw header, so a report can group by bot without re-parsing every row's user_agent.
+  await sql`
+    CREATE TABLE IF NOT EXISTS ai_crawler_visits (
+      id SERIAL PRIMARY KEY,
+      visited_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      bot_name TEXT NOT NULL,
+      path TEXT NOT NULL,
+      user_agent TEXT NOT NULL
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_ai_crawler_visits_visited_at ON ai_crawler_visits(visited_at)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_ai_crawler_visits_bot_name ON ai_crawler_visits(bot_name)`;
+
   schemaEnsured = true;
 }
 
