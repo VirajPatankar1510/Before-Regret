@@ -88,6 +88,33 @@ function isSpecificAddress(item: any): boolean {
   return !!item?.address?.house_number;
 }
 
+// The geocoder returns THREE shapes, not two -- verified live against the real API, and the
+// reason the search error below used to be actively wrong:
+//
+//   "1211 Brazos St, Austin, TX" -> class=highway, road="Brazos Street", NO house_number
+//   "Washington County, PA"      -> class=boundary/administrative, no road, no house_number
+//   "301 Congress Ave, Austin"   -> house_number present
+//
+// The middle case is a real, correctly-typed street address that LocationIQ simply has no
+// house-number entry for. It has no house_number, so isSpecificAddress rejects it -- and the old
+// single catch-all message then told that user they had entered "just a city, county, or state,"
+// which is false and reads as though they made a mistake they did not make. This distinguishes it
+// so the message can say what actually happened.
+function isStreetLevel(item: any): boolean {
+  const addr = item?.address || {};
+  return !addr.house_number && !!(addr.road || addr.street);
+}
+
+/** "Brazos Street, Austin, TX" -- what the geocoder DID find, for an error message that quotes it
+ *  back rather than leaving the reader guessing which part of their input failed. */
+function describeMatch(item: any): string {
+  const addr = item?.address || {};
+  const road = addr.road || addr.street || '';
+  const city = addr.city || addr.town || addr.village || addr.municipality || addr.county || '';
+  const state = addr.state_code ? String(addr.state_code).toUpperCase() : (addr.state || '');
+  return [road, city, state].filter(Boolean).join(', ');
+}
+
 export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<MapLibreMap | null>(null);
@@ -427,20 +454,41 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       const res = await fetch(
         `/api/geocode/search?q=${encodeURIComponent(mapSearchQuery.trim())}&addressdetails=1&limit=8`
       );
-      if (res.ok) {
-        const results = await res.json();
-        const first = Array.isArray(results) ? results.find(isSpecificAddress) : null;
-        if (first) {
-          const lat = parseFloat(first.lat);
-          const lon = parseFloat(first.lon);
-          selectLocation(lat, lon, first.display_name, first);
-        } else {
-          setMapSearchError('Please enter a specific street address (e.g. "301 Congress Ave, Austin, TX"), not just a city, county, or state.');
-        }
+      // A non-OK response previously fell through this whole block silently: no result, no error,
+      // the spinner just stopped and the user was left staring at an unchanged form with no idea
+      // anything had failed. A geocoder 5xx or rate-limit is exactly when a person most needs to
+      // be told to try again, so it gets a real message now.
+      if (!res.ok) {
+        setMapSearchError('Address lookup is temporarily unavailable. Please try again in a moment.');
+        return;
+      }
+
+      const json = await res.json();
+      const results = Array.isArray(json) ? json : [];
+      const first = results.find(isSpecificAddress);
+      if (first) {
+        const lat = parseFloat(first.lat);
+        const lon = parseFloat(first.lon);
+        selectLocation(lat, lon, first.display_name, first);
+        return;
+      }
+
+      // Three genuinely different failures, three different messages -- see isStreetLevel above
+      // for why collapsing them into one was wrong rather than merely vague.
+      const street = results.find(isStreetLevel);
+      if (street) {
+        const where = describeMatch(street);
+        setMapSearchError(
+          `We found ${where || 'that street'}, but no records for that exact house number. Double-check the number, or try adding the ZIP code.`
+        );
+      } else if (results.length > 0) {
+        setMapSearchError('That looks like a city, county, or state. Please enter a specific street address (e.g. "301 Congress Ave, Austin, TX").');
+      } else {
+        setMapSearchError("We couldn't find that address. Check the spelling, and include the city and state.");
       }
     } catch (err) {
       console.error('Map search error:', err);
-      setMapSearchError('Failed to search location.');
+      setMapSearchError('Failed to search location. Please try again.');
     } finally {
       setIsSearchingMap(false);
     }
