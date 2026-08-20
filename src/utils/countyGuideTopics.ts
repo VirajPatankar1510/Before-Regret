@@ -166,19 +166,38 @@ export function pickCountiesForGuide(
 // pair possible.
 //
 // Most permit-guide slugs already encode their target county's slug directly
-// (check-building-permits-<county-slug>), so the match is usually just string surgery. The five
-// exceptions are US municipalities that sit inside a differently-named county -- verified against
-// the real county_data rows, not guessed: Manhattan -> New York County, Brooklyn -> Kings County,
-// Queens -> Queens County, the Bronx -> Bronx County, Seattle -> King County, WA.
+// (check-building-permits-<county-slug>), so the match is usually just string surgery. Two kinds
+// of exception land here: five US municipalities that sit inside a differently-named county
+// (Manhattan -> New York County, Brooklyn -> Kings County, Queens -> Queens County, the Bronx ->
+// Bronx County, Seattle -> King County, WA), and two guides written before the
+// "check-building-permits-<county-slug>" naming convention existed, whose slugs don't start with
+// that prefix at all (check-harris-county-permit-history-before-buying, check-building-permit-
+// history-before-buying-travis-county-tx) -- found via a real audit of every permit guide's
+// rendered HTML: 29 of 31 carried the county-data card automatically, these two were the only
+// silent misses, both because permitGuideCountySlug's prefix check simply never matched their
+// older slug shape. All seven verified against the real county_data rows, not guessed.
 const PERMIT_GUIDE_COUNTY_ALIASES: Record<string, string> = {
   'check-building-permits-manhattan-ny': 'new-york-county-ny',
   'check-building-permits-brooklyn-ny': 'kings-county-ny',
   'check-building-permits-queens-ny': 'queens-county-ny',
   'check-building-permits-bronx-ny': 'bronx-county-ny',
   'check-building-permits-seattle-wa': 'king-county-wa',
+  'check-harris-county-permit-history-before-buying': 'harris-county-tx',
+  'check-building-permit-history-before-buying-travis-county-tx': 'travis-county-tx',
 };
 
 const PERMIT_GUIDE_SLUG_PREFIX = 'check-building-permits-';
+
+/** Whether a guide slug is one permitGuideCountySlug can ever match -- either the standard
+ *  "check-building-permits-<county-slug>" shape, or an explicit alias key. scripts/prerender-
+ *  counties.tsx uses this to cheaply narrow ~140+ guides down to the handful worth checking per
+ *  county, instead of re-deriving "which slugs count" with its own prefix check -- a second copy
+ *  of that logic is exactly how the two alias-table guides above went unlinked for a while: their
+ *  slugs don't start with the standard prefix, so a prefix-only filter silently drops them before
+ *  permitGuideCountySlug ever gets a chance to match them via the alias table. */
+export function isPossiblePermitGuideSlug(guideSlug: string): boolean {
+  return guideSlug.startsWith(PERMIT_GUIDE_SLUG_PREFIX) || guideSlug in PERMIT_GUIDE_COUNTY_ALIASES;
+}
 
 /** The one county slug a "How to Check Building Permits in X" guide is actually about, or
  *  undefined for every other guide (including one of this series whose target county isn't yet a
