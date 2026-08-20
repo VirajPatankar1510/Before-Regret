@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
-import { ChevronRight, Loader2, BookOpen, Calendar } from 'lucide-react';
+import { ChevronRight, Loader2, BookOpen, Calendar, Search, X } from 'lucide-react';
 import { ContentLink } from '../home/ContentLink';
+import { classifyGuideTopic, GUIDE_CLUSTER_META } from '../../utils/homeContent';
 
 interface GuidesIndexViewProps {
   onNavigate: (path: string) => void;
@@ -22,6 +23,14 @@ interface GuideRow {
 export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) => {
   const [guides, setGuides] = useState<GuideRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  // Filtering is CLIENT-SIDE ONLY, and that is a hard constraint rather than an implementation
+  // shortcut. scripts/prerender-guides.tsx renders this page's crawler-facing static twin, and its
+  // entire job is to give all 158 published guides one crawlable inbound link from a single hub.
+  // Anything that removed links from that static HTML would trade the page's whole SEO purpose for
+  // a browsing convenience. So the prerender still emits every guide, unfiltered; this state only
+  // narrows what a booted human sees.
+  const [query, setQuery] = useState('');
+  const [topic, setTopic] = useState<string | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -45,6 +54,32 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
   }, []);
 
   const canonicalUrl = 'https://www.beforeregret.com/guides/';
+
+  // Only offer a chip for a topic that actually has guides behind it, and show the real count on
+  // it -- a filter that returns nothing is worse than no filter, and the count tells the reader
+  // whether a topic is worth opening before they click it.
+  const topicCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const g of guides ?? []) {
+      const id = classifyGuideTopic(g);
+      if (id) counts.set(id, (counts.get(id) ?? 0) + 1);
+    }
+    return counts;
+  }, [guides]);
+
+  const visibleGuides = useMemo(() => {
+    if (!guides) return [];
+    const q = query.trim().toLowerCase();
+    return guides.filter((g) => {
+      if (topic && classifyGuideTopic(g) !== topic) return false;
+      if (!q) return true;
+      // Matches the meta description too, not just the title: a reader searching "aluminum" should
+      // find a guide whose headline says "Stab-Lok" but whose description names the material.
+      return `${g.title} ${g.metaDescription ?? ''}`.toLowerCase().includes(q);
+    });
+  }, [guides, query, topic]);
+
+  const isFiltering = Boolean(query.trim() || topic);
 
   useEffect(() => {
     if (!guides) return;
@@ -122,8 +157,85 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
         )}
 
         {guides && guides.length > 0 && (
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={`Search ${guides.length} guides...`}
+                aria-label="Search guides by title or description"
+                className="w-full pl-10 pr-10 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-slate-400"
+              />
+              {query && (
+                <button
+                  onClick={() => setQuery('')}
+                  aria-label="Clear search"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setTopic(null)}
+                aria-pressed={topic === null}
+                className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-colors cursor-pointer ${
+                  topic === null
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-700'
+                }`}
+              >
+                All {guides.length}
+              </button>
+              {GUIDE_CLUSTER_META.filter((c) => (topicCounts.get(c.id) ?? 0) > 0).map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => setTopic(topic === c.id ? null : c.id)}
+                  aria-pressed={topic === c.id}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-colors cursor-pointer ${
+                    topic === c.id
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-700'
+                  }`}
+                >
+                  {c.title} {topicCounts.get(c.id)}
+                </button>
+              ))}
+            </div>
+
+            {isFiltering && (
+              <p className="text-xs text-slate-500" role="status" aria-live="polite">
+                Showing {visibleGuides.length} of {guides.length} guides.{' '}
+                <button
+                  onClick={() => { setQuery(''); setTopic(null); }}
+                  className="font-bold text-blue-700 hover:text-blue-800 cursor-pointer"
+                >
+                  Clear filters
+                </button>
+              </p>
+            )}
+          </div>
+        )}
+
+        {guides && guides.length > 0 && visibleGuides.length === 0 && (
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 text-center space-y-2">
+            <p className="text-sm text-slate-600">No guides match that search.</p>
+            <button
+              onClick={() => { setQuery(''); setTopic(null); }}
+              className="text-xs font-bold text-blue-700 hover:text-blue-800 cursor-pointer"
+            >
+              Clear filters and show all {guides.length}
+            </button>
+          </div>
+        )}
+
+        {guides && guides.length > 0 && visibleGuides.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {guides.map((g) => (
+            {visibleGuides.map((g) => (
               <ContentLink
                 key={g.slug}
                 href={`/guides/${g.slug}/`}
