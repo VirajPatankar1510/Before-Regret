@@ -251,22 +251,16 @@ const PAGES: LegalPageConfig[] = [
     Component: RefundPolicy,
     routeKey: 'refunds',
   },
-  // Legacy alias -- App.tsx's client router still treats any /refund-policy* path as the 'refunds'
-  // type (see the `path.startsWith('/refund-policy')` check), but nothing before this script ever
-  // gave that literal path its own static file, so it fell through to the same broken shell as
-  // every other unmatched route. Identical content and meta to 'refunds' above; canonical still
-  // points at /refunds/ so this URL never competes with it for indexing even though it's noindexed
-  // either way.
-  {
-    outputPath: 'refund-policy',
-    title: 'Refund Policy & Satisfaction Guarantee | BeforeRegret',
-    description: 'BeforeRegret refund policy and customer support commitments for property research report orders.',
-    canonicalUrl: 'https://www.beforeregret.com/refunds/',
-    robots: 'noindex, follow',
-    jsonLd: [REFUNDS_BREADCRUMB],
-    Component: RefundPolicy,
-    routeKey: 'refunds',
-  },
+  // NOTE: '/refund-policy' deliberately has NO entry here anymore. It used to get its own static
+  // file as a noindex+canonical-pointing-at-/refunds/ alias, but Search Console kept showing it
+  // earning real impressions anyway -- noindex only takes effect once Google re-crawls the page,
+  // and on a site crawled at ~3 pages/day that can take a long time. server.ts's LEGACY_GONE table
+  // now 410s this exact path instead, which is a stronger and faster de-indexing signal than
+  // noindex. Generating a static file here would defeat that: Vercel's static-file serving wins
+  // the routing race over the vercel.json rewrite that leads to server.ts, so as long as this
+  // script writes a real file at dist/refund-policy/, the 410 in server.ts can never be reached --
+  // confirmed live (the 410 landed for every other legacy URL immediately, but this one kept
+  // serving the old static 200 for the same deploy, which is what caught this).
 ];
 
 function escapeHtmlAttr(value: string): string {
