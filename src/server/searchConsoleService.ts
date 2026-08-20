@@ -211,3 +211,91 @@ export async function fetchPagePerformance(days: number = 90): Promise<SearchCon
 
   return rows.sort((a, b) => b.impressions - a.impressions);
 }
+
+export interface UrlInspectionResult {
+  url: string;
+  coverageState: string;
+  verdict: string;
+  indexed: boolean;
+  lastCrawlTime: string | null;
+  pageFetchState: string | null;
+  robotsTxtState: string | null;
+  googleCanonical: string | null;
+  userCanonical: string | null;
+  error?: string;
+}
+
+/**
+ * A different API from the two above -- searchanalytics/searchAnalytics reports what already
+ * happened (impressions, clicks), which is silent about a URL Google has never shown to anyone
+ * and never crawled. This is the only endpoint that answers "does Google know this URL exists,
+ * has it been crawled, and is it actually indexed right now" for one specific URL on demand --
+ * the same check the Search Console UI's own "URL Inspection" tool runs, exposed as an API so a
+ * whole candidate list can be swept without clicking through the UI one URL at a time.
+ *
+ * Same service-account JWT auth as the two functions above and the same readonly scope -- an
+ * inspection is a read, it changes nothing on the property, so no broader scope is needed.
+ *
+ * Deliberately swallows a per-URL failure into the returned row's `error` field rather than
+ * throwing, so one bad URL (a typo, a URL outside this property) can't abort a whole sweep of
+ * dozens of others -- the caller decides what to do with a partial-failure row instead of losing
+ * every result after it.
+ */
+export async function fetchUrlInspection(url: string): Promise<UrlInspectionResult> {
+  const siteUrl = process.env.GSC_SITE_URL!;
+  const accessToken = await getAccessToken();
+
+  try {
+    const res = await fetch('https://searchconsole.googleapis.com/v1/urlInspection/index:inspect', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ inspectionUrl: url, siteUrl }),
+    });
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      return {
+        url, coverageState: 'ERROR', verdict: 'ERROR', indexed: false,
+        lastCrawlTime: null, pageFetchState: null, robotsTxtState: null,
+        googleCanonical: null, userCanonical: null,
+        error: `${res.status}: ${errBody.slice(0, 300)}`,
+      };
+    }
+
+    const json = await res.json() as {
+      inspectionResult?: {
+        indexStatusResult?: {
+          verdict?: string;
+          coverageState?: string;
+          lastCrawlTime?: string;
+          pageFetchState?: string;
+          robotsTxtState?: string;
+          googleCanonical?: string;
+          userCanonical?: string;
+        };
+      };
+    };
+    const r = json.inspectionResult?.indexStatusResult;
+    return {
+      url,
+      coverageState: r?.coverageState ?? 'UNKNOWN',
+      verdict: r?.verdict ?? 'UNKNOWN',
+      // "Submitted and indexed" is the one coverage state that actually means "on Google" --
+      // every other state (Discovered, Crawled but not indexed, URL is unknown to Google, etc.)
+      // means it is not, regardless of what the coarser PASS/NEUTRAL verdict says.
+      indexed: r?.coverageState === 'Submitted and indexed',
+      lastCrawlTime: r?.lastCrawlTime ?? null,
+      pageFetchState: r?.pageFetchState ?? null,
+      robotsTxtState: r?.robotsTxtState ?? null,
+      googleCanonical: r?.googleCanonical ?? null,
+      userCanonical: r?.userCanonical ?? null,
+    };
+  } catch (err) {
+    return {
+      url, coverageState: 'ERROR', verdict: 'ERROR', indexed: false,
+      lastCrawlTime: null, pageFetchState: null, robotsTxtState: null,
+      googleCanonical: null, userCanonical: null,
+      error: String((err as Error)?.message ?? err),
+    };
+  }
+}
