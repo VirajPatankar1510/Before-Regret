@@ -136,9 +136,32 @@ const CLUSTER_RULES: ClusterRule[] = [
   },
 ];
 
-function haystack(article: HomeArticle): string {
+// Widened from HomeArticle to just the two fields it reads, so the guides-index page can classify
+// its own lighter row shape (slug/title/metaDescription/publishedAt, no articleType) through the
+// exact same rules the homepage clusters by. One taxonomy, two consumers.
+function haystack(article: { title: string; slug: string }): string {
   return `${article.title} ${article.slug}`.toLowerCase();
 }
+
+/** The cluster id a single guide falls into, or null if no rule matches it. */
+export function classifyGuideTopic(article: { title: string; slug: string }): string | null {
+  const hay = haystack(article);
+  return CLUSTER_RULES.find((r) => r.match.test(hay))?.id ?? null;
+}
+
+/**
+ * Id + title for every cluster, in the same precedence order the rules are evaluated in. Exists so
+ * a filter UI can offer the same topics the homepage groups by without duplicating the labels --
+ * if a cluster is ever renamed or reordered, both move together.
+ *
+ * Note this exposes ALL rules, unlike buildGuideClusters, which drops clusters below minSize. A
+ * filter chip that finds two guides is still a useful filter; a homepage card promising a topic
+ * and delivering two links is not, which is why only the latter has a floor.
+ */
+export const GUIDE_CLUSTER_META: { id: string; title: string }[] = CLUSTER_RULES.map((r) => ({
+  id: r.id,
+  title: r.title,
+}));
 
 /** Evergreen buyer guides only -- excludes event-reactive news and the data-reference rankings. */
 export function isEvergreenGuide(article: HomeArticle): boolean {
