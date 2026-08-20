@@ -89,24 +89,76 @@
     <meta name="twitter:image" content="https://www.beforeregret.com/og-image.png" />
 
     <!-- Structured Data (Organization & WebSite SearchAction) -->
+    <!-- The site's entity definition: who BeforeRegret IS, as opposed to what any single page is
+         about. Lives here, in the shared template, so it is present in the RAW HTML of every page
+         on the domain without JavaScript -- which matters because a large share of AI crawlers
+         issue a plain fetch and never execute JS, and an entity definition they cannot see does
+         not do its job.
+
+         This block deliberately carries NO data-seo attribute. src/utils/headSeo.ts strips
+         [data-seo="dynamic"] and [data-seo="prerendered"] blocks on every route change so
+         page-specific schema never duplicates; leaving this one unmarked is what keeps the global
+         entity in place across all of that. Do not add the attribute.
+
+         Every field below is verifiable on this site. Deliberately omitted rather than guessed:
+         sameAs (this site links to no social or profile pages anywhere -- sameAs exists so a
+         search engine can CONFIRM identity against another source, so a wrong or aspirational one
+         actively misleads the thing it is meant to reassure), and foundingDate/employees/ratings
+         (not stated anywhere on the site). Same rule the content itself follows: if it isn't
+         backed by something real, it doesn't get asserted.
+
+         The postal address sits on parentOrganization because that is exactly what the Privacy
+         Policy says -- Atmostellar is the registered entity, in Mumbai; Before Regret is its
+         product brand. -->
     <script type="application/ld+json">
     [
       {
         "@context": "https://schema.org",
         "@type": "Organization",
+        "@id": "https://www.beforeregret.com/#organization",
         "name": "Before Regret",
+        "alternateName": "BeforeRegret",
         "url": "https://www.beforeregret.com",
         "logo": "https://www.beforeregret.com/favicon.svg",
+        "description": "Free, address-based property research for US home buyers and renters. Runs a live USGS seismic hazard check and validates the address against US Census records, then gives a curated, source-linked checklist of what to verify -- with anything not independently verified labeled as such rather than guessed.",
+        "knowsAbout": [
+          "Home inspection reports",
+          "Building permit and code violation records",
+          "Residential electrical and plumbing defects",
+          "Natural hazard risk (FEMA National Risk Index, EPA radon, NOAA storm history)",
+          "Homeowners insurance underwriting requirements",
+          "US county housing stock and property records"
+        ],
+        "areaServed": {
+          "@type": "Country",
+          "name": "United States"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "hello@beforeregret.com",
+          "availableLanguage": "English"
+        },
         "parentOrganization": {
           "@type": "Organization",
-          "name": "Atmostellar"
+          "name": "Atmostellar",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Mumbai",
+            "addressRegion": "Maharashtra",
+            "addressCountry": "IN"
+          }
         }
       },
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
+        "@id": "https://www.beforeregret.com/#website",
         "name": "BeforeRegret",
         "url": "https://www.beforeregret.com",
+        "publisher": {
+          "@id": "https://www.beforeregret.com/#organization"
+        },
         "potentialAction": {
           "@type": "SearchAction",
           "target": {

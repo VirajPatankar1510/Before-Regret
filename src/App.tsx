@@ -15,6 +15,9 @@ import { useAuth } from './context/AuthContext';
 
 import { applyHeadSeo } from './utils/headSeo';
 import { routeChunkLoaders } from './routeChunks';
+// Not a new dependency on the homepage's bundle: Hero.tsx (rendered by this file, never lazy)
+// already imports FaqSection, so this module is in the homepage graph regardless.
+import { HOMEPAGE_FAQS } from './components/home/FaqSection';
 
 // --- Route-level code splitting ------------------------------------------------------------
 // Everything below is pulled out of the initial bundle, because none of it can appear on a
@@ -447,33 +450,26 @@ export function App() {
         description: 'Search any US address for free -- live seismic hazard data, address validation, inspection priorities, and seller questions -- nothing fabricated.',
         canonicalUrl: 'https://www.beforeregret.com/',
         robotsDirective: 'index, follow',
-        jsonLdSchema: [
-          {
-            '@context': 'https://schema.org',
-            '@type': 'Organization',
-            'name': 'Before Regret',
-            'url': 'https://www.beforeregret.com',
-            'logo': 'https://www.beforeregret.com/favicon.svg',
-            'parentOrganization': {
-              '@type': 'Organization',
-              'name': 'Atmostellar'
-            }
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'WebSite',
-            'name': 'BeforeRegret',
-            'url': 'https://www.beforeregret.com',
-            'potentialAction': {
-              '@type': 'SearchAction',
-              'target': {
-                '@type': 'EntryPoint',
-                'urlTemplate': 'https://www.beforeregret.com/?address={search_term_string}'
-              },
-              'query-input': 'required name=search_term_string'
-            }
-          }
-        ]
+        // FAQPage, NOT Organization/WebSite. Those two used to be re-declared here, which was a
+        // duplicate: index.html already carries them globally, unmarked, in the raw HTML of every
+        // page (see the long comment on that block), and headSeo.ts deliberately leaves an
+        // unmarked block alone. Confirmed live in the rendered DOM before this fix -- two separate
+        // Organization + WebSite groups, one from the template and one appended here on mount.
+        //
+        // Emitting the homepage FAQ here also repairs a second, quieter loss: headSeo.ts strips
+        // every [data-seo="prerendered"] block on mount, which included the FAQPage that
+        // scripts/prerender-homepage.tsx bakes in -- so a JS-executing crawler saw the homepage's
+        // FAQ schema disappear and nothing replace it. Built from the same HOMEPAGE_FAQS array the
+        // visible accordion and the prerender script both read, so all three cannot disagree.
+        jsonLdSchema: {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: HOMEPAGE_FAQS.map((faq) => ({
+            '@type': 'Question',
+            name: faq.q,
+            acceptedAnswer: { '@type': 'Answer', text: faq.a },
+          })),
+        }
       });
     } else if (pseoRoute.type === 'about') {
       // Deliberately index, follow -- unlike support/terms/privacy/refunds below, this page is
