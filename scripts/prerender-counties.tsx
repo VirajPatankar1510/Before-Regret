@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { withDb, isDbConfigured } from '../src/server/db.js';
-import { pickGuidesForCounty, GuideLink, findPermitGuideForCounty, PermitGuideLink } from '../src/utils/countyGuideTopics.js';
+import { pickGuidesForCounty, GuideLink, findPermitGuideForCounty, PermitGuideLink, isPossiblePermitGuideSlug } from '../src/utils/countyGuideTopics.js';
 import { computeCountyRankings, CountyMetricInput, CountyRankings } from '../src/utils/countyRankings.js';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
@@ -604,11 +604,16 @@ async function run() {
   const guideRows = (await withDb((sql) => sql`
     SELECT slug, title, article_type FROM articles WHERE status = 'published' ORDER BY published_at DESC
   `)) as unknown as Array<{ slug: string; title: string; article_type: string | null }>;
-  // Every guide permitGuideCountySlug can ever match -- both the direct-slug guides and the 5
-  // NYC-borough/Seattle aliases -- shares this one prefix, so filtering here is a correctness-free
-  // way to keep findPermitGuideForCounty's search small rather than scanning all 140+ guides per
-  // county.
-  const permitGuides = guideRows.filter((g) => g.slug.startsWith('check-building-permits-'));
+  // Every guide permitGuideCountySlug can ever match -- both the direct-slug guides and every
+  // alias-table entry -- so filtering here is a correctness-free way to keep
+  // findPermitGuideForCounty's search small rather than scanning all 140+ guides per county.
+  // isPossiblePermitGuideSlug is the shared source of truth for "which slugs count" rather than a
+  // second, independent prefix check here: a prior version of this filter only checked the
+  // standard prefix directly, which silently excluded two alias-table guides whose slugs don't
+  // start with it (confirmed live: their county-data card rendered on the guide page but never on
+  // the matching county page, because this filter dropped them before findPermitGuideForCounty
+  // ever ran).
+  const permitGuides = guideRows.filter((g) => isPossiblePermitGuideSlug(g.slug));
   const footerGuides: FooterGuideSummary[] = guideRows
     .filter((g) => (g.article_type ?? 'guide') === 'guide')
     .slice(0, 4)
