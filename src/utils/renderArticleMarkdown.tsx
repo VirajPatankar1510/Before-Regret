@@ -2,7 +2,7 @@ import React from 'react';
 import { resolveKnownSource } from '../data/knownSources';
 
 // Small, dependency-free renderer for exactly the markdown subset the AI generation prompt
-// produces (see src/server/articleGenerator.ts): ## / ### headers, **bold**, paragraphs,
+// produces (see src/server/articleGenerator.ts): ## through ###### headers, **bold**, paragraphs,
 // bullet/numbered lists, GFM tables, fenced code blocks, and [CODE] inline citations. Not a
 // general CommonMark implementation -- before this existed, the article body was dumped as plain
 // text with `whitespace-pre-line`, so a "## Heading" line rendered as the literal characters
@@ -108,24 +108,42 @@ export function renderArticleMarkdown(markdown: string): React.ReactNode[] {
       continue;
     }
 
-    if (trimmed.startsWith('### ')) {
+    // Any depth from ## to ###### -- not just ## and ###. Originally this only matched those two
+    // exact prefixes, which meant a real, well-formed #### line (confirmed live on two FEMA
+    // county-event guides -- src/server/countyEventGenerator.ts's prompt never asks for it, but
+    // nothing stops the model from nesting a section one level deeper on its own) matched neither
+    // branch and fell through to the paragraph buffer below, dumping the literal "#### Heading"
+    // text into visible body copy instead of rendering as a heading. Matching any 2-6 hash prefix
+    // closes the whole class of "unsupported heading depth" bugs instead of only this one
+    // instance -- a fifth level would have hit the exact same failure.
+    const headingMatch = trimmed.match(/^(#{2,6})\s+(.+)$/);
+    if (headingMatch) {
       flushParagraph();
-      blocks.push(
-        <h3 key={blocks.length} className="text-base font-bold text-slate-900 mt-6 mb-2">
-          {parseInline(trimmed.slice(4))}
-        </h3>
-      );
-      i++;
-      continue;
-    }
-
-    if (trimmed.startsWith('## ')) {
-      flushParagraph();
-      blocks.push(
-        <h2 key={blocks.length} className="text-lg sm:text-xl font-extrabold text-slate-900 mt-8 mb-3 pb-2 border-b border-slate-100">
-          {parseInline(trimmed.slice(3))}
-        </h2>
-      );
+      const level = headingMatch[1].length;
+      const text = parseInline(headingMatch[2]);
+      if (level === 2) {
+        blocks.push(
+          <h2 key={blocks.length} className="text-lg sm:text-xl font-extrabold text-slate-900 mt-8 mb-3 pb-2 border-b border-slate-100">
+            {text}
+          </h2>
+        );
+      } else if (level === 3) {
+        blocks.push(
+          <h3 key={blocks.length} className="text-base font-bold text-slate-900 mt-6 mb-2">
+            {text}
+          </h3>
+        );
+      } else {
+        // Levels 4-6 collapse to one visual style, one step below h3 -- this renderer only ever
+        // needs to distinguish "section," "subsection," and "everything nested past that," and
+        // the prompt has never asked for deliberate 5-6 level nesting; this exists so a stray
+        // deeper heading still renders as a heading instead of falling through to plain text.
+        blocks.push(
+          <h4 key={blocks.length} className="text-sm font-bold text-slate-800 mt-4 mb-1.5">
+            {text}
+          </h4>
+        );
+      }
       i++;
       continue;
     }
