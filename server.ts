@@ -56,7 +56,7 @@ import {
   saveGeneratedReportInputs
 } from "./src/server/db.js";
 import { isClerkBackendConfigured } from "./src/server/clerkAuth.js";
-import { detectAiCrawler, logAiCrawlerVisit } from "./src/server/aiCrawlerLog.js";
+import { logAiCrawlerVisit } from "./src/server/aiCrawlerLog.js";
 
 dotenv.config();
 
@@ -96,19 +96,23 @@ export async function createApp() {
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
   // --- AI crawler visibility logging -------------------------------------------------------
-  // Passive only: never blocks, redirects, or alters the response for any request, including a
-  // matched one -- this observes, it does not gate (robots.txt already allows every AI crawler
-  // this recognizes). Registered before every other route so it sees traffic to legacy/410 URLs
-  // and API routes too, not just guide/county pages -- an AI crawler hitting a dead URL is itself
-  // a useful signal (stale link data somewhere upstream of this site). The match check is a cheap
-  // substring scan against a short list, so this costs nothing on the ~100% of requests that
-  // aren't from a recognized AI crawler; logAiCrawlerVisit is fire-and-forget and swallows its own
-  // errors, so a DB hiccup here can never fail or slow the real response.
-  app.use((req, _res, next) => {
-    const ua = req.headers['user-agent'] || '';
-    const bot = detectAiCrawler(ua);
-    if (bot) void logAiCrawlerVisit(bot, req.path, ua);
-    next();
+  // Detection happens in middleware.ts (Vercel Edge Middleware, which runs before Vercel's
+  // filesystem-priority static-file serving -- the only way to see traffic to guide/county/
+  // homepage pages, which are all prerendered static files that never reach this Express app at
+  // all). This route is just the DB-write half: middleware.ts fire-and-forget POSTs here with the
+  // bot name it already matched, since the Neon driver's schema-ensuring code has no business
+  // running inside an edge isolate. No auth -- this is a same-origin, fire-and-forget internal
+  // call carrying no sensitive data (a bot name, a path, a user-agent string), and requiring auth
+  // would mean provisioning and shipping a secret to the edge runtime for no real protection.
+  // Always responds 204 immediately without awaiting the write, matching logAiCrawlerVisit's own
+  // fire-and-forget contract -- a slow or failed DB write must never make this endpoint (or the
+  // edge middleware's fetch to it) hang or error.
+  app.post('/api/internal/log-ai-crawler', (req, res) => {
+    res.status(204).end();
+    const { botName, path, userAgent } = req.body || {};
+    if (typeof botName === 'string' && typeof path === 'string' && typeof userAgent === 'string') {
+      void logAiCrawlerVisit(botName, path, userAgent);
+    }
   });
 
   // --- Admin authentication ---------------------------------------------------------------
