@@ -435,7 +435,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           const lon = parseFloat(first.lon);
           selectLocation(lat, lon, first.display_name, first);
         } else {
-          setMapSearchError('Please enter a specific street address (e.g. "123 Main St, Austin, TX"), not just a city, county, or state.');
+          setMapSearchError('Please enter a specific street address (e.g. "301 Congress Ave, Austin, TX"), not just a city, county, or state.');
         }
       }
     } catch (err) {

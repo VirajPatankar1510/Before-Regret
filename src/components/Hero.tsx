@@ -150,7 +150,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
               says what format to type but not what it actually looks like, or that a full report
               is what comes out the other end. */}
           <p className="text-xs text-slate-500">
-            e.g., 123 Main St, Austin, TX
+            e.g., 301 Congress Ave, Austin, TX
           </p>
 
           {/* Subtext */}
