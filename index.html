@@ -100,12 +100,23 @@
          page-specific schema never duplicates; leaving this one unmarked is what keeps the global
          entity in place across all of that. Do not add the attribute.
 
-         Every field below is verifiable on this site. Deliberately omitted rather than guessed:
-         sameAs (this site links to no social or profile pages anywhere -- sameAs exists so a
-         search engine can CONFIRM identity against another source, so a wrong or aspirational one
-         actively misleads the thing it is meant to reassure), and foundingDate/employees/ratings
-         (not stated anywhere on the site). Same rule the content itself follows: if it isn't
-         backed by something real, it doesn't get asserted.
+         Every field below is verifiable. sameAs carries the official LinkedIn company page, in its
+         vanity-slug form (LinkedIn's own canonical, and more durable than the numeric-ID URL the
+         same page also answers on). Supplied first-hand by the site's owner, and note it could NOT
+         be verified by fetching it from here: LinkedIn answers automated clients with HTTP 999 and
+         redirects logged-out browsers to a login wall, so an outside check proves nothing either
+         way. Asserted on the owner's word -- a different thing from a guess, but worth re-checking
+         by hand if the page is ever renamed or removed. A sameAs pointing somewhere dead is worse
+         than none at all, because the property exists specifically so a search engine can CONFIRM
+         identity against another source.
+
+         For that confirmation to run in BOTH directions, the LinkedIn page's own Website field
+         must point back at https://www.beforeregret.com. Without the return link this is a one-way
+         claim and does far less work.
+
+         Still deliberately omitted rather than guessed: foundingDate, employee count and any
+         rating, none of which are stated anywhere on this site. Same rule the content itself
+         follows -- if it isn't backed by something real, it doesn't get asserted.
 
          The postal address sits on parentOrganization because that is exactly what the Privacy
          Policy says -- Atmostellar is the registered entity, in Mumbai; Before Regret is its
@@ -121,6 +132,9 @@
         "url": "https://www.beforeregret.com",
         "logo": "https://www.beforeregret.com/favicon.svg",
         "description": "Free, address-based property research for US home buyers and renters. Runs a live USGS seismic hazard check and validates the address against US Census records, then gives a curated, source-linked checklist of what to verify -- with anything not independently verified labeled as such rather than guessed.",
+        "sameAs": [
+          "https://www.linkedin.com/company/before-regret/"
+        ],
         "knowsAbout": [
           "Home inspection reports",
           "Building permit and code violation records",
