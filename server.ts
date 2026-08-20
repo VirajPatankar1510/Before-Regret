@@ -1429,7 +1429,23 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
           // real suffix like `/insights/abc123`, which is exactly the bug this fixed after the
           // first version of this handler shipped 404-ing real /insights/:id links.
           const boundary = prefix.endsWith('/') ? prefix : `${prefix}/`;
-          return path === prefix || path.startsWith(boundary);
+          if (path === prefix) return true;
+          if (!path.startsWith(boundary)) return false;
+          // At most ONE segment may follow the prefix. Every real route in App.tsx's
+          // resolveRouteFromPath takes a single id/slug there at most -- /guides/<slug>,
+          // /county/<slug>, /insights/<id>, /topic-ads/success -- and nothing goes deeper.
+          //
+          // Without this check the prefix match alone returned 200 for ANY depth, which made an
+          // unbounded space of soft-404s: /guides/<real-slug>/null answered 200 with the shell,
+          // as did /guides/<real-slug>/literally/anything. Not theoretical -- found because an AI
+          // crawler actually fetched /guides/check-building-permits-orange-county-ca/null and got
+          // a 200 (see ai_crawler_visits). That matters more than usual here: this domain is
+          // crawled at roughly 3 pages/day, so budget spent on junk URLs that answer 200 is budget
+          // taken from the 100+ real pages Google has never fetched. The /guides/:slug and
+          // /county/:slug handlers above already do a real existence check for the one-segment
+          // case; this only stops the deeper paths that bypass them entirely.
+          const rest = path.slice(boundary.length).replace(/\/+$/, '');
+          return !rest.includes('/');
         });
       sendShellWithStatus(res, isKnownRoute ? 200 : 404);
     });
