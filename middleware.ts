@@ -21,12 +21,29 @@ export const config = {
   matcher: '/:path*',
 };
 
+// Static assets an AI crawler pulls as a side effect of fetching a real page -- images, fonts,
+// JS/CSS bundles, source maps. Excluded because logging them actively makes the data WRONG, not
+// just noisy: confirmed live, a single Meta AI visit to one county page produced five rows (the
+// page, /og-image.png, /api/images/<county>-hazard-map.svg, and two SPA data endpoints), so a
+// naive row count reports ~5x the real number of page visits. Also saves the serverless
+// invocation and DB write each one would otherwise cost, which matters on a Hobby plan.
+//
+// Deliberately NOT excluded, because each is real signal rather than a side effect:
+//   - /robots.txt, /sitemap.xml, /llms.txt -- a crawler reading these is deliberately orienting
+//     itself on the site (ClaudeBot has already been observed doing exactly this).
+//   - /api/v1/* -- the documented public API; an AI system calling it directly is among the
+//     strongest possible signals this content is being consumed programmatically.
+//   - SPA data endpoints like /api/homepage -- duplicative of the page view, but they indicate
+//     the crawler executed JavaScript, which is worth being able to see.
+const ASSET_PATH = /\.(?:js|mjs|cjs|css|map|png|jpe?g|gif|svg|webp|avif|ico|woff2?|ttf|eot)$/i;
+
 export default function middleware(request: Request, context: { waitUntil?: (promise: Promise<unknown>) => void }) {
   const userAgent = request.headers.get('user-agent') || '';
   const bot = detectAiCrawler(userAgent);
   if (!bot) return;
 
   const url = new URL(request.url);
+  if (ASSET_PATH.test(url.pathname)) return;
   const logPromise = fetch(`${url.origin}/api/internal/log-ai-crawler`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
