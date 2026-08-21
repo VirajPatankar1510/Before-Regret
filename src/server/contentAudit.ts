@@ -1,7 +1,7 @@
 import { withDb } from './db.js';
 import { KNOWN_SOURCES } from '../data/knownSources.js';
 import { COVERED_COUNTIES } from '../data/coveredCounties.js';
-import { findAdversarialCounterpartyFraming } from './articleGenerator.js';
+import { findAdversarialCounterpartyFraming, findOverbroadFederalDutyClaim } from './articleGenerator.js';
 
 // The single source of truth for the article-quality checks -- imported by both the admin
 // content-audit route below and the article-faqs skill's CLI script
@@ -46,6 +46,7 @@ export interface AuditReport {
   thin: AuditFinding[];
   deadLink: AuditFinding[];
   adversarialFraming: AuditFinding[];
+  overbroadLegalClaim: AuditFinding[];
 }
 
 interface ArticleRow {
@@ -54,6 +55,7 @@ interface ArticleRow {
   title: string;
   article_type: string;
   body_markdown: string;
+  faq_json: string;
 }
 
 interface LinkCheckOptions {
@@ -187,8 +189,8 @@ let guideRowsBySlug = new Map<string, true>();
 export async function runContentAudit(ids?: number[], linkOptions?: LinkCheckOptions): Promise<AuditReport> {
   const rows = await withDb((sql) => (
     ids && ids.length > 0
-      ? sql`SELECT id, slug, title, article_type, body_markdown FROM articles WHERE status = 'published' AND id = ANY(${ids})`
-      : sql`SELECT id, slug, title, article_type, body_markdown FROM articles WHERE status = 'published'`
+      ? sql`SELECT id, slug, title, article_type, body_markdown, faq_json FROM articles WHERE status = 'published' AND id = ANY(${ids})`
+      : sql`SELECT id, slug, title, article_type, body_markdown, faq_json FROM articles WHERE status = 'published'`
   )) as unknown as ArticleRow[];
 
   // A link check needs the FULL set of published slugs to validate against, even when this call
@@ -201,7 +203,7 @@ export async function runContentAudit(ids?: number[], linkOptions?: LinkCheckOpt
 
   const report: AuditReport = {
     scanned: 0, truncated: [], nonCodeFence: [], malformedTable: [], brokenLink: [], unresolvedCitation: [], thin: [],
-    deadLink: [], adversarialFraming: [],
+    deadLink: [], adversarialFraming: [], overbroadLegalClaim: [],
   };
 
   for (const r of rows) {
@@ -262,6 +264,29 @@ export async function runContentAudit(ids?: number[], linkOptions?: LinkCheckOpt
     // was added after some of these articles already existed and nothing had swept backward.
     for (const hit of findAdversarialCounterpartyFraming(b)) {
       report.adversarialFraming.push({ ...ref, detail: `Adversarial framing of a standard, disclosed practice: "${hit}"` });
+    }
+
+    // A federal duty asserted without the statute's own carve-outs. Content accuracy AND legal
+    // exposure: an overstated legal requirement is exactly the kind of claim a consumer-protection
+    // regulator reads as deceptive, and it is far worse once documented and left standing than it
+    // ever was as an ordinary mistake.
+    for (const hit of findOverbroadFederalDutyClaim(b)) {
+      report.overbroadLegalClaim.push({ ...ref, detail: `Federal duty stated without its exceptions: "${hit}"` });
+    }
+
+    // faq_json is checked too, and it is not an afterthought: these answers ship as FAQPage
+    // JSON-LD, which is the form an AI answer engine is most likely to lift verbatim. Confirmed
+    // the hard way -- the first pass of this check swept only body_markdown, and four articles
+    // kept the overbroad lead-paint claim alive in their FAQ answers after the bodies were fixed.
+    // The question is passed as context so an answer can inherit its subject from it.
+    let faqs: { question?: string; answer?: string }[] = [];
+    try { faqs = JSON.parse(r.faq_json || '[]'); } catch { faqs = []; }
+    if (Array.isArray(faqs)) {
+      for (const faq of faqs) {
+        for (const hit of findOverbroadFederalDutyClaim(faq?.answer || '', faq?.question || '')) {
+          report.overbroadLegalClaim.push({ ...ref, detail: `Federal duty stated without its exceptions, in an FAQ answer: "${hit}"` });
+        }
+      }
     }
   }
 

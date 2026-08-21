@@ -5,7 +5,7 @@ import {
   Library, ShieldCheck, CheckCircle2, Search, Copy, Check
 } from 'lucide-react';
 import { KNOWN_SOURCES } from '../../data/knownSources';
-import { extractCitedSourceCodes, findAdversarialCounterpartyFraming } from '../../server/articleGenerator';
+import { extractCitedSourceCodes, findAdversarialCounterpartyFraming, findOverbroadFederalDutyClaim } from '../../server/articleGenerator';
 import { NEWS_TOPIC_PRESETS, type NewsTopicPreset } from '../../data/newsTopicPresets';
 import { STOPWORDS } from '../../utils/relatedGuides';
 import { buildPageTitle, TITLE_SUFFIX_MAX_LENGTH } from '../../utils/pageTitle';
@@ -351,6 +351,12 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   // Same reset-on-edit/reset-on-regenerate treatment as overrideTruncatedWarning above -- see
   // findAdversarialCounterpartyFraming in articleGenerator.ts for what this catches and why.
   const [overrideAdversarialWarning, setOverrideAdversarialWarning] = useState(false);
+
+  // Same treatment again, for an overstated federal legal duty -- see findOverbroadFederalDutyClaim
+  // in articleGenerator.ts. Overridable rather than a hard block, like the two above: the check is
+  // a hedge-word heuristic, so a sentence that genuinely states a rule with no exceptions should
+  // still be publishable by a human who has checked it.
+  const [overrideLegalClaimWarning, setOverrideLegalClaimWarning] = useState(false);
 
   // Gemini token/cost counter (see src/server/geminiUsageTracker.ts). "Real time" here means
   // polled every 20s while this screen is open, not a websocket push -- a cost dashboard doesn't
@@ -905,6 +911,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
     setActionError(null);
     setOverrideTruncatedWarning(false);
     setOverrideAdversarialWarning(false);
+    setOverrideLegalClaimWarning(false);
     try {
       const res = await fetch('/api/admin/articles/generate', {
         method: 'POST',
@@ -1327,6 +1334,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 ['deadLink', 'Dead or unreachable links'],
                 ['unresolvedCitation', 'Unresolved citations'],
                 ['adversarialFraming', 'Adversarial framing of a disclosed practice'],
+                ['overbroadLegalClaim', 'Federal duty stated without its exceptions'],
                 ['thin', 'Thin content (under 500 words)'],
               ];
               const totalFindings = categories.reduce((n, [key]) => n + contentAuditReport[key].length, 0);
@@ -1843,6 +1851,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const bodyTrimmed = draft.bodyMarkdown.trim();
   const looksTruncated = !generating && bodyTrimmed.length > 0 && !/[.!?]["')\]]?\s*$/.test(bodyTrimmed);
   const adversarialFramingHits = generating ? [] : findAdversarialCounterpartyFraming(draft.bodyMarkdown);
+  const overbroadLegalClaimHits = generating ? [] : findOverbroadFederalDutyClaim(draft.bodyMarkdown);
 
   return (
     <div className="bg-slate-950 text-white min-h-screen font-sans">
@@ -1869,7 +1878,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               <>
                 <button
                   onClick={updateArticle}
-                  disabled={saving || generating || (looksTruncated && !overrideTruncatedWarning) || (adversarialFramingHits.length > 0 && !overrideAdversarialWarning)}
+                  disabled={saving || generating || (looksTruncated && !overrideTruncatedWarning) || (adversarialFramingHits.length > 0 && !overrideAdversarialWarning) || (overbroadLegalClaimHits.length > 0 && !overrideLegalClaimWarning)}
                   className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
                 >
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
@@ -1887,7 +1896,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             ) : (
               <button
                 onClick={publishNow}
-                disabled={saving || generating || (looksTruncated && !overrideTruncatedWarning) || (adversarialFramingHits.length > 0 && !overrideAdversarialWarning)}
+                disabled={saving || generating || (looksTruncated && !overrideTruncatedWarning) || (adversarialFramingHits.length > 0 && !overrideAdversarialWarning) || (overbroadLegalClaimHits.length > 0 && !overrideLegalClaimWarning)}
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-all cursor-pointer disabled:opacity-50"
               >
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
@@ -1996,6 +2005,30 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               </span>
               <button
                 onClick={() => setOverrideAdversarialWarning(true)}
+                className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
+              >
+                it's accurate as written, publish anyway
+              </button>
+              <span>.</span>
+            </div>
+          </div>
+        )}
+
+        {overbroadLegalClaimHits.length > 0 && !overrideLegalClaimWarning && (
+          <div className="p-4 bg-amber-950/40 border border-amber-800/60 rounded-xl text-sm text-amber-200 flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <div>
+              <span>
+                This states a federal requirement for pre-1978 housing without the exceptions the rule
+                actually carries -- found:{' '}
+                <strong>{overbroadLegalClaimHits.map((h) => `"${h}"`).join(', ')}</strong>. The lead-based
+                paint disclosure duty reaches "target housing," which excludes studio/0-bedroom units and
+                elderly or disability housing with no child under six, and foreclosure sales are exempt
+                outright; the duty is to disclose what the seller <em>knows</em>, never to test. Add
+                "most", name the exception, or{' '}
+              </span>
+              <button
+                onClick={() => setOverrideLegalClaimWarning(true)}
                 className="font-bold underline underline-offset-2 hover:text-white cursor-pointer"
               >
                 it's accurate as written, publish anyway
@@ -2898,6 +2931,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               setDraft({ ...draft, bodyMarkdown: e.target.value });
               setOverrideTruncatedWarning(false);
               setOverrideAdversarialWarning(false);
+              setOverrideLegalClaimWarning(false);
             }}
             placeholder="Write the article here, or click Generate with AI above."
             rows={20}
