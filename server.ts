@@ -56,6 +56,7 @@ import {
   saveGeneratedReportInputs,
   getGeneratedReportBody
 } from "./src/server/db.js";
+import { isLegacyGonePath } from './src/data/legacyUrls.js';
 import { isClerkBackendConfigured } from "./src/server/clerkAuth.js";
 import { logAiCrawlerVisit } from "./src/server/aiCrawlerLog.js";
 
@@ -1356,21 +1357,10 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
   // Deliberately NOT in vercel.json: it cannot express 410, so splitting the table across two
   // files would leave half the legacy URLs handled somewhere the other half is not. Registered
   // before the dev/prod split so `npm run dev` behaves the same as production.
-  const LEGACY_GONE = new Set([
-    '/become-expert', '/become-resident', '/court', '/explore', '/will-i-regret',
-    '/shipping-policy',
-    '/privacy-policy', '/terms-and-conditions', '/legal-disclaimer', '/refund-policy',
-    '/guides/breadwinner-resentment-income-disparity',
-    '/guides/red-flag-evaluation-boundary-matrix',
-  ]);
-  // Every /expert/* path from the old platform, including its /ask sub-pages. A prefix rather than
-  // a list because the indexed set (exp_amit, exp_rahul, exp_sneha, plus /ask variants) is clearly
-  // a sample of a larger generated space, and the current site has no /expert route at all.
-  const LEGACY_GONE_PREFIX = '/expert/';
-
+  // The list itself now lives in src/data/legacyUrls.ts so scripts/legacy-url-audit.ts asserts
+  // against exactly what this handler enforces, rather than a re-typed copy that can drift.
   app.use((req, res, next) => {
-    const p = req.path.replace(/\/+$/, '') || '/';
-    if (LEGACY_GONE.has(p) || p.startsWith(LEGACY_GONE_PREFIX)) {
+    if (isLegacyGonePath(req.path)) {
       return res.status(410).type('text/plain').send('Gone -- this page was part of a previous version of this site and has been permanently removed.');
     }
     next();
