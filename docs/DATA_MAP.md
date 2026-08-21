@@ -28,12 +28,13 @@ Row counts are approximate (from `pg_stat_user_tables`) and were current on 2026
 
 | | |
 |---|---|
-| **What** | `formatted_address`, `city`, `state`, `zip_code`, `county`, `declared_property_type`, `declared_year_built`, `declared_unit_number`, `attested_accurate`, `clerk_user_id`, `ip_address`, `user_agent`, `is_paid`, `price_usd` |
-| **Why** | Evidence of what was actually submitted if a report is later disputed (Terms §3.5, §3.6), and abuse investigation for the free-report allowance |
+| **What** | `formatted_address`, `city`, `state`, `zip_code`, `county`, `declared_property_type`, `declared_year_built`, `declared_unit_number`, `attested_accurate`, `clerk_user_id`, `ip_address`, `user_agent`, `is_paid`, `price_usd`, **`report_json`** |
+| **Why** | Evidence of what was actually submitted if a report is later disputed (Terms §3.5, §3.6); abuse investigation for the free-report allowance; and **serving the report permalink** |
+| **`report_json`** | Added 2026-08-21. The delivered report body. Before it, report bodies existed only in an in-memory `Map` that dies with the serverless instance, and `GET /api/insights/:id` responded to a miss by **fabricating** a report for "Subject Property, Austin, TX" and returning it as `success: true` — so a shared or reloaded permalink served an invented property under a "CONFIRMED FOR THIS ADDRESS" heading, including for reports someone had paid for. It now falls through to this column, then to 404 |
 | **Where** | Neon Postgres (`us-east-2`) |
 | **Retention** | **3 years** from request date |
 | **Enforced by** | `purgeExpiredReportRequestRecords()` — `src/server/db.ts`, daily cron |
-| **Disclosed** | Privacy Policy §7, "Report request records" |
+| **Disclosed** | Privacy Policy §7, "Report request records" — including that the report body itself is stored |
 | **Sensitivity** | **Highest on the site.** A specific street address tied to an IP, a user-agent and an account id is neither aggregated nor anonymous |
 
 ### `terms_acceptances` — clickwrap evidence

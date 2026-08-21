@@ -151,9 +151,14 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'none';
+    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'reportUnavailable' | 'none';
     guideSlug?: string;
     countySlug?: string;
+    // 'reportUnavailable' only. A report permalink is the link people actually SHARE, so the two
+    // reasons it can fail need different words: a generic "404 — Page Not Found" tells someone who
+    // was sent a link that the site is broken, and tells someone hitting a transient database blip
+    // that their report is gone. Neither is true.
+    reportFailure?: 'not_found' | 'unavailable';
   }>({ type: 'none' });
 
   // Function to resolve current URL path to route
@@ -374,33 +379,44 @@ export function App() {
 
     if (reportIdFromUrl && reportIdFromUrl.length > 0) {
       setIsLoading(true);
+      // The retry against /api/report/:id that used to sit here has been dropped: server.ts serves
+      // /api/insights, /api/report and /api/reports from one handler, so the "fallback" was a second
+      // request to the same code guaranteed to give the same answer.
       fetch(`/api/insights/${reportIdFromUrl}`)
         .then((res) => {
-          if (!res.ok) {
-            return fetch(`/api/report/${reportIdFromUrl}`);
-          }
-          return res;
-        })
-        .then((res) => {
+          // 503 means we could not reach the database, which is not the same as "this report does
+          // not exist" -- telling someone their report is gone when the truth is "we can't look
+          // right now" is its own kind of wrong answer, so it gets a distinct, retryable message.
+          if (res.status === 503) throw new Error('REPORT_UNAVAILABLE');
           const contentType = res.headers.get('content-type') || '';
           if (res.ok && contentType.includes('application/json')) {
             return res.json();
           }
-          throw new Error('Non-JSON response from report permalink');
+          throw new Error('REPORT_NOT_FOUND');
         })
         .then((data) => {
           if (data && data.success && data.report) {
             setReport(data.report);
             setCurrentStep('REPORT');
           } else {
-            throw new Error('Invalid report payload');
+            throw new Error('REPORT_NOT_FOUND');
           }
         })
         .catch((err) => {
-          console.warn('Could not load report from API permalink, generating viewable report:', err);
-          const fallback = createFallbackReport(null, null);
-          setReport(fallback);
-          setCurrentStep('REPORT');
+          // Previously this called createFallbackReport(null, null) and rendered the result, which
+          // with no property argument invents "1204 Oakridge Dr, Austin, TX 78701" -- a specific
+          // street address the visitor never searched, presented as their report. That was the
+          // client-side twin of the server's own fabricating fallback, so fixing only the API would
+          // have left the same lie reachable by a different route. A report we cannot load is now
+          // a 404 page, which is the honest answer and the only safe one: this permalink is the
+          // thing people share, and a shared link that quietly shows the wrong property is worse
+          // than one that plainly says it expired.
+          console.warn('Could not load report from permalink:', err);
+          setPseoRoute({
+            type: 'reportUnavailable',
+            reportFailure: err?.message === 'REPORT_UNAVAILABLE' ? 'unavailable' : 'not_found',
+          });
+          setCurrentStep('PSEO');
         })
         .finally(() => setIsLoading(false));
     } else if (!isRoot) {
@@ -691,6 +707,13 @@ export function App() {
       applyHeadSeo({
         title: 'Page Not Found | BeforeRegret',
         description: 'The page you requested does not exist or may have been moved.',
+        canonicalUrl: 'https://www.beforeregret.com/',
+        robotsDirective: 'noindex, nofollow'
+      });
+    } else if (pseoRoute.type === 'reportUnavailable') {
+      applyHeadSeo({
+        title: 'Report Not Available | BeforeRegret',
+        description: 'This property report link is no longer available.',
         canonicalUrl: 'https://www.beforeregret.com/',
         robotsDirective: 'noindex, nofollow'
       });
@@ -1011,6 +1034,40 @@ export function App() {
             )}
             {pseoRoute.type === 'paymentCancelled' && (
               <PaymentCancelled />
+            )}
+            {pseoRoute.type === 'reportUnavailable' && (
+              <div className="max-w-2xl mx-auto px-6 py-24 text-center">
+                {pseoRoute.reportFailure === 'unavailable' ? (
+                  <>
+                    <h1 className="text-3xl font-bold text-slate-900 mb-4">We couldn't load this report</h1>
+                    <p className="text-slate-600 mb-8">
+                      Something went wrong on our side, not with your link. Please refresh in a moment
+                      &mdash; if it keeps happening, email{' '}
+                      <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>{' '}
+                      with this link and we'll find your report.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="text-3xl font-bold text-slate-900 mb-4">This report link isn't available</h1>
+                    <p className="text-slate-600 mb-3">
+                      We couldn't find a saved report for this link. Reports created before
+                      21 August 2026 weren't stored, so their links no longer open.
+                    </p>
+                    <p className="text-slate-600 mb-8">
+                      If you paid for this report, email{' '}
+                      <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>{' '}
+                      with the address you researched and we'll sort it out.
+                    </p>
+                  </>
+                )}
+                <button
+                  onClick={() => handleNavigate('/')}
+                  className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Research an address
+                </button>
+              </div>
             )}
             {pseoRoute.type === 'notFound' && (
               <div className="max-w-2xl mx-auto px-6 py-24 text-center">
