@@ -342,6 +342,15 @@ export async function ensureArticlesSchema(): Promise<void> {
   // future price change doesn't silently rewrite the history of what past buyers were charged.
   await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS is_paid BOOLEAN NOT NULL DEFAULT FALSE`;
   await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS price_usd NUMERIC(10,2)`;
+  // The delivered report itself, as the client-projected JSON that was actually sent. Added
+  // 2026-08-21 to fix a live defect: report bodies existed ONLY in an in-memory Map in server.ts,
+  // which on Vercel dies with the serverless instance. GET /api/insights/:id then fell through to
+  // generating a placeholder for "Subject Property, Austin, TX" and returning it as success:true --
+  // so a reloaded or shared permalink served a fabricated report about a property nobody had
+  // researched, under a heading reading "CONFIRMED FOR THIS ADDRESS". A paid $14.99 report was not
+  // durably stored anywhere at all. This column is where a report actually lives now; the Map is
+  // only a same-instance fast path in front of it.
+  await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS report_json TEXT`;
 
   // Vendor ad slots on guide pages (see src/server/guideAdsApi.ts). Two tables, not one:
   // guide_ad_orders is the checkout attempt (one row per PayPal order, holding the pending slot
@@ -643,6 +652,8 @@ export interface GeneratedReportInput {
   userAgent: string | null;
   isPaid: boolean;
   priceUsd: number | null;
+  /** The client-projected report as delivered. Serving a permalink depends on this being here. */
+  reportJson: string | null;
 }
 
 // Fire-and-forget from the caller's perspective (see server.ts) -- a failed write here must never
@@ -656,15 +667,45 @@ export async function saveGeneratedReportInputs(data: GeneratedReportInput): Pro
       INSERT INTO generated_reports (
         report_id, clerk_user_id, formatted_address, city, state, zip_code, county,
         declared_property_type, declared_year_built, declared_unit_number, attested_accurate,
-        ip_address, user_agent, is_paid, price_usd
+        ip_address, user_agent, is_paid, price_usd, report_json
       ) VALUES (
         ${data.reportId}, ${data.clerkUserId}, ${data.formattedAddress}, ${data.city}, ${data.state},
         ${data.zipCode}, ${data.county}, ${data.declaredPropertyType}, ${data.declaredYearBuilt},
         ${data.declaredUnitNumber}, ${data.attestedAccurate}, ${data.ipAddress}, ${data.userAgent},
-        ${data.isPaid}, ${data.priceUsd}
+        ${data.isPaid}, ${data.priceUsd}, ${data.reportJson}
       )
-      ON CONFLICT (report_id) DO NOTHING
+      -- DO NOTHING on the row as a whole, but still fill report_json if the existing row has none.
+      -- The retry path this guard was written for calls this once WITHOUT a body (the audit write,
+      -- which happens before generation finishes) and once WITH it, and a plain DO NOTHING would
+      -- discard the body and leave the permalink permanently unservable.
+      ON CONFLICT (report_id) DO UPDATE
+        SET report_json = COALESCE(generated_reports.report_json, EXCLUDED.report_json)
     `;
+  });
+}
+
+/**
+ * The durable copy of a delivered report, for GET /api/insights/:id.
+ *
+ * Returns null when the id is unknown OR when the row exists but predates report_json (every
+ * report generated before 2026-08-21). Null must mean "show the reader nothing" at the call site
+ * -- never "invent something to show them," which is the exact defect this was written to end.
+ */
+export async function getGeneratedReportBody(reportId: string): Promise<any | null> {
+  return withDb(async (sql) => {
+    const rows = await sql`
+      SELECT report_json FROM generated_reports WHERE report_id = ${reportId} LIMIT 1
+    `;
+    const raw = (rows as any[])[0]?.report_json;
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch (err) {
+      // A row whose JSON won't parse is corrupt, not absent. Same outcome for the reader either
+      // way, but say so in the log rather than silently reporting "not found".
+      console.error(`[insights] report_json for ${reportId} failed to parse:`, err);
+      return null;
+    }
   });
 }
 

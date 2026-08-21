@@ -264,7 +264,9 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                 <strong>Report request records.</strong> When you generate a property report, we keep
                 a record of that request: the address you researched, the property type, year built,
                 and unit number you entered, your account identifier where you were signed in, and
-                the IP address and browser user-agent at that moment. This is a record about you, not
+                the IP address and browser user-agent at that moment. <strong>We also store the
+                finished report itself</strong>, so that your link still opens when you return to it
+                or send it to someone else. This is a record about you, not
                 an anonymous statistic, and we keep it deliberately for two reasons: it is the
                 evidence of what was actually submitted if a report is later disputed as inaccurate
                 (see sections 3.5 and 3.6 of our{' '}

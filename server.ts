@@ -53,7 +53,8 @@ import {
   getTransaction,
   isDbConfigured,
   withDb,
-  saveGeneratedReportInputs
+  saveGeneratedReportInputs,
+  getGeneratedReportBody
 } from "./src/server/db.js";
 import { isClerkBackendConfigured } from "./src/server/clerkAuth.js";
 import { logAiCrawlerVisit } from "./src/server/aiCrawlerLog.js";
@@ -479,28 +480,52 @@ export async function createApp() {
     }
   });
 
-  // GET Standalone Report by Unique ID
-  app.get(["/api/report/:reportId", "/api/reports/:reportId", "/api/insights/:reportId"], (req, res) => {
+  // GET Standalone Report by Unique ID.
+  //
+  // This used to end in a fabrication. On a miss it generated a placeholder report for "Subject
+  // Property, Austin, TX" (with Washington DC coordinates), stamped the requested id on it, and
+  // returned success:true -- so ANY id at all produced a confident-looking report about a property
+  // nobody had researched, rendered under a "CONFIRMED FOR THIS ADDRESS" heading with an Export PDF
+  // button. Because report bodies lived only in the in-memory Map below, which dies with the
+  // serverless instance, that was the NORMAL outcome for a reloaded or shared permalink, not an
+  // edge case -- including for a report someone had paid $14.99 for.
+  //
+  // The order now is: same-instance Map (fast path) -> generated_reports.report_json (the durable
+  // copy) -> 404. There is deliberately no fourth branch. A report we cannot produce is a 404; the
+  // one thing this endpoint must never do again is invent a property.
+  app.get(["/api/report/:reportId", "/api/reports/:reportId", "/api/insights/:reportId"], async (req, res) => {
     const { reportId } = req.params;
     if (reportsStore.has(reportId)) {
       res.json({ success: true, report: reportsStore.get(reportId) });
       return;
     }
 
-    // On-demand report resolution for direct link access
-    const report = generateStructuredPropertyReport(
-      "Subject Property, Austin, TX",
-      "Austin",
-      "TX",
-      "78701",
-      "Travis County",
-      "Single Family Home",
-      21,
-      29
-    );
-    report.id = reportId;
-    reportsStore.set(reportId, report);
-    res.json({ success: true, report });
+    if (isDbConfigured()) {
+      try {
+        const stored = await getGeneratedReportBody(reportId);
+        if (stored) {
+          // Repopulate the instance cache so a reader paging around the report doesn't re-query.
+          reportsStore.set(reportId, stored);
+          res.json({ success: true, report: stored });
+          return;
+        }
+      } catch (err) {
+        // A database failure is not evidence that the report doesn't exist, so don't say it is.
+        console.error(`[insights] Lookup failed for ${reportId}:`, err);
+        res.status(503).json({
+          success: false,
+          error: 'unavailable',
+          message: 'We could not load this report just now. Please try again in a moment.',
+        });
+        return;
+      }
+    }
+
+    res.status(404).json({
+      success: false,
+      error: 'not_found',
+      message: 'This report link is no longer available. Reports generated before August 21, 2026 were not saved, and links can expire.',
+    });
   });
 
   // 301 Redirect /report/:id -> /insights/:id
@@ -704,10 +729,25 @@ export async function createApp() {
     // fact, don't gate on it" posture as gemini_usage_log and the capacityCheck reservation above.
     // Called once here, before either the Gemini-success or fallback path below, so both are
     // covered without duplicating the call at each reportsStore.set() site.
-    const persistDeclaredInputs = (reportId: string) => {
+    // reportBody is the client-projected report as delivered. It is what makes the permalink
+    // servable after this serverless instance is gone -- see getGeneratedReportBody. Optional only
+    // so a caller that genuinely has no body yet can still write the audit row; every call site
+    // below passes one.
+    const persistDeclaredInputs = (reportId: string, reportBody?: unknown) => {
       if (!isDbConfigured()) return;
+      let reportJson: string | null = null;
+      if (reportBody !== undefined) {
+        try {
+          reportJson = JSON.stringify(reportBody);
+        } catch (err) {
+          // Don't lose the audit row over an unserializable body -- but do say so, because the
+          // permalink for this report will 404 and that should not be a silent surprise later.
+          console.error(`[generate-report] Could not serialize report ${reportId} for storage:`, err);
+        }
+      }
       void saveGeneratedReportInputs({
         reportId,
+        reportJson,
         clerkUserId: requesterClerkUserId,
         formattedAddress: resolvedMeta.formattedAddress,
         city: resolvedMeta.city || null,
@@ -1040,7 +1080,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
         // /api/report/:reportId serves later is the same clean object -- see CLIENT_REPORT_FIELDS.
         const clientReport = projectReportForClient(cleanedReport);
         reportsStore.set(cleanedReport.id, clientReport);
-        persistDeclaredInputs(cleanedReport.id);
+        persistDeclaredInputs(cleanedReport.id, clientReport);
 
         res.json({
           success: true,
@@ -1069,7 +1109,7 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     // fallback generator is where the hardcoded "Verified Record" constants live.
     const clientFallbackReport = projectReportForClient(cleanedReport);
     reportsStore.set(cleanedReport.id, clientFallbackReport);
-    persistDeclaredInputs(cleanedReport.id);
+    persistDeclaredInputs(cleanedReport.id, clientFallbackReport);
 
     // Fallback high-quality structured decision guide report
     res.json({
