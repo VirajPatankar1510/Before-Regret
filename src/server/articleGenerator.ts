@@ -24,7 +24,7 @@ import { KNOWN_SOURCES } from '../data/knownSources.js';
 export const ARTICLE_SYSTEM_INSTRUCTION = `You are an expert SEO content writer for BeforeRegret, a US property research platform that helps home buyers avoid regret after closing. You write articles that read as original work by an experienced researcher -- never as AI-generated boilerplate, a keyword-stuffed listicle, or a corporate brochure.
 
 HARD RULES -- breaking any of these makes the output unusable:
-1. Never invent a specific statistic, percentage, dollar figure, or study result. Only state facts that are well-established public record (e.g. "the federal lead-paint disclosure law took effect in 1978" is fine; a specific percentage of homes affected is not, unless you can name the real source it came from).
+1. Never invent a specific statistic, percentage, dollar figure, or study result. Only state facts that are well-established public record (e.g. "lead-based paint was banned for residential use in 1978" is fine; a specific percentage of homes affected is not, unless you can name the real source it came from).
 2. Never make a claim about a specific property. Every statement is class-level: "homes built in this era commonly..." never "this house has...".
 3. Never state or imply personalized insurance, legal, or financial advice. Frame findings as "some insurers have documented declining coverage for X" -- never "you will/won't be covered."
 4. Every actionable recommendation routes to a licensed professional (inspector, structural engineer, plumber, electrician, insurance agent) as the next step. The article itself is never a substitute for one.
@@ -32,7 +32,8 @@ HARD RULES -- breaking any of these makes the output unusable:
 6. Vary sentence length and structure like a real person writing. No "In today's fast-paced world," no "In conclusion," no listicle padding, no filler sentences added just to hit a word count.
 7. Write only original analysis and explanation in your own words. Do not paraphrase or lift structure from any specific existing article.
 8. Never invent a URL or a specific report/study to attribute a claim to. You may only cite an organization by its short code from the approved list given to you -- never write out a URL yourself. Precision matters as much as existence: only attach a citation when that specific organization is the actual, correct authority for that specific claim -- not merely the closest-sounding or most plausible agency on the list. A federal regulator's general subject-matter area (e.g. CFPB covers consumer lending disclosures and servicing) does not make it the right citation for a claim that actually belongs to a different body (e.g. Fannie Mae/Freddie Mac's non-warrantable-property underwriting rules, which are not a government agency and are not on this list at all). Confirmed as a real, published mistake: a claim about GSE mortgage underwriting treatment of HOA litigation was cited to [CFPB], which does not set or publish that standard. When no organization on the approved list is a precise match for a claim, state the claim in plain text with no citation bracket -- an uncited true statement is correct; a citation to the wrong authority is not, even if the organization itself is real and on the list.
-9. When a counterparty in the transaction (a landowner, seller, HOA, lender, or any vendor -- inspector, contractor, agent, attorney) uses a standard, legal, disclosed practice, describe its financial mechanism and consequence to the buyer -- never editorialize it as deception or bad intent. Words like "trap," "landmine," or a section header like "Why the Purchase Price Is Deceptive" assume the counterparty meant to harm the reader; a disclosed rent-escalation clause or a standard contract term is a real risk to explain, not a scheme to expose. Confirmed as a real, published mistake: an article on land-lease apartments titled a section "The Escalation Clause Trap" and called standard reappraisal clauses "financial landmines," which a landowner could reasonably read as an accusation of bad faith for using a disclosed, legal term. State the risk plainly and let the facts carry the warning.`;
+9. When a counterparty in the transaction (a landowner, seller, HOA, lender, or any vendor -- inspector, contractor, agent, attorney) uses a standard, legal, disclosed practice, describe its financial mechanism and consequence to the buyer -- never editorialize it as deception or bad intent. Words like "trap," "landmine," or a section header like "Why the Purchase Price Is Deceptive" assume the counterparty meant to harm the reader; a disclosed rent-escalation clause or a standard contract term is a real risk to explain, not a scheme to expose. Confirmed as a real, published mistake: an article on land-lease apartments titled a section "The Escalation Clause Trap" and called standard reappraisal clauses "financial landmines," which a landowner could reasonably read as an accusation of bad faith for using a disclosed, legal term. State the risk plainly and let the facts carry the warning.
+10. Never state a legal requirement as universal when the rule itself carries exceptions. Say who it actually binds, and name the main carve-out rather than implying there is none. Confirmed as a real, published mistake across eight articles: "Federal law requires sellers of homes built before 1978 to provide a lead-based paint disclosure" -- stated flatly, with no qualifier. The real rule reaches "target housing," which excludes 0-bedroom units (studios, dorms, rented rooms) and housing for the elderly or people with disabilities unless a child under six lives there, and it exempts foreclosure sales outright; the duty is to disclose what the seller ALREADY KNOWS and hand over records already held -- it is not, and has never been, a duty to test for lead. Write "sellers of most homes built before 1978 must disclose known lead-based paint and hazards," not the unqualified version. The same discipline applies to every legal duty: a rule that binds only FHA-insured loans, only landlords, only a particular state, or only compensated contractors must say so in the same sentence that states the duty.`;
 
 // Deliberately not a ranked or numbered list -- an earlier numbered "pillar" version put
 // insurance first and gave it by far the most specific named examples (Federal Pacific/Zinsco
@@ -92,6 +93,81 @@ export function findAdversarialCounterpartyFraming(bodyMarkdown: string): string
   for (const pattern of ADVERSARIAL_COUNTERPARTY_PATTERNS) {
     const match = bodyMarkdown.match(pattern);
     if (match) hits.push(match[0]);
+  }
+  return hits;
+}
+
+// Narrow tripwire for a federal legal duty stated as universal when the statute itself carves out
+// exceptions. Written for the one case confirmed live across EIGHT published articles: the
+// lead-based paint disclosure rule, asserted as "federal law requires sellers of homes built
+// before 1978 to..." with no qualifier.
+//
+// That is overbroad as a matter of law. Section 1018 of the Residential Lead-Based Paint Hazard
+// Reduction Act reaches "target housing," which 40 CFR 745.103 defines to EXCLUDE any 0-bedroom
+// dwelling (studios, dorms, rented single rooms) and housing for the elderly or people with
+// disabilities -- unless a child under six lives or is expected to live there. 40 CFR 745.101
+// then exempts foreclosure sales from the sale-side duty outright. The duty is also to disclose
+// what the seller already KNOWS and to hand over records already in hand; it has never been a
+// duty to test for lead.
+//
+// Why a tripwire and not just a content fix: the generator produces this sentence unprompted
+// whenever a topic touches housing age, so correcting the eight live articles fixes today and
+// nothing else. This is the same "code-level check, not a one-time edit" reasoning as the
+// adversarial-framing patterns above.
+//
+// Sentence-scoped on purpose. All three signals must land in ONE sentence, and a hedge anywhere
+// in that same sentence clears it -- so the corrected wording ("sellers of MOST homes built
+// before 1978...") passes, and an article that states the rule properly in one place but loosely
+// in another is still caught. Naming the statutory term "target housing" also clears it, since
+// using the term carries its definition.
+const FEDERAL_AUTHORITY = /\bfederal(?:ly)?\b/i;
+const DUTY_VERB = /\b(?:requires?|required|mandates?|mandated|must)\b/i;
+const PRE_1978 = /\b(?:pre-?\s?1978|(?:before|prior to|predating)\s+1978)\b/i;
+// Two ways a sentence can clear this check, because there are two correct ways to state a
+// partial duty. Either hedge the scope ("most homes built before 1978..."), or name the party
+// the rule actually binds ("a paid contractor must follow the RRP rule...") -- the second is
+// strictly better writing where the rule really does bind one identifiable group, so a sentence
+// that does it must not be flagged for lacking the word "most."
+const LEGAL_CLAIM_HEDGE =
+  /\b(?:most|many|generally|typically|usually|some|certain|often|except|excepts?|exempt\w*|target housing)\b/i;
+const LEGAL_CLAIM_SCOPED_PARTY =
+  /\b(?:FHA|USDA|VA loan|paid contractor|compensated|certified renovator|renovation firm|landlords?|lessors?|property managers?)\b/i;
+
+/**
+ * Returns each sentence that asserts an unqualified federal duty tied to pre-1978 housing.
+ * Empty array means nothing overstates the rule.
+ *
+ * `contextText` supplies surrounding text that sets a sentence's subject without being part of
+ * it -- in practice, an FAQ's question relative to its answer. It exists because a real miss was
+ * found exactly this way: the lead-paint FAQ asked "What does the FEDERAL lead paint disclosure
+ * actually give me?" and answered "Sellers of residential properties constructed before 1978
+ * must provide..." -- an unqualified duty whose only mention of federal authority sat in the
+ * question, so scanning the answer alone read it as harmless. Topic signals (the authority, the
+ * 1978 date) may come from either place. Hedges count from either place too: a question that
+ * already says "most homes" frames every answer sentence beneath it.
+ *
+ * faq_json matters as much as the body here, maybe more -- it is published as FAQPage JSON-LD,
+ * which is the form an AI answer engine is most likely to quote back verbatim.
+ */
+export function findOverbroadFederalDutyClaim(bodyMarkdown: string, contextText = ''): string[] {
+  const ctx = contextText.replace(/\s+/g, ' ');
+  const ctxAuthority = FEDERAL_AUTHORITY.test(ctx);
+  const ctxPre1978 = PRE_1978.test(ctx);
+  const ctxCleared = LEGAL_CLAIM_HEDGE.test(ctx) || LEGAL_CLAIM_SCOPED_PARTY.test(ctx);
+
+  const hits: string[] = [];
+  for (const raw of bodyMarkdown.split(/(?<=[.!?])\s+/)) {
+    const sentence = raw.replace(/\s+/g, ' ').trim();
+    if (!sentence) continue;
+    // The duty verb must be in the sentence itself -- otherwise a neighbouring sentence's topic
+    // words could manufacture a hit on a sentence asserting nothing.
+    if (!DUTY_VERB.test(sentence)) continue;
+    if (!FEDERAL_AUTHORITY.test(sentence) && !ctxAuthority) continue;
+    if (!PRE_1978.test(sentence) && !ctxPre1978) continue;
+    if (ctxCleared) continue;
+    if (LEGAL_CLAIM_HEDGE.test(sentence)) continue;
+    if (LEGAL_CLAIM_SCOPED_PARTY.test(sentence)) continue;
+    hits.push(sentence.slice(0, 200));
   }
   return hits;
 }
