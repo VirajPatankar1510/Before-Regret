@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from 'express';
-import { withDb, isDbConfigured, purgeExpiredReportRequestRecords } from './db.js';
+import { withDb, isDbConfigured, purgeExpiredReportRequestRecords, purgeExpiredIpRateLimitRecords } from './db.js';
 import { hasValidSession } from './adminAuth.js';
 import { isQuotaError, generateContentWithFallback, contentQuotaExhaustedMessage } from './geminiModel.js';
 import { logGeminiUsage } from './geminiUsageTracker.js';
@@ -127,6 +127,16 @@ export function registerCountyEventsRoutes(app: Express) {
         if (deleted > 0) console.log(`[retention] Purged ${deleted} report request record(s) past the retention window.`);
       })
       .catch((err) => console.error('[retention] Failed to purge expired report request records:', err));
+
+    // Same rationale, same schedule, separate promise: the rate-limit table holds raw IPs and is
+    // only read for CURRENT_DATE, so anything older is undisclosed personal data serving no
+    // purpose. Kept as its own fire-and-forget chain rather than chained onto the one above so a
+    // failure in either purge can't silently prevent the other from running.
+    void purgeExpiredIpRateLimitRecords()
+      .then((deleted) => {
+        if (deleted > 0) console.log(`[retention] Purged ${deleted} expired IP rate-limit record(s).`);
+      })
+      .catch((err) => console.error('[retention] Failed to purge expired IP rate-limit records:', err));
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {

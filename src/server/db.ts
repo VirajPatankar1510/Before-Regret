@@ -687,6 +687,30 @@ export async function purgeExpiredReportRequestRecords(): Promise<number> {
   });
 }
 
+// report_generation_ip_daily_cap is keyed (ip_address, usage_date) and is only ever READ for
+// CURRENT_DATE -- see checkAndReserveReportGenerationCapacity in reportGenerationLimiter.ts. Every
+// row for a past date is therefore dead weight that still happens to be an IP address, i.e.
+// personal data held for no operating purpose. Found by the data map: it had no purge, no stated
+// retention period, and no privacy-policy paragraph covering it, so in practice the answer to "how
+// long do you keep visitor IPs" was "forever, by omission." That is the weakest possible position
+// to be in -- indefinite retention nobody chose and nobody disclosed.
+//
+// 30 days rather than 1: the mechanism only needs today, but a short window is what makes "this
+// IP has hit the cap every day this week" answerable, which is the abuse-investigation purpose the
+// Privacy Policy already claims. Bounded, stated, and enforced beats unbounded and silent.
+export const IP_RATE_LIMIT_RETENTION_DAYS = 30;
+
+export async function purgeExpiredIpRateLimitRecords(): Promise<number> {
+  return withDb(async (sql) => {
+    const rows = await sql`
+      DELETE FROM report_generation_ip_daily_cap
+      WHERE usage_date < CURRENT_DATE - ${IP_RATE_LIMIT_RETENTION_DAYS}::integer
+      RETURNING ip_address
+    `;
+    return rows.length;
+  });
+}
+
 export async function createTransaction(data: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>): Promise<Transaction> {
   return withDb(async (sql) => {
     const result = await sql`

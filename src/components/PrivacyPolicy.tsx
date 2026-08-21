@@ -28,7 +28,15 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
             <span>Return to Home</span>
           </button>
 
-          <span className="text-xs font-mono text-slate-500">Effective Date: August 17, 2026</span>
+          {/* Moved from August 17 on 2026-08-21, for the same reason legalVersions.ts requires
+              TERMS_VERSION to be bumped in the commit that changes the Terms: a date that lags the
+              text it stamps attests to the wrong document. That day's changes were substantive --
+              §5 gained the service-provider disclosures (including that the searched address is
+              sent to Google and the Census geocoder), §6 was corrected to say there is no analytics
+              on this site, and §7 gained a stated 30-day retention period for the IP rate-limit
+              records. No PRIVACY_VERSION constant to match: unlike the Terms, nothing records a
+              per-user acceptance of this document, so the date is the whole of the provenance. */}
+          <span className="text-xs font-mono text-slate-500">Effective Date: August 21, 2026</span>
         </div>
 
         {/* Content Pane */}
@@ -147,6 +155,48 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                   <strong>Statutory Disclosures:</strong> We disclose information only when required by valid judicial order, law enforcement subpoena, or statutory legal obligation.
                 </li>
               </ul>
+              {/* Added after a full data-map exercise (docs/DATA_MAP.md) found this section had no
+                  service-provider paragraph at all. That omission mattered more than a missing
+                  section normally would, because of what it sat next to: the "NEVER sold, rented,
+                  monetized, or shared" bullet above is scoped to advertisers, brokers, and
+                  commercial vendors, and is true as written -- but a reader lands on it and
+                  reasonably concludes the address they typed goes nowhere. It does go somewhere.
+                  Generating a report sends it to Google's Gemini API and to the US Census Bureau
+                  geocoder. Neither is a sale and neither is advertising, so nothing above was
+                  false; it was just incomplete in the exact direction a reader would care about,
+                  which is the harder problem to spot and the easier one to be judged for. Naming
+                  the processors, and saying plainly which of them receives the address, is what
+                  makes the section above safe to leave standing. */}
+              <p className="pt-1">
+                <strong>Service providers who process data for us.</strong> Running this site means
+                other companies handle some of your data on our behalf. They may only use it to
+                provide their service to us, never for their own purposes:
+              </p>
+              <ul className="list-disc pl-5 space-y-1.5 text-xs text-slate-600">
+                <li>
+                  <strong>Google (Gemini API)</strong> — generates the written analysis in a property
+                  report. <strong>The address you searched is sent to Google</strong>, along with its
+                  city, state, ZIP and county, so the report can be written about that property. Your
+                  name, email, account identifier and IP address are not sent.
+                </li>
+                <li>
+                  <strong>US Census Bureau geocoder</strong> — confirms the address you entered is a
+                  real, locatable US address before any report is produced. <strong>The address is
+                  sent to this US government service</strong>; nothing identifying you is.
+                </li>
+                <li>
+                  <strong>Clerk</strong> — provides sign-in. Holds your email address, name and any
+                  profile photo from the sign-in method you chose, under its own privacy policy.
+                </li>
+                <li>
+                  <strong>PayPal</strong> — processes payments, as described in section 3.
+                </li>
+                <li>
+                  <strong>Neon</strong> (database hosting) and <strong>Vercel</strong> (application
+                  hosting) — store and serve the data described in this policy. Both hold it as
+                  infrastructure providers and neither uses it for any purpose of their own.
+                </li>
+              </ul>
             </section>
 
             {/* Section 6 */}
@@ -154,11 +204,42 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
                 6. Cookie & Analytics Disclosure
               </h2>
+              {/* Rewritten after the data map (docs/DATA_MAP.md) checked this paragraph against the
+                  code. The previous version claimed "privacy-preserving analytics scripts" that
+                  "analyze page performance across zip codes." There is no analytics script on this
+                  site -- not Google Analytics, not a privacy-preserving alternative, not anything --
+                  and no per-zip-code performance analysis exists to describe. The error ran in the
+                  unusual direction of claiming MORE data collection than actually happens, which is
+                  not the dangerous direction, but it is still an inaccurate description of our own
+                  practices in the document a regulator reads first, and the fix costs nothing. What
+                  replaces it is what the code actually does. */}
               <p>
-                Before Regret utilizes standard, non-intrusive session cookies and privacy-preserving analytics scripts to measure aggregate traffic patterns, analyze page performance across zip codes, and prevent automated spam bot activity.
+                <strong>We run no analytics or tracking scripts.</strong> There is no Google
+                Analytics on this site, no advertising pixel, no third-party tracker, and no
+                cross-site profiling of any kind. We do not set advertising cookies, and there is no
+                cookie consent banner because there is nothing to consent to.
               </p>
+              <p>
+                Two things do happen, and both are worth naming rather than leaving to the word
+                "standard":
+              </p>
+              <ul className="list-disc pl-5 space-y-1.5 text-xs text-slate-600">
+                <li>
+                  <strong>A sign-in cookie, only if you sign in.</strong> Our authentication provider
+                  (Clerk) sets a session cookie so you stay signed in between pages. Browse without
+                  signing in and it is never set.
+                </li>
+                <li>
+                  <strong>Ordinary server logs.</strong> Our hosting provider records requests to the
+                  site, including IP address and browser user-agent, as essentially every web server
+                  does. We separately keep a short-lived record of IP addresses to enforce the daily
+                  free-report limit — see section 7 for how long.
+                </li>
+              </ul>
               <p className="text-xs text-slate-500 italic">
-                Note: Cookies used on our platform do not track your activity on non-Atmostellar websites and do not sell user profiles to advertising networks. Users can manage or disable cookie preferences through standard browser settings.
+                We also keep a log of visits by AI crawlers (ChatGPT, Claude, Perplexity and similar),
+                recording only the bot's own user-agent and the page it fetched, so we can see whether
+                AI systems are reading our guides. No human visitor is recorded in it.
               </p>
             </section>
 
@@ -190,6 +271,19 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                 <a href="/terms/" className="text-blue-600 font-bold hover:underline">Terms of Service</a>),
                 and it is what lets us investigate abuse of the free-report allowance. We retain it
                 for <strong>three years</strong> from the date of the request, then delete it.
+              </p>
+              {/* The data map (docs/DATA_MAP.md) found this table had no retention period, no purge,
+                  and no paragraph here -- so the honest answer to "how long do you keep visitor IPs"
+                  was "indefinitely," by omission rather than by decision. Both halves are now fixed:
+                  purgeExpiredIpRateLimitRecords in db.ts enforces the window on the daily cron, and
+                  this paragraph states it. A retention promise with no enforcement and enforcement
+                  with no promise are both half-measures; this is the pair. */}
+              <p>
+                <strong>Free-report limit records.</strong> To stop one person from consuming the
+                free-report allowance endlessly, we count report requests against the IP address they
+                came from. That record is just the IP address, the date, and a count — no address you
+                searched, no account, no name. We keep it for <strong>30 days</strong>, then delete
+                it.
               </p>
               {/* Added when consumer Terms acceptance began being recorded (see
                   src/server/termsApi.ts). Disclosing this specifically matters: it is a record
