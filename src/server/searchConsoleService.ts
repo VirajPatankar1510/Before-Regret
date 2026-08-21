@@ -299,3 +299,62 @@ export async function fetchUrlInspection(url: string): Promise<UrlInspectionResu
     };
   }
 }
+
+export interface SearchAppearanceRow {
+  /** Google's own label, e.g. 'AMP_BLUE_LINK', 'RICHCARD', 'PRODUCT_SNIPPETS', 'WEBLITE'. */
+  appearance: string;
+  clicks: number;
+  impressions: number;
+}
+
+/**
+ * Which SERP feature types this site has actually appeared in.
+ *
+ * Exists to test a specific claim rather than argue about it. Analysis of Google's endpoint data
+ * (Mark Williams-Cook, 2TB / 90M queries) reports a site_quality_score whose inputs include brand
+ * search visibility, and which below roughly 0.4 excludes a site from People Also Ask and featured
+ * snippets. That is leak-derived, not documented by Google, so it cannot be taken as fact -- but
+ * it makes a checkable prediction: a site with no brand search should show no enhanced appearances
+ * at all. This is the query that checks it.
+ *
+ * An empty result is genuinely ambiguous and must not be over-read: it is equally consistent with
+ * "excluded by a quality threshold" and with "too new and too small to have earned a rich result
+ * yet". It is evidence about the site, not proof of the threshold's existence.
+ *
+ * 'searchAppearance' is the one dimension the API refuses to combine with any other -- queries
+ * mixing it with 'page' or 'query' fail rather than returning a cross-tab -- so this is
+ * deliberately its own call.
+ */
+export async function fetchSearchAppearance(days: number = 90): Promise<SearchAppearanceRow[]> {
+  const siteUrl = process.env.GSC_SITE_URL!;
+  const accessToken = await getAccessToken();
+
+  const endDate = new Date();
+  const startDate = new Date(endDate.getTime() - days * 24 * 60 * 60 * 1000);
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+  const res = await fetch(
+    `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        startDate: iso(startDate),
+        endDate: iso(endDate),
+        dimensions: ['searchAppearance'],
+        rowLimit: 100,
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(`Search Console searchAppearance query failed (${res.status}): ${await res.text()}`);
+  }
+
+  const json = (await res.json()) as { rows?: Array<{ keys: string[]; clicks: number; impressions: number }> };
+  return (json.rows || []).map((r) => ({
+    appearance: r.keys[0],
+    clicks: r.clicks,
+    impressions: r.impressions,
+  }));
+}
