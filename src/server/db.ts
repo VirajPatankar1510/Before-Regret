@@ -619,6 +619,38 @@ export async function ensureArticlesSchema(): Promise<void> {
     )
   `;
 
+  // Reader-reported inaccuracies, from the report page and from guide articles.
+  //
+  // This table exists because the feature that collects these did not have one. The error-reporting
+  // modal on property reports had a submit handler whose entire body was setSubmitted(true) -- no
+  // fetch, no endpoint, no storage -- while telling the reader "our data research team will
+  // cross-verify ... and respond within 1-2 business days" and printing a ticket ID built from
+  // Date.now(). Every correction anyone had ever submitted went nowhere, and the promise of a reply
+  // could not be kept by anyone. That is the same category as the fabricated Austin report and the
+  // overbroad legal claims: a statement about what happens that is not true.
+  //
+  // source_type distinguishes a report ('report') from a guide ('guide'); source_ref holds the
+  // report id or the guide slug. Kept as one table rather than two because the triage question is
+  // identical either way -- "did we get something wrong, and where."
+  await sql`
+    CREATE TABLE IF NOT EXISTS content_reports (
+      id SERIAL PRIMARY KEY,
+      source_type TEXT NOT NULL,
+      source_ref TEXT NOT NULL,
+      source_label TEXT,
+      topic TEXT NOT NULL,
+      description TEXT NOT NULL,
+      reporter_email TEXT,
+      status TEXT NOT NULL DEFAULT 'open',
+      ip_address TEXT,
+      user_agent TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      resolved_at TIMESTAMPTZ,
+      resolution_note TEXT
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_content_reports_status ON content_reports(status, created_at DESC)`;
+
   // Passive record of which AI crawlers actually fetch this site -- see aiCrawlerLog.ts for the
   // user-agent matching this is fed from. The question "does an AI answer engine cite us" has no
   // real answer until the prerequisite question is answered first: "does its crawler even come

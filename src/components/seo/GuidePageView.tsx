@@ -8,6 +8,8 @@ import { GuideAdSlot } from '../GuideAdSlot';
 import { ContentLink } from '../home/ContentLink';
 import { pickRelatedGuides, GuideSummary } from '../../utils/relatedGuides';
 import { buildPageTitle } from '../../utils/pageTitle';
+import { ErrorReportingModal } from '../ErrorReportingModal';
+import { Flag } from 'lucide-react';
 
 interface GuidePageViewProps {
   guideSlug: string;
@@ -69,6 +71,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
   const [notFound, setNotFound] = useState(false);
   const [allGuides, setAllGuides] = useState<GuideSummary[]>([]);
   const [openFaqIndices, setOpenFaqIndices] = useState<Set<number>>(new Set());
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
   const toggleFaq = (idx: number) => {
     setOpenFaqIndices((prev) => {
@@ -398,6 +401,29 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
               })}
             </ul>
           </div>
+        )}
+
+        {/* Correction path. A BUTTON, never a link: no href means nothing for a crawler to follow,
+            no new URL to index, and no internal link equity redirected away from real content --
+            which is what a "/report-an-error" page linked from all 159 guides would have done.
+            Client-only by design too, so the prerendered HTML a crawler reads is unchanged. */}
+        <div className="flex justify-center pt-2">
+          <button
+            onClick={() => setIsErrorModalOpen(true)}
+            className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+          >
+            <Flag className="w-3.5 h-3.5" />
+            <span>Something wrong on this page? Tell us.</span>
+          </button>
+        </div>
+
+        {isErrorModalOpen && (
+          <ErrorReportingModal
+            sourceType="guide"
+            sourceRef={article.slug}
+            sourceLabel={article.title}
+            onClose={() => setIsErrorModalOpen(false)}
+          />
         )}
 
       </div>
