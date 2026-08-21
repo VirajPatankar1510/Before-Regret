@@ -54,7 +54,7 @@ export interface EraInsightsContext {
   insuranceRedFlags: string[];
 }
 
-const FEMA_HAZARD_LABELS: Record<string, string> = {
+export const FEMA_HAZARD_LABELS: Record<string, string> = {
   AVLN: 'Avalanche', CFLD: 'Coastal Flooding', CWAV: 'Cold Wave', DRGT: 'Drought',
   ERQK: 'Earthquake', HAIL: 'Hail', HWAV: 'Heat Wave', HRCN: 'Hurricane',
   ISTM: 'Ice Storm', LNDS: 'Landslide', LTNG: 'Lightning', IFLD: 'Inland Flooding',
@@ -62,7 +62,7 @@ const FEMA_HAZARD_LABELS: Record<string, string> = {
   WFIR: 'Wildfire', WNTW: 'Winter Weather',
 };
 
-function buildCountyDataBlock(county: CountyEventCountyContext): string {
+export function buildCountyDataBlock(county: CountyEventCountyContext): string {
   const topHazards = Object.entries(county.femaHazards)
     .filter(([, v]) => v && typeof v.score === 'number')
     .sort((a, b) => (b[1].score as number) - (a[1].score as number))
@@ -84,7 +84,7 @@ function buildCountyDataBlock(county: CountyEventCountyContext): string {
 - County page (the only county-level URL you may use): ${county.countyUrl}`;
 }
 
-function buildEraInsightsBlock(era: EraInsightsContext): string {
+export function buildEraInsightsBlock(era: EraInsightsContext): string {
   const prioritiesList = era.priorities
     .map((p) => `- [${p.priority}] ${p.title}: ${p.eraBasis}`)
     .join('\n');

@@ -23,6 +23,7 @@ interface CountyRow {
   fema_hazards_json: string;
   noaa_event_counts_json: string;
   noaa_years_covered: string | null;
+  narrative_markdown: string;
   data_complete: boolean;
   fetched_at: string;
 }
@@ -42,6 +43,7 @@ function toApiShape(row: CountyRow) {
     femaHazards: JSON.parse(row.fema_hazards_json || '{}'),
     noaaEventCounts: JSON.parse(row.noaa_event_counts_json || '{}'),
     noaaYearsCovered: row.noaa_years_covered,
+    narrativeMarkdown: row.narrative_markdown || '',
     fetchedAt: row.fetched_at,
   };
 }

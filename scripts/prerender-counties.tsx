@@ -8,6 +8,7 @@ import { pickGuidesForCounty, GuideLink, findPermitGuideForCounty, PermitGuideLi
 import { computeCountyRankings, CountyMetricInput, CountyRankings } from '../src/utils/countyRankings.js';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
+import { renderArticleMarkdown } from '../src/utils/renderArticleMarkdown.js';
 
 // Static HTML generator for county research pages, mirroring scripts/prerender-guides.tsx exactly
 // -- same reasoning applies: the live app is a pure client-render SPA (createRoot, not
@@ -30,6 +31,7 @@ interface CountyRow {
   fema_hazards_json: string;
   noaa_event_counts_json: string;
   noaa_years_covered: string | null;
+  narrative_markdown: string;
   fetched_at: string;
 }
 
@@ -52,6 +54,7 @@ function toPreloadShape(row: CountyRow, rankings: CountyRankings) {
     femaHazards: JSON.parse(row.fema_hazards_json || '{}'),
     noaaEventCounts: JSON.parse(row.noaa_event_counts_json || '{}'),
     noaaYearsCovered: row.noaa_years_covered,
+    narrativeMarkdown: row.narrative_markdown || '',
     fetchedAt: row.fetched_at,
     rankings,
   };
@@ -175,6 +178,19 @@ function CountyStaticBody({
             <p className="text-[11px] text-slate-400 leading-relaxed">
               #1 is the highest of the group for that measure -- not necessarily a warning, and not a claim about any specific property in the county.
             </p>
+          </section>
+        )}
+
+        {/* The county-specific analysis, above the data tables on purpose. Everything below this
+            point is the same shell on all 100 pages -- which is exactly what left them 79%
+            identical and "Discovered - currently not indexed" in Search Console. This is the part
+            that differs county to county, so it leads. Renders nothing at all where a county has
+            no narrative yet, which is what lets the pilot cover 5 counties without touching 95. */}
+        {row.narrative_markdown?.trim() && (
+          <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
+            <div className="prose-county space-y-3">
+              {renderArticleMarkdown(row.narrative_markdown)}
+            </div>
           </section>
         )}
 
@@ -592,7 +608,7 @@ async function run() {
   const rows = (await withDb((sql) => sql`
     SELECT slug, county_name, state_name, state_abbrev, population, radon_zone,
            census_total_units, census_year_built_json, fema_risk_rating, fema_risk_score,
-           fema_hazards_json, noaa_event_counts_json, noaa_years_covered, fetched_at
+           fema_hazards_json, noaa_event_counts_json, noaa_years_covered, narrative_markdown, fetched_at
     FROM county_data WHERE data_complete = true
   `)) as unknown as CountyRow[];
 
