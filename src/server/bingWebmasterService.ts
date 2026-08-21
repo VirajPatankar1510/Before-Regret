@@ -14,6 +14,21 @@
 //
 // Set BING_WEBMASTER_API_KEY (bing.com/webmasters -> Settings -> API access) for the verified
 // beforeregret.com property.
+//
+// ON THE "APIs RETIRED 31 AUGUST 2026" BANNER -- checked, and it does NOT apply to these calls.
+// Microsoft's own protocol documentation (learn.microsoft.com/bingwebmaster/api-protocols) lists
+// three separate protocols over the same api.svc host:
+//     SOAP                                    <- retiring
+//     POX/HTTP   .../api.svc/pox/METHOD       <- retiring
+//     JSON/HTTP  .../api.svc/json/METHOD      <- what this file uses, NOT named in the retirement
+// The retirement notice names SOAP and POX only, and JSON/HTTP is the migration target ("migrate
+// to our REST APIs"). Verified 2026-08-21 against the protocols page and the retirement notice.
+//
+// Worth re-checking around 2026-08-31 anyway. "Should be unaffected" is a reading of a notice, not
+// an observation of what happens after the date, and the failure mode is silent: every function
+// here would start throwing on a 404 that looks exactly like a transient outage. If these calls do
+// break on that date, the fix is the endpoint prefix, not the request shapes -- the JSON responses
+// are already what the REST API returns.
 
 const BASE = 'https://ssl.bing.com/webmaster/api.svc/json';
 
