@@ -526,8 +526,9 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
       {/* Error Reporting Modal */}
       {isErrorModalOpen && (
         <ErrorReportingModal
-          reportId={report.id}
-          address={report.headerInfo?.address || ''}
+          sourceType="report"
+          sourceRef={report.id}
+          sourceLabel={report.headerInfo?.address || 'this report'}
           onClose={() => setIsErrorModalOpen(false)}
         />
       )}
