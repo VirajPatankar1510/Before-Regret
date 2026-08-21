@@ -358,3 +358,53 @@ export async function fetchSearchAppearance(days: number = 90): Promise<SearchAp
     impressions: r.impressions,
   }));
 }
+
+/**
+ * The search queries a SINGLE page actually ranks for.
+ *
+ * Distinct from fetchTopSearchQueries, which is site-wide and cannot tell you which page earned a
+ * given query. That gap matters: a page can accumulate impressions from queries its title does not
+ * address at all, which looks like healthy ranking in the page report and like a CTR problem in
+ * the summary, when the real story is a mismatch between what people asked and what the result
+ * promised. Answering that requires the query list for one specific URL, which is this.
+ *
+ * The page filter uses `equals`, so the URL must match exactly, trailing slash included.
+ */
+export async function fetchQueriesForPage(pageUrl: string, days: number = 28): Promise<SearchConsoleQueryRow[]> {
+  const siteUrl = process.env.GSC_SITE_URL!;
+  const accessToken = await getAccessToken();
+
+  const endDate = new Date();
+  const startDate = new Date(endDate.getTime() - days * 24 * 60 * 60 * 1000);
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+  const res = await fetch(
+    `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        startDate: iso(startDate),
+        endDate: iso(endDate),
+        dimensions: ['query'],
+        rowLimit: 500,
+        dimensionFilterGroups: [{ filters: [{ dimension: 'page', operator: 'equals', expression: pageUrl }] }],
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(`Search Console page-query request failed (${res.status}): ${await res.text()}`);
+  }
+
+  const json = (await res.json()) as {
+    rows?: Array<{ keys: string[]; clicks: number; impressions: number; ctr: number; position: number }>;
+  };
+  return (json.rows || []).map((r) => ({
+    query: r.keys[0],
+    clicks: r.clicks,
+    impressions: r.impressions,
+    ctr: r.ctr,
+    position: r.position,
+  }));
+}
