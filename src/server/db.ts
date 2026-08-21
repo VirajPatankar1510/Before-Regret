@@ -278,6 +278,16 @@ export async function ensureArticlesSchema(): Promise<void> {
   // buckets rather than a precomputed age split: every displayed number should be re-derivable in
   // code from the actual Census counts, not trusted from an intermediate that could itself be wrong.
   await sql`ALTER TABLE county_data ADD COLUMN IF NOT EXISTS census_insurance_json TEXT NOT NULL DEFAULT '{}'`;
+  // Per-county prose, written from that county's own hazard/era profile -- see
+  // countyNarrativeGenerator.ts for the measurement that prompted it (two unrelated county pages
+  // measured 79% identical, and Search Console reports every county page as "Discovered -
+  // currently not indexed" while the hubs above them are indexed fine). Empty means the page still
+  // renders exactly as it did before, so this rolls out county by county rather than all at once.
+  await sql`ALTER TABLE county_data ADD COLUMN IF NOT EXISTS narrative_markdown TEXT NOT NULL DEFAULT ''`;
+  // The reviewer-facing one-liner naming the angle taken. Kept alongside the prose specifically so
+  // two counties that came back with the same story are spottable without reading both in full.
+  await sql`ALTER TABLE county_data ADD COLUMN IF NOT EXISTS narrative_angle TEXT NOT NULL DEFAULT ''`;
+  await sql`ALTER TABLE county_data ADD COLUMN IF NOT EXISTS narrative_generated_at TIMESTAMPTZ`;
 
   // Gemini token/cost tracking (see src/server/geminiUsageTracker.ts). Persisted here rather than
   // kept in memory for the same reason property reports shouldn't be in-memory either: a

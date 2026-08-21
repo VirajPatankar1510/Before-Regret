@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { renderArticleMarkdown } from '../../utils/renderArticleMarkdown';
 import { applyHeadSeo } from '../../utils/headSeo';
 import { ChevronRight, Loader2, MapPin, Home, Flame, CloudRain, ExternalLink, BarChart3 } from 'lucide-react';
 import { ArticleClosingNote } from './ArticleClosingNote';
@@ -25,6 +26,8 @@ interface CountyData {
   femaHazards: Record<string, { rating: string; score: number | null }>;
   noaaEventCounts: Record<string, number>;
   noaaYearsCovered: string | null;
+  /** County-specific prose. Empty for counties not yet covered by the narrative pilot. */
+  narrativeMarkdown?: string;
   fetchedAt: string;
   /** Optional -- absent for any cached __PRELOADED_COUNTY__ blob written before this field existed. */
   rankings?: CountyRankings;
@@ -300,6 +303,20 @@ export const CountyPageView: React.FC<CountyPageViewProps> = ({ countySlug, onNa
             <p className="text-[11px] text-slate-400 leading-relaxed">
               #1 is the highest of the group for that measure -- not necessarily a warning, and not a claim about any specific property in the county.
             </p>
+          </section>
+        )}
+
+        {/* Static twin: the matching block in scripts/prerender-counties.tsx, in this same
+            position. Both must render it -- the prerendered HTML is what a crawler sees, and this
+            is what a human sees once React boots, so a narrative in only one of them means the
+            page visibly changes on hydration and real visitors never read the part written for
+            them. Renders nothing where a county has no narrative, which is what keeps the other
+            95 counties untouched while the pilot runs. */}
+        {county.narrativeMarkdown?.trim() && (
+          <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
+            <div className="prose-county space-y-3">
+              {renderArticleMarkdown(county.narrativeMarkdown)}
+            </div>
           </section>
         )}
 
