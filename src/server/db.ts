@@ -651,6 +651,22 @@ export async function ensureArticlesSchema(): Promise<void> {
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_content_reports_status ON content_reports(status, created_at DESC)`;
 
+  // Which URLs have already been sent to Bing's SubmitUrlBatch, so a later run continues from
+  // where the last one stopped instead of resending the same first N.
+  //
+  // Needed because the submit script had no memory: it took the first N URLs of a deterministic
+  // list every time, so a second run with --limit 50 would have re-sent 50 URLs already submitted
+  // the day before and never reached the ~163 still waiting. An offset flag would have worked
+  // until the next article shifted the ordering (guides sort by published_at, counties by
+  // population), which is exactly the kind of silent drift that wastes a capped monthly quota
+  // without anyone noticing.
+  await sql`
+    CREATE TABLE IF NOT EXISTS bing_url_submissions (
+      url TEXT PRIMARY KEY,
+      submitted_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+
   // Passive record of which AI crawlers actually fetch this site -- see aiCrawlerLog.ts for the
   // user-agent matching this is fed from. The question "does an AI answer engine cite us" has no
   // real answer until the prerequisite question is answered first: "does its crawler even come

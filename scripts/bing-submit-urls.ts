@@ -52,7 +52,17 @@ async function main() {
 
   const quota = await fetchBingSubmissionQuota(SITE);
   const all = await collectUrls();
-  const batch = all.slice(0, Math.min(LIMIT, quota.dailyQuota));
+
+  // Skip anything already sent. Without this the script took the first N of a deterministic list
+  // every run, so a second run resent URLs from the first and never reached the remainder --
+  // quietly spending a capped monthly quota on duplicates.
+  const sentRows = await retry(() => withDb((sql) => sql`SELECT url FROM bing_url_submissions`));
+  const alreadySent = new Set((sentRows as any[]).map((r) => r.url));
+  const pending = all.filter((u) => !alreadySent.has(u));
+  const batch = pending.slice(0, Math.min(LIMIT, quota.dailyQuota));
+
+  console.log(`already submitted   : ${alreadySent.size}`);
+  console.log(`still pending       : ${pending.length}`);
 
   console.log(`published URLs      : ${all.length}`);
   console.log(`quota               : ${quota.dailyQuota}/day, ${quota.monthlyQuota}/month`);
@@ -82,7 +92,12 @@ async function main() {
   try { json = JSON.parse(text); } catch {}
   if (json?.ErrorCode) throw new Error(`SubmitUrlBatch error ${json.ErrorCode}: ${json.Message}`);
 
-  console.log(`\nsubmitted ${batch.length} URL(s).`);
+  // Recorded only after the API accepted the batch, so a failed call leaves them pending.
+  for (const u of batch) {
+    await retry(() => withDb((sql) => sql`
+      INSERT INTO bing_url_submissions (url) VALUES (${u}) ON CONFLICT (url) DO NOTHING`));
+  }
+  console.log(`\nsubmitted ${batch.length} URL(s), recorded in bing_url_submissions.`);
   const after = await fetchBingSubmissionQuota(SITE);
   console.log(`quota now: ${after.dailyQuota}/day, ${after.monthlyQuota}/month remaining`);
   console.log('\nThis asks Bing to crawl these URLs. It is not a promise to index them, and it has');
