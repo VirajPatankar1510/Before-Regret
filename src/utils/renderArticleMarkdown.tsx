@@ -34,8 +34,18 @@ import { resolveKnownSource } from '../data/knownSources';
 // box in GuidePageView.tsx is a single paragraph, not multi-block markdown, so it uses this
 // directly rather than the full block-level renderArticleMarkdown below.
 export function parseInline(text: string): React.ReactNode[] {
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*|\[[^\]]+\]\([^)\s]+\)|\[[A-Z]+\])/g);
+  // The image form is captured by the same split so that an image which somehow reaches inline
+  // context -- mid-paragraph, inside a table cell, anywhere the block handler in
+  // renderArticleMarkdown never sees it -- is recognised and dropped rather than falling through
+  // to the link branch below, which would render it as a hyperlink with a stray "!" in front. The
+  // block handler is where images are supposed to be caught; this is the guard for everywhere else.
+  const parts = text.split(/(!\[[^\]]*\]\([^)\s]+\)|\*\*[^*]+\*\*|\*[^*\s][^*]*\*|\[[^\]]+\]\([^)\s]+\)|\[[A-Z]+\])/g);
   return parts.map((part, i) => {
+    if (part.startsWith('![')) {
+      // Deliberately renders nothing. An inline image in this content set is a mistake in the
+      // markdown, and showing a broken link where a diagram was meant is worse than a gap.
+      return <React.Fragment key={i} />;
+    }
     if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
       return <strong key={i}>{part.slice(2, -2)}</strong>;
     }
@@ -116,6 +126,56 @@ export function renderArticleMarkdown(markdown: string): React.ReactNode[] {
     // text into visible body copy instead of rendering as a heading. Matching any 2-6 hash prefix
     // closes the whole class of "unsupported heading depth" bugs instead of only this one
     // instance -- a fifth level would have hit the exact same failure.
+    // Block-level image: ![alt](/images/foo.webp "Optional caption")
+    //
+    // Handled HERE, before anything reaches parseInline, and that ordering is the whole point.
+    // parseInline's link pattern is /\[[^\]]+\]\([^)\s]+\)/ -- it has no idea about the leading
+    // "!", so an image left to it matched the [alt](url) portion, rendered a blue hyperlink, and
+    // left a literal "!" sitting in the body text. That was the actual behaviour before this
+    // existed: markdown images did not "not work", they worked wrongly, which is worse.
+    //
+    // An image is a block, never inline: it gets a <figure>, an optional <figcaption> from the
+    // markdown title, and a caption is the natural place to put attribution for a diagram someone
+    // else may reuse.
+    //
+    // alt is REQUIRED, and an image without it is dropped rather than rendered with alt="". These
+    // are explanatory diagrams -- a cross-section showing EIFS against traditional stucco is
+    // content, not decoration, so an empty alt would hide the actual point of the figure from a
+    // screen reader. (Decorative images elsewhere on the site correctly DO use alt="" -- that is
+    // the distinction Bing's "missing alt attribute" notice failed to make.)
+    //
+    // loading="lazy" because every one of these sits well below the fold in article body copy, so
+    // none is ever the LCP element. No width/height attributes: markdown carries no dimensions, so
+    // there is some layout shift as each loads. Bounded and below the fold, and the alternative
+    // (a dimension syntax markdown does not have) is worse than the problem.
+    const imageMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)$/);
+    if (imageMatch) {
+      flushParagraph();
+      const [, alt, src, caption] = imageMatch;
+      if (alt.trim()) {
+        blocks.push(
+          <figure key={blocks.length} className="my-6">
+            <img
+              src={src}
+              alt={alt}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-auto rounded-2xl border border-slate-200 bg-slate-50"
+            />
+            {caption && (
+              <figcaption className="mt-2 text-xs text-slate-500 leading-relaxed text-center">
+                {parseInline(caption)}
+              </figcaption>
+            )}
+          </figure>
+        );
+      } else {
+        console.warn(`[renderArticleMarkdown] Dropped an image with no alt text: ${src}`);
+      }
+      i++;
+      continue;
+    }
+
     const headingMatch = trimmed.match(/^(#{2,6})\s+(.+)$/);
     if (headingMatch) {
       flushParagraph();
