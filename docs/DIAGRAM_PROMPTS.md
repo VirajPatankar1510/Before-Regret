@@ -1,160 +1,226 @@
 # Diagram generation prompts
 
-Three diagrams, chosen because they score on both axes that matter: the page gets real attention,
-**and** the reader is trying to identify a physical object rather than understand a process. See the
-selection working in the session that produced this — 25 of 159 guides have attention from any
-source, and only these three subjects are things you recognise by sight.
+Three diagrams for the three guides that earn one — chosen because the page has real attention
+**and** the reader is trying to identify a physical object rather than follow a process.
+
+**Rewritten after the first EIFS generation.** Two things changed, both learned from what actually
+came back rather than guessed in advance.
 
 ---
 
-## Read this before generating anything
+## What the first result taught us
 
-**AI image generators garble text.** Every one of these diagrams depends on labels, and labels are
-exactly what the models get wrong — `PB2110` will come back as `PB21I0`, `P8Z110`, or worse, and a
-stamp that reads wrong is worse than no stamp at all, because the whole point is that a reader
-compares it against what they can see on the pipe.
+**The style spec was wrong.** The original prompts asked for "flat vector, no gradients, no
+shadows, no photorealism." What came back was a shaded isometric cutaway with real material
+texture — visible foam beads, stranded OSB, fibrous building paper — and it was **better**. Those
+textures communicate *material* in a way outlines cannot, which is the entire job of these
+diagrams. The style block below now asks for what worked.
 
-So the prompts below are written to **generate the illustration with label positions left empty**,
-and you add the text afterwards in Figma, Canva, Illustrator, or any vector tool. That is a
-ten-minute job per diagram and it is the difference between a figure people embed and a figure that
-embarrasses you when someone zooms in.
+**Side-by-side comparison is the format.** The EIFS image works because two assemblies sit next to
+each other and the difference is visible before any label is read. All three prompts now use that
+structure: the thing the reader fears, beside the thing they should see instead. It also keeps the
+set visually consistent.
 
-If you do let the generator produce text, check every character against the real product marking
-before publishing. Do not assume it got it right because it looks plausible.
+---
 
-**Diagrams, not photographs.** A photo of a real Federal Pacific panel or a real length of
-polybutylene means either licensing someone's photo or taking your own. A drawn cross-section is
-cleaner legally, clearer for showing layers, and is what other sites will actually embed.
+## Read this before generating
 
-**House style, applied to all three** so they read as a set:
+**Image models garble text.** Every one of these turns on a label, and labels are what models get
+wrong — `PB2110` comes back as `PB21I0` or `P8Z110`. A stamp that reads wrong is worse than no
+stamp, because the whole point is a reader comparing it against what is printed on their own pipe.
 
-> Clean technical illustration, flat vector style, no gradients, no drop shadows, no photorealism.
-> Restrained palette: slate greys (#0F172A, #475569, #94A3B8), off-white background (#F1F5F9), a
-> single blue accent (#2563EB) used only for the element being pointed at. Thin consistent line
-> weights. Generous white space. Neutral, instructional, textbook-diagram feel — not marketing
-> illustration, no people, no branding, no icons.
+So every prompt below says **no text anywhere** and leaves empty margins and blank bands for labels
+you add afterwards in Figma, Canva or Illustrator. Ten minutes per diagram, and it is the difference
+between a figure people embed and one that embarrasses you when someone zooms in.
 
-**Output spec:** 1600×1000px, landscape, WebP, under 150KB after export.
+**Diagrams, not photographs.** A photo of a real panel or a real length of PB means licensing
+someone's image or taking your own. A drawn cutaway is cleaner legally, clearer for showing layers,
+and is what other sites embed.
+
+**Leave room at the top.** The first EIFS render put the assemblies high in the frame and the space
+for headings was tighter than ideal. Each prompt now asks for a generous empty band across the top.
+
+### House style — paste this with every prompt
+
+> Precise technical illustration in a shaded isometric cutaway style. Soft even lighting, gentle
+> form shading to show depth and material, no harsh drop shadows, no glossy highlights, not
+> photorealistic. Materials should read by texture: foam as fine beads, OSB as visible wood strands,
+> paper as fibrous, ceramic as smooth matte porcelain, metal as brushed grey.
+>
+> Restrained palette: slate greys (#0F172A, #475569, #94A3B8), natural muted wood tones, off-white
+> background (#F1F5F9). A single blue accent (#2563EB) used ONLY on the one element the diagram
+> exists to point at — nowhere else.
+>
+> Absolutely no text, letters, numbers, labels, arrows, callouts, logos, watermarks, people or
+> branding anywhere in the image. Generous white space. Instructional textbook feel.
+>
+> 1600x1000px, landscape.
 
 ---
 
 ## 1. EIFS vs traditional stucco — wall cross-section
 
 **Serves:** `spot-eifs-siding-vs-traditional-stucco-before-buying` and
-`standard-home-inspection-check-eifs-stucco-moisture` (122 impressions — the #2 page on the site).
+`standard-home-inspection-check-eifs-stucco-moisture` — the site's **#2 page, 122 impressions**.
 
-**Why this one first:** the two systems are near-indistinguishable from three feet away and behave
-completely differently in water. That is not a distinction prose can carry. It is a layer diagram or
-it is nothing.
+**Status: already generated and good.** This v2 prompt exists only if you want to regenerate to fix
+one thing — the first render made the foam blue, and real EIFS foam is almost always **white EPS**.
+Blue foam is XPS, a different product, and a reader could go looking for the wrong colour. The fix
+moves the blue accent onto the drainage gap instead, which is the actual functional difference
+between the two walls.
+
+Not worth regenerating on its own. Handle it in the label if you'd rather: *"Foam insulation board
+— usually white EPS."*
 
 ### Prompt
 
-> A clean technical cross-section diagram comparing two exterior wall assemblies, shown side by side
-> as two vertical slices separated by a thin vertical divider line. Flat vector style, no gradients,
-> no shadows, no photorealism, no text or labels anywhere.
+> [HOUSE STYLE BLOCK]
 >
-> LEFT assembly, from outside in: a thin outer finish coat, then a thin base coat with a fine mesh
-> layer embedded in it, then a THICK block of lightweight foam board, then a house wrap layer, then
-> wood sheathing, then a wall stud cavity. The foam layer should be visually dominant and obviously
-> soft and thick.
+> A technical cross-section comparing two exterior wall assemblies, shown as two vertical slices
+> side by side, separated by a thin vertical divider line. Each slice is cut away so all layers are
+> visible in sequence.
 >
-> RIGHT assembly, from outside in: a thick dense cement layer with a visible wire mesh grid embedded
-> in it, then two layers of building paper, then wood sheathing, then a wall stud cavity. The cement
-> layer should read as hard, dense and mineral, clearly different in texture from the foam on the
-> left.
+> LEFT assembly, ordered from the outside face inward: a thin smooth acrylic finish coat; a thin
+> base coat with a fine fibreglass mesh visibly embedded in it; a THICK block of white expanded
+> polystyrene foam board with a fine bead texture — this layer must be visually dominant and
+> obviously soft and lightweight; a narrow vertical drainage gap; a water-resistive barrier sheet;
+> oriented strand board sheathing with visible wood strands; and a stud cavity with framing.
 >
-> Leave a clear empty margin down the outer edge of each assembly for labels to be added later, and
-> empty space above each assembly for a heading. Use the single blue accent only on the foam layer
-> in the left assembly and the wire mesh in the right assembly. Everything else in greys.
-> Off-white background. 1600x1000, landscape.
+> RIGHT assembly, ordered from the outside face inward: a THICK dense cement plaster layer with a
+> galvanised wire lath grid embedded within it, roughly mid-depth, not on the surface — this layer
+> must read as hard, heavy and mineral, clearly a different material from the foam opposite; two
+> distinct layers of fibrous building paper; oriented strand board sheathing; and a stud cavity with
+> framing.
+>
+> The single blue accent goes ONLY on the narrow drainage gap in the left assembly. Everything else
+> in greys, wood tones and white.
+>
+> Leave a generous empty band across the top of the image for headings, and a clear empty margin
+> down the far outer edge of each assembly for layer labels. No text anywhere.
 
 ### Labels to add afterwards
 
-- Left heading: **EIFS (synthetic stucco)** · Right heading: **Traditional hard-coat stucco**
-- Left layers, outside in: Finish coat · Base coat with mesh · **Foam insulation board** · Water-resistive barrier · Sheathing · Stud cavity
-- Right layers, outside in: **Cement stucco with wire lath** · Two layers building paper · Sheathing · Stud cavity
-- Caption: *EIFS puts a thick foam layer behind a thin synthetic skin; traditional stucco is dense cement over wire lath. The difference is invisible from the street and decisive when water gets in.*
+| | |
+|---|---|
+| Left heading | **EIFS (synthetic stucco)** |
+| Right heading | **Traditional hard-coat stucco** |
+
+- Left, outside in: Acrylic finish coat · Base coat with fibreglass mesh · **Foam board — usually white EPS** · Drainage gap · Water-resistive barrier · OSB sheathing · Stud cavity
+- Right, outside in: **Cement plaster with wire lath** · Two layers building paper · OSB sheathing · Stud cavity
+- Caption: *EIFS puts thick foam board behind a thin synthetic skin. Traditional stucco is dense cement over wire lath. From the street they look identical; when water gets behind them they behave nothing alike.*
 
 ---
 
-## 2. Polybutylene pipe — identification
+## 2. Polybutylene vs PEX — pipe identification
 
 **Serves:** `spot-polybutylene-pipes-before-buying-house`, `should-replace-polybutylene-pipes-wait-leak`,
 and `get-home-insurance-polybutylene-plumbing` — your **#1 page on Bing**.
 
-**Why:** this is a pure identification question. Grey or blue, plastic, stamped, usually visible at
-the water heater or the main shutoff. One image answers it permanently.
+**Why a comparison rather than PB alone:** the modern failure mode is not "I've never seen plastic
+pipe," it's "I can't tell if this plastic pipe is the bad one." PEX is everywhere in houses built
+since the 2000s and looks superficially similar. Showing them together answers the question the
+reader actually has, and matches the format of the other two.
 
 ### Prompt
 
-> A clean technical illustration showing a short horizontal length of smooth plastic water supply
-> pipe, drawn in flat vector style with no gradients, no shadows and no photorealism. The pipe is a
-> soft dull grey-blue, matte, with a slightly flexible look — clearly plastic, not metal and not
-> rigid white PVC.
+> [HOUSE STYLE BLOCK]
 >
-> Show the pipe connected at one end to a metal crimp ring fitting over a barbed insert, drawn in a
-> contrasting grey so the joint is clearly readable as a separate component.
+> A technical illustration comparing two plastic water supply pipes, shown as two horizontal pipe
+> sections stacked one above the other with clear space between them, each cut away at the right
+> end to show the wall thickness and hollow bore.
 >
-> Along the top surface of the pipe, leave a clean empty horizontal band where a stamped marking
-> will be added later — do not draw any text, letters or numbers anywhere in the image.
+> TOP pipe: a dull matte grey-blue plastic, slightly chalky and non-reflective, with a subtly
+> irregular surface suggesting age. It has a gentle permanent curve rather than lying perfectly
+> straight. At its left end it connects to a fitting made of a metal crimp ring clamped over a
+> ribbed barbed insert, the insert visible entering the pipe bore in the cutaway. Along the top
+> surface of the pipe, leave a clean empty horizontal band, slightly recessed as if stamped, running
+> a third of the pipe's length — draw absolutely no characters in it.
 >
-> Below the pipe, show three small simplified vignettes in a row, each a plain outline drawing with
-> no text: a water heater with pipes entering the top, a main shutoff valve on a pipe stub coming
-> through a wall, and an open sink base cabinet with pipe stubs at the back wall.
+> BOTTOM pipe: a bright clean plastic with a faint sheen, noticeably more vivid and more uniform
+> than the pipe above, lying straighter. At its left end it connects to a different fitting: a
+> smooth expansion sleeve or a solid brass insert fitting, clearly a different joint design from the
+> crimp ring above. Its surface is smooth and unmarked.
 >
-> Use the single blue accent only on the empty stamp band on the pipe. Everything else in greys.
-> Off-white background. Generous white space. 1600x1000, landscape.
+> Below both pipes, a row of three small simplified line-drawing vignettes with generous space
+> between them, each showing a location in a house and nothing else: a water heater with supply
+> pipes entering the top; a main water shutoff valve on a pipe stub emerging from a basement wall;
+> and an open sink base cabinet with two pipe stubs at the back wall.
+>
+> The single blue accent goes ONLY on the empty stamp band on the top pipe. Everything else in
+> greys and muted tones.
+>
+> Leave a generous empty band across the top of the image for headings, and clear space to the right
+> of each pipe for labels. No text anywhere.
 
 ### Labels to add afterwards
 
-- On the stamp band: **`PB2110`** — check this character-for-character against a real photo before publishing
-- Pipe callout: **Dull grey, blue, or occasionally black — flexible, matte, never rigid white**
-- Fitting callout: **Metal crimp ring over a barbed insert**
-- Vignette labels: *At the water heater* · *At the main shutoff* · *Under sinks*
-- Caption: *Polybutylene was installed in millions of US homes between roughly 1978 and 1996. The `PB2110` stamp is the definitive marking; the three places above are where it is usually visible without opening a wall.*
+| | |
+|---|---|
+| Top heading | **Polybutylene — installed c. 1978–1996** |
+| Bottom heading | **PEX — what modern homes use** |
+
+- Top pipe: **Dull, matte, grey or blue** · **Metal crimp ring over a barbed insert** · stamp band → **`PB2110`**
+- Bottom pipe: *Brighter, glossier, often red / blue / white* · *Expansion or brass fitting*
+- Vignettes: *At the water heater* · *At the main shutoff* · *Under sinks*
+- Caption: *Polybutylene was installed in millions of US homes between roughly 1978 and 1996. The `PB2110` stamp is the definitive marking. The three locations above are where it is usually visible without opening a wall.*
+
+> **Check `PB2110` character by character** against a real photograph before you publish. This is the
+> single most quoted detail in the whole set and the one most likely to be wrong.
 
 ---
 
-## 3. Knob-and-tube wiring — what it looks like in a joist bay
+## 3. Knob-and-tube vs modern cable — inside a joist bay
 
 **Serves:** `knob-tube-wiring-have-be-replaced-before-closing` (17 impressions),
 `i-buy-house-knob-tube-wiring`, `get-homeowners-insurance-knob-tube-wiring`.
 
-**Why:** unmistakable once you have seen it, invisible if you have not. Most buyers look into an
-attic or basement, see it, and do not know what they are looking at.
+**Why a comparison:** a buyer in an attic needs to know both what knob-and-tube looks like *and*
+what normal looks like. Showing the modern cable beside it makes the absent ground wire and the
+separated conductors obvious without reading a word.
 
 ### Prompt
 
-> A clean technical illustration of an early-1900s electrical wiring method, viewed looking up into
-> an open attic joist bay. Flat vector style, no gradients, no shadows, no photorealism, no text or
-> labels anywhere.
+> [HOUSE STYLE BLOCK]
 >
-> Show two parallel wood joists running horizontally across the frame. Two separate single
-> insulated conductors run across the bay, spaced widely apart from each other and never touching.
-> Where each conductor crosses a joist it passes through a small cylindrical ceramic tube set into a
-> drilled hole in the wood. Where a conductor runs along the side of a joist it is held away from the
-> wood by a small ceramic knob — a spool-shaped porcelain insulator with the wire wrapped in its
-> groove.
+> A technical illustration looking up into an open attic joist bay, showing two wiring methods in
+> the same space for comparison, separated by a thin vertical divider line. Two parallel wooden
+> joists run horizontally across the frame with visible grain.
 >
-> Draw the ceramic components in off-white porcelain, clearly a different material from the wood.
-> The conductors should have a slightly fibrous cloth-wrapped texture rather than smooth modern
-> plastic.
+> LEFT half: an early-1900s wiring method. Two entirely separate single conductors run across the
+> bay, spaced widely apart from each other and never touching. Each conductor is wrapped in a
+> fibrous cloth-like insulation with a slightly frayed woven texture, not smooth plastic. Where a
+> conductor crosses a joist it passes through a small smooth cylindrical porcelain tube set into a
+> drilled hole. Where a conductor runs along the face of a joist it is held clear of the wood by a
+> spool-shaped porcelain knob, the wire seated in the knob's groove and secured with a small nail
+> through its centre. The porcelain components are off-white, smooth and matte, clearly a different
+> material from the wood.
 >
-> Leave clear empty space around the knobs and the tubes for callout labels to be added later. Use
-> the single blue accent only on the air gap between the two conductors. Everything else in greys
-> and natural wood tones. Off-white background. 1600x1000, landscape.
+> RIGHT half: the modern equivalent in the same joist bay. A single flat sheathed cable, smooth and
+> uniform in matte plastic, stapled neatly to the side of a joist and passing through a drilled hole
+> in the other. Cut away a short section of its outer sheath to reveal three conductors bundled
+> together inside — two insulated and one bare — clearly grouped within one jacket, in obvious
+> contrast to the two separated bare-run conductors on the left.
+>
+> The single blue accent goes ONLY on the wide air gap between the two conductors on the left half.
+> Everything else in greys, off-white porcelain and natural wood.
+>
+> Leave a generous empty band across the top for headings, and clear space around the porcelain
+> knobs and tubes for callout labels. No text anywhere.
 
 ### Labels to add afterwards
 
-- **Ceramic knob** — holds the conductor away from the framing
-- **Ceramic tube** — protects the conductor where it passes through a joist
-- **Two separate conductors, widely spaced** — no shared cable, no ground wire
-- **Cloth insulation, not plastic**
-- Caption: *Knob-and-tube runs its two conductors separately with air as part of the insulation. It has no ground wire, which is what most insurers actually object to.*
+| | |
+|---|---|
+| Left heading | **Knob-and-tube — pre-1950s** |
+| Right heading | **Modern sheathed cable** |
+
+- Left: **Ceramic knob** — holds the conductor clear of framing · **Ceramic tube** — protects it through a joist · **Two conductors, widely separated** · *Cloth insulation, not plastic* · **No ground wire**
+- Right: *One jacket* · *Hot, neutral and **ground** together*
+- Caption: *Knob-and-tube runs its two conductors separately, using air as part of the insulation, and has no ground wire. The missing ground is what most insurers actually object to.*
 
 ---
 
-## After the images exist
+## Once the images exist
 
 Add to the article body as a block on its own line:
 
@@ -162,8 +228,11 @@ Add to the article body as a block on its own line:
 ![EIFS and traditional stucco wall assemblies compared in cross-section](/images/eifs-vs-stucco-cross-section.webp "Figure 1. EIFS places foam board behind a thin synthetic skin; traditional stucco is dense cement over wire lath.")
 ```
 
-The alt text is not optional — the renderer drops any image without it, on purpose. Write alt that
-describes **what the diagram shows**, not what it is called: "EIFS and traditional stucco wall
-assemblies compared in cross-section", never "EIFS diagram".
+**Alt text is required** — the renderer drops any image without it, deliberately. Describe what the
+diagram *shows*, not what it is called: "EIFS and traditional stucco wall assemblies compared in
+cross-section", never "EIFS diagram".
 
-Naming: `public/images/<subject>-<what-it-shows>.webp`, all lowercase, hyphenated.
+Filenames: `public/images/<subject>-<what-it-shows>.webp`, lowercase, hyphenated.
+
+Send the finished files over and they get converted to WebP, sized, placed, wired into every guide
+that uses them, and verified in both the prerendered HTML and the live component.
