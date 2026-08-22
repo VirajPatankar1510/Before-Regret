@@ -11,6 +11,7 @@ import { buildPageTitle } from '../src/utils/pageTitle';
 import { pickCountiesForGuide, CountyTopicInput, GUIDE_TOPICS, permitGuideCountySlug } from '../src/utils/countyGuideTopics.js';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
+import { resolveArticleSchemaImage } from '../src/utils/articleImage.js';
 import type { PrerenderedRouteKey } from '../src/routeChunks.js';
 
 // Static HTML generator for published guide articles, run once after `vite build` as part of
@@ -146,7 +147,8 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
       '@type': article.articleType === 'news' ? 'NewsArticle' : 'Article',
       headline: article.title,
       description: article.metaDescription,
-      image: 'https://www.beforeregret.com/hero-bg.jpg',
+      // The article's own first diagram where it has one -- see src/utils/articleImage.ts.
+      image: resolveArticleSchemaImage(article.bodyMarkdown),
       datePublished: article.publishedAt,
       dateModified: article.updatedAt || article.publishedAt,
       author: { '@type': 'Organization', name: 'BeforeRegret' },
