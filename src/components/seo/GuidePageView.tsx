@@ -9,6 +9,7 @@ import { ContentLink } from '../home/ContentLink';
 import { pickRelatedGuides, GuideSummary } from '../../utils/relatedGuides';
 import { buildPageTitle } from '../../utils/pageTitle';
 import { ErrorReportingModal } from '../ErrorReportingModal';
+import { resolveArticleSchemaImage } from '../../utils/articleImage';
 import { Flag } from 'lucide-react';
 
 interface GuidePageViewProps {
@@ -161,7 +162,8 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           '@type': article.articleType === 'news' ? 'NewsArticle' : 'Article',
           'headline': article.title,
           'description': article.metaDescription,
-          'image': 'https://www.beforeregret.com/hero-bg.jpg',
+          // Static twin: scripts/prerender-guides.tsx resolves the same way.
+          'image': resolveArticleSchemaImage(article.bodyMarkdown),
           'datePublished': article.publishedAt,
           'dateModified': article.updatedAt || article.publishedAt,
           'author': {
