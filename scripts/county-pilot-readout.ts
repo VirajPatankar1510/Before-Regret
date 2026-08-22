@@ -38,9 +38,30 @@ const MIN_DAYS_FOR_VERDICT = 14;
 /** Rewritten 2026-08-21 with county-specific narratives. */
 const PILOT = ['cook-county-il', 'maricopa-county-az', 'miami-dade-county-fl', 'king-county-wa', 'harris-county-tx'];
 
-/** Untouched. Chosen to sit in the same population/traffic band as the pilot set so the only
- *  deliberate difference between the groups is the narrative. */
+/** Untouched, and NOT submitted via Request Indexing. */
 const CONTROL = ['dallas-county-tx', 'clark-county-nv', 'orange-county-ca'];
+
+/**
+ * The confound, and the accidental control that rescues this experiment.
+ *
+ * On 2026-08-21 the five pilot counties were submitted through Search Console's Request Indexing.
+ * The three controls deliberately were not -- advice I gave, and it was wrong. It meant the two
+ * groups differed in TWO ways (rewritten, and manually submitted), so "pilot indexed, controls not"
+ * cannot distinguish which one did it. A clean design would have submitted both groups and left
+ * only the content different.
+ *
+ * The national permits hub happens to separate them. It was submitted at the same time and never
+ * rewritten -- still the same 634 words of thin prose. So:
+ *
+ *   pilot    rewritten  + submitted
+ *   hub      unchanged  + submitted   <- isolates submission from content
+ *   control  unchanged  + not submitted
+ *
+ * If the hub is indexed, submission alone is sufficient and the rewrite is unproven. That is why
+ * the verdict below checks the hub FIRST: it is the only group that can falsify the depth theory,
+ * and reading pilot-vs-control without it produces a confident wrong answer.
+ */
+const HUB_UNCHANGED_BUT_SUBMITTED = 'https://www.beforeregret.com/guides/check-building-permit-history-by-address-any-us-county/';
 
 const INDEXED = /indexed/i;
 const NOT_INDEXED = /discovered|crawled - currently not indexed|not indexed/i;
@@ -74,8 +95,14 @@ async function main() {
   console.log('  pilot rewritten 2026-08-21: similarity 83.8% -> 53.2%, ~700 -> ~1200 words');
   console.log('  controls untouched: still ~85% similar at ~700 words');
 
-  const pilot = await inspect(PILOT, 'PILOT (rewritten)');
-  const control = await inspect(CONTROL, 'CONTROL (untouched)');
+  const pilot = await inspect(PILOT, 'PILOT (rewritten + submitted)');
+  const control = await inspect(CONTROL, 'CONTROL (untouched, not submitted)');
+
+  const hubResult = await fetchUrlInspection(HUB_UNCHANGED_BUT_SUBMITTED);
+  const hubState = hubResult.error ? `ERROR: ${hubResult.error}` : (hubResult.coverageState || 'unknown');
+  const hubIndexed = !hubResult.error && isIndexed(hubState);
+  console.log('\n--- HUB (NOT rewritten, but submitted) ---');
+  console.log(`  ${hubIndexed ? 'IDX' : '   '}  national permits hub     ${hubState}`);
 
   console.log(`\n  pilot   : ${pilot.indexed}/${pilot.total} indexed`);
   console.log(`  control : ${control.indexed}/${control.total} indexed`);
@@ -101,27 +128,44 @@ async function main() {
     return;
   }
 
+  // The hub decides this, and it is checked before anything else. It was submitted for indexing
+  // on the same day as the pilot but its content was never touched, so if it is indexed then
+  // submission alone is sufficient and the rewrite has not been shown to do anything. Reading
+  // pilot-vs-control without this check produced a confident "DEPTH IS THE LEVER" on 2026-08-22
+  // while the hub sat indexed and unchanged three lines above it.
+  if (hubIndexed) {
+    console.log('  CONFOUNDED -- and the answer is probably submission, not depth.');
+    console.log('');
+    console.log('  The national permits hub is indexed. It was submitted through Request Indexing');
+    console.log('  at the same time as the pilot, but its content was never rewritten -- still the');
+    console.log('  same thin 634 words. Manual submission alone therefore explains indexing here,');
+    console.log('  and the county rewrites have NOT been shown to contribute anything.');
+    console.log('');
+    console.log('  -> Do NOT roll the narrative out to the remaining 95 counties on this evidence.');
+    console.log('  -> DO treat Request Indexing as a real, cheap lever: these URLs were crawled');
+    console.log('     within hours of submission, against a background crawl rate of ~3 pages/day.');
+    console.log('');
+    console.log('  To actually test depth, submit the three controls too and wait. Once every group');
+    console.log('  has been submitted, content is the only remaining difference.');
+    return;
+  }
+
   if (pilotMoved && !controlMoved) {
-    console.log('  DEPTH IS THE LEVER. Rewritten pages got indexed and untouched ones did not.');
+    console.log('  DEPTH IS THE LEVER. Rewritten pages got indexed, untouched ones did not, and');
+    console.log('  the unchanged-but-submitted hub did NOT get indexed -- so submission alone does');
+    console.log('  not explain it.');
     console.log('  -> Roll the narrative out to the remaining 95 counties.');
-    console.log('  -> The same reasoning now justifies expanding the national permits hub');
-    console.log('     (634 words of prose, "Discovered - currently not indexed", and its advice');
-    console.log('     for 75 of 100 counties is currently "search Google").');
   } else if (!pilotMoved && !controlMoved) {
     console.log('  DEPTH IS NOT THE LEVER at this size. Nothing moved either way.');
     console.log('  -> Do NOT roll out to 95 counties, and do NOT expand the hub on this theory.');
     console.log('  -> The constraint is site-level authority, which page length does not touch.');
-    console.log('     Effort belongs on brand signal and external citation instead');
-    console.log('     (see scripts/brand-signal-report.ts).');
     console.log('  This outcome saves the most work. It is a result, not a failure.');
   } else if (pilotMoved && controlMoved) {
     console.log('  INCONCLUSIVE. Both groups moved, so something other than the rewrite did it');
-    console.log('  (site age, a crawl pass, a Google-side change). The pilot proved nothing --');
-    console.log('  do not credit the narrative for this.');
+    console.log('  (site age, a crawl pass, a Google-side change). Do not credit the narrative.');
   } else {
-    console.log('  ODD: controls indexed while rewritten pages did not. Nothing about the rewrite');
-    console.log('  should cause that. Check for a crawl error or noindex on the pilot pages before');
-    console.log('  drawing any conclusion.');
+    console.log('  ODD: controls indexed while rewritten pages did not. Check the pilot pages for a');
+    console.log('  crawl error or an accidental noindex before drawing any conclusion.');
   }
 }
 
