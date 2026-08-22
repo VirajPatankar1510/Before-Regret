@@ -47,6 +47,7 @@ export interface AuditReport {
   deadLink: AuditFinding[];
   adversarialFraming: AuditFinding[];
   overbroadLegalClaim: AuditFinding[];
+  malformedImage: AuditFinding[];
 }
 
 interface ArticleRow {
@@ -203,7 +204,7 @@ export async function runContentAudit(ids?: number[], linkOptions?: LinkCheckOpt
 
   const report: AuditReport = {
     scanned: 0, truncated: [], nonCodeFence: [], malformedTable: [], brokenLink: [], unresolvedCitation: [], thin: [],
-    deadLink: [], adversarialFraming: [], overbroadLegalClaim: [],
+    deadLink: [], adversarialFraming: [], overbroadLegalClaim: [], malformedImage: [],
   };
 
   for (const r of rows) {
@@ -245,9 +246,46 @@ export async function runContentAudit(ids?: number[], linkOptions?: LinkCheckOpt
     }
 
     // The renderer's link regex requires no whitespace inside the URL.
-    const linkMatches = trimmed.match(/\[[^\]]+\]\([^)]*\)/g) || [];
+    //
+    // The (?<!!) is load-bearing. An image is ![alt](src "Caption") and its tail -- [alt](src
+    // "Caption") -- matches the link pattern exactly, so without the lookbehind every image gets
+    // reported as a malformed link: the strict test below rejects it because of the whitespace
+    // before the title. That is precisely what happened when block images shipped, and it flagged
+    // all seven figures at once. Images carry a title where links may not, so they cannot share
+    // this check and are validated separately below.
+    const linkMatches = trimmed.match(/(?<!!)\[[^\]]+\]\([^)]*\)/g) || [];
     for (const link of linkMatches) {
       if (!/^\[[^\]]+\]\([^)\s]+\)$/.test(link)) report.brokenLink.push({ ...ref, detail: `Malformed link: "${link.slice(0, 90)}"` });
+    }
+
+    // Images, validated LINE BY LINE against exactly what renderArticleMarkdown accepts.
+    //
+    // Scanning line-wise rather than with a global match is the point. The obvious finder,
+    // /!\[[^\]]*\]\([^)]*\)/g, stops at the first ")" -- and a caption legitimately contains
+    // parentheses ("EIFS (left) places a thick foam board..."), so it extracts a truncated
+    // fragment and then reports every correctly-formed figure as unparseable. That is what
+    // happened: seven live, correctly-rendering images flagged at once. The renderer never had
+    // the bug, because its quoted-title group is [^"]* and happily contains parens.
+    //
+    // Anchoring to the whole line mirrors the renderer's own block-level rule, so this check and
+    // the thing it checks cannot disagree about what a valid image is.
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (!line.includes('![')) continue;
+
+      if (!line.startsWith('![')) {
+        // parseInline deliberately renders nothing for an inline image, so this is a figure the
+        // author will never see on the page.
+        report.malformedImage.push({ ...ref, detail: `Image is inline rather than on its own line, so it renders as nothing: "${line.slice(0, 80)}"` });
+        continue;
+      }
+
+      const wellFormed = line.match(/^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)$/);
+      if (!wellFormed) {
+        report.malformedImage.push({ ...ref, detail: `Image the renderer cannot parse: "${line.slice(0, 90)}"` });
+      } else if (!wellFormed[1].trim()) {
+        report.malformedImage.push({ ...ref, detail: `Image has no alt text and will be dropped: ${wellFormed[2]}` });
+      }
     }
 
     // A citation bracket that doesn't resolve against knownSources.ts renders as plain text.
