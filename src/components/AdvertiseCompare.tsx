@@ -38,7 +38,7 @@ interface AdvertiseCompareProps {
 export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'Do I need to be licensed or verified to advertise?',
-    a: "No independent credential check happens before your placement goes live. For every trade category except chimney sweeping you must supply a licence, registration, or certification number at checkout, and it is printed in your ad exactly as you enter it -- but we do not verify it with any licensing board. Every placement carries a line telling readers that its details are advertiser-supplied and unverified -- including placements in the licence-exempt chimney category, which show no number at all. Business name, trade category, and contact details are likewise self-reported and confirmed accurate with a checkbox there.",
+    a: "No -- we don't check your credentials before your placement goes live. Every trade category except chimney sweeping requires a licence, registration, or certification number at checkout; it prints on your ad exactly as you type it, but we don't verify it with any licensing board. Every placement tells readers its details are advertiser-supplied and unverified, and that includes chimney listings, which carry that same notice with no number since that category doesn't require one. Your business name, trade category, and contact details work the same way: you enter them, confirm they're accurate with a checkbox at checkout, and that's the only check that happens.",
   },
   {
     q: 'How many people will see my ad?',
