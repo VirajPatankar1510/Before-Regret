@@ -49,7 +49,6 @@ export function StaticFooterLinks({ guides }: StaticFooterLinksProps) {
               </li>
             ))}
             <li><a href="/guides/" className="hover:text-white font-bold text-blue-300 block py-1.5">View all guides →</a></li>
-            <li><a href="/counties/" className="hover:text-white font-bold text-blue-300 block py-1.5">View all counties →</a></li>
           </ul>
         </div>
         <div className="space-y-2">

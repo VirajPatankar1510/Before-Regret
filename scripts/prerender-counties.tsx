@@ -705,8 +705,17 @@ async function run() {
 
   console.log(`[prerender-counties] Wrote static HTML for ${written} verified county page(s) to dist/county/<slug>/index.html`);
 
-  // The hub page (dist/counties/index.html) -- see CountiesIndexView.tsx for the client-rendered
-  // twin, and its own comment for why this page needed to exist at all.
+  // The hub page (dist/counties/index.html) is retired as of 2026-08-23 -- see the /counties entry
+  // in src/data/legacyUrls.ts, which now answers this URL with 410 regardless of whether a static
+  // file exists here. Skipping generation entirely when there's nothing live to list rather than
+  // writing an empty directory page that would only need its own removal reasoning duplicated.
+  // If page_enabled counties exist again in the future, this naturally starts writing the hub
+  // again -- remove the /counties entry in legacyUrls.ts at the same time to re-enable the route.
+  if (rows.length === 0) {
+    console.log('[prerender-counties] No page_enabled counties -- skipping the counties hub (see src/data/legacyUrls.ts).');
+    return;
+  }
+
   const indexCanonicalUrl = 'https://www.beforeregret.com/counties/';
   const indexTitle = 'County Property Research | BeforeRegret';
   const indexDescription = `Real EPA radon, Census housing-age, FEMA hazard, and NOAA storm data for ${titleCasedRows.length} US counties -- every figure sourced, nothing estimated.`;

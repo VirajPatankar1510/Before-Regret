@@ -59,10 +59,11 @@ async function countRecentNewsArticles(): Promise<number> {
 export async function generateSitemapIndexXml(): Promise<string> {
   const today = new Date().toISOString().split('T')[0];
 
+  // sitemap-counties.xml removed 2026-08-23: every county page was retired (see the /counties
+  // entry in src/data/legacyUrls.ts), so that child sitemap would only ever list 0 URLs now.
   const sitemaps = [
     { loc: `${BASE_URL}/sitemaps/sitemap-pages.xml`, lastmod: today },
     { loc: `${BASE_URL}/sitemaps/sitemap-guides.xml`, lastmod: today },
-    { loc: `${BASE_URL}/sitemaps/sitemap-counties.xml`, lastmod: today },
   ];
 
   if ((await countRecentNewsArticles()) > 0) {
@@ -136,7 +137,8 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
     entries = [
       { loc: `${BASE_URL}/`, lastmod: today, changefreq: 'daily', priority: '1.0' },
       { loc: `${BASE_URL}/guides/`, lastmod: today, changefreq: 'weekly', priority: '0.8' },
-      { loc: `${BASE_URL}/counties/`, lastmod: today, changefreq: 'weekly', priority: '0.8' },
+      // /counties/ removed 2026-08-23: every county page was retired (see the /counties entry in
+      // src/data/legacyUrls.ts), so the hub itself now 410s and has no place in a sitemap.
       // Only indexable pages belong here. /support/, /terms/, /privacy/ and /refunds/ used to be
       // listed and are all 'noindex' (see scripts/prerender-legal-pages.tsx) -- submitting a URL
       // for indexing while the page itself tells Google not to index it is a contradiction, which
@@ -291,7 +293,6 @@ export function generateRobotsTxt(): string {
 User-agent: *
 Allow: /
 Allow: /guides/
-Allow: /counties/
 Allow: /about
 Allow: /accessibility
 Allow: /support

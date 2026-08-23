@@ -16,7 +16,6 @@ interface NavbarProps {
 // tries to be a sitemap stops being a menu.
 const MOBILE_NAV_LINKS: { href: string; label: string }[] = [
   { href: '/guides/', label: 'Guides' },
-  { href: '/counties/', label: 'Counties' },
   { href: '/advertise/', label: 'Advertise' },
   { href: '/about/', label: 'About & Methodology' },
 ];

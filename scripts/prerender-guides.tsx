@@ -491,9 +491,15 @@ async function run() {
   // direction (county -> guides) is cheap both ways since __PRELOADED_COUNTY__ already carries
   // everything CountyPageView.tsx needs. Crawler-facing link equity is the actual goal here, so
   // static-only still delivers it.
+  // page_enabled = true, not just data_complete: a county can have real, verified data and still
+  // have no live page (see src/data/legacyUrls.ts's /counties entry, 2026-08-23 -- every county
+  // page was retired). Filtering here is what keeps this section and the permit-county card below
+  // from linking to a URL that 410s; both already render conditionally on an empty/undefined
+  // result (see permitCounty && ... and relevantCounties.length > 0 && ... in GuideStaticBody), so
+  // this query alone is enough to make both sections disappear cleanly.
   const countyRows = (await withDb((sql) => sql`
     SELECT slug, county_name, state_abbrev, radon_zone, census_total_units, census_year_built_json
-    FROM county_data WHERE data_complete = true
+    FROM county_data WHERE data_complete = true AND page_enabled = true
   `)) as unknown as Array<{
     slug: string; county_name: string; state_abbrev: string; radon_zone: number | null;
     census_total_units: number | null; census_year_built_json: string;

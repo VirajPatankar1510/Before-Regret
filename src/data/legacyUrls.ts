@@ -17,6 +17,14 @@
 // plausible would be worse than 410: Google treats an irrelevant redirect as a soft 404 anyway,
 // and a reader who clicked "will I regret" does not want a county page.
 
+// /counties/ (2026-08-23): the county-page hub, added here after every underlying county page was
+// disabled (see county_data.page_enabled). All 100 county pages were near-identical templated
+// copy that never earned meaningful Search Console impressions after months live -- a pre-
+// registered pilot testing whether hand-written narratives would fix that was cut short before
+// its scheduled Sept 4 readout, in favor of removing the page type outright. A hub with nothing
+// live to link to is itself dead weight, same reasoning as the legal-page duplicates below: 410
+// tells Google to drop it now rather than wait for a re-crawl to notice an empty index page.
+
 /** Exact paths (no trailing slash -- the handler normalises before comparing). */
 export const LEGACY_GONE_PATHS: readonly string[] = [
   '/become-expert', '/become-resident', '/court', '/explore', '/will-i-regret',
@@ -24,6 +32,7 @@ export const LEGACY_GONE_PATHS: readonly string[] = [
   '/privacy-policy', '/terms-and-conditions', '/legal-disclaimer', '/refund-policy',
   '/guides/breadwinner-resentment-income-disparity',
   '/guides/red-flag-evaluation-boundary-matrix',
+  '/counties',
 ];
 
 /**

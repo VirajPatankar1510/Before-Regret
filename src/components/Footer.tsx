@@ -144,9 +144,6 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                   <li>
                     <ContentLink href="/guides/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">View all guides →</ContentLink>
                   </li>
-                  <li>
-                    <ContentLink href="/counties/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">View all counties →</ContentLink>
-                  </li>
                 </ul>
               </div>
             )}
