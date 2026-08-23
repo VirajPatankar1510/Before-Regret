@@ -118,7 +118,7 @@ export function registerPublicApiV1Routes(app: Express) {
     try {
       const rows = await withDb((sql) => sql`
         SELECT slug, county_name, state_name, state_abbrev, population
-        FROM county_data WHERE data_complete = true ORDER BY county_name ASC
+        FROM county_data WHERE data_complete = true AND page_enabled = true ORDER BY county_name ASC
       `);
       const counties = (rows as unknown as Array<Pick<CountyRow, 'slug' | 'county_name' | 'state_name' | 'state_abbrev' | 'population'>>).map((r) => ({
         slug: r.slug,

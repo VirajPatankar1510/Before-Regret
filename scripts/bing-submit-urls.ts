@@ -42,7 +42,7 @@ async function collectUrls(): Promise<string[]> {
   const urls: string[] = [`${SITE}/`, `${SITE}/guides/`, `${SITE}/counties/`, `${SITE}/about/`];
   const guides = await retry(() => withDb((sql) => sql`SELECT slug FROM articles WHERE status='published' ORDER BY published_at DESC`));
   for (const r of guides as any[]) urls.push(`${SITE}/guides/${r.slug}/`);
-  const counties = await retry(() => withDb((sql) => sql`SELECT slug FROM county_data WHERE data_complete=true ORDER BY population DESC NULLS LAST`));
+  const counties = await retry(() => withDb((sql) => sql`SELECT slug FROM county_data WHERE data_complete=true AND page_enabled=true ORDER BY population DESC NULLS LAST`));
   for (const r of counties as any[]) urls.push(`${SITE}/county/${r.slug}/`);
   return urls;
 }

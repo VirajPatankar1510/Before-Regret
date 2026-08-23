@@ -58,7 +58,7 @@ export function registerCountyRoutes(app: Express) {
     try {
       const [rows, rankingRows] = await Promise.all([
         withDb((sql) => sql`
-          SELECT * FROM county_data WHERE slug = ${req.params.slug} AND data_complete = true LIMIT 1
+          SELECT * FROM county_data WHERE slug = ${req.params.slug} AND data_complete = true AND page_enabled = true LIMIT 1
         `),
         // All 31 (and growing) covered counties' minimal fields -- how this one ranks against the
         // rest is only computable with every county's numbers in hand, not just this one's own

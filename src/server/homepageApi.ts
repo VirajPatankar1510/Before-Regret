@@ -37,7 +37,7 @@ export async function loadHomepageData() {
   // county whose data isn't fully verified has no page, so it must not be linked from here either.
   const countyRows = (await withDb((sql) => sql`
     SELECT slug, county_name, state_abbrev, population, census_total_units
-    FROM county_data WHERE data_complete = true ORDER BY population DESC NULLS LAST
+    FROM county_data WHERE data_complete = true AND page_enabled = true ORDER BY population DESC NULLS LAST
   `)) as unknown as CountyRow[];
 
   return {

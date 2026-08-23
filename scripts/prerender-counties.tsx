@@ -605,11 +605,23 @@ async function run() {
   // has already been overwritten with real homepage content.
   const template = fs.readFileSync(actualTemplatePath, 'utf8');
 
-  const rows = (await withDb((sql) => sql`
+  // page_enabled splits "counties we have real data for" from "counties with a live page" (see the
+  // 2026-08-23 cleanup that removed 91 near-duplicate county pages Google never indexed). Rankings
+  // below are deliberately computed from ALL data_complete counties regardless of page_enabled --
+  // the underlying FEMA/NOAA/Census numbers are still real for a disabled county even though it no
+  // longer has its own page, and a comparison should stay honest ("ranks in the top 5 of 100"),
+  // not shrink to the size of whatever subset currently has a page.
+  const allRows = (await withDb((sql) => sql`
     SELECT slug, county_name, state_name, state_abbrev, population, radon_zone,
            census_total_units, census_year_built_json, fema_risk_rating, fema_risk_score,
            fema_hazards_json, noaa_event_counts_json, noaa_years_covered, narrative_markdown, fetched_at
     FROM county_data WHERE data_complete = true
+  `)) as unknown as CountyRow[];
+  const rows = (await withDb((sql) => sql`
+    SELECT slug, county_name, state_name, state_abbrev, population, radon_zone,
+           census_total_units, census_year_built_json, fema_risk_rating, fema_risk_score,
+           fema_hazards_json, noaa_event_counts_json, noaa_years_covered, narrative_markdown, fetched_at
+    FROM county_data WHERE data_complete = true AND page_enabled = true
   `)) as unknown as CountyRow[];
 
   // This script never queried the articles table before -- it had no way to know a guide existed
@@ -638,7 +650,7 @@ async function run() {
   // Every covered county's minimal fields, computed once outside the loop -- ranking one county
   // needs every county's numbers in hand, and re-deriving this per iteration would be the same
   // fixed cost 31+ times over for no benefit. See src/utils/countyRankings.ts.
-  const rankingInputs: CountyMetricInput[] = rows.map((r) => ({
+  const rankingInputs: CountyMetricInput[] = allRows.map((r) => ({
     slug: r.slug,
     censusTotalUnits: r.census_total_units,
     censusYearBuiltBuckets: JSON.parse(r.census_year_built_json || '{}'),

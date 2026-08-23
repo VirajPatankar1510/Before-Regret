@@ -178,7 +178,7 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
   } else if (cleanName === 'sitemap-counties' && isDbConfigured()) {
     try {
       const rows = await withDb((sql) => sql`
-        SELECT slug, county_name, state_abbrev, fetched_at FROM county_data WHERE data_complete = true ORDER BY fetched_at DESC
+        SELECT slug, county_name, state_abbrev, fetched_at FROM county_data WHERE data_complete = true AND page_enabled = true ORDER BY fetched_at DESC
       `);
       (rows as unknown as Array<{ slug: string; county_name: string; state_abbrev: string; fetched_at: string | Date | null }>).forEach((c) => {
         entries.push({

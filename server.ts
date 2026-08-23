@@ -1432,9 +1432,18 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
       if (!isDbConfigured()) return sendShellWithStatus(res, 200);
       try {
         const rows = await withDb((sql) => sql`
-          SELECT 1 FROM county_data WHERE slug = ${req.params.slug} AND data_complete = true LIMIT 1
-        `);
-        sendShellWithStatus(res, rows.length > 0 ? 200 : 404);
+          SELECT page_enabled FROM county_data WHERE slug = ${req.params.slug} AND data_complete = true LIMIT 1
+        `) as unknown as Array<{ page_enabled: boolean }>;
+        const row = rows[0];
+        // No row at all: a genuinely unknown slug, 404. A row that exists but page_enabled=false:
+        // real content that was deliberately removed (see the 2026-08-23 templated-county cleanup
+        // -- 91 near-duplicate county pages earning ~0 impressions after months of never being
+        // indexed). 410 is the correct signal for that case, not 404: it tells Google to drop the
+        // URL outright rather than keep re-checking a "maybe temporarily missing" page, which
+        // matters on a site crawled only a few pages a day. Same reasoning as isLegacyGonePath
+        // above.
+        if (!row) return sendShellWithStatus(res, 404);
+        sendShellWithStatus(res, row.page_enabled ? 200 : 410);
       } catch (err) {
         console.error('[counties] slug-existence check failed, serving 200:', err);
         sendShellWithStatus(res, 200);
