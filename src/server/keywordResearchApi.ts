@@ -3,8 +3,6 @@ import { requireAdmin } from './adminAuth.js';
 import { isSearchConsoleConfigured, fetchTopSearchQueries } from './searchConsoleService.js';
 import { isBingKeywordResearchConfigured, fetchRelatedKeywords } from './bingKeywordService.js';
 import { fetchAutocompleteKeywords } from './googleAutocompleteService.js';
-import { isSerperConfigured, fetchSerperResults } from './serperService.js';
-import { classifyDomain, scoreResults, bandFor } from './serpDifficulty.js';
 
 // Admin-only keyword research for the article editor's "Topic" field.
 //
@@ -105,51 +103,5 @@ export function registerKeywordResearchRoutes(app: Express) {
       rows: [...merged.values()],
       sources: { searchConsole, autocomplete, bing },
     });
-  });
-
-  // Difficulty for ONE query, scored from who actually ranks. See serpDifficulty.ts for what the
-  // number means and, more importantly, what it does not.
-  //
-  // Deliberately a separate on-demand endpoint rather than a field on every keyword-research row.
-  // Each check costs one Serper credit, and the route above routinely returns 100+ autocomplete
-  // rows -- scoring them all would spend a hundred credits on a lookup the editor did not ask for,
-  // every time they research a topic. One explicit click, one credit.
-  app.get('/api/admin/serp-difficulty', requireAdmin, async (req: Request, res: Response) => {
-    const query = typeof req.query.q === 'string' ? req.query.q.trim() : '';
-    if (!query) {
-      res.status(400).json({ success: false, error: 'Pass ?q=<query>.' });
-      return;
-    }
-    if (!isSerperConfigured()) {
-      res.json({ success: false, configured: false, error: 'SERPER_API_KEY is not set. Free tier at serper.dev gives 2500 queries with no card.' });
-      return;
-    }
-    try {
-      const results = await fetchSerperResults(query, { num: 10 });
-      const scored = results.map((r) => ({
-        position: r.position,
-        domain: r.domain,
-        verdict: classifyDomain(r.domain),
-      }));
-      // An empty result set is an absence of evidence, not a mid-range score. Returning 50 here
-      // would rank it alongside genuinely-measured neutral SERPs, which is exactly the wrong
-      // conclusion to invite.
-      if (scored.length === 0) {
-        res.json({ success: true, configured: true, query, score: null, band: null, results: [] });
-        return;
-      }
-      const score = scoreResults(scored);
-      res.json({
-        success: true,
-        configured: true,
-        query,
-        score,
-        band: bandFor(score),
-        results: scored.map((s) => ({ position: s.position, domain: s.domain, label: s.verdict.label, kind: s.verdict.kind })),
-      });
-    } catch (err: any) {
-      console.error('[serp-difficulty] lookup failed:', err);
-      res.json({ success: false, configured: true, error: err?.message || 'SERP lookup failed.' });
-    }
   });
 }

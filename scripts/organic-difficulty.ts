@@ -43,9 +43,54 @@ import {
 } from '../src/server/serpResearch.js';
 import { isDataForSeoConfigured, fetchSerpResults } from '../src/server/dataForSeoService.js';
 import { isSerperConfigured, fetchSerperResults } from '../src/server/serperService.js';
-// Classification and scoring live in src/server/serpDifficulty.ts so this script and the admin
-// panel's /api/admin/serp-difficulty route cannot disagree about what a domain is worth.
-import { classifyDomain as classify, scoreResults as scoreOf, bandFor as band, type Verdict } from '../src/server/serpDifficulty.js';
+
+/** Domains whose presence means the query is genuinely contested. Points are subtracted. */
+const STRONG: Array<{ match: RegExp; label: string; weight: number }> = [
+  { match: /\bwikipedia\.org$/i, label: 'Wikipedia', weight: 30 },
+  { match: /\.gov$|\.gov\./i, label: 'government', weight: 30 },
+  { match: /\.edu$|\.edu\./i, label: 'university', weight: 20 },
+  { match: /\b(nachi|internachi)\.org$/i, label: 'InterNACHI (industry body)', weight: 15 },
+  { match: /\bhomeinspector\.org$/i, label: 'ASHI (industry body)', weight: 15 },
+  { match: /\b(nfpa|epa|cpsc|fema|noaa|hud|cdc|usgs)\.(org|gov)$/i, label: 'standards/agency', weight: 25 },
+  { match: /\b(zillow|realtor|redfin|trulia|homes)\.com$/i, label: 'major portal', weight: 25 },
+  { match: /\b(forbes|nytimes|wsj|washingtonpost|cnn|bbc)\.com$/i, label: 'major publisher', weight: 25 },
+  { match: /\b(nerdwallet|bankrate|investopedia|thisoldhouse|bobvila|familyhandyman)\.com$/i, label: 'major vertical publisher', weight: 20 },
+  { match: /\b(consumerreports|angi|homeadvisor|thumbtack)\.com$/i, label: 'large commercial aggregator', weight: 12 },
+  // Mortgage and banking brands dominate loan-adjacent inspection queries (FHA/VA checklists in
+  // particular). Added after a first run scored rocketmortgage.com and chase.com as "unrecognised",
+  // which made a lender-dominated SERP read as neutral when it is anything but.
+  { match: /\b(rocketmortgage|quickenloans|lendingtree|freedommortgage|guildmortgage|pennymac|loandepot)\.com$/i, label: 'major mortgage lender', weight: 22 },
+  { match: /\b(chase|bankofamerica|wellsfargo|citi|usbank|pnc|truist)\.com$/i, label: 'major bank', weight: 22 },
+  { match: /\b(fha|hud|va|benefits)\.(com|gov)$/i, label: 'loan-program authority', weight: 20 },
+  { match: /\b(valoannetwork|veteransunited|navyfederal)\.(com|org)$/i, label: 'VA-loan specialist', weight: 15 },
+];
+
+/** Domains whose presence means Google is filling page one with whatever it can find. Points added. */
+const WEAK: Array<{ match: RegExp; label: string; weight: number }> = [
+  { match: /\breddit\.com$/i, label: 'Reddit (UGC)', weight: 25 },
+  { match: /\b(quora|answers\.yahoo)\.com$/i, label: 'Q&A site (UGC)', weight: 25 },
+  { match: /forums?\./i, label: 'forum thread', weight: 25 },
+  { match: /\bstackexchange\.com$|\bstackoverflow\.com$/i, label: 'Stack Exchange (UGC)', weight: 15 },
+  { match: /\b(pinterest|facebook|youtube)\.com$/i, label: 'social/video', weight: 10 },
+];
+
+type Verdict = { label: string; weight: number; kind: 'strong' | 'weak' | 'neutral' };
+
+/** Small local business sites -- electricians, inspectors, HVAC -- are the commonest weak page-one
+ *  filler in this niche. Detected by shape (llc/electric/plumbing/inspection in the host) rather
+ *  than by name, since the long tail of them cannot be enumerated. */
+function looksLikeSmallTradeSite(host: string): boolean {
+  return /(electric|plumb|hvac|inspect|heating|cooling|roofing|contractor|remodel|restoration)/i.test(host)
+    && !/\b(nachi|internachi|homeinspector|ashi)\b/i.test(host);
+}
+
+function classify(domain: string): Verdict {
+  const host = domain.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+  for (const s of STRONG) if (s.match.test(host)) return { label: s.label, weight: -s.weight, kind: 'strong' };
+  for (const w of WEAK) if (w.match.test(host)) return { label: w.label, weight: w.weight, kind: 'weak' };
+  if (looksLikeSmallTradeSite(host)) return { label: 'small trade/lead-gen site', weight: 18, kind: 'weak' };
+  return { label: 'unrecognised (neutral)', weight: 0, kind: 'neutral' };
+}
 
 interface Scored {
   query: string;
@@ -54,6 +99,43 @@ interface Scored {
   /** Which data source produced this row -- the two are not comparable and the report says so. */
   source: 'serp' | 'grounding';
   error?: string;
+}
+
+/**
+ * Position weighting, used only when real SERP ranks are available.
+ *
+ * Without ranks every retrieved domain counts the same, which was this tool's single worst defect:
+ * a forum thread at #9 and a forum thread at #1 say very different things about whether a query is
+ * winnable, and averaging them flat erases that difference. Weighted so the top of page one
+ * dominates -- #1 counts ~3x a #10 -- because that is where the click share and the actual barrier
+ * to entry live.
+ */
+function positionWeight(position: number): number {
+  if (position <= 0) return 1;
+  return 1 + 2 / Math.sqrt(position);
+}
+
+/** 0 = looks contested, 100 = looks wide open. Centred at 50 so a fully neutral set reads as
+ *  "no signal either way" rather than as an easy win. */
+function scoreOf(entries: Array<{ verdict: Verdict; position?: number }>): number {
+  if (entries.length === 0) return 50;
+  let weighted = 0;
+  let totalWeight = 0;
+  for (const e of entries) {
+    const w = e.position !== undefined ? positionWeight(e.position) : 1;
+    weighted += e.verdict.weight * w;
+    totalWeight += w;
+  }
+  const avg = weighted / totalWeight;
+  return Math.max(0, Math.min(100, Math.round(50 + avg * 1.6)));
+}
+
+function band(score: number): string {
+  if (score >= 70) return 'LOOKS OPEN';
+  if (score >= 55) return 'mixed, leaning open';
+  if (score >= 45) return 'mixed';
+  if (score >= 30) return 'mixed, leaning contested';
+  return 'LOOKS CONTESTED';
 }
 
 async function main() {
