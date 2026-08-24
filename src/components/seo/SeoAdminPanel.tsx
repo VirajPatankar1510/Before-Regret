@@ -2298,8 +2298,13 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                   >
                     <span className="text-xs text-slate-300 truncate">{row.query}</span>
                     <span className="text-[10px] font-mono text-slate-500 shrink-0">
+                      {/* Abbreviated deliberately. This label sits beside a truncating query and
+                          every character it takes is one the query loses -- at full width the rows
+                          read "are all fed...", "are federal...", which are indistinguishable from
+                          each other and so useless for picking one. The query is the content here;
+                          the source tag is metadata. */}
                       {row.source === 'autocomplete'
-                        ? `google suggest${row.isQuestion ? ' · question' : ''}`
+                        ? `GSuggest${row.isQuestion ? ' · Qst' : ''}`
                         : `${row.impressions} impr${row.position != null ? ` · pos ${row.position.toFixed(1)}` : ''}`}
                     </span>
                   </button>
