@@ -37,6 +37,7 @@ import {
   buildSerpResearchPrompt,
   extractGroundingFacts,
 } from '../src/server/serpResearch.js';
+import { isDataForSeoConfigured, fetchSerpResults } from '../src/server/dataForSeoService.js';
 
 /** Domains whose presence means the query is genuinely contested. Points are subtracted. */
 const STRONG: Array<{ match: RegExp; label: string; weight: number }> = [
@@ -89,15 +90,38 @@ function classify(domain: string): Verdict {
 interface Scored {
   query: string;
   score: number;
-  domains: Array<{ domain: string; verdict: Verdict }>;
+  domains: Array<{ domain: string; verdict: Verdict; position?: number }>;
+  /** Which data source produced this row -- the two are not comparable and the report says so. */
+  source: 'serp' | 'grounding';
   error?: string;
+}
+
+/**
+ * Position weighting, used only when real SERP ranks are available.
+ *
+ * Without ranks every retrieved domain counts the same, which was this tool's single worst defect:
+ * a forum thread at #9 and a forum thread at #1 say very different things about whether a query is
+ * winnable, and averaging them flat erases that difference. Weighted so the top of page one
+ * dominates -- #1 counts ~3x a #10 -- because that is where the click share and the actual barrier
+ * to entry live.
+ */
+function positionWeight(position: number): number {
+  if (position <= 0) return 1;
+  return 1 + 2 / Math.sqrt(position);
 }
 
 /** 0 = looks contested, 100 = looks wide open. Centred at 50 so a fully neutral set reads as
  *  "no signal either way" rather than as an easy win. */
-function scoreOf(verdicts: Verdict[]): number {
-  if (verdicts.length === 0) return 50;
-  const avg = verdicts.reduce((s, v) => s + v.weight, 0) / verdicts.length;
+function scoreOf(entries: Array<{ verdict: Verdict; position?: number }>): number {
+  if (entries.length === 0) return 50;
+  let weighted = 0;
+  let totalWeight = 0;
+  for (const e of entries) {
+    const w = e.position !== undefined ? positionWeight(e.position) : 1;
+    weighted += e.verdict.weight * w;
+    totalWeight += w;
+  }
+  const avg = weighted / totalWeight;
   return Math.max(0, Math.min(100, Math.round(50 + avg * 1.6)));
 }
 
@@ -141,6 +165,36 @@ async function main() {
   };
 
   const results: Scored[] = [];
+
+  // Real SERP data when DataForSEO credentials exist, grounded search otherwise. This is a genuine
+  // upgrade rather than a preference: DataForSEO returns ranked positions, has no per-minute quota,
+  // and always returns a result set -- which fixes all three defects the grounding path has (no
+  // positions, a 5 req/min free-tier wall, and ~40% of queries returning no domains at all).
+  if (isDataForSeoConfigured()) {
+    console.log('Using DataForSEO SERP data (real positions).\n');
+    for (let i = 0; i < queries.length; i++) {
+      const query = queries[i];
+      process.stdout.write(`[${i + 1}/${queries.length}] ${query} ... `);
+      try {
+        const serp = await fetchSerpResults(query, { depth: 10 });
+        const domains = serp.map((r) => ({ domain: r.domain, verdict: classify(r.domain), position: r.position }));
+        if (domains.length === 0) {
+          results.push({ query, score: -2, domains: [], source: 'serp', error: 'SERP returned no organic results' });
+          console.log('no organic results -- NO DATA');
+        } else {
+          results.push({ query, score: scoreOf(domains), domains, source: 'serp' });
+          console.log(`${domains.length} results, score ${scoreOf(domains)}`);
+        }
+      } catch (e: any) {
+        results.push({ query, score: -1, domains: [], source: 'serp', error: e?.message || String(e) });
+        console.log(`FAILED (${String(e?.message || e).slice(0, 90)})`);
+      }
+    }
+    report(results);
+    return;
+  }
+
+  console.log('DataForSEO not configured -- falling back to grounded search (no positions, quota-limited).\n');
   for (let i = 0; i < queries.length; i++) {
     const query = queries[i];
     process.stdout.write(`[${i + 1}/${queries.length}] ${query} ... `);
@@ -158,11 +212,11 @@ async function main() {
         // scoring it 50 would rank it alongside genuinely-measured mixed SERPs. Marked -2 and
         // reported separately so it can never be mistaken for a measurement.
         if (domains.length === 0) {
-          results.push({ query, score: -2, domains: [], error: 'grounding returned no domains' });
+          results.push({ query, score: -2, domains: [], source: 'grounding', error: 'grounding returned no domains' });
           console.log('no domains retrieved -- NO DATA');
         } else {
-          const score = scoreOf(domains.map((d) => d.verdict));
-          results.push({ query, score, domains });
+          const score = scoreOf(domains);
+          results.push({ query, score, domains, source: 'grounding' });
           console.log(`${domains.length} domains, score ${score}`);
         }
         done = true;
@@ -174,7 +228,7 @@ async function main() {
           process.stdout.write(`[${i + 1}/${queries.length}] ${query} (retry ${attempt}) ... `);
           continue;
         }
-        results.push({ query, score: -1, domains: [], error: e?.message || String(e) });
+        results.push({ query, score: -1, domains: [], source: 'grounding', error: e?.message || String(e) });
         console.log(`FAILED (${String(e?.message || e).slice(0, 90)})`);
         done = true;
       }
@@ -182,17 +236,23 @@ async function main() {
     if (i < queries.length - 1) await sleep(MIN_SPACING_MS);
   }
 
+  report(results);
+}
+
+function report(results: Scored[]) {
+  const usedSerp = results.some((r) => r.source === 'serp');
   console.log(`\n${'='.repeat(74)}\nRANKED BY APPARENT OPENNESS (higher = weaker result set = better opening)\n${'='.repeat(74)}`);
   for (const r of results.filter((x) => x.score >= 0).sort((a, b) => b.score - a.score)) {
     console.log(`\n  ${String(r.score).padStart(3)}  ${band(r.score).padEnd(26)} "${r.query}"`);
-    for (const { domain, verdict } of r.domains) {
+    for (const { domain, verdict, position } of r.domains) {
       const sign = verdict.kind === 'weak' ? '+' : verdict.kind === 'strong' ? '-' : ' ';
-      console.log(`         ${sign} ${domain}  [${verdict.label}]`);
+      const pos = position !== undefined ? `#${String(position).padEnd(2)} ` : '';
+      console.log(`         ${sign} ${pos}${domain}  [${verdict.label}]`);
     }
   }
   const noData = results.filter((x) => x.score === -2);
   if (noData.length) {
-    console.log(`\n--- ${noData.length} NO DATA (grounding retrieved nothing -- not a score of 50) ---`);
+    console.log(`\n--- ${noData.length} NO DATA (nothing retrieved -- not a score of 50) ---`);
     for (const f of noData) console.log(`  ${f.query}`);
   }
   const failed = results.filter((x) => x.score === -1);
@@ -201,9 +261,15 @@ async function main() {
     for (const f of failed) console.log(`  ${f.query}: ${String(f.error).slice(0, 120)}`);
   }
 
-  console.log(`\nScores are a triage aid over the retrieved set, not a rank-tracked metric --`);
-  console.log(`the retrieval returns domains without positions. Read the per-domain lines, not`);
-  console.log(`just the number, and see the header comment for the full list of limits.`);
+  if (usedSerp) {
+    console.log(`\nScored from real SERP positions, weighted so the top of page one dominates.`);
+    console.log(`Still a triage aid, not a difficulty metric: it reads who ranks, and says nothing`);
+    console.log(`about this site's own authority, which is the thing actually gating it today.`);
+  } else {
+    console.log(`\nScores are a triage aid over the retrieved set, not a rank-tracked metric --`);
+    console.log(`this fallback path returns domains WITHOUT positions, so a weak result at #9 counts`);
+    console.log(`the same as one at #1. Set DATAFORSEO_LOGIN/PASSWORD for real ranked data.`);
+  }
 }
 
 main().catch((e) => { console.error(e?.message || e); process.exit(1); });
