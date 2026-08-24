@@ -291,6 +291,16 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [keywordLoading, setKeywordLoading] = useState(false);
   const [keywordConfigured, setKeywordConfigured] = useState<boolean | null>(null);
   const [keywordError, setKeywordError] = useState('');
+  // A null `score` records a query whose SERP came back empty. Kept distinct from the whole object
+  // being null (never checked) so an absence of evidence is never rendered as a mid-range number --
+  // the exact misreading this tool exists to prevent.
+  const [difficulty, setDifficulty] = useState<{
+    query: string;
+    score: number | null;
+    band: string | null;
+    results: Array<{ position: number; domain: string; label: string; kind: string }>;
+  } | null>(null);
+  const [difficultyLoading, setDifficultyLoading] = useState(false);
   // Which row's per-item copy button was just clicked, so only that one row flips to the
   // "Copied!" checkmark rather than every row in the list. Keyed on the query string itself
   // (unique per row -- see the .map key below) rather than an index, so it survives the list
@@ -988,6 +998,27 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       setKeywordError('Lost connection while checking Search Console.');
     } finally {
       setKeywordLoading(false);
+    }
+  };
+
+  /** Scores the SERP for whatever is currently in Topic. One call, one Serper credit. */
+  const checkDifficulty = async () => {
+    const query = topicInput.trim();
+    if (!query) return;
+    setDifficultyLoading(true);
+    setKeywordError('');
+    try {
+      const res = await fetch(`/api/admin/serp-difficulty?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (data?.success) {
+        setDifficulty({ query, score: data.score, band: data.band, results: data.results || [] });
+      } else {
+        setKeywordError(data?.error || 'SERP difficulty lookup failed.');
+      }
+    } catch {
+      setKeywordError('Lost connection while checking SERP difficulty.');
+    } finally {
+      setDifficultyLoading(false);
     }
   };
 
@@ -2221,13 +2252,69 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
               disabled={generating || hasExistingContent}
               className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-lg text-white text-sm placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
             />
-            <button
-              onClick={checkKeywords}
-              disabled={keywordLoading || hasExistingContent}
-              className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 cursor-pointer disabled:opacity-50"
-            >
-              {keywordLoading ? 'Checking real search queries...' : 'Check real search queries for this topic'}
-            </button>
+            <div className="flex items-center gap-3 flex-wrap">
+              <button
+                onClick={checkKeywords}
+                disabled={keywordLoading || hasExistingContent}
+                className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 cursor-pointer disabled:opacity-50"
+              >
+                {keywordLoading ? 'Checking real search queries...' : 'Check real search queries for this topic'}
+              </button>
+              {/* Scores whatever is in Topic, NOT each row. An earlier version put this button in
+                  every result row and the added width truncated the queries to "are all fed...",
+                  "are federal..." -- indistinguishable, so the list stopped being pickable. Here it
+                  costs the list no width at all, and the flow already suits it: clicking a result
+                  fills Topic, so pick-then-score is two clicks with no extra plumbing.
+                  One click, one Serper credit. */}
+              <button
+                onClick={checkDifficulty}
+                disabled={difficultyLoading || !topicInput.trim()}
+                className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 cursor-pointer disabled:opacity-40"
+              >
+                {difficultyLoading ? 'Checking SERP...' : 'Check SERP difficulty'}
+              </button>
+            </div>
+
+            {difficulty && (
+              <div className="px-3 py-2 bg-slate-900/60 border border-slate-800 rounded-lg space-y-1">
+                {difficulty.score === null ? (
+                  <p className="text-[11px] text-slate-500">
+                    No results came back for &ldquo;{difficulty.query}&rdquo; -- that is an absence of evidence, not a middling score.
+                  </p>
+                ) : (
+                  <>
+                    <div className="flex items-baseline gap-2">
+                      <span className={`text-lg font-bold ${
+                        difficulty.score >= 70 ? 'text-emerald-400'
+                          : difficulty.score >= 55 ? 'text-emerald-500/80'
+                          : difficulty.score >= 45 ? 'text-slate-400'
+                          : difficulty.score >= 30 ? 'text-amber-500/80'
+                          : 'text-rose-400'}`}>{difficulty.score}</span>
+                      <span className="text-[11px] font-bold text-slate-300">{difficulty.band}</span>
+                      <span className="text-[10px] text-slate-600 truncate">{difficulty.query}</span>
+                    </div>
+                    {/* The per-result lines are the evidence; the number is only their summary. An
+                        unrecognised domain scores neutral, so a SERP can look weaker than it is --
+                        which is exactly why these stay visible rather than being collapsed away. */}
+                    <div className="space-y-0.5 pt-1">
+                      {difficulty.results.map((r) => (
+                        <div key={`${r.position}-${r.domain}`} className="flex items-center gap-2 text-[10px] font-mono">
+                          <span className={r.kind === 'weak' ? 'text-emerald-400' : r.kind === 'strong' ? 'text-rose-400' : 'text-slate-600'}>
+                            {r.kind === 'weak' ? '+' : r.kind === 'strong' ? '-' : ' '}
+                          </span>
+                          <span className="text-slate-500 w-6 shrink-0">#{r.position}</span>
+                          <span className="text-slate-400 truncate">{r.domain}</span>
+                          <span className="text-slate-600 truncate">[{r.label}]</span>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-slate-600 pt-1">
+                      Reads who already ranks. Says nothing about whether this site can -- that is gated by its own authority.
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
 
             {keywordConfigured === false && (
               <p className="text-[11px] text-slate-500">
