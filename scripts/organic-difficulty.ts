@@ -3,6 +3,10 @@
 //   npx tsx scripts/organic-difficulty.ts "knob and tube wiring" "knob and tube fuse box"
 //   npx tsx scripts/organic-difficulty.ts --file queries.txt
 //
+// SOURCES, best first: Serper.dev (SERPER_API_KEY -- 2500 free queries, no card, real positions),
+// then DataForSEO (DATAFORSEO_LOGIN/PASSWORD), then Gemini grounded search as a last resort. Only
+// the first two return ranks; the fallback does not, and the report says which one produced a run.
+//
 // WHY THIS EXISTS. Google Ads Keyword Planner's "Competition" column, which is the only difficulty
 // signal this project had, measures ADVERTISER BIDDING -- how many people buy that keyword -- not
 // how hard the organic result set is to break into. The two routinely disagree: "knob and tube
@@ -38,6 +42,7 @@ import {
   extractGroundingFacts,
 } from '../src/server/serpResearch.js';
 import { isDataForSeoConfigured, fetchSerpResults } from '../src/server/dataForSeoService.js';
+import { isSerperConfigured, fetchSerperResults } from '../src/server/serperService.js';
 
 /** Domains whose presence means the query is genuinely contested. Points are subtracted. */
 const STRONG: Array<{ match: RegExp; label: string; weight: number }> = [
@@ -166,24 +171,33 @@ async function main() {
 
   const results: Scored[] = [];
 
-  // Real SERP data when DataForSEO credentials exist, grounded search otherwise. This is a genuine
-  // upgrade rather than a preference: DataForSEO returns ranked positions, has no per-minute quota,
-  // and always returns a result set -- which fixes all three defects the grounding path has (no
-  // positions, a 5 req/min free-tier wall, and ~40% of queries returning no domains at all).
-  if (isDataForSeoConfigured()) {
-    console.log('Using DataForSEO SERP data (real positions).\n');
+  // Source preference, best first. Either real-SERP path fixes all three defects of the grounding
+  // fallback (no positions, a 5 req/min free-tier wall, and ~40% of queries returning no domains).
+  // Serper is preferred over DataForSEO for this particular job: it answers the same question at
+  // this scale on a no-card free tier, while DataForSEO needs a verified account with a $50 minimum
+  // before it responds at all. DataForSEO earns its place elsewhere (backlinks), not here.
+  const serpSource: { name: string; run: (q: string) => Promise<Array<{ domain: string; position: number }>> } | null =
+    isSerperConfigured()
+      ? { name: 'Serper.dev', run: (q) => fetchSerperResults(q, { num: 10 }) }
+      : isDataForSeoConfigured()
+        ? { name: 'DataForSEO', run: (q) => fetchSerpResults(q, { depth: 10 }) }
+        : null;
+
+  if (serpSource) {
+    console.log(`Using ${serpSource.name} SERP data (real positions).\n`);
     for (let i = 0; i < queries.length; i++) {
       const query = queries[i];
       process.stdout.write(`[${i + 1}/${queries.length}] ${query} ... `);
       try {
-        const serp = await fetchSerpResults(query, { depth: 10 });
+        const serp = await serpSource.run(query);
         const domains = serp.map((r) => ({ domain: r.domain, verdict: classify(r.domain), position: r.position }));
         if (domains.length === 0) {
           results.push({ query, score: -2, domains: [], source: 'serp', error: 'SERP returned no organic results' });
           console.log('no organic results -- NO DATA');
         } else {
-          results.push({ query, score: scoreOf(domains), domains, source: 'serp' });
-          console.log(`${domains.length} results, score ${scoreOf(domains)}`);
+          const score = scoreOf(domains);
+          results.push({ query, score, domains, source: 'serp' });
+          console.log(`${domains.length} results, score ${score}`);
         }
       } catch (e: any) {
         results.push({ query, score: -1, domains: [], source: 'serp', error: e?.message || String(e) });
@@ -194,7 +208,7 @@ async function main() {
     return;
   }
 
-  console.log('DataForSEO not configured -- falling back to grounded search (no positions, quota-limited).\n');
+  console.log('No SERP API configured (set SERPER_API_KEY) -- falling back to grounded search (no positions, quota-limited).\n');
   for (let i = 0; i < queries.length; i++) {
     const query = queries[i];
     process.stdout.write(`[${i + 1}/${queries.length}] ${query} ... `);
@@ -268,7 +282,7 @@ function report(results: Scored[]) {
   } else {
     console.log(`\nScores are a triage aid over the retrieved set, not a rank-tracked metric --`);
     console.log(`this fallback path returns domains WITHOUT positions, so a weak result at #9 counts`);
-    console.log(`the same as one at #1. Set DATAFORSEO_LOGIN/PASSWORD for real ranked data.`);
+    console.log(`the same as one at #1. Set SERPER_API_KEY (free tier, no card) for real ranked data.`);
   }
 }
 
