@@ -50,6 +50,13 @@ const STRONG: Array<{ match: RegExp; label: string; weight: number }> = [
   { match: /\b(forbes|nytimes|wsj|washingtonpost|cnn|bbc)\.com$/i, label: 'major publisher', weight: 25 },
   { match: /\b(nerdwallet|bankrate|investopedia|thisoldhouse|bobvila|familyhandyman)\.com$/i, label: 'major vertical publisher', weight: 20 },
   { match: /\b(consumerreports|angi|homeadvisor|thumbtack)\.com$/i, label: 'large commercial aggregator', weight: 12 },
+  // Mortgage and banking brands dominate loan-adjacent inspection queries (FHA/VA checklists in
+  // particular). Added after a first run scored rocketmortgage.com and chase.com as "unrecognised",
+  // which made a lender-dominated SERP read as neutral when it is anything but.
+  { match: /\b(rocketmortgage|quickenloans|lendingtree|freedommortgage|guildmortgage|pennymac|loandepot)\.com$/i, label: 'major mortgage lender', weight: 22 },
+  { match: /\b(chase|bankofamerica|wellsfargo|citi|usbank|pnc|truist)\.com$/i, label: 'major bank', weight: 22 },
+  { match: /\b(fha|hud|va|benefits)\.(com|gov)$/i, label: 'loan-program authority', weight: 20 },
+  { match: /\b(valoannetwork|veteransunited|navyfederal)\.(com|org)$/i, label: 'VA-loan specialist', weight: 15 },
 ];
 
 /** Domains whose presence means Google is filling page one with whatever it can find. Points added. */
@@ -121,25 +128,58 @@ async function main() {
   const { GoogleGenAI } = await import('@google/genai');
   const ai = new GoogleGenAI({ apiKey, httpOptions: { headers: { 'User-Agent': 'aistudio-build' } } });
 
+  // The free tier allows 5 requests/minute on this model, so calls must be spaced ~12s apart. A
+  // first version used a 1.2s delay and burned through the quota after six queries, failing every
+  // remaining one -- the pacing is not politeness, it is the difference between a complete run and
+  // a half-empty result table.
+  const MIN_SPACING_MS = 13000;
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  /** A 429 carries the wait it wants in its own message; obey that rather than guessing. */
+  const parseRetrySeconds = (err: any): number | null => {
+    const m = String(err?.message ?? '').match(/retry in ([\d.]+)s/i) || String(err?.message ?? '').match(/"retryDelay":\s*"(\d+)s"/);
+    return m ? Math.ceil(parseFloat(m[1])) : null;
+  };
+
   const results: Scored[] = [];
-  for (const query of queries) {
-    process.stdout.write(`searching: ${query} ... `);
-    try {
-      const r: any = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: buildSerpResearchPrompt(query),
-        config: { systemInstruction: SERP_RESEARCH_SYSTEM_INSTRUCTION, temperature: 0.2, tools: [{ googleSearch: {} }] },
-      });
-      const { sourceDomains } = extractGroundingFacts(r);
-      const domains = sourceDomains.map((d) => ({ domain: d, verdict: classify(d) }));
-      const score = scoreOf(domains.map((d) => d.verdict));
-      results.push({ query, score, domains });
-      console.log(`${domains.length} domains, score ${score}`);
-    } catch (e: any) {
-      results.push({ query, score: -1, domains: [], error: e?.message || String(e) });
-      console.log(`FAILED (${e?.message || e})`);
+  for (let i = 0; i < queries.length; i++) {
+    const query = queries[i];
+    process.stdout.write(`[${i + 1}/${queries.length}] ${query} ... `);
+    let done = false;
+    for (let attempt = 1; attempt <= 3 && !done; attempt++) {
+      try {
+        const r: any = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: buildSerpResearchPrompt(query),
+          config: { systemInstruction: SERP_RESEARCH_SYSTEM_INSTRUCTION, temperature: 0.2, tools: [{ googleSearch: {} }] },
+        });
+        const { sourceDomains } = extractGroundingFacts(r);
+        const domains = sourceDomains.map((d) => ({ domain: d, verdict: classify(d) }));
+        // No retrieved domains is NOT a mid-range score -- it is an absence of evidence, and
+        // scoring it 50 would rank it alongside genuinely-measured mixed SERPs. Marked -2 and
+        // reported separately so it can never be mistaken for a measurement.
+        if (domains.length === 0) {
+          results.push({ query, score: -2, domains: [], error: 'grounding returned no domains' });
+          console.log('no domains retrieved -- NO DATA');
+        } else {
+          const score = scoreOf(domains.map((d) => d.verdict));
+          results.push({ query, score, domains });
+          console.log(`${domains.length} domains, score ${score}`);
+        }
+        done = true;
+      } catch (e: any) {
+        const retry = parseRetrySeconds(e);
+        if (e?.status === 429 && retry !== null && attempt < 3) {
+          console.log(`rate-limited, waiting ${retry + 3}s`);
+          await sleep((retry + 3) * 1000);
+          process.stdout.write(`[${i + 1}/${queries.length}] ${query} (retry ${attempt}) ... `);
+          continue;
+        }
+        results.push({ query, score: -1, domains: [], error: e?.message || String(e) });
+        console.log(`FAILED (${String(e?.message || e).slice(0, 90)})`);
+        done = true;
+      }
     }
-    await new Promise((r) => setTimeout(r, 1200));
+    if (i < queries.length - 1) await sleep(MIN_SPACING_MS);
   }
 
   console.log(`\n${'='.repeat(74)}\nRANKED BY APPARENT OPENNESS (higher = weaker result set = better opening)\n${'='.repeat(74)}`);
@@ -150,10 +190,15 @@ async function main() {
       console.log(`         ${sign} ${domain}  [${verdict.label}]`);
     }
   }
-  const failed = results.filter((x) => x.score < 0);
+  const noData = results.filter((x) => x.score === -2);
+  if (noData.length) {
+    console.log(`\n--- ${noData.length} NO DATA (grounding retrieved nothing -- not a score of 50) ---`);
+    for (const f of noData) console.log(`  ${f.query}`);
+  }
+  const failed = results.filter((x) => x.score === -1);
   if (failed.length) {
     console.log(`\n--- ${failed.length} FAILED ---`);
-    for (const f of failed) console.log(`  ${f.query}: ${f.error}`);
+    for (const f of failed) console.log(`  ${f.query}: ${String(f.error).slice(0, 120)}`);
   }
 
   console.log(`\nScores are a triage aid over the retrieved set, not a rank-tracked metric --`);
