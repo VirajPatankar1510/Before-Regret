@@ -45,7 +45,7 @@ async function main() {
     SELECT slug, title, article_type FROM articles WHERE status = 'published' ORDER BY slug
   `) as unknown as Array<{ slug: string; title: string; article_type: string }>;
   const counties = await withDb((sql) => sql`
-    SELECT slug, county_name, state_abbrev FROM county_data WHERE data_complete = true ORDER BY slug
+    SELECT slug, county_name, state_abbrev FROM county_data WHERE data_complete = true AND page_enabled = true ORDER BY slug
   `) as unknown as Array<{ slug: string; county_name: string; state_abbrev: string }>;
 
   const published: Published[] = [
