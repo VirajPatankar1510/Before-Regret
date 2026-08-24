@@ -1036,18 +1036,36 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
           sources: draft.sources,
           faqItems: draft.faqItems,
           slug: draft.slug,
-          // Deliberately no expectedUpdatedAt here, unlike updateArticle below. This is the
-          // draft -> published transition, and the concrete clobbering hazard that check exists for
-          // does not reach drafts: the article-faqs skill writes faq_json only WHERE status =
-          // 'published'. Sending a token on this path would add a failure mode to the
-          // generate-then-publish flow without closing a risk that actually exists here. Two tabs
-          // editing the same draft can still race -- unchanged from before, and much lower stakes
-          // than overwriting a live page's FAQs.
+          // Concurrency token, same as updateArticle below. This path previously omitted it on the
+          // reasoning that drafts could not be clobbered, because the article-faqs skill writes
+          // faq_json only WHERE status = 'published'.
+          //
+          // That premise was too narrow, and it cost real content on 2026-08-24. The skill is not
+          // the only thing that writes to this table outside the editor: a one-off script inserted
+          // a draft WITH four hand-written FAQs, the editor was open on that draft holding an empty
+          // faqItems, and publishing sent that empty list back and silently erased them. Nothing
+          // surfaced, because last-write-wins is invisible by construction.
+          //
+          // The failure mode this adds -- a publish blocked with "this changed since you opened it"
+          // -- is the outcome you want when the row really did change underneath. The stale banner
+          // below already diffs FAQ counts and offers to reload the server copy, so the recovery
+          // path was built and simply never reachable from here.
+          expectedUpdatedAt: draft.updatedAt,
         }),
       });
       const saveData = await saveRes.json();
       if (!saveData?.success) {
-        setActionError(saveData?.error || 'Could not save your changes.');
+        // A blocked publish must surface the same way a blocked save does, or the concurrency token
+        // added above would just produce a dead-end error with no way forward. Routing 409 into
+        // staleServerCopy gives this path the existing banner, its field-level diff (FAQ counts
+        // included), and the explicit reload-the-server-copy button. Publishing stops here on
+        // purpose: going ahead would publish the very state the save just refused to write.
+        if (saveRes.status === 409 && saveData?.stale && saveData?.article) {
+          setStaleServerCopy(saveData.article);
+          setActionError(saveData.error || 'This article changed since you opened it -- publish stopped so nothing is overwritten.');
+        } else {
+          setActionError(saveData?.error || 'Could not save your changes.');
+        }
         return;
       }
       const pubRes = await fetch(`/api/admin/articles/${draft.id}/publish`, { method: 'POST' });
