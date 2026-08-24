@@ -291,6 +291,12 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
   const [keywordLoading, setKeywordLoading] = useState(false);
   const [keywordConfigured, setKeywordConfigured] = useState<boolean | null>(null);
   const [keywordError, setKeywordError] = useState('');
+  // Difficulty scores, keyed by query and fetched one at a time on click. `null` records a query
+  // that returned no results at all -- kept distinct from `undefined` (never checked) so an absence
+  // of evidence is never rendered as a middling score, which is the misreading the whole tool
+  // exists to prevent.
+  const [difficultyScores, setDifficultyScores] = useState<Record<string, { score: number; band: string; top: string } | null>>({});
+  const [difficultyLoading, setDifficultyLoading] = useState<string | null>(null);
   // Which row's per-item copy button was just clicked, so only that one row flips to the
   // "Copied!" checkmark rather than every row in the list. Keyed on the query string itself
   // (unique per row -- see the .map key below) rather than an index, so it survives the list
@@ -988,6 +994,33 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
       setKeywordError('Lost connection while checking Search Console.');
     } finally {
       setKeywordLoading(false);
+    }
+  };
+
+  /** Scores one query's SERP. Cached per query so a second look costs no credit, and silent on
+   *  failure rather than raising a panel-wide error -- this is an optional lookup beside a working
+   *  keyword list, and a Serper hiccup should not make the list itself look broken. */
+  const checkDifficulty = async (query: string) => {
+    if (difficultyScores[query] !== undefined || difficultyLoading) return;
+    setDifficultyLoading(query);
+    try {
+      const res = await fetch(`/api/admin/serp-difficulty?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      if (data?.success && typeof data.score === 'number') {
+        const top = (data.results || [])
+          .slice(0, 3)
+          .map((r: { position: number; domain: string }) => `#${r.position} ${r.domain}`)
+          .join(', ');
+        setDifficultyScores((prev) => ({ ...prev, [query]: { score: data.score, band: data.band, top } }));
+      } else if (data?.success) {
+        setDifficultyScores((prev) => ({ ...prev, [query]: null }));
+      } else {
+        setKeywordError(data?.error || 'SERP difficulty lookup failed.');
+      }
+    } catch {
+      setKeywordError('Lost connection while checking SERP difficulty.');
+    } finally {
+      setDifficultyLoading(null);
     }
   };
 
@@ -2319,6 +2352,35 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                     {copiedKeyword === row.query
                       ? <Check className="w-3.5 h-3.5 text-emerald-400" />
                       : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                  {/* Difficulty is checked per row on an explicit click, never automatically for
+                      the whole list: each check spends one Serper credit and this list routinely
+                      runs past a hundred autocomplete rows. Once fetched the result is cached in
+                      state, so re-reading a score costs nothing. */}
+                  <button
+                    type="button"
+                    title="Check how contested this query's search results look"
+                    disabled={difficultyLoading === row.query}
+                    onClick={() => checkDifficulty(row.query)}
+                    className="shrink-0 px-2 py-1.5 text-[10px] font-mono border border-slate-800 rounded-lg cursor-pointer disabled:opacity-50 hover:bg-slate-800"
+                  >
+                    {difficultyLoading === row.query
+                      ? <span className="text-slate-500">...</span>
+                      : difficultyScores[row.query] === undefined
+                        ? <span className="text-slate-500 hover:text-indigo-400">SERP?</span>
+                        : difficultyScores[row.query] === null
+                          ? <span className="text-slate-600" title="No results returned -- not a score">n/a</span>
+                          : (() => {
+                              const d = difficultyScores[row.query]!;
+                              // Colour tracks the same bands the CLI prints, so a number read here
+                              // and a number read there mean the same thing.
+                              const tone = d.score >= 70 ? 'text-emerald-400'
+                                : d.score >= 55 ? 'text-emerald-500/80'
+                                : d.score >= 45 ? 'text-slate-400'
+                                : d.score >= 30 ? 'text-amber-500/80'
+                                : 'text-rose-400';
+                              return <span className={tone} title={`${d.band} -- top results: ${d.top}`}>{d.score}</span>;
+                            })()}
                   </button>
                   </div>
                 ))}
