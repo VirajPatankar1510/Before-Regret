@@ -177,30 +177,7 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
     } catch (err) {
       console.error('[sitemap] failed to load published guides:', err);
     }
-  } else if (cleanName === 'sitemap-counties' && isDbConfigured()) {
-    try {
-      const rows = await withDb((sql) => sql`
-        SELECT slug, county_name, state_abbrev, fetched_at FROM county_data WHERE data_complete = true AND page_enabled = true ORDER BY fetched_at DESC
-      `);
-      (rows as unknown as Array<{ slug: string; county_name: string; state_abbrev: string; fetched_at: string | Date | null }>).forEach((c) => {
-        entries.push({
-          loc: `${BASE_URL}/county/${c.slug}/`,
-          lastmod: c.fetched_at ? new Date(c.fetched_at).toISOString().slice(0, 10) : today,
-          changefreq: 'monthly',
-          priority: '0.6',
-          // Real image, real title -- see src/utils/countyHazardSvg.ts / the /api/images/:filename
-          // route. A documented, separate discovery path for Google Images beyond the page's own
-          // alt text, and worth the few extra lines since the data (and the image itself) already
-          // exists for every county in this loop.
-          images: [{
-            loc: `${BASE_URL}/api/images/${c.slug}-hazard-map.svg`,
-            title: `${titleCase(c.county_name)} County, ${c.state_abbrev} real hazard data summary (FEMA National Risk Index, EPA radon zone, NOAA storm history)`,
-          }],
-        });
-      });
-    } catch (err) {
-      console.error('[sitemap] failed to load verified counties:', err);
-    }
+
   }
 
   return buildUrlsetXml(entries);
@@ -305,7 +282,6 @@ Disallow: /report/
 Disallow: /insights/
 Disallow: /admin
 Disallow: /api/
-Allow: /api/images/
 Allow: /api/v1/
 
 Sitemap: https://www.beforeregret.com/sitemap.xml

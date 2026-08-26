@@ -25,8 +25,6 @@
 export const routeChunkLoaders = {
   guide: () => import('./components/seo/GuidePageView'),
   guidesIndex: () => import('./components/seo/GuidesIndexView'),
-  county: () => import('./components/seo/CountyPageView'),
-  countiesIndex: () => import('./components/seo/CountiesIndexView'),
   about: () => import('./components/AboutMethodology'),
   support: () => import('./components/ContactUs'),
   terms: () => import('./components/TermsConditions'),
@@ -59,8 +57,6 @@ export type PrerenderedRouteKey = keyof typeof routeChunkLoaders;
 export const routeChunkSources: Record<PrerenderedRouteKey, string> = {
   guide: 'src/components/seo/GuidePageView.tsx',
   guidesIndex: 'src/components/seo/GuidesIndexView.tsx',
-  county: 'src/components/seo/CountyPageView.tsx',
-  countiesIndex: 'src/components/seo/CountiesIndexView.tsx',
   about: 'src/components/AboutMethodology.tsx',
   support: 'src/components/ContactUs.tsx',
   terms: 'src/components/TermsConditions.tsx',
@@ -102,8 +98,6 @@ export function prerenderedRouteForPath(pathname: string): PrerenderedRouteKey |
 
   // Singular /county/<slug>/ for a single county, plural /counties/ for the index -- not a typo,
   // it matches the live URL structure (and resolveRouteFromPath) exactly.
-  if (path.startsWith('/county/') && path.split('/').filter(Boolean).length >= 2) return 'county';
-  if (path === '/counties/') return 'countiesIndex';
 
   return null;
 }

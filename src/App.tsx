@@ -57,8 +57,6 @@ const PaymentCancelled = lazy(() => import('./components/PaymentCancelled').then
 // different one, and the flash these are ordered around would come straight back.
 const GuidePageView = lazy(() => routeChunkLoaders.guide().then((m) => ({ default: m.GuidePageView })));
 const GuidesIndexView = lazy(() => routeChunkLoaders.guidesIndex().then((m) => ({ default: m.GuidesIndexView })));
-const CountyPageView = lazy(() => routeChunkLoaders.county().then((m) => ({ default: m.CountyPageView })));
-const CountiesIndexView = lazy(() => routeChunkLoaders.countiesIndex().then((m) => ({ default: m.CountiesIndexView })));
 const AboutMethodology = lazy(() => routeChunkLoaders.about().then((m) => ({ default: m.AboutMethodology })));
 const ContactUs = lazy(() => routeChunkLoaders.support().then((m) => ({ default: m.ContactUs })));
 const TermsConditions = lazy(() => routeChunkLoaders.terms().then((m) => ({ default: m.TermsConditions })));
@@ -153,7 +151,6 @@ export function App() {
   const [pseoRoute, setPseoRoute] = useState<{
     type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'reportUnavailable' | 'none';
     guideSlug?: string;
-    countySlug?: string;
     // 'reportUnavailable' only. A report permalink is the link people actually SHARE, so the two
     // reasons it can fail need different words: a generic "404 — Page Not Found" tells someone who
     // was sent a link that the site is broken, and tells someone hitting a transient database blip
@@ -280,24 +277,6 @@ export function App() {
       // Exact /guides/ (no slug) -- the hub every guide should be reachable from. Checked after
       // the slug case above only for readability; parts.length distinguishes them unambiguously.
       setPseoRoute({ type: 'guidesIndex' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path.startsWith('/county/')) {
-      const parts = path.split('/').filter(Boolean);
-      if (parts.length >= 2) {
-        setPseoRoute({ type: 'county', countySlug: parts[1] });
-        setCurrentStep('PSEO');
-        return true;
-      }
-    }
-
-    // path is always trailing-slash-normalized above, so '/counties/' is the only exact form to
-    // check -- same reasoning as the guidesIndex branch, just without a slug variant to test first
-    // since there's no /counties/<something>/ route.
-    if (path === '/counties/') {
-      setPseoRoute({ type: 'countiesIndex' });
       setCurrentStep('PSEO');
       return true;
     }
@@ -1001,12 +980,6 @@ export function App() {
             )}
             {pseoRoute.type === 'guide' && pseoRoute.guideSlug && (
               <GuidePageView guideSlug={pseoRoute.guideSlug} onNavigate={handleNavigate} />
-            )}
-            {pseoRoute.type === 'countiesIndex' && (
-              <CountiesIndexView onNavigate={handleNavigate} />
-            )}
-            {pseoRoute.type === 'county' && pseoRoute.countySlug && (
-              <CountyPageView countySlug={pseoRoute.countySlug} onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'about' && (
               <AboutMethodology onBackToHome={handleNewSearch} onNavigate={handleNavigate} />

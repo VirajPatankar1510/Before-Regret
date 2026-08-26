@@ -22,7 +22,6 @@ import {
   verifyTotpCode,
 } from "./src/server/adminAuth.js";
 import { registerArticleRoutes } from "./src/server/articlesApi.js";
-import { registerCountyRoutes } from "./src/server/countiesApi.js";
 import { registerHomepageRoutes } from "./src/server/homepageApi.js";
 import { registerKeywordResearchRoutes } from "./src/server/keywordResearchApi.js";
 import { registerNewsCoverageRoutes } from "./src/server/newsCoverageApi.js";
@@ -32,10 +31,6 @@ import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerMyAdsRoutes } from "./src/server/myAdsApi.js";
 import { registerTermsRoutes } from "./src/server/termsApi.js";
-import { registerCountyEventsRoutes } from "./src/server/countyEventsApi.js";
-import { registerCountyComparisonRoutes } from "./src/server/countyComparisonApi.js";
-import { registerCountyInsuranceRoutes } from "./src/server/countyInsuranceApi.js";
-import { registerDefectReferenceRoutes } from "./src/server/defectReferenceApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { registerFunnelRoutes } from "./src/server/funnelApi.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
@@ -253,7 +248,6 @@ export async function createApp() {
   // --- County research pages (Neon-backed) --------------------------------------------------
   // Public /api/counties/:slug read route only, no admin routes -- these rows are populated by
   // scripts/fetch-county-data.ts, not through an admin editor. See src/server/countiesApi.ts.
-  registerCountyRoutes(app);
 
   // --- Homepage content sections (Neon-backed) ----------------------------------------------
   // Public read route feeding the homepage's guide clusters, research pages, and county coverage.
@@ -297,20 +291,16 @@ export async function createApp() {
   // (see vercel.json) and by a manual button in the SEO admin panel. Every draft lands in the
   // same articles table as any other guide -- a human reviews and publishes it, nothing here
   // ever publishes on its own. See src/server/countyEventsApi.ts.
-  registerCountyEventsRoutes(app);
 
   // --- Original data journalism report generator (Neon-backed) --------------------------------
   // Admin-triggered, not event-triggered -- ranks every covered county by real Census housing-age
   // data (computed in plain code, never by Gemini) and drafts an article around the real table.
   // See src/server/countyComparisonApi.ts.
-  registerCountyComparisonRoutes(app);
-  registerCountyInsuranceRoutes(app);
 
   // --- Era x defect reference library generator (Neon-backed) ---------------------------------
   // One-shot batch: drafts a page per material/system defect (knob-and-tube, polybutylene, etc.),
   // each ranking covered counties by real Census housing-age data for that defect's era. See
   // src/server/defectReferenceApi.ts.
-  registerDefectReferenceRoutes(app);
 
   // --- Public API v1 (Neon-backed, cached, rate-limited) -------------------------------------
   // The documented, agent-facing surface for county hazard data and the guide index. Separate
