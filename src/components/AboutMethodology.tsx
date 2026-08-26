@@ -82,7 +82,13 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
             <ul className="text-sm text-slate-600 leading-relaxed space-y-2 pl-1">
               <li className="flex gap-2">
                 <ListChecks className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>No invented statistics.</strong> A specific percentage, dollar figure, or study result is never stated unless it's traceable to a real, named source. General facts of public record ("the federal lead-paint disclosure law took effect in 1978") are fine; a fabricated number attached to them is not.</span>
+                {/* The example here was "the federal lead-paint disclosure law took effect in 1978",
+                    which is wrong, and wrong in a way that mattered: it sat inside the no-invented-
+                    facts principle as the illustration of an acceptable fact. 1978 is when CPSC
+                    banned residential lead paint; the disclosure rule (Section 1018 of Title X)
+                    took effect in 1996, which is why it applies to pre-1978 housing. Corrected
+                    2026-08-26 after an outside audit caught it. */}
+                <span><strong>No invented statistics.</strong> A specific percentage, dollar figure, or study result is never stated unless it's traceable to a real, named source. General facts of public record ("residential lead-based paint was banned in 1978, and the federal disclosure rule for pre-1978 housing took effect in 1996") are fine; a fabricated number attached to them is not.</span>
               </li>
               <li className="flex gap-2">
                 <ListChecks className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
