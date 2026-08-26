@@ -236,3 +236,43 @@ Filenames: `public/images/<subject>-<what-it-shows>.webp`, lowercase, hyphenated
 
 Send the finished files over and they get converted to WebP, sized, placed, wired into every guide
 that uses them, and verified in both the prerendered HTML and the live component.
+
+---
+
+## 4. Open ground vs. bootleg ground (receptacle wiring)
+
+Added 2026-08-26 for `open-ground-mean-electrical-inspection`. Differs from the other three in
+what it has to show: not a material to identify, but **three wiring states, two of which look
+identical to a tester**. The whole point of the image is that the middle and right panels produce
+different tester readings than the reader expects, so the wiring itself has to be legible.
+
+**Three panels, side by side, same viewing angle, same receptacle drawn identically in each.**
+Cutaway view of a standard US duplex receptacle in an open wall box, seen from the front-right at
+a slight angle so the side terminal screws are visible.
+
+- **Left panel, "Correctly grounded":** three conductors landing on their own terminals -- black
+  wire to the brass screw, white wire to the silver screw, bare copper wire to the green screw.
+  All three are separate and traceable back out of the box.
+- **Centre panel, "Open ground":** black to brass, white to silver, and the green screw **empty** --
+  no conductor on it at all. Only two wires enter the box.
+- **Right panel, "Bootleg ground":** black to brass, white to silver, and a short jumper wire
+  connecting the silver (neutral) screw to the green (ground) screw. Still only two wires entering
+  the box; the jumper is a stub between two terminals, clearly not a conductor leaving the box.
+
+The jumper in the right panel is the single most important element in the image. Draw it short,
+obvious, and unmistakably connecting neutral to ground.
+
+**US colour code, non-negotiable:** hot is black, neutral is white, ground is bare copper. Never
+brown/blue -- that is the European code and this is a US-only site. The bare copper conductor must
+read as uninsulated metal, not as a green-insulated wire.
+
+**Style:** same as the other three -- shaded isometric-leaning cutaway, real material texture on
+the copper and on the receptacle body, restrained palette, plain light background.
+
+**Forbidden:** no header bands, no edge-colored strips, no frame rules, no drop shadows behind
+panels, no arrows, no callout numbers, no watermark, no logo, no tester device in frame, no hands,
+no sparks or hazard iconography. Panel titles only -- exactly the three strings above, nothing else.
+
+**Why no tester in the image:** the article's point is that the tester reads the centre and right
+panels differently than a reader expects. Drawing the tester invites the model to draw its lights,
+which it will get wrong, and a wrong light pattern here actively misinforms.
