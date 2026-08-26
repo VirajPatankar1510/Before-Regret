@@ -40,6 +40,29 @@ export default defineConfig(() => {
       // dist/assets for a name prefix would avoid this flag, but the manifest also lists each
       // chunk's transitive imports, which is what makes the hint complete rather than partial.
       manifest: true,
+      rollupOptions: {
+        output: {
+          // Split ONLY React itself into its own chunk, by explicit allowlist.
+          //
+          // The obvious version of this rule -- `if (id.includes('node_modules')) return 'vendor'`
+          // -- is actively harmful here and was measured before being rejected: it sweeps in
+          // maplibre-gl, which AddressSearchBox.tsx deliberately loads on demand via a dynamic
+          // import (see the comment there). Forcing it into an eagerly-loaded vendor chunk took
+          // first-load JS from 158 KB gzipped to 471 KB, roughly triple, because every visitor
+          // reading a guide would download a mapping library they never use.
+          //
+          // React and its scheduler are different: every page needs them immediately, so they are
+          // already eager, and this only decides which file they live in. The gain is caching --
+          // React does not change between deploys, so a returning visitor re-downloads only the
+          // app chunk when content or features change, instead of the two bundled together.
+          //
+          // Anything not named here keeps Rollup's own chunking, which is what preserves the lazy
+          // route chunks and maplibre.
+          manualChunks(id) {
+            if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'react-vendor';
+          },
+        },
+      },
     },
     resolve: {
       alias: {
