@@ -527,6 +527,30 @@ export async function createApp() {
     res.redirect(301, `/insights/${reportId}`);
   });
 
+  // Consolidated guides. A 301 here rather than the 410 used for retired content in
+  // src/data/legacyUrls.ts, and the distinction is the point: 410 says the page is gone and its
+  // ranking should be dropped, while 301 says the content moved and its ranking should follow.
+  // These are merges, so the second is what we want.
+  //
+  // hot-neutral-reversed-mean covered the same subject as reverse-polarity-mean-electrical-
+  // inspection -- both explained swapped hot and neutral, the lamp-socket-shell hazard, detection,
+  // and handling it before closing. Two pages competing for one set of queries helps neither. The
+  // survivor is the older page with real traction (107 impressions, position 24.3, against nothing
+  // measurable for the other), and the merged article carries the retired page's unique GFCI/AFCI
+  // and electronics material plus its FAQs.
+  //
+  // Registered before the static-file and slug-existence handlers below so it wins over both: the
+  // retired slug still has a prerendered file on disk until the next deploy rebuilds, and
+  // express.static would otherwise serve it with a 200.
+  const MERGED_GUIDES: Record<string, string> = {
+    'hot-neutral-reversed-mean': 'reverse-polarity-mean-electrical-inspection',
+  };
+  app.get(['/guides/:slug', '/guides/:slug/'], (req, res, next) => {
+    const target = MERGED_GUIDES[req.params.slug];
+    if (!target) return next();
+    res.redirect(301, `/guides/${target}/`);
+  });
+
   // 0. Residential-Only Address Validation Gate (Layers 1-3)
   // Synchronous, authoritative check -- called by the map/search UI for real-time feedback
   // AND independently re-run before report generation below, so a bypassed or stale frontend
