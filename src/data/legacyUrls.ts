@@ -36,18 +36,26 @@ export const LEGACY_GONE_PATHS: readonly string[] = [
 ];
 
 /**
- * Every /expert/* path from the old platform, including its /ask sub-pages. A prefix rather than a
- * list because the indexed set (exp_amit, exp_rahul, exp_sneha, plus /ask variants) is clearly a
- * sample of a larger generated space, and the current site has no /expert route at all.
+ * Whole URL spaces from the previous product, matched by prefix rather than listed, because each
+ * is clearly a sample of a larger generated set and the current site has no such route at all.
+ *
+ *   /expert/  -- the old platform's expert profiles and their /ask sub-pages. Search Console has
+ *                reported impressions for exp_amit, exp_rahul and exp_sneha, so more certainly
+ *                exist than the three that happened to surface.
+ *   /city/    -- the India-focused city hubs. Added 2026-08-26 after URL Inspection confirmed
+ *                /city/mumbai is still "Submitted and indexed" (last crawled 2026-07-20) despite
+ *                answering 404 for months, while /city/delhi is unknown to Google. A 404 says
+ *                "not found, might come back" and invites Google to keep re-checking; 410 says the
+ *                URL is gone and should be dropped, which is what is actually true here.
  */
-export const LEGACY_GONE_PREFIX = '/expert/';
+export const LEGACY_GONE_PREFIXES: readonly string[] = ['/expert/', '/city/'];
 
 const legacySet = new Set(LEGACY_GONE_PATHS);
 
 /** True when this path belonged to the previous site and should be answered with 410. */
 export function isLegacyGonePath(pathname: string): boolean {
   const p = pathname.replace(/\/+$/, '') || '/';
-  return legacySet.has(p) || p.startsWith(LEGACY_GONE_PREFIX);
+  return legacySet.has(p) || LEGACY_GONE_PREFIXES.some((prefix) => p.startsWith(prefix));
 }
 
 /**
