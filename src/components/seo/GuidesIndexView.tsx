@@ -133,9 +133,13 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
           <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
             Every research guide we've published, in one place -- what a specific era, system, or record actually means for a home you're buying, cited back to the government or industry source behind it.
           </p>
-          <ContentLink href="/counties/" onNavigate={onNavigate} className="text-xs font-bold text-blue-700 hover:text-blue-800 cursor-pointer block">
-            Looking for county-level hazard and housing data instead? Browse all covered counties →
-          </ContentLink>
+          {/* The "browse all covered counties" link that used to sit here pointed at /counties/,
+              which has answered 410 since the county pages were retired on 2026-08-23. Missed in
+              that cleanup -- Navbar, Footer and StaticFooterLinks were all updated, this one was
+              not, and an Ahrefs crawl found it as the site's only broken internal link. Removed
+              rather than repointed: there is no county content left to send anyone to. The twin
+              copy in scripts/prerender-guides.tsx is removed alongside it, since the static and
+              client renders of this page must not disagree. */}
         </div>
 
         {loadError && (
