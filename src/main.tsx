@@ -4,12 +4,22 @@ import App from './App.tsx';
 import './index.css';
 import { AuthProvider } from './context/AuthContext';
 import { preloadRouteChunk } from './routeChunks';
+// Replaces Google Analytics, removed from index.html on 2026-08-26. GA4's gtag.js was 147.5 KiB
+// transferred -- more than React and this app's entire shell combined -- to record pageviews and
+// nothing else, since no custom gtag() event was ever fired anywhere in the codebase. This is
+// roughly 1 KiB and reports the same pageviews, top pages, referrers and devices.
+//
+// Mounted inside the React tree rather than as a script tag in index.html so it is bundled and
+// versioned with the app, and so it records a view on client-side route changes -- App.tsx swaps
+// routes without a document navigation, which a plain script tag would never see.
+import { Analytics } from '@vercel/analytics/react';
 
 const mount = () => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <AuthProvider>
         <App />
+        <Analytics />
       </AuthProvider>
     </StrictMode>,
   );

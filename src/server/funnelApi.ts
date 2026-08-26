@@ -7,11 +7,16 @@ import { hasValidSession } from './adminAuth.js';
 // and nothing about whether anyone ever paid for a second one.
 //
 // Deliberate scope boundary: this measures the steps the SERVER can prove, and refuses to guess at
-// the one it cannot. Sessions and pageviews are not here, because the pages that matter (homepage,
-// guides, county pages) are prerendered static HTML served by Vercel's CDN -- the Express process
-// never sees those requests, so any "sessions" number computed here would be wrong in a way that
-// looks authoritative. GA4 (already installed, G-Z61ENG55YD) is the honest source for the top of
-// the funnel; this endpoint owns everything from account creation down, and says so in its output.
+// the one it cannot. Sessions and pageviews are not here, because the pages that matter (homepage
+// and guides) are prerendered static HTML served by Vercel's CDN -- the Express process never sees
+// those requests, so any "sessions" number computed here would be wrong in a way that looks
+// authoritative. Vercel Web Analytics is the honest source for the top of the funnel; this endpoint
+// owns everything from account creation down, and says so in its output.
+//
+// That top-of-funnel source was Google Analytics until 2026-08-26, when GA4 was removed for weight
+// (147.5 KiB transferred, larger than React plus this app's shell, for pageviews and nothing else --
+// no custom gtag() event was ever fired). The division of labour described above is unchanged; only
+// the tool measuring the top half changed.
 //
 // Every figure below is a COUNT of real rows, never an extrapolation.
 export function registerFunnelRoutes(app: Express) {
