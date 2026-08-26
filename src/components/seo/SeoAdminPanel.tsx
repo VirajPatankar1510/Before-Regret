@@ -1109,6 +1109,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
                 ['adversarialFraming', 'Adversarial framing of a disclosed practice'],
                 ['overbroadLegalClaim', 'Federal duty stated without its exceptions'],
                 ['malformedImage', 'Images the renderer cannot parse'],
+                ['unreadableFaq', 'FAQs the site cannot read (wrong key shape)'],
                 ['thin', 'Thin content (under 500 words)'],
               ];
               const totalFindings = categories.reduce((n, [key]) => n + contentAuditReport[key].length, 0);

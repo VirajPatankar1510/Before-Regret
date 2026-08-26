@@ -48,6 +48,7 @@ export interface AuditReport {
   adversarialFraming: AuditFinding[];
   overbroadLegalClaim: AuditFinding[];
   malformedImage: AuditFinding[];
+  unreadableFaq: AuditFinding[];
 }
 
 interface ArticleRow {
@@ -204,7 +205,7 @@ export async function runContentAudit(ids?: number[], linkOptions?: LinkCheckOpt
 
   const report: AuditReport = {
     scanned: 0, truncated: [], nonCodeFence: [], malformedTable: [], brokenLink: [], unresolvedCitation: [], thin: [],
-    deadLink: [], adversarialFraming: [], overbroadLegalClaim: [], malformedImage: [],
+    deadLink: [], adversarialFraming: [], overbroadLegalClaim: [], malformedImage: [], unreadableFaq: [],
   };
 
   for (const r of rows) {
@@ -319,7 +320,26 @@ export async function runContentAudit(ids?: number[], linkOptions?: LinkCheckOpt
     // The question is passed as context so an answer can inherit its subject from it.
     let faqs: { question?: string; answer?: string }[] = [];
     try { faqs = JSON.parse(r.faq_json || '[]'); } catch { faqs = []; }
+
+    // An FAQ the site cannot read is worse than a missing one, because the database looks correct
+    // while the page shows nothing. Both readers -- articlesApi.ts and prerender-guides.tsx --
+    // filter on `typeof item.question === 'string' && typeof item.answer === 'string'`, and a row
+    // shaped {q, a} is dropped by that filter with no error anywhere.
+    //
+    // Not hypothetical: five articles were written with {q, a} keys and shipped with their FAQ
+    // accordions empty and their FAQPage schema carrying a single fallback entry (the article
+    // title) instead of the four real questions. Nothing surfaced it -- it was found by chance
+    // while auditing something else. This check exists so the next one is caught by a button.
     if (Array.isArray(faqs)) {
+      const unreadable = faqs.filter(
+        (f) => f && (typeof (f as { question?: unknown }).question !== 'string' || typeof (f as { answer?: unknown }).answer !== 'string')
+      ).length;
+      if (unreadable > 0) {
+        report.unreadableFaq.push({
+          ...ref,
+          detail: `${unreadable} of ${faqs.length} FAQ entries are missing a string \`question\` or \`answer\` key, so the site drops them silently -- the accordion and FAQPage schema will be empty. Older drafts used {q, a}; the readers require {question, answer}.`,
+        });
+      }
       for (const faq of faqs) {
         for (const hit of findOverbroadFederalDutyClaim(faq?.answer || '', faq?.question || '')) {
           report.overbroadLegalClaim.push({ ...ref, detail: `Federal duty stated without its exceptions, in an FAQ answer: "${hit}"` });
