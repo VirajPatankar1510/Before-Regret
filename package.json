@@ -11,7 +11,8 @@
     "lint": "tsc --noEmit",
     "outreach:dry-run": "tsx scripts/send-vendor-outreach.ts",
     "outreach:send": "SEND=true tsx scripts/send-vendor-outreach.ts",
-    "admin:generate-totp-secret": "tsx scripts/generate-admin-totp-secret.ts"
+    "admin:generate-totp-secret": "tsx scripts/generate-admin-totp-secret.ts",
+    "knip": "knip"
   },
   "dependencies": {
     "@clerk/backend": "^3.16.6",
@@ -36,6 +37,7 @@
     "@types/zipcodes": "^8.0.5",
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.25.0",
+    "knip": "^6.32.3",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
