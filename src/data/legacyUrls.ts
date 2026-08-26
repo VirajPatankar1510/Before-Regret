@@ -30,8 +30,17 @@ export const LEGACY_GONE_PATHS: readonly string[] = [
   '/become-expert', '/become-resident', '/court', '/explore', '/will-i-regret',
   '/shipping-policy',
   '/privacy-policy', '/terms-and-conditions', '/legal-disclaimer', '/refund-policy',
+  // Relationship-psychology guides from the previous product. The first two were listed when this
+  // file was written; the other two were found on 2026-08-26 by diffing Search Console's page
+  // report against the articles table, then confirming each with URL Inspection. Google still had
+  // narcissistic-gaslighting "Submitted and indexed" while it answered 404, and
+  // codependency-vs-interdependence as a duplicate canonicalised onto red-flag-evaluation --
+  // which was already 410 here, so two halves of the same dead pair were telling Google different
+  // things.
   '/guides/breadwinner-resentment-income-disparity',
   '/guides/red-flag-evaluation-boundary-matrix',
+  '/guides/narcissistic-gaslighting-vs-healthy-disagreements',
+  '/guides/codependency-vs-interdependence-autonomy-score',
   '/counties',
 ];
 
