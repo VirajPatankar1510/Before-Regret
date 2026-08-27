@@ -1,5 +1,6 @@
 import React from 'react';
 import { BookOpen, ShieldCheck } from 'lucide-react';
+import { PREFERRED_SOURCE_URL, PREFERRED_SOURCE_LABEL } from '../data/preferredSource';
 
 export interface FooterGuideSummary {
   slug: string;
@@ -60,6 +61,9 @@ export function StaticFooterLinks({ guides }: StaticFooterLinksProps) {
             <li><a href="/about/" className="hover:text-white font-bold text-blue-300 block py-1.5">About &amp; Methodology</a></li>
             <li><a href="/advertise/" className="hover:text-white font-bold text-blue-300 block py-1.5">Advertise With Us</a></li>
             <li><a href="/support/" className="hover:text-white font-medium text-slate-300 block py-1.5">Customer Support</a></li>
+            {/* Mirrors Footer.tsx, reading the same constant so the two renderings of this link
+                cannot drift apart. See src/data/preferredSource.ts. */}
+            <li><a href={PREFERRED_SOURCE_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white font-medium text-slate-300 block py-1.5">{PREFERRED_SOURCE_LABEL}</a></li>
             <li><a href="/terms/" className="hover:text-white text-slate-400 block py-1.5">Terms of Service</a></li>
             <li><a href="/privacy/" className="hover:text-white text-slate-400 block py-1.5">Privacy Policy</a></li>
             <li><a href="/refunds/" className="hover:text-white text-slate-400 block py-1.5">Refund &amp; Cancellation</a></li>

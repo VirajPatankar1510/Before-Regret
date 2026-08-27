@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ShieldCheck, ArrowRight, BookOpen } from 'lucide-react';
 import { Logo } from './Logo';
 import { ContentLink } from './home/ContentLink';
+import { PREFERRED_SOURCE_URL, PREFERRED_SOURCE_LABEL } from '../data/preferredSource';
 
 interface FooterProps {
   onNewSearch: () => void;
@@ -157,6 +158,19 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                 <li><ContentLink href="/about/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">About & Methodology</ContentLink></li>
                 <li><ContentLink href="/advertise/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">Advertise With Us</ContentLink></li>
                 <li><ContentLink href="/support/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5">Customer Support</ContentLink></li>
+                {/* External, so a plain <a> rather than ContentLink -- there is no SPA route to
+                    intercept. See src/data/preferredSource.ts for why this is a link and not
+                    Google's JavaScript button, and why the deeplink form matters. */}
+                <li>
+                  <a
+                    href={PREFERRED_SOURCE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5"
+                  >
+                    {PREFERRED_SOURCE_LABEL}
+                  </a>
+                </li>
                 <li><ContentLink href="/terms/" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Terms of Service</ContentLink></li>
                 <li><ContentLink href="/privacy/" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Privacy Policy</ContentLink></li>
                 <li><ContentLink href="/refunds/" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Refund & Cancellation</ContentLink></li>
