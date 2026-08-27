@@ -3,6 +3,7 @@ import { Search, User, LogIn, Sparkles, ChevronDown, CheckCircle2, ShieldCheck, 
 import { Logo } from './Logo';
 import { useAuth } from '../context/AuthContext';
 import { AuthModal } from './AuthModal';
+import { ContentLink } from './home/ContentLink';
 
 interface NavbarProps {
   onNewSearch: () => void;
@@ -108,6 +109,28 @@ export const Navbar: React.FC<NavbarProps> = ({
                 Guides
               </button>
             )}
+            {/* Advertise was reachable from the mobile menu (MOBILE_NAV_LINKS) and the footer, but
+                had no desktop header entry at all -- so on a laptop the only route to the product
+                that carries this site's revenue was scrolling to the bottom of the page. Vendor
+                traffic mostly arrives by direct link or the recruitment CTA on a guide, so this is
+                a secondary path rather than a primary one, which is why it sits quiet next to
+                Guides instead of competing with the Free Report button for attention.
+
+                ContentLink, not <button onClick> like Guides beside it, so it is a real <a href>:
+                cmd/middle-click opens it in a tab, it has a hover target a browser recognises, and
+                it degrades to an ordinary link when no onNavigate is supplied.
+
+                Note what this does NOT buy, so nobody assumes it later: it adds no crawlable link.
+                The prerender scripts render the page body and StaticFooterLinks only -- the Navbar
+                is never in the static HTML -- so the footer's "Advertise With Us" remains the only
+                /advertise link a crawler sees. This entry is for humans on a laptop. */}
+            <ContentLink
+              href="/advertise/"
+              onNavigate={onNavigate}
+              className="hidden sm:inline px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-700 rounded-lg transition-colors cursor-pointer"
+            >
+              Advertise
+            </ContentLink>
             {currentStep !== 'HOME' && (
               <button
                 onClick={onNewSearch}
