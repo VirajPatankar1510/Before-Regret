@@ -12,6 +12,11 @@ interface GuideRow {
   slug: string;
   title: string;
   taken: boolean;
+  // Which price band this guide sells at -- see src/server/adPricing.ts. Optional so a stale cached
+  // response from before tiers existed still renders; the fallback treats it as standard, which is
+  // the old behaviour exactly.
+  tier?: 'standard' | 'geo';
+  priceUsd?: number;
 }
 
 interface GuideAdsCheckoutProps {
@@ -67,6 +72,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [guides, setGuides] = useState<GuideRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pricePerSlot, setPricePerSlot] = useState(7.99);
+  // The county-tier price, read from the same /slots response as the per-guide prices so the copy
+  // above the list can never disagree with the numbers in it. Seeded with the current tier price
+  // only so the page has something to render before the fetch lands.
+  const [geoPrice, setGeoPrice] = useState(29);
   const [slotDurationDays, setSlotDurationDays] = useState(30);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState('');
@@ -150,6 +159,8 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
         if (data?.success) {
           setGuides(data.guides);
           if (typeof data.pricePerSlotUsd === 'number') setPricePerSlot(data.pricePerSlotUsd);
+          if (typeof data.tierPricesUsd?.standard === 'number') setPricePerSlot(data.tierPricesUsd.standard);
+          if (typeof data.tierPricesUsd?.geo === 'number') setGeoPrice(data.tierPricesUsd.geo);
           if (typeof data.slotDurationDays === 'number') setSlotDurationDays(data.slotDurationDays);
         } else {
           setLoadError(data?.error || 'Could not load available placements.');
@@ -201,7 +212,15 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   }, [guides, search, tradeCategory]);
 
   const selectedCount = selected.size;
-  const total = selectedCount * pricePerSlot;
+  // Summed per guide rather than multiplied by one rate: county guides cost more than standard
+  // ones (see src/server/adPricing.ts), so a flat multiply would quote the wrong number for any
+  // cart mixing the two. This is display only -- the amount actually charged is recomputed
+  // server-side from each guide's stored tier at checkout, and never taken from the client.
+  const priceOf = (g: GuideRow) => (typeof g.priceUsd === 'number' ? g.priceUsd : pricePerSlot);
+  const total = useMemo(() => {
+    if (!guides) return selectedCount * pricePerSlot;
+    return guides.reduce((sum, g) => (selected.has(g.articleId) ? sum + priceOf(g) : sum), 0);
+  }, [guides, selected, pricePerSlot, selectedCount]);
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -276,7 +295,19 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           g.taken ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-slate-50'
         }`}
       >
-        <span className="text-sm text-slate-800 min-w-0 flex-1">{g.title}</span>
+        <span className="text-sm text-slate-800 min-w-0 flex-1">
+          {g.title}
+          {/* The county badge is the whole reason this tier exists, so it is named on the row
+              rather than left for the vendor to infer from a higher price: a guide about one
+              county reaches readers researching that county, which is the only audience a local
+              trade can actually serve. */}
+          {g.tier === 'geo' && (
+            <span className="ml-2 inline-block align-middle text-[10px] font-bold uppercase tracking-wide text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+              County
+            </span>
+          )}
+        </span>
+        <span className="text-xs font-bold text-slate-500 shrink-0 tabular-nums">${priceOf(g).toFixed(2)}</span>
         <span
           className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border shrink-0 ${
             g.taken
@@ -325,8 +356,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
               Get your phone number in front of people researching this exact problem
             </h1>
             <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-              ${pricePerSlot.toFixed(2)} per guide, {slotDurationDays} days -- pick as many guides as you want,
-              pay once, and your business shows up there until it expires. Any business can advertise on any guide.
+              From ${pricePerSlot.toFixed(2)} per guide for {slotDurationDays} days -- pick as many guides as you
+              want, pay once, and your business shows up there until it expires. Guides about a specific county
+              cost ${geoPrice.toFixed(2)}, because they reach readers in one place rather than the whole country.
+              Any business can advertise on any guide.
             </p>
           </div>
 
@@ -371,10 +404,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
               <CircleDollarSign className="w-5 h-5" />
             </div>
-            <h3 className="font-extrabold text-base text-slate-900">Lowest Cost Per Slot</h3>
+            <h3 className="font-extrabold text-base text-slate-900">Priced By Reach</h3>
             <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              ${pricePerSlot.toFixed(2)} -- a good fit if you serve customers across many
-              cities or the whole country.
+              ${pricePerSlot.toFixed(2)} for a nationwide guide -- a good fit if you serve customers across many
+              cities. ${geoPrice.toFixed(2)} for a county guide, where everyone reading is in your service area.
             </p>
           </div>
         </div>

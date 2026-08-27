@@ -1,6 +1,7 @@
 import React from 'react';
 import { Phone, ExternalLink, Megaphone } from 'lucide-react';
 import { SponsoredVendor } from '../types';
+import { reportAdClick } from '../utils/adClickBeacon';
 
 interface SponsoredVendorCardProps {
   vendor: SponsoredVendor | null | undefined;
@@ -44,16 +45,23 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
         </p>
       </div>
       <div className="flex items-center gap-2 shrink-0">
+        {/* vendor.id is the zip_ad_purchases row id (see fetchActiveZipVendors), which is what a
+            click is attributed to. The tel: href is deliberately left alone -- measurement rides
+            alongside it and never stands between a reader and the dialler. See
+            src/utils/adClickBeacon.ts. */}
         <a
           href={`tel:${vendor.phone}`}
+          onClick={() => reportAdClick('zip', Number(vendor.id), 'phone')}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all"
         >
           <Phone className="w-3.5 h-3.5" />
           <span>{vendor.phone}</span>
         </a>
         {vendor.website && (
+          // Counted server-side via /out/, so a website click registers without JavaScript. The
+          // raw URL stays as the fallback for an id that doesn't parse, so the link is never dead.
           <a
-            href={vendor.website}
+            href={Number.isFinite(Number(vendor.id)) ? `/out/zip/${Number(vendor.id)}` : vendor.website}
             target="_blank"
             rel="sponsored noopener noreferrer"
             className="inline-flex items-center gap-1 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-all"

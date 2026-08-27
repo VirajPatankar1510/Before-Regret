@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Phone, Globe, Wrench } from 'lucide-react';
 import { guessBusinessPhraseFromTitle } from '../data/guideAdCategoryGuess';
+import { reportAdClick } from '../utils/adClickBeacon';
 
 interface GuideAdSlotProps {
   articleId: number;
@@ -8,6 +9,10 @@ interface GuideAdSlotProps {
 }
 
 interface ActiveVendor {
+  // Identifies which placement a click belongs to. Optional so a cached response from before click
+  // tracking existed still renders a working ad -- the links just go untracked, which is the right
+  // failure direction.
+  purchaseId?: number;
   businessName: string;
   tradeCategory: string;
   phone: string;
@@ -90,12 +95,27 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle 
             </div>
           </div>
           <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">
-            <a href={`tel:${vendor.phone}`} className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 hover:text-blue-700">
+            {/* The tel: href is untouched by click tracking -- see src/utils/adClickBeacon.ts.
+                The number must dial whether or not measurement works. */}
+            <a
+              href={`tel:${vendor.phone}`}
+              onClick={() => { if (vendor.purchaseId) reportAdClick('guide', vendor.purchaseId, 'phone'); }}
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 hover:text-blue-700"
+            >
               <Phone className="w-3.5 h-3.5" />
               <span>{vendor.phone}</span>
             </a>
             {vendor.website && (
-              <a href={vendor.website} target="_blank" rel="sponsored noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+              // Routed through /out/ so the click is counted server-side, with no dependency on
+              // JavaScript. Falls back to the raw URL when the placement id is missing, so the
+              // link always goes somewhere real. rel="sponsored" is kept either way: it describes
+              // the commercial relationship, which the redirect doesn't change.
+              <a
+                href={vendor.purchaseId ? `/out/guide/${vendor.purchaseId}` : vendor.website}
+                target="_blank"
+                rel="sponsored noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"
+              >
                 <Globe className="w-3 h-3" />
                 <span>Visit website</span>
               </a>

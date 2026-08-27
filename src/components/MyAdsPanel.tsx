@@ -3,6 +3,17 @@ import { Loader2, Lock, ExternalLink, Pencil, Check, X, RotateCcw, Receipt, MapP
 import { useAuth } from '../context/AuthContext';
 import { requiresLicenceNumber } from '../data/sponsoredVendors';
 
+// What a vendor's placement actually did. Clicks only, never impressions -- guide pages are
+// prerendered and served by the CDN, so the server genuinely cannot count views, and a "times
+// shown" figure here would be an invented number in our own favour shown to someone deciding
+// whether to pay us again. See src/server/adClicksApi.ts.
+interface ClickSummary {
+  totalClicks: number;
+  phoneClicks: number;
+  websiteClicks: number;
+  last7Days: number;
+}
+
 interface GuidePlacement {
   purchaseId: number;
   articleId: number;
@@ -16,6 +27,12 @@ interface GuidePlacement {
   paidThrough: string;
   active: boolean;
   contactEdited: boolean;
+  tier?: 'standard' | 'geo';
+  // Per placement, not per page: county slots and standard slots renew at different prices, and a
+  // placement bought at a founding rate keeps that rate. Optional for older server responses.
+  renewalPriceUsd?: number;
+  priceLocked?: boolean;
+  clicks?: ClickSummary;
 }
 
 interface ZipPlacement {
@@ -30,6 +47,7 @@ interface ZipPlacement {
   paidThrough: string;
   active: boolean;
   contactEdited: boolean;
+  clicks?: ClickSummary;
 }
 
 interface OrderHistoryRow {
@@ -63,6 +81,33 @@ function daysLeft(paidThrough: string): number {
 
 function expiryLabel(paidThrough: string): string {
   return new Date(paidThrough).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// The single number a vendor uses to decide whether to renew. Rendered for every active placement,
+// including -- especially -- when it is zero: a placement that has been live and drawn nothing has
+// been measured, and zero is the honest answer. Hiding it until it looked good would make the
+// whole figure untrustworthy the first time a vendor noticed it only ever appeared on wins.
+//
+// The wording says what it counts and what it does not. "Times shown" is absent because it is not
+// measurable from the server (prerendered pages never reach it), and a vendor who assumed clicks
+// meant views would be reading a number that does not exist.
+function clickStats(clicks: ClickSummary | undefined) {
+  const c = clicks ?? { totalClicks: 0, phoneClicks: 0, websiteClicks: 0, last7Days: 0 };
+  return (
+    <div className="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+      <span className="text-lg font-black text-slate-900 tabular-nums">{c.totalClicks}</span>
+      <span className="text-xs text-slate-600 font-semibold">
+        {c.totalClicks === 1 ? 'reader acted on this ad' : 'readers acted on this ad'}
+      </span>
+      <span className="text-[11px] text-slate-400 tabular-nums">
+        {c.phoneClicks} phone &middot; {c.websiteClicks} website &middot; {c.last7Days} in the last 7 days
+      </span>
+      <span className="w-full text-[10px] text-slate-400 leading-relaxed">
+        Counted once per person per day. We report clicks only -- we don't measure or guarantee how
+        many times a page was viewed.
+      </span>
+    </div>
+  );
 }
 
 // Deliberately named "My Placements," never "Dashboard" -- this app doesn't track or guarantee
@@ -612,8 +657,12 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                           <Pencil className="w-3 h-3" /><span>Edit contact info</span>
                         </button>
                       )}
-                      {renewControl(key, renewal?.guidePriceUsd, () => startGuideRenew(p))}
+                      {/* The placement's own renewal price, not a page-level one: county slots
+                          cost more than standard, and a founding rate stays with the placement
+                          that bought it. Falls back to the flat figure for older responses. */}
+                      {renewControl(key, p.renewalPriceUsd ?? renewal?.guidePriceUsd, () => startGuideRenew(p))}
                     </div>
+                    {clickStats(p.clicks)}
                     {editingKey === key && editForm(() => saveGuideEdit(p.purchaseId), p.tradeCategory)}
                     {licencePrompt('guide', p.purchaseId, p.tradeCategory, p.licenceNumber)}
                   </div>
@@ -682,6 +731,20 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                         group.length > 1 ? `to all ${group.length} ZIPs` : undefined
                       )}
                     </div>
+                    {/* ZIP placements render as one card per order, so the clicks shown are the
+                        group's total -- the vendor bought the bundle as one unit and renews it as
+                        one unit, so a per-ZIP split here would be detail they can't act on. */}
+                    {clickStats(
+                      group.reduce(
+                        (sum, z) => ({
+                          totalClicks: sum.totalClicks + (z.clicks?.totalClicks ?? 0),
+                          phoneClicks: sum.phoneClicks + (z.clicks?.phoneClicks ?? 0),
+                          websiteClicks: sum.websiteClicks + (z.clicks?.websiteClicks ?? 0),
+                          last7Days: sum.last7Days + (z.clicks?.last7Days ?? 0),
+                        }),
+                        { totalClicks: 0, phoneClicks: 0, websiteClicks: 0, last7Days: 0 }
+                      )
+                    )}
                   </div>
                 );
               })}

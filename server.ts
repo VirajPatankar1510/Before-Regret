@@ -30,6 +30,7 @@ import { registerContentReportRoutes } from "./src/server/contentReportsApi.js";
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerMyAdsRoutes } from "./src/server/myAdsApi.js";
+import { registerAdClickRoutes } from "./src/server/adClicksApi.js";
 import { registerTermsRoutes } from "./src/server/termsApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { registerFunnelRoutes } from "./src/server/funnelApi.js";
@@ -275,9 +276,19 @@ export async function createApp() {
 
   // --- Vendor placement manager (Neon-backed) -------------------------------------------------
   // /my-ads: everything a signed-in vendor has bought across both ad products -- proof of
-  // purchase, expiry, and contact-detail edits. No traffic/visibility stats by design. See
-  // src/server/myAdsApi.ts.
+  // purchase, expiry, contact-detail edits, and (since click tracking landed) how many readers
+  // actually acted on the placement. See src/server/myAdsApi.ts.
   registerMyAdsRoutes(app);
+
+  // --- Vendor ad click measurement ------------------------------------------------------------
+  // /out/:adKind/:purchaseId forwards a reader to the advertiser's site and counts the click on
+  // the way through; POST /api/ad-click is the phone-tap beacon. Clicks only -- impressions are
+  // not measurable from this process, because prerendered guide pages are served by the CDN
+  // without ever reaching it. See src/server/adClicksApi.ts.
+  //
+  // Registered before express.static and the catch-all slug handler, same as the merged-guides
+  // redirect: /out/ is a route, not a file, and must not fall through to static serving.
+  registerAdClickRoutes(app);
 
   // --- Consumer Terms acceptance ledger (Neon-backed) -----------------------------------------
   // Records that a signed-in consumer affirmatively accepted the current Terms revision, for the

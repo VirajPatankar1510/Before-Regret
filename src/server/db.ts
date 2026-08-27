@@ -91,6 +91,15 @@ export async function ensureArticlesSchema(): Promise<void> {
   // the mechanism that keeps a defect page from ever needing (or getting) a second, near-duplicate
   // copy once county coverage grows: the existing one gets refreshed in place instead.
   await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS counties_ranked INTEGER`;
+  // Which price band this guide's ad slot sells at -- 'standard' or 'geo'. See adPricing.ts for
+  // why two bands exist at all (short version: a county-specific guide reaches a local audience a
+  // local trade can actually serve, and was being sold at the same price as a national one).
+  //
+  // Defaults to 'standard' rather than being derived from the slug on read, so that a guide can be
+  // marked local by hand when its slug doesn't name a county, and so that renaming a slug can
+  // never silently change what a page costs. The initial values were set by
+  // scripts/backfill-guide-ad-tiers.ts, which reports what it would change before changing it.
+  await sql`ALTER TABLE articles ADD COLUMN IF NOT EXISTS ad_tier TEXT NOT NULL DEFAULT 'standard'`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS transactions (
@@ -429,6 +438,17 @@ export async function ensureArticlesSchema(): Promise<void> {
   // edit. One edit covers the real case (a typo, a number that changed) without reopening that gap.
   await sql`ALTER TABLE guide_ad_purchases ADD COLUMN IF NOT EXISTS contact_edited BOOLEAN NOT NULL DEFAULT FALSE`;
 
+  // What this specific placement was actually sold for, captured at purchase time. Renewals quote
+  // from this column first and only fall back to the article's current tier price when it's absent
+  // -- which is what makes a "founding rate, locked for a year" offer something the system honours
+  // rather than something a person has to remember. Without it, every renewal would silently
+  // re-price to whatever the tier costs today, and the first price rise would break the promise
+  // for every early advertiser at once.
+  //
+  // Nullable because rows sold before this column existed genuinely have no recorded price;
+  // defaulting them to today's number would invent a fact about a past transaction.
+  await sql`ALTER TABLE guide_ad_purchases ADD COLUMN IF NOT EXISTS price_usd NUMERIC(10,2)`;
+
   // clerk_user_id: the stable identity the placement-manager dashboard (/my-ads) keys off of.
   // contact_email alone can't be trusted for that -- it's client-synthesized as
   // `user.email || \`${uid}@beforeregret.com\`` at checkout time (see GuideAdsCheckout.tsx /
@@ -453,6 +473,17 @@ export async function ensureArticlesSchema(): Promise<void> {
   // timestamp for them would fabricate a record rather than admit its absence.
   await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS terms_version TEXT`;
   await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMPTZ`;
+
+  // The per-slot breakdown behind amount_usd: [{articleId, tier, priceUsd}, ...] as JSON, same
+  // JSON-in-TEXT convention as slots_json beside it. Written at checkout, read at capture.
+  //
+  // It exists so capture can stamp each purchase's price_usd with the number the vendor was
+  // actually quoted, instead of re-deriving it from the article's tier minutes later. Those two
+  // are the same figure today and would silently stop being the same the first time a tier price
+  // changes while an order sits unpaid in a PayPal tab -- and the row that would end up wrong is
+  // the one a renewal quotes from forever after. Nullable: orders placed before this column
+  // existed have no breakdown, and capture falls back to the tier price for them.
+  await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS slot_prices_json TEXT`;
 
   // zip_ad_orders / zip_ad_purchases: same split as guide_ad_orders/guide_ad_purchases above and
   // for the same reason (order = checkout attempt, purchase = actually-sold inventory, "who's
@@ -501,6 +532,48 @@ export async function ensureArticlesSchema(): Promise<void> {
   // Same stable-identity column and same reasoning as guide_ad_orders.clerk_user_id above.
   await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS clerk_user_id TEXT`;
   await sql`CREATE INDEX IF NOT EXISTS idx_zip_ad_orders_clerk_user ON zip_ad_orders(clerk_user_id)`;
+
+  // Clicks on a paying advertiser's phone number or website link. See adClicksApi.ts for the full
+  // reasoning; the parts that constrain this schema:
+  //
+  //   click_day + visitor_hash + the unique index below are what make a "click" mean one
+  //   interested person per day rather than one tap. Deduplication is enforced by the index at
+  //   write time (ON CONFLICT DO NOTHING) instead of by a DISTINCT at read time, so the table
+  //   cannot grow without bound from someone holding down a link, and so every reader of this
+  //   table gets the same definition of a click without having to remember to apply it.
+  //
+  //   visitor_hash is a salted HMAC of the request IP, never the IP. Its only job is same-day
+  //   deduplication. It is never selected back out, never joined to anything, and cannot identify
+  //   a reader -- the salt is a server secret, so the digest can't be checked against a guessed
+  //   address the way a bare hash of a 32-bit space could be.
+  //
+  //   There is deliberately no impressions table. Guide pages are prerendered and CDN-served, so
+  //   this process never sees them being viewed -- the same limitation funnelApi.ts documents for
+  //   sessions. Counting "views" here would mean inventing them.
+  //
+  // No foreign key to either purchases table: ad_kind selects which one a row belongs to, and a
+  // column can't reference two parents. Orphaned rows are harmless (reads always filter by
+  // ad_kind + purchase_id) and preferable to losing a placement's click history the moment a row
+  // is cleaned up.
+  await sql`
+    CREATE TABLE IF NOT EXISTS vendor_ad_clicks (
+      id BIGSERIAL PRIMARY KEY,
+      ad_kind TEXT NOT NULL,
+      purchase_id INTEGER NOT NULL,
+      target TEXT NOT NULL,
+      click_day DATE NOT NULL,
+      visitor_hash TEXT NOT NULL,
+      clicked_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_vendor_ad_clicks_unique
+    ON vendor_ad_clicks(ad_kind, purchase_id, target, click_day, visitor_hash)
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_vendor_ad_clicks_lookup
+    ON vendor_ad_clicks(ad_kind, purchase_id, click_day)
+  `;
 
   // Advertiser-supplied licence / registration / certification number, added to all four ad tables
   // at once so an order and the purchase it becomes carry the same value. See

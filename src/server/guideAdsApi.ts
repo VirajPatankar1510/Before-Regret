@@ -4,6 +4,14 @@ import { isPayPalConfigured, createPayPalOrder, capturePayPalOrder } from './pay
 import { TRADE_CATEGORIES, requiresLicenceNumber } from '../data/sponsoredVendors.js';
 import { requireVerifiedUser } from './clerkAuth.js';
 import { TERMS_VERSION } from '../data/legalVersions.js';
+import {
+  GUIDE_AD_TIER_PRICES_USD,
+  SLOT_DURATION_DAYS,
+  normaliseTier,
+  priceForTier,
+  quoteGuideSlots,
+  quoteGuideRenewal,
+} from './adPricing.js';
 
 // Self-serve vendor ad slots on guide pages: one slot per guide, open market (any business, any
 // guide, no trade-category matching required), $7.99 per slot for a flat 30-day window, no
@@ -16,11 +24,13 @@ import { TERMS_VERSION } from '../data/legalVersions.js';
 // (guide_ad_orders = checkout attempt, guide_ad_purchases = actually-sold inventory) and why
 // (article_id, position) is deliberately not unique.
 
-// Exported so myAdsApi.ts can quote the real renewal price to the vendor before sending them to
-// PayPal -- the placement manager used to send them straight to a payment page with the amount
-// never shown anywhere in our own UI.
-export const PRICE_PER_SLOT_USD = 7.99;
-export const SLOT_DURATION_DAYS = 30;
+// Pricing moved to adPricing.ts when the flat rate became two tiers -- see that file for why a
+// county guide and a national one stopped costing the same. PRICE_PER_SLOT_USD is kept as the
+// standard-tier price so existing importers keep compiling, but nothing here should compute a
+// charge from it: an amount must come from quoteGuideSlots(), which reads each guide's tier from
+// the database rather than assuming every slot costs alike.
+export const PRICE_PER_SLOT_USD = GUIDE_AD_TIER_PRICES_USD.standard;
+export { SLOT_DURATION_DAYS };
 const SLOT_POSITION = 'top';
 
 function dbUnavailable(res: Response) {
@@ -57,19 +67,34 @@ export function registerGuideAdsRoutes(app: Express) {
     if (!isDbConfigured()) return dbUnavailable(res);
     try {
       const guides = await withDb(
-        (sql) => sql`SELECT id, slug, title FROM articles WHERE status = 'published' ORDER BY title ASC`
+        (sql) => sql`SELECT id, slug, title, ad_tier FROM articles WHERE status = 'published' ORDER BY title ASC`
       );
       const takenRows = await withDb(
         (sql) => sql`SELECT article_id FROM guide_ad_purchases WHERE position = ${SLOT_POSITION} AND active = true AND paid_through > now()`
       );
       const takenSet = new Set((takenRows as unknown as Array<{ article_id: number }>).map((r) => r.article_id));
-      const result = (guides as unknown as Array<{ id: number; slug: string; title: string }>).map((g) => ({
-        articleId: g.id,
-        slug: g.slug,
-        title: g.title,
-        taken: takenSet.has(g.id),
-      }));
-      res.json({ success: true, guides: result, pricePerSlotUsd: PRICE_PER_SLOT_USD, slotDurationDays: SLOT_DURATION_DAYS });
+      // Each guide now carries its own price. The client renders these and sums them for display,
+      // but the amount actually charged is always recomputed server-side at checkout from the same
+      // ad_tier column -- see quoteGuideSlots(). What's shown here is a quote, never the invoice.
+      const result = (guides as unknown as Array<{ id: number; slug: string; title: string; ad_tier: string }>).map((g) => {
+        const tier = normaliseTier(g.ad_tier);
+        return {
+          articleId: g.id,
+          slug: g.slug,
+          title: g.title,
+          taken: takenSet.has(g.id),
+          tier,
+          priceUsd: priceForTier(tier),
+        };
+      });
+      res.json({
+        success: true,
+        guides: result,
+        // Retained for older clients that read a single flat price; current ones use guide.priceUsd.
+        pricePerSlotUsd: PRICE_PER_SLOT_USD,
+        tierPricesUsd: GUIDE_AD_TIER_PRICES_USD,
+        slotDurationDays: SLOT_DURATION_DAYS,
+      });
     } catch (err: any) {
       console.error('[guide-ads] slots list failed:', err);
       res.status(500).json({ success: false, error: 'Could not load guide ad slots.' });
@@ -87,7 +112,7 @@ export function registerGuideAdsRoutes(app: Express) {
     }
     try {
       const rows = await withDb((sql) => sql`
-        SELECT business_name, trade_category, phone, website, licence_number
+        SELECT id, business_name, trade_category, phone, website, licence_number
         FROM guide_ad_purchases
         WHERE article_id = ${articleId} AND position = ${SLOT_POSITION} AND active = true AND paid_through > now()
         ORDER BY created_at DESC LIMIT 1
@@ -101,6 +126,11 @@ export function registerGuideAdsRoutes(app: Express) {
         success: true,
         active: true,
         vendor: {
+          // The placement id, needed by the client to attribute a click to the right advertiser
+          // (see adClicksApi.ts). Safe to expose: it identifies an ad that is already public on
+          // this page, and every route that accepts it re-checks the placement is live and paid
+          // before doing anything with it.
+          purchaseId: row.id,
           businessName: row.business_name,
           tradeCategory: row.trade_category,
           phone: row.phone,
@@ -181,7 +211,12 @@ export function registerGuideAdsRoutes(app: Express) {
         return;
       }
 
-      const amount = (slots.length * PRICE_PER_SLOT_USD).toFixed(2);
+      // Priced from the database, never from the request. The client sends which guides it wants;
+      // what each one costs is looked up here. When every slot was the same price this distinction
+      // didn't matter (slots.length * FLAT was unforgeable), but with two tiers a client-supplied
+      // price or tier would be a way to buy a $29 county slot at the $7.99 rate.
+      const quote = await withDb((sql) => quoteGuideSlots(sql, slots));
+      const amount = quote.amount;
       const appUrl = process.env.APP_URL || 'http://localhost:3000';
 
       const paypalOrder = await createPayPalOrder({
@@ -197,11 +232,11 @@ export function registerGuideAdsRoutes(app: Express) {
       await withDb((sql) => sql`
         INSERT INTO guide_ad_orders (
           paypal_order_id, business_name, trade_category, phone, website, contact_email, slots_json, amount_usd, status, clerk_user_id,
-          terms_version, terms_accepted_at, licence_number
+          terms_version, terms_accepted_at, licence_number, slot_prices_json
         ) VALUES (
           ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${phone}, ${website || null},
           ${contactEmail}, ${JSON.stringify(slots)}, ${amount}, 'pending', ${req.verifiedUserId as string},
-          ${TERMS_VERSION}, now(), ${trimmedLicence || null}
+          ${TERMS_VERSION}, now(), ${trimmedLicence || null}, ${JSON.stringify(quote.lines)}
         )
       `);
 
@@ -211,7 +246,7 @@ export function registerGuideAdsRoutes(app: Express) {
         process.env.PAYPAL_MODE === 'live' ? 'paypal.com' : 'sandbox.paypal.com'
       }/cgi-bin/webscr?cmd=_express-checkout&token=${paypalOrder.orderId}`;
 
-      res.json({ success: true, orderId: paypalOrder.orderId, amount, approvalUrl });
+      res.json({ success: true, orderId: paypalOrder.orderId, amount, lines: quote.lines, approvalUrl });
     } catch (err: any) {
       console.error('[guide-ads] checkout failed:', err);
       res.status(500).json({ success: false, error: err.message || 'Could not start checkout.' });
@@ -266,6 +301,29 @@ export function registerGuideAdsRoutes(app: Express) {
 
       const requestedArticleIds = JSON.parse(order.slots_json) as number[];
 
+      // What each slot was quoted at, recorded when the order was created. Rebuilt as a map here so
+      // every purchase row below can be stamped with the number this vendor actually agreed to pay
+      // -- which is what their renewals will quote from for as long as the placement lives.
+      // Falls back to the article's current tier only for orders created before slot_prices_json
+      // existed, where nothing better was ever recorded.
+      const quotedPrices = new Map<number, number>();
+      try {
+        for (const line of (JSON.parse(order.slot_prices_json || '[]') as Array<{ articleId: number; priceUsd: number }>)) {
+          if (Number.isFinite(line?.articleId) && Number.isFinite(line?.priceUsd)) {
+            quotedPrices.set(line.articleId, line.priceUsd);
+          }
+        }
+      } catch { /* malformed breakdown falls through to the tier lookup below */ }
+      if (quotedPrices.size === 0) {
+        await withDb(async (sql) => {
+          for (const articleId of requestedArticleIds) {
+            const rows = await sql`SELECT ad_tier FROM articles WHERE id = ${articleId} LIMIT 1`;
+            const tier = normaliseTier((rows as unknown as Array<{ ad_tier: string }>)[0]?.ad_tier);
+            quotedPrices.set(articleId, priceForTier(tier));
+          }
+        });
+      }
+
       // Capture, then persist the capture id BEFORE doing anything else. Money moving at PayPal
       // is the one step that can't be undone or replayed, so it has to leave a durable trace the
       // moment it succeeds -- otherwise a failure anywhere below (a DB blip, a lost connection)
@@ -300,11 +358,11 @@ export function registerGuideAdsRoutes(app: Express) {
           const inserted = await sql`
             INSERT INTO guide_ad_purchases (
               order_id, article_id, position, business_name, trade_category, phone, website, paid_through,
-              licence_number
+              licence_number, price_usd
             )
             SELECT ${order.id}, ${articleId}, ${SLOT_POSITION}, ${order.business_name}, ${order.trade_category},
                    ${order.phone}, ${order.website}, ${paidThrough.toISOString()},
-                   ${order.licence_number ?? null}
+                   ${order.licence_number ?? null}, ${quotedPrices.get(articleId) ?? null}
             WHERE NOT EXISTS (
               SELECT 1 FROM guide_ad_purchases
               WHERE article_id = ${articleId} AND position = ${SLOT_POSITION} AND active = true AND paid_through > now()
@@ -429,10 +487,15 @@ export function registerGuideAdsRoutes(app: Express) {
       }
 
       const appUrl = process.env.APP_URL || 'http://localhost:3000';
+      // The renewal price comes from the placement itself, not from a constant: a county slot and a
+      // standard one no longer cost the same, and a vendor who bought at a founding rate keeps it
+      // (see quoteGuideRenewal). Charging PRICE_PER_SLOT_USD here would have quietly renewed every
+      // $29 county placement for $7.99.
+      const renewalQuote = await withDb((sql) => quoteGuideRenewal(sql, purchaseId));
       // PayPal appends `&token=<orderId>` to this on redirect back -- see
       // GuideAdsCheckoutSuccess.tsx's own returnUrl handling for the same pattern this mirrors.
       const paypalOrder = await createPayPalOrder({
-        amount: PRICE_PER_SLOT_USD.toFixed(2),
+        amount: renewalQuote.amount,
         currency: 'USD',
         type: 'vendor_subscription',
         description: `BeforeRegret guide ad renewal -- ${SLOT_DURATION_DAYS} more days`,
@@ -451,7 +514,7 @@ export function registerGuideAdsRoutes(app: Express) {
         -- they already gave would be friction, and dropping it would silently strip the licence
         -- from an ad that had been displaying one.
         SELECT ${paypalOrder.orderId}, business_name, trade_category, phone, website,
-               ${purchase.contact_email}, '[]', ${PRICE_PER_SLOT_USD.toFixed(2)}, 'pending', ${clerkUserId}, ${purchaseId},
+               ${purchase.contact_email}, '[]', ${renewalQuote.amount}, 'pending', ${clerkUserId}, ${purchaseId},
                licence_number
         FROM guide_ad_purchases WHERE id = ${purchaseId}
       `);
@@ -460,7 +523,7 @@ export function registerGuideAdsRoutes(app: Express) {
         process.env.PAYPAL_MODE === 'live' ? 'paypal.com' : 'sandbox.paypal.com'
       }/cgi-bin/webscr?cmd=_express-checkout&token=${paypalOrder.orderId}`;
 
-      res.json({ success: true, orderId: paypalOrder.orderId, approvalUrl });
+      res.json({ success: true, orderId: paypalOrder.orderId, amount: renewalQuote.amount, approvalUrl });
     } catch (err: any) {
       console.error('[guide-ads] renew checkout failed:', err);
       res.status(500).json({ success: false, error: err.message || 'Could not start renewal.' });

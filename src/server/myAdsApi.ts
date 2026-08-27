@@ -4,10 +4,22 @@ import { requireVerifiedUser } from './clerkAuth.js';
 import { requiresLicenceNumber } from '../data/sponsoredVendors.js';
 import { PRICE_PER_SLOT_USD as GUIDE_PRICE_USD, SLOT_DURATION_DAYS as RENEWAL_DAYS } from './guideAdsApi.js';
 import { PRICE_PER_BUNDLE_USD as ZIP_PRICE_USD, ZIPS_PER_BUNDLE } from './zipAdsApi.js';
+import { GUIDE_AD_TIER_PRICES_USD, normaliseTier, priceForTier } from './adPricing.js';
+import { getClickSummaries } from './adClicksApi.js';
 
-// The vendor-facing placement manager (/my-ads) -- deliberately not called a "dashboard" anywhere
-// in its copy, since it carries zero traffic/impression stats by design (this app doesn't
-// guarantee or measure visibility). Its actual job: proof of purchase, expiry, edit, renew. Keyed
+// The vendor-facing placement manager (/my-ads). Its job: proof of purchase, expiry, edit, renew,
+// and -- since click tracking landed -- what the placement actually did.
+//
+// This file used to state that it carried "zero traffic/impression stats by design," and half of
+// that is still true and deliberate: impressions are NOT reported, because prerendered guide pages
+// are served by the CDN and never reach this process, so any view count would be invented (same
+// limitation funnelApi.ts documents for sessions). What changed is clicks, which genuinely do
+// reach the server and are now counted (see adClicksApi.ts). The original stance was defensible
+// for a one-time sale and untenable for a renewing product: a vendor with no evidence has no basis
+// to renew except faith, so churn was the designed-in outcome of every placement.
+//
+// The copy still avoids the word "dashboard" -- what's reported here is one honest number, not an
+// analytics suite, and naming it as more than it is would set up the same disappointment. Keyed
 // by clerk_user_id, the column added to guide_ad_orders/zip_ad_orders alongside checkout -- see
 // db.ts for why contact_email alone can't be trusted as a stable identity (it's a client-
 // synthesized `user.email || uid@beforeregret.com` fallback, not guaranteed consistent across
@@ -33,7 +45,8 @@ export function registerMyAdsRoutes(app: Express) {
       const guideRows = await withDb((sql) => sql`
         SELECT p.id AS purchase_id, p.article_id, a.slug, a.title, p.business_name, p.trade_category,
                p.phone, p.website, p.licence_number, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id,
-               o.amount_usd, o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at
+               o.amount_usd, o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at,
+               p.price_usd, a.ad_tier
         FROM guide_ad_purchases p
         JOIN guide_ad_orders o ON o.id = p.order_id
         JOIN articles a ON a.id = p.article_id
@@ -89,6 +102,7 @@ export function registerMyAdsRoutes(app: Express) {
         trade_category: string; phone: string; website: string | null; licence_number: string | null;
         paid_through: string; created_at: string; contact_edited: boolean; order_id: number; amount_usd: string;
         paypal_order_id: string; paypal_capture_id: string | null; order_created_at: string;
+        price_usd: string | null; ad_tier: string;
       };
       type ZipPurchaseRow = {
         purchase_id: number; zip_code: string; trade_category: string; business_name: string;
@@ -96,6 +110,16 @@ export function registerMyAdsRoutes(app: Express) {
         created_at: string; contact_edited: boolean; order_id: number; amount_usd: string; paypal_order_id: string;
         paypal_capture_id: string | null; order_created_at: string;
       };
+
+      // Click counts, fetched once per ad kind rather than per placement. See adClicksApi.ts for
+      // what a "click" is defined as (one visitor, one target, one day) and why impressions are
+      // deliberately absent -- prerendered pages never reach this server, so a "times shown"
+      // figure would be invented rather than measured.
+      const [guideClicks, zipClicks] = await Promise.all([
+        getClickSummaries('guide', (guideRows as unknown as GuidePurchaseRow[]).map((r) => r.purchase_id)),
+        getClickSummaries('zip', (zipRows as unknown as ZipPurchaseRow[]).map((r) => r.purchase_id)),
+      ]);
+      const noClicks = { totalClicks: 0, phoneClicks: 0, websiteClicks: 0, last7Days: 0 };
 
       const now = Date.now();
       const guidePlacements = (guideRows as unknown as GuidePurchaseRow[]).map((r) => ({
@@ -115,6 +139,19 @@ export function registerMyAdsRoutes(app: Express) {
         paidThrough: r.paid_through,
         active: new Date(r.paid_through).getTime() > now,
         contactEdited: r.contact_edited,
+        tier: normaliseTier(r.ad_tier),
+        // Per-placement, because a flat renewal price stopped being true once county slots cost
+        // more than standard ones -- and because a placement bought at a founding rate renews at
+        // that rate rather than at today's tier price. Same resolution order as quoteGuideRenewal:
+        // the price stored on the row wins, the tier is only a fallback for rows that predate it.
+        renewalPriceUsd:
+          r.price_usd !== null && Number.isFinite(Number(r.price_usd))
+            ? Number(r.price_usd)
+            : priceForTier(normaliseTier(r.ad_tier)),
+        // Whether this placement's price is locked to what was actually paid, rather than tracking
+        // the tier. Shown to the vendor so a founding rate is visible as a thing they hold.
+        priceLocked: r.price_usd !== null,
+        clicks: guideClicks.get(r.purchase_id) ?? noClicks,
       }));
       const zipPlacements = (zipRows as unknown as ZipPurchaseRow[]).map((r) => ({
         purchaseId: r.purchase_id,
@@ -132,6 +169,7 @@ export function registerMyAdsRoutes(app: Express) {
         paidThrough: r.paid_through,
         active: new Date(r.paid_through).getTime() > now,
         contactEdited: r.contact_edited,
+        clicks: zipClicks.get(r.purchase_id) ?? noClicks,
       }));
 
       const orders = [
@@ -184,7 +222,17 @@ export function registerMyAdsRoutes(app: Express) {
         guidePlacements,
         zipPlacements,
         orders,
-        renewal: { guidePriceUsd: GUIDE_PRICE_USD, zipPriceUsd: ZIP_PRICE_USD, days: RENEWAL_DAYS, zipsPerBundle: ZIPS_PER_BUNDLE },
+        renewal: {
+          // Kept for the ZIP product, which is still a single flat price, and as a fallback for
+          // any client that hasn't moved to the per-placement renewalPriceUsd above. Guide
+          // renewals must use the placement's own figure -- a page-level price is no longer
+          // capable of being right for every row on the page.
+          guidePriceUsd: GUIDE_PRICE_USD,
+          guideTierPricesUsd: GUIDE_AD_TIER_PRICES_USD,
+          zipPriceUsd: ZIP_PRICE_USD,
+          days: RENEWAL_DAYS,
+          zipsPerBundle: ZIPS_PER_BUNDLE,
+        },
       });
     } catch (err: any) {
       console.error('[my-ads] load failed:', err);
