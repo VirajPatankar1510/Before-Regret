@@ -20,7 +20,15 @@ interface AdvertiseCompareProps {
 // complaint. Describe the actual mechanism (someone reading a guide, or a report for one address)
 // instead. (2) The term "guide page" -- it's this codebase's internal name for the underlying
 // content type, not something a vendor buying an ad slot needs to know; the vendor just needs to
-// know their ad reaches nationwide readers of educational content vs. one ZIP code's report.
+// know their ad reaches someone reading an article vs. someone pulling a report on one address.
+//
+// The national-vs-local framing on this page was rewritten when county guides became their own
+// $29 tier (see src/server/adPricing.ts). It previously described Topic Ads as "nationwide reach"
+// at one flat price, which meant a local contractor -- the exact buyer the county guides exist for
+// -- read the cheaper product as irrelevant to them and was steered toward Report Ads instead.
+// That is the wrong recommendation on the facts: Report Ads render inside property reports, and
+// the guide pages are where the readers actually are. Keep both prices visible on the Topic Ads
+// card; a single headline price is what caused the misread.
 //
 // This page is now prerendered (scripts/prerender-advertise.tsx) and indexable -- an Ahrefs crawl
 // found it had neither: no static render meant a crawler saw an empty <div id="root">, the
@@ -42,7 +50,13 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'How many people will see my ad?',
-    a: "We don't track or guarantee impressions, clicks, or leads for either product -- you're buying a fixed placement for the 30-day window, not a performance number. Click through to a live guide or report to see your listing yourself.",
+    // Rewritten when click tracking shipped. The old answer ("we don't track impressions, clicks,
+    // or leads") became false about clicks the moment /out/ started counting them, and leaving it
+    // would have understated the one piece of evidence a vendor gets. The impressions half is still
+    // true and still stated plainly: guide pages are served from a CDN, so views genuinely cannot
+    // be measured here, and a page that claimed otherwise would be inventing a number in our own
+    // favour. Deliberately does not promise a volume -- see the traffic sentence.
+    a: "We report clicks, not impressions. Every time a reader taps your phone number or your website link we count it (once per person per day, bots excluded), and you'll see the running total on your My Placements page -- so at the end of 30 days you have a real number rather than a guess. We can't report how many times a page was viewed: guide pages are served from a cache that never touches our server, so any view count we showed you would be made up. We also don't guarantee a volume. This site is new and its traffic is still small; you're buying a fixed placement and an honest count of what it did.",
   },
   {
     q: 'Can I cancel or get a refund?',
@@ -58,7 +72,7 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can I buy both Topic Ads and Report Ads?',
-    a: "Yes, nothing stops you from buying both -- they reach different audiences (nationwide by topic vs. your selected ZIP codes), so some vendors run both at once.",
+    a: "Yes. They reach people at different moments -- someone reading an article about a problem, versus someone pulling a report on one address -- so some vendors run both. If you only want one and you work a single metro, start with a county guide: it is the placement with readers already researching your area.",
   },
 ];
 
@@ -96,9 +110,9 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               Two ways to put your business in front of people researching a property
             </h1>
             <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-              One reaches readers nationwide, the other reaches someone looking at one specific
-              address. Both are self-serve, paid once, and live within minutes -- pick whichever
-              matches how your business actually finds customers.
+              Put your number on the article your next customer is already reading -- including
+              32 county guides covering permit lookups in the largest US metros. Self-serve, paid
+              once, live within minutes, and we send you a real click count at the end of 30 days.
             </p>
           </div>
 
@@ -123,7 +137,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             decision. Three steps, no jargon, sets up why the two cards below are worth reading. */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           {[
-            { icon: ListChecks, step: '1', title: 'Pick a plan', body: 'Topic Ads reach readers nationwide by subject. Report Ads target 3 ZIP codes and one trade. Compare both below.' },
+            { icon: ListChecks, step: '1', title: 'Pick a plan', body: 'Topic Ads put you on an article you choose -- a county permit guide if you work one metro, a national guide if you do not. Report Ads target 3 ZIP codes inside property reports.' },
             { icon: CreditCard, step: '2', title: 'Add your business', body: 'Business name, phone, and trade category -- pay once through PayPal, no account setup beyond that.' },
             { icon: Zap, step: '3', title: "You're live", body: 'Your placement goes live within minutes and runs for a flat 30-day window, no auto-renewal.' },
           ].map(({ icon: Icon, step, title, body }) => (
@@ -149,15 +163,22 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
                 <Wrench className="w-5 h-5" />
               </div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full">
-                Nationwide reach
+                National or county
               </span>
             </div>
             <div className="space-y-1">
               <h2 className="font-serif text-xl font-bold text-slate-900">Topic Ads</h2>
-              <p className="text-xs text-slate-500">Best for businesses with broad or multi-market reach</p>
+              <p className="text-xs text-slate-500">Pick the exact articles your customers are reading</p>
             </div>
+            {/* Two prices shown, not one. This card described a single flat rate until county
+                guides became their own tier -- a local contractor reading "nationwide reach,
+                $7.99" concluded this product wasn't for them and went to Report Ads, which is
+                the opposite of the right answer now that 32 county guides exist. */}
             <div className="text-3xl font-black text-slate-900">
-              $7.99 <span className="text-sm font-normal text-slate-500">/ slot, 30 days</span>
+              $7.99 <span className="text-sm font-normal text-slate-500">/ national guide</span>
+            </div>
+            <div className="-mt-3 text-2xl font-black text-emerald-700">
+              $29 <span className="text-sm font-normal text-slate-500">/ county guide, 30 days</span>
             </div>
 
             <div className="space-y-1.5">
@@ -183,16 +204,20 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
 
             <ul className="text-xs sm:text-sm text-slate-600 space-y-2.5 flex-1">
               <li className="flex items-start gap-2">
-                <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-                <span>Shown on educational articles across the whole site, not tied to any one ZIP code -- readers nationwide researching that specific topic</span>
+                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                <span><strong className="text-slate-900">32 county guides</strong> cover permit lookups in the largest US metros -- Cook, Los Angeles, Maricopa, Harris, Miami-Dade and more. Everyone reading one is researching that county.</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-                <span>Any business, any topic -- pick as many placements as you want in one checkout</span>
+                <span>119 national guides cover a single problem for readers anywhere -- a good fit if you serve many cities</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-                <span>Lowest cost per slot -- a good fit if you serve customers across many cities or the whole country</span>
+                <span>Any business, any article -- pick as many placements as you want in one checkout</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                <span>One advertiser per article. When it's yours, nobody else appears on that page.</span>
               </li>
             </ul>
             <ContentLink
@@ -280,7 +305,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               <tbody className="divide-y divide-slate-100">
                 <tr>
                   <td className="py-2.5 px-2 text-slate-500 font-medium">Price</td>
-                  <td className="py-2.5 px-2 font-bold text-slate-900">$7.99 / slot</td>
+                  <td className="py-2.5 px-2 font-bold text-slate-900">$7.99 national<br /><span className="text-emerald-700">$29 county</span></td>
                   <td className="py-2.5 px-2 font-bold text-slate-900">$29 / 3 ZIPs</td>
                 </tr>
                 <tr>
@@ -290,17 +315,17 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
                 </tr>
                 <tr>
                   <td className="py-2.5 px-2 text-slate-500 font-medium">Where it appears</td>
-                  <td className="py-2.5 px-2 text-slate-700">Educational articles, sitewide</td>
+                  <td className="py-2.5 px-2 text-slate-700">On the guide article you pick</td>
                   <td className="py-2.5 px-2 text-slate-700">Inside the report, for each of 3 ZIP codes</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 px-2 text-slate-500 font-medium">Targeting</td>
-                  <td className="py-2.5 px-2 text-slate-700">By topic, nationwide</td>
+                  <td className="py-2.5 px-2 text-slate-700">By article — county-specific or national</td>
                   <td className="py-2.5 px-2 text-slate-700">By ZIP code + trade category</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 px-2 text-slate-500 font-medium">Best for</td>
-                  <td className="py-2.5 px-2 text-slate-700">Wide or multi-market service area</td>
+                  <td className="py-2.5 px-2 text-slate-700">Any service area — pick county guides if local</td>
                   <td className="py-2.5 px-2 text-slate-700">Up to 3 specific ZIP codes or a metro area</td>
                 </tr>
               </tbody>
@@ -309,11 +334,18 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
         </div>
 
         <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 text-xs sm:text-sm text-slate-600">
+          {/* This used to send anyone with a local service area to Report Ads. That was written
+              before county guides existed and is no longer the honest recommendation: Report Ads
+              appear inside property reports, and the county guides are the placement with readers
+              already researching a specific metro. Recommending by where the readers actually are
+              matters more here than product symmetry. */}
           <span className="font-bold text-slate-900">Not sure which one? </span>
-          If you'd take a customer from anywhere, Topic Ads reach more people for less per slot.
-          If you only serve a few towns or ZIP codes, Report Ads put you in front of someone
-          researching an exact address there instead of a general topic -- worth the higher price for that
-          precision. Nothing stops you from buying both.
+          If you work one metro, start with a <span className="font-semibold text-emerald-700">county guide</span> --
+          it's the placement where every reader is researching that county, and there are 32 of them
+          covering the largest US metros. If you'd take a customer from anywhere, a national guide reaches
+          readers on one specific problem for $7.99. Report Ads are worth adding once you want to reach
+          people pulling a full report on an exact address, rather than reading about a problem. Nothing
+          stops you from buying more than one.
         </div>
 
         {/* FAQ -- closes the page on the honest answers a vendor would actually want before

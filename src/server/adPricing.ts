@@ -45,6 +45,20 @@ export function priceForTier(tier: GuideAdTier): number {
   return GUIDE_AD_TIER_PRICES_USD[tier];
 }
 
+/**
+ * Thrown when a requested guide can't be priced because it isn't a published guide.
+ *
+ * A distinct type rather than a bare Error so the checkout route can answer 400 (the caller asked
+ * for something that isn't for sale) instead of 500 (we broke). Matching on the message string
+ * would work today and break silently the first time the wording is edited.
+ */
+export class GuideNotSellableError extends Error {
+  constructor(public readonly articleId: number) {
+    super(`Guide #${articleId} is not available for advertising.`);
+    this.name = 'GuideNotSellableError';
+  }
+}
+
 export interface GuideAdQuoteLine {
   articleId: number;
   tier: GuideAdTier;
@@ -80,7 +94,7 @@ export async function quoteGuideSlots(
       SELECT ad_tier FROM articles WHERE id = ${articleId} AND status = 'published' LIMIT 1
     `;
     const row = (rows as unknown as Array<{ ad_tier: string }>)[0];
-    if (!row) throw new Error(`Guide #${articleId} is not available for advertising.`);
+    if (!row) throw new GuideNotSellableError(articleId);
     const tier = normaliseTier(row.ad_tier);
     lines.push({ articleId, tier, priceUsd: priceForTier(tier) });
   }

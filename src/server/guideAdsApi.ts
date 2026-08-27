@@ -11,6 +11,7 @@ import {
   priceForTier,
   quoteGuideSlots,
   quoteGuideRenewal,
+  GuideNotSellableError,
 } from './adPricing.js';
 
 // Self-serve vendor ad slots on guide pages: one slot per guide, open market (any business, any
@@ -180,6 +181,16 @@ export function registerGuideAdsRoutes(app: Express) {
       res.status(400).json({ success: false, error: 'Select at least one guide page.' });
       return;
     }
+    // Deduplicated before anything prices or persists it. A guide can only be sold once -- capture's
+    // INSERT ... WHERE NOT EXISTS grants the first copy and skips the rest -- but the amount was
+    // computed from the raw list, so a cart containing the same id twice charged twice and granted
+    // once. The checkout UI selects into a Set and so can't produce that, but this route accepts
+    // whatever JSON array it is handed, and a retry or a hand-made request is enough.
+    //
+    // Deduping here rather than at pricing time is deliberate: slots_json is written from this same
+    // list and read back by capture, so a duplicate surviving to storage would reappear as a
+    // "skipped" guide on the vendor's receipt for a slot they were charged for.
+    const uniqueSlots = [...new Set(slots)];
     if (attestedAccurate !== true) {
       res.status(400).json({ success: false, error: 'You must accept the Terms of Service and confirm your business details before checking out.' });
       return;
@@ -201,7 +212,7 @@ export function registerGuideAdsRoutes(app: Express) {
     }
 
     try {
-      const alreadyTaken = await findAlreadyTakenArticleIds(slots);
+      const alreadyTaken = await findAlreadyTakenArticleIds(uniqueSlots);
       if (alreadyTaken.length > 0) {
         res.status(409).json({
           success: false,
@@ -215,7 +226,7 @@ export function registerGuideAdsRoutes(app: Express) {
       // what each one costs is looked up here. When every slot was the same price this distinction
       // didn't matter (slots.length * FLAT was unforgeable), but with two tiers a client-supplied
       // price or tier would be a way to buy a $29 county slot at the $7.99 rate.
-      const quote = await withDb((sql) => quoteGuideSlots(sql, slots));
+      const quote = await withDb((sql) => quoteGuideSlots(sql, uniqueSlots));
       const amount = quote.amount;
       const appUrl = process.env.APP_URL || 'http://localhost:3000';
 
@@ -223,7 +234,7 @@ export function registerGuideAdsRoutes(app: Express) {
         amount,
         currency: 'USD',
         type: 'vendor_subscription',
-        description: `BeforeRegret guide ad -- ${slots.length} guide${slots.length === 1 ? '' : 's'} x 30 days`,
+        description: `BeforeRegret guide ad -- ${uniqueSlots.length} guide${uniqueSlots.length === 1 ? '' : 's'} x 30 days`,
         returnUrl: `${appUrl}/topic-ads/success`,
         cancelUrl: `${appUrl}/topic-ads`,
         userEmail: contactEmail,
@@ -235,7 +246,7 @@ export function registerGuideAdsRoutes(app: Express) {
           terms_version, terms_accepted_at, licence_number, slot_prices_json
         ) VALUES (
           ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${phone}, ${website || null},
-          ${contactEmail}, ${JSON.stringify(slots)}, ${amount}, 'pending', ${req.verifiedUserId as string},
+          ${contactEmail}, ${JSON.stringify(uniqueSlots)}, ${amount}, 'pending', ${req.verifiedUserId as string},
           ${TERMS_VERSION}, now(), ${trimmedLicence || null}, ${JSON.stringify(quote.lines)}
         )
       `);
@@ -248,6 +259,18 @@ export function registerGuideAdsRoutes(app: Express) {
 
       res.json({ success: true, orderId: paypalOrder.orderId, amount, lines: quote.lines, approvalUrl });
     } catch (err: any) {
+      // A guide that isn't for sale is the caller asking for the wrong thing, not a server fault --
+      // most likely a stale tab whose guide list predates the guide being unpublished. 400 says
+      // "reload and pick again"; the 500 this used to return said "we broke, try later", which is
+      // both wrong and unactionable.
+      if (err instanceof GuideNotSellableError) {
+        res.status(400).json({
+          success: false,
+          error: 'One of the guides you selected is no longer available -- reload the page and choose again.',
+          unavailableArticleId: err.articleId,
+        });
+        return;
+      }
       console.error('[guide-ads] checkout failed:', err);
       res.status(500).json({ success: false, error: err.message || 'Could not start checkout.' });
     }
@@ -447,12 +470,16 @@ export function registerGuideAdsRoutes(app: Express) {
       // dashboard already hides those (its own query filters on active), but this endpoint is
       // reachable directly and has to enforce the same thing itself.
       const owned = await withDb((sql) => sql`
-        SELECT p.id, p.paid_through, p.trade_category, p.licence_number, o.contact_email
-        FROM guide_ad_purchases p JOIN guide_ad_orders o ON o.id = p.order_id
+        SELECT p.id, p.paid_through, p.trade_category, p.licence_number, o.contact_email,
+               a.status AS article_status, a.title AS article_title
+        FROM guide_ad_purchases p
+        JOIN guide_ad_orders o ON o.id = p.order_id
+        JOIN articles a ON a.id = p.article_id
         WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} AND p.active = true LIMIT 1
       `);
       const purchase = (owned as unknown as Array<{
         id: number; paid_through: string; trade_category: string; licence_number: string | null; contact_email: string;
+        article_status: string; article_title: string;
       }>)[0];
       if (!purchase) {
         res.status(404).json({ success: false, error: 'Placement not found.' });
@@ -475,6 +502,21 @@ export function registerGuideAdsRoutes(app: Express) {
             `${purchase.trade_category}. Add it to this placement first (use "Add licence number" on ` +
             'the placement), then renew.',
           needsLicenceNumber: true,
+        });
+        return;
+      }
+      // Same principle as the `active = true` check above, one cause further out: that one catches a
+      // placement an admin pulled, this catches the guide itself no longer being published. Either
+      // way the ad has no page to render on, so charging $29 to extend it would be taking money for
+      // something that cannot be delivered. Only the reason differs, so it gets its own message --
+      // "placement not found" would be actively misleading when the placement is fine and the page
+      // is the thing that went away.
+      if (purchase.article_status !== 'published') {
+        res.status(409).json({
+          success: false,
+          error: `"${purchase.article_title}" is no longer published, so this placement can't be renewed -- ` +
+            'it would have nowhere to appear. Pick a different guide from Topic Ads instead.',
+          guideUnpublished: true,
         });
         return;
       }
