@@ -112,11 +112,24 @@ export function registerGuideAdsRoutes(app: Express) {
       return;
     }
     try {
+      // Joined to articles so an unpublished guide reports no active vendor. Third place the same
+      // rule is enforced, after the renew route's article_status check and its older `active = true`
+      // check: an ad on a page that isn't published is being shown to nobody, so answering
+      // "active: true" states something that isn't true about the world.
+      //
+      // Today nothing reaches this with an unpublished id -- GuideAdSlot only renders on published
+      // guide pages -- so this changes no behaviour a reader can see. It matters for the case that
+      // is not hypothetical: a guide unpublished while a placement is still paid and live. That
+      // silently stops delivering, and an endpoint still reporting the vendor as active is the
+      // thing that would keep it looking fine.
       const rows = await withDb((sql) => sql`
-        SELECT id, business_name, trade_category, phone, website, licence_number
-        FROM guide_ad_purchases
-        WHERE article_id = ${articleId} AND position = ${SLOT_POSITION} AND active = true AND paid_through > now()
-        ORDER BY created_at DESC LIMIT 1
+        SELECT p.id, p.business_name, p.trade_category, p.phone, p.website, p.licence_number
+        FROM guide_ad_purchases p
+        JOIN articles a ON a.id = p.article_id
+        WHERE p.article_id = ${articleId} AND p.position = ${SLOT_POSITION}
+          AND p.active = true AND p.paid_through > now()
+          AND a.status = 'published'
+        ORDER BY p.created_at DESC LIMIT 1
       `);
       const row = (rows as unknown as any[])[0];
       if (!row) {

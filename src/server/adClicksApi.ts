@@ -101,6 +101,15 @@ export function registerAdClickRoutes(app: Express) {
       // An expired or pulled placement stops forwarding traffic the moment it stops being paid for.
       // Its links live on in whatever page caches and bookmarks already exist, and continuing to
       // honour them would be delivering unpaid clicks to a former advertiser.
+      //
+      // Deliberately NOT also gated on the article being published, unlike
+      // /api/guide-ads/active/:articleId. The rules look like they should match and shouldn't: that
+      // endpoint answers "is an ad running here", where an unpublished page means the honest answer
+      // is no. This one forwards a click a real person just made on a link they already have. If we
+      // unpublish a guide mid-window, the vendor has already lost the placement they paid for --
+      // refusing to forward the few clicks still trickling in from caches and bookmarks would take
+      // away the remainder too, to no one's benefit. Expiry is the vendor's own bargain ending;
+      // unpublishing is our decision, and the cost of it shouldn't land on them twice.
       if (!website) {
         res.redirect(302, '/');
         return;
