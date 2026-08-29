@@ -1,4 +1,4 @@
-# BeforeRegret Robots.txt
+# Before Regret Robots.txt
 User-agent: *
 Allow: /
 Allow: /guides/
@@ -13,6 +13,7 @@ Allow: /disclaimer
 Disallow: /report/
 Disallow: /insights/
 Disallow: /admin
+Disallow: /out/
 Disallow: /api/
 Allow: /api/v1/
 

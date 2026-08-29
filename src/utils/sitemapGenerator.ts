@@ -265,8 +265,30 @@ export async function generateXmlSitemap(): Promise<string> {
 // pages carry no footer link block worth following and nothing a searcher should ever land on.
 // /insights/ was missing while its sibling /report/ was already listed, which is the inconsistency
 // this line closes, not a new policy.
+//
+// /out/ is the same unboundedness argument again, applied before it becomes a problem rather than
+// after. Those are the vendor click-tracking redirects (see src/server/adClicksApi.ts): one URL per
+// placement, each a 302 to an advertiser's own site. Googlebot has no reason to follow them, and
+// this site cannot spare the crawl -- Google's crawl stats for 2026-08-07..26 show 618 requests
+// total with only 3.88% (~24) spent on DISCOVERY across the whole 20-day window.
+//
+// It is theoretical today, which is exactly why it is cheap to fix now: with zero active
+// placements, no /out/ link is rendered on any page, so nothing is discoverable. The moment a slot
+// sells, GuideAdSlot.tsx and SponsoredVendorCard.tsx render real <a href="/out/..."> links on guide
+// pages and report pages, and a crawler that follows them spends discovery budget travelling to
+// third-party sites. rel="sponsored" already stops link equity passing; it does NOT stop crawling.
+// Different mechanism, different problem.
+//
+// Note this does NOT affect click counting. /out/ is hit by real readers clicking a vendor link,
+// not by crawlers following one, and adClicksApi.ts independently excludes bot user-agents from
+// the count. Blocking crawlers here removes crawl waste without touching a single real click.
+//
+// Deliberately NOT extended to /api/v1/: that surface is permitted but undiscoverable -- zero
+// sitemap entries, zero inbound links, and /api/v1/counties currently returns an empty set, so its
+// one parameterised route expands to nothing. Allow costs nothing when no crawler can find the URL.
+// Revisit if county pages are ever re-enabled and that endpoint starts listing 100 slugs.
 export function generateRobotsTxt(): string {
-  return `# BeforeRegret Robots.txt
+  return `# Before Regret Robots.txt
 User-agent: *
 Allow: /
 Allow: /guides/
@@ -281,6 +303,7 @@ Allow: /disclaimer
 Disallow: /report/
 Disallow: /insights/
 Disallow: /admin
+Disallow: /out/
 Disallow: /api/
 Allow: /api/v1/
 
