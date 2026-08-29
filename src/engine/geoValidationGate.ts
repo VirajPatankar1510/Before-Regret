@@ -155,9 +155,11 @@ export async function validateLayer1(rawAddress: string): Promise<Layer1Result> 
 //      South Drive (an unnumbered interior road on the same grounds) -- satisfying the spec's
 //      explicit requirement to catch unnumbered government-grounds roads.
 //   2. NTAD Military Bases (US DOT / Bureau of Transportation Statistics, official).
-//   3. GSA Inventory of Owned and Leased Properties (Esri's hosted copy of GSA's own IOLP open
-//      data; point layer, queried with a small buffer, catches standalone federal office
-//      buildings that aren't on a dedicated federal land parcel).
+//   3. GSA Inventory of OWNED Properties (Esri's hosted copy of GSA's own IOLP open data; point
+//      layer, queried with a small buffer, catches standalone federal office buildings that
+//      aren't on a dedicated federal land parcel). The companion LEASED layer was dropped on
+//      2026-08-29 -- a lease is a tenancy in a privately owned building, not a facility, and it
+//      was blocking ordinary residential addresses. See FACILITY_SOURCES.
 //   4. PAD-US Protected Areas National (USGS, official; parks, wildlife refuges, monuments,
 //      other conservation/protected land -- this is the "protected areas database" the spec
 //      calls for).
@@ -250,7 +252,12 @@ const PADUS_BLOCKING_MANAGERS: ReadonlySet<string> = new Set([
 ]);
 
 const POLYGON_FACILITY_BUFFER_METERS = 25;
-const POINT_FACILITY_BUFFER_METERS = 60;
+// GSA publishes buildings as POINTS, not footprints, so this radius is standing in for a building
+// outline. It was 60m, which in a dense city is most of a block: verified 2026-08-29 that a 60m
+// radius blocked ordinary residential points in Tribeca NYC, the Chicago Loop and SF Civic Center.
+// Condo/multifamily is a property type this product explicitly supports, so that was rejecting a
+// core segment. 25m still covers the building the point sits on without reaching its neighbours.
+const POINT_FACILITY_BUFFER_METERS = 25;
 // Protected areas get no buffer -- their boundaries run alongside too many ordinary residential
 // lots for any buffer to be safe (see comment above FACILITY_SOURCES).
 const PROTECTED_AREA_BUFFER_METERS = 0;
@@ -278,13 +285,20 @@ const FACILITY_SOURCES: FacilitySource[] = [
     bufferMeters: POINT_FACILITY_BUFFER_METERS,
     nameField: 'Real_Property_Asset_Name',
   },
-  {
-    id: 'gsa_leased_buildings',
-    label: 'GSA Leased Buildings (IOLP)',
-    url: 'https://services1.arcgis.com/eBupDfPlEJK3mdAm/ArcGIS/rest/services/IOLP_NEW/FeatureServer/1',
-    bufferMeters: POINT_FACILITY_BUFFER_METERS,
-    nameField: 'Real_Property_Asset_Name',
-  },
+  // GSA LEASED BUILDINGS (IOLP FeatureServer/1) was a source here and was removed 2026-08-29.
+  //
+  // A GSA lease is a tenancy, not a place. It records that some federal office rents floors in an
+  // ordinary commercial building -- the building is privately owned, the lease turns over, and the
+  // apartment next door is in no sense a federal facility. Blocking on it was rejecting real
+  // residential addresses: with the old 60m radius it blocked Tribeca NYC (15 Worth Street) and
+  // SF Civic Center (355 McAllister Street), both ordinary residential neighbourhoods.
+  //
+  // The two error directions here are not symmetric, and this gate should lean toward permitting.
+  // A false positive turns away a real buyer and tells them their home is a federal facility --
+  // wrong, and it costs the customer. A false negative lets someone generate a research report on
+  // a federal office building, which is merely unhelpful. Federal Lands, Military Bases, GSA OWNED
+  // buildings and the narrowed PAD-US still block every genuine installation; verified that the
+  // White House and Nellis AFB both still block after this removal.
   {
     id: 'protected_areas',
     label: 'PAD-US Protected Areas National (USGS)',
@@ -352,10 +366,11 @@ async function queryFacilitySource(source: FacilitySource, lat: number, lon: num
 
 /**
  * Checks: whether the resolved coordinates fall within (or near, see buffer calibration above)
- * a federal land parcel, military base, GSA-owned/leased building, or protected area.
- * Calls: 5 ArcGIS FeatureServer point-in-polygon/point-in-radius queries in parallel -- Esri
- * Living Atlas USA Federal Lands, US DOT/BTS NTAD Military Bases, Esri-hosted GSA IOLP owned +
- * leased buildings, and USGS PAD-US Protected Areas National.
+ * a federal land parcel, military base, GSA-owned building, or a blocking-category protected area.
+ * Calls: 4 ArcGIS FeatureServer point-in-polygon/point-in-radius queries in parallel -- Esri
+ * Living Atlas USA Federal Lands, US DOT/BTS NTAD Military Bases, Esri-hosted GSA IOLP owned
+ * buildings, and USGS PAD-US Protected Areas National (Defense/Energy managers only).
+ * GSA LEASED buildings were removed as a source on 2026-08-29 -- see FACILITY_SOURCES.
  * On failure: returns { passed: false, code, message, matchedFacility? } -- never throws.
  * Fails closed on: a match from any source (blocks), OR any source's query erroring/timing out
  * (blocks as "temporarily unavailable" even if other sources came back clear -- an inconclusive
