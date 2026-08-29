@@ -113,22 +113,23 @@ function buildEmail(reportId: string, address: string) {
   // Plain text is written first and sent as a real alternative, not an afterthought -- a
   // text-only client should get the link, not an empty message.
   const text = [
-    `Here's the research checklist you generated for:`,
+    `Your property research is ready.`,
+    ``,
     address,
     ``,
     url,
     ``,
-    `What's in it: the checks that actually matter for a home of this age and county, the`,
-    `questions worth asking the seller, and where the public records live so you can verify`,
-    `them yourself.`,
+    `Inside: the checks that matter for a home of this age and county, the questions worth`,
+    `asking the seller, and where the public records live so you can verify them yourself.`,
     ``,
-    `Two things we want to be straight about. The seismic hazard check and the address`,
-    `validation are live lookups run for this specific address. Everything else is a curated`,
-    `link to the official government source, clearly labelled as not independently verified`,
-    `until you open it and check. And this is research, not a home inspection -- confirm`,
-    `anything that matters with a licensed professional before you rely on it.`,
+    `Two checks in this report ran live against your address: seismic hazard, from the USGS,`,
+    `and address validation, from the US Census Bureau. Every other item is a direct link to`,
+    `the official record, marked unverified until you open it.`,
     ``,
-    `Questions or something looks wrong? Reply to this email.`,
+    `This is research, not an inspection. Anything that bears on your decision should be`,
+    `confirmed with a licensed professional.`,
+    ``,
+    `Replies to this address reach a person.`,
     ``,
     `Before Regret`,
     SITE,
@@ -143,12 +144,11 @@ function buildEmail(reportId: string, address: string) {
 <h1 style="margin:14px 0 6px;font-size:21px;line-height:1.25;color:#10161d;">Your property research is ready</h1>
 <p style="margin:0 0 20px;font-size:15px;color:#47555f;">${escapeHtml(address)}</p>
 <a href="${url}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;padding:12px 22px;border-radius:6px;">Open your report</a>
-<p style="margin:18px 0 0;font-size:13px;color:#6d7b86;word-break:break-all;">${url}</p>
 </td></tr>
 <tr><td style="padding:20px 28px 28px;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;font-size:13px;line-height:1.6;color:#47555f;border-top:1px solid #e8edf1;">
-<p style="margin:16px 0 0;">The seismic hazard check and address validation are live lookups run for this specific address. Everything else is a curated link to the official government source, clearly labelled as not independently verified until you open it and check.</p>
-<p style="margin:12px 0 0;">This is research, not a home inspection. Confirm anything that matters with a licensed professional before you rely on it.</p>
-<p style="margin:16px 0 0;color:#6d7b86;">Something look wrong? Reply to this email and a person will read it.</p>
+<p style="margin:16px 0 0;">Two checks in this report ran live against your address: seismic hazard, from the USGS, and address validation, from the US Census Bureau. Every other item is a direct link to the official record, marked unverified until you open it.</p>
+<p style="margin:12px 0 0;">This is research, not an inspection. Anything that bears on your decision should be confirmed with a licensed professional.</p>
+<p style="margin:16px 0 0;color:#6d7b86;">Replies to this address reach a person.</p>
 </td></tr>
 </table>
 </td></tr></table></body></html>`;
