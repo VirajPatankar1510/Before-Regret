@@ -197,7 +197,7 @@ function buildNewsUrlsetXml(entries: NewsUrlEntry[]): string {
     xmlLines.push(`    <loc>${escapeXml(e.loc)}</loc>`);
     xmlLines.push('    <news:news>');
     xmlLines.push('      <news:publication>');
-    xmlLines.push('        <news:name>BeforeRegret</news:name>');
+    xmlLines.push('        <news:name>Before Regret</news:name>');
     xmlLines.push('        <news:language>en</news:language>');
     xmlLines.push('      </news:publication>');
     xmlLines.push(`      <news:publication_date>${e.publicationDate}</news:publication_date>`);

@@ -156,7 +156,7 @@ const PAGES: LegalPageConfig[] = [
         '@type': 'AboutPage',
         name: 'How we research and write this site',
         url: 'https://www.beforeregret.com/about/',
-        isPartOf: { '@type': 'WebSite', name: 'BeforeRegret', url: 'https://www.beforeregret.com/' },
+        isPartOf: { '@type': 'WebSite', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
       },
       ABOUT_BREADCRUMB,
     ],

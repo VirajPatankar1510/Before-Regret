@@ -151,7 +151,7 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
       image: resolveArticleSchemaImage(article.bodyMarkdown),
       datePublished: article.publishedAt,
       dateModified: article.updatedAt || article.publishedAt,
-      author: { '@type': 'Organization', name: 'BeforeRegret' },
+      author: { '@type': 'Organization', name: 'Before Regret' },
     },
     {
       '@context': 'https://schema.org',
@@ -544,7 +544,7 @@ async function run() {
 
     const html = applyHeadReplacements(template, {
       routeKey: 'guide',
-      title: buildPageTitle(article.title, ' | BeforeRegret Guides'),
+      title: buildPageTitle(article.title, ' | Before Regret Guides'),
       description: article.metaDescription,
       canonicalUrl,
       jsonLd: buildJsonLd(article, canonicalUrl),

@@ -51,7 +51,7 @@ export function applyHeadSeo({
   setMetaTag('property', 'og:type', ogType);
   setMetaTag('property', 'og:url', canonicalUrl);
   setMetaTag('property', 'og:image', ogImage);
-  setMetaTag('property', 'og:site_name', 'BeforeRegret');
+  setMetaTag('property', 'og:site_name', 'Before Regret');
 
   // Twitter Card Meta Tags
   setMetaTag('name', 'twitter:card', 'summary_large_image');

@@ -150,7 +150,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
   useEffect(() => {
     if (!article) return;
     applyHeadSeo({
-      title: buildPageTitle(article.title, ' | BeforeRegret Guides'),
+      title: buildPageTitle(article.title, ' | Before Regret Guides'),
       description: article.metaDescription,
       canonicalUrl,
       robotsDirective: 'index, follow',
@@ -168,7 +168,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           'dateModified': article.updatedAt || article.publishedAt,
           'author': {
             '@type': 'Organization',
-            'name': 'BeforeRegret'
+            'name': 'Before Regret'
           }
         },
         {

@@ -2386,7 +2386,7 @@ export const SeoAdminPanel: React.FC<SeoAdminPanelProps> = ({ onNavigate }) => {
             className="w-full px-4 py-3 bg-slate-900 border border-slate-800 focus:border-blue-500 rounded-xl text-white text-base font-bold placeholder:text-slate-600 focus:outline-none disabled:opacity-60"
           />
           {draft.title.trim() && (() => {
-            const rendered = buildPageTitle(draft.title, ' | BeforeRegret Guides');
+            const rendered = buildPageTitle(draft.title, ' | Before Regret Guides');
             const suffixDropped = rendered.length === draft.title.length;
             return (
               <p className="text-[11px] text-slate-500">

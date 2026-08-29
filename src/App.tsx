@@ -441,7 +441,7 @@ export function App() {
         // scripts/prerender-homepage.tsx) -- this client-side call was still overwriting that
         // honest static copy back to the old "20+ Public Records" overclaim on every real visit,
         // since it runs on mount regardless of what the static HTML already says.
-        title: 'BeforeRegret — Know What to Check Before You Sign',
+        title: 'Before Regret — Know What to Check Before You Sign',
         description: 'Search any US address for free -- live seismic hazard data, address validation, inspection priorities, and seller questions -- nothing fabricated.',
         canonicalUrl: 'https://www.beforeregret.com/',
         robotsDirective: 'index, follow',
@@ -482,7 +482,7 @@ export function App() {
             '@type': 'AboutPage',
             'name': 'How we research and write this site',
             'url': 'https://www.beforeregret.com/about/',
-            'isPartOf': { '@type': 'WebSite', 'name': 'BeforeRegret', 'url': 'https://www.beforeregret.com/' }
+            'isPartOf': { '@type': 'WebSite', 'name': 'Before Regret', 'url': 'https://www.beforeregret.com/' }
           },
           {
             '@context': 'https://schema.org',

@@ -76,7 +76,7 @@ export async function createPayPalOrder(params: CreateOrderParams) {
           return_url: params.returnUrl,
           cancel_url: params.cancelUrl,
           user_action: 'PAY_NOW',
-          brand_name: 'BeforeRegret',
+          brand_name: 'Before Regret',
           locale: 'en-US',
         },
       },
