@@ -1070,7 +1070,22 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
           ...parsedReport,
           headerInfo: {
             ...fallbackReport.headerInfo,
-            ...(parsedReport.headerInfo || {})
+            ...(parsedReport.headerInfo || {}),
+            // The model does NOT get to supply these two, and the order matters: they are
+            // re-applied AFTER the spread so the model's values are overwritten, not merged.
+            //
+            // reportDate is a required field on the response schema, so Gemini dutifully invents
+            // one. A real report generated 2026-08-29 rendered "2024-05-18" in its header -- a
+            // plausible-looking date with no relationship to anything. On a product whose stated
+            // rule is that nothing is asserted unless it is backed by something real, a
+            // hallucinated date sitting above the address is precisely the wrong failure. The
+            // server knows this value for certain; there was never a reason to ask for it.
+            //
+            // address is pinned for the same reason: fallbackReport carries the geocoder's
+            // resolved address, and a model paraphrase would silently disagree with the address
+            // every other section of the report was built from.
+            reportDate: fallbackReport.headerInfo.reportDate,
+            address: fallbackReport.headerInfo.address,
           },
           pricing: {
             ...fallbackReport.pricing,
