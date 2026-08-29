@@ -76,6 +76,37 @@ export async function lookupClerkEmail(clerkUserId: string | null): Promise<stri
   }
 }
 
+/**
+ * Proves the SMTP credential actually works, without sending anything.
+ *
+ * nodemailer's verify() opens the connection and completes the AUTH handshake, then stops. That
+ * distinguishes the three states this feature can be in, which are otherwise indistinguishable
+ * from outside: not configured at all, configured with a credential the server rejects, and
+ * genuinely working. A Vercel env var also only takes effect on a REDEPLOY, so "I added the
+ * password" and "the running code can see the password" are separate facts -- this reports the
+ * second one.
+ *
+ * Never throws, and never returns the password or any part of it.
+ */
+export async function verifyReportEmailTransport(): Promise<{
+  configured: boolean;
+  host: string;
+  port: number;
+  user: string;
+  connectionOk: boolean;
+  error?: string;
+}> {
+  const base = { configured: isReportEmailConfigured(), host: SMTP_HOST, port: SMTP_PORT, user: SMTP_USER };
+  const transport = getTransport();
+  if (!transport) return { ...base, connectionOk: false, error: 'SMTP_PASSWORD is not set in this environment.' };
+  try {
+    await transport.verify();
+    return { ...base, connectionOk: true };
+  } catch (err: any) {
+    return { ...base, connectionOk: false, error: String(err?.message || err).slice(0, 300) };
+  }
+}
+
 function buildEmail(reportId: string, address: string) {
   const url = `${SITE}/insights/${reportId}`;
   const subject = `Your property research for ${address}`;

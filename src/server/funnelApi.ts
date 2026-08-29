@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { hasValidSession } from './adminAuth.js';
+import { verifyReportEmailTransport } from './reportEmailService.js';
 
 // Read-only funnel measurement, admin-gated. Exists because every revenue projection for this site
 // was being built on invented conversion rates: the schema recorded plenty about WHAT was generated
@@ -20,6 +21,27 @@ import { hasValidSession } from './adminAuth.js';
 //
 // Every figure below is a COUNT of real rows, never an extrapolation.
 export function registerFunnelRoutes(app: Express) {
+  // Admin-gated SMTP diagnostic. Answers the one question that cannot be checked from outside:
+  // is the running deployment actually able to authenticate as hello@beforeregret.com?
+  //
+  // Admin-gated rather than public because it discloses the mail host, port and sending account.
+  // It never returns the password, and verify() sends no mail -- it opens the connection,
+  // completes AUTH, and disconnects.
+  app.get('/api/admin/email-status', async (req: Request, res: Response) => {
+    if (!hasValidSession(req)) {
+      res.status(401).json({ success: false, error: 'Not authorized.' });
+      return;
+    }
+    const result = await verifyReportEmailTransport();
+    res.json({
+      success: true,
+      ...result,
+      note: result.connectionOk
+        ? 'SMTP authenticated. Signed-in requesters will be emailed their report link.'
+        : 'Report emails are NOT sending. A Vercel env var only applies after a redeploy -- if SMTP_PASSWORD was just added, redeploy before reading this as a credential problem.',
+    });
+  });
+
   app.get('/api/admin/funnel', async (req: Request, res: Response) => {
     if (!hasValidSession(req)) {
       res.status(401).json({ success: false, error: 'Not authorized.' });
