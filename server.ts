@@ -31,6 +31,7 @@ import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerMyAdsRoutes } from "./src/server/myAdsApi.js";
 import { registerAdClickRoutes } from "./src/server/adClicksApi.js";
+import { sendReportEmail, isReportEmailConfigured } from "./src/server/reportEmailService.js";
 import { registerTermsRoutes } from "./src/server/termsApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { registerFunnelRoutes } from "./src/server/funnelApi.js";
@@ -777,7 +778,26 @@ export async function createApp() {
         priceUsd: Number.isFinite(Number(price)) ? Number(price) : null,
         ipAddress: requestIp(req),
         userAgent: (req.headers['user-agent'] as string) || null,
-      }).catch((err) => console.error('[generate-report] Failed to persist declared inputs:', err));
+      })
+        // Email the permalink to the requester, if they were signed in and SMTP is configured.
+        //
+        // CHAINED off the audit write with .then(), deliberately, not fired alongside it.
+        // sendReportEmail stamps recipient_email and report_emailed_at onto the very row
+        // saveGeneratedReportInputs inserts; starting both at once is a race where the UPDATEs can
+        // reach the database first, match zero rows, and vanish leaving no trace that mail was
+        // ever sent. Sequencing costs nothing here because the whole chain is already detached
+        // from the response.
+        //
+        // void on the outside, and never awaited by the request: the report has already gone to
+        // the browser and the web permalink is the real delivery mechanism. Mail is an addition to
+        // it, so a slow or failing SMTP server must never hold up or fail a request that already
+        // succeeded. Same fire-and-forget posture as submitUrlsToIndexNow and triggerRedeploy.
+        .then(() => sendReportEmail({
+          reportId,
+          clerkUserId: requesterClerkUserId,
+          formattedAddress: resolvedMeta.formattedAddress,
+        }))
+        .catch((err) => console.error('[generate-report] Failed to persist declared inputs:', err));
     };
 
     const fallbackReport = generateStructuredPropertyReport(
@@ -1510,6 +1530,14 @@ async function startServer() {
   const app = await createApp();
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`[BeforeRegret] Property Research Engine running on http://0.0.0.0:${PORT}`);
+    // Stated at boot rather than discovered later. deployHookService.ts records what the silent
+    // version cost: a feature that no-ops without its credential is indistinguishable from one
+    // that is running and losing mail, and there is no way to tell which from outside.
+    console.log(
+      isReportEmailConfigured()
+        ? '[report-email] SMTP configured -- signed-in requesters will be emailed their report link.'
+        : '[report-email] SMTP_PASSWORD not set -- report emails are DISABLED (web permalink still works).'
+    );
   });
 }
 

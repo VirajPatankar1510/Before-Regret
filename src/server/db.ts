@@ -371,6 +371,21 @@ export async function ensureArticlesSchema(): Promise<void> {
   // only a same-instance fast path in front of it.
   await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS report_json TEXT`;
 
+  // Who the report permalink was emailed to, and when. See src/server/reportEmailService.ts.
+  //
+  // recipient_email is resolved from Clerk at generation time and STORED rather than looked up
+  // again on demand, for one concrete reason: "re-send me my report" is the first support request
+  // this feature will produce, and Clerk cannot answer it once the account's primary address has
+  // changed or the account is gone. The address is the requester's own, captured for the
+  // transactional purpose they asked for, and the same kind of data terms_acceptances.user_email
+  // already holds -- this is not a new category of storage for this app.
+  //
+  // Both nullable, and a null in either is a real state rather than a gap: a signed-out requester
+  // has no address to resolve, and a report generated while SMTP_PASSWORD is unset is never sent.
+  // The web permalink is the delivery mechanism in both cases; email is an addition to it.
+  await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS recipient_email TEXT`;
+  await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS report_emailed_at TIMESTAMPTZ`;
+
   // Vendor ad slots on guide pages (see src/server/guideAdsApi.ts). Two tables, not one:
   // guide_ad_orders is the checkout attempt (one row per PayPal order, holding the pending slot
   // selection as JSON until captured); guide_ad_purchases is the actual sold inventory (one row
