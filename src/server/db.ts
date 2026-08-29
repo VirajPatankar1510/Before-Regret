@@ -386,6 +386,20 @@ export async function ensureArticlesSchema(): Promise<void> {
   await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS recipient_email TEXT`;
   await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS report_emailed_at TIMESTAMPTZ`;
 
+  // Why a send failed, when one did. Added 2026-08-29 after a report showed recipient_email set
+  // and report_emailed_at null -- which says only "it did not finish", and cannot distinguish an
+  // SMTP rejection from a timeout from a killed function. The error was being logged to Vercel,
+  // which is exactly where it is least reachable when someone asks "why didn't I get the email".
+  //
+  // Cleared on a successful send, so a non-null value always describes the LAST failure and never
+  // a stale one from an earlier attempt.
+  await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS report_email_error TEXT`;
+  // How long the SMTP submission actually took, in milliseconds. Recorded because the first
+  // successful send landed five minutes after the report row was created, which is far outside
+  // what an SMTP handshake should cost and is the sort of thing that only looks like a problem
+  // once it is measured rather than assumed.
+  await sql`ALTER TABLE generated_reports ADD COLUMN IF NOT EXISTS report_email_ms INTEGER`;
+
   // Vendor ad slots on guide pages (see src/server/guideAdsApi.ts). Two tables, not one:
   // guide_ad_orders is the checkout attempt (one row per PayPal order, holding the pending slot
   // selection as JSON until captured); guide_ad_purchases is the actual sold inventory (one row

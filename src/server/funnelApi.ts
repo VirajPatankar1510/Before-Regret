@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { hasValidSession } from './adminAuth.js';
-import { verifyReportEmailTransport } from './reportEmailService.js';
+import { verifyReportEmailTransport, sendTestEmail } from './reportEmailService.js';
 
 // Read-only funnel measurement, admin-gated. Exists because every revenue projection for this site
 // was being built on invented conversion rates: the schema recorded plenty about WHAT was generated
@@ -40,6 +40,30 @@ export function registerFunnelRoutes(app: Express) {
         ? 'SMTP authenticated. Signed-in requesters will be emailed their report link.'
         : 'Report emails are NOT sending. A Vercel env var only applies after a redeploy -- if SMTP_PASSWORD was just added, redeploy before reading this as a credential problem.',
     });
+  });
+
+  // Sends one real message on demand. verifyReportEmailTransport() above proves AUTH works, which
+  // is a different question from whether a message is accepted and delivered -- both failures have
+  // now happened here, and only the first shows up in verify(). This reproduces the second
+  // deliberately instead of waiting for someone to generate a report and report back.
+  //
+  // Reports elapsed ms and the server's own response line, because the first successful report
+  // email landed five minutes after its row was created and that number is the thing worth seeing.
+  app.post('/api/admin/email-test', async (req: Request, res: Response) => {
+    if (!hasValidSession(req)) {
+      res.status(401).json({ success: false, error: 'Not authorized.' });
+      return;
+    }
+    const to = String((req.body || {}).to || '').trim();
+    // Deliberately requires an explicit recipient rather than defaulting to the mailbox itself:
+    // a message from hello@ to hello@ can be accepted and filed locally without ever proving the
+    // path to an outside inbox, which is the path that is actually in question.
+    if (!to || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) {
+      res.status(400).json({ success: false, error: 'Provide a recipient address as {"to":"you@example.com"}.' });
+      return;
+    }
+    const result = await sendTestEmail(to);
+    res.json({ success: true, to, ...result });
   });
 
   app.get('/api/admin/funnel', async (req: Request, res: Response) => {

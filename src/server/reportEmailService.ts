@@ -107,6 +107,35 @@ export async function verifyReportEmailTransport(): Promise<{
   }
 }
 
+/**
+ * Sends one real message to a chosen address and reports how long it took and exactly what failed.
+ *
+ * verifyReportEmailTransport() proves AUTH works, which is a different question from whether a
+ * message is accepted and delivered -- the 535 credential problem and the current
+ * accepted-but-never-arrived problem are both real and only one of them shows up in verify().
+ * This closes that gap without needing anyone to generate a report and wait.
+ */
+export async function sendTestEmail(to: string): Promise<{
+  ok: boolean; ms: number; host: string; port: number; error?: string; response?: string;
+}> {
+  const transport = getTransport();
+  const base = { host: SMTP_HOST, port: SMTP_PORT };
+  if (!transport) return { ...base, ok: false, ms: 0, error: 'SMTP_PASSWORD is not set in this environment.' };
+  const started = Date.now();
+  try {
+    const info: any = await transport.sendMail({
+      from: `"${FROM_NAME}" <${SMTP_USER}>`,
+      to,
+      subject: 'Before Regret — delivery test',
+      text: 'This is a delivery test from Before Regret. If it arrived, SMTP submission is working end to end.',
+      replyTo: SMTP_USER,
+    });
+    return { ...base, ok: true, ms: Date.now() - started, response: String(info?.response || '').slice(0, 200) };
+  } catch (err: any) {
+    return { ...base, ok: false, ms: Date.now() - started, error: String(err?.message || err).slice(0, 400) };
+  }
+}
+
 function buildEmail(reportId: string, address: string) {
   const url = `${SITE}/insights/${reportId}`;
   const subject = `Your property research for ${address}`;
@@ -195,18 +224,46 @@ export async function sendReportEmail(opts: {
     }
 
     const { subject, text, html } = buildEmail(reportId, formattedAddress);
-    await transport.sendMail({
-      from: `"${FROM_NAME}" <${SMTP_USER}>`,
-      to,
-      subject,
-      text,
-      html,
-      replyTo: SMTP_USER,
-    });
+
+    // Timed, because the first successful send landed five minutes after its report row was
+    // created -- far outside what an SMTP handshake should cost. Whether that is GoDaddy being
+    // slow to accept, or the platform suspending and resuming the function, is not something
+    // guessing can settle, and a number in the row settles it.
+    const started = Date.now();
+    try {
+      await transport.sendMail({
+        from: `"${FROM_NAME}" <${SMTP_USER}>`,
+        to,
+        subject,
+        text,
+        html,
+        replyTo: SMTP_USER,
+      });
+    } catch (sendErr: any) {
+      // Recorded on the row, not only to the platform log. A row showing recipient_email set and
+      // report_emailed_at null says nothing beyond "it did not finish", and cannot separate an
+      // SMTP rejection from a timeout from a killed function -- which is exactly the question
+      // asked when somebody reports not receiving their report.
+      const ms = Date.now() - started;
+      const message = String(sendErr?.message || sendErr).slice(0, 400);
+      await withDb((sql) => sql`
+        UPDATE generated_reports
+        SET report_email_error = ${message}, report_email_ms = ${ms}
+        WHERE report_id = ${reportId}
+      `).catch(() => {});
+      console.error(`[report-email] SMTP send failed for ${reportId} after ${ms}ms:`, message);
+      return;
+    }
+
+    const ms = Date.now() - started;
+    // report_email_error is cleared here so a non-null value always describes the LAST attempt,
+    // never a stale failure from an earlier one.
     await withDb((sql) => sql`
-      UPDATE generated_reports SET report_emailed_at = now() WHERE report_id = ${reportId}
+      UPDATE generated_reports
+      SET report_emailed_at = now(), report_email_ms = ${ms}, report_email_error = NULL
+      WHERE report_id = ${reportId}
     `).catch(() => {});
-    console.log(`[report-email] Sent report ${reportId}`);
+    console.log(`[report-email] Sent report ${reportId} in ${ms}ms`);
   } catch (err: any) {
     // Never rethrow. The report exists and its permalink works; a mail failure is a degraded
     // outcome, not a failed request.
