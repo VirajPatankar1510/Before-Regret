@@ -11,21 +11,32 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
   summaryData,
   onGenerateReport
 }) => {
-  const { address, priceRationale } = summaryData;
+  const { address, priceRationale, includedCategories, publicSourcesList, totalSourcesSearched } = summaryData;
 
-  const includedItems = [
-    'Flood & environmental risks',
-    'Natural hazards',
-    'Property records',
-    'Planning & development',
-    'Government datasets',
-    'Infrastructure',
-    'Nearby essentials',
-    'Buyer insights',
-    'Property visit checklist',
-    'Questions to ask the seller',
-    'Things to verify before purchase'
-  ];
+  // What this page promises is now derived from the sources actually assembled for THIS address,
+  // not from a fixed list written once and never revisited.
+  //
+  // It used to render eleven hardcoded strings -- "Flood & environmental risks", "Property
+  // records", "Planning & development" and so on -- regardless of address, and regardless of what
+  // the report would actually contain. That overstated things in two directions at once: the list
+  // read as data the product supplies, while the paragraph directly beneath it said there was no
+  // live data connection and the report was a checklist of links. Two blocks on one screen
+  // disagreeing about what the product does.
+  //
+  // includedCategories and publicSourcesList have been on this payload the whole time (see the
+  // /api/property/research-summary handler) -- the component simply ignored them. Nothing new is
+  // fetched here; the honest answer was already in the props.
+  //
+  // The fallback list is kept deliberately short and generic: if the server ever sends no
+  // categories, showing three vague-but-true lines is better than showing eleven specific claims
+  // that may not hold.
+  const categories = includedCategories?.length
+    ? includedCategories
+    : ['Public records', 'Hazard and environmental data', 'What to verify before you sign'];
+
+  // Counted from the list itself rather than trusting a separate number, so the heading and the
+  // rows can never disagree.
+  const sourceCount = publicSourcesList?.length ?? totalSourcesSearched ?? 0;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12 space-y-8">
@@ -57,23 +68,36 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
         {/* Decorative ambient gradient */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
 
-        {/* What This Report Includes Checklist */}
+        {/* Headed "This report covers", not "This report includes". The old wording implied the
+            product supplies these findings; what it actually supplies is a checklist pointing at
+            each source. One word, and it stops the heading contradicting the pricing note below.
+
+            The tick marks are gone with it. Green ticks on a page shown BEFORE anything has run
+            read as work already completed, which was never true here -- these are the subjects the
+            report will cover, not results. A neutral marker says the same thing without the
+            implied claim. */}
         <div className="space-y-4">
           <div className="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
             <FileText className="w-4 h-4 text-blue-400" />
-            <span>This Report Includes:</span>
+            <span>This report covers:</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {includedItems.map((item, idx) => (
+            {categories.map((item, idx) => (
               <div key={idx} className="flex items-center gap-2.5 text-sm text-slate-200">
-                <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                </div>
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-400/70 shrink-0" />
                 <span className="font-medium">{item}</span>
               </div>
             ))}
           </div>
+
+          {sourceCount > 0 && (
+            <p className="text-xs text-slate-400 pt-1">
+              Assembled from {sourceCount} official public sources for {address.city ? `${address.city}, ` : ''}{address.state}.
+              Two are checked live for this address; the rest are direct links to the government
+              record so you can look them up yourself.
+            </p>
+          )}
         </div>
 
       </div>

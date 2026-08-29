@@ -652,7 +652,7 @@ export async function createApp() {
     const totalSourcesSearched = sourcesList.length;
 
     const price = 0;
-    const priceRationale = `BeforeRegret does not yet have a live, verified data connection for this address. This is a free reference checklist linking to the ${totalSourcesSearched} official public sources so you can look up records yourself.`;
+    const priceRationale = `Before Regret does not yet have a live, verified data connection for this address. This is a free reference checklist linking to the ${totalSourcesSearched} official public sources so you can look up records yourself.`;
 
     const categoriesSet = Array.from(new Set(sourcesList.map(s => s.category)));
 
