@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ShieldCheck, Lock, User, LogOut, CheckCircle2, ArrowRight, UserCheck, Loader2, Megaphone
 } from 'lucide-react';
@@ -21,8 +21,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     logout,
     triggerClerkSignIn,
     triggerClerkSignUp,
-    requestClerkLoad
+    requestClerkLoad,
+    getToken
   } = useAuth();
+
+  // Whether this account has ever bought an ad. null = not yet known.
+  //
+  // Starts null and the button renders only on an explicit true, so the default is HIDDEN rather
+  // than shown-then-retracted. A homebuyer -- almost every account here -- should never see it
+  // appear and then vanish.
+  const [hasEverPurchased, setHasEverPurchased] = useState<boolean | null>(null);
 
   // Defense-in-depth, not the primary trigger -- Navbar's Sign In button (the only thing that
   // opens this modal today) already calls requestClerkLoad() on hover/focus/click, well before
@@ -31,6 +39,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   useEffect(() => {
     if (isOpen) requestClerkLoad();
   }, [isOpen, requestClerkLoad]);
+
+  // Asked only when the modal is open AND somebody is signed in, so a signed-out visitor never
+  // triggers it. Re-checked on each open rather than cached for the session: a vendor who has just
+  // bought their first placement should find the entry waiting next time they open this, without
+  // needing a reload.
+  useEffect(() => {
+    if (!isOpen || !user) { setHasEverPurchased(null); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = await getToken();
+        if (!token) return;
+        const res = await fetch('/api/my-ads/exists', { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) setHasEverPurchased(Boolean(data?.hasEverPurchased));
+      } catch {
+        // Left null, so the button stays hidden. /my-ads remains directly reachable, so a failed
+        // check costs a vendor a shortcut, never access.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [isOpen, user, getToken]);
 
   if (!isOpen) return null;
 
@@ -83,8 +114,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             {/* Vendors' only way back to /my-ads once they leave the checkout-success page it
                 links from -- without this, a signed-in vendor with no bookmark had no path back
-                to their own placements anywhere on the site. */}
-            {onNavigate && (
+                to their own placements anywhere on the site.
+
+                Shown ONLY to accounts that have actually bought an ad. It used to render for every
+                signed-in user, which for a homebuyer -- almost every account -- was a menu item
+                leading to an empty page about a product they have no relationship with. Gated on an
+                explicit true so it never flashes before the answer lands.
+
+                This hides the shortcut; it does not restrict access. /my-ads stays directly
+                reachable and its own routes remain gated by requireVerifiedUser, so a bookmarked
+                vendor, or one returning from PayPal, is unaffected. */}
+            {onNavigate && hasEverPurchased === true && (
               <button
                 onClick={() => {
                   onClose();

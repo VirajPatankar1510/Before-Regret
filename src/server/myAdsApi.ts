@@ -36,6 +36,46 @@ function dbUnavailable(res: Response) {
 }
 
 export function registerMyAdsRoutes(app: Express) {
+  // --- Has this account ever bought an ad? ----------------------------------------------------
+  //
+  // Exists so the account menu can stop showing "Manage My Ads" to people who have never bought
+  // one. That entry was rendered for every signed-in user, which for a homebuyer -- the
+  // overwhelming majority of accounts -- is a menu item leading to an empty page about a product
+  // they have no relationship with.
+  //
+  // Deliberately NOT /api/my-ads with the client checking whether the arrays came back empty. That
+  // route runs six queries with joins to build placements, order history and click counts; asking
+  // a yes/no question should not pay for all of it. This is two EXISTS lookups that stop at the
+  // first matching row.
+  //
+  // Counts ORDERS, not active placements, and the distinction is the point: a vendor whose
+  // placements have all expired has still bought before, still has order history worth reaching,
+  // and should still see the way back to it. "Have you ever been a customer" is the question, not
+  // "are you currently running an ad".
+  app.get('/api/my-ads/exists', requireVerifiedUser, async (req: Request, res: Response) => {
+    if (!isDbConfigured()) {
+      // Fail closed to hidden. A database blip should not make the menu item appear for someone
+      // who has never bought anything; the /my-ads page stays directly reachable regardless.
+      res.json({ success: true, hasEverPurchased: false });
+      return;
+    }
+    const clerkUserId = req.verifiedUserId as string;
+    try {
+      const rows = await withDb((sql) => sql`
+        SELECT EXISTS (
+          SELECT 1 FROM guide_ad_orders WHERE clerk_user_id = ${clerkUserId} AND status = 'completed'
+          UNION ALL
+          SELECT 1 FROM zip_ad_orders   WHERE clerk_user_id = ${clerkUserId} AND status = 'completed'
+        ) AS has_any
+      `);
+      const hasAny = Boolean((rows as unknown as Array<{ has_any: boolean }>)[0]?.has_any);
+      res.json({ success: true, hasEverPurchased: hasAny });
+    } catch (err: any) {
+      console.error('[my-ads] exists check failed:', err);
+      res.json({ success: true, hasEverPurchased: false });
+    }
+  });
+
   // --- Everything one signed-in vendor has ever bought, across both products -----------------
   app.get('/api/my-ads', requireVerifiedUser, async (req: Request, res: Response) => {
     if (!isDbConfigured()) return dbUnavailable(res);
