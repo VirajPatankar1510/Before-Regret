@@ -32,6 +32,7 @@ import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAds
 import { registerMyAdsRoutes } from "./src/server/myAdsApi.js";
 import { registerAdClickRoutes } from "./src/server/adClicksApi.js";
 import { sendReportEmail, isReportEmailConfigured } from "./src/server/reportEmailService.js";
+import { runAfterResponse } from "./src/server/afterResponse.js";
 import { registerTermsRoutes } from "./src/server/termsApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { registerFunnelRoutes } from "./src/server/funnelApi.js";
@@ -757,7 +758,7 @@ export async function createApp() {
           console.error(`[generate-report] Could not serialize report ${reportId} for storage:`, err);
         }
       }
-      void saveGeneratedReportInputs({
+      const auditThenEmail = saveGeneratedReportInputs({
         reportId,
         reportJson,
         clerkUserId: requesterClerkUserId,
@@ -785,19 +786,25 @@ export async function createApp() {
         // sendReportEmail stamps recipient_email and report_emailed_at onto the very row
         // saveGeneratedReportInputs inserts; starting both at once is a race where the UPDATEs can
         // reach the database first, match zero rows, and vanish leaving no trace that mail was
-        // ever sent. Sequencing costs nothing here because the whole chain is already detached
-        // from the response.
-        //
-        // void on the outside, and never awaited by the request: the report has already gone to
-        // the browser and the web permalink is the real delivery mechanism. Mail is an addition to
-        // it, so a slow or failing SMTP server must never hold up or fail a request that already
-        // succeeded. Same fire-and-forget posture as submitUrlsToIndexNow and triggerRedeploy.
+        // ever sent.
         .then(() => sendReportEmail({
           reportId,
           clerkUserId: requesterClerkUserId,
           formattedAddress: resolvedMeta.formattedAddress,
         }))
         .catch((err) => console.error('[generate-report] Failed to persist declared inputs:', err));
+
+      // runAfterResponse, NOT a bare `void`. This app runs inside a Vercel serverless function
+      // (vercel.json rewrites everything to /api/index), so once the response is sent the platform
+      // may freeze the function and kill whatever is still running.
+      //
+      // That is not hypothetical here -- it was observed on 2026-08-29. With a plain `void`, the
+      // fast steps finished and the slow one did not: the Clerk lookup and the recipient_email
+      // write landed, sendMail just barely completed, and the trailing report_emailed_at write
+      // never ran. The email genuinely arrived while the database still said it had not been sent.
+      //
+      // waitUntil holds the function open until the whole chain settles. See afterResponse.ts.
+      runAfterResponse(auditThenEmail, `report ${reportId} audit + email`);
     };
 
     const fallbackReport = generateStructuredPropertyReport(
