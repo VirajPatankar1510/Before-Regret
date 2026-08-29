@@ -270,3 +270,88 @@ export async function sendReportEmail(opts: {
     console.error(`[report-email] Failed to send report ${reportId}:`, err?.message || err);
   }
 }
+
+/**
+ * Re-sends report emails that were resolved to a recipient but never delivered.
+ *
+ * NO NEW QUEUE TABLE. generated_reports already records everything a queue would: recipient_email
+ * (we know who), report_emailed_at (whether it went), report_email_error (why it did not). A row
+ * with a recipient and no sent-timestamp IS a pending item, so the queue is a WHERE clause rather
+ * than a second copy of the truth that can drift from it.
+ *
+ * WHY THIS IS NEEDED AT ALL. The inline send runs after the response, via waitUntil, on a function
+ * that has already spent most of its budget generating the report with Gemini. Observed live: one
+ * report emailed five minutes after its row was created, and the next was never sent at all --
+ * while a direct test send from inside a request took 4.3 seconds and was accepted. The send is not
+ * broken; it is losing a race against the function's lifetime. maxDuration in vercel.json is the
+ * primary fix; this is the net under it, so a report is never silently lost when that is not enough.
+ *
+ * Deliberately bounded and conservative:
+ *   - only rows from the last 7 days, so a historical backlog can never suddenly mail people about
+ *     research they ran months ago
+ *   - at most BATCH rows per run, so one invocation cannot stall on a long queue
+ *   - each send is independent; one failure records its error and the loop continues
+ */
+const DRAIN_BATCH = 10;
+const DRAIN_MAX_AGE_DAYS = 7;
+
+export async function drainPendingReportEmails(): Promise<{
+  found: number; sent: number; failed: number; skipped: number;
+}> {
+  const out = { found: 0, sent: 0, failed: 0, skipped: 0 };
+  if (!isDbConfigured() || !isReportEmailConfigured()) return out;
+
+  let pending: Array<{ report_id: string; formatted_address: string; recipient_email: string }> = [];
+  try {
+    pending = (await withDb((sql) => sql`
+      SELECT report_id, formatted_address, recipient_email
+      FROM generated_reports
+      WHERE recipient_email IS NOT NULL
+        AND report_emailed_at IS NULL
+        AND created_at > now() - (${DRAIN_MAX_AGE_DAYS} * interval '1 day')
+      ORDER BY created_at ASC
+      LIMIT ${DRAIN_BATCH}
+    `)) as any;
+  } catch (err: any) {
+    console.error('[report-email] drain query failed:', err?.message || err);
+    return out;
+  }
+
+  out.found = pending.length;
+  const transport = getTransport();
+  if (!transport) { out.skipped = pending.length; return out; }
+
+  for (const row of pending) {
+    const started = Date.now();
+    try {
+      const { subject, text, html } = buildEmail(row.report_id, row.formatted_address);
+      await transport.sendMail({
+        from: `"${FROM_NAME}" <${SMTP_USER}>`,
+        to: row.recipient_email,
+        subject, text, html,
+        replyTo: SMTP_USER,
+      });
+      const ms = Date.now() - started;
+      // The UPDATE re-checks report_emailed_at IS NULL so a concurrent inline send that landed
+      // between the SELECT and here cannot be double-counted as a second delivery.
+      await withDb((sql) => sql`
+        UPDATE generated_reports
+        SET report_emailed_at = now(), report_email_ms = ${ms}, report_email_error = NULL
+        WHERE report_id = ${row.report_id} AND report_emailed_at IS NULL
+      `);
+      out.sent++;
+      console.log(`[report-email] drain sent ${row.report_id} in ${ms}ms`);
+    } catch (err: any) {
+      const ms = Date.now() - started;
+      const message = String(err?.message || err).slice(0, 400);
+      out.failed++;
+      await withDb((sql) => sql`
+        UPDATE generated_reports
+        SET report_email_error = ${message}, report_email_ms = ${ms}
+        WHERE report_id = ${row.report_id}
+      `).catch(() => {});
+      console.error(`[report-email] drain failed for ${row.report_id}:`, message);
+    }
+  }
+  return out;
+}

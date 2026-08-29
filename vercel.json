@@ -76,8 +76,13 @@
   ],
   "crons": [
     {
-      "path": "/api/admin/county-events/check",
-      "schedule": "0 13 * * *"
+      "path": "/api/cron/send-pending-report-emails",
+      "schedule": "0 * * * *"
     }
-  ]
+  ],
+  "functions": {
+    "api/index.ts": {
+      "maxDuration": 60
+    }
+  }
 }

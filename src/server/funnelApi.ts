@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { hasValidSession } from './adminAuth.js';
-import { verifyReportEmailTransport, sendTestEmail } from './reportEmailService.js';
+import { verifyReportEmailTransport, sendTestEmail, drainPendingReportEmails } from './reportEmailService.js';
 
 // Read-only funnel measurement, admin-gated. Exists because every revenue projection for this site
 // was being built on invented conversion rates: the schema recorded plenty about WHAT was generated
@@ -65,6 +65,37 @@ export function registerFunnelRoutes(app: Express) {
     const result = await sendTestEmail(to);
     res.json({ success: true, to, ...result });
   });
+
+  // Cron target: re-sends report emails that resolved to a recipient but never went out.
+  // See drainPendingReportEmails() for why the queue is a WHERE clause on generated_reports rather
+  // than a second table.
+  //
+  // AUTH. Vercel Cron sends "Authorization: Bearer $CRON_SECRET" when CRON_SECRET is set on the
+  // project. Accepted here, and an admin session is accepted too so the drain can be triggered by
+  // hand while debugging. If CRON_SECRET is NOT set, this route would otherwise be open to anyone
+  // -- it cannot leak data (it returns four counts) but it could be used to make the server send
+  // mail, so it refuses in that case rather than running unauthenticated.
+  const cronOrAdmin = (req: Request): boolean => {
+    if (hasValidSession(req)) return true;
+    const secret = process.env.CRON_SECRET;
+    if (!secret) return false;
+    return req.headers.authorization === `Bearer ${secret}`;
+  };
+
+  app.get(['/api/cron/send-pending-report-emails', '/api/admin/send-pending-report-emails'],
+    async (req: Request, res: Response) => {
+      if (!cronOrAdmin(req)) {
+        res.status(401).json({
+          success: false,
+          error: process.env.CRON_SECRET
+            ? 'Not authorized.'
+            : 'CRON_SECRET is not set on this project, so this route refuses to run unauthenticated. Set it in Vercel, or call this while signed in to /admin.',
+        });
+        return;
+      }
+      const result = await drainPendingReportEmails();
+      res.json({ success: true, ...result });
+    });
 
   app.get('/api/admin/funnel', async (req: Request, res: Response) => {
     if (!hasValidSession(req)) {
