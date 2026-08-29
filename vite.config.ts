@@ -45,19 +45,23 @@ export default defineConfig(() => {
           // Split ONLY React itself into its own chunk, by explicit allowlist.
           //
           // The obvious version of this rule -- `if (id.includes('node_modules')) return 'vendor'`
-          // -- is actively harmful here and was measured before being rejected: it sweeps in
-          // maplibre-gl, which AddressSearchBox.tsx deliberately loads on demand via a dynamic
-          // import (see the comment there). Forcing it into an eagerly-loaded vendor chunk took
-          // first-load JS from 158 KB gzipped to 471 KB, roughly triple, because every visitor
-          // reading a guide would download a mapping library they never use.
+          // -- was measured and rejected. At the time it swept in maplibre-gl, which
+          // AddressSearchBox.tsx loaded on demand, and forcing it into an eagerly-loaded vendor
+          // chunk took first-load JS from 158 KB gzipped to 471 KB: every visitor reading a guide
+          // downloaded a mapping library they never used.
+          //
+          // maplibre-gl was removed from the project on 2026-08-29 with the confirmation map, so
+          // that specific trap is gone -- but the rule stays an explicit allowlist, because the
+          // reasoning was never about maplibre. Any future heavy dependency behind a dynamic
+          // import would be pulled eager by a blanket node_modules rule in exactly the same way.
           //
           // React and its scheduler are different: every page needs them immediately, so they are
           // already eager, and this only decides which file they live in. The gain is caching --
           // React does not change between deploys, so a returning visitor re-downloads only the
           // app chunk when content or features change, instead of the two bundled together.
           //
-          // Anything not named here keeps Rollup's own chunking, which is what preserves the lazy
-          // route chunks and maplibre.
+          // Anything not named here keeps Rollup's own chunking, which preserves the lazy route
+          // chunks.
           manualChunks(id) {
             if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'react-vendor';
           },

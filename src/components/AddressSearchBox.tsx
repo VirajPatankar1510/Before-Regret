@@ -1,10 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-// Type-only -- the actual maplibre-gl module (and its stylesheet) are loaded on demand in the map
-// init effect below, not at module scope. maplibre is ~800KB of JS, and this component renders in
-// the homepage hero, so a static import put the whole mapping library on the critical path of
-// every page load. The map itself is never visible until someone has searched and picked an
-// address (see `showMap`), so none of it needs to be there for first paint.
-import type { Map as MapLibreMap, Marker as MapLibreMarker } from 'maplibre-gl';
 import {
   Loader2, AlertCircle, MapPin,
   CheckCircle2, ArrowRight, Search, X
@@ -15,11 +9,6 @@ import { isPlausibleYearBuilt } from '../engine/inspectionPriorities';
 interface AddressSearchBoxProps {
   onSelectProperty: (property: PropertySearchResult) => void;
 }
-
-// Neutral continental-US view shown before the user has searched for anything -- no property is
-// pre-selected on load (a prior version defaulted to a sample Austin address, which meant the
-// "Analyze Property" button was usable before the user had chosen anything).
-const DEFAULT_VIEW = { lat: 39.8, lon: -98.5, zoom: 3.4 };
 
 // Real residential-only validation gate: calls the backend, which runs Census geocoder
 // (Layer 1) + HIFLD-successor federal/military/protected-area checks (Layer 2) + a
@@ -116,14 +105,6 @@ function describeMatch(item: any): string {
 }
 
 export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty }) => {
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<MapLibreMap | null>(null);
-  const markerInstanceRef = useRef<MapLibreMarker | null>(null);
-  // Handle on the lazily-imported maplibre module, kept in a ref rather than state because its
-  // arrival never needs to trigger a render -- the only consumers are the init effect that loads
-  // it and updateMarkerPosition, which can only run after the map exists.
-  const maplibreRef = useRef<typeof import('maplibre-gl') | null>(null);
-
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
 
   const [selectedPinResult, setSelectedPinResult] = useState<PropertySearchResult | null>(() => {
@@ -168,11 +149,11 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // The map is a confirmation preview for a result the user already searched for -- it has
-  // nothing to show before that, so it isn't mounted at all until there's a result (or one is
-  // being looked up). Rendering a large empty map box on every page load, before any search,
-  // wasted prime above-the-fold space and read as broken rather than intentional.
-  const showMap = !!(selectedPinResult || isReverseGeocoding);
+  // True once the reader has picked an address, or while one is being resolved. Gates the whole
+  // confirmation block below -- validation gate banner, property panel, submit button. This was
+  // called `showMap` until the confirmation map was removed on 2026-08-29; the map was only ever
+  // one child of the block this guards, so the condition outlived it and only the name changed.
+  const hasSelection = !!(selectedPinResult || isReverseGeocoding);
 
   const yearBuiltValid = isPlausibleYearBuilt(parseInt(yearBuilt, 10));
 
@@ -274,39 +255,6 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     return () => clearTimeout(timer);
   }, [mapSearchQuery]);
 
-  const updateMarkerPosition = (lat: number, lon: number) => {
-    const maplibregl = maplibreRef.current;
-    if (!mapInstanceRef.current || !maplibregl) return;
-
-    if (!markerInstanceRef.current) {
-      const pinEl = document.createElement('div');
-      pinEl.innerHTML = `
-        <div class="relative flex flex-col items-center justify-end transform -translate-x-1/2 -translate-y-full" style="width:36px; height:44px;">
-          <div class="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg border border-slate-700">
-            This is your selected location
-          </div>
-          <div class="w-9 h-9 bg-blue-600 border-2 border-white text-white rounded-full flex items-center justify-center shadow-2xl ring-4 ring-blue-500/30">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-          </div>
-          <div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-blue-600 -mt-[1px]"></div>
-        </div>
-      `;
-
-      // Static confirmation pin only -- not draggable. Selecting a different address means
-      // searching again, not repositioning this marker.
-      const marker = new maplibregl.Marker({
-        element: pinEl,
-        draggable: false,
-        anchor: 'bottom'
-      })
-        .setLngLat([lon, lat])
-        .addTo(mapInstanceRef.current);
-
-      markerInstanceRef.current = marker;
-    } else {
-      markerInstanceRef.current.setLngLat([lon, lat]);
-    }
-  };
 
   // Reverse geocode a resolved coordinate into a display-ready property result. Only called
   // after a search selection, not from any map interaction (the map is a static confirmation
@@ -376,12 +324,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const selectLocation = (lat: number, lon: number, name?: string, item?: any) => {
     setShowSuggestions(false);
     if (name) setMapSearchQuery(name);
-    // Deliberately does not require mapInstanceRef.current to already exist: the map only
-    // mounts once selectedPinResult is set (see showMap above), so gating this on the map
-    // already existing would mean neither could ever happen first. The map-init effect reads
-    // selectedPinResult for its initial center once it mounts, and the separate recenter effect
-    // re-centers/drops the marker whenever selectedPinResult's lat/lon changes -- both handle
-    // actually moving the map, so this function only needs to set the result state.
+    // Sets result state only. This used to coexist with a confirmation map that had to be
+    // re-centred here; that map was removed on 2026-08-29 and nothing else needs to react to a
+    // selection beyond the state set below.
     if (!isNaN(lat) && !isNaN(lon)) {
       if (item && item.address) {
         const addr = item.address || {};
@@ -499,129 +444,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   // background API traffic in the old design (a request on every pan/zoom to fetch nearby
   // building labels, on top of one for every pin drag). Address entry now happens exclusively
   // through the search bar above; the map only ever shows where the searched address resolved.
-  useEffect(() => {
-    if (!showMap || !mapContainerRef.current || mapInstanceRef.current) return;
-
-    const initialLat = selectedPinResult?.lat || DEFAULT_VIEW.lat;
-    const initialLon = selectedPinResult?.lon || DEFAULT_VIEW.lon;
-    const initialZoom = selectedPinResult ? 17 : DEFAULT_VIEW.zoom;
-
-    // `cancelled` guards the await below: showMap can flip back off (or the component unmount)
-    // while the maplibre chunk is still downloading, and without this the late-arriving module
-    // would build a map into a container React has already torn down, leaking it past the
-    // cleanup that already ran.
-    let cancelled = false;
-    let resizeTimer: ReturnType<typeof setTimeout> | undefined;
-
-    (async () => {
-      let maplibregl: typeof import('maplibre-gl');
-      try {
-        // Stylesheet ships with the module rather than as a <link> in index.html -- it used to be
-        // a render-blocking request to unpkg for a map that isn't on screen yet.
-        [maplibregl] = await Promise.all([
-          import('maplibre-gl'),
-          import('maplibre-gl/dist/maplibre-gl.css'),
-        ]);
-      } catch (e) {
-        console.warn('Map library failed to load:', e);
-        return;
-      }
-      if (cancelled || !mapContainerRef.current || mapInstanceRef.current) return;
-      maplibreRef.current = maplibregl;
-
-      let map: MapLibreMap;
-      try {
-        const tileUrl = `${window.location.origin}/api/geocode/tiles/streets/{z}/{x}/{y}.png`;
-        map = new maplibregl.Map({
-          container: mapContainerRef.current,
-          style: {
-            version: 8,
-            sources: {
-              'locationiq-streets': {
-                type: 'raster',
-                tiles: [tileUrl],
-                tileSize: 256,
-                attribution: '&copy; LocationIQ'
-              },
-              'esri-satellite': {
-                type: 'raster',
-                tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-                tileSize: 256,
-                attribution: 'Tiles &copy; Esri'
-              },
-              'esri-labels': {
-                type: 'raster',
-                tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],
-                tileSize: 256
-              }
-            },
-            layers: [
-              {
-                id: 'streets-layer',
-                type: 'raster',
-                source: 'locationiq-streets',
-                layout: { visibility: 'none' }
-              },
-              {
-                id: 'satellite-layer',
-                type: 'raster',
-                source: 'esri-satellite',
-                layout: { visibility: 'visible' }
-              },
-              {
-                id: 'satellite-labels-layer',
-                type: 'raster',
-                source: 'esri-labels',
-                layout: { visibility: 'visible' }
-              }
-            ]
-          },
-          center: [initialLon, initialLat],
-          zoom: initialZoom,
-          attributionControl: { compact: true },
-          interactive: false
-        });
-      } catch (e) {
-        console.warn('Map creation skipped:', e);
-        return;
-      }
-
-      mapInstanceRef.current = map;
-      if (selectedPinResult) {
-        updateMarkerPosition(initialLat, initialLon);
-      }
-
-      resizeTimer = setTimeout(() => {
-        if (mapInstanceRef.current) {
-          try {
-            mapInstanceRef.current.resize();
-          } catch (e) {}
-        }
-      }, 200);
-    })();
-
-    return () => {
-      cancelled = true;
-      clearTimeout(resizeTimer);
-      if (markerInstanceRef.current) {
-        try { markerInstanceRef.current.remove(); } catch (e) {}
-        markerInstanceRef.current = null;
-      }
-      if (mapInstanceRef.current) {
-        try {
-          mapInstanceRef.current.remove();
-        } catch (e) {}
-        mapInstanceRef.current = null;
-      }
-    };
-  }, [showMap]);
 
   // Recenter/show the pin whenever a new address is selected via search.
-  useEffect(() => {
-    if (!mapInstanceRef.current || !selectedPinResult) return;
-    mapInstanceRef.current.jumpTo({ center: [selectedPinResult.lon, selectedPinResult.lat], zoom: 17 });
-    updateMarkerPosition(selectedPinResult.lat, selectedPinResult.lon);
-  }, [selectedPinResult?.lat, selectedPinResult?.lon]);
 
 
   return (
@@ -688,18 +512,23 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         </div>
       )}
 
-      {/* Static Confirmation Map -- preview only, not an input. Not mounted until a search
-          result exists (see showMap above), so there's nothing to show before that. The gate
-          banner and confirmation panel below used to overlay the bottom half of the map itself;
-          they're now separate blocks stacked below it so nothing covers the map. */}
-      {showMap && (
+      {/* The confirmation map that used to sit here was removed on 2026-08-29. It rendered a
+          maplibre-gl canvas with LocationIQ tiles once an address was picked, purely to show the
+          reader where it was -- it carried `pointer-events-none` and wrote nothing back, so it was
+          a preview and never an input. Removing it costs no functionality.
+
+          What did NOT go with it: /api/geocode/search and /api/geocode/reverse. Those resolve the
+          address the reader types and produce the lat/lon that server.ts hands to
+          fetchSeismicHazardFinding() for the live USGS query -- one of the two live checks this
+          product advertises. Verified against 1280 Riverwalk Ter, Jenks, OK 74037: LocationIQ
+          returns 36.0309871 / -95.9638813, and USGS answers seismic design category B from those
+          coordinates. Do not "finish the job" by deleting the geocode routes.
+
+          `hasSelection` below was called `showMap`. It still gates this whole block, because the
+          gate banner and the confirmation panel were nested inside the map's fragment -- the name
+          was the only thing that was ever about the map. */}
+      {hasSelection && (
       <>
-      <div className="relative w-full h-[350px] sm:h-[400px] bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
-
-        <div ref={mapContainerRef} className="w-full h-full z-0 pointer-events-none" />
-
-      </div>
-
       {/* Address Validation Gate Banner */}
       {gateState && gateState.status === 'blocked' && !gateState.isDismissed && (
         <div className="bg-amber-950/90 border border-amber-500/40 rounded-2xl p-3.5 text-xs font-medium text-amber-200 shadow-2xl backdrop-blur-md animate-fade-in flex items-center justify-between gap-3">

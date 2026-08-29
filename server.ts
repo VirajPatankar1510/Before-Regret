@@ -454,35 +454,18 @@ export async function createApp() {
     }
   });
 
-  // Map tile proxy (LocationIQ map tiles)
-  app.get("/api/geocode/tiles/:style/:z/:x/:y.png", async (req, res) => {
-    const { style, z, x, y } = req.params;
-    const apiKey = process.env.LOCATIONIQ_API_KEY;
-
-    if (!apiKey) {
-      res.status(503).send("LocationIQ API key required for tiles.");
-      return;
-    }
-
-    const validStyle = ['streets', 'dark', 'light'].includes(style) ? style : 'streets';
-
-    try {
-      const sub = ['a', 'b', 'c'][(parseInt(x || '0', 10) + parseInt(y || '0', 10)) % 3];
-      const upstreamUrl = `https://${sub}-tiles.locationiq.com/v3/${validStyle}/r/${z}/${x}/${y}.png?key=${apiKey}`;
-      const upstream = await fetch(upstreamUrl);
-      if (upstream.ok) {
-        const buffer = await upstream.arrayBuffer();
-        res.setHeader("Content-Type", "image/png");
-        res.setHeader("Cache-Control", "public, max-age=86400");
-        res.send(Buffer.from(buffer));
-        return;
-      }
-      res.status(upstream.status).send("Tile fetch failed");
-    } catch (err) {
-      console.error("[LocationIQ Tile Proxy Error]:", err);
-      res.status(502).send("Tile fetch failed");
-    }
-  });
+  // The LocationIQ tile proxy that used to sit here (/api/geocode/tiles/:style/:z/:x/:y.png) was
+  // removed on 2026-08-29 along with the confirmation map it fed. That map rendered a maplibre-gl
+  // canvas after an address was picked, carried pointer-events-none, and wrote nothing back to
+  // application state -- a preview, never an input -- so nothing depended on these tiles.
+  //
+  // The two geocoding routes ABOVE stay, and are load-bearing: /api/geocode/search resolves what
+  // the reader types, and its lat/lon is what the report route (see the /api/generate-report
+  // handler's req.body destructure) passes to fetchSeismicHazardFinding() for the live USGS
+  // query. Verified against 1280 Riverwalk Ter, Jenks, OK 74037 -- LocationIQ returns
+  // 36.0309871 / -95.9638813 and USGS answers seismic design category B from those coordinates.
+  // Deleting them would remove address search and one of the two live checks this product
+  // advertises on its homepage and /about page.
 
   // GET Standalone Report by Unique ID.
   //
