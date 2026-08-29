@@ -148,12 +148,24 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   // come back from the server and drive the filters above), so they stay as-is -- only what the
   // reader sees changes. 'NOT YET VERIFIED' in particular read as a system error rather than an
   // instruction; 'Needs verification' says the same thing as a next step.
-  const STATUS_LABEL: Record<string, string> = {
-    'CONFIRMED RECORD': 'Confirmed',
+  //
+  // 'CONFIRMED RECORD' deliberately maps to null, not to a word. The badge read "Confirmed",
+  // which overstates what actually happened: a live API call returned a value for this address.
+  // That is a real check and worth distinguishing, but "Confirmed" invites a reader to treat the
+  // finding as settled fact about their house rather than as one data point to take to a
+  // professional. Removed 2026-08-29 at the owner's request.
+  //
+  // The DISTINCTION is not removed with it -- see "Checked live for this address" as the section
+  // heading below, and the disclosure paragraph at the foot of the report. Those say the same
+  // thing in a full sentence, where the caveat travels with the claim instead of being compressed
+  // into a green pill.
+  const STATUS_LABEL: Record<string, string | null> = {
+    'CONFIRMED RECORD': null,
     'NO RECORD FOUND': 'No record found',
     'NOT YET VERIFIED': 'Needs verification',
   };
-  const statusLabel = (status: string) => STATUS_LABEL[status] || status;
+  const statusLabel = (status: string): string | null =>
+    status in STATUS_LABEL ? STATUS_LABEL[status] : status;
 
   // Toggle checklist checkbox
   const toggleCheck = (id: string) => {
@@ -178,9 +190,13 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             {finding.subject}
           </h3>
         </div>
-        <span className={`shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full border ${statusBadgeClasses(finding.status)}`}>
-          {statusLabel(finding.status)}
-        </span>
+        {/* No badge at all when the label is null -- an empty pill would be worse than none.
+            Only statuses that ask something of the reader are badged now. */}
+        {statusLabel(finding.status) && (
+          <span className={`shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full border ${statusBadgeClasses(finding.status)}`}>
+            {statusLabel(finding.status)}
+          </span>
+        )}
       </div>
 
       {/* whatWeFound / whyItMatters / suggestedNextStep used to be concatenated into a
@@ -348,7 +364,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             <div className="space-y-1">
               <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
                 <FileCheck className="w-3.5 h-3.5" />
-                <span>Confirmed for this address</span>
+                <span>Checked live for this address</span>
               </div>
               {/* Was "What We Checked" covering both confirmed findings and the pending list. Those
                   are two different things to a buyer -- what we actually found vs. what they still
@@ -511,7 +527,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             has to stay somewhere on every report. */}
         <div data-print-block className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-[11px] text-slate-500 leading-relaxed">
           <span className="font-bold text-slate-700 block uppercase font-mono tracking-wider mb-1">Disclaimer</span>
-          BeforeRegret links you to official public sources -- it does not perform physical engineering inspections, legal title searches, or property valuations. Findings marked <strong>Not Yet Verified</strong> are research leads, not established facts: confirm each one directly with the source agency before relying on it. Findings marked <strong>Confirmed</strong> reflect a live query run against a government API for this address at the time this report was generated, and may change as those agencies update their data. Physical building conditions should always be confirmed with a licensed home inspector before closing.
+          BeforeRegret links you to official public sources -- it does not perform physical engineering inspections, legal title searches, or property valuations. Findings marked <strong>Not Yet Verified</strong> are research leads, not established facts: confirm each one directly with the source agency before relying on it. Findings under <strong>Checked live for this address</strong> come from a query run against a government API for this address at the time this report was generated. That means the value was returned by the agency, not that the condition of your property has been verified -- and agencies update their data, so it can change. Physical building conditions should always be confirmed with a licensed home inspector before closing.
         </div>
 
       </main>

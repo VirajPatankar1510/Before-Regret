@@ -59,8 +59,8 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
             </h2>
             <p className="text-sm text-slate-600 leading-relaxed">
               Every property report runs two live lookups against the address you enter: a USGS seismic hazard
-              query and a U.S. Census Bureau address/neighborhood validation. Those are marked <strong>Confirmed</strong> because
-              a real API call ran for that specific address. Everything else in a report -- FEMA flood data, EPA
+              query and a U.S. Census Bureau address/neighborhood validation. Those are shown under <strong>Checked live for this
+              address</strong> because a real API call ran for that specific address. Everything else in a report -- FEMA flood data, EPA
               records, local permit and code-enforcement portals -- is a curated link straight to the actual
               government or municipal source, clearly labeled as <strong>not yet independently verified</strong> until
               you open it and check yourself. We don't blur that distinction: a report never presents a link as
