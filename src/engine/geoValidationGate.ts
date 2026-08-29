@@ -209,7 +209,45 @@ interface FacilitySource {
   bufferMeters?: number;
   nameField: string;
   agencyField?: string;
+  /**
+   * When present, a polygon hit only blocks if its agencyField value is in this set. Absent means
+   * any hit blocks, which is correct for sources that contain nothing but facilities.
+   *
+   * Added 2026-08-29 for PAD-US, which is not a facility database at all -- it is a land
+   * MANAGEMENT database, and blocking on every polygon in it was rejecting ordinary homes at
+   * scale. See PADUS_BLOCKING_MANAGERS below.
+   */
+  blockingAgencies?: ReadonlySet<string>;
 }
+
+/**
+ * The only PAD-US manager categories that block an address.
+ *
+ * WHY THIS IS AN ALLOWLIST AND NOT A LIST OF EXCLUSIONS. PAD-US publishes 31 distinct
+ * MngNm_Desc values (enumerated live from the service on 2026-08-29). The overwhelming majority
+ * of them describe land that ordinary people live on or beside: American Indian Lands, City Land,
+ * County Land, Private, Non-Governmental Organization, Regional Water Districts, every "Other or
+ * Unknown" bucket, and the conservation agencies whose boundaries routinely enclose private
+ * inholdings -- there are homes legally inside national forests and national parks. Enumerating
+ * what to exclude would mean listing almost everything and still being wrong about the next one.
+ *
+ * THE BUG THAT PROMPTED THIS. Blocking on any PAD-US polygon rejected 1280 N Riverwalk Ter,
+ * Jenks OK -- a house listed on Zillow -- with "This location is a government or federal
+ * facility", because it falls inside the Creek Oklahoma Tribal Statistical Area, filed under
+ * American Indian Lands. That polygon covers most of eastern Oklahoma after McGirt v. Oklahoma
+ * (2020), including the whole of Tulsa. Verified: Jenks, Tulsa and Broken Arrow were all blocked;
+ * Austin TX passed. A tribal statistical area is a JURISDICTION containing ordinary towns, not a
+ * facility, and telling a resident their home is a federal facility is both wrong and offensive.
+ *
+ * WHY LOSING THE REST COSTS NOTHING. PAD-US was never what caught real facilities. The White
+ * House blocks on the USA Federal Lands layer, and military installations have their own NTAD
+ * layer -- both verified before this narrowing. What remains here are the two categories where a
+ * residential address genuinely cannot exist and which the other layers might not carry.
+ */
+const PADUS_BLOCKING_MANAGERS: ReadonlySet<string> = new Set([
+  'Department of Defense',
+  'Department of Energy',
+]);
 
 const POLYGON_FACILITY_BUFFER_METERS = 25;
 const POINT_FACILITY_BUFFER_METERS = 60;
@@ -254,6 +292,7 @@ const FACILITY_SOURCES: FacilitySource[] = [
     bufferMeters: PROTECTED_AREA_BUFFER_METERS,
     nameField: 'Unit_Nm',
     agencyField: 'MngNm_Desc',
+    blockingAgencies: PADUS_BLOCKING_MANAGERS,
   },
 ];
 
@@ -285,7 +324,21 @@ async function queryFacilitySource(source: FacilitySource, lat: number, lon: num
     const features = data?.features;
     if (!Array.isArray(features)) return { ok: false };
     if (features.length === 0) return { ok: true, matched: false };
-    const attrs = features[0]?.attributes || {};
+
+    // Every overlapping polygon is considered, not just features[0]. Protected-area boundaries
+    // nest and overlap -- a point can sit inside a tribal statistical area AND a military
+    // installation at once -- so taking the first feature would let the blocking one hide behind
+    // whichever the service happened to return first.
+    const hits = features
+      .map((f: any) => f?.attributes || {})
+      .filter((attrs: any) => {
+        if (!source.blockingAgencies) return true;
+        const agency = source.agencyField ? attrs[source.agencyField] : undefined;
+        return typeof agency === 'string' && source.blockingAgencies.has(agency);
+      });
+
+    if (hits.length === 0) return { ok: true, matched: false };
+    const attrs = hits[0];
     return {
       ok: true,
       matched: true,
