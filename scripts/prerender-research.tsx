@@ -27,8 +27,13 @@ const SOURCE = path.join(process.cwd(), 'docs', 'risk-without-price.html');
 
 const CANONICAL_URL = 'https://www.beforeregret.com/research/risk-without-price/';
 const TITLE = 'Risk Without Price: what Americans actually pay to insure their homes vs. the risk they face';
+// Written to match how people actually phrase this in search -- "homeowners insurance rates by
+// state", "average home insurance cost" -- rather than restating the headline finding a second
+// time. The page's own data answers those queries; the description is where a searcher finds out
+// that it does. There is deliberately no <meta name="keywords">: Google dropped support for it in
+// 2009 and it does nothing but tell competitors what you are targeting.
 const DESCRIPTION =
-  'A study of 3,093 U.S. counties and 50.7 million mortgaged households. Which state a home sits in explains more than twice as much of its homeowners insurance premium as the natural-hazard risk the home actually faces.';
+  'Homeowners insurance rates by state and by county, measured from what households report paying. Across 3,093 U.S. counties and 50.7 million mortgaged households, state of residence explains more than twice as much of the premium as the natural-hazard risk a home actually faces.';
 const OG_IMAGE = 'https://www.beforeregret.com/og-image.png';
 const PUBLISHED = '2026-08-30';
 
@@ -87,6 +92,65 @@ const JSON_LD = [
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
       { '@type': 'ListItem', position: 2, name: 'Research', item: CANONICAL_URL },
+    ],
+  },
+  // FAQPage. Every question here is phrased the way Google Autocomplete says people actually type
+  // it, and every answer is a figure this study computed -- no rounding, no restating, no claim the
+  // page does not make. The answer text MUST stay a faithful summary of the visible "What this
+  // study answers" section: Google requires structured data to reflect on-page content, and an
+  // answer that drifts from the text is a manual-action risk, not a clever shortcut.
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Which state has the highest homeowners insurance rates?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Florida, at a household-weighted median of $2,012 a year, followed by Louisiana ($1,877), Oklahoma ($1,807), Texas ($1,767) and Colorado ($1,717). These are ACS 5-year 2023 figures centred near 2021 and do not reflect the 2023-2025 increases.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Which state has the lowest homeowners insurance rates?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Utah, at $855 a year, then Nevada ($896), Idaho ($903), Oregon ($912) and Maine ($914). The spread between the most and least expensive state is about 2.4 times.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'What is the average homeowners insurance premium in the United States?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'The household-weighted median across 3,093 counties is $1,317 a year for mortgaged owner-occupied homes. That is what households report paying in the American Community Survey, not a quoted rate for a model home.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Do homeowners insurance rates reflect actual risk?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: "Only weakly. Across 3,093 counties, FEMA's modelled hazard risk explains 20% of the variation in what people pay, while state of residence alone explains 44% - more than twice as much. Counties facing the same modelled hazard differ in price by a median of 2.3 times.",
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Why does homeowners insurance not cover flood damage?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: "Flood is excluded from standard HO-3 policies and requires separate NFIP or private cover. Inland flooding alone accounts for 59.2% of FEMA's modelled annual building loss in the United States, and earthquake - also excluded - a further 16.1%. In total 76.5% of modelled building loss falls outside the policy most homeowners buy.",
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How many US homes face earthquake risk without earthquake cover?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'In the 158 counties FEMA scores at or above 95 for earthquake risk, 22,030,850 homes - 57% of the housing stock there - were built before 1980, predating the seismic provisions introduced in the 1976 Uniform Building Code. Standard policies exclude earthquake in every one of them.',
+        },
+      },
     ],
   },
 ];

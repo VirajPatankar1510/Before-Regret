@@ -31,6 +31,12 @@ h2{font-family:var(--disp);font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.06
   font-weight:400;letter-spacing:-.01em}
 h3{font-family:var(--mono);font-size:.78rem;font-weight:600;letter-spacing:.14em;
   text-transform:uppercase;color:var(--muted)}
+/* Question headings in the FAQ block. Deliberately a plain serif rather than the mono/uppercase
+   h3 treatment: these are real questions a reader scans, not section labels. */
+h4{font-family:var(--serif);font-size:1.12rem;line-height:1.35;font-weight:600;
+  margin:0;color:var(--ink);text-wrap:balance}
+h4+p{margin-top:.4em}
+.stack>h4{margin-top:1.9em}
 p{margin:0}
 .stack>*+*{margin-top:1.05em}
 header{padding:88px 0 40px;border-bottom:2px solid var(--ink)}
@@ -293,9 +299,11 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
 
 <section class="spine stack">
   <h3>Appendix</h3>
-  <h2>Every state.</h2>
-  <p>Household-weighted median premium and covered-peril loss rate, all 51 states and DC,
-  ordered by premium.</p>
+  <h2>Average homeowners insurance premium by state</h2>
+  <p>Household-weighted median annual premium and covered-peril loss rate for all 51 states and DC,
+  ordered from the most expensive homeowners insurance rates by state to the least. Figures are ACS
+  5-year 2023 estimates, centred near 2021, so they are the baseline the 2023&#8211;2025 increases
+  departed from rather than today&#8217;s market.</p>
   <div class="tablebox">
   <table>
     <thead><tr><th>State</th><th style="text-align:right">Counties</th>
@@ -304,6 +312,44 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
     <tbody><tr><td class="mono">FL</td><td class="num">67</td><td class="num strong">$2,012</td><td class="num">$1.17</td></tr><tr><td class="mono">LA</td><td class="num">64</td><td class="num strong">$1,877</td><td class="num">$1.86</td></tr><tr><td class="mono">OK</td><td class="num">76</td><td class="num strong">$1,807</td><td class="num">$0.62</td></tr><tr><td class="mono">TX</td><td class="num">237</td><td class="num strong">$1,767</td><td class="num">$0.49</td></tr><tr><td class="mono">CO</td><td class="num">63</td><td class="num strong">$1,717</td><td class="num">$0.59</td></tr><tr><td class="mono">KS</td><td class="num">105</td><td class="num strong">$1,652</td><td class="num">$0.40</td></tr><tr><td class="mono">NE</td><td class="num">80</td><td class="num strong">$1,604</td><td class="num">$0.64</td></tr><tr><td class="mono">MS</td><td class="num">81</td><td class="num strong">$1,496</td><td class="num">$0.81</td></tr><tr><td class="mono">RI</td><td class="num">5</td><td class="num strong">$1,495</td><td class="num">$0.12</td></tr><tr><td class="mono">MN</td><td class="num">87</td><td class="num strong">$1,493</td><td class="num">$0.28</td></tr><tr><td class="mono">CT</td><td class="num">9</td><td class="num strong">$1,448</td><td class="num">$0.26</td></tr><tr><td class="mono">MA</td><td class="num">14</td><td class="num strong">$1,443</td><td class="num">$0.17</td></tr><tr><td class="mono">MO</td><td class="num">115</td><td class="num strong">$1,419</td><td class="num">$0.28</td></tr><tr><td class="mono">AL</td><td class="num">67</td><td class="num strong">$1,385</td><td class="num">$0.62</td></tr><tr><td class="mono">GA</td><td class="num">159</td><td class="num strong">$1,358</td><td class="num">$0.33</td></tr><tr><td class="mono">SD</td><td class="num">63</td><td class="num strong">$1,354</td><td class="num">$0.44</td></tr><tr><td class="mono">ND</td><td class="num">51</td><td class="num strong">$1,351</td><td class="num">$0.56</td></tr><tr><td class="mono">WY</td><td class="num">23</td><td class="num strong">$1,348</td><td class="num">$0.27</td></tr><tr><td class="mono">MT</td><td class="num">52</td><td class="num strong">$1,346</td><td class="num">$0.29</td></tr><tr><td class="mono">AR</td><td class="num">75</td><td class="num strong">$1,314</td><td class="num">$0.46</td></tr><tr><td class="mono">NY</td><td class="num">62</td><td class="num strong">$1,280</td><td class="num">$0.09</td></tr><tr><td class="mono">SC</td><td class="num">46</td><td class="num strong">$1,279</td><td class="num">$1.15</td></tr><tr><td class="mono">TN</td><td class="num">95</td><td class="num strong">$1,255</td><td class="num">$0.18</td></tr><tr><td class="mono">NJ</td><td class="num">21</td><td class="num strong">$1,246</td><td class="num">$0.23</td></tr><tr><td class="mono">CA</td><td class="num">58</td><td class="num strong">$1,239</td><td class="num">$0.24</td></tr><tr><td class="mono">KY</td><td class="num">120</td><td class="num strong">$1,235</td><td class="num">$0.26</td></tr><tr><td class="mono">HI</td><td class="num">4</td><td class="num strong">$1,222</td><td class="num">$0.29</td></tr><tr><td class="mono">MD</td><td class="num">24</td><td class="num strong">$1,204</td><td class="num">$0.14</td></tr><tr><td class="mono">AK</td><td class="num">27</td><td class="num strong">$1,194</td><td class="num">$0.14</td></tr><tr><td class="mono">IA</td><td class="num">99</td><td class="num strong">$1,189</td><td class="num">$0.37</td></tr><tr><td class="mono">IL</td><td class="num">102</td><td class="num strong">$1,187</td><td class="num">$0.17</td></tr><tr><td class="mono">NC</td><td class="num">100</td><td class="num strong">$1,179</td><td class="num">$0.60</td></tr><tr><td class="mono">IN</td><td class="num">92</td><td class="num strong">$1,155</td><td class="num">$0.20</td></tr><tr><td class="mono">VA</td><td class="num">133</td><td class="num strong">$1,138</td><td class="num">$0.17</td></tr><tr><td class="mono">WA</td><td class="num">39</td><td class="num strong">$1,113</td><td class="num">$0.09</td></tr><tr><td class="mono">NM</td><td class="num">32</td><td class="num strong">$1,099</td><td class="num">$0.21</td></tr><tr><td class="mono">NH</td><td class="num">10</td><td class="num strong">$1,048</td><td class="num">$0.19</td></tr><tr><td class="mono">MI</td><td class="num">83</td><td class="num strong">$1,044</td><td class="num">$0.19</td></tr><tr><td class="mono">OH</td><td class="num">88</td><td class="num strong">$1,041</td><td class="num">$0.16</td></tr><tr><td class="mono">DC</td><td class="num">1</td><td class="num strong">$1,041</td><td class="num">$0.10</td></tr><tr><td class="mono">PA</td><td class="num">67</td><td class="num strong">$996</td><td class="num">$0.10</td></tr><tr><td class="mono">VT</td><td class="num">14</td><td class="num strong">$969</td><td class="num">$0.08</td></tr><tr><td class="mono">AZ</td><td class="num">15</td><td class="num strong">$954</td><td class="num">$0.17</td></tr><tr><td class="mono">WI</td><td class="num">72</td><td class="num strong">$950</td><td class="num">$0.19</td></tr><tr><td class="mono">WV</td><td class="num">55</td><td class="num strong">$949</td><td class="num">$0.09</td></tr><tr><td class="mono">DE</td><td class="num">3</td><td class="num strong">$937</td><td class="num">$0.19</td></tr><tr><td class="mono">ME</td><td class="num">16</td><td class="num strong">$914</td><td class="num">$0.34</td></tr><tr><td class="mono">OR</td><td class="num">36</td><td class="num strong">$912</td><td class="num">$0.13</td></tr><tr><td class="mono">ID</td><td class="num">43</td><td class="num strong">$903</td><td class="num">$0.30</td></tr><tr><td class="mono">NV</td><td class="num">15</td><td class="num strong">$896</td><td class="num">$0.23</td></tr><tr><td class="mono">UT</td><td class="num">28</td><td class="num strong">$855</td><td class="num">$0.33</td></tr></tbody>
   </table>
   </div>
+</section>
+
+<section class="spine stack">
+  <h3>Questions</h3>
+  <h2>What this study answers</h2>
+
+  <h4>Which state has the highest homeowners insurance rates?</h4>
+  <p>Florida, at a household-weighted median of <b>$2,012</b> a year, followed by Louisiana ($1,877),
+  Oklahoma ($1,807), Texas ($1,767) and Colorado ($1,717). These are ACS 5-year 2023 figures centred
+  near 2021 and do not reflect the 2023&#8211;2025 increases.</p>
+
+  <h4>Which state has the lowest homeowners insurance rates?</h4>
+  <p>Utah, at <b>$855</b> a year, then Nevada ($896), Idaho ($903), Oregon ($912) and Maine ($914).
+  The spread between the most and least expensive state is about 2.4&#215;.</p>
+
+  <h4>What is the average homeowners insurance premium in the United States?</h4>
+  <p>The household-weighted median across 3,093 counties is <b>$1,317</b> a year for
+  mortgaged owner-occupied homes. That is what households report paying in the American Community
+  Survey, not a quoted rate for a model home.</p>
+
+  <h4>Do homeowners insurance rates reflect actual risk?</h4>
+  <p>Only weakly. Across 3,093 counties, FEMA&#8217;s modelled hazard risk explains <b>20%</b> of the
+  variation in what people pay, while state of residence alone explains <b>44%</b> &#8212; more than
+  twice as much. Counties facing the same modelled hazard differ in price by a median of
+  <b>2.3&#215;</b>.</p>
+
+  <h4>Why doesn&#8217;t homeowners insurance cover flood damage?</h4>
+  <p>Flood is excluded from standard HO-3 policies and requires separate NFIP or private cover. It is
+  not a small exclusion: inland flooding alone accounts for <b>59.2%</b> of FEMA&#8217;s modelled
+  annual building loss in the United States, and earthquake &#8212; also excluded &#8212; a further
+  <b>16.1%</b>. In total <b>76.5%</b> of modelled building loss falls outside the policy most
+  homeowners buy.</p>
+
+  <h4>How many US homes face earthquake risk without earthquake cover?</h4>
+  <p>In the 158 counties FEMA scores at or above 95 for earthquake risk, <b>22,030,850</b> homes
+  &#8212; 57% of the housing stock there &#8212; were built before 1980, predating the seismic
+  provisions introduced in the 1976 Uniform Building Code. Standard policies exclude earthquake in
+  every one of them.</p>
 </section>
 
 <section class="spine stack">
