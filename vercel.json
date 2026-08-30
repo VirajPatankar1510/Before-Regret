@@ -77,7 +77,7 @@
   "crons": [
     {
       "path": "/api/cron/send-pending-report-emails",
-      "schedule": "0 * * * *"
+      "schedule": "0 6 * * *"
     }
   ],
   "functions": {
