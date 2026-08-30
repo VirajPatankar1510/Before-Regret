@@ -59,6 +59,12 @@ export function StaticFooterLinks({ guides }: StaticFooterLinksProps) {
           </div>
           <ul className="space-y-2">
             <li><a href="/about/" className="hover:text-white font-bold text-blue-300 block py-1.5">About &amp; Methodology</a></li>
+            {/* The research study is a standalone static document (scripts/prerender-research.tsx),
+                not an SPA route, so it is unreachable from the app's own navigation. This block is
+                the only crawlable path to it from the rest of the site, and it renders on every
+                prerendered page -- which is the point, given how much of this site sits in
+                "Discovered - currently not indexed" for want of internal links. */}
+            <li><a href="/research/risk-without-price/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research: Risk Without Price</a></li>
             <li><a href="/advertise/" className="hover:text-white font-bold text-blue-300 block py-1.5">Advertise With Us</a></li>
             <li><a href="/support/" className="hover:text-white font-medium text-slate-300 block py-1.5">Customer Support</a></li>
             {/* Mirrors Footer.tsx, reading the same constant so the two renderings of this link

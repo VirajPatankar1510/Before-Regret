@@ -160,6 +160,11 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       // follow' and has real prerendered content to back that up. /topic-ads and /report-ads, the
       // two checkout pages this page routes to, stay noindex and are correctly absent.
       { loc: `${BASE_URL}/advertise/`, lastmod: today, changefreq: 'monthly', priority: '0.6' },
+      // The research study (scripts/prerender-research.tsx). Listed with a fixed lastmod rather
+      // than `today`: it is a dated analysis of a fixed data vintage, and re-declaring it modified
+      // on every build would be a false freshness signal on the one page here whose whole value is
+      // that a reader can tell exactly what it measured and when.
+      { loc: `${BASE_URL}/research/risk-without-price/`, lastmod: '2026-08-30', changefreq: 'yearly', priority: '0.8' },
     ];
   } else if (cleanName === 'sitemap-guides' && isDbConfigured()) {
     try {
