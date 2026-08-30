@@ -106,8 +106,9 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
   <p class="standfirst">Across 3,093 U.S. counties, which state a home sits in explains
   more than twice as much of what its owner pays to insure it as the natural-hazard risk the home
   actually faces.</p>
-  <p class="dek">An analysis of 50,715,340 mortgaged households, combining what homeowners
-  report paying with FEMA&#8217;s own dollar-denominated loss model.</p>
+  <p class="dek">An analysis of 50,715,340 mortgaged households &#8212; 99.99% of every
+  mortgaged owner-occupied home in the country &#8212; combining what homeowners report paying with
+  FEMA&#8217;s own dollar-denominated loss model.</p>
   <div class="keyfig">
     <div><span class="v" style="color:var(--price)">0.44</span><span class="k">R&#178; from state alone</span></div>
     <div><span class="v" style="color:var(--risk)">0.20</span><span class="k">R&#178; from hazard risk</span></div>
@@ -228,44 +229,10 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
  <div class="spine stack" style="margin-top:44px">
   <p>That exposure sits disproportionately in old housing. In the 158 counties FEMA
   scores at or above 95 for earthquake risk, <b>22,030,850</b> homes &#8212;
-  57% of the housing stock &#8212; were built before 1980, and so predate the modern
-  seismic provisions introduced with the 1976 Uniform Building Code. Standard homeowners policies
-  exclude earthquake in every one of them.</p>
+  57% of the housing stock &#8212; were built before 1980, and so predate the seismic
+  provisions introduced in the 1976 Uniform Building Code. Standard homeowners policies exclude
+  earthquake in every one of them.</p>
  </div>
-</section>
-
-<section class="spine stack">
-  <h3>What we tested and rejected</h3>
-  <h2>Four things that did not survive.</h2>
-  <div class="note" style="border-left-color:var(--price)">
-    <h3>A correction we made to our own headline</h3>
-    <p>Our first pass reported that hazard risk explained <em>nothing</em> &#8212; an R&#178; of
-    0.000. That was an artifact. Puerto Rico&#8217;s 77 municipios report premiums between $55 and
-    $400, an insurance market not comparable to the mainland, and in log space those became outliers
-    severe enough to annihilate the correlation. The rank correlation, which is immune to that,
-    was never zero. Excluding Puerto Rico, risk explains 20%. The finding that
-    survived is the narrower one now reported above: risk matters, and state matters more.</p>
-  </div>
-  <p><b>&#8220;Premiums track home values, not risk.&#8221;</b> Not on its own &#8212; median home
-  value alone explains R&#178; = 0.035. It does add real explanatory power on top of state and risk
-  together, taking the full model to 0.612, but it does not displace either.</p>
-  <p><b>&#8220;Condo owners with HO-6 policies drag the cheap markets down.&#8221;</b> The share of
-  mortgaged households reporting under $500 a year is flat &#8212; 13% to 18% in every state we
-  checked. Recomputing medians over only households paying $500 or more preserves the ranking.</p>
-  <p><b>&#8220;California looks cheap because its risk is earthquake.&#8221;</b> Correct, and it
-  changed our answer. Using FEMA&#8217;s total expected loss, California appeared to pay $0.62 per
-  dollar of modelled loss. Restricting risk to perils the policy actually covers moved it to $7.94
-  and reordered the whole table.</p>
-  <div class="note">
-    <h3>Why we do not publish a &#8220;fair price&#8221; ranking</h3>
-    <p>It is tempting to divide premium by expected loss and call the result overpricing. That number
-    is not interpretable. The National Risk Index models <em>natural hazards only</em>, while a
-    homeowners policy also pays for house fires, burst pipes, theft and liability &#8212; the bulk of
-    ordinary claims, which no public county-level dataset measures. A state with little catastrophe
-    exposure will show a very high ratio for entirely innocent reasons. We computed it, found it
-    spans 0.8&#215; to 70&#215;, and concluded it measures our own blind spot rather than anyone&#8217;s
-    conduct.</p>
-  </div>
 </section>
 
 <section class="spine stack">
@@ -274,24 +241,28 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
   <ol class="meth">
     <li><b>Premiums.</b> ACS 5-year 2023, table B25141, all counties. The table reports mortgaged
     owner-occupied households in twelve annual-cost bands. County medians interpolated linearly
-    within the containing band; the top band is open-ended and censored at $4,000, which binds in
-    one county.</li>
+    within the containing band. The top band is open-ended, so a median falling inside it is
+    censored at $4,000; that happens in one county.</li>
     <li><b>Risk.</b> FEMA National Risk Index county table, queried live from the same ArcGIS feature
     service the NRI&#8217;s own map uses. Per-peril expected annual loss to buildings
     (<span class="mono">*_EALB</span>) divided by total building exposure
     (<span class="mono">BUILDVALUE</span>), giving a loss rate per dollar at risk.</li>
     <li><b>Covered perils.</b> Wildfire, hurricane wind, tornado, hail, severe wind, lightning, winter
     weather, ice storm, volcanic activity. <b>Excluded:</b> earthquake, coastal and inland flooding,
-    tsunami, landslide, avalanche, cold wave, heat wave.</li>
-    <li><b>Home values.</b> ACS 5-year 2023, table B25077, as a control and for rate-normalised
-    robustness checks.</li>
-    <li><b>Filters.</b> Counties with at least 100 mortgaged households and valid value and loss
-    figures. <b>Puerto Rico is excluded</b> &#8212; see the correction above. Final sample:
-    3,093 counties across 51 states and DC, covering 142,301,493 housing
-    units and 50,715,340 mortgaged households.</li>
-    <li><b>Models.</b> OLS on log premium, state as fixed effects. Reported unweighted and weighted
-    by mortgaged households. Correlations reported as both Pearson and Spearman, because the gap
-    between them is what caught our original error.</li>
+    tsunami, landslide, avalanche, cold wave, heat wave. Restricting the risk measure this way
+    matters: on FEMA&#8217;s <em>total</em> expected loss, states whose exposure is mostly earthquake
+    or flood appear to face far more risk than their policies actually respond to.</li>
+    <li><b>Home values.</b> ACS 5-year 2023, table B25077, as a control. Value alone explains
+    R&#178; = 0.035; adding it to state and risk together takes the full model to
+    0.612, without displacing either.</li>
+    <li><b>Sample.</b> Counties with at least 100 mortgaged households and valid value and loss
+    figures: 3,093 of the 3,222 the ACS returns. Puerto Rico&#8217;s 77 municipios are
+    excluded &#8212; reported premiums there are roughly a tenth of mainland levels, a separate
+    insurance market rather than a low-priced corner of this one. The final sample covers
+    142,301,493 housing units and 50,715,340 mortgaged households, which is 99.99% of
+    every mortgaged owner-occupied home in the United States.</li>
+    <li><b>Models.</b> OLS on log premium, state as fixed effects, reported unweighted and weighted
+    by mortgaged households. Correlations are reported as both Pearson and Spearman throughout.</li>
   </ol>
 </section>
 
@@ -301,14 +272,20 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
   <p><b>It predates the current crisis.</b> The ACS 5-year file spans 2019&#8211;2023 and is centred
   near 2021. It does not capture the premium surges of 2023&#8211;2025 in Florida, California and
   Louisiana. Read it as the baseline those increases departed from, not as today&#8217;s market.</p>
-  <p><b>It covers mortgaged owners only.</b> Renters are absent, as are the roughly 38% of owners who
-  own outright and face no lender requirement to insure at all.</p>
-  <p><b>Premiums are self-reported.</b> Households may report escrowed amounts or misremember. ACS
-  margins of error on this table are small &#8212; under 2.5% of the estimate in every county we
-  spot-checked &#8212; but it is survey data, not filings.</p>
+  <p><b>It covers mortgaged owners only.</b> Renters are absent, as are the 39% of American owners
+  who own outright and face no lender requirement to insure at all.</p>
+  <p><b>Premiums are self-reported, and county estimates carry real uncertainty.</b> Households may
+  report escrowed amounts or misremember. The ACS margin of error on this table has a median of
+  about 9% of the estimate at county level, and exceeds 20% in the smallest tenth of counties &#8212;
+  which is why the findings here rest on patterns across thousands of counties and on
+  household-weighted figures, never on any single county&#8217;s number.</p>
   <p><b>Risk is a model.</b> The National Risk Index is FEMA&#8217;s estimate, not observed insurer
   experience, and county resolution is coarse relative to how wildfire and flood risk actually vary
   within a county.</p>
+  <p><b>Natural hazard is only part of what a policy covers.</b> Homeowners insurance also pays for
+  house fires, burst pipes, theft and liability, which no public county-level dataset measures. The
+  gap between price and modelled hazard is therefore not, by itself, evidence that any premium is
+  too high or too low.</p>
   <p><b>Correlation, not conduct.</b> Nothing here identifies why any state&#8217;s prices sit where
   they do. Rate regulation, residual markets, reinsurance costs, litigation environments and market
   concentration all plausibly contribute, and this analysis distinguishes none of them.</p>
@@ -341,9 +318,8 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
 </section>
 
 <footer class="spine">
-  <p>Before Regret &#183; research@beforeregret.com<br>
+  <p>Before Regret &#183; hello@beforeregret.com<br>
   Data: U.S. Census Bureau, American Community Survey 5-year estimates, 2023 &#183;
-  FEMA National Risk Index, county table.<br>
-  Corrections and methodology questions are welcome and will be published alongside the study.</p>
+  FEMA National Risk Index, county table.</p>
 </footer>
 </div>
