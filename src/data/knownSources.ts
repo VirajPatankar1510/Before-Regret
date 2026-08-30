@@ -23,6 +23,13 @@ export const KNOWN_SOURCES: KnownSource[] = [
   { key: 'ASHI', name: 'American Society of Home Inspectors', url: 'https://www.homeinspector.org' },
   { key: 'NFPA', name: 'National Fire Protection Association', url: 'https://www.nfpa.org' },
   { key: 'CDC', name: 'Centers for Disease Control and Prevention', url: 'https://www.cdc.gov' },
+  // Title insurance has no federal regulator to cite the way EPA covers radon, so the two bodies
+  // that actually publish the industry's claims data go here. NAIC is where insurers file the
+  // financials the loss ratios are derived from; ALTA commissions and hosts the independent
+  // Milliman claims analyses. naic.org redirects to content.naic.org, so the canonical host is
+  // used directly.
+  { key: 'NAIC', name: 'National Association of Insurance Commissioners', url: 'https://content.naic.org' },
+  { key: 'ALTA', name: 'American Land Title Association', url: 'https://www.alta.org' },
 ];
 
 export function resolveKnownSource(key: string): KnownSource | undefined {
