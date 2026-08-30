@@ -1,0 +1,248 @@
+==========================================================================
+BEFORE REGRET - PRESS OUTREACH
+Risk Without Price: who to email, and what to send
+==========================================================================
+
+Six emails, each written for the specific editor it is addressed to.
+Copy the subject line and the body block, paste, send. Nothing needs filling in.
+
+Addresses copied from Insurance Journal's own published submissions page
+(insurancejournal.com/submitnews) on 30 August 2026. Verify before sending -
+newsroom staff move.
+
+--------------------------------------------------------------------------
+THREE THINGS TO HOLD TO
+--------------------------------------------------------------------------
+
+1. Send one outlet at a time. These editors are beat-assigned; sending the
+   Florida angle to the West editor marks you as someone who did not read
+   their page. Do not BCC.
+
+2. Never drop the data vintage. Every body below states that the ACS file
+   centres near 2021. If a reporter prints these as current premiums, that
+   is a correction with your name on it.
+
+3. Do not claim causation if they follow up. The study shows state explains
+   more variation than risk. It does not show why.
+
+==========================================================================
+EMAIL 1 OF 6  -  CHAD HEMENWAY
+==========================================================================
+TO:      chemenway@insurancejournal.com
+OUTLET:  Insurance Journal
+BEAT:    National
+WHEN:    Send first. Day 1.
+
+--------------------------------------------------------------------------
+SUBJECT:
+County-level data: hazard risk explains 20% of US home insurance premiums, state explains 44%
+--------------------------------------------------------------------------
+
+Dear Chad,
+
+I've completed a national analysis that may suit the Insurance Journal national desk.
+
+It pairs Census ACS table B25141 — what mortgaged households report actually paying for homeowners insurance — with FEMA's National Risk Index expected annual building loss, across all 3,093 US counties and 50.7 million mortgaged households. That covers 99.99% of every mortgaged owner-occupied home in the country.
+
+Restricted to perils a standard HO-3 actually responds to, modelled hazard risk explains 20% of the county-level variation in premium. State of residence alone explains 44%. Counties sitting in the same risk band differ in price by a median of 2.3 times.
+
+Two caveats I would want stated in any coverage. The ACS file spans 2019 to 2023 and centres near 2021, so these figures are the baseline the 2023-25 increases departed from, not current pricing. And the analysis is descriptive: it does not identify whether the state effect is rate regulation, reinsurance cost, litigation environment or market concentration.
+
+The full method, a per-state table and the machine-readable figures are here:
+https://www.beforeregret.com/research/risk-without-price/
+
+I'm glad to walk through the method, or to pull a custom cut for any state or county you want to look at.
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+==========================================================================
+EMAIL 2 OF 6  -  EZRA AMACHER
+==========================================================================
+TO:      eamacher@insurancejournal.com
+OUTLET:  Insurance Journal
+BEAT:    Texas / Oklahoma / Louisiana / Arkansas
+WHEN:    Day 1. Strongest single pitch in this pack.
+
+--------------------------------------------------------------------------
+SUBJECT:
+Louisiana, Oklahoma and Texas rank 2nd, 3rd and 4th nationally for home insurance premiums
+--------------------------------------------------------------------------
+
+Dear Ezra,
+
+Three of the four most expensive states for homeowners insurance in the country sit in your coverage area, and I have county-level data for all of them.
+
+From a national analysis of 3,093 counties using Census ACS table B25141 — what mortgaged households report actually paying, rather than quoted rates for a model home:
+
+Louisiana  $1,877  (2nd nationally)
+Oklahoma  $1,807  (3rd)
+Texas  $1,767  (4th)
+Arkansas  $1,314  (20th)
+
+Only Florida, at $2,012, is higher. The national household-weighted median is $1,317.
+
+There is a sharper story underneath. Nationally, within a given state, counties carrying more FEMA-modelled hazard usually pay somewhat more. In 11 states out of 43 that runs backwards — and two of them are yours. In Oklahoma the correlation between modelled risk and premium is -0.24 across 76 counties; in Arkansas it is -0.23 across 75. Louisiana is the opposite: +0.71, one of the tightest risk-to-price relationships in the country.
+
+So within your four states you have both the clearest example of risk-based pricing in the dataset and two of the clearest counterexamples.
+
+Caveat for print: ACS 5-year 2023, centred near 2021 — the baseline the recent increases departed from, not current pricing. The analysis is descriptive and does not identify a cause.
+
+Method, per-state table and figures:
+https://www.beforeregret.com/research/risk-without-price/
+
+Happy to send the county-level breakdown for any of the four states.
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+==========================================================================
+EMAIL 3 OF 6  -  WILLIAM RABB
+==========================================================================
+TO:      wrabb@insurancejournal.com
+OUTLET:  Insurance Journal
+BEAT:    Southeast
+WHEN:    Day 1.
+
+--------------------------------------------------------------------------
+SUBJECT:
+Florida ranks first of 51 for homeowners premiums, and Georgia is one of 11 states where risk and price move in opposite directions
+--------------------------------------------------------------------------
+
+Dear William,
+
+I've built a county-level dataset on homeowners insurance covering all 3,093 US counties, and two results fall inside your patch.
+
+Florida has the highest premiums in the country: a household-weighted median of $2,012 a year across its 67 counties. The figures come from Census ACS table B25141 — what mortgaged households report actually paying — rather than quoted rates for a hypothetical house, which is what most published state comparisons rely on.
+
+The second is less obvious. Nationally, within a single state, counties facing more modelled hazard usually pay a little more. Georgia is one of 11 states out of 43 where that relationship runs backwards: across its 159 counties, more FEMA-modelled risk correlates with a lower premium (-0.17). North Carolina is the opposite case, one of the cleanest positive relationships in the country at +0.64.
+
+Caveat for print: ACS 5-year 2023, centred near 2021 — the baseline the recent increases departed from, not today's market. The analysis is descriptive and does not identify a cause.
+
+County-level figures for any Southeast state are yours if useful. Method and per-state table:
+https://www.beforeregret.com/research/risk-without-price/
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+==========================================================================
+EMAIL 4 OF 6  -  DON JERGLER
+==========================================================================
+TO:      djergler@insurancejournal.com
+OUTLET:  Insurance Journal
+BEAT:    West
+WHEN:    Day 1.
+
+--------------------------------------------------------------------------
+SUBJECT:
+Utah has the lowest homeowners premiums in the US, and four of the cheapest five states are in the West
+--------------------------------------------------------------------------
+
+Dear Don,
+
+I've completed a county-level analysis of homeowners insurance across all 3,093 US counties, and the cheapest end of the table is almost entirely your patch.
+
+Using Census ACS table B25141 — what mortgaged households report actually paying — the five lowest states are:
+
+Utah  $855
+Nevada  $896
+Idaho  $903
+Oregon  $912
+Maine  $914
+
+Four of the five are Western states. The national household-weighted median is $1,317.
+
+California is probably the more interesting line for your readers. At $1,239 it sits mid-table, below the national median. Its covered-peril loss rate is only $0.24 per $1,000 of building exposure — low, because most of California's FEMA-modelled building loss is earthquake, which the standard homeowners policy excludes outright. On total modelled loss including earthquake and flood, California looks like one of the highest-risk states in the country. On the perils the policy actually pays for, it does not. Within California, price tracks risk more tightly than in most states (+0.53 across 58 counties).
+
+Caveat for print: ACS 5-year 2023, centred near 2021. This is the baseline the 2023-25 wildfire-driven increases departed from, not current pricing — which for your beat is arguably the point of it.
+
+Method, per-state table and machine-readable figures:
+https://www.beforeregret.com/research/risk-without-price/
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+==========================================================================
+EMAIL 5 OF 6  -  SUSANNE SCLAFANE
+==========================================================================
+TO:      ssclafane@carriermanagement.com
+OUTLET:  Carrier Management
+BEAT:    Editor
+WHEN:    Day 2. More technical readership — leads with the anomaly, not the ranking.
+
+--------------------------------------------------------------------------
+SUBJECT:
+In 11 states, counties with more modelled hazard pay lower homeowners premiums
+--------------------------------------------------------------------------
+
+Dear Susanne,
+
+I've completed a county-level analysis that may suit Carrier Management's more technical readership.
+
+The setup: Census ACS table B25141, reported homeowners insurance costs for mortgaged households, paired with per-peril expected annual building loss from FEMA's National Risk Index, across 3,093 counties and 50.7 million households.
+
+Regressing log premium on log hazard risk, with risk restricted to the perils a standard HO-3 responds to, gives R-squared = 0.196. State fixed effects alone give 0.436. Adding risk on top of state moves the fit by under a percentage point.
+
+The result I find hardest to explain is within-state. Inside a single regulatory regime, risk ought to sort price cleanly. The median within-state correlation across the 43 states with at least 15 counties is only +0.218, and in 11 states it is negative: Kansas -0.42, South Dakota -0.32, Oklahoma -0.24, Arkansas -0.23, North Dakota -0.22, Georgia -0.17, Missouri -0.15, Nebraska -0.07, Alaska -0.04, Pennsylvania -0.01, Ohio -0.00.
+
+I want to be careful about what this does and does not show. It is descriptive. It does not separate rate regulation from reinsurance cost, residual market structure or litigation environment. The NRI models natural hazards only, so it says nothing about fire, water, theft or liability, which are the bulk of ordinary claims. And the ACS file centres near 2021.
+
+If the within-state inversion is already understood in the actuarial literature, I would genuinely rather be told that than publish it as novel.
+
+Method, figures and the underlying JSON:
+https://www.beforeregret.com/research/risk-without-price/
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+==========================================================================
+EMAIL 6 OF 6  -  ANDREA WELLS
+==========================================================================
+TO:      awells@insurancejournal.com
+OUTLET:  Insurance Journal
+BEAT:    National / MyNewMarkets
+WHEN:    HOLD. Only if Chad Hemenway has not replied after 3 working days. Same desk — do not send both at once.
+
+--------------------------------------------------------------------------
+SUBJECT:
+Three quarters of modelled US building loss falls outside the standard homeowners policy
+--------------------------------------------------------------------------
+
+Dear Andrea,
+
+I've published a county-level analysis of homeowners insurance, and one finding may be more useful to your readers than the pricing result it started as.
+
+Using FEMA's National Risk Index and separating perils by whether a standard HO-3 responds to them, 76.5% of the expected annual building loss to US homes comes from perils the policy excludes. Inland flooding alone accounts for 59.2% of it; earthquake a further 16.1%.
+
+The exposure concentrates in older housing. In the 158 counties FEMA scores at or above 95 for earthquake risk, 22,030,850 homes — 57% of the housing stock there — were built before 1980, predating the seismic provisions introduced in the 1976 Uniform Building Code.
+
+For context on the pricing side: across 3,093 counties, hazard risk explains 20% of the variation in what households report paying, while state of residence alone explains 44%.
+
+Sources are ACS 5-year 2023, centred near 2021, and the current NRI county table. The analysis is descriptive and does not attempt to explain the state effect.
+
+Method, per-state table and figures:
+https://www.beforeregret.com/research/risk-without-price/
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+==========================================================================
+IF SOMEONE REPLIES
+==========================================================================
+
+Answer within the day. Offer the county-level cut for their state - that is
+the thing no one else can give them, and it is the ask most likely to turn a
+reply into a published citation. Figures are already public at
+beforeregret.com/research/data/risk-without-price-figures.json
