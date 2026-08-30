@@ -278,6 +278,89 @@ ${SITE_FOOTER}
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, 'index.html'), html, 'utf8');
 
+  // ---- /research/risk-without-price/embed/ ---------------------------------------------------
+  // The target of the iframe snippet the study offers. Built by lifting the lookup's own CSS,
+  // markup, script and dataset out of the source rather than by keeping a second copy, so the
+  // embed cannot drift away from the page it came from. Every extraction below asserts, because a
+  // silent miss here would ship an empty iframe to somebody else's site.
+  const cssStart = source.indexOf('/* --- County lookup');
+  const cssEnd = source.indexOf('.lk-tools{');
+  const secStart = source.indexOf('<section class="spine" id="lookup">');
+  const secEnd = source.indexOf('</section>', secStart);
+  const dataStart = source.indexOf('<script id="county-data"');
+  const dataEnd = source.indexOf('</script>', source.indexOf('</script>', dataStart) + 1);
+  if (cssStart < 0 || cssEnd < 0 || secStart < 0 || secEnd < 0 || dataStart < 0 || dataEnd < 0) {
+    console.error('[prerender-research] could not locate the lookup widget for the embed build.');
+    process.exit(1);
+  }
+  const lookupCss = source.slice(cssStart, cssEnd);
+  // Drop the embed/cite tool block from the embedded copy: offering an embed button inside an
+  // embed is noise, and the citation belongs on the study page it points at.
+  const lookupMarkup = source
+    .slice(secStart, secEnd + '</section>'.length)
+    .replace(/<div class="lk-tools">[\s\S]*?<div class="lk-panel" id="lkCite">[\s\S]*?<\/div>\s*/, '')
+    // The study page can afford four lines explaining the peer-set filter. Inside somebody else's
+    // article, vertical space is the scarcest thing there is, so the disclosure is compressed to a
+    // single clause rather than dropped -- an unstated filter would be the dishonest saving here.
+    .replace(
+      /<p class="lk-intro">[\s\S]*?<\/p>/,
+      '<p class="lk-intro">Type a county or state to see what its mortgaged homeowners report paying, ' +
+      'and what counties facing the same modelled hazard pay. Comparison ranges use counties with at ' +
+      'least 5,000 mortgaged households.</p>'
+    );
+  const lookupScript = source.slice(dataStart, dataEnd + '</script>'.length);
+  const rootVars = source.slice(source.indexOf(':root{'), source.indexOf('*{box-sizing:border-box}'));
+
+  const embedHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>County homeowners insurance lookup &mdash; Before Regret</title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="${escapeHtmlAttr(CANONICAL_URL)}">
+${headParts.trim()}
+  <style>
+${rootVars}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);margin:0;padding:16px;
+  font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.spine{max-width:680px;margin:0 auto}
+h3{font-family:var(--mono);font-size:.78rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin:0}
+p{margin:0}
+${lookupCss}
+.embed-credit{max-width:680px;margin:14px auto 0;font-family:var(--mono);font-size:.7rem;
+  color:var(--muted);text-align:right}
+.embed-credit a{color:var(--price)}
+  </style>
+</head>
+<body>
+${lookupMarkup}
+<p class="embed-credit"><a href="${escapeHtmlAttr(CANONICAL_URL)}" target="_blank" rel="noopener">Risk Without Price</a> &mdash; Before Regret</p>
+${lookupScript}
+<script>
+/* Reports its own height to the embedding page. Needed because the widget is 531px collapsed and
+   1210px expanded on a phone, so no single iframe height is right -- a fixed one either clips the
+   result or leaves a hole above it. The host's listener is optional: without it the fallback
+   height in the snippet still renders a usable tool, it just does not follow the content. */
+(function(){
+  function post(){
+    var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+    try { parent.postMessage({ beforeRegretEmbedHeight: h }, '*'); } catch (e) {}
+  }
+  if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  window.addEventListener('load', post);
+  setTimeout(post, 60);
+})();
+</script>
+</body>
+</html>`;
+
+  const embedDir = path.join(outDir, 'embed');
+  fs.mkdirSync(embedDir, { recursive: true });
+  fs.writeFileSync(path.join(embedDir, 'index.html'), embedHtml, 'utf8');
+
   // The machine-readable figures behind every number on the page. Published deliberately: the study
   // asks to be cited, and a citable study has to let someone check its arithmetic.
   const figuresSrc = path.join(process.cwd(), 'docs', 'data', 'risk-without-price-figures.json');

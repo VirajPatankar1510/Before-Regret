@@ -127,6 +127,17 @@ figcaption b{color:var(--ink);font-weight:600}
   color:var(--muted);margin-top:7px}
 .lk-note{font-size:.9rem;color:var(--muted);margin-top:12px;max-width:60ch}
 .lk-note b{color:var(--ink)}
+.lk-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;padding-top:18px;border-top:1px solid var(--rule)}
+.lk-btn{font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;cursor:pointer;background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule);border-radius:2px;padding:8px 13px}
+.lk-btn:hover{border-color:var(--price);color:var(--price)}
+.lk-panel{display:none;margin-top:14px}
+.lk-panel.on{display:block}
+.lk-code{width:100%;font-family:var(--mono);font-size:.72rem;line-height:1.6;padding:12px 13px;
+  background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:2px;
+  min-height:104px;resize:vertical}
+.lk-why{font-size:.85rem;color:var(--muted);margin-top:9px;max-width:62ch}
 .pull{font-family:var(--disp);font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.2;
   border-left:3px solid var(--price);padding-left:24px;margin:36px 0;color:var(--ink)}
 table{border-collapse:collapse;width:100%;font-size:.86rem}
@@ -204,6 +215,22 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
       <div class="lk-ends"><span id="lklo"></span><span id="lkhi"></span></div>
       <p class="lk-note" id="lknote"></p>
     </div>
+  </div>
+  <div class="lk-tools">
+    <button type="button" class="lk-btn" id="lkEmbedBtn" aria-expanded="false" aria-controls="lkEmbed">Embed this tool</button>
+    <button type="button" class="lk-btn" id="lkCiteBtn" aria-expanded="false" aria-controls="lkCite">Cite this study</button>
+  </div>
+  <div class="lk-panel" id="lkEmbed">
+    <textarea class="lk-code" id="lkEmbedCode" readonly rows="5" aria-label="Embed code"></textarea>
+    <button type="button" class="lk-btn" style="margin-top:9px" id="lkEmbedCopy">Copy embed code</button>
+    <p class="lk-why">The attribution link carries <span class="mono">rel="nofollow"</span> deliberately.
+    Google treats links distributed inside a widget, where the host did not choose the anchor text, as a
+    link scheme and asks that they be nofollowed. Embedding this passes no ranking signal to us and
+    creates no risk for you. To link to the study editorially instead, use the citation.</p>
+  </div>
+  <div class="lk-panel" id="lkCite">
+    <textarea class="lk-code" id="lkCiteCode" readonly rows="4" aria-label="Citation"></textarea>
+    <button type="button" class="lk-btn" style="margin-top:9px" id="lkCiteCopy">Copy citation</button>
   </div>
  </div>
 </section>
@@ -524,6 +551,40 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
     else if(e.key==='Escape'){ matches=[]; render(); }
   });
   q.addEventListener('blur', function(){ setTimeout(function(){ matches=[]; render(); },120); });
+})();
+(function(){
+  var BASE='https://www.beforeregret.com/research/risk-without-price/';
+  var embed=document.getElementById('lkEmbedCode'), cite=document.getElementById('lkCiteCode');
+  if(!embed||!cite) return;
+  embed.value='<iframe id="br-premiums" src="'+BASE+'embed/" width="100%" height="640"\n'+
+    '        loading="lazy" style="border:1px solid #dcdcdc"\n'+
+    '        title="US county homeowners insurance premiums vs hazard risk"></iframe>\n'+
+    '<p><a href="'+BASE+'" rel="nofollow">Risk Without Price</a> \u2014 Before Regret</p>\n'+
+    '<script>addEventListener("message",function(e){var h=e.data&&e.data.beforeRegretEmbedHeight;\n'+
+    '  if(h)document.getElementById("br-premiums").style.height=h+"px";});<\/script>';
+  cite.value='Before Regret, "Risk Without Price: state of residence explains more than twice as much '+
+    'of American homeowners insurance premiums as hazard risk does." Analysis of ACS 5-year 2023 tables '+
+    'B25141 and B25077 and the FEMA National Risk Index, covering 3,093 U.S. counties and 50,715,340 '+
+    'mortgaged households. '+BASE;
+  function toggle(btn,panel){
+    btn.addEventListener('click',function(){
+      var open=panel.classList.toggle('on');
+      btn.setAttribute('aria-expanded',open?'true':'false');
+      if(open){ var t=panel.querySelector('textarea'); t.focus(); t.select(); }
+    });
+  }
+  toggle(document.getElementById('lkEmbedBtn'),document.getElementById('lkEmbed'));
+  toggle(document.getElementById('lkCiteBtn'),document.getElementById('lkCite'));
+  function copier(btn,ta){
+    btn.addEventListener('click',function(){
+      ta.select();
+      var done=function(){ var o=btn.textContent; btn.textContent='Copied'; setTimeout(function(){btn.textContent=o;},1400); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(ta.value).then(done,done); }
+      else { try{ document.execCommand('copy'); done(); }catch(e){} }
+    });
+  }
+  copier(document.getElementById('lkEmbedCopy'),embed);
+  copier(document.getElementById('lkCiteCopy'),cite);
 })();
 </script>
 
