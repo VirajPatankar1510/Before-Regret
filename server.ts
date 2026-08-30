@@ -538,8 +538,22 @@ export async function createApp() {
   // Registered before the static-file and slug-existence handlers below so it wins over both: the
   // retired slug still has a prerendered file on disk until the next deploy rebuilds, and
   // express.static would otherwise serve it with a 200.
+  // check-building-permit-history-by-address-any-us-county and look-up-building-permits-by-address
+  // both answered "how do I check permits by address", and Search Console showed the cost of that:
+  // across 28 days Google ranked the PHILADELPHIA page at an average position of 9.9 for 39
+  // generic, non-geographic permit queries ("how to check building permits", "permit search by
+  // address"), while the two pages actually written for those queries sat at 58.3 and 90.0. Those
+  // 39 queries earned zero clicks -- a searcher in Texas does not click a Philadelphia result.
+  //
+  // The cause was link starvation, not content: look-up-building-permits-by-address had ZERO
+  // inbound internal links, and only 1 of 30 geo permit pages linked up to any general guide.
+  // The survivor is look-up-building-permits-by-address (11k chars against 5.5k, and already the
+  // page Google associated with 12 generic queries against the other's 1). The retired page's
+  // unique asset -- its 31-county directory -- moved across, so the survivor is now both the
+  // deepest explainer and the hub, and all 32 geo permit pages link up to it.
   const MERGED_GUIDES: Record<string, string> = {
     'hot-neutral-reversed-mean': 'reverse-polarity-mean-electrical-inspection',
+    'check-building-permit-history-by-address-any-us-county': 'look-up-building-permits-by-address',
   };
   app.get(['/guides/:slug', '/guides/:slug/'], (req, res, next) => {
     const target = MERGED_GUIDES[req.params.slug];
