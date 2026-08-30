@@ -168,13 +168,25 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
     ];
   } else if (cleanName === 'sitemap-guides' && isDbConfigured()) {
     try {
+      // lastmod is GREATEST(published_at, updated_at), not published_at alone. It was published_at
+      // alone, which meant editing an article never changed its sitemap entry: on 2026-08-30 the
+      // permit cluster was rewritten across 33 articles and every one still advertised a lastmod of
+      // 2026-08-23, so the sitemap actively told Google nothing had changed and there was no reason
+      // to re-crawl. On a site where most URLs already sit in "Discovered - currently not indexed",
+      // suppressing the one honest freshness signal available is expensive.
+      //
+      // updated_at is safe to trust here: the only writers are the article edit, publish, and
+      // unpublish routes in articlesApi.ts, all of which are real modifications. The ad-tier
+      // backfill script deliberately does not touch it. Postgres GREATEST ignores NULLs, so a row
+      // with either column null still yields the other.
       const rows = await withDb((sql) => sql`
-        SELECT slug, published_at FROM articles WHERE status = 'published' ORDER BY published_at DESC
+        SELECT slug, GREATEST(published_at, updated_at) AS lastmod
+        FROM articles WHERE status = 'published' ORDER BY published_at DESC
       `);
-      (rows as unknown as Array<{ slug: string; published_at: string | Date | null }>).forEach((g) => {
+      (rows as unknown as Array<{ slug: string; lastmod: string | Date | null }>).forEach((g) => {
         entries.push({
           loc: `${BASE_URL}/guides/${g.slug}/`,
-          lastmod: g.published_at ? new Date(g.published_at).toISOString().slice(0, 10) : today,
+          lastmod: g.lastmod ? new Date(g.lastmod).toISOString().slice(0, 10) : today,
           changefreq: 'monthly',
           priority: '0.7'
         });
