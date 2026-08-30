@@ -30,6 +30,14 @@ export const KNOWN_SOURCES: KnownSource[] = [
   // used directly.
   { key: 'NAIC', name: 'National Association of Insurance Commissioners', url: 'https://content.naic.org' },
   { key: 'ALTA', name: 'American Land Title Association', url: 'https://www.alta.org' },
+  // GAO-07-401 is the definitive independent study of title insurance economics, so this entry is
+  // needed for that citation. UNVERIFIED URL: unlike every other entry here, gao.gov could not be
+  // reached from the machine this was added on -- DNS returned SERVFAIL, and the same resolver has
+  // been failing on api.census.gov and Neon in this environment, so this reads as a local network
+  // fault rather than a dead host. The report itself was read at govinfo.gov (the GPO archive,
+  // which did resolve): govinfo.gov/content/pkg/GAOREPORTS-GAO-07-401. Worth clicking once to
+  // confirm before relying on it.
+  { key: 'GAO', name: 'U.S. Government Accountability Office', url: 'https://www.gao.gov' },
 ];
 
 export function resolveKnownSource(key: string): KnownSource | undefined {
