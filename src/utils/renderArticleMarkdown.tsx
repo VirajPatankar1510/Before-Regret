@@ -215,6 +215,36 @@ export function renderArticleMarkdown(markdown: string): React.ReactNode[] {
       continue;
     }
 
+    // Blockquote: consecutive `> ` lines. Added for pull-out text a reader is meant to lift and
+    // reuse -- the copy-paste request to a seller in prove-roof-age-for-insurance is the case
+    // that prompted it. Without this branch a `> ` line fell through to a paragraph and rendered
+    // the marker literally, which is what it was doing on that page until this was added.
+    //
+    // Deliberately NOT a code fence, which is the other block style that visually separates
+    // content here: fences render dark and monospaced, correct for a command or an ASCII diagram
+    // and wrong for a message a person is about to send to another person.
+    //
+    // Content runs through parseInline, so bold and links work inside a quote. Nested `> >` is
+    // not supported and collapses to one level; no article uses it and CommonMark nesting is not
+    // worth the recursion here.
+    if (trimmed.startsWith('>')) {
+      flushParagraph();
+      const quoted: string[] = [];
+      while (i < lines.length && lines[i].trim().startsWith('>')) {
+        quoted.push(lines[i].trim().replace(/^>\s?/, ''));
+        i++;
+      }
+      blocks.push(
+        <blockquote
+          key={blocks.length}
+          className="border-l-4 border-blue-300 bg-slate-50 rounded-r-lg px-5 py-4 mb-4 text-slate-700 leading-relaxed"
+        >
+          {parseInline(quoted.join(' '))}
+        </blockquote>
+      );
+      continue;
+    }
+
     // Fenced code block: ``` or ```lang ... ```. Content lines are pushed raw (not `.trim()`-ed)
     // -- the whole point is preserving exact whitespace/alignment (an ASCII diagram, a code
     // sample), which a plain <p> collapses. Not run through parseInline: a code block renders
