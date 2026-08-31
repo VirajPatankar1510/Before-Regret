@@ -1,338 +1,138 @@
 <title>Risk Without Price Outreach</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --paper:#F5F7F6; --ink:#16211F; --muted:#5A6B67; --rule:#D4DCD9; --panel:#EBEFED;
-  --ok:#1B6E5A; --todo:#9A5B10; --hot:#B0332B;
-  --disp:"Archivo",system-ui,sans-serif;
-  --serif:"Source Serif 4",Georgia,serif;
-  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --paper:#0D1413; --ink:#E2E9E6; --muted:#93A5A0; --rule:#26332F; --panel:#151F1D;
-  --ok:#4FBE9C; --todo:#D79B4A; --hot:#EE6F62;
-}}
-:root[data-theme="dark"]{
-  --paper:#0D1413; --ink:#E2E9E6; --muted:#93A5A0; --rule:#26332F; --panel:#151F1D;
-  --ok:#4FBE9C; --todo:#D79B4A; --hot:#EE6F62;
-}
+:root{--paper:#F5F7F6;--ink:#16211F;--muted:#5A6B67;--rule:#D4DCD9;--panel:#EBEFED;
+ --done:#1B6E5A;--todo:#9A5B10;--hot:#B0332B;
+ --disp:"Archivo",system-ui,sans-serif;--serif:"Source Serif 4",Georgia,serif;--mono:"JetBrains Mono",monospace}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0D1413;--ink:#E2E9E6;--muted:#93A5A0;--rule:#26332F;--panel:#151F1D;--done:#4FBE9C;--todo:#D79B4A;--hot:#EE6F62}}
+:root[data-theme="dark"]{--paper:#0D1413;--ink:#E2E9E6;--muted:#93A5A0;--rule:#26332F;--panel:#151F1D;--done:#4FBE9C;--todo:#D79B4A;--hot:#EE6F62}
 *{box-sizing:border-box}
-body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;
-  line-height:1.6;margin:0;padding:0 22px 80px;font-variant-numeric:tabular-nums;
-  -webkit-font-smoothing:antialiased}
-.wrap{max-width:940px;margin:0 auto}
-h1,h2,h3,h4{font-family:var(--disp);margin:0;text-wrap:balance}
-h1{font-size:clamp(2.3rem,6vw,3.6rem);line-height:1.02;letter-spacing:-.025em;font-weight:700}
-h2{font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.15;letter-spacing:-.015em;font-weight:700;margin-top:0}
-h3{font-size:1.06rem;font-weight:600;letter-spacing:-.005em}
-h4{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--muted)}
-p{margin:0}
-.stack>*+*{margin-top:1em}
-header{padding:64px 0 30px;border-bottom:2px solid var(--ink)}
-.kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--hot);font-weight:700}
-.lede{font-size:1.16rem;color:var(--muted);max-width:60ch}
-section{padding:46px 0;border-bottom:1px solid var(--rule)}
-.tier{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
-.tiernum{font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--hot);flex:none}
-.card{background:var(--panel);border:1px solid var(--rule);border-radius:3px;
-  padding:18px 20px;margin-top:16px}
-.card h3{margin-bottom:3px}
-.who{display:grid;gap:2px;margin:12px 0 0;font-family:var(--mono);font-size:.84rem}
-.who div{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;padding:5px 0;
-  border-top:1px solid var(--rule)}
-.who div:first-child{border-top:0}
-.who b{font-weight:700;color:var(--ink);min-width:150px}
-.who code{color:var(--ok);word-break:break-all}
-.who em{color:var(--muted);font-style:normal;font-size:.92em}
-.badge{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;padding:2px 7px;border-radius:2px;white-space:nowrap}
-.b-ok{background:var(--ok);color:var(--paper)}
-.b-todo{background:var(--todo);color:var(--paper)}
-/* padding-top clears the absolutely-positioned Copy button, which otherwise sits on top of the
-   subject line -- the one part of the pitch a reader looks at first. */
-.pitch{position:relative;background:var(--paper);border:1px solid var(--rule);
-  border-left:3px solid var(--hot);padding:44px 18px 16px;margin-top:14px;
-  font-family:var(--mono);font-size:.8rem;line-height:1.65;white-space:pre-wrap;
-  overflow-x:auto}
-.copy{position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:.62rem;
-  font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
-  background:var(--ink);color:var(--paper);border:0;border-radius:2px;padding:5px 9px}
-.copy:hover{background:var(--hot)}
-.fill{color:var(--hot);font-weight:700}
-.note{background:var(--panel);border-left:3px solid var(--todo);padding:16px 18px;
-  font-size:.95rem}
-table{border-collapse:collapse;width:100%;font-size:.88rem;margin-top:12px}
-th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--rule)}
-th{font-family:var(--mono);font-size:.64rem;letter-spacing:.11em;text-transform:uppercase;
-  color:var(--muted);font-weight:700}
-td.n{text-align:right;font-family:var(--mono)}
-.scroll{overflow-x:auto}
-ol{padding-left:20px;margin:0}
-ol li{margin-top:.55em}
-a{color:var(--hot)}
-*:focus-visible{outline:2px solid var(--ok);outline-offset:2px}
-footer{padding:40px 0 0;font-family:var(--mono);font-size:.74rem;color:var(--muted);line-height:1.8}
-@media(max-width:620px){body{font-size:16px;padding:0 15px 60px}header{padding:44px 0 24px}
-  .who b{min-width:0;display:block;width:100%}}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.6;margin:0;padding:0 22px 80px}
+.wrap{max-width:900px;margin:0 auto}
+h1,h2{font-family:var(--disp);margin:0;text-wrap:balance}
+h1{font-size:clamp(2.1rem,6vw,3.2rem);line-height:1.03;letter-spacing:-.03em;font-weight:700}
+h2{font-size:1.25rem;font-weight:700}
+header{padding:60px 0 26px;border-bottom:2px solid var(--ink)}
+.kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--hot);font-weight:600}
+.lede{font-size:1.08rem;color:var(--muted);max-width:62ch;margin-top:12px}
+.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:26px}
+.status div{background:var(--paper);padding:16px}
+.status .v{font-family:var(--mono);font-size:1.6rem;font-weight:600;display:block}
+.status .k{font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-top:6px}
+h2.sec{font-family:var(--disp);font-size:1.5rem;margin:44px 0 4px}
+.secsub{color:var(--muted);font-size:.97rem;margin-bottom:6px}
+.card{border:1px solid var(--rule);border-left:3px solid var(--todo);background:var(--panel);padding:20px 22px;margin-top:18px}
+.chead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.num{font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--muted)}
+.tag{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;padding:3px 8px;border-radius:2px;margin-left:auto;color:var(--paper)}
+.tag.todo{background:var(--todo)}
+table.meta{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:.8rem;margin-bottom:6px}
+table.meta th{text-align:left;color:var(--muted);font-weight:600;width:78px;padding:4px 10px 4px 0;vertical-align:top}
+table.meta td{padding:4px 0;word-break:break-word}
+.lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--todo);font-weight:600;margin:16px 0 5px}
+.subj{font-weight:600;margin:0 0 4px}
+.mail{position:relative;background:var(--paper);border:1px solid var(--rule);padding:42px 18px 16px;font-family:var(--mono);font-size:.79rem;line-height:1.65;overflow-x:auto}
+.mail .ln{white-space:pre-wrap}
+.mail .sp{height:.85em}
+.cp{position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;background:var(--ink);color:var(--paper);border:0;border-radius:2px;padding:5px 9px}
+.cp:hover{background:var(--hot)}
+.sent-row{display:grid;grid-template-columns:1fr;gap:3px;background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--done);padding:13px 16px;margin-top:10px;font-family:var(--mono);font-size:.8rem}
+.sent-row b{font-family:var(--serif);font-size:1.02rem}
+.sent-row code{color:var(--done);word-break:break-all}
+.sent-row span{color:var(--muted)}
+.sent-row em{font-family:var(--serif);font-style:normal;color:var(--ink);font-size:.95rem;margin-top:4px}
+.note{background:var(--panel);border-left:3px solid var(--hot);padding:16px 18px;font-size:.95rem;margin-top:20px}
+ol{padding-left:20px} ol li{margin-top:.5em}
+footer{padding:40px 0 0;font-family:var(--mono);font-size:.72rem;color:var(--muted);line-height:1.8}
+@media(max-width:620px){body{font-size:16px;padding:0 15px 60px}header{padding:42px 0 22px}}
 </style>
-
 <div class="wrap">
-<header class="stack">
-  <p class="kicker">Before Regret &middot; Outreach Pack</p>
-  <h1>Placing<br>Risk Without Price</h1>
-  <p class="lede">Verified contacts and ready-to-send pitches for the homeowners-insurance study.
-  Every email address below was copied from the outlet&rsquo;s own public submissions page. Nothing
-  here is guessed &mdash; where I could not verify a contact, it says so.</p>
+<header>
+  <p class="kicker">Before Regret &middot; Outreach Status</p>
+  <h1>Three sent.<br>Three to go.</h1>
+  <p class="lede">Chad Hemenway, William Rabb and Don Jergler have your pitches. What follows is
+  what is still unsent, and what to do about the three that are already out.</p>
+  <div class="status">
+    <div><span class="v" style="color:var(--done)">3</span><span class="k">Sent</span></div>
+    <div><span class="v" style="color:var(--todo)">2</span><span class="k">Ready to send</span></div>
+    <div><span class="v" style="color:var(--muted)">1</span><span class="k">Held on a reply</span></div>
+    <div><span class="v">3,093</span><span class="k">Counties now loopable in the study</span></div>
+  </div>
 </header>
 
-<section class="stack">
-  <h4>Before you send</h4>
-  <h2>Four rules that keep this honest</h2>
-  <ol>
-    <li><b>State the data vintage every time.</b> ACS 5-year 2023, centred near 2021. If a reporter
-    publishes these as <em>current</em> premiums, that is a correction with your name on it. Every
-    pitch below says so in the body.</li>
-    <li><b>Do not claim causation.</b> The study shows state explains more variation than risk. It
-    does <em>not</em> show why, and says so. If asked, the honest answer is &ldquo;we can&rsquo;t
-    separate rate regulation from reinsurance costs from litigation environment.&rdquo;</li>
-    <li><b>Send from a real mailbox.</b> <code>hello@beforeregret.com</code> is the only address that
-    exists. Do not invent a press alias.</li>
-    <li><b>One outlet at a time, no BCC blasts.</b> Trade editors bin mass mail, and Insurance
-    Journal&rsquo;s editors are beat-assigned &mdash; sending the Florida angle to the West editor
-    marks you as someone who did not read their page.</li>
-  </ol>
-</section>
-
-<section>
-  <div class="tier"><span class="tiernum">TIER 01</span><h2>Insurance trade press</h2></div>
-  <p class="lede">The strongest fit, and the only tier where I could verify named, beat-assigned
-  editors from a public page. These people publish rate-and-regulation stories every day.</p>
-
-  <div class="card">
-    <h3>Insurance Journal &amp; Carrier Management</h3>
-    <p style="font-size:.9rem;color:var(--muted)">Source: insurancejournal.com/submitnews/ &mdash;
-    their own published submissions page.</p>
-    <div class="who">
-      <div><b>Chad Hemenway</b><code>chemenway@insurancejournal.com</code><em>National</em><span class="badge b-ok">verified</span></div>
-      <div><b>Andrea Wells</b><code>awells@insurancejournal.com</code><em>National</em><span class="badge b-ok">verified</span></div>
-      <div><b>William Rabb</b><code>wrabb@insurancejournal.com</code><em>Southeast &rarr; the Florida angle</em><span class="badge b-ok">verified</span></div>
-      <div><b>Ezra Amacher</b><code>eamacher@insurancejournal.com</code><em>Texas / OK / LA / AR &rarr; three of the top four states</em><span class="badge b-ok">verified</span></div>
-      <div><b>Don Jergler</b><code>djergler@insurancejournal.com</code><em>West &rarr; the Utah angle</em><span class="badge b-ok">verified</span></div>
-      <div><b>Susanne Sclafane</b><code>ssclafane@carriermanagement.com</code><em>Carrier Management</em><span class="badge b-ok">verified</span></div>
-    </div>
-  </div>
-
-  <p style="margin-top:22px"><b>Send this to Hemenway or Wells (national desk) first.</b></p>
-  <div class="pitch"><button class="copy" onclick="cp(this)">Copy</button>Subject: Data: hazard risk explains 20% of US home insurance premiums, state explains 44%
-
-Hi <span class="fill">[Chad]</span>,
-
-I've finished an analysis that may be useful to you. It crosses what households actually report paying for homeowners insurance (Census ACS table B25141) against FEMA's National Risk Index expected annual building loss, for all 3,093 US counties and 50.7 million mortgaged households.
-
-The headline: restricted to perils a standard HO-3 actually covers, modelled hazard risk explains 20% of the county-level variation in premium. State of residence alone explains 44%. Counties facing the same modelled hazard differ in price by a median of 2.3x.
-
-A second finding may interest your readers more: 76.5% of FEMA's modelled annual building loss in the US comes from perils standard policies exclude - inland flooding 59.2%, earthquake 16.1%.
-
-Important caveat I'd want stated in any coverage: the ACS file spans 2019-2023 and centres near 2021, so this is the baseline the 2023-25 increases departed from, not today's market. It is also descriptive - it does not identify why any state's prices sit where they do.
-
-Full method, per-state table and the machine-readable figures:
-https://www.beforeregret.com/research/risk-without-price/
-
-Happy to walk through the method or pull a custom cut for a specific state.
-
-<span class="fill">[Your name]</span>
-Before Regret
-hello@beforeregret.com</div>
-</section>
-
-<section>
-  <div class="tier"><span class="tiernum">TIER 02</span><h2>The regional angle</h2></div>
-  <p class="lede">Easiest sell in the pack. A regional editor gets a national dataset in which
-  <em>their</em> patch is the extreme. Note that Ezra Amacher covers Texas, Oklahoma, Louisiana and
-  Arkansas &mdash; three of the four most expensive states in the country sit on his desk.</p>
-
-  <div class="scroll">
-  <table>
-    <thead><tr><th>Angle</th><th>State</th><th class="n">Median premium</th><th>Send to</th></tr></thead>
-    <tbody>
-      <tr><td>Most expensive in the US</td><td>Florida</td><td class="n">$2,012</td><td>William Rabb (Southeast)</td></tr>
-      <tr><td>#2, #3 and #4 all on one desk</td><td>Louisiana / Oklahoma / Texas</td><td class="n">$1,877 / $1,807 / $1,767</td><td>Ezra Amacher</td></tr>
-      <tr><td>Cheapest in the US</td><td>Utah</td><td class="n">$855</td><td>Don Jergler (West)</td></tr>
-      <tr><td>Also lowest five</td><td>Nevada / Idaho / Oregon / Maine</td><td class="n">$896 / $903 / $912 / $914</td><td>Jergler; Maine &rarr; Andrew Simpson (East)</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <div class="pitch"><button class="copy" onclick="cp(this)">Copy</button>Subject: <span class="fill">[Florida]</span> ranks <span class="fill">[1st]</span> of 51 for home insurance premiums - full county dataset
-
-Hi <span class="fill">[William]</span>,
-
-I've built a county-level dataset on homeowners insurance across all 3,093 US counties, and <span class="fill">[Florida]</span> comes out <span class="fill">[the most expensive state in the country, at a household-weighted median of $2,012 a year]</span>.
-
-The source is what households report actually paying - Census ACS table B25141 - rather than quoted rates for a model home, which is what most published comparisons use.
-
-What makes it more than a ranking: I crossed it against FEMA's National Risk Index, and hazard risk explains only 20% of the variation in what people pay nationally. State explains 44%. So <span class="fill">[Florida's]</span> position is not straightforwardly a risk story.
-
-Caveat worth stating in print: ACS 5-year 2023, centred near 2021 - the baseline the recent increases departed from, not current pricing.
-
-County-level figures for <span class="fill">[Florida]</span> are yours if useful, and the full method and per-state table are here:
-https://www.beforeregret.com/research/risk-without-price/
-
-<span class="fill">[Your name]</span>
-Before Regret
-hello@beforeregret.com</div>
-</section>
-
-<section>
-  <div class="tier"><span class="tiernum">TIER 03</span><h2>Personal-finance data desks</h2></div>
-  <p class="lede">NerdWallet, Bankrate, ValuePenguin, Policygenius. Highest domain authority in the
-  pack and the most likely to link, because they maintain &ldquo;average home insurance cost by
-  state&rdquo; pages that need refreshing and citing. Different framing: this is a
-  <em>resource</em> note, not a news pitch.</p>
-
-  <div class="note">
-    <h4 style="margin-bottom:8px">Contact route &mdash; not verified</h4>
-    <p>These outlets do not publish editorial emails. <b>Do not guess an address.</b> The route that
-    works: open their existing &ldquo;average homeowners insurance cost by state&rdquo; page, take
-    the byline, and find that writer on LinkedIn or their author page. You are pitching the person
-    who has to keep that page current, not a press desk.</p>
-  </div>
-
-  <div class="pitch"><button class="copy" onclick="cp(this)">Copy</button>Subject: Free citable dataset for your home insurance by state page
-
-Hi <span class="fill">[name]</span>,
-
-You maintain <span class="fill">[URL of their by-state page]</span>. I've published a dataset you're welcome to cite that may be more precise than the usual sources.
-
-Most by-state comparisons use quoted rates for a hypothetical house. This uses Census ACS table B25141 - what mortgaged households report actually paying - covering 3,093 counties and 50.7 million households, which is 99.99% of all mortgaged owner-occupied homes in the country.
-
-Highest: Florida $2,012. Lowest: Utah $855. National household-weighted median: $1,317.
-
-Vintage: ACS 5-year 2023, centred near 2021. Not current-year pricing, and I'd want that stated.
-
-Per-state table plus machine-readable figures (JSON) so you can pull numbers directly:
-https://www.beforeregret.com/research/risk-without-price/
-
-Free to reproduce with attribution. Happy to answer method questions.
-
-<span class="fill">[Your name]</span>
-Before Regret
-hello@beforeregret.com</div>
-</section>
-
-<section>
-  <div class="tier"><span class="tiernum">TIER 04</span><h2>Housing trade &amp; policy researchers</h2></div>
-  <p class="lede">Lower hit rate, slower, but a link from a university centre or think tank is worth
-  more than several trade mentions and lasts longer.</p>
-
-  <div class="card">
-    <h3>Housing trade</h3>
-    <div class="who">
-      <div><b>HousingWire</b><em>No public editorial email &mdash; help-desk tickets only. Route: reporter bylines on their mortgage/housing-cost coverage.</em><span class="badge b-todo">look up</span></div>
-      <div><b>Inman</b><em>Contact not verified. Same route: byline, then LinkedIn.</em><span class="badge b-todo">look up</span></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Policy researchers</h3>
-    <div class="who">
-      <div><b>Wharton Risk Center</b><em>Insurance and climate risk</em><span class="badge b-todo">look up</span></div>
-      <div><b>Urban Institute</b><em>Housing Finance Policy Center</em><span class="badge b-todo">look up</span></div>
-      <div><b>Brookings</b><em>Metro housing team</em><span class="badge b-todo">look up</span></div>
-    </div>
-    <p style="margin-top:12px;font-size:.92rem;color:var(--muted)">Researchers publish their emails
-    on faculty and staff pages. Find the person whose published work is nearest to insurance
-    availability or housing costs and write to them directly.</p>
-  </div>
-
-  <div class="pitch"><button class="copy" onclick="cp(this)">Copy</button>Subject: County-level dataset: reported home insurance premiums vs FEMA modelled loss
-
-Dear <span class="fill">[Dr. name]</span>,
-
-I've assembled a county-level dataset that may be useful to your work on <span class="fill">[their topic]</span>, and I'd value your view on whether the central result is already known.
-
-It pairs ACS table B25141 - reported homeowners insurance costs for mortgaged households - with per-peril expected annual building loss from FEMA's National Risk Index, across 3,093 counties.
-
-Regressing log premium on log hazard risk (restricted to perils a standard HO-3 covers) gives R^2 = 0.196. State fixed effects alone give 0.436. Within-state, the median correlation between risk and premium is +0.218, and in 11 of 43 states it is negative.
-
-I want to be straightforward about the limits: this is descriptive, there is no identification strategy, and I have not done a formal literature review. If this result is already established, I would genuinely rather know than publish it as novel.
-
-Method, figures and the underlying JSON:
-https://www.beforeregret.com/research/risk-without-price/
-
-<span class="fill">[Your name]</span>
-Before Regret
-hello@beforeregret.com</div>
-</section>
-
-<section class="stack">
-  <h4>Sequencing</h4>
-  <h2>What to do this week</h2>
-  <ol>
-    <li><b>Day 1 &mdash; Insurance Journal national.</b> One email to Chad Hemenway. Wait 3 working
-    days before trying Andrea Wells; they share a desk and double-sending looks careless.</li>
-    <li><b>Day 1 &mdash; the three regional editors.</b> Rabb, Amacher, Jergler. These are genuinely
-    different stories, so sending all three the same day is fine and not spammy.</li>
-    <li><b>Day 2 &mdash; Carrier Management.</b> Susanne Sclafane. More analytical readership; the
-    76.5% exclusion figure leads better than the ranking there.</li>
-    <li><b>Days 3&ndash;5 &mdash; personal finance.</b> Look up four bylines, send four notes. This
-    tier takes the most research and has the highest authority payoff.</li>
-    <li><b>Ongoing &mdash; source platforms.</b> Connectively, Qwoted, SourceBottle. Answer housing
-    and insurance queries as a named person. Highest-frequency channel you have, and it compounds.</li>
-  </ol>
-  <div class="note" style="border-left-color:var(--hot)">
-    <h4 style="margin-bottom:8px">Realistic expectation</h4>
-    <p>Cold pitching converts at low single digits. Sending eleven well-targeted emails might yield
-    one or two responses, and that would be a good outcome from a standing start of
-    <b>zero backlinks</b>. The regional angle has the best odds; the personal-finance tier has the
-    highest value per placement. Neither pays off in a week.</p>
-  </div>
-</section>
-
-<section class="stack">
-  <h4>Reference</h4>
-  <h2>Every number you may be asked for</h2>
-  <div class="scroll">
-  <table>
-    <thead><tr><th>Figure</th><th class="n">Value</th></tr></thead>
-    <tbody>
-      <tr><td>Counties analysed</td><td class="n">3,093</td></tr>
-      <tr><td>Mortgaged households covered</td><td class="n">50,715,340</td></tr>
-      <tr><td>Share of all US mortgaged owner-occupied homes</td><td class="n">99.99%</td></tr>
-      <tr><td>National household-weighted median premium</td><td class="n">$1,317</td></tr>
-      <tr><td>R&sup2; from hazard risk alone</td><td class="n">0.196</td></tr>
-      <tr><td>R&sup2; from state alone</td><td class="n">0.436</td></tr>
-      <tr><td>Median price gap at identical risk</td><td class="n">2.3&times;</td></tr>
-      <tr><td>Modelled building loss excluded by a standard policy</td><td class="n">76.5%</td></tr>
-      <tr><td>&mdash; inland flooding</td><td class="n">59.2%</td></tr>
-      <tr><td>&mdash; earthquake</td><td class="n">16.1%</td></tr>
-      <tr><td>Pre-1980 homes in the 158 highest-seismic counties</td><td class="n">22,030,850</td></tr>
-      <tr><td>&mdash; share of that housing stock</td><td class="n">57%</td></tr>
-      <tr><td>States where risk/premium runs backwards</td><td class="n">11 of 43</td></tr>
-    </tbody>
-  </table>
-  </div>
-</section>
-
-<footer>
-  <p>Sources: US Census Bureau, American Community Survey 5-year estimates 2023, tables B25141 and
-  B25077 &middot; FEMA National Risk Index, county table.<br>
-  Editorial contacts in Tier 01 copied from insurancejournal.com/submitnews/ on 30 August 2026.
-  Verify before sending &mdash; newsroom staff move.</p>
-</footer>
+<div class="note">
+  <b>What changed since you sent those three.</b> The study now has a county lookup, a copy-ready
+  citation and an embed. That matters twice over: the two unsent pitches below mention it, and it
+  gives you a real reason to follow up with Chad, William and Don rather than simply chasing them.
+  A follow-up that hands someone a new tool is welcome; one that asks whether they read the last
+  email is not.
 </div>
 
+<h2 class="sec">Send these next</h2>
+<p class="secsub">Both are new desks, so they can go the same day without stepping on each other.</p>
+<section class="card todo">
+ <div class="chead"><span class="num">1</span><h2>Ezra Amacher</h2><span class="tag todo">To send</span></div>
+ <table class="meta"><tr><th>To</th><td>eamacher@insurancejournal.com</td></tr><tr><th>Outlet</th><td>Insurance Journal</td></tr><tr><th>Beat</th><td>Texas / Oklahoma / Louisiana / Arkansas</td></tr><tr><th>When</th><td>Send next. Strongest remaining pitch in the pack.</td></tr></table>
+ <p class="lbl">Subject line</p><p class="subj">Louisiana, Oklahoma and Texas rank 2nd, 3rd and 4th nationally for home insurance premiums</p>
+ <p class="lbl">Email body &mdash; copy from here</p>
+ <div class="mail"><button class="cp" onclick="cp(this)">Copy</button><div class="ln">Dear Ezra,</div><div class="sp"></div><div class="ln">Three of the four most expensive states for homeowners insurance in the country sit in your coverage area, and I have county-level data for all of them.</div><div class="sp"></div><div class="ln">From a national analysis of 3,093 counties using Census ACS table B25141 - what mortgaged households report actually paying, rather than quoted rates for a model home:</div><div class="sp"></div><div class="ln">Louisiana  $1,877  (2nd nationally)</div><div class="ln">Oklahoma  $1,807  (3rd)</div><div class="ln">Texas  $1,767  (4th)</div><div class="ln">Arkansas  $1,314  (20th)</div><div class="sp"></div><div class="ln">Only Florida, at $2,012, is higher. The national household-weighted median is $1,317.</div><div class="sp"></div><div class="ln">There is a sharper story underneath. Nationally, within a given state, counties carrying more FEMA-modelled hazard usually pay somewhat more. In 11 states out of 43 that runs backwards - and two of them are yours. In Oklahoma the correlation between modelled risk and premium is -0.24 across 76 counties; in Arkansas it is -0.23 across 75. Louisiana is the opposite: +0.71, one of the tightest risk-to-price relationships in the country.</div><div class="sp"></div><div class="ln">So within your four states you have both the clearest example of risk-based pricing in the dataset and two of the clearest counterexamples.</div><div class="sp"></div><div class="ln">I&#x27;ve also added a county lookup to the study, so you can pull the figure for any of the 3,093 counties yourself rather than asking me for a cut, and there is a copy-ready citation on the page.</div><div class="sp"></div><div class="ln">Caveat for print: ACS 5-year 2023, centred near 2021 - the baseline the recent increases departed from, not current pricing. The analysis is descriptive and does not identify a cause.</div><div class="sp"></div><div class="ln">Method, per-state table and figures:</div><div class="ln">https://www.beforeregret.com/research/risk-without-price/</div><div class="sp"></div><div class="ln">Best regards,</div><div class="ln">Viraj Patankar</div><div class="ln">Before Regret</div><div class="ln">hello@beforeregret.com</div></div>
+</section><section class="card todo">
+ <div class="chead"><span class="num">2</span><h2>Susanne Sclafane</h2><span class="tag todo">To send</span></div>
+ <table class="meta"><tr><th>To</th><td>ssclafane@carriermanagement.com</td></tr><tr><th>Outlet</th><td>Carrier Management</td></tr><tr><th>Beat</th><td>Editor</td></tr><tr><th>When</th><td>Send next. Technical readership - leads with the anomaly, not the ranking.</td></tr></table>
+ <p class="lbl">Subject line</p><p class="subj">In 11 states, counties with more modelled hazard pay lower homeowners premiums</p>
+ <p class="lbl">Email body &mdash; copy from here</p>
+ <div class="mail"><button class="cp" onclick="cp(this)">Copy</button><div class="ln">Dear Susanne,</div><div class="sp"></div><div class="ln">I&#x27;ve completed a county-level analysis that may suit Carrier Management&#x27;s more technical readership.</div><div class="sp"></div><div class="ln">The setup: Census ACS table B25141, reported homeowners insurance costs for mortgaged households, paired with per-peril expected annual building loss from FEMA&#x27;s National Risk Index, across 3,093 counties and 50.7 million households.</div><div class="sp"></div><div class="ln">Regressing log premium on log hazard risk, with risk restricted to the perils a standard HO-3 responds to, gives R-squared = 0.196. State fixed effects alone give 0.436. Adding risk on top of state moves the fit by under a percentage point.</div><div class="sp"></div><div class="ln">The result I find hardest to explain is within-state. Inside a single regulatory regime, risk ought to sort price cleanly. The median within-state correlation across the 43 states with at least 15 counties is only +0.218, and in 11 states it is negative: Kansas -0.42, South Dakota -0.32, Oklahoma -0.24, Arkansas -0.23, North Dakota -0.22, Georgia -0.17, Missouri -0.15, Nebraska -0.07, Alaska -0.04, Pennsylvania -0.01, Ohio -0.00.</div><div class="sp"></div><div class="ln">I want to be careful about what this does and does not show. It is descriptive. It does not separate rate regulation from reinsurance cost, residual market structure or litigation environment. The NRI models natural hazards only, so it says nothing about fire, water, theft or liability, which are the bulk of ordinary claims. And the ACS file centres near 2021.</div><div class="sp"></div><div class="ln">If the within-state inversion is already understood in the actuarial literature, I would genuinely rather be told that than publish it as novel.</div><div class="sp"></div><div class="ln">I&#x27;ve also added a county lookup to the study, so you can pull the figure for any of the 3,093 counties yourself rather than asking me for a cut, and there is a copy-ready citation on the page.</div><div class="sp"></div><div class="ln">Method, figures and the underlying JSON:</div><div class="ln">https://www.beforeregret.com/research/risk-without-price/</div><div class="sp"></div><div class="ln">Best regards,</div><div class="ln">Viraj Patankar</div><div class="ln">Before Regret</div><div class="ln">hello@beforeregret.com</div></div>
+</section><section class="card todo">
+ <div class="chead"><span class="num">3</span><h2>Andrea Wells</h2><span class="tag todo">To send</span></div>
+ <table class="meta"><tr><th>To</th><td>awells@insurancejournal.com</td></tr><tr><th>Outlet</th><td>Insurance Journal</td></tr><tr><th>Beat</th><td>National / MyNewMarkets</td></tr><tr><th>When</th><td>CONDITIONAL. Only if Chad Hemenway has not replied 3 working days after your send. Same desk - do not double up.</td></tr></table>
+ <p class="lbl">Subject line</p><p class="subj">Three quarters of modelled US building loss falls outside the standard homeowners policy</p>
+ <p class="lbl">Email body &mdash; copy from here</p>
+ <div class="mail"><button class="cp" onclick="cp(this)">Copy</button><div class="ln">Dear Andrea,</div><div class="sp"></div><div class="ln">I&#x27;ve published a county-level analysis of homeowners insurance, and one finding may be more useful to your readers than the pricing result it started as.</div><div class="sp"></div><div class="ln">Using FEMA&#x27;s National Risk Index and separating perils by whether a standard HO-3 responds to them, 76.5% of the expected annual building loss to US homes comes from perils the policy excludes. Inland flooding alone accounts for 59.2% of it; earthquake a further 16.1%.</div><div class="sp"></div><div class="ln">The exposure concentrates in older housing. In the 158 counties FEMA scores at or above 95 for earthquake risk, 22,030,850 homes - 57% of the housing stock there - were built before 1980, predating the seismic provisions introduced in the 1976 Uniform Building Code.</div><div class="sp"></div><div class="ln">For context on the pricing side: across 3,093 counties, hazard risk explains 20% of the variation in what households report paying, while state of residence alone explains 44%.</div><div class="sp"></div><div class="ln">I&#x27;ve also added a county lookup to the study, so you can pull the figure for any of the 3,093 counties yourself rather than asking me for a cut, and there is a copy-ready citation on the page.</div><div class="sp"></div><div class="ln">Sources are ACS 5-year 2023, centred near 2021, and the current NRI county table. The analysis is descriptive and does not attempt to explain the state effect.</div><div class="sp"></div><div class="ln">Method, per-state table and figures:</div><div class="ln">https://www.beforeregret.com/research/risk-without-price/</div><div class="sp"></div><div class="ln">Best regards,</div><div class="ln">Viraj Patankar</div><div class="ln">Before Regret</div><div class="ln">hello@beforeregret.com</div></div>
+</section>
+
+<h2 class="sec">Already sent &mdash; what to do now</h2>
+<p class="secsub">Do nothing for four working days. Journalists sit on things; silence at this stage
+means nothing.</p>
+<div class="sent-row"><b>Chad Hemenway</b><code>chemenway@insurancejournal.com</code>
+ <span>National</span><em>The national desk. His reply, or silence, is what releases the Andrea Wells pitch above.</em></div><div class="sent-row"><b>William Rabb</b><code>wrabb@insurancejournal.com</code>
+ <span>Southeast</span><em>Florida at $2,012 is the strongest single stat you sent anyone.</em></div><div class="sent-row"><b>Don Jergler</b><code>djergler@insurancejournal.com</code>
+ <span>West</span><em>Utah lowest, and the California point about earthquake sitting outside the policy.</em></div>
+
+<div class="note" style="border-left-color:var(--done)">
+  <b>If none of the three has replied after about a week,</b> send the follow-up below once, and
+  once only. It works because it gives them something new instead of asking for attention, and it
+  closes the loop explicitly so you are not the person who emails four times.
+</div>
+
+<section class="card" style="border-left-color:var(--done)">
+  <div class="chead"><span class="num">FOLLOW-UP</span><h2>One message, one time</h2><span class="tag" style="background:var(--done)">Hold ~1 week</span></div>
+  <p class="lbl">Subject line</p>
+  <p class="subj">Re: [reply to your original message so it threads] &mdash; county lookup added</p>
+  <p class="lbl">Email body &mdash; copy from here</p>
+  <div class="mail"><button class="cp" onclick="cp(this)">Copy</button><div class="ln">Dear [name],</div><div class="sp"></div><div class="ln">Following up on the homeowners insurance analysis I sent through recently.</div><div class="sp"></div><div class="ln">I&#x27;ve since added a county lookup to the study, so rather than asking me for a custom cut you can pull the figure for any of the 3,093 counties directly, along with what counties facing the same modelled hazard pay:</div><div class="sp"></div><div class="ln">https://www.beforeregret.com/research/risk-without-price/</div><div class="sp"></div><div class="ln">There is a copy-ready citation on the page too, and an embed if that is ever useful.</div><div class="sp"></div><div class="ln">No reply needed if it isn&#x27;t a fit for you - I won&#x27;t chase this again.</div><div class="sp"></div><div class="ln">Best regards,</div><div class="ln">Viraj Patankar</div><div class="ln">Before Regret</div><div class="ln">hello@beforeregret.com</div></div>
+</section>
+
+<h2 class="sec">Order of play</h2>
+<ol>
+  <li><b>Today.</b> Ezra Amacher and Susanne Sclafane. Different outlets, different angles, no conflict.</li>
+  <li><b>Three working days after your Hemenway send.</b> If he has not replied, Andrea Wells becomes live. Not before &mdash; they share the national desk.</li>
+  <li><b>About a week out.</b> One follow-up each to Hemenway, Rabb and Jergler. Then stop.</li>
+  <li><b>Anyone who replies.</b> Answer the same day and offer the county-level cut for their patch. That is the ask most likely to turn a reply into a published citation.</li>
+</ol>
+
+<footer>
+  <p>Editorial contacts from insurancejournal.com/submitnews, captured 30 August 2026. Verify before
+  sending &mdash; newsroom staff move.<br>
+  Every figure in these pitches traces to docs/data/risk-without-price-figures.json.</p>
+</footer>
+</div>
 <script>
 function cp(btn){
-  const el = btn.parentElement.cloneNode(true);
-  el.querySelector('.copy').remove();
-  navigator.clipboard.writeText(el.innerText.trim()).then(()=>{
-    const was = btn.textContent; btn.textContent = 'Copied';
-    setTimeout(()=>{ btn.textContent = was; }, 1400);
-  }).catch(()=>{ btn.textContent = 'Select manually'; });
+  var el=btn.parentElement.cloneNode(true); el.querySelector('.cp').remove();
+  var lines=[].map.call(el.children,function(n){return n.className==='sp'?'':n.textContent;});
+  navigator.clipboard.writeText(lines.join('\n').trim()).then(function(){
+    var w=btn.textContent; btn.textContent='Copied'; setTimeout(function(){btn.textContent=w;},1400);
+  },function(){ btn.textContent='Select manually'; });
 }
 </script>
