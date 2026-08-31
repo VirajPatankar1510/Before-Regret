@@ -65,24 +65,41 @@ const JSON_LD = [
     image: OG_IMAGE,
     keywords:
       'homeowners insurance, premiums, natural hazard risk, FEMA National Risk Index, American Community Survey, rate regulation, property risk',
+    // description is REQUIRED on a nested Dataset and license is recommended -- Google's Rich
+    // Results Test flagged all three of these as one critical plus one non-critical issue each
+    // when they carried only name/creator/url. Both source agencies are US federal, so their
+    // output is a government work rather than a licensed dataset; usa.gov/government-works is the
+    // canonical statement of that and was checked to resolve before being used here.
     isBasedOn: [
       {
         '@type': 'Dataset',
         name: 'American Community Survey 5-year estimates, 2023, table B25141 (Homeowners insurance costs by mortgage status)',
+        description:
+          'Annual homeowners insurance costs reported by owner-occupied households, tabulated by mortgage status into twelve annual-cost bands, for every county in the United States. Five-year period estimates, so figures are centred near 2021 rather than describing a single year.',
         creator: { '@type': 'Organization', name: 'U.S. Census Bureau' },
         url: 'https://api.census.gov/data/2023/acs/acs5',
+        license: 'https://www.usa.gov/government-works',
+        isAccessibleForFree: true,
       },
       {
         '@type': 'Dataset',
         name: 'FEMA National Risk Index, county table',
+        description:
+          'Expected annual loss to buildings, population and agriculture from eighteen natural hazards, reported per hazard and in total, for every county in the United States, alongside composite risk scores and ratings.',
         creator: { '@type': 'Organization', name: 'Federal Emergency Management Agency' },
         url: 'https://hazards.fema.gov/nri/',
+        license: 'https://www.usa.gov/government-works',
+        isAccessibleForFree: true,
       },
       {
         '@type': 'Dataset',
         name: 'American Community Survey 5-year estimates, 2023, table B25077 (Median home value)',
+        description:
+          'Median value of owner-occupied housing units for every county in the United States. Five-year period estimates, used here as a control variable rather than as a headline figure.',
         creator: { '@type': 'Organization', name: 'U.S. Census Bureau' },
         url: 'https://api.census.gov/data/2023/acs/acs5',
+        license: 'https://www.usa.gov/government-works',
+        isAccessibleForFree: true,
       },
     ],
   },
