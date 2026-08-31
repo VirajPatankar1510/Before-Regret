@@ -224,7 +224,7 @@ I've published a county-level analysis of homeowners insurance, and one finding 
 
 Using FEMA's National Risk Index and separating perils by whether a standard HO-3 responds to them, 76.5% of the expected annual building loss to US homes comes from perils the policy excludes. Inland flooding alone accounts for 59.2% of it; earthquake a further 16.1%.
 
-The exposure concentrates in older housing. In the 158 counties FEMA scores at or above 95 for earthquake risk, 22,030,850 homes — 57% of the housing stock there — were built before 1980, predating the seismic provisions introduced in the 1976 Uniform Building Code.
+The exposure concentrates in older housing. In the 158 counties FEMA scores at or above 95 for earthquake risk, 22,030,850 homes — 57% of the housing stock there — were built before 1980, predating the substantially strengthened seismic provisions of the 1976 Uniform Building Code.
 
 For context on the pricing side: across 3,093 counties, hazard risk explains 20% of the variation in what households report paying, while state of residence alone explains 44%.
 

@@ -165,7 +165,7 @@ const JSON_LD = [
         name: 'How many US homes face earthquake risk without earthquake cover?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'In the 158 counties FEMA scores at or above 95 for earthquake risk, 22,030,850 homes - 57% of the housing stock there - were built before 1980, predating the seismic provisions introduced in the 1976 Uniform Building Code. Standard policies exclude earthquake in every one of them.',
+          text: 'In the 158 counties FEMA scores at or above 95 for earthquake risk, 22,030,850 homes - 57% of the housing stock there - were built before 1980, predating the substantially strengthened seismic provisions of the 1976 Uniform Building Code. US codes had carried seismic requirements since 1927 and modernised them in 1961, and adoption varied by jurisdiction, so age is a proxy for seismic design rather than proof any particular house is unsafe. Standard policies exclude earthquake in all of them.',
         },
       },
     ],
