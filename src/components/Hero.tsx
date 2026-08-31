@@ -160,13 +160,13 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
           {/* Sample report link -- for a visitor deciding whether to trust the product with a real
               address before typing one in. Plain <a>, not onNavigate/ContentLink: /sample-report/
               is a static file in public/ (see that file's own comments), not an SPA route, so it
-              needs a real document load the same way the footer's link to it does. Styled as a
-              quiet outlined pill on the dark hero background, deliberately lighter weight than the
-              search box above it -- this is a secondary path for the undecided, not competing with
-              the primary flow. */}
+              needs a real document load the same way the footer's link to it does. Solid fill, not
+              transparent/outlined, so it reads clearly against the photographic hero background at
+              every scroll position -- still visually secondary to the blue "Free Report" button in
+              the header via slate rather than blue, not competing with the primary search flow. */}
           <a
             href="/sample-report/"
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-200 border border-white/20 rounded-full hover:bg-white/10 hover:text-white hover:border-white/30 transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-slate-800 border border-slate-600 rounded-full hover:bg-slate-700 hover:border-slate-500 transition-colors"
           >
             See a sample report
             <span aria-hidden="true">&rarr;</span>
