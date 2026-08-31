@@ -17,3 +17,8 @@ scripts/draft-topics-log.json
 # Database backups written by scripts/backup-db.ts. Contain real user data
 # (transactions, terms acceptances, generated reports) -- never commit them.
 backups/
+
+# Office lock files. Word writes ~$name.docx beside a document while it is open, and a
+# `git add -A` run during that window commits it. One reached the repo in 94baad9 this way.
+~$*
+.~lock.*#
