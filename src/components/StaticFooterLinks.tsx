@@ -65,6 +65,7 @@ export function StaticFooterLinks({ guides }: StaticFooterLinksProps) {
                 prerendered page -- which is the point, given how much of this site sits in
                 "Discovered - currently not indexed" for want of internal links. */}
             <li><a href="/research/risk-without-price/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research: Risk Without Price</a></li>
+            <li><a href="/sample-report/" className="hover:text-white font-bold text-blue-300 block py-1.5">See a Sample Report</a></li>
             <li><a href="/advertise/" className="hover:text-white font-bold text-blue-300 block py-1.5">Advertise With Us</a></li>
             <li><a href="/support/" className="hover:text-white font-medium text-slate-300 block py-1.5">Customer Support</a></li>
             {/* Mirrors Footer.tsx, reading the same constant so the two renderings of this link

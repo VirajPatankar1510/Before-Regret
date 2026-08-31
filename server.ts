@@ -681,8 +681,16 @@ export async function createApp() {
           zipCode: resolvedMeta.zipCode,
           county: resolvedMeta.county,
           country: 'United States',
-          lat: lat || 38.8951,
-          lon: lon || -77.0364,
+          // The address gate has already geocoded this address via LocationIQ, so its coordinates
+          // are the authoritative ones -- req.body's lat/lon are only present when a caller
+          // supplies them directly, which the browser client never does (see App.tsx's
+          // generate-report body). This used to fall back to 38.8951/-77.0364 -- Washington DC --
+          // which meant every report stored for every address in the country recorded DC as the
+          // property's location. Nothing rendered the field, so no reader ever saw it and no
+          // finding was computed from it (fetchSeismicHazardFinding takes gateResult.layer1's
+          // coordinates, not these), but it was wrong data sitting in generated_reports.
+          lat: lat ?? gateResult.layer1.lat,
+          lon: lon ?? gateResult.layer1.lon,
           propertyType: resolvedMeta.propertyType,
           displayName: resolvedMeta.formattedAddress
         },
@@ -829,7 +837,9 @@ export async function createApp() {
       resolvedMeta.county,
       resolvedMeta.propertyType,
       usefulSourcesCount || 21,
-      price || 29
+      price || 29,
+      gateResult.layer1.lat ?? null,
+      gateResult.layer1.lon ?? null
     );
 
     const apiKey = process.env.GEMINI_API_KEY;
@@ -2307,7 +2317,14 @@ function generateStructuredPropertyReport(
   rawCounty: string = 'Travis County',
   rawPropertyType: string = 'Single Family Home',
   usefulSourcesCount: number = 21,
-  price: number = 29
+  price: number = 29,
+  // Threaded in from the caller's address-gate result rather than defaulted to a literal: these
+  // previously hardcoded 38.8951/-77.0364 (Washington DC) into propertyInfo for every report
+  // regardless of where the property actually was. Optional because the parameter list above is
+  // already all-optional, and null is an honest "not resolved" -- a plausible-looking wrong
+  // coordinate is worse than no coordinate in a product whose promise is that nothing is invented.
+  lat: number | null = null,
+  lon: number | null = null
 ) {
   const meta = resolvePropertyMetadata(fullAddr, rawCity, rawState, rawZipCode, rawCounty, rawPropertyType);
   const reportDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -2517,8 +2534,8 @@ function generateStructuredPropertyReport(
       state: meta.state,
       zipCode: meta.zipCode,
       county: meta.county,
-      lat: 38.8951,
-      lon: -77.0364,
+      lat,
+      lon,
       propertyType: meta.propertyType,
       estimatedSqFt: meta.estimatedSqFt
     },

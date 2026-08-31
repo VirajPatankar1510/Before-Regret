@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample Report — See Exactly What Before Regret Checks | Before Regret</title>
+<meta name="description" content="A real, unedited Before Regret property report with the address redacted. See what a live USGS and Census query returns, what we mark as not yet verified, and the inspection questions it generates.">
+<link rel="canonical" href="https://www.beforeregret.com/sample-report/">
+<meta name="robots" content="index, follow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sample Report — See Exactly What Before Regret Checks">
+<meta property="og:description" content="A real, unedited Before Regret property report with the address redacted.">
+<meta property="og:url" content="https://www.beforeregret.com/sample-report/">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+  :root{
+    --ink:#0f172a; --ink-2:#334155; --ink-3:#64748b;
+    --line:#e2e8f0; --line-2:#f1f5f9;
+    --page:#f8fafc; --card:#ffffff;
+    --brand:#1d4ed8; --brand-soft:#eff6ff;
+    --ok:#047857; --ok-soft:#ecfdf5; --ok-line:#a7f3d0;
+    --warn:#b45309; --warn-soft:#fffbeb; --warn-line:#fde68a;
+    --radius:16px;
+    --wrap:940px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--brand)}
+  .wrap{max-width:var(--wrap); margin:0 auto; padding:0 20px}
+
+  /* ---- top bar ---- */
+  .topbar{background:var(--card); border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex; align-items:center; justify-content:space-between; gap:16px; padding-top:14px; padding-bottom:14px; flex-wrap:wrap}
+  .brand{font-weight:700; letter-spacing:-.02em; color:var(--ink); text-decoration:none; font-size:1.05rem}
+  .btn{
+    display:inline-block; background:var(--brand); color:#fff; text-decoration:none;
+    padding:10px 18px; border-radius:10px; font-weight:600; font-size:.94rem;
+  }
+  .btn:hover{background:#1e40af}
+  .btn-ghost{background:transparent; color:var(--brand); border:1px solid var(--line)}
+  .btn-ghost:hover{background:var(--brand-soft)}
+
+  /* ---- hero ---- */
+  .hero{padding:44px 0 8px}
+  .eyebrow{
+    display:inline-block; font-size:.75rem; font-weight:700; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--brand); background:var(--brand-soft);
+    padding:5px 11px; border-radius:999px; margin-bottom:14px;
+  }
+  h1{font-size:2.1rem; line-height:1.2; letter-spacing:-.025em; margin:0 0 14px; text-wrap:balance}
+  .lede{font-size:1.09rem; color:var(--ink-2); max-width:64ch; margin:0}
+
+  /* ---- notice ---- */
+  .notice{
+    background:var(--card); border:1px solid var(--line); border-left:4px solid var(--brand);
+    border-radius:var(--radius); padding:18px 20px; margin:26px 0 8px;
+  }
+  .notice p{margin:0; color:var(--ink-2); font-size:.95rem}
+  .notice strong{color:var(--ink)}
+
+  /* ---- report shell ---- */
+  .report{background:var(--card); border:1px solid var(--line); border-radius:20px; margin:26px 0; overflow:hidden}
+  .report-head{padding:24px; border-bottom:1px solid var(--line-2); background:linear-gradient(180deg,#fff, #fcfdff)}
+  .report-head .meta{font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-3); font-weight:700}
+  .addr-line{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:10px 0 4px}
+  .redacted{
+    display:inline-block; background:#cbd5e1; color:transparent; user-select:none;
+    border-radius:5px; height:1.35em; width:190px; vertical-align:middle;
+    box-shadow:inset 0 0 10px rgba(15,23,42,.18);
+  }
+  .addr-rest{font-size:1.28rem; font-weight:700; letter-spacing:-.02em}
+  .redact-note{font-size:.8rem; color:var(--ink-3); margin:6px 0 0}
+
+  .facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; background:var(--line-2)}
+  .fact{background:var(--card); padding:14px 20px}
+  .fact dt{font-size:.72rem; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-3); font-weight:700; margin:0 0 3px}
+  .fact dd{margin:0; font-weight:600; font-size:.97rem}
+
+  /* ---- sections ---- */
+  .sec{padding:26px 24px; border-top:1px solid var(--line-2)}
+  .sec > h2{
+    font-size:1.18rem; letter-spacing:-.02em; margin:0 0 4px;
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  }
+  .sec > .sub{color:var(--ink-3); font-size:.9rem; margin:0 0 18px}
+  .count{
+    font-size:.72rem; font-weight:700; color:var(--ink-3);
+    background:var(--line-2); border-radius:999px; padding:3px 9px; letter-spacing:.04em;
+  }
+
+  /* ---- finding cards ---- */
+  .finding{border:1px solid var(--line); border-radius:var(--radius); padding:20px; margin-bottom:16px}
+  .finding h3{margin:0; font-size:1.02rem; letter-spacing:-.01em}
+  .fhead{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; margin-bottom:10px}
+  .badge{
+    font-size:.7rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    padding:4px 10px; border-radius:999px; white-space:nowrap;
+    background:var(--ok-soft); color:var(--ok); border:1px solid var(--ok-line);
+  }
+  .badge.warn{background:var(--warn-soft); color:var(--warn); border-color:var(--warn-line)}
+  .summary{font-size:1rem; color:var(--ink); margin:0 0 14px}
+  .metrics{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; margin:0 0 14px}
+  .metric{background:var(--page); border:1px solid var(--line-2); border-radius:11px; padding:10px 12px}
+  .metric .l{font-size:.72rem; color:var(--ink-3); font-weight:700; text-transform:uppercase; letter-spacing:.05em}
+  .metric .v{font-weight:700; font-size:1rem; font-variant-numeric:tabular-nums}
+  .metric .c{font-size:.8rem; color:var(--ink-3)}
+  .block{margin:0 0 12px}
+  .block .l{font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-3); margin:0 0 3px}
+  .block p{margin:0; color:var(--ink-2); font-size:.94rem}
+  .src{border-top:1px solid var(--line-2); padding-top:11px; margin-top:14px; font-size:.82rem; color:var(--ink-3)}
+  .src a{text-decoration:none}
+  .src a:hover{text-decoration:underline}
+
+  /* ---- pending list ---- */
+  .pending{border:1px solid var(--warn-line); background:var(--warn-soft); border-radius:var(--radius); padding:18px 20px}
+  .pending ul{margin:12px 0 0; padding:0; list-style:none; display:grid; gap:11px}
+  .pending li{background:#fff; border:1px solid var(--line); border-radius:11px; padding:12px 14px}
+  .pending .t{font-weight:700; font-size:.95rem}
+  .pending .d{font-size:.88rem; color:var(--ink-2); margin-top:3px}
+
+  /* ---- tables ---- */
+  .scroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse; width:100%; font-size:.9rem; min-width:640px}
+  th,td{text-align:left; padding:11px 12px; border-bottom:1px solid var(--line-2); vertical-align:top}
+  th{font-size:.71rem; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-3); font-weight:700; background:var(--page)}
+  td.num{font-variant-numeric:tabular-nums; white-space:nowrap}
+  .pill{font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:3px 8px; border-radius:999px; background:var(--warn-soft); color:var(--warn); border:1px solid var(--warn-line)}
+  .pill.low{background:var(--line-2); color:var(--ink-3); border-color:var(--line)}
+
+  /* ---- questions ---- */
+  .q{border:1px solid var(--line); border-radius:var(--radius); padding:18px; margin-bottom:14px}
+  .q .qt{font-weight:700; font-size:1rem; margin:0 0 10px}
+
+  /* ---- cta ---- */
+  .cta{background:var(--ink); color:#fff; border-radius:20px; padding:32px 26px; margin:30px 0 44px; text-align:center}
+  .cta h2{margin:0 0 8px; font-size:1.42rem; letter-spacing:-.02em; color:#fff}
+  .cta p{margin:0 auto 20px; color:#cbd5e1; max-width:56ch; font-size:.98rem}
+  .cta .btn{background:#fff; color:var(--ink)}
+  .cta .btn:hover{background:#e2e8f0}
+
+  footer.site{border-top:1px solid var(--line); background:var(--card); padding:22px 0; font-size:.86rem; color:var(--ink-3)}
+  footer.site .wrap{display:flex; gap:16px; flex-wrap:wrap; justify-content:space-between}
+  footer.site a{color:var(--ink-3); text-decoration:none; margin-right:14px}
+  footer.site a:hover{color:var(--brand); text-decoration:underline}
+
+  @media (max-width:640px){
+    h1{font-size:1.68rem}
+    .sec,.report-head{padding:20px 16px}
+    .redacted{width:140px}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="brand" href="/">Before Regret</a>
+    <a class="btn" href="/">Run your own address</a>
+  </div>
+</div>
+
+<div class="wrap hero">
+  <span class="eyebrow">Sample report</span>
+  <h1>This is a real report, not a mock-up</h1>
+  <p class="lede">Below is an actual Before Regret report, generated for a real single-family home and reproduced without edits. The only change is the street address, which has been removed to protect the owner's privacy.</p>
+</div>
+
+<div class="wrap">
+  <div class="notice">
+    <p><strong>Read the "not yet verified" section carefully.</strong> Five of the seven checks in this report came back without a verified data connection, and the report says so plainly instead of filling the space with an estimate. That is the point of the product: you are told what was actually confirmed, what was not, and where to go look yourself. A report that claims certainty about everything is guessing about something.</p>
+  </div>
+</div>
+
+<div class="wrap">
+<div class="report">
+
+  <div class="report-head">
+    <div class="meta">Property report · v1.0.4 · August 31, 2026</div>
+    <div class="addr-line">
+      <span class="redacted" aria-label="Street address redacted"></span>
+      <span class="addr-rest">Jenks, OK 74037</span>
+    </div>
+    <p class="redact-note">Street address redacted — this is a private residence. Everything else on this page is exactly as generated.</p>
+  </div>
+
+  <dl class="facts">
+    <div class="fact"><dt>County</dt><dd>Tulsa County</dd></div>
+    <div class="fact"><dt>Property type</dt><dd>Single Family Home</dd></div>
+    <div class="fact"><dt>Year built</dt><dd>1998</dd></div>
+    <div class="fact"><dt>Checks run</dt><dd>7</dd></div>
+  </dl>
+
+  <!-- ============ CONFIRMED ============ -->
+  <div class="sec">
+    <h2>Confirmed records <span class="count">2 of 7</span></h2>
+    <p class="sub">Returned by a live query to a government data source at the moment the report was generated.</p>
+
+    <div class="finding">
+      <div class="fhead">
+        <h3>Neighborhood Profile (U.S. Census)</h3>
+        <span class="badge">Confirmed record</span>
+      </div>
+      <p class="summary">This home was built in 1998 — about 15 years newer than the typical home on its own block.</p>
+
+      <div class="metrics">
+        <div class="metric"><div class="l">Typical nearby home</div><div class="v">Built around 1983</div><div class="c">County average: built around 1979</div></div>
+        <div class="metric"><div class="l">This home vs. its block</div><div class="v">Built 1998</div><div class="c">15 yrs newer than typical here</div></div>
+        <div class="metric"><div class="l">Median monthly cost to own</div><div class="v">$1,236/mo</div><div class="c">County average: $1,587/mo</div></div>
+        <div class="metric"><div class="l">Median home value</div><div class="v">$178,900</div><div class="c">County average: $213,500</div></div>
+        <div class="metric"><div class="l">Owner-occupied</div><div class="v">45%</div><div class="c">55% rented</div></div>
+        <div class="metric"><div class="l">Mean commute</div><div class="v">18.9 min</div><div class="c">County average: 20.1 min</div></div>
+      </div>
+
+      <div class="block">
+        <p class="l">Why it matters</p>
+        <p>These figures cover the census tract this address sits in — roughly a neighborhood, not the whole county — so they track the immediate area much more closely than county-wide numbers. Housing age drives which defects are plausible here, and the monthly ownership cost is the figure buyers most often underestimate when budgeting from a mortgage quote alone.</p>
+      </div>
+      <div class="block">
+        <p class="l">Suggested next step</p>
+        <p>Budget against the $1,236 all-in figure rather than a mortgage quote on its own — it includes taxes, insurance and utilities, not just the loan payment. Ask the seller for twelve months of actual tax and insurance bills for this specific property.</p>
+      </div>
+
+      <div class="src">Source: U.S. Census Bureau, American Community Survey (5-Year Estimates) · ACS 2023 5-year estimates (live query) · <a href="https://data.census.gov/" rel="nofollow noopener" target="_blank">data.census.gov</a></div>
+    </div>
+
+    <div class="finding">
+      <div class="fhead">
+        <h3>Seismic Design Category (USGS)</h3>
+        <span class="badge">Confirmed record</span>
+      </div>
+      <p class="summary">USGS places this location in Seismic Design Category B — low seismic design requirements — earthquake risk here is low.</p>
+
+      <div class="block">
+        <p class="l">What we found</p>
+        <p>USGS's ASCE 7-22 seismic design tool places this location in Seismic Design Category B, based on a mapped short-period spectral acceleration (S<sub>s</sub>) of 0.18g and a 1-second spectral acceleration (S<sub>1</sub>) of 0.08g, for standard Site Class D soil conditions and Risk Category II construction.</p>
+      </div>
+      <div class="block">
+        <p class="l">Why it matters</p>
+        <p>Seismic Design Category determines how much earthquake-resistant construction a building at this site is required to meet under current building code — higher categories (D, E, F) indicate meaningfully higher regional earthquake risk and stricter, often costlier, structural requirements for new construction and major renovations.</p>
+      </div>
+      <div class="block">
+        <p class="l">Suggested next step</p>
+        <p>This is a low seismic-risk area. No special earthquake-related questions are typically needed.</p>
+      </div>
+
+      <div class="src">Source: U.S. Geological Survey (USGS) · ASCE 7-22 seismic design values (live query) · <a href="https://earthquake.usgs.gov/hazards/hazmaps/" rel="nofollow noopener" target="_blank">earthquake.usgs.gov</a></div>
+    </div>
+  </div>
+
+  <!-- ============ NOT YET VERIFIED ============ -->
+  <div class="sec">
+    <h2>Not yet verified <span class="count">5 of 7</span></h2>
+    <p class="sub">No live, verified data connection exists for these records in this jurisdiction. Rather than estimate, the report names the gap and tells you where to look.</p>
+
+    <div class="pending">
+      <ul>
+        <li>
+          <div class="t">Roof Replacement Permit Records</div>
+          <div class="d">Ask the seller for roof replacement receipts or contractor invoice documentation, and check the municipal permit portal directly.</div>
+        </li>
+        <li>
+          <div class="t">Main Electrical Service Panel</div>
+          <div class="d">Verify main panel labelling and breaker alignment during physical walkthrough, and check the municipal permit portal directly.</div>
+        </li>
+        <li>
+          <div class="t">HVAC Compressor &amp; Mechanical System</div>
+          <div class="d">Have your home inspector record the manufacturing date on the condenser unit dataplate.</div>
+        </li>
+        <li>
+          <div class="t">FEMA Flood Hazard Risk Zone</div>
+          <div class="d">Look up the official flood zone yourself at the FEMA Flood Map Service Center before making assumptions about insurance requirements.</div>
+        </li>
+        <li>
+          <div class="t">Municipal Code Enforcement Standing</div>
+          <div class="d">Check the municipal code enforcement portal directly before closing.</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ INSPECTION PRIORITIES ============ -->
+  <div class="sec">
+    <h2>Inspection priorities <span class="count">1990s construction · Tulsa, OK</span></h2>
+    <p class="sub">Ranked for a home of this era and region — what to have checked, what it costs to check, and what it costs if it is wrong.</p>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>What to check</th><th>Priority</th><th>Cost to check</th><th>Typical repair cost</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Identify the foundation type and check for movement</strong></td>
+            <td><span class="pill">Medium</span></td>
+            <td>Included in a general inspection</td>
+            <td class="num">Minor sealing to $30,000+</td>
+          </tr>
+          <tr>
+            <td><strong>If the exterior is stucco, find out which kind</strong><br><span style="color:var(--ink-3)">Early synthetic stucco (EIFS) could trap water behind the cladding.</span></td>
+            <td><span class="pill">Medium</span></td>
+            <td class="num">$400 – $800</td>
+            <td class="num">$10,000+ if extensive</td>
+          </tr>
+          <tr>
+            <td><strong>Get the age and remaining life of the roof in writing</strong></td>
+            <td><span class="pill">Medium</span></td>
+            <td>Included in a general inspection</td>
+            <td class="num">$8,000 – $25,000+</td>
+          </tr>
+          <tr>
+            <td><strong>Get the age of the HVAC system and water heater in writing</strong></td>
+            <td><span class="pill">Medium</span></td>
+            <td>Included — ask for data-plate dates</td>
+            <td class="num">HVAC $6,000 – $15,000<br>Water heater $1,200 – $3,000</td>
+          </tr>
+          <tr>
+            <td><strong>Level 2 chimney inspection, if there is a fireplace</strong><br><span style="color:var(--ink-3)">NFPA 211 calls for this whenever a property changes ownership.</span></td>
+            <td><span class="pill">Medium</span></td>
+            <td class="num">$250 – $600</td>
+            <td class="num">$1,500 – $30,000+</td>
+          </tr>
+          <tr>
+            <td><strong>Get a wood-destroying insect (WDI) report</strong></td>
+            <td><span class="pill">Medium</span></td>
+            <td class="num">$75 – $150</td>
+            <td class="num">$1,200 – $9,000+</td>
+          </tr>
+          <tr>
+            <td><strong>Radon test</strong><br><span style="color:var(--ink-3)">EPA recommends testing every home regardless of predicted zone.</span></td>
+            <td><span class="pill low">Lower</span></td>
+            <td class="num">$150 – $300</td>
+            <td class="num">$800 – $2,500</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ SELLER QUESTIONS ============ -->
+  <div class="sec">
+    <h2>Questions to ask the seller <span class="count">4</span></h2>
+    <p class="sub">Written to be asked as-is, with what a reassuring answer sounds like.</p>
+
+    <div class="q">
+      <p class="qt">"Were any additions, conversions, or major renovations done to this home, and were they permitted?"</p>
+      <div class="block">
+        <p class="l">Why ask</p>
+        <p>Unpermitted work is one of the most commonly reported post-closing regrets. It can affect insurability, resale value, and in some cases has to be redone to code before it can be legally finished.</p>
+      </div>
+      <div class="block">
+        <p class="l">What to listen for</p>
+        <p>A specific answer naming the work and its permit status is reassuring. A vague answer, or "I'm not sure," is worth following up on with your agent before your option period ends.</p>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="qt">"Has the property ever flooded, or had a water-damage insurance claim filed?"</p>
+      <div class="block">
+        <p class="l">Why ask</p>
+        <p>Many states require sellers to disclose known flood history. Past flooding can affect future insurance cost and eligibility even for a home that is not in a mapped flood zone today.</p>
+      </div>
+      <div class="block">
+        <p class="l">What to listen for</p>
+        <p>A clear "no," or a fully disclosed and repaired past incident, are both workable answers. A vague or evasive answer is worth asking your agent to pursue in writing.</p>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="qt">"What year were the roof, HVAC system, and water heater last replaced? Do you have receipts or permits?"</p>
+      <div class="block">
+        <p class="l">Why ask</p>
+        <p>Major systems have finite service lives — roughly 15 to 25 years for a roof, 15 to 20 for HVAC, 8 to 12 for a water heater — and a home of this age is old enough that at least one is typically due.</p>
+      </div>
+      <div class="block">
+        <p class="l">What to listen for</p>
+        <p>Specific years with receipts are reassuring. A vague answer means your inspector should estimate remaining life directly from the equipment's data plates.</p>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="qt">"If the home is on a septic system, when was it last pumped or inspected, and is there a diagram of the drain field?"</p>
+      <div class="block">
+        <p class="l">Why ask</p>
+        <p>Septic issues are expensive to diagnose after the fact and are not part of a standard home inspection. This only matters if the home is not on municipal sewer.</p>
+      </div>
+      <div class="block">
+        <p class="l">What to listen for</p>
+        <p>Recent service records and a drain field diagram are reassuring. If the seller isn't sure whether the home is on septic at all, confirm with your agent — it changes what you need to check.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="wrap">
+  <div class="cta">
+    <h2>Run this on the house you're actually looking at</h2>
+    <p>Every report is generated live for one specific address. What comes back as a confirmed record depends on what the government sources actually hold for that jurisdiction — and where they hold nothing, you'll be told that too.</p>
+    <a class="btn" href="/">Check an address</a>
+  </div>
+</div>
+
+<footer class="site">
+  <div class="wrap">
+    <div>
+      <a href="/">Home</a>
+      <a href="/guides/">Guides</a>
+      <a href="/counties/">Counties</a>
+      <a href="/research/risk-without-price/">Research</a>
+      <a href="/about/">About</a>
+    </div>
+    <div>© 2026 Before Regret</div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -169,6 +169,17 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                     Research: Risk Without Price
                   </a>
                 </li>
+                {/* Same reason as the research link above: /sample-report/ is a static file in
+                    public/, not an SPA route, so ContentLink's preventDefault would change the URL
+                    and blank the page. Needs a real document load. */}
+                <li>
+                  <a
+                    href="/sample-report/"
+                    className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5"
+                  >
+                    See a Sample Report
+                  </a>
+                </li>
                 <li><ContentLink href="/advertise/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">Advertise With Us</ContentLink></li>
                 <li><ContentLink href="/support/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5">Customer Support</ContentLink></li>
                 {/* External, so a plain <a> rather than ContentLink -- there is no SPA route to
