@@ -165,6 +165,7 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       // on every build would be a false freshness signal on the one page here whose whole value is
       // that a reader can tell exactly what it measured and when.
       { loc: `${BASE_URL}/research/risk-without-price/`, lastmod: '2026-08-30', changefreq: 'yearly', priority: '0.8' },
+      { loc: `${BASE_URL}/research/risk-without-cover/`, lastmod: '2026-08-31', changefreq: 'yearly', priority: '0.8' },
     ];
   } else if (cleanName === 'sitemap-guides' && isDbConfigured()) {
     try {

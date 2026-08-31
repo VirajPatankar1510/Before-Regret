@@ -378,6 +378,119 @@ ${lookupScript}
   fs.mkdirSync(embedDir, { recursive: true });
   fs.writeFileSync(path.join(embedDir, 'index.html'), embedHtml, 'utf8');
 
+
+  // ---- /research/risk-without-cover/ ----------------------------------------------------------
+  // The companion flood-coverage study. Same standalone-document contract as above and the same
+  // reasoning for it: no SPA route, so it must not be injected into the shell. It needs no embed
+  // build, because its value is the finding rather than a widget other sites would host.
+  const COVER_SRC = path.join(process.cwd(), 'docs', 'risk-without-cover.html');
+  if (fs.existsSync(COVER_SRC)) {
+    const coverSource = fs.readFileSync(COVER_SRC, 'utf8');
+    const cWrap = coverSource.indexOf('<div class="wrap">');
+    if (cWrap === -1) {
+      console.error('[prerender-research] risk-without-cover.html has no document body.');
+      process.exit(1);
+    }
+    const cHead = coverSource.slice(0, cWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
+    const cBody = coverSource.slice(cWrap);
+    const COVER_URL = 'https://www.beforeregret.com/research/risk-without-cover/';
+    const COVER_TITLE =
+      'Risk Without Cover: how few homes in US flood zones actually carry flood insurance';
+    const COVER_DESC =
+      'Flood insurance take-up by county. Across 2,304 US counties and 3.75 million homes inside FEMA-mapped flood zones, the median county covers 15% of them, and take-up does not track flood risk.';
+    const COVER_LD = [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'ScholarlyArticle',
+        headline: 'Risk Without Cover',
+        alternativeHeadline:
+          'In the typical US county fewer than one in six homes in a mapped flood zone carries flood insurance, and take-up does not track flood risk',
+        description: COVER_DESC,
+        url: COVER_URL,
+        datePublished: '2026-08-31',
+        dateModified: '2026-08-31',
+        inLanguage: 'en-US',
+        isAccessibleForFree: true,
+        license: 'https://creativecommons.org/licenses/by/4.0/',
+        author: { '@type': 'Organization', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Before Regret',
+          url: 'https://www.beforeregret.com/',
+          logo: { '@type': 'ImageObject', url: 'https://www.beforeregret.com/logo-mark.png' },
+        },
+        image: OG_IMAGE,
+        keywords:
+          'flood insurance, NFIP, flood zone, Special Flood Hazard Area, take-up rate, FEMA National Risk Index, homeowners insurance',
+        isBasedOn: [
+          {
+            '@type': 'Dataset',
+            name: 'FEMA OpenFEMA, NFIP residential penetration rates',
+            description:
+              'Residential structures inside Special Flood Hazard Areas and National Flood Insurance Program contracts in force within them, reported for every county in the United States.',
+            creator: { '@type': 'Organization', name: 'Federal Emergency Management Agency' },
+            url: 'https://www.fema.gov/api/open/v1/NfipResidentialPenetrationRates',
+            license: 'https://www.usa.gov/government-works',
+            isAccessibleForFree: true,
+          },
+          {
+            '@type': 'Dataset',
+            name: 'FEMA National Risk Index, county table',
+            description:
+              'Expected annual loss to buildings from inland and coastal flooding, per county, used here as the measure of how much flood risk a county actually faces.',
+            creator: { '@type': 'Organization', name: 'Federal Emergency Management Agency' },
+            url: 'https://hazards.fema.gov/nri/',
+            license: 'https://www.usa.gov/government-works',
+            isAccessibleForFree: true,
+          },
+        ],
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+          { '@type': 'ListItem', position: 2, name: 'Research', item: COVER_URL },
+        ],
+      },
+    ];
+
+    const coverHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapeHtmlAttr(COVER_TITLE)}</title>
+  <meta name="description" content="${escapeHtmlAttr(COVER_DESC)}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <link rel="canonical" href="${escapeHtmlAttr(COVER_URL)}">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Before Regret">
+  <meta property="og:url" content="${escapeHtmlAttr(COVER_URL)}">
+  <meta property="og:title" content="${escapeHtmlAttr(COVER_TITLE)}">
+  <meta property="og:description" content="${escapeHtmlAttr(COVER_DESC)}">
+  <meta property="og:image" content="${escapeHtmlAttr(OG_IMAGE)}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${escapeHtmlAttr(COVER_TITLE)}">
+  <meta name="twitter:description" content="${escapeHtmlAttr(COVER_DESC)}">
+  <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
+${cHead.trim()}
+  <style>${EXTRA_CSS}</style>
+  <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(COVER_LD)}</script>
+</head>
+<body>
+${SITE_NAV}
+${cBody.trim()}
+${SITE_FOOTER}
+</body>
+</html>`;
+    const coverDir = path.join(process.cwd(), 'dist', 'research', 'risk-without-cover');
+    fs.mkdirSync(coverDir, { recursive: true });
+    fs.writeFileSync(path.join(coverDir, 'index.html'), coverHtml, 'utf8');
+    console.log(`[prerender-research] Wrote static HTML for /research/risk-without-cover/ (${Math.round(coverHtml.length / 1024)} KB)`);
+  }
+
   // The machine-readable figures behind every number on the page. Published deliberately: the study
   // asks to be cited, and a citable study has to let someone check its arithmetic.
   const figuresSrc = path.join(process.cwd(), 'docs', 'data', 'risk-without-price-figures.json');
