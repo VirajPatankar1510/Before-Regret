@@ -101,6 +101,16 @@ function HomeStaticBody({ data }: { data: HomeData }) {
           <p className="text-xs sm:text-sm text-slate-400 font-medium">
             Your first report is free. No credit card required.
           </p>
+          {/* Mirrors src/components/Hero.tsx's own sample-report link -- same href, same styling,
+              same position relative to the subtext above it. A plain <a>, same as the live
+              component, so this needs no onNavigate wiring to render correctly here. */}
+          <a
+            href="/sample-report/"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-200 border border-white/20 rounded-full hover:bg-white/10 hover:text-white hover:border-white/30 transition-colors"
+          >
+            See a sample report
+            <span aria-hidden="true">&rarr;</span>
+          </a>
         </div>
       </section>
 
