@@ -921,9 +921,26 @@ Maintain a non-diagnostic stance:
         // content-generation models as fallback) on quota exhaustion -- see geminiModel.ts. Only
         // falls through to the fallbackReport below if every model in that chain is exhausted (or
         // some other error occurs).
+        //
+        // httpOptions.timeout below is the fix for a confirmed-live 504: this call previously had
+        // NO timeout at all, so a slow or stalled model response rode all the way to Vercel's hard
+        // 60s function kill (vercel.json's maxDuration) -- a raw 504 with no JSON body, never
+        // reaching the catch block below or the fallbackReport it serves. By the time this call
+        // starts, the route has already spent up to ~16s on the address gate (layer1 geocode +
+        // layer2 facility check, each 8s-timeout, sequential -- see geoValidationGate.ts) and up to
+        // ~15s more on the parallel seismic/neighborhood/vendor fetches above, so 20s here is
+        // chosen to leave real margin against the 60s ceiling even in that near-worst case, not
+        // just in the common case. A client-side timeout throws APIConnectionTimeoutError, which
+        // isTransientModelError (geminiModel.ts) does NOT classify as transient -- so it does not
+        // cascade through the other two models in REPORT_GENERATION_MODELS and re-spend the
+        // timeout three times over; it's rethrown immediately, caught below, and served as the
+        // fast, always-available fallbackReport instead. That's deliberate: on a genuinely slow
+        // Gemini response, a bounded miss beats a second and third bounded miss that still burns
+        // the remaining budget and ends in the same 504.
         const { result: response, model: usedModel } = await generateContentWithFallback(ai, {
           contents: prompt,
           config: {
+            httpOptions: { timeout: 20000 },
             systemInstruction: `You are the executive property research engine at BeforeRegret (beforeregret.com).
 Your output is 100% factually accurate, structured, professional, non-diagnostic, and strictly based on verified public property records.
 You MUST NEVER state, assume, or derive any finding from a property's construction year or age.
