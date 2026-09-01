@@ -26,14 +26,14 @@ import path from 'path';
 const SOURCE = path.join(process.cwd(), 'docs', 'risk-without-price.html');
 
 const CANONICAL_URL = 'https://www.beforeregret.com/research/risk-without-price/';
-const TITLE = 'Risk Without Price: what Americans actually pay to insure their homes vs. the risk they face';
+const TITLE = 'Risk Without Price: what Americans report paying to insure their homes vs. modelled hazard risk';
 // Written to match how people actually phrase this in search -- "homeowners insurance rates by
 // state", "average home insurance cost" -- rather than restating the headline finding a second
 // time. The page's own data answers those queries; the description is where a searcher finds out
 // that it does. There is deliberately no <meta name="keywords">: Google dropped support for it in
 // 2009 and it does nothing but tell competitors what you are targeting.
 const DESCRIPTION =
-  'Homeowners insurance rates by state and by county, measured from what households report paying. Across 3,093 U.S. counties and 50.7 million mortgaged households, state of residence explains more than twice as much of the premium as the natural-hazard risk a home actually faces.';
+  'Homeowners insurance rates by state and by county, measured from what households report paying. Across 3,093 U.S. counties and 50.7 million mortgaged households, state of residence explains more than twice as much of the premium as the modelled natural-hazard risk a home faces.';
 const OG_IMAGE = 'https://www.beforeregret.com/og-image.png';
 const PUBLISHED = '2026-08-30';
 
@@ -404,7 +404,7 @@ ${lookupScript}
         '@type': 'ScholarlyArticle',
         headline: 'Risk Without Cover',
         alternativeHeadline:
-          'In the typical US county fewer than one in six homes in a mapped flood zone carries flood insurance, and take-up does not track flood risk',
+          'In the typical US county fewer than one in six homes in a mapped flood zone carries flood insurance, and coverage rates track state of residence more closely than modelled flood risk',
         description: COVER_DESC,
         url: COVER_URL,
         datePublished: '2026-08-31',
@@ -437,7 +437,7 @@ ${lookupScript}
             '@type': 'Dataset',
             name: 'FEMA National Risk Index, county table',
             description:
-              'Expected annual loss to buildings from inland and coastal flooding, per county, used here as the measure of how much flood risk a county actually faces.',
+              'Expected annual loss to buildings from inland and coastal flooding, per county, used here as the modelled measure of a county\'s flood risk.',
             creator: { '@type': 'Organization', name: 'Federal Emergency Management Agency' },
             url: 'https://hazards.fema.gov/nri/',
             license: 'https://www.usa.gov/government-works',
@@ -521,7 +521,7 @@ ${SITE_FOOTER}
         '@type': 'ScholarlyArticle',
         headline: 'Outside the Zone',
         alternativeHeadline:
-          'More than one in four US flood insurance claims was paid on a property the map did not call high-risk',
+          'More than one in four US flood insurance claims was paid on a property whose policy was rated outside the high-risk flood zone',
         description: ZONE_DESC,
         url: ZONE_URL,
         datePublished: '2026-09-01',
