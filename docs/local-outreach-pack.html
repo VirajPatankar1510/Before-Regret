@@ -63,12 +63,25 @@ footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--rule);font-fa
   not from a contact broker. Each pitch leads with that outlet&#8217;s own county figure, because
   the local number is the story &#8212; the national one is just context.</p>
   <div class="status">
-    <div><span class="v">6</span><span class="k">Emails ready</span></div>
-    <div><span class="v">4</span><span class="k">Verified addresses</span></div>
-    <div><span class="v">2</span><span class="k">Need a 30-second check</span></div>
+    <div><span class="v">5</span><span class="k">Emails ready</span></div>
+    <div><span class="v">3</span><span class="k">Shared desk addresses</span></div>
+    <div><span class="v">2</span><span class="k">Need a manual check</span></div>
     <div><span class="v">Sep 6&#8211;7</span><span class="k">Trade-press follow-up window</span></div>
   </div>
 </header>
+
+<div class="note">
+  <b>Corrected 1 September, after a bounce.</b> The first version of this pack sent the Houston pitch
+  to a named business editor taken from the Chronicle&#8217;s own published staff list. It hard-bounced:
+  <code>550 5.4.1 Recipient address rejected: Access denied</code>. Published is not the same as
+  reachable &#8212; large newsrooms list staff addresses for attribution while the mail server refuses
+  external senders.
+  <br><br>
+  <b>The rule this pack now follows:</b> pitch cold to a <em>shared desk</em> address
+  (<code>citydesk@</code>, <code>localnews@</code>, <code>pitches@</code>), never to an individual you
+  have no prior contact with. Named addresses are for replying to a reporter who has written to you
+  first. Every &#8220;To&#8221; below is now a shared address.
+</div>
 
 <div class="note">
   <b>Read this first.</b> These go to <em>local</em> desks and are independent of the five trade-press
@@ -102,16 +115,14 @@ country outside Florida, and Harvey is the story every Houston reader already kn
     <tr><th>Beat</th><td>Business desk &#8212; consumer money story</td></tr>
     <tr><th>Hook</th><td>Harris County: 54.8% of 167,261 claims, $4.1bn paid outside the zone</td></tr>
   </table>
-  <p class="lbl">To (business editor)</p>
-  <div class="one">Jonathan.Diamond@houstonchronicle.com<button class="cp" onclick="cp1(this)">Copy</button></div>
-  <p class="lbl">Cc (assistant business editor)</p>
-  <div class="one">Brian.Rausch@houstonchronicle.com<button class="cp" onclick="cp1(this)">Copy</button></div>
+  <p class="lbl">To (the paper&#8217;s designated news-tips address)</p>
+  <div class="one">citydesk@houstonchronicle.com<button class="cp" onclick="cp1(this)">Copy</button></div>
   <p class="lbl">Subject</p>
   <div class="one">More than half of Harris County's flood insurance claims were paid outside the flood zone<button class="cp" onclick="cp1(this)">Copy</button></div>
   <p class="lbl">Body</p>
   <div class="mail"><button class="cp" onclick="cp(this)">Copy</button>
-<div class="ln">Hi Jonathan,</div><div class="sp"></div>
-<div class="ln">I've finished an analysis of every flood insurance claim FEMA has ever paid, and the Harris County number seems worth your desk's time.</div><div class="sp"></div>
+<div class="ln">Hello,</div><div class="sp"></div>
+<div class="ln">I've finished an analysis of every flood insurance claim FEMA has ever paid, and the Harris County number seems worth the business desk's time.</div><div class="sp"></div>
 <div class="ln">Of the 167,261 NFIP claims on record in Harris County, 54.8% were paid on homes that were rated outside the high-risk flood zone - the zone that triggers the insurance requirement when you take a mortgage. That's about $4.1 billion paid to people the map said were not the ones at risk.</div><div class="sp"></div>
 <div class="ln">Statewide it's 50.7% of 380,408 Texas claims. Nationally it's 26.6%. Texas is roughly double the national rate, and Harris is the single biggest piece of it.</div><div class="sp"></div>
 <div class="ln">The part I'd point a reporter at: outside those mapped zones, only 1.25% of homes carry any flood insurance at all, against 47.9% inside. So all of that $4.1 billion came from the small minority who bought a policy nobody made them buy. Everyone else who flooded outside the zone simply isn't in the data.</div><div class="sp"></div>
@@ -124,9 +135,14 @@ country outside Florida, and Harvey is the story every Houston reader already kn
 <div class="ln">Before Regret</div>
 <div class="ln">hello@beforeregret.com</div>
   </div>
-  <div class="note" style="margin-top:14px"><b>If no reply in a week</b>, try
-  <code>Yaffa.Fredrick@houstonchronicle.com</code> (Senior Director of Investigations) or the general
-  city desk at <code>citydesk@houstonchronicle.com</code>. Do not send to all of them at once.</div>
+  <div class="note" style="margin-top:14px"><b>Do not use the individual staff addresses here.</b>
+  <code>Jonathan.Diamond@houstonchronicle.com</code> was tried first and hard-bounced:
+  <code>550 5.4.1 Recipient address rejected: Access denied</code>. The Chronicle publishes 88
+  individual staff addresses on its newsroom page, but the mail server refuses external senders, so
+  the other 87 will almost certainly do the same. <code>citydesk@</code> is the address that page
+  labels NEWS TIPS, and shared desk addresses are the ones actually configured to receive outside
+  mail. If a reporter picks the story up from here, reply to <em>them</em> directly &#8212; an
+  address that has emailed you first will accept your reply.</div>
 </div>
 
 <h2 class="sec">2 &#183; Beaumont Enterprise</h2>
@@ -173,8 +189,12 @@ publishes a dedicated address for them.</p>
   </table>
   <p class="lbl">To (pitches desk)</p>
   <div class="one">pitches@texastribune.org<button class="cp" onclick="cp1(this)">Copy</button></div>
-  <p class="lbl">Alternative (managing editor, news &amp; state affairs)</p>
+  <p class="lbl">Fallback only &#8212; managing editor, news &amp; state affairs</p>
   <div class="one">bformby@texastribune.org<button class="cp" onclick="cp1(this)">Copy</button></div>
+  <p style="font-size:.88rem;color:var(--muted);margin:0 0 4px">This is an individual address, so the
+  Houston bounce applies in principle. The Tribune is a small newsroom that publishes it as a contact
+  and is not on the same corporate mail setup, so the risk is lower &#8212; but send to
+  <code>pitches@</code> first and only try this if that gets no reply.</p>
   <p class="lbl">Subject</p>
   <div class="one">Half of all Texas flood insurance claims were paid outside the mapped flood zone<button class="cp" onclick="cp1(this)">Copy</button></div>
   <p class="lbl">Body</p>
