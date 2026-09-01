@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outside the Zone Local Outreach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F5F7F6;--ink:#16211F;--muted:#5A6B67;--rule:#D4DCD9;--panel:#EBEFED;
+ --done:#1B6E5A;--todo:#9A5B10;--hot:#B0332B;
+ --disp:"Archivo",system-ui,sans-serif;--serif:"Source Serif 4",Georgia,serif;--mono:"JetBrains Mono",monospace}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0D1413;--ink:#E2E9E6;--muted:#93A5A0;--rule:#26332F;--panel:#151F1D;--done:#4FBE9C;--todo:#D79B4A;--hot:#EE6F62}}
+:root[data-theme="dark"]{--paper:#0D1413;--ink:#E2E9E6;--muted:#93A5A0;--rule:#26332F;--panel:#151F1D;--done:#4FBE9C;--todo:#D79B4A;--hot:#EE6F62}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.6;margin:0;padding:0 22px 80px}
+.wrap{max-width:900px;margin:0 auto}
+h1,h2{font-family:var(--disp);margin:0;text-wrap:balance}
+h1{font-size:clamp(2.1rem,6vw,3.2rem);line-height:1.03;letter-spacing:-.03em;font-weight:700}
+h2{font-size:1.25rem;font-weight:700}
+header{padding:60px 0 26px;border-bottom:2px solid var(--ink)}
+.kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--hot);font-weight:600}
+.lede{font-size:1.08rem;color:var(--muted);max-width:62ch;margin-top:12px}
+.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:26px}
+.status div{background:var(--paper);padding:16px}
+.status .v{font-family:var(--mono);font-size:1.6rem;font-weight:600;display:block}
+.status .k{font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-top:6px}
+h2.sec{font-family:var(--disp);font-size:1.5rem;margin:46px 0 4px}
+.secsub{color:var(--muted);font-size:.97rem;margin-bottom:6px}
+.card{border:1px solid var(--rule);border-left:3px solid var(--todo);background:var(--panel);padding:20px 22px;margin-top:18px}
+.card.verified{border-left-color:var(--done)}
+.card.unverified{border-left-color:var(--hot)}
+.chead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.num{font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--muted)}
+.tag{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;padding:3px 8px;border-radius:2px;margin-left:auto;color:var(--paper)}
+.tag.ok{background:var(--done)} .tag.check{background:var(--hot)} .tag.form{background:var(--todo)}
+table.meta{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:.8rem;margin-bottom:6px}
+table.meta th{text-align:left;color:var(--muted);font-weight:600;width:88px;padding:4px 10px 4px 0;vertical-align:top}
+table.meta td{padding:4px 0;word-break:break-word}
+.lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--todo);font-weight:600;margin:16px 0 5px}
+.mail{position:relative;background:var(--paper);border:1px solid var(--rule);padding:42px 18px 16px;font-family:var(--mono);font-size:.79rem;line-height:1.65;overflow-x:auto}
+.mail .ln{white-space:pre-wrap}
+.mail .sp{height:.85em}
+.cp{position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;background:var(--ink);color:var(--paper);border:0;border-radius:2px;padding:5px 9px}
+.cp:hover{background:var(--hot)}
+.one{position:relative;background:var(--paper);border:1px solid var(--rule);padding:10px 92px 10px 14px;font-family:var(--mono);font-size:.8rem;margin-bottom:8px;word-break:break-all}
+.one .cp{top:6px}
+.note{background:var(--panel);border-left:3px solid var(--hot);padding:16px 18px;font-size:.95rem;margin-top:20px}
+.note b{color:var(--ink)}
+ul{padding-left:20px} li{margin-top:7px}
+code{font-family:var(--mono);font-size:.86em;word-break:break-all}
+a{color:var(--hot)}
+footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:.74rem;color:var(--muted);line-height:1.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="kicker">Before Regret &#183; Local outreach</p>
+  <h1>Outside the Zone: local desks</h1>
+  <p class="lede">Every address below was taken from the outlet&#8217;s own published contact page,
+  not from a contact broker. Each pitch leads with that outlet&#8217;s own county figure, because
+  the local number is the story &#8212; the national one is just context.</p>
+  <div class="status">
+    <div><span class="v">6</span><span class="k">Emails ready</span></div>
+    <div><span class="v">4</span><span class="k">Verified addresses</span></div>
+    <div><span class="v">2</span><span class="k">Need a 30-second check</span></div>
+    <div><span class="v">Sep 6&#8211;7</span><span class="k">Trade-press follow-up window</span></div>
+  </div>
+</header>
+
+<div class="note">
+  <b>Read this first.</b> These go to <em>local</em> desks and are independent of the five trade-press
+  editors already contacted (Hemenway, Rabb, Jergler, Amacher, Sclafane). Those sends were 1&#8211;2 days
+  ago; do not chase them yet. Andrea Wells unlocks around <b>Sep 3</b>, and the Hemenway/Rabb/Jergler
+  follow-ups around <b>Sep 6&#8211;7</b>. Local and trade are different desks, so sending these now
+  does not double up on anyone.
+</div>
+
+<h2 class="sec">Before you send</h2>
+<p class="secsub">Four things that keep this honest if a reporter pushes back.</p>
+<ul>
+  <li>The zone is the <b>rated</b> zone on the policy, not today&#8217;s map. Claims span the 1970s to
+  2026 and maps have been redrawn many times. Never let this be printed as &#8220;X% of homes are
+  outside today&#8217;s flood zone.&#8221;</li>
+  <li><b>NFIP only.</b> Private flood cover is not counted.</li>
+  <li>It is <b>descriptive</b>. It does not explain why &#8212; map vintage, drainage, development and
+  enforcement all plausibly contribute.</li>
+  <li>If asked how much bigger the real gap is: <b>say you don&#8217;t know.</b> People who buy flood
+  cover unprompted are not a random sample, so the numbers cannot simply be scaled up.</li>
+</ul>
+
+<h2 class="sec">1 &#183; Houston Chronicle</h2>
+<p class="secsub">The strongest pitch in this pack. Harris County is the largest claims sample in the
+country outside Florida, and Harvey is the story every Houston reader already knows.</p>
+
+<div class="card verified">
+  <div class="chead"><span class="num">EMAIL 1</span><span class="tag ok">Address verified</span></div>
+  <table class="meta">
+    <tr><th>Outlet</th><td>Houston Chronicle</td></tr>
+    <tr><th>Beat</th><td>Business desk &#8212; consumer money story</td></tr>
+    <tr><th>Hook</th><td>Harris County: 54.8% of 167,261 claims, $4.1bn paid outside the zone</td></tr>
+  </table>
+  <p class="lbl">To (business editor)</p>
+  <div class="one">Jonathan.Diamond@houstonchronicle.com<button class="cp" onclick="cp1(this)">Copy</button></div>
+  <p class="lbl">Cc (assistant business editor)</p>
+  <div class="one">Brian.Rausch@houstonchronicle.com<button class="cp" onclick="cp1(this)">Copy</button></div>
+  <p class="lbl">Subject</p>
+  <div class="one">More than half of Harris County's flood insurance claims were paid outside the flood zone<button class="cp" onclick="cp1(this)">Copy</button></div>
+  <p class="lbl">Body</p>
+  <div class="mail"><button class="cp" onclick="cp(this)">Copy</button>
+<div class="ln">Hi Jonathan,</div><div class="sp"></div>
+<div class="ln">I've finished an analysis of every flood insurance claim FEMA has ever paid, and the Harris County number seems worth your desk's time.</div><div class="sp"></div>
+<div class="ln">Of the 167,261 NFIP claims on record in Harris County, 54.8% were paid on homes that were rated outside the high-risk flood zone - the zone that triggers the insurance requirement when you take a mortgage. That's about $4.1 billion paid to people the map said were not the ones at risk.</div><div class="sp"></div>
+<div class="ln">Statewide it's 50.7% of 380,408 Texas claims. Nationally it's 26.6%. Texas is roughly double the national rate, and Harris is the single biggest piece of it.</div><div class="sp"></div>
+<div class="ln">The part I'd point a reporter at: outside those mapped zones, only 1.25% of homes carry any flood insurance at all, against 47.9% inside. So all of that $4.1 billion came from the small minority who bought a policy nobody made them buy. Everyone else who flooded outside the zone simply isn't in the data.</div><div class="sp"></div>
+<div class="ln">Two things I'd want stated in any coverage. The zone recorded is the one the policy was rated in at the time, not today's map, and these claims go back to the 1970s. And this counts NFIP policies only, not private flood insurance.</div><div class="sp"></div>
+<div class="ln">Method, the 50-state table, and a lookup for any of 1,921 counties:</div>
+<div class="ln">https://www.beforeregret.com/research/outside-the-zone/</div><div class="sp"></div>
+<div class="ln">Happy to pull a custom cut for any county or ZIP if that's useful.</div><div class="sp"></div>
+<div class="ln">Best regards,</div>
+<div class="ln">Viraj Patankar</div>
+<div class="ln">Before Regret</div>
+<div class="ln">hello@beforeregret.com</div>
+  </div>
+  <div class="note" style="margin-top:14px"><b>If no reply in a week</b>, try
+  <code>Yaffa.Fredrick@houstonchronicle.com</code> (Senior Director of Investigations) or the general
+  city desk at <code>citydesk@houstonchronicle.com</code>. Do not send to all of them at once.</div>
+</div>
+
+<h2 class="sec">2 &#183; Beaumont Enterprise</h2>
+<p class="secsub">Jefferson County has the highest out-of-zone share of any large-sample county in
+Texas. Beaumont and Port Arthur took the worst of Harvey&#8217;s rainfall.</p>
+
+<div class="card verified">
+  <div class="chead"><span class="num">EMAIL 2</span><span class="tag ok">Address verified</span></div>
+  <table class="meta">
+    <tr><th>Outlet</th><td>Beaumont Enterprise</td></tr>
+    <tr><th>Hook</th><td>Jefferson County: 76.7% of 22,358 claims, $813.9m outside the zone</td></tr>
+  </table>
+  <p class="lbl">To</p>
+  <div class="one">localnews@beaumontenterprise.com<button class="cp" onclick="cp1(this)">Copy</button></div>
+  <p class="lbl">Subject</p>
+  <div class="one">Three quarters of Jefferson County's flood claims were paid outside the flood zone<button class="cp" onclick="cp1(this)">Copy</button></div>
+  <p class="lbl">Body</p>
+  <div class="mail"><button class="cp" onclick="cp(this)">Copy</button>
+<div class="ln">Hello,</div><div class="sp"></div>
+<div class="ln">I've been going through every flood insurance claim FEMA has paid since the 1970s, and Jefferson County stands out nationally.</div><div class="sp"></div>
+<div class="ln">Of the 22,358 NFIP claims on record there, 76.7% were paid on homes rated outside the high-risk flood zone - the highest share of any large Texas county I found. That is roughly $813.9 million paid out to households the flood map did not flag.</div><div class="sp"></div>
+<div class="ln">For comparison: Harris County is 54.8%, Texas as a whole is 50.7%, and the national figure is 26.6%. Jefferson is close to three times the national rate.</div><div class="sp"></div>
+<div class="ln">What makes it matter locally is who is missing from that number. Outside the mapped zones only about 1 in 80 homes carries flood insurance, because nothing requires it. So the claims above came from the few who bought anyway. Neighbours who flooded without a policy never show up.</div><div class="sp"></div>
+<div class="ln">Two caveats worth printing. The zone is the one each policy was rated in at the time, not today's map, and the records go back decades. And it counts NFIP policies only, not private flood cover.</div><div class="sp"></div>
+<div class="ln">Full method and a county lookup:</div>
+<div class="ln">https://www.beforeregret.com/research/outside-the-zone/</div><div class="sp"></div>
+<div class="ln">I'm glad to walk through how it was built, or pull the figure for any nearby county - Orange is 65.8% and Chambers is 77.9%.</div><div class="sp"></div>
+<div class="ln">Best regards,</div>
+<div class="ln">Viraj Patankar</div>
+<div class="ln">Before Regret</div>
+<div class="ln">hello@beforeregret.com</div>
+  </div>
+</div>
+
+<h2 class="sec">3 &#183; The Texas Tribune</h2>
+<p class="secsub">Statewide framing rather than one county. The Tribune asks for pitches by email and
+publishes a dedicated address for them.</p>
+
+<div class="card verified">
+  <div class="chead"><span class="num">EMAIL 3</span><span class="tag ok">Address verified</span></div>
+  <table class="meta">
+    <tr><th>Outlet</th><td>The Texas Tribune</td></tr>
+    <tr><th>Hook</th><td>Texas: 50.7% of 380,408 claims, $8.1bn outside the zone &#8212; double the national rate</td></tr>
+  </table>
+  <p class="lbl">To (pitches desk)</p>
+  <div class="one">pitches@texastribune.org<button class="cp" onclick="cp1(this)">Copy</button></div>
+  <p class="lbl">Alternative (managing editor, news &amp; state affairs)</p>
+  <div class="one">bformby@texastribune.org<button class="cp" onclick="cp1(this)">Copy</button></div>
+  <p class="lbl">Subject</p>
+  <div class="one">Half of all Texas flood insurance claims were paid outside the mapped flood zone<button class="cp" onclick="cp1(this)">Copy</button></div>
+  <p class="lbl">Body</p>
+  <div class="mail"><button class="cp" onclick="cp(this)">Copy</button>
+<div class="ln">Hello,</div><div class="sp"></div>
+<div class="ln">A statewide finding that may suit the Tribune, from an analysis of all 2.7 million flood insurance claims FEMA has ever paid.</div><div class="sp"></div>
+<div class="ln">In Texas, 50.7% of the 380,408 NFIP claims on record were paid on properties rated outside the high-risk flood zone - about $8.1 billion. The national figure is 26.6%, so Texas is close to double.</div><div class="sp"></div>
+<div class="ln">County by county it gets sharper: Jefferson 76.7%, Chambers 77.9%, Hidalgo 76.7%, Cameron 73.9%, Fort Bend 72.4%, Harris 54.8% across 167,261 claims.</div><div class="sp"></div>
+<div class="ln">The policy angle is the gap between who is required to insure and who actually floods. Inside mapped zones a federally backed mortgage forces the purchase and 47.9% of homes are covered. Outside them nothing requires it and 1.25% are. Yet outside-the-zone properties still account for a quarter of every claim the programme has paid.</div><div class="sp"></div>
+<div class="ln">Caveats I'd want in print: the zone is the one each policy was rated in at the time rather than today's map, the data covers NFIP only, and the analysis is descriptive - it doesn't identify whether the cause is map vintage, development, drainage or enforcement.</div><div class="sp"></div>
+<div class="ln">Method, every state, and a lookup for 1,921 counties:</div>
+<div class="ln">https://www.beforeregret.com/research/outside-the-zone/</div><div class="sp"></div>
+<div class="ln">Best regards,</div>
+<div class="ln">Viraj Patankar</div>
+<div class="ln">Before Regret</div>
+<div class="ln">hello@beforeregret.com</div>
+  </div>
+</div>
+
+<h2 class="sec">4 &#183; Washington suburbs &#8212; Bethesda Today</h2>
+<p class="secsub">A different story from the Texas one: affluent inland counties where nobody thinks
+about flood insurance at all. Note the sample-size caution below.</p>
+
+<div class="card">
+  <div class="chead"><span class="num">EMAIL 4</span><span class="tag form">Web form only</span></div>
+  <table class="meta">
+    <tr><th>Outlet</th><td>Bethesda Today (Montgomery County, MD)</td></tr>
+    <tr><th>How</th><td>No newsroom email is published. Use the contact form:<br>
+      <a href="https://bethesdamagazine.com/contact/">bethesdamagazine.com/contact/</a></td></tr>
+    <tr><th>Hook</th><td>Montgomery County: 73.6% of claims outside the zone (724 claims &#8212; small sample)</td></tr>
+  </table>
+  <div class="note" style="margin-top:0"><b>Sample-size caution.</b> Montgomery has only 724
+  classifiable claims, well above the 500 needed to rank but far below Harris or Jefferson. Say so in
+  the pitch, as the draft does. If a reporter finds the caveat themselves after you omitted it, the
+  story dies.</div>
+  <p class="lbl">Message</p>
+  <div class="mail"><button class="cp" onclick="cp(this)">Copy</button>
+<div class="ln">Hello,</div><div class="sp"></div>
+<div class="ln">I've analysed every flood insurance claim FEMA has paid nationally, and Montgomery County turns up in a place I did not expect.</div><div class="sp"></div>
+<div class="ln">Of the 724 NFIP claims on record in the county, 73.6% were paid on homes rated outside the high-risk flood zone. Fairfax is 67.7% and Prince George's is 65%. The national figure is 26.6%.</div><div class="sp"></div>
+<div class="ln">I want to be straight about the limits: 724 claims is a small base compared with the Gulf Coast counties in this data, so treat the county percentage as indicative rather than precise. The pattern across the three DC-area counties is the interesting part, not any single one of them.</div><div class="sp"></div>
+<div class="ln">The reason it may matter to your readers is what it implies about who is insured. Inside a mapped flood zone a mortgage usually forces you to buy flood cover. Outside one, almost nobody does - 1.25% of homes nationally. So in counties like these, where most flooding happens outside the mapped zone, most of the damage lands on people with no flood policy at all, because a normal homeowners policy does not cover flood.</div><div class="sp"></div>
+<div class="ln">The zone recorded is the one each policy was rated in at the time rather than today's map, and this is NFIP data only.</div><div class="sp"></div>
+<div class="ln">Method and a county lookup:</div>
+<div class="ln">https://www.beforeregret.com/research/outside-the-zone/</div><div class="sp"></div>
+<div class="ln">Best regards,</div>
+<div class="ln">Viraj Patankar</div>
+<div class="ln">Before Regret</div>
+<div class="ln">hello@beforeregret.com</div>
+  </div>
+</div>
+
+<h2 class="sec">5 &#183; Rio Grande Valley &#8212; The Monitor / Brownsville Herald</h2>
+<p class="secsub">Hidalgo and Cameron are both above 73%. Both papers are run by AIM Media Texas under
+myrgv.com.</p>
+
+<div class="card unverified">
+  <div class="chead"><span class="num">EMAIL 5</span><span class="tag check">Check address first</span></div>
+  <table class="meta">
+    <tr><th>Outlet</th><td>The Monitor (McAllen) and The Brownsville Herald</td></tr>
+    <tr><th>Hook</th><td>Hidalgo 76.7% of 4,054 claims &#183; Cameron 73.9% of 6,428</td></tr>
+    <tr><th>Address</th><td><b>Not verified.</b> myrgv.com blocked automated access, so I could not read
+      their contact page. Open <a href="https://myrgv.com/contact-us/">myrgv.com/contact-us/</a> and copy
+      the newsroom address before sending. I am not going to guess at it.</td></tr>
+  </table>
+  <p class="lbl">Subject</p>
+  <div class="one">Three quarters of Hidalgo County's flood claims were paid outside the flood zone<button class="cp" onclick="cp1(this)">Copy</button></div>
+  <p class="lbl">Body</p>
+  <div class="mail"><button class="cp" onclick="cp(this)">Copy</button>
+<div class="ln">Hello,</div><div class="sp"></div>
+<div class="ln">I've gone through every flood insurance claim FEMA has paid since the 1970s, and both Valley counties stand out.</div><div class="sp"></div>
+<div class="ln">In Hidalgo County, 76.7% of the 4,054 NFIP claims on record were paid on homes rated outside the high-risk flood zone. In Cameron County it is 73.9% of 6,428 claims. The national figure is 26.6%, and Texas as a whole is 50.7%.</div><div class="sp"></div>
+<div class="ln">In plain terms: the flood map is what decides whether a homebuyer is told to buy flood insurance. In these two counties, most of the flood damage that actually got paid out happened to homes the map had not flagged.</div><div class="sp"></div>
+<div class="ln">And outside those mapped zones, only about 1 in 80 homes nationally carries any flood policy, because nothing requires it. A standard homeowners policy does not cover flood at all. So the claims above came from the few households who bought cover voluntarily.</div><div class="sp"></div>
+<div class="ln">Two caveats: the zone is the one each policy was rated in at the time, not today's map, and this is NFIP data only, not private flood insurance.</div><div class="sp"></div>
+<div class="ln">Method and a lookup for any county:</div>
+<div class="ln">https://www.beforeregret.com/research/outside-the-zone/</div><div class="sp"></div>
+<div class="ln">Best regards,</div>
+<div class="ln">Viraj Patankar</div>
+<div class="ln">Before Regret</div>
+<div class="ln">hello@beforeregret.com</div>
+  </div>
+</div>
+
+<h2 class="sec">Sending order</h2>
+<ul>
+  <li><b>Today.</b> Houston Chronicle, Beaumont Enterprise, Texas Tribune. Three different outlets,
+  no overlap.</li>
+  <li><b>Today or tomorrow.</b> Bethesda Today via the web form. Verify the RGV address, then send
+  that one.</li>
+  <li><b>Around Sep 3.</b> Andrea Wells unlocks, per the trade-press pack.</li>
+  <li><b>Around Sep 6&#8211;7.</b> One follow-up each to Hemenway, Rabb and Jergler, leading with this
+  new study rather than asking whether they read the last one. Then stop.</li>
+</ul>
+
+<div class="note">
+  <b>One outlet at a time, and never BCC.</b> If two of these run the same week that is a good
+  outcome, but a reporter who can see they were one of a batch will bin it. Every pitch above leads
+  with that outlet&#8217;s own county because that is the only reason a local desk cares.
+</div>
+
+<footer>
+  Figures from https://www.beforeregret.com/research/outside-the-zone/ (FEMA OpenFEMA FimaNfipClaims,
+  claims through 2026-06-01; NfipResidentialPenetrationRates as of 2026-08-03).<br>
+  Addresses read from each outlet&#8217;s own published contact page on 1 September 2026, except where
+  marked. Newsroom staff move - verify before sending.
+</footer>
+
+</div>
+<script>
+function cp(btn){
+  var el=btn.parentElement.cloneNode(true); el.querySelector('.cp').remove();
+  var lines=[].map.call(el.children,function(n){return n.className==='sp'?'':n.textContent;});
+  navigator.clipboard.writeText(lines.join('\n').trim()).then(function(){
+    var w=btn.textContent; btn.textContent='Copied'; setTimeout(function(){btn.textContent=w;},1400);
+  },function(){ btn.textContent='Select manually'; });
+}
+function cp1(btn){
+  var el=btn.parentElement.cloneNode(true); el.querySelector('.cp').remove();
+  navigator.clipboard.writeText(el.textContent.trim()).then(function(){
+    var w=btn.textContent; btn.textContent='Copied'; setTimeout(function(){btn.textContent=w;},1400);
+  },function(){ btn.textContent='Select manually'; });
+}
+</script>
+</body>
+</html>
