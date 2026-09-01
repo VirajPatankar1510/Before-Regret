@@ -608,34 +608,39 @@ ${SITE_FOOTER}
     console.log(`[prerender-research] Wrote static HTML for /research/outside-the-zone/ (${Math.round(zoneHtml.length / 1024)} KB)`);
   }
 
-  // ---- /research/no-plan-downstream/ ------------------------------------------------------------
+  // ---- /research/high-hazard-dams/ ------------------------------------------------------------
   // Fourth study. Deliberately NOT another "the official category does not predict the outcome"
   // finding like the three above -- this one reads three of the inventory's own columns together
   // (hazard class, condition, emergency plan) rather than testing one dataset against another.
   //
-  // docs/no-plan-downstream.html is GENERATED, same contract as outside-the-zone.html.
-  const DAM_SRC = path.join(process.cwd(), 'docs', 'no-plan-downstream.html');
+  // docs/high-hazard-dams.html is GENERATED, same contract as outside-the-zone.html.
+  const DAM_SRC = path.join(process.cwd(), 'docs', 'high-hazard-dams.html');
   if (fs.existsSync(DAM_SRC)) {
     const damSource = fs.readFileSync(DAM_SRC, 'utf8');
     const dWrap = damSource.indexOf('<div class="wrap">');
     if (dWrap === -1) {
-      console.error('[prerender-research] no-plan-downstream.html has no document body.');
+      console.error('[prerender-research] high-hazard-dams.html has no document body.');
       process.exit(1);
     }
     const dHead = damSource.slice(0, dWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
     const dBody = damSource.slice(dWrap);
-    const DAM_URL = 'https://www.beforeregret.com/research/no-plan-downstream/';
+    const DAM_URL = 'https://www.beforeregret.com/research/high-hazard-dams/';
+    // Metadata is worded to the same standard as the page body: it reports what the inventory
+    // RECORDS, attributes every assessment to the regulating agency, and never characterises any
+    // dam as dangerous or any agency as negligent. A headline is the part most likely to be quoted
+    // out of context, so it carries the "as recorded" framing rather than relying on the body to
+    // supply it.
     const DAM_TITLE =
-      'No Plan Downstream: US high-hazard dams in poor condition with no emergency action plan';
+      'High-Hazard Dams by County: condition and emergency plan status in the National Inventory of Dams';
     const DAM_DESC =
-      'The United States has 17,049 dams whose failure would be expected to cause loss of life. 2,791 are rated poor or unsatisfactory, and 636 of those have no emergency action plan at all.';
+      'A county-level summary of the US Army Corps of Engineers National Inventory of Dams: how many dams are classified high hazard potential, what condition assessments are recorded for them, and whether an emergency action plan is on file. All assessments are those of the responsible regulating agencies.';
     const DAM_LD = [
       {
         '@context': 'https://schema.org',
         '@type': 'ScholarlyArticle',
-        headline: 'No Plan Downstream',
+        headline: 'High-Hazard Dams by County',
         alternativeHeadline:
-          '636 US dams are rated poor or unsatisfactory, classified as likely to cause loss of life if they fail, and have no plan to warn anyone downstream',
+          'Condition assessments and emergency action plan status recorded for the 17,049 US dams classified high hazard potential, summarised by county',
         description: DAM_DESC,
         url: DAM_URL,
         datePublished: '2026-09-01',
@@ -706,10 +711,10 @@ ${dBody.trim()}
 ${SITE_FOOTER}
 </body>
 </html>`;
-    const damDir = path.join(process.cwd(), 'dist', 'research', 'no-plan-downstream');
+    const damDir = path.join(process.cwd(), 'dist', 'research', 'high-hazard-dams');
     fs.mkdirSync(damDir, { recursive: true });
     fs.writeFileSync(path.join(damDir, 'index.html'), damHtml, 'utf8');
-    console.log(`[prerender-research] Wrote static HTML for /research/no-plan-downstream/ (${Math.round(damHtml.length / 1024)} KB)`);
+    console.log(`[prerender-research] Wrote static HTML for /research/high-hazard-dams/ (${Math.round(damHtml.length / 1024)} KB)`);
   }
 
   // The machine-readable figures behind every number on the page. Published deliberately: the study

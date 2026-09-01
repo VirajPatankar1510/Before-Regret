@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>No Plan Downstream</title>
+<title>High-Hazard Dams by County</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -129,24 +129,25 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
 
 <header class="spine">
   <p class="kicker">Before Regret &#183; Research</p>
-  <h1>No Plan Downstream</h1>
-  <p class="standfirst" style="margin-top:22px">America has 17,049 dams whose failure would be
-  expected to kill someone. 2,791 of them are rated in poor or unsatisfactory condition.
-  636 of those have no plan for warning the people below.</p>
+  <h1>High-Hazard Dams by County</h1>
+  <p class="standfirst" style="margin-top:22px">A county-by-county summary of what the US Army Corps
+  of Engineers&#8217; National Inventory of Dams records for the 17,049 dams it classifies as
+  high hazard potential: how each is rated for condition, and whether an emergency action plan is
+  recorded on file. All figures are the assessments of the regulating agencies themselves.</p>
 
   <div class="keyfig">
-    <div><span class="v">17,049</span><span class="k">Dams where failure would be expected to cause loss of life</span></div>
-    <div><span class="v">16.4%</span><span class="k">Of them rated poor or unsatisfactory</span></div>
-    <div><span class="v">636</span><span class="k">Poor or unsatisfactory <em>and</em> no emergency plan</span></div>
-    <div><span class="v">1955</span><span class="k">Median year the poor-rated ones were built</span></div>
+    <div><span class="v">17,049</span><span class="k">Dams classified high hazard potential</span></div>
+    <div><span class="v">16.4%</span><span class="k">Recorded condition of poor or unsatisfactory</span></div>
+    <div><span class="v">636</span><span class="k">Both, and no emergency action plan on file</span></div>
+    <div><span class="v">1955</span><span class="k">Median completion year of those dams</span></div>
   </div>
 
   <div class="lookup">
     <p class="lk-eyebrow">Interactive &#183; 2,274 counties</p>
     <h3>Look up your county</h3>
-    <p class="lk-intro">Every US county with at least one high-hazard dam. Type a county to see how
-    many it has, how many are rated poor or unsatisfactory, and how many have no emergency action
-    plan.</p>
+    <p class="lk-intro">Every US county with at least one dam classified high hazard potential. Type
+    a county to see how many it has, and what the inventory records for their condition ratings and
+    emergency action plan status.</p>
     <div class="lk-field">
       <label for="lkq" class="lk-sub" style="display:block;margin-bottom:6px">County</label>
       <input id="lkq" type="text" autocomplete="off" spellcheck="false" role="combobox"
@@ -158,97 +159,107 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
       <h4 class="lk-name" id="lkname"></h4>
       <div class="lk-grid">
         <div><span class="v" id="lkhigh"></span><span class="k">High-hazard dams</span></div>
-        <div><span class="v" id="lkbad"></span><span class="k">Rated poor or unsatisfactory</span></div>
-        <div><span class="v" id="lknoeap"></span><span class="k">No emergency action plan</span></div>
+        <div><span class="v" id="lkbad"></span><span class="k">Condition recorded poor or unsatisfactory</span></div>
+        <div><span class="v" id="lknoeap"></span><span class="k">No emergency action plan on file</span></div>
         <div><span class="v" id="lkboth"></span><span class="k">Both</span></div>
       </div>
       <p class="lk-note" id="lknote"></p>
-      <p class="lk-caveat">&#8220;High hazard potential&#8221; describes what would happen if the dam
-      failed, not how likely it is to fail. A county with a high count is not a county in danger; it
-      is a county where more people live below more dams.</p>
+      <p class="lk-caveat">&#8220;High hazard potential&#8221; is a classification of what would be at
+      stake if a dam failed. It is not an assessment of how likely any dam is to fail, and it is not
+      a safety ranking. A county with a higher count is generally a county with more dams and more
+      development below them, not a county in danger. These figures describe records, not risk.</p>
     </div>
   </div>
 </header>
 
 <section class="spine stack">
-  <h3>The question</h3>
-  <h2>Somebody has already worked out that these dams would kill people.</h2>
-  <p>Every dam in the United States large enough to matter carries a federal classification. If the
-  people who assign it conclude that the dam&#8217;s failure would be expected to cause loss of life,
-  it is designated <b>high hazard potential</b>. That is not a prediction. It is a statement about
-  consequences: this is what is downstream.</p>
-  <p>17,049 dams carry that designation. They are also rated for condition, and separately
-  recorded as having, or not having, an emergency action plan &#8212; the document that says who gets
-  warned, and how, if the dam starts to go.</p>
-  <p>Those three fields are published together in the US Army Corps of Engineers&#8217; National
-  Inventory of Dams. Read across them and you can ask a question the inventory does not ask itself:
-  how many dams are known to threaten life, known to be in poor condition, and have no plan for
-  telling anyone.</p>
+  <h3>What this is</h3>
+  <h2>Three fields the inventory publishes, summarised together.</h2>
+  <p>Dams in the National Inventory of Dams carry a <b>hazard potential classification</b>. The
+  highest of these, <b>high hazard potential</b>, is assigned where failure would be expected to
+  result in loss of life. It is a classification of potential consequences, based on what lies
+  downstream. It is expressly not an assessment of the dam&#8217;s condition, and not a statement
+  that failure is likely.</p>
+  <p>17,049 dams carry that classification. The inventory separately records a
+  <b>condition assessment</b> for many of them, and separately again records whether an
+  <b>emergency action plan</b> is on file &#8212; the document setting out notification procedures
+  in the event of an emergency.</p>
+  <p>Those three fields are published together, but the inventory does not summarise them against
+  one another. This page does that, at county level, and nothing more. Every classification,
+  rating and status reported here was assigned and recorded by the relevant regulating agency. None
+  of it is our assessment, and we have not inspected, evaluated or formed any view about any dam.</p>
 </section>
 
 <section class="spine stack">
   <div class="finding"><span class="fnum">FINDING 01</span>
-    <h2>One in six is in poor or unsatisfactory condition.</h2></div>
-  <p>Of the 17,049 high-hazard dams, <b>2,791 &#8212; 16.4% &#8212; are
-  rated Poor or Unsatisfactory</b>: 2,287 Poor and 504 Unsatisfactory.
-  Unsatisfactory is the inventory&#8217;s bottom rating, meaning a safety deficiency is recognised
-  and requires immediate remedial action.</p>
-  <p>A further <b>3,784 (22.2%)</b> carry no usable condition rating at
-  all &#8212; not rated, not available, or blank. For roughly a fifth of the dams the country has
-  formally decided would cost lives, the inventory cannot say what condition they are in.</p>
+    <h2>About one in six carries a condition rating of poor or unsatisfactory.</h2></div>
+  <p>Of the 17,049 dams classified high hazard potential, <b>2,791 &#8212;
+  16.4% &#8212; have a recorded condition assessment of Poor or Unsatisfactory</b>:
+  2,287 Poor and 504 Unsatisfactory. These are the inventory&#8217;s own
+  rating categories, applied by the regulating agency responsible for each dam.</p>
+  <p>A further <b>3,784 (22.2%)</b> have no condition rating recorded
+  in this release &#8212; entered as not rated, not available, or left blank. A missing rating in the
+  published file indicates that no assessment is recorded here. It does not establish that no
+  assessment exists, and it says nothing about the condition of the dam.</p>
   <figure>
     <div class="chartbox"><svg class="chart" viewBox="0 0 620 250" role="img"
-  aria-label="From 92,766 dams to 636 high-hazard dams in poor condition with no emergency action plan"><rect class="track" x="200" y="26" width="410" height="30"/><rect class="bar risk" x="200" y="26" width="410.0" height="30"/><text class="end sm" x="192" y="46">All dams in the inventory</text><text class="big" x="620" y="47">92,766</text><rect class="track" x="200" y="82" width="410" height="30"/><rect class="bar risk" x="200" y="82" width="349.3" height="30"/><text class="end sm" x="192" y="102">High hazard potential</text><text class="big" x="559.2773794438662" y="103">17,049</text><text class="tiny" x="200" y="126">failure would be expected to cause loss of life</text><rect class="track" x="200" y="138" width="410" height="30"/><rect class="bar price" x="200" y="138" width="284.4" height="30"/><text class="end sm" x="192" y="158">Rated Poor or Unsatisfactory</text><text class="big" x="494.40727737509917" y="159">2,791</text><text class="tiny" x="200" y="182">16.4% of high-hazard dams</text><rect class="track" x="200" y="194" width="410" height="30"/><rect class="bar price" x="200" y="194" width="231.4" height="30"/><text class="end sm" x="192" y="214">And no emergency action plan</text><text class="big" x="441.39268066689147" y="215">636</text><text class="tiny" x="200" y="238">no plan to warn anyone downstream</text></svg></div>
-    <figcaption><b>Exhibit 1.</b> From every dam in the inventory to the ones that are high hazard,
-    poorly rated, and without a plan. Bars are on a log scale so the smallest group stays visible.</figcaption>
+  aria-label="Counts of dams in the inventory by hazard classification, recorded condition, and emergency action plan status"><rect class="track" x="200" y="26" width="410" height="30"/><rect class="bar risk" x="200" y="26" width="410.0" height="30"/><text class="end sm" x="192" y="46">All dams in the inventory</text><text class="big" x="620" y="47">92,766</text><rect class="track" x="200" y="82" width="410" height="30"/><rect class="bar risk" x="200" y="82" width="349.3" height="30"/><text class="end sm" x="192" y="102">Classified high hazard potential</text><text class="big" x="559.2773794438662" y="103">17,049</text><text class="tiny" x="200" y="126">a classification of potential consequences, not of condition</text><rect class="track" x="200" y="138" width="410" height="30"/><rect class="bar price" x="200" y="138" width="284.4" height="30"/><text class="end sm" x="192" y="158">Condition recorded poor or unsatisfactory</text><text class="big" x="494.40727737509917" y="159">2,791</text><text class="tiny" x="200" y="182">16.4% of those</text><rect class="track" x="200" y="194" width="410" height="30"/><rect class="bar price" x="200" y="194" width="231.4" height="30"/><text class="end sm" x="192" y="214">No emergency action plan on file</text><text class="big" x="441.39268066689147" y="215">636</text><text class="tiny" x="200" y="238">as recorded in this release</text></svg></div>
+    <figcaption><b>Exhibit 1.</b> Counts of dams in the inventory, narrowing by hazard
+    classification, then by recorded condition, then by emergency action plan status. Bars use a
+    log scale so the smallest group remains visible; the groups are nested, not separate.</figcaption>
   </figure>
 </section>
 
 <section class="spine stack">
   <div class="finding"><span class="fnum">FINDING 02</span>
-    <h2>636 are in bad condition with nobody to call.</h2></div>
-  <p>An emergency action plan is the least a dam can have. It is not a repair, or a spillway, or a
-  buttress &#8212; it is a piece of paper naming who is notified, in what order, if the structure
-  begins to fail, and which areas flood when it does.</p>
-  <p><b>2,476 high-hazard dams (14.5%) have no such plan.</b> Of those,
-  <b>636 are also rated Poor or Unsatisfactory</b> &#8212; simultaneously known to
-  threaten life, known to be in bad repair, and without a written answer to the question of who
-  gets told.</p>
-  <p class="pull">The condition rating says the dam might fail. The missing plan says nobody has
-  written down what happens when it does.</p>
+    <h2>636 of those also have no emergency action plan recorded.</h2></div>
+  <p>An emergency action plan is a procedural document. It sets out who is notified, and in what
+  order, if a dam emergency occurs, and it commonly includes inundation mapping. Whether one is on
+  file is recorded in the inventory as a separate field from condition.</p>
+  <p><b>2,476 dams classified high hazard potential (14.5%) are recorded
+  as having no emergency action plan on file.</b> Of those, <b>636 also carry a
+  condition assessment of Poor or Unsatisfactory.</b> That overlap is the narrowest group this
+  summary identifies.</p>
+  <p>Two limits on reading that number. The field reflects what has been reported to the inventory,
+  so an absent record is not proof that no plan exists at the operator or state level. And an
+  emergency action plan is a notification procedure, not a physical measure &#8212; its presence does
+  not make a dam safe, and its absence from the record does not make a dam unsafe.</p>
 </section>
 
 <section class="spine stack">
   <div class="finding"><span class="fnum">FINDING 03</span>
-    <h2>They were built, on average, in 1955.</h2></div>
-  <p>The high-hazard dams rated Poor or Unsatisfactory have a median completion year of
-  <b>1955</b>, and <b>90.8%</b> of those with a recorded year were
-  finished before 1980 (n = 2,353).</p>
-  <p>That matters because of what has happened downstream of them since. A dam built in the 1950s
-  was assigned its hazard class based on what stood below it. Half a century of building is what
-  turned many of these from low hazard to high &#8212; the structure did not move closer to people,
-  people moved closer to it.</p>
+    <h2>Their median completion year is 1955.</h2></div>
+  <p>The dams in that group have a median recorded completion year of <b>1955</b>, and
+  <b>90.8%</b> of those with a year recorded were completed before 1980
+  (n = 2,353).</p>
+  <p>This is a description of the group&#8217;s age, not an explanation of its condition ratings.
+  The inventory does not publish the reasoning behind any assessment, and age alone does not
+  determine condition: the same file contains dams of similar vintage rated Satisfactory. We have
+  not tested why any dam holds the rating it holds, and this page does not attempt to.</p>
   <figure>
     <div class="chartbox"><svg class="chart" viewBox="0 0 620 475" role="img"
-  aria-label="States by number of high-hazard dams rated poor or unsatisfactory"><rect class="track" x="46" y="26" width="494" height="13"/><rect class="bar price" x="46" y="26" width="494.0" height="13"/><text class="end sm" x="38" y="37">NC</text><text class="sm" x="547" y="37">247</text><rect class="track" x="46" y="43" width="494" height="13"/><rect class="bar price" x="46" y="43" width="434.0" height="13"/><text class="end sm" x="38" y="54">TX</text><text class="sm" x="487" y="54">217</text><rect class="track" x="46" y="60" width="494" height="13"/><rect class="bar price" x="46" y="60" width="386.0" height="13"/><text class="end sm" x="38" y="71">GA</text><text class="sm" x="439" y="71">193</text><rect class="track" x="46" y="77" width="494" height="13"/><rect class="bar price" x="46" y="77" width="324.0" height="13"/><text class="end sm" x="38" y="88">SC</text><text class="sm" x="377" y="88">162</text><rect class="track" x="46" y="94" width="494" height="13"/><rect class="bar price" x="46" y="94" width="290.0" height="13"/><text class="end sm" x="38" y="105">PA</text><text class="sm" x="343" y="105">145</text><rect class="track" x="46" y="111" width="494" height="13"/><rect class="bar price" x="46" y="111" width="290.0" height="13"/><text class="end sm" x="38" y="122">NM</text><text class="sm" x="343" y="122">145</text><rect class="track" x="46" y="128" width="494" height="13"/><rect class="bar price" x="46" y="128" width="280.0" height="13"/><text class="end sm" x="38" y="139">MS</text><text class="sm" x="333" y="139">140</text><rect class="track" x="46" y="145" width="494" height="13"/><rect class="bar price" x="46" y="145" width="264.0" height="13"/><text class="end sm" x="38" y="156">OH</text><text class="sm" x="317" y="156">132</text><rect class="track" x="46" y="162" width="494" height="13"/><rect class="bar price" x="46" y="162" width="232.0" height="13"/><text class="end sm" x="38" y="173">NY</text><text class="sm" x="285" y="173">116</text><rect class="track" x="46" y="179" width="494" height="13"/><rect class="bar price" x="46" y="179" width="212.0" height="13"/><text class="end sm" x="38" y="190">KY</text><text class="sm" x="265" y="190">106</text><rect class="track" x="46" y="196" width="494" height="13"/><rect class="bar price" x="46" y="196" width="182.0" height="13"/><text class="end sm" x="38" y="207">IN</text><text class="sm" x="235" y="207">91</text><rect class="track" x="46" y="213" width="494" height="13"/><rect class="bar price" x="46" y="213" width="176.0" height="13"/><text class="end sm" x="38" y="224">HI</text><text class="sm" x="229" y="224">88</text><rect class="track" x="46" y="230" width="494" height="13"/><rect class="bar price" x="46" y="230" width="150.0" height="13"/><text class="end sm" x="38" y="241">KS</text><text class="sm" x="203" y="241">75</text><rect class="track" x="46" y="247" width="494" height="13"/><rect class="bar price" x="46" y="247" width="132.0" height="13"/><text class="end sm" x="38" y="258">VA</text><text class="sm" x="185" y="258">66</text><rect class="track" x="46" y="264" width="494" height="13"/><rect class="bar price" x="46" y="264" width="120.0" height="13"/><text class="end sm" x="38" y="275">NH</text><text class="sm" x="173" y="275">60</text><rect class="track" x="46" y="281" width="494" height="13"/><rect class="bar price" x="46" y="281" width="116.0" height="13"/><text class="end sm" x="38" y="292">NJ</text><text class="sm" x="169" y="292">58</text><rect class="track" x="46" y="298" width="494" height="13"/><rect class="bar price" x="46" y="298" width="106.0" height="13"/><text class="end sm" x="38" y="309">WA</text><text class="sm" x="159" y="309">53</text><rect class="track" x="46" y="315" width="494" height="13"/><rect class="bar price" x="46" y="315" width="106.0" height="13"/><text class="end sm" x="38" y="326">MA</text><text class="sm" x="159" y="326">53</text><rect class="track" x="46" y="332" width="494" height="13"/><rect class="bar price" x="46" y="332" width="94.0" height="13"/><text class="end sm" x="38" y="343">CA</text><text class="sm" x="147" y="343">47</text><rect class="track" x="46" y="349" width="494" height="13"/><rect class="bar price" x="46" y="349" width="86.0" height="13"/><text class="end sm" x="38" y="360">NV</text><text class="sm" x="139" y="360">43</text><rect class="track" x="46" y="366" width="494" height="13"/><rect class="bar price" x="46" y="366" width="82.0" height="13"/><text class="end sm" x="38" y="377">WV</text><text class="sm" x="135" y="377">41</text><rect class="track" x="46" y="383" width="494" height="13"/><rect class="bar price" x="46" y="383" width="82.0" height="13"/><text class="end sm" x="38" y="394">MT</text><text class="sm" x="135" y="394">41</text><rect class="track" x="46" y="400" width="494" height="13"/><rect class="bar price" x="46" y="400" width="80.0" height="13"/><text class="end sm" x="38" y="411">OK</text><text class="sm" x="133" y="411">40</text><rect class="track" x="46" y="417" width="494" height="13"/><rect class="bar price" x="46" y="417" width="74.0" height="13"/><text class="end sm" x="38" y="428">CO</text><text class="sm" x="127" y="428">37</text><rect class="track" x="46" y="434" width="494" height="13"/><rect class="bar price" x="46" y="434" width="70.0" height="13"/><text class="end sm" x="38" y="445">MO</text><text class="sm" x="123" y="445">35</text></svg></div>
-    <figcaption><b>Exhibit 2.</b> States by number of high-hazard dams rated Poor or Unsatisfactory,
-    top 25. Leaders: NC (247), TX (217), GA (193), SC (162), PA (145).</figcaption>
+  aria-label="States by number of high hazard potential dams with a recorded condition of poor or unsatisfactory"><rect class="track" x="46" y="26" width="494" height="13"/><rect class="bar price" x="46" y="26" width="494.0" height="13"/><text class="end sm" x="38" y="37">NC</text><text class="sm" x="547" y="37">247</text><rect class="track" x="46" y="43" width="494" height="13"/><rect class="bar price" x="46" y="43" width="434.0" height="13"/><text class="end sm" x="38" y="54">TX</text><text class="sm" x="487" y="54">217</text><rect class="track" x="46" y="60" width="494" height="13"/><rect class="bar price" x="46" y="60" width="386.0" height="13"/><text class="end sm" x="38" y="71">GA</text><text class="sm" x="439" y="71">193</text><rect class="track" x="46" y="77" width="494" height="13"/><rect class="bar price" x="46" y="77" width="324.0" height="13"/><text class="end sm" x="38" y="88">SC</text><text class="sm" x="377" y="88">162</text><rect class="track" x="46" y="94" width="494" height="13"/><rect class="bar price" x="46" y="94" width="290.0" height="13"/><text class="end sm" x="38" y="105">PA</text><text class="sm" x="343" y="105">145</text><rect class="track" x="46" y="111" width="494" height="13"/><rect class="bar price" x="46" y="111" width="290.0" height="13"/><text class="end sm" x="38" y="122">NM</text><text class="sm" x="343" y="122">145</text><rect class="track" x="46" y="128" width="494" height="13"/><rect class="bar price" x="46" y="128" width="280.0" height="13"/><text class="end sm" x="38" y="139">MS</text><text class="sm" x="333" y="139">140</text><rect class="track" x="46" y="145" width="494" height="13"/><rect class="bar price" x="46" y="145" width="264.0" height="13"/><text class="end sm" x="38" y="156">OH</text><text class="sm" x="317" y="156">132</text><rect class="track" x="46" y="162" width="494" height="13"/><rect class="bar price" x="46" y="162" width="232.0" height="13"/><text class="end sm" x="38" y="173">NY</text><text class="sm" x="285" y="173">116</text><rect class="track" x="46" y="179" width="494" height="13"/><rect class="bar price" x="46" y="179" width="212.0" height="13"/><text class="end sm" x="38" y="190">KY</text><text class="sm" x="265" y="190">106</text><rect class="track" x="46" y="196" width="494" height="13"/><rect class="bar price" x="46" y="196" width="182.0" height="13"/><text class="end sm" x="38" y="207">IN</text><text class="sm" x="235" y="207">91</text><rect class="track" x="46" y="213" width="494" height="13"/><rect class="bar price" x="46" y="213" width="176.0" height="13"/><text class="end sm" x="38" y="224">HI</text><text class="sm" x="229" y="224">88</text><rect class="track" x="46" y="230" width="494" height="13"/><rect class="bar price" x="46" y="230" width="150.0" height="13"/><text class="end sm" x="38" y="241">KS</text><text class="sm" x="203" y="241">75</text><rect class="track" x="46" y="247" width="494" height="13"/><rect class="bar price" x="46" y="247" width="132.0" height="13"/><text class="end sm" x="38" y="258">VA</text><text class="sm" x="185" y="258">66</text><rect class="track" x="46" y="264" width="494" height="13"/><rect class="bar price" x="46" y="264" width="120.0" height="13"/><text class="end sm" x="38" y="275">NH</text><text class="sm" x="173" y="275">60</text><rect class="track" x="46" y="281" width="494" height="13"/><rect class="bar price" x="46" y="281" width="116.0" height="13"/><text class="end sm" x="38" y="292">NJ</text><text class="sm" x="169" y="292">58</text><rect class="track" x="46" y="298" width="494" height="13"/><rect class="bar price" x="46" y="298" width="106.0" height="13"/><text class="end sm" x="38" y="309">WA</text><text class="sm" x="159" y="309">53</text><rect class="track" x="46" y="315" width="494" height="13"/><rect class="bar price" x="46" y="315" width="106.0" height="13"/><text class="end sm" x="38" y="326">MA</text><text class="sm" x="159" y="326">53</text><rect class="track" x="46" y="332" width="494" height="13"/><rect class="bar price" x="46" y="332" width="94.0" height="13"/><text class="end sm" x="38" y="343">CA</text><text class="sm" x="147" y="343">47</text><rect class="track" x="46" y="349" width="494" height="13"/><rect class="bar price" x="46" y="349" width="86.0" height="13"/><text class="end sm" x="38" y="360">NV</text><text class="sm" x="139" y="360">43</text><rect class="track" x="46" y="366" width="494" height="13"/><rect class="bar price" x="46" y="366" width="82.0" height="13"/><text class="end sm" x="38" y="377">WV</text><text class="sm" x="135" y="377">41</text><rect class="track" x="46" y="383" width="494" height="13"/><rect class="bar price" x="46" y="383" width="82.0" height="13"/><text class="end sm" x="38" y="394">MT</text><text class="sm" x="135" y="394">41</text><rect class="track" x="46" y="400" width="494" height="13"/><rect class="bar price" x="46" y="400" width="80.0" height="13"/><text class="end sm" x="38" y="411">OK</text><text class="sm" x="133" y="411">40</text><rect class="track" x="46" y="417" width="494" height="13"/><rect class="bar price" x="46" y="417" width="74.0" height="13"/><text class="end sm" x="38" y="428">CO</text><text class="sm" x="127" y="428">37</text><rect class="track" x="46" y="434" width="494" height="13"/><rect class="bar price" x="46" y="434" width="70.0" height="13"/><text class="end sm" x="38" y="445">MO</text><text class="sm" x="123" y="445">35</text></svg></div>
+    <figcaption><b>Exhibit 2.</b> States by the number of high hazard potential dams with a recorded
+    condition of Poor or Unsatisfactory, top 25 by count. Highest counts: NC (247), TX (217), GA (193), SC (162), PA (145). Counts
+    largely reflect how many dams a state has and how it reports; they are not a comparison of
+    state dam-safety programmes.</figcaption>
   </figure>
 </section>
 
 <section class="spine stack">
-  <h3>Fairness</h3>
-  <h2>What this does not say.</h2>
+  <h3>Context</h3>
+  <h2>What the same file shows about oversight.</h2>
   <div class="note">
-    <h3>The system mostly works</h3>
-    <p><b>77.4% of high-hazard dams do have an emergency action plan</b>
-    (13,201 of 17,049), and the median high-hazard dam was last inspected in
-    <b>2023</b>. The condition ratings behind this study are current, not archival: among the
-    Poor and Unsatisfactory ones, the median assessment date is also 2023.</p>
-    <p style="margin-top:1em">So this is not a story about a country that has stopped looking at its
-    dams. It is a story about a specific, countable tail that the looking has already identified.
-    Every dam described here was assessed by a regulator who wrote down what they found. The
-    findings are theirs. All this study did was read the three columns together.</p>
+    <h3>The majority position</h3>
+    <p><b>77.4% of dams classified high hazard potential have an emergency action plan
+    recorded</b> (13,201 of 17,049). The median high-hazard dam in the file has a
+    last inspection date in <b>2023</b>, and among those rated Poor or Unsatisfactory the median
+    condition assessment date is also <b>2023</b>.</p>
+    <p style="margin-top:1em">That context belongs alongside every figure above. These records
+    indicate an inspection and reporting regime that is active and current for most dams in the
+    classification. The smaller groups described on this page were identified by that regime, by the
+    agencies operating it, and recorded in its own published file. This page counts those records.
+    It does not evaluate the agencies, the dams, or the adequacy of any programme.</p>
   </div>
 </section>
 
@@ -277,19 +288,25 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
 <section class="spine stack">
   <h3>Limitations</h3>
   <h2>What this cannot tell you.</h2>
-  <p><b>Hazard class is about consequence, not probability.</b> This is the single most important
-  caveat on the page. A high-hazard dam is not a dam expected to fail; it is a dam whose failure
-  would be expected to cost lives. A well-maintained high-hazard dam is safer than a neglected
-  low-hazard one. Nothing here ranks dams by likelihood of failure, and no figure on this page
-  should be read that way.</p>
-  <p><b>Ratings are not issued by one authority.</b> Most dams are regulated by their state, and
-  states differ in how they inspect, how often, and where they draw the line between Fair and Poor.
-  A Poor in one state is not exactly a Poor in another.</p>
-  <p><b>The inventory does not publish how many people are downstream.</b> Earlier releases carried
-  a population-at-risk estimate; this one does not. So this study cannot say how many homes or
-  people sit below any particular dam, and it does not try to.</p>
-  <p><b>An emergency action plan is a document, not a repair.</b> A dam with a plan is not a safe
-  dam. It is a dam where someone has written down what to do.</p>
+  <p><b>Hazard classification describes consequences, not probability.</b> This is the most
+  important limitation on the page. A dam classified high hazard potential is not a dam predicted or
+  expected to fail. The classification reflects what is downstream if failure were to occur. A
+  well-maintained high-hazard dam may be in better condition than a low-hazard one. Nothing here
+  ranks any dam by likelihood of failure, and no figure should be read as doing so.</p>
+  <p><b>This is not a safety assessment.</b> We are not engineers, we have not inspected any
+  structure, and we express no opinion on the safety, integrity or management of any dam, operator
+  or agency. Every rating reproduced here is the recorded determination of the responsible
+  regulating authority, reported as published.</p>
+  <p><b>Records may be incomplete or out of date.</b> The inventory is compiled from submissions by
+  many federal and state agencies on differing schedules. A blank or absent value indicates what the
+  file contains, not what exists in the world. Ratings and plan status change, and this page is a
+  snapshot of the 2026-08-28 release.</p>
+  <p><b>Ratings are not issued by a single authority.</b> Most dams are regulated by their state,
+  and states differ in inspection practice, frequency, and where the boundary between rating
+  categories falls. Counts should not be read as a like-for-like comparison between states.</p>
+  <p><b>The inventory does not publish downstream population.</b> This release contains no
+  population-at-risk field, so nothing here indicates how many people or homes are below any dam,
+  and no such inference should be drawn.</p>
 </section>
 
 <section class="spine stack">
@@ -362,9 +379,9 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
   <p>Every figure here comes from one public file and can be rebuilt from it. If you are writing
   about a specific county, the lookup above gives you its own numbers, and the inventory itself
   will give you the individual dams by name.</p>
-  <div class="cite">Before Regret (2026). <i>No Plan Downstream: America&#8217;s high-hazard dams in
-  poor condition, and the ones with no emergency plan.</i><br>
-  https://www.beforeregret.com/research/no-plan-downstream/</div>
+  <div class="cite">Before Regret (2026). <i>High-Hazard Dams by County: condition assessments and
+  emergency action plan status as recorded in the National Inventory of Dams.</i><br>
+  https://www.beforeregret.com/research/high-hazard-dams/</div>
   <p style="margin-top:1.4em">Corrections and questions:
   <a href="mailto:hello@beforeregret.com">hello@beforeregret.com</a>. If a dam is listed here whose
   rating or plan status has since changed, we would rather be told than not &#8212; the inventory
@@ -415,12 +432,12 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
     elBad.textContent=r[3]; elBad.className='v'+(r[3]>0?' hot':'');
     elNo.textContent=r[4];  elNo.className='v'+(r[4]>0?' hot':'');
     elBoth.textContent=r[5];elBoth.className='v'+(r[5]>0?' hot':'');
-    var s=name+' has <b>'+r[2]+'</b> dam'+(r[2]===1?'':'s')+' classified high hazard potential';
-    if(r[3]>0) s+=', of which <b>'+r[3]+'</b> '+(r[3]===1?'is':'are')+' rated poor or unsatisfactory';
-    if(r[5]>0) s+='. <b>'+r[5]+'</b> '+(r[5]===1?'is':'are')+' both poorly rated and without an emergency action plan';
-    else if(r[4]>0) s+='. <b>'+r[4]+'</b> lack'+(r[4]===1?'s':'')+' an emergency action plan';
+    var s='The inventory records <b>'+r[2]+'</b> dam'+(r[2]===1?'':'s')+' classified high hazard potential in '+name;
+    if(r[3]>0) s+=', of which <b>'+r[3]+'</b> '+(r[3]===1?'has':'have')+' a condition assessment of poor or unsatisfactory';
+    if(r[5]>0) s+='. For <b>'+r[5]+'</b> of those, no emergency action plan is recorded on file';
+    else if(r[4]>0) s+='. For <b>'+r[4]+'</b>, no emergency action plan is recorded on file';
     s+='.';
-    if(r[6]>0) s+=' A further <b>'+r[6]+'</b> carr'+(r[6]===1?'ies':'y')+' no condition rating at all.';
+    if(r[6]>0) s+=' A further <b>'+r[6]+'</b> '+(r[6]===1?'has':'have')+' no condition rating recorded in this release.';
     elNote.innerHTML=s;
     out.classList.add('on');
   }

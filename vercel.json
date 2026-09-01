@@ -1,4 +1,16 @@
 {
+  "redirects": [
+    {
+      "source": "/research/no-plan-downstream",
+      "destination": "/research/high-hazard-dams/",
+      "permanent": true
+    },
+    {
+      "source": "/research/no-plan-downstream/",
+      "destination": "/research/high-hazard-dams/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/api",
