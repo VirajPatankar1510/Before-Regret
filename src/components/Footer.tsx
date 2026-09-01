@@ -169,6 +169,26 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                     Research: Risk Without Price
                   </a>
                 </li>
+                {/* The other two studies. Listed here rather than left to reach only through the
+                    first study's own body links: on a domain where most pages sit in "Discovered --
+                    currently not indexed", a two-hop-only path is the difference between a page
+                    being crawled and not. Same plain <a> reasoning as above. */}
+                <li>
+                  <a
+                    href="/research/risk-without-cover/"
+                    className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5"
+                  >
+                    Research: Risk Without Cover
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/research/outside-the-zone/"
+                    className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5"
+                  >
+                    Research: Outside the Zone
+                  </a>
+                </li>
                 {/* Same reason as the research link above: /sample-report/ is a static file in
                     public/, not an SPA route, so ContentLink's preventDefault would change the URL
                     and blank the page. Needs a real document load. */}

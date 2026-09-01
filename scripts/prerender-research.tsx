@@ -491,6 +491,123 @@ ${SITE_FOOTER}
     console.log(`[prerender-research] Wrote static HTML for /research/risk-without-cover/ (${Math.round(coverHtml.length / 1024)} KB)`);
   }
 
+  // ---- /research/outside-the-zone/ --------------------------------------------------------------
+  // Third study in the series, and the sequel the flood study asked for: risk-without-cover's own
+  // limitations section conceded that "a large share of flood damage happens outside" mapped zones
+  // without being able to measure it. This measures it from the claims file. Same standalone-document
+  // contract as the two above.
+  //
+  // docs/outside-the-zone.html is GENERATED (see the build script kept with the study's analysis),
+  // not hand-edited -- it inlines ~76KB of county data for its lookup and renders a 47-state chart
+  // from the same figures, so the prose and the data cannot be allowed to drift apart by hand.
+  const ZONE_SRC = path.join(process.cwd(), 'docs', 'outside-the-zone.html');
+  if (fs.existsSync(ZONE_SRC)) {
+    const zoneSource = fs.readFileSync(ZONE_SRC, 'utf8');
+    const zWrap = zoneSource.indexOf('<div class="wrap">');
+    if (zWrap === -1) {
+      console.error('[prerender-research] outside-the-zone.html has no document body.');
+      process.exit(1);
+    }
+    const zHead = zoneSource.slice(0, zWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
+    const zBody = zoneSource.slice(zWrap);
+    const ZONE_URL = 'https://www.beforeregret.com/research/outside-the-zone/';
+    const ZONE_TITLE =
+      'Outside the Zone: how much US flood insurance is paid outside the flood zone';
+    const ZONE_DESC =
+      'More than a quarter of every NFIP flood insurance claim ever paid went to a property rated outside the mapped high-risk zone -- $20.6 billion across 2.58 million claims -- while only 1.25% of homes outside those zones carry any flood cover.';
+    const ZONE_LD = [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'ScholarlyArticle',
+        headline: 'Outside the Zone',
+        alternativeHeadline:
+          'More than one in four US flood insurance claims was paid on a property the map did not call high-risk',
+        description: ZONE_DESC,
+        url: ZONE_URL,
+        datePublished: '2026-09-01',
+        dateModified: '2026-09-01',
+        inLanguage: 'en-US',
+        isAccessibleForFree: true,
+        license: 'https://creativecommons.org/licenses/by/4.0/',
+        author: { '@type': 'Organization', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Before Regret',
+          url: 'https://www.beforeregret.com/',
+          logo: { '@type': 'ImageObject', url: 'https://www.beforeregret.com/logo-mark.png' },
+        },
+        image: OG_IMAGE,
+        keywords:
+          'flood insurance, NFIP, flood zone, Special Flood Hazard Area, flood claims, FEMA, flood map, homeowners insurance',
+        isBasedOn: [
+          {
+            '@type': 'Dataset',
+            name: 'FEMA OpenFEMA, NFIP redacted claims',
+            description:
+              'Every claim paid by the National Flood Insurance Program, each carrying the flood zone the policy was rated in, the county, the year of loss, and the amounts paid on building and contents.',
+            creator: { '@type': 'Organization', name: 'Federal Emergency Management Agency' },
+            url: 'https://www.fema.gov/api/open/v2/FimaNfipClaims',
+            license: 'https://www.usa.gov/government-works',
+            isAccessibleForFree: true,
+          },
+          {
+            '@type': 'Dataset',
+            name: 'FEMA OpenFEMA, NFIP residential penetration rates',
+            description:
+              'Residential structures and National Flood Insurance Program contracts in force, inside and outside Special Flood Hazard Areas, reported for every county in the United States.',
+            creator: { '@type': 'Organization', name: 'Federal Emergency Management Agency' },
+            url: 'https://www.fema.gov/api/open/v1/NfipResidentialPenetrationRates',
+            license: 'https://www.usa.gov/government-works',
+            isAccessibleForFree: true,
+          },
+        ],
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+          { '@type': 'ListItem', position: 2, name: 'Research', item: ZONE_URL },
+        ],
+      },
+    ];
+
+    const zoneHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapeHtmlAttr(ZONE_TITLE)}</title>
+  <meta name="description" content="${escapeHtmlAttr(ZONE_DESC)}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <link rel="canonical" href="${escapeHtmlAttr(ZONE_URL)}">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Before Regret">
+  <meta property="og:url" content="${escapeHtmlAttr(ZONE_URL)}">
+  <meta property="og:title" content="${escapeHtmlAttr(ZONE_TITLE)}">
+  <meta property="og:description" content="${escapeHtmlAttr(ZONE_DESC)}">
+  <meta property="og:image" content="${escapeHtmlAttr(OG_IMAGE)}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${escapeHtmlAttr(ZONE_TITLE)}">
+  <meta name="twitter:description" content="${escapeHtmlAttr(ZONE_DESC)}">
+  <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
+${zHead.trim()}
+  <style>${EXTRA_CSS}</style>
+  <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(ZONE_LD)}</script>
+</head>
+<body>
+${SITE_NAV}
+${zBody.trim()}
+${SITE_FOOTER}
+</body>
+</html>`;
+    const zoneDir = path.join(process.cwd(), 'dist', 'research', 'outside-the-zone');
+    fs.mkdirSync(zoneDir, { recursive: true });
+    fs.writeFileSync(path.join(zoneDir, 'index.html'), zoneHtml, 'utf8');
+    console.log(`[prerender-research] Wrote static HTML for /research/outside-the-zone/ (${Math.round(zoneHtml.length / 1024)} KB)`);
+  }
+
   // The machine-readable figures behind every number on the page. Published deliberately: the study
   // asks to be cited, and a citable study has to let someone check its arithmetic.
   const figuresSrc = path.join(process.cwd(), 'docs', 'data', 'risk-without-price-figures.json');
@@ -498,6 +615,14 @@ ${SITE_FOOTER}
     const dataDir = path.join(process.cwd(), 'dist', 'research', 'data');
     fs.mkdirSync(dataDir, { recursive: true });
     fs.copyFileSync(figuresSrc, path.join(dataDir, 'risk-without-price-figures.json'));
+  }
+
+  // Same contract for the third study: it invites checking, so the figures behind it ship too.
+  const zoneFigures = path.join(process.cwd(), 'docs', 'data', 'flood-outside-zone.json');
+  if (fs.existsSync(zoneFigures)) {
+    const dataDir = path.join(process.cwd(), 'dist', 'research', 'data');
+    fs.mkdirSync(dataDir, { recursive: true });
+    fs.copyFileSync(zoneFigures, path.join(dataDir, 'flood-outside-zone.json'));
   }
 
   console.log(`[prerender-research] Wrote static HTML for /research/risk-without-price/ (${Math.round(html.length / 1024)} KB)`);

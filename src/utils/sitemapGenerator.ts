@@ -166,6 +166,7 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       // that a reader can tell exactly what it measured and when.
       { loc: `${BASE_URL}/research/risk-without-price/`, lastmod: '2026-08-30', changefreq: 'yearly', priority: '0.8' },
       { loc: `${BASE_URL}/research/risk-without-cover/`, lastmod: '2026-08-31', changefreq: 'yearly', priority: '0.8' },
+      { loc: `${BASE_URL}/research/outside-the-zone/`, lastmod: '2026-09-01', changefreq: 'yearly', priority: '0.8' },
       // The worked example of the actual product (public/sample-report/index.html -- a static file
       // Vite copies into dist/, so Vercel's filesystem priority serves it ahead of the SPA
       // catch-all rewrite, the same mechanism the prerender scripts rely on). Fixed lastmod for
