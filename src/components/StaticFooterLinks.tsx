@@ -67,6 +67,7 @@ export function StaticFooterLinks({ guides }: StaticFooterLinksProps) {
             <li><a href="/research/risk-without-price/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research: Risk Without Price</a></li>
             <li><a href="/research/risk-without-cover/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research: Risk Without Cover</a></li>
             <li><a href="/research/outside-the-zone/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research: Outside the Zone</a></li>
+            <li><a href="/research/no-plan-downstream/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research: No Plan Downstream</a></li>
             <li><a href="/sample-report/" className="hover:text-white font-bold text-blue-300 block py-1.5">See a Sample Report</a></li>
             <li><a href="/advertise/" className="hover:text-white font-bold text-blue-300 block py-1.5">Advertise With Us</a></li>
             <li><a href="/support/" className="hover:text-white font-medium text-slate-300 block py-1.5">Customer Support</a></li>

@@ -608,6 +608,110 @@ ${SITE_FOOTER}
     console.log(`[prerender-research] Wrote static HTML for /research/outside-the-zone/ (${Math.round(zoneHtml.length / 1024)} KB)`);
   }
 
+  // ---- /research/no-plan-downstream/ ------------------------------------------------------------
+  // Fourth study. Deliberately NOT another "the official category does not predict the outcome"
+  // finding like the three above -- this one reads three of the inventory's own columns together
+  // (hazard class, condition, emergency plan) rather than testing one dataset against another.
+  //
+  // docs/no-plan-downstream.html is GENERATED, same contract as outside-the-zone.html.
+  const DAM_SRC = path.join(process.cwd(), 'docs', 'no-plan-downstream.html');
+  if (fs.existsSync(DAM_SRC)) {
+    const damSource = fs.readFileSync(DAM_SRC, 'utf8');
+    const dWrap = damSource.indexOf('<div class="wrap">');
+    if (dWrap === -1) {
+      console.error('[prerender-research] no-plan-downstream.html has no document body.');
+      process.exit(1);
+    }
+    const dHead = damSource.slice(0, dWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
+    const dBody = damSource.slice(dWrap);
+    const DAM_URL = 'https://www.beforeregret.com/research/no-plan-downstream/';
+    const DAM_TITLE =
+      'No Plan Downstream: US high-hazard dams in poor condition with no emergency action plan';
+    const DAM_DESC =
+      'The United States has 17,049 dams whose failure would be expected to cause loss of life. 2,791 are rated poor or unsatisfactory, and 636 of those have no emergency action plan at all.';
+    const DAM_LD = [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'ScholarlyArticle',
+        headline: 'No Plan Downstream',
+        alternativeHeadline:
+          '636 US dams are rated poor or unsatisfactory, classified as likely to cause loss of life if they fail, and have no plan to warn anyone downstream',
+        description: DAM_DESC,
+        url: DAM_URL,
+        datePublished: '2026-09-01',
+        dateModified: '2026-09-01',
+        inLanguage: 'en-US',
+        isAccessibleForFree: true,
+        license: 'https://creativecommons.org/licenses/by/4.0/',
+        author: { '@type': 'Organization', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Before Regret',
+          url: 'https://www.beforeregret.com/',
+          logo: { '@type': 'ImageObject', url: 'https://www.beforeregret.com/logo-mark.png' },
+        },
+        image: OG_IMAGE,
+        keywords:
+          'dam safety, National Inventory of Dams, high hazard potential dam, emergency action plan, USACE, infrastructure, flood risk',
+        isBasedOn: [
+          {
+            '@type': 'Dataset',
+            name: 'US Army Corps of Engineers, National Inventory of Dams',
+            description:
+              'Every dam in the National Inventory of Dams with its hazard potential classification, condition assessment, emergency action plan status, year completed, and location.',
+            creator: { '@type': 'Organization', name: 'US Army Corps of Engineers' },
+            url: 'https://nid.sec.usace.army.mil/',
+            license: 'https://www.usa.gov/government-works',
+            isAccessibleForFree: true,
+          },
+        ],
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+          { '@type': 'ListItem', position: 2, name: 'Research', item: DAM_URL },
+        ],
+      },
+    ];
+
+    const damHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapeHtmlAttr(DAM_TITLE)}</title>
+  <meta name="description" content="${escapeHtmlAttr(DAM_DESC)}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <link rel="canonical" href="${escapeHtmlAttr(DAM_URL)}">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Before Regret">
+  <meta property="og:url" content="${escapeHtmlAttr(DAM_URL)}">
+  <meta property="og:title" content="${escapeHtmlAttr(DAM_TITLE)}">
+  <meta property="og:description" content="${escapeHtmlAttr(DAM_DESC)}">
+  <meta property="og:image" content="${escapeHtmlAttr(OG_IMAGE)}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${escapeHtmlAttr(DAM_TITLE)}">
+  <meta name="twitter:description" content="${escapeHtmlAttr(DAM_DESC)}">
+  <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
+${dHead.trim()}
+  <style>${EXTRA_CSS}</style>
+  <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(DAM_LD)}</script>
+</head>
+<body>
+${SITE_NAV}
+${dBody.trim()}
+${SITE_FOOTER}
+</body>
+</html>`;
+    const damDir = path.join(process.cwd(), 'dist', 'research', 'no-plan-downstream');
+    fs.mkdirSync(damDir, { recursive: true });
+    fs.writeFileSync(path.join(damDir, 'index.html'), damHtml, 'utf8');
+    console.log(`[prerender-research] Wrote static HTML for /research/no-plan-downstream/ (${Math.round(damHtml.length / 1024)} KB)`);
+  }
+
   // The machine-readable figures behind every number on the page. Published deliberately: the study
   // asks to be cited, and a citable study has to let someone check its arithmetic.
   const figuresSrc = path.join(process.cwd(), 'docs', 'data', 'risk-without-price-figures.json');

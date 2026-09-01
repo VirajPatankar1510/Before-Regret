@@ -189,6 +189,14 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                     Research: Outside the Zone
                   </a>
                 </li>
+                <li>
+                  <a
+                    href="/research/no-plan-downstream/"
+                    className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5"
+                  >
+                    Research: No Plan Downstream
+                  </a>
+                </li>
                 {/* Same reason as the research link above: /sample-report/ is a static file in
                     public/, not an SPA route, so ContentLink's preventDefault would change the URL
                     and blank the page. Needs a real document load. */}
