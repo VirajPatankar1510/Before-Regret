@@ -7,12 +7,16 @@
 // WHY THIS IS WORTH HAVING. Google's equivalent ("Request Indexing") is UI-only, one URL at a
 // time, and heavily rate-limited -- which is why several manual Search Console steps keep landing
 // on the user in this project. Bing exposes the same idea as an API with a real quota (100/day,
-// 1100/month for this property), so the whole backlog can be submitted without clicking anything.
+// 2900/month for this property as of 2026-09-02), so a backlog can be submitted without clicking.
 //
 // WHAT IT IS NOT. Submitting asks Bing to CRAWL a URL. It is not a promise to index it, and it
-// does not affect Google at all. Bing already had 95 pages indexed when this was written, against
-// a handful at Google, so the marginal value here is finishing Bing's coverage of the ~262
-// published URLs -- not fixing the Google problem, which this cannot touch.
+// does not affect Google at all.
+//
+// STATE AS OF 2026-09-02. Bing has 104 pages indexed against roughly 25 at Google, and out-clicks
+// Google about 5:1 on this property -- so Bing coverage is close to finished and this script has
+// little left to do. All 35 surviving guides are already submitted. It stays because it is the
+// only programmatic indexing lever this project has, and it is the right tool the next time a
+// genuinely new page ships. It cannot touch the Google problem.
 //
 // DEFAULTS TO A DRY RUN on purpose. This is an outward-facing action against a third-party service
 // with a monthly quota; it should not be possible to spend 1100 submissions by running a script
@@ -37,13 +41,23 @@ async function retry<T>(fn: () => Promise<T>, n = 6): Promise<T> {
   throw new Error('unreachable');
 }
 
+// Only URLs that actually answer 200. Submitting anything else spends capped quota asking Bing to
+// crawl a page that will tell it to go away.
+//
+// The county hub and the per-county URLs used to be built here and both were wrong by the time
+// this was noticed: /counties/ has answered 410 since the 2026-08-23 county retirement (it is in
+// legacyUrls.ts), and the /county/:slug page type was deleted outright on 2026-08-26 -- component,
+// route and API. The county_data table survives only to back /api/v1/counties, so a row there is
+// no longer evidence that a page exists. Rebuilding the list from county_data would therefore
+// submit URLs with no page behind them at all.
+//
+// articles is filtered to status = 'published', which the 2026-09-02 prune reduced to 35. Removed
+// guides answer 410 and merged ones 301, so neither belongs in a crawl request either.
 async function collectUrls(): Promise<string[]> {
   if (!isDbConfigured()) throw new Error('DATABASE_URL is not set.');
-  const urls: string[] = [`${SITE}/`, `${SITE}/guides/`, `${SITE}/counties/`, `${SITE}/about/`];
+  const urls: string[] = [`${SITE}/`, `${SITE}/guides/`, `${SITE}/about/`];
   const guides = await retry(() => withDb((sql) => sql`SELECT slug FROM articles WHERE status='published' ORDER BY published_at DESC`));
   for (const r of guides as any[]) urls.push(`${SITE}/guides/${r.slug}/`);
-  const counties = await retry(() => withDb((sql) => sql`SELECT slug FROM county_data WHERE data_complete=true AND page_enabled=true ORDER BY population DESC NULLS LAST`));
-  for (const r of counties as any[]) urls.push(`${SITE}/county/${r.slug}/`);
   return urls;
 }
 
