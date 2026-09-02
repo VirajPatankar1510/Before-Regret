@@ -509,8 +509,32 @@ ${SITE_FOOTER}
       process.exit(1);
     }
     const zHead = zoneSource.slice(0, zWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
-    const zBody = zoneSource.slice(zWrap);
+    const zBodyRaw = zoneSource.slice(zWrap);
     const ZONE_URL = 'https://www.beforeregret.com/research/outside-the-zone/';
+
+    // Press kit, same contract as the dam study's: the county table as a spreadsheet, and an embed
+    // whose credit line survives a copy desk. See the dam block below for the full reasoning.
+    const zoneKitIdx = zBodyRaw.indexOf('<div class="cite">');
+    if (zoneKitIdx < 0) {
+      console.error('[prerender-research] could not find the outside-the-zone cite block.');
+      process.exit(1);
+    }
+    const zoneKitEnd = zBodyRaw.indexOf('</section>', zoneKitIdx);
+    if (zoneKitEnd < 0) {
+      console.error('[prerender-research] outside-the-zone cite block is not inside a section.');
+      process.exit(1);
+    }
+    const zoneKit = `
+<h3 style="margin-top:2.2em">The data</h3>
+<p>The full county table, 1,921 rows, one per US county with a classifiable claims history. The same numbers as the lookup above.</p>
+<p style="margin-top:.7em"><a href="/research/data/outside-the-zone-by-county.csv" download>outside-the-zone-by-county.csv</a> &#183; <a href="/research/data/flood-outside-zone.json">the full figures as JSON</a></p>
+<p style="margin-top:.9em;font-size:.9rem;color:var(--muted)">Three things to know before you quote the file. The county rows total 2,487,348 classifiable claims rather than the 2,578,413 counted nationally, because not every claim on record carries a county that can be matched; the national and state figures on this page are not built up from the county table. The take-up column is blank for 263 counties rather than zero &#8212; blank means no rate is published for that county, including the 22 where the computed rate exceeded 100%, which the source attributes to structure-count errors, and reading a blank as a zero would invert what it means.</p>
+<p style="margin-top:.7em;font-size:.9rem;color:var(--muted)">And six names appear twice, because they are genuinely two places: Baltimore MD, St. Louis MO, and Fairfax, Richmond, Franklin and Roanoke in Virginia each exist as both an independent city and a separate county. The two rows are different jurisdictions with different claims histories. The file does not say which is which, so if you are writing about one of those six, check the count against the source before you publish rather than picking a row.</p>
+<h3 style="margin-top:2.2em">Embed the county lookup</h3>
+<p>Free to use on any site. It sizes itself to its content and carries its own credit line.</p>
+<div class="code" style="margin-top:.7em">&lt;iframe src="${escapeHtmlAttr(ZONE_URL)}embed/" width="100%" height="640" style="border:1px solid #ddd" title="Flood claims outside the mapped high-risk zone, by county" loading="lazy"&gt;&lt;/iframe&gt;</div>
+`;
+    const zBody = zBodyRaw.slice(0, zoneKitEnd) + zoneKit + zBodyRaw.slice(zoneKitEnd);
     const ZONE_TITLE =
       'Outside the Zone: how much US flood insurance is paid outside the flood zone';
     const ZONE_DESC =
@@ -606,6 +630,88 @@ ${SITE_FOOTER}
     fs.mkdirSync(zoneDir, { recursive: true });
     fs.writeFileSync(path.join(zoneDir, 'index.html'), zoneHtml, 'utf8');
     console.log(`[prerender-research] Wrote static HTML for /research/outside-the-zone/ (${Math.round(zoneHtml.length / 1024)} KB)`);
+
+    // ---- /research/outside-the-zone/embed/ -----------------------------------------------------
+    // Same construction and the same reasoning as the dam embed below: lifted from the source so it
+    // cannot drift, asserts every extraction, and refuses to build without the widget's caveat.
+    const zCssStart = zoneSource.indexOf('.lk-eyebrow{');
+    const zCssEnd = zoneSource.indexOf('.pull{');
+    const zMarkStart = zoneSource.indexOf('<div class="lookup">');
+    const zMarkEnd = zoneSource.indexOf('</header>');
+    const zDataStart = zoneSource.indexOf('<script type="application/json" id="zone-data">');
+    const zDataEnd = zoneSource.indexOf('</script>', zDataStart);
+    const zJsStart = zoneSource.indexOf('<script>', zDataEnd);
+    const zRootStart = zoneSource.indexOf(':root{');
+    const zRootEnd = zoneSource.indexOf('*{box-sizing:border-box}');
+    if (
+      zCssStart < 0 || zCssEnd < 0 || zMarkStart < 0 || zMarkEnd < 0 ||
+      zDataStart < 0 || zDataEnd < 0 || zJsStart < 0 || zRootStart < 0 || zRootEnd < 0
+    ) {
+      console.error('[prerender-research] could not locate the zone lookup widget for the embed build.');
+      process.exit(1);
+    }
+    const zLookupCss = zoneSource.slice(zCssStart, zCssEnd);
+    const zLookupMarkup = zoneSource.slice(zMarkStart, zMarkEnd).trim();
+    const zDataScript = zoneSource.slice(zDataStart, zDataEnd + '</script>'.length);
+    const zJsScript = zoneSource.slice(zJsStart);
+    const zRootVars = zoneSource.slice(zRootStart, zRootEnd);
+
+    // A percentage lifted out of its study and dropped into someone else's article is the most
+    // misreadable number here: without the caveat, "100%" reads as a prediction about a county
+    // rather than a description of the claims already on its record.
+    if (!zLookupMarkup.includes('lk-caveat')) {
+      console.error('[prerender-research] zone embed is missing its lk-caveat disclaimer; refusing to build.');
+      process.exit(1);
+    }
+
+    const zoneEmbedHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flood claims outside the mapped zone, by county &mdash; Before Regret</title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="${escapeHtmlAttr(ZONE_URL)}">
+${zHead.trim()}
+  <style>
+${zRootVars}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);margin:0;padding:16px;
+  font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.lookup{max-width:680px;margin:0 auto}
+h3{font-family:var(--mono);font-size:.78rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin:0}
+h4{margin:0}
+p{margin:0}
+${zLookupCss}
+.embed-credit{max-width:680px;margin:14px auto 0;font-family:var(--mono);font-size:.7rem;
+  color:var(--muted);text-align:right}
+.embed-credit a{color:var(--accent,#b4451f)}
+  </style>
+</head>
+<body>
+${zLookupMarkup}
+<p class="embed-credit"><a href="${escapeHtmlAttr(ZONE_URL)}" target="_blank" rel="noopener">Outside the Zone</a> &mdash; Before Regret</p>
+${zDataScript}
+${zJsScript}
+<script>
+/* Reports its own height to the embedding page; the widget grows once a county is selected. */
+(function(){
+  function post(){
+    var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+    try { parent.postMessage({ beforeRegretEmbedHeight: h }, '*'); } catch (e) {}
+  }
+  if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  window.addEventListener('load', post);
+  setTimeout(post, 60);
+})();
+</script>
+</body>
+</html>`;
+    const zoneEmbedDir = path.join(zoneDir, 'embed');
+    fs.mkdirSync(zoneEmbedDir, { recursive: true });
+    fs.writeFileSync(path.join(zoneEmbedDir, 'index.html'), zoneEmbedHtml, 'utf8');
+    console.log(`[prerender-research] Wrote /research/outside-the-zone/embed/ (${Math.round(zoneEmbedHtml.length / 1024)} KB)`);
   }
 
   // ---- /research/high-hazard-dams/ ------------------------------------------------------------
@@ -847,12 +953,53 @@ ${dJsScript}
     fs.copyFileSync(figuresSrc, path.join(dataDir, 'risk-without-price-figures.json'));
   }
 
-  // Same contract for the third study: it invites checking, so the figures behind it ship too.
+  // Same contract for the third study: it invites checking, so the figures behind it ship too --
+  // as JSON, and as the county table in the format a newsroom actually opens.
   const zoneFigures = path.join(process.cwd(), 'docs', 'data', 'flood-outside-zone.json');
   if (fs.existsSync(zoneFigures)) {
     const dataDir = path.join(process.cwd(), 'dist', 'research', 'data');
     fs.mkdirSync(dataDir, { recursive: true });
     fs.copyFileSync(zoneFigures, path.join(dataDir, 'flood-outside-zone.json'));
+
+    const zone = JSON.parse(fs.readFileSync(zoneFigures, 'utf8')) as {
+      countyCols?: string[];
+      counties?: Array<Array<string | number | null>>;
+    };
+    const zoneExpected = ['county', 'st', 'claims', 'share', 'paidOutside', 'takeupSfha'];
+    const zCols = zone.countyCols || [];
+    if (zCols.length !== zoneExpected.length || zCols.some((c, i) => c !== zoneExpected[i])) {
+      console.error(`[prerender-research] flood-outside-zone.json columns changed: ${JSON.stringify(zCols)}`);
+      process.exit(1);
+    }
+    const zRows = zone.counties || [];
+    if (zRows.length === 0) {
+      console.error('[prerender-research] flood-outside-zone.json has no county rows; refusing to write an empty CSV.');
+      process.exit(1);
+    }
+    const zHeader = [
+      'county',
+      'state',
+      'classifiable_claims',
+      'pct_of_claims_paid_outside_mapped_zone',
+      'paid_on_out_of_zone_claims_usd',
+      'takeup_rate_inside_mapped_zone_pct',
+    ];
+    // A null take-up rate becomes an EMPTY CELL, never a zero. 263 of the 1,921 counties have no
+    // published rate -- including 22 the source suppresses because the computed value exceeded
+    // 100%, which it attributes to structure-count errors. Writing 0 there would turn "we do not
+    // know" into "nobody in this county is insured", which is the opposite claim and the kind of
+    // error that gets printed.
+    const zEsc = (v: string | number | null) => {
+      if (v === null || v === undefined) return '';
+      const s = String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const zCsv = [zHeader.join(','), ...zRows.map((r) => r.map(zEsc).join(','))].join('\n') + '\n';
+    fs.writeFileSync(path.join(dataDir, 'outside-the-zone-by-county.csv'), zCsv, 'utf8');
+    const blanks = zRows.filter((r) => r[5] === null || r[5] === undefined).length;
+    console.log(
+      `[prerender-research] Wrote outside-the-zone-by-county.csv (${zRows.length} counties, ${blanks} with no take-up rate)`
+    );
   }
 
   // The dam study's figures, as JSON and as CSV.
