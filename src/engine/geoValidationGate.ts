@@ -66,40 +66,70 @@ export async function validateLayer1(rawAddress: string): Promise<Layer1Result> 
     };
   }
 
-  let response: Response;
-  try {
-    const url = `https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=${encodeURIComponent(trimmed)}&benchmark=Public_AR_Current&format=json`;
-    response = await fetchWithTimeout(url);
-  } catch (err) {
-    // Fail closed: a network error or timeout is not a pass.
-    return {
-      passed: false,
-      code: 'L1_GEOCODER_UNAVAILABLE',
-      message: 'Address verification service is temporarily unavailable. Please try again in a moment.',
-    };
+  // One attempt against the Census geocoder. Returns null for "ask again differently" (zero
+  // matches) and a Layer1Result for anything the caller must return as-is.
+  async function askCensus(address: string): Promise<{ matches: any[] } | Layer1Result> {
+    let response: Response;
+    try {
+      const url = `https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=${encodeURIComponent(address)}&benchmark=Public_AR_Current&format=json`;
+      response = await fetchWithTimeout(url);
+    } catch (err) {
+      // Fail closed: a network error or timeout is not a pass.
+      return {
+        passed: false,
+        code: 'L1_GEOCODER_UNAVAILABLE',
+        message: 'Address verification service is temporarily unavailable. Please try again in a moment.',
+      };
+    }
+    if (!response.ok) {
+      return {
+        passed: false,
+        code: 'L1_GEOCODER_ERROR',
+        message: 'Address verification service returned an error. Please try again in a moment.',
+      };
+    }
+    let data: any;
+    try {
+      data = await response.json();
+    } catch {
+      return {
+        passed: false,
+        code: 'L1_GEOCODER_BAD_RESPONSE',
+        message: 'Address verification service returned an unreadable response. Please try again.',
+      };
+    }
+    const m = data?.result?.addressMatches;
+    return { matches: Array.isArray(m) ? m : [] };
   }
 
-  if (!response.ok) {
-    return {
-      passed: false,
-      code: 'L1_GEOCODER_ERROR',
-      message: 'Address verification service returned an error. Please try again in a moment.',
-    };
+  const first = await askCensus(trimmed);
+  if (!('matches' in first)) return first;
+  let matches = first.matches;
+
+  // RETRY WITHOUT THE ZIP when the first attempt found nothing.
+  //
+  // Reported by a reader whose address the site refused for days. The two geocoders disagree
+  // about his ZIP: LocationIQ resolves 133 Wynooska Road to "Greene, PA 18325", the Census
+  // Bureau has the very same house as "GREENTOWN, PA 18426". Because the search box hands this
+  // gate LocationIQ's normalised string, Census was being asked to verify an address carrying a
+  // ZIP it does not associate with that street, and returned zero matches -- so a real,
+  // Census-listed home was rejected as unverifiable. Measured directly: with ZIP 18325, zero
+  // matches; with the ZIP dropped, exactly one, correctly resolved to Greentown 18426.
+  //
+  // Only fires on ZERO matches, never to break a tie, and the single-match requirement below
+  // still applies to the retry. That ordering matters: "100 Main St, Springfield, MA" is
+  // ambiguous without its ZIP (two matches) but resolves cleanly with it, so it succeeds on the
+  // first attempt and never reaches this path.
+  if (matches.length === 0) {
+    const withoutZip = trimmed.replace(/[, ]+\d{5}(-\d{4})?\s*(,\s*USA)?$/i, '').trim();
+    if (withoutZip && withoutZip !== trimmed) {
+      const second = await askCensus(withoutZip);
+      if (!('matches' in second)) return second;
+      matches = second.matches;
+    }
   }
 
-  let data: any;
-  try {
-    data = await response.json();
-  } catch {
-    return {
-      passed: false,
-      code: 'L1_GEOCODER_BAD_RESPONSE',
-      message: 'Address verification service returned an unreadable response. Please try again.',
-    };
-  }
-
-  const matches = data?.result?.addressMatches;
-  if (!Array.isArray(matches) || matches.length === 0) {
+  if (matches.length === 0) {
     return {
       passed: false,
       code: 'L1_NO_MATCH',
