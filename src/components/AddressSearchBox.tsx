@@ -136,7 +136,47 @@ function suggestionLine(item: any): string {
   if (street && (county || state)) {
     return [street, county, state].filter(Boolean).join(', ');
   }
-  return (item.display_name || '').replace(/,\s*United States$/i, '');
+  return composeDisplayAddress({ streetNumber: houseNumber, streetName: road, county, state });
+}
+
+// NEVER build a displayed address out of the geocoder's display_name. Compose it from the
+// structured address components instead, which is what this exists for.
+//
+// display_name embeds POI and community names in the middle of the string. For "133 Wynooska
+// Road" LocationIQ returns:
+//
+//   "133, Wynooska Road, Rustic Acres Mobile Home Community, Roemersville, Greene Township,
+//    Pike County, Pennsylvania, 18325, USA"
+//
+// Reported by the owner of that property. He is selling a house his family has owned since 1965,
+// and our site was presenting it as being in a low-income trailer park that is actually up the
+// road -- the geocoder's coordinate for his street lands there, not at his house. He noticed
+// because he had tried fifteen times to search his own address. That is not a formatting nit: it
+// is a claim about someone's property that we have no basis for and that could cost them money on
+// a sale.
+//
+// The three call sites all used to reconstruct from components when street, city and state were
+// ALL present and fall back to the raw display_name otherwise -- so the community name reappeared
+// exactly when the structured data was thinnest and the fallback was least scrutinised. There is
+// no case where showing a community name beats showing less. A shorter honest address is always
+// preferable to a longer wrong one, and an empty result is correctly rejected by the address gate
+// rather than shown as a confident label.
+function composeDisplayAddress(a: {
+  streetNumber?: string;
+  streetName?: string;
+  city?: string;
+  county?: string;
+  state?: string;
+  zip?: string;
+}): string {
+  const street = [a.streetNumber, a.streetName].filter(Boolean).join(' ').trim();
+  // County stands in for a missing city because it is administrative, not a settlement or
+  // development name -- "Pike County" cannot misattribute a property to a named community the way
+  // "Rustic Acres Mobile Home Community" does.
+  const locality = a.city || a.county || '';
+  const head = [street, locality, a.state].filter(Boolean).join(', ');
+  if (!head) return '';
+  return a.zip ? `${head} ${a.zip}` : head;
 }
 
 export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty }) => {
@@ -439,12 +479,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           pType = 'Single Family Residential';
         }
 
-        let cleanDisplayName = item.display_name;
-        if (street && city && state) {
-          cleanDisplayName = zip ? `${street}, ${city}, ${state} ${zip}` : `${street}, ${city}, ${state}`;
-        } else {
-          cleanDisplayName = item.display_name.replace(/,\s*United States$/i, '');
-        }
+        const cleanDisplayName = composeDisplayAddress({
+          streetNumber: houseNumber, streetName: road, city, county, state, zip,
+        });
 
         setCommercialHint(looksCommercial(item.class, item.type));
         setSelectedPinResult({
@@ -470,13 +507,30 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     }
   };
 
-  const selectLocation = (lat: number, lon: number, name?: string, item?: any) => {
+  // `name` is the geocoder's raw display_name at both call sites. It is deliberately NOT what gets
+  // written into the search box: that string carries POI and community names (see
+  // composeDisplayAddress), and the search box is the most visible surface on the site -- the
+  // reader watches their own address get replaced by ours. Composed from the structured components
+  // instead, and when those cannot produce anything the box is left showing exactly what the
+  // reader typed, which is never wrong in our voice.
+  const selectLocation = (lat: number, lon: number, _name?: string, item?: any) => {
     setShowSuggestions(false);
     setSuggestions([]);
-    if (name) {
+    const a = item?.address;
+    const safeBoxText = a
+      ? composeDisplayAddress({
+          streetNumber: a.house_number || '',
+          streetName: a.road || a.street || a.pedestrian || a.footway || '',
+          city: a.city || a.town || a.village || a.municipality || a.suburb || a.hamlet || '',
+          county: a.county || '',
+          state: a.state_code ? String(a.state_code).toUpperCase() : (a.state || ''),
+          zip: a.postcode || '',
+        })
+      : '';
+    if (safeBoxText) {
       // Order matters: arm the guard BEFORE the state write that re-runs the suggestion effect.
       suppressNextSuggestRef.current = true;
-      setMapSearchQuery(name);
+      setMapSearchQuery(safeBoxText);
     }
     // Sets result state only. This used to coexist with a confirmation map that had to be
     // re-centred here; that map was removed on 2026-08-29 and nothing else needs to react to a
@@ -512,12 +566,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         // start with a street number" check even though the address itself is perfectly valid.
         // Mirrors the same reconstruction fetchAddressFromCoords below already does.
         const street = [houseNumber, road].filter(Boolean).join(' ');
-        let cleanDisplayName = item.display_name;
-        if (street && city && state) {
-          cleanDisplayName = zip ? `${street}, ${city}, ${state} ${zip}` : `${street}, ${city}, ${state}`;
-        } else {
-          cleanDisplayName = item.display_name.replace(/,\s*United States$/i, '');
-        }
+        const cleanDisplayName = composeDisplayAddress({
+          streetNumber: houseNumber, streetName: road, city, county, state, zip,
+        });
 
         setCommercialHint(looksCommercial(item.class, item.type));
         setSelectedPinResult({
