@@ -42,18 +42,74 @@ export interface Layer1Result {
   code: string;
   message: string;
   matchedAddress?: string;
+  // Structured area fields, populated on every pass regardless of which source resolved it.
+  // Read these directly rather than parsing matchedAddress -- added alongside the fallback path
+  // below, where there is no Census matchedAddress string to parse at all.
+  resolvedCity?: string;
+  resolvedState?: string;
+  resolvedZip?: string;
+  // 'census' when the Census Bureau placed this on a real address range; 'search-geocoder' when
+  // Census had nothing and this fell back to the area the search box's own geocoder already
+  // resolved (see the fallback param below). Not shown to users -- this is for anything
+  // downstream that ever needs to know how precisely an address was pinned down.
+  resolvedVia?: 'census' | 'search-geocoder';
   lat?: number;
   lon?: number;
 }
 
+/** What the caller already knows about the address from its own (less strict) geocoder, used
+ *  only if the Census Bureau cannot place the address at all. See validateLayer1's fallback
+ *  branch for why this exists and what it does and does not let through. */
+export interface Layer1Fallback {
+  city?: string;
+  state?: string;
+  zip?: string;
+}
+
 /**
- * Checks: the input has a leading street number, and resolves to exactly one point address.
+ * Checks: the input has a leading street number, and resolves to a real address area.
  * Calls: US Census Bureau geocoder (geocoding.geo.census.gov, Public_AR_Current benchmark).
  * On failure: returns { passed: false, code, message } -- never throws to the caller.
- * Fails closed on: missing street number, no match, ambiguous (>1) match, missing coordinates,
- * network error, non-OK response, or unparseable response body.
+ * Fails closed on: missing street number, no match from Census AND no usable fallback, missing
+ * coordinates on the chosen Census match, network error, non-OK response, or unparseable body.
+ *
+ * WHAT CHANGED, AND WHY. This used to require Census to resolve to EXACTLY one address point,
+ * and hard-failed on zero matches or more than one. That was built for a product that verified
+ * one specific house. This product verifies the AREA a report is about, not any one house inside
+ * it, so two of the old failure modes were stricter than the product now needs:
+ *
+ *   - Ambiguous (>1) matches no longer fails. Multiple Census candidates for the same input
+ *     overwhelmingly agree on city and ZIP even when they disagree on unit or building -- which
+ *     is exactly the distinction that stopped mattering. The first candidate is used.
+ *   - Zero matches no longer fails outright if the caller supplies a fallback area (city + state,
+ *     from whatever geocoder the search box itself used to resolve the reader's selection). This
+ *     is what a reader's own address should have gotten from the start: 133 Wynooska Rd is a real,
+ *     Zillow-listed home that the search box could resolve every time, but Census's stricter
+ *     address-range matcher initially couldn't (until the ZIP-retry below), and a stricter-than-
+ *     necessary Layer 1 was rejecting a real house because of it. The fallback closes that gap for
+ *     any address, not just this one.
+ *
+ * The fallback path returns no lat/lon: it has no Census-verified point, and Layer 2 (the
+ * government-facility check) is written to trust a Census point, not an arbitrary client-supplied
+ * one. runAddressGate skips Layer 2 rather than run it against an unverified coordinate -- see
+ * that function's own comment on the same tradeoff.
  */
-export async function validateLayer1(rawAddress: string): Promise<Layer1Result> {
+// Every real USPS state/territory abbreviation the fallback path will accept. /api/address/validate
+// is a public endpoint a direct API call can hit with an arbitrary body, and the fallback exists to
+// trust the search geocoder's OWN city/state -- which in the real UI flow always comes from
+// LocationIQ's structured response, never free text. Without this check a direct call could claim
+// any city/state pair (state: "ZZ" was accepted and passed in testing before this was added) and
+// get an area-scoped report generated against a fabricated location. This is not a defense against
+// a determined attacker supplying a real-but-wrong state; it only closes the "not even a real
+// state" gap, which is the gap this fallback actually introduced.
+const VALID_US_STATE_CODES: ReadonlySet<string> = new Set([
+  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA',
+  'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM',
+  'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA',
+  'WV', 'WI', 'WY', 'PR', 'GU', 'VI', 'AS', 'MP',
+]);
+
+export async function validateLayer1(rawAddress: string, fallback?: Layer1Fallback): Promise<Layer1Result> {
   const trimmed = (rawAddress || '').trim();
 
   // A real US civic address must start with a street number. This is the one check that can be
@@ -130,26 +186,40 @@ export async function validateLayer1(rawAddress: string): Promise<Layer1Result> 
   }
 
   if (matches.length === 0) {
+    // Census has nothing at all for this address, at either ZIP. Fall back to the area the
+    // search box's own geocoder already resolved, rather than reject a real house over a
+    // disagreement between two geocoders -- see this function's own doc comment. Gated on the
+    // state actually being a real US state/territory code (see VALID_US_STATE_CODES) so a direct
+    // API call can't pass this branch with a fabricated location.
+    const fallbackState = (fallback?.state || '').trim().toUpperCase();
+    if (fallback?.city && VALID_US_STATE_CODES.has(fallbackState)) {
+      return {
+        passed: true,
+        code: 'L1_RESOLVED_VIA_SEARCH_GEOCODER',
+        message: "Address area confirmed via the search geocoder; the US Census Bureau's stricter address-range matcher had no exact record for this street.",
+        resolvedCity: fallback.city,
+        resolvedState: fallbackState,
+        resolvedZip: fallback.zip,
+        resolvedVia: 'search-geocoder',
+      };
+    }
     return {
       passed: false,
       code: 'L1_NO_MATCH',
-      message: 'This address could not be verified against US Census Bureau address records. Double-check the street number, name, city, state, and ZIP.',
+      message: 'This address could not be verified. Double-check the street number, name, city, state, and ZIP.',
     };
   }
 
-  // More than one candidate match means the input was ambiguous -- fail closed rather than
-  // guessing which candidate the user meant.
-  if (matches.length > 1) {
-    return {
-      passed: false,
-      code: 'L1_AMBIGUOUS_MATCH',
-      message: 'This address matched more than one location in Census Bureau records. Please enter a more specific address.',
-    };
-  }
-
+  // Once Census places the address at all, ambiguity among candidates (different units or
+  // buildings on the same input) no longer matters -- see this function's doc comment for why.
+  // The first candidate's area is representative of all of them.
   const match = matches[0];
   const coords = match?.coordinates;
+  const ac = match?.addressComponents || {};
   if (!coords || typeof coords.x !== 'number' || typeof coords.y !== 'number') {
+    // A genuinely rare Census response shape (a match with no coordinates) -- not the same case
+    // as "no match", so this does not fall back; there is no reason to expect a coordinate-free
+    // match to recur with the fallback area either.
     return {
       passed: false,
       code: 'L1_NO_COORDINATES',
@@ -157,10 +227,17 @@ export async function validateLayer1(rawAddress: string): Promise<Layer1Result> 
     };
   }
 
+  const titleCase = (s: string) =>
+    s.toLowerCase().replace(/(^|[\s-])([a-z])/g, (_m, sep, ch) => sep + ch.toUpperCase());
+
   return {
     passed: true,
     code: 'L1_RESOLVED',
     message: 'Address resolved to a verified US Census Bureau address point.',
+    resolvedCity: ac.city ? titleCase(String(ac.city)) : undefined,
+    resolvedState: ac.state ? String(ac.state).toUpperCase() : undefined,
+    resolvedZip: ac.zip ? String(ac.zip) : undefined,
+    resolvedVia: 'census',
     matchedAddress: match.matchedAddress,
     lat: coords.y,
     lon: coords.x,
@@ -548,6 +625,10 @@ export interface AddressGateResult {
   layer2?: Layer2Result;
   layer3?: Layer3Result;
   resolvedAddress?: string;
+  resolvedCity?: string;
+  resolvedState?: string;
+  resolvedZip?: string;
+  resolvedVia?: 'census' | 'search-geocoder';
   lat?: number;
   lon?: number;
 }
@@ -568,14 +649,42 @@ export async function runAddressGate(
   city: string,
   state: string,
   declaredPropertyType?: DeclaredPropertyType | null,
-  unitNumber?: string | null
+  unitNumber?: string | null,
+  // The ZIP the search box's own geocoder reported, if any. Only ever used as Layer 1's
+  // fallback-area input (alongside city/state above) when Census cannot place the address at
+  // all -- see validateLayer1's doc comment. Optional and additive: every existing call site
+  // keeps working unchanged without it, just without the fallback.
+  zip?: string | null
 ): Promise<AddressGateResult> {
-  const layer1 = await validateLayer1(rawAddress);
+  const layer1 = await validateLayer1(rawAddress, { city, state, zip: zip || undefined });
   if (!layer1.passed) {
     return { canGenerateReport: false, blockedAtLayer: 1, message: layer1.message, layer1 };
   }
+  const resolvedFields = {
+    resolvedAddress: layer1.matchedAddress,
+    resolvedCity: layer1.resolvedCity,
+    resolvedState: layer1.resolvedState,
+    resolvedZip: layer1.resolvedZip,
+    resolvedVia: layer1.resolvedVia,
+    lat: layer1.lat,
+    lon: layer1.lon,
+  };
 
-  const layer2 = await validateLayer2(layer1.lat!, layer1.lon!);
+  // Layer 2 needs a Census-verified point to query against -- it was written and buffer-tuned
+  // against Census's own interpolation, not an arbitrary client-supplied coordinate. The
+  // search-geocoder fallback path has no such point (see validateLayer1), so rather than either
+  // crash on a missing coordinate or trust an unverified one for a security-relevant check, skip
+  // Layer 2 outright and say so plainly. This is the direct, honest consequence of no longer
+  // claiming house-level precision: a report that can't be pinned to a verified point can't run a
+  // point-in-polygon facility check either.
+  const layer2: Layer2Result =
+    typeof layer1.lat === 'number' && typeof layer1.lon === 'number'
+      ? await validateLayer2(layer1.lat, layer1.lon)
+      : {
+          passed: true,
+          code: 'L2_SKIPPED_NO_VERIFIED_POINT',
+          message: 'Government-facility check skipped: no Census-verified coordinate for this address.',
+        };
   if (!layer2.passed) {
     return {
       canGenerateReport: false,
@@ -583,9 +692,7 @@ export async function runAddressGate(
       message: layer2.message,
       layer1,
       layer2,
-      resolvedAddress: layer1.matchedAddress,
-      lat: layer1.lat,
-      lon: layer1.lon,
+      ...resolvedFields,
     };
   }
 
@@ -599,9 +706,7 @@ export async function runAddressGate(
       layer1,
       layer2,
       layer3,
-      resolvedAddress: layer1.matchedAddress,
-      lat: layer1.lat,
-      lon: layer1.lon,
+      ...resolvedFields,
     };
   }
 
@@ -612,8 +717,6 @@ export async function runAddressGate(
     layer1,
     layer2,
     layer3,
-    resolvedAddress: layer1.matchedAddress,
-    lat: layer1.lat,
-    lon: layer1.lon,
+    ...resolvedFields,
   };
 }

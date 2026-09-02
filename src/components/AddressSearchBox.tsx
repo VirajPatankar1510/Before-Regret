@@ -24,12 +24,21 @@ interface AddressGateOutcome {
   message: string;
   blockedAtLayer: 1 | 2 | 3 | null;
   promptForUnit?: boolean;
+  // Structured area fields the gate resolved the address to (Layer 1), from either the Census
+  // Bureau or, failing that, the search box's own geocoder -- see runAddressGate and
+  // validateLayer1 in geoValidationGate.ts. Populated whenever Layer 1 resolves at all,
+  // independent of whether Layers 2/3 go on to pass. Used to correct the search box's own
+  // display against the area the report is actually generated for; see the effect below.
+  resolvedCity?: string;
+  resolvedState?: string;
+  resolvedZip?: string;
 }
 
 async function validateAddressGate(
   address: string,
   city: string,
   state: string,
+  zipCode: string,
   declaredPropertyType: DeclaredPropertyType | null,
   unitNumber: string
 ): Promise<AddressGateOutcome> {
@@ -37,7 +46,7 @@ async function validateAddressGate(
     const res = await fetch('/api/address/validate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address, city, state, declaredPropertyType, unitNumber })
+      body: JSON.stringify({ address, city, state, zipCode, declaredPropertyType, unitNumber })
     });
     if (!res.ok) {
       return { passed: false, message: 'Address verification is temporarily unavailable. Please try again.', blockedAtLayer: 1 };
@@ -48,7 +57,10 @@ async function validateAddressGate(
       passed: !!gate?.canGenerateReport,
       message: gate?.message || "This location isn't a residential address. Try searching for a specific home or condo address.",
       blockedAtLayer: gate?.blockedAtLayer ?? 1,
-      promptForUnit: gate?.promptForUnit
+      promptForUnit: gate?.promptForUnit,
+      resolvedCity: gate?.resolvedCity,
+      resolvedState: gate?.resolvedState,
+      resolvedZip: gate?.resolvedZip
     };
   } catch (err) {
     console.warn('Address gate request failed:', err);
@@ -119,6 +131,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   });
   const [gateState, setGateState] = useState<{ status: 'checking' | 'passed' | 'blocked'; message: string; promptForUnit?: boolean; isDismissed?: boolean } | null>(null);
   const gateRequestIdRef = useRef(0);
+  const addressCorrectionIdRef = useRef(0);
   const [declaredPropertyType, setDeclaredPropertyType] = useState<DeclaredPropertyType | null>(null);
   const [unitNumber, setUnitNumber] = useState('');
   // Required, not optional -- a skippable year built meant the Inspection Budget Priorities
@@ -196,6 +209,97 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     }
   }, [selectedPinResult?.placeId]);
 
+  // Corrects the displayed city/state/ZIP against whatever area Layer 1 resolves (Census, or the
+  // search geocoder's own area if Census has no exact record -- see validateLayer1's doc comment
+  // in geoValidationGate.ts) as soon as a selection resolves, rather than leaving the search
+  // geocoder's raw version on screen until a report exists to correct it.
+  //
+  // Reported by a reader whose search box and confirmation card both showed "Greene, Pennsylvania
+  // 18325" for 133 Wynooska Rd after he selected it, back when this product still tried to verify
+  // one exact house: the two geocoders disagreed about his ZIP (18325 is Canadensis, a different
+  // postal area and county), and the search box's own geocoder -- LocationIQ -- was simply the one
+  // shown, unconditionally, start to finish. The area-wise redesign this effect now reflects also
+  // means that specific disagreement usually no longer matters -- Layer 1 accepts the search
+  // geocoder's own area when Census has nothing -- but the display can still lag behind whichever
+  // area Layer 1 settles on, which is what this corrects.
+  //
+  // Deliberately independent of the gate-check effect below: this fires immediately on selection,
+  // does not wait for a declared property type, and does not touch gateState. It calls the same
+  // /api/address/validate endpoint, but only to read the resolved city/state/ZIP, which Layer 1
+  // attaches whenever it resolves an area at all -- Layer 2/3 do not need to pass for those fields
+  // to be present (see AddressGateResult in geoValidationGate.ts). declaredPropertyType is passed
+  // as null on purpose; this call is not the one that gates "Analyze Property".
+  //
+  // Latency varies by which path Layer 1 takes. When Census resolves the address directly, Layer 2
+  // still runs against that verified point, including its slowest external source (measured up to
+  // ~7s, now retried once when inconclusive -- see validateLayer2), so the correction can take
+  // several seconds to visibly land. When Layer 1 falls back to the search geocoder's own area,
+  // Layer 2 is skipped outright (no verified point to check -- see runAddressGate), so that path is
+  // faster. Confirmed in testing on the Census-resolved path: the confirmation card can sit
+  // on the wrong city/ZIP for 5-10s before correcting. That is a real UX cost, not nothing, but
+  // it is a temporary wrong display rather than a permanently wrong one, and the report itself was
+  // never wrong once the earlier server-side fix landed.
+  //
+  // Both state writes are guarded with functional updates keyed on the request's own id / the
+  // selection's own placeId, so a slow response can never stomp on a selection or a search query
+  // the reader has since moved on from -- the same race this file's suggestion-dropdown fix
+  // earlier addressed for a different effect. Verified: typing new text within 500ms of a
+  // selection is preserved, not overwritten when the correction later resolves.
+  useEffect(() => {
+    if (!selectedPinResult) return;
+    const placeIdAtSelection = selectedPinResult.placeId;
+    const requestId = ++addressCorrectionIdRef.current;
+    // Captured now, not re-read inside the .then: selectLocation writes the RAW LocationIQ
+    // display_name into mapSearchQuery, which is a different string from
+    // selectedPinResult.formattedAddress (the reconstructed "street, city, state zip" version
+    // sent to the gate below) -- comparing the gate's request address against mapSearchQuery
+    // would never match, and the search box text would silently never get corrected.
+    const queryAtSelection = mapSearchQuery;
+
+    const addressForGate = selectedPinResult.formattedAddress || selectedPinResult.displayName;
+    validateAddressGate(addressForGate, selectedPinResult.city, selectedPinResult.state, selectedPinResult.zipCode, null, '').then((outcome) => {
+      if (requestId !== addressCorrectionIdRef.current) return; // a newer selection has since started
+      if (!outcome.resolvedCity || !outcome.resolvedState) return;
+      if (
+        outcome.resolvedCity.toLowerCase() === (selectedPinResult.city || '').toLowerCase() &&
+        outcome.resolvedState.toLowerCase() === (selectedPinResult.state || '').toLowerCase() &&
+        (outcome.resolvedZip || '') === (selectedPinResult.zipCode || '')
+      ) {
+        return; // already correct -- avoid a needless re-render
+      }
+      const resolved = { city: outcome.resolvedCity, state: outcome.resolvedState, zip: outcome.resolvedZip || '' };
+
+      const street = [selectedPinResult.streetNumber, selectedPinResult.streetName].filter(Boolean).join(' ');
+      const correctedFormatted = street
+        ? `${street}, ${resolved.city}, ${resolved.state} ${resolved.zip}`
+        : selectedPinResult.formattedAddress;
+
+      setSelectedPinResult((prev) =>
+        prev && prev.placeId === placeIdAtSelection
+          ? { ...prev, city: resolved.city, state: resolved.state, zipCode: resolved.zip, formattedAddress: correctedFormatted, displayName: correctedFormatted }
+          : prev
+      );
+      // Only overwrite the visible search text if the reader has not since typed something new.
+      // Arming suppressNextSuggestRef INSIDE the updater, conditionally, is load-bearing: this
+      // write to mapSearchQuery is not guarded by the ref the way selectLocation's own write is,
+      // so without this it re-triggers the debounced suggestions-fetch effect below (a real,
+      // reproduced cascade: correcting the query re-opens a suggestions search against the
+      // corrected address, on top of whatever the reader may have since typed). Arming the guard
+      // only when the query is actually about to change means a reader who has since typed
+      // something new -- where this branch is a no-op -- never has a future, unrelated keystroke
+      // wrongly suppressed.
+      setMapSearchQuery((current) => {
+        if (current !== queryAtSelection) return current;
+        suppressNextSuggestRef.current = true;
+        return correctedFormatted;
+      });
+    });
+    // Deliberately narrow: this must fire once per NEW selection, not on every field write this
+    // same effect makes to selectedPinResult (the object reference changes each time, but
+    // .placeId does not) -- see the comment above the effect for the full reasoning.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPinResult?.placeId]);
+
   // Layer 4 gate: does NOT run until the requester has declared a property type (Layer 3 needs
   // it -- there's no external data source to check property type against, see
   // geoValidationGate.ts). Re-verifies against the real backend gate (Census geocoder +
@@ -218,7 +322,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     // Debounce so typing a unit number doesn't fire a request per keystroke.
     const timer = setTimeout(() => {
       const addressForGate = selectedPinResult.formattedAddress || selectedPinResult.displayName;
-      validateAddressGate(addressForGate, selectedPinResult.city, selectedPinResult.state, declaredPropertyType, unitNumber).then((outcome) => {
+      validateAddressGate(addressForGate, selectedPinResult.city, selectedPinResult.state, selectedPinResult.zipCode, declaredPropertyType, unitNumber).then((outcome) => {
         // Ignore stale responses if the user already selected a different result/declaration.
         if (requestId !== gateRequestIdRef.current) return;
         setGateState({ status: outcome.passed ? 'passed' : 'blocked', message: outcome.message, promptForUnit: outcome.promptForUnit });

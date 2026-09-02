@@ -566,7 +566,7 @@ export async function createApp() {
   // AND independently re-run before report generation below, so a bypassed or stale frontend
   // check can never let a non-residential or unsupported address through.
   app.post("/api/address/validate", async (req, res) => {
-    const { address, city, state, declaredPropertyType, unitNumber } = req.body;
+    const { address, city, state, zipCode, declaredPropertyType, unitNumber } = req.body;
 
     if (!address || typeof address !== 'string') {
       res.status(400).json({ error: 'address is required.' });
@@ -574,7 +574,7 @@ export async function createApp() {
     }
 
     try {
-      const gateResult = await runAddressGate(address, city || '', state || '', declaredPropertyType || null, unitNumber || null);
+      const gateResult = await runAddressGate(address, city || '', state || '', declaredPropertyType || null, unitNumber || null, zipCode || null);
       res.json({ success: true, gate: gateResult });
     } catch (err) {
       // Fail closed: an unexpected error in the gate itself must never be treated as a pass.
@@ -602,7 +602,7 @@ export async function createApp() {
 
     const fullAddrStr = address || displayName || 'Subject Property';
 
-    const gateResult = await runAddressGate(fullAddrStr, city || '', state || '', declaredPropertyType || null, unitNumber || null);
+    const gateResult = await runAddressGate(fullAddrStr, city || '', state || '', declaredPropertyType || null, unitNumber || null, zipCode || null);
     if (!gateResult.canGenerateReport) {
       res.json({
         success: true,
@@ -613,12 +613,11 @@ export async function createApp() {
       return;
     }
 
-    const census = parseCensusMatchedAddress(gateResult.resolvedAddress);
     const resolvedMeta = resolvePropertyMetadata(
       fullAddrStr,
-      census?.city || city,
-      census?.state || state,
-      census?.zip || zipCode,
+      gateResult.resolvedCity || city,
+      gateResult.resolvedState || state,
+      gateResult.resolvedZip || zipCode,
       county,
       propertyType
     );
@@ -724,7 +723,7 @@ export async function createApp() {
     // state, or direct API call can ever produce a report for an unresolvable address, a
     // government facility, or a property type the requester didn't actually declare. Fails
     // closed on any error inside runAddressGate.
-    const gateResult = await runAddressGate(fullAddr, city || '', state || '', declaredPropertyType || null, unitNumber || null);
+    const gateResult = await runAddressGate(fullAddr, city || '', state || '', declaredPropertyType || null, unitNumber || null, zipCode || null);
     if (!gateResult.canGenerateReport) {
       const blockedReport = {
         id: `rep_blocked_${Date.now()}`,
@@ -742,12 +741,11 @@ export async function createApp() {
       return;
     }
 
-    const censusReport = parseCensusMatchedAddress(gateResult.resolvedAddress);
     const resolvedMeta = resolvePropertyMetadata(
       fullAddr,
-      censusReport?.city || city,
-      censusReport?.state || state,
-      censusReport?.zip || zipCode,
+      gateResult.resolvedCity || city,
+      gateResult.resolvedState || state,
+      gateResult.resolvedZip || zipCode,
       county,
       propertyType
     );
@@ -2177,47 +2175,6 @@ interface PropertyMetadata {
   isMultiFamilyOrApartment: boolean;
   isNonResidential: boolean;
   estimatedSqFt: number;
-}
-
-/**
- * Pulls city / state / ZIP out of the address string the US Census Bureau geocoder matched, which
- * Layer 1 of the address gate already has by the time any report is built.
- *
- * Why this exists. The search box's geocoder (LocationIQ) and the Census Bureau disagree about
- * some addresses, and where they disagree the Census answer is the one this product should show:
- * it is the register Layer 1 validates against, so displaying anything else means verifying one
- * address and reporting another.
- *
- * The case that surfaced it, from a reader: 133 Wynooska Rd is listed by the Census Bureau as
- * GREENTOWN, PA 18426 -- the address on the deed and on the listing. LocationIQ returns
- * "Greene, Pennsylvania 18325", which is a different postal area (18325 is Canadensis, in another
- * county), with coordinates about 300m off. The gate resolved the address correctly, then the
- * report was built from the client-supplied LocationIQ values and printed the wrong ZIP on the
- * reader's own house. gateResult.resolvedAddress was already being returned and simply never read.
- *
- * This is not cosmetic: ZIP drives vendor ad targeting (see zipAdsApi) and the county lookups the
- * report leans on, so a wrong ZIP mis-targets everything downstream of it.
- *
- * Census returns "133 WYNOOSKA RD, GREENTOWN, PA, 18426". Returns null on anything that does not
- * match that shape, so callers fall back to what they already had rather than losing a field.
- */
-function parseCensusMatchedAddress(
-  matched?: string
-): { city: string; state: string; zip: string } | null {
-  if (!matched) return null;
-  const parts = matched.split(',').map((p) => p.trim()).filter(Boolean);
-  if (parts.length < 4) return null;
-  const zip = parts[parts.length - 1];
-  const state = parts[parts.length - 2];
-  const city = parts[parts.length - 3];
-  if (!/^\d{5}(-\d{4})?$/.test(zip)) return null;
-  if (!/^[A-Za-z]{2}$/.test(state)) return null;
-  if (!city) return null;
-  // Census returns these upper-cased; title-case so the report does not shout the address.
-  const titled = city
-    .toLowerCase()
-    .replace(/(^|[\s-])([a-z])/g, (_m, sep, ch) => sep + ch.toUpperCase());
-  return { city: titled, state: state.toUpperCase(), zip: zip.slice(0, 5) };
 }
 
 function resolvePropertyMetadata(
