@@ -151,14 +151,8 @@ function buildEmail(reportId: string, address: string) {
     `Inside: the checks that matter for a home of this age and county, the questions worth`,
     `asking the seller, and where the public records live so you can verify them yourself.`,
     ``,
-    `Two checks in this report ran live against your address: seismic hazard, from the USGS,`,
-    `and address validation, from the US Census Bureau. Every other item is a direct link to`,
-    `the official record, marked unverified until you open it.`,
-    ``,
     `This is research, not an inspection. Anything that bears on your decision should be`,
     `confirmed with a licensed professional.`,
-    ``,
-    `Replies to this address reach a person.`,
     ``,
     `Before Regret`,
     SITE,
@@ -175,9 +169,7 @@ function buildEmail(reportId: string, address: string) {
 <a href="${url}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;padding:12px 22px;border-radius:6px;">Open your report</a>
 </td></tr>
 <tr><td style="padding:20px 28px 28px;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;font-size:13px;line-height:1.6;color:#47555f;border-top:1px solid #e8edf1;">
-<p style="margin:16px 0 0;">Two checks in this report ran live against your address: seismic hazard, from the USGS, and address validation, from the US Census Bureau. Every other item is a direct link to the official record, marked unverified until you open it.</p>
-<p style="margin:12px 0 0;">This is research, not an inspection. Anything that bears on your decision should be confirmed with a licensed professional.</p>
-<p style="margin:16px 0 0;color:#6d7b86;">Replies to this address reach a person.</p>
+<p style="margin:16px 0 0;">This is research, not an inspection. Anything that bears on your decision should be confirmed with a licensed professional.</p>
 </td></tr>
 </table>
 </td></tr></table></body></html>`;
