@@ -407,7 +407,24 @@ async function queryFacilitySource(source: FacilitySource, lat: number, lon: num
  * result from any single source is treated as not-yet-cleared, not as a pass).
  */
 export async function validateLayer2(lat: number, lon: number): Promise<Layer2Result> {
-  const outcomes = await Promise.all(FACILITY_SOURCES.map((s) => queryFacilitySource(s, lat, lon)));
+  // One retry per source before an inconclusive result is allowed to block the address.
+  //
+  // A reader reported being told his home was a "Government Facility" on an address that passes
+  // this check on any other attempt. Layer 2 fails closed if ANY of the four sources errors, and
+  // one of them is much slower than the rest: measured at his coordinates, NTAD Military Bases
+  // averaged 1.7s and peaked at 7.1s against this module's 8s timeout, while the other three all
+  // returned in under a second. So the gate was intermittently aborting on that one source and
+  // blocking a residential address that nothing had actually matched.
+  //
+  // Retrying only the sources that came back inconclusive keeps the fail-closed guarantee intact
+  // -- a source that fails twice still blocks -- while removing the single-timeout coin flip. It
+  // costs nothing on the normal path, where no source is retried at all.
+  let outcomes = await Promise.all(FACILITY_SOURCES.map((s) => queryFacilitySource(s, lat, lon)));
+  if (outcomes.some((o) => !o.ok)) {
+    outcomes = await Promise.all(
+      outcomes.map((o, i) => (o.ok ? o : queryFacilitySource(FACILITY_SOURCES[i], lat, lon)))
+    );
+  }
 
   for (let i = 0; i < outcomes.length; i++) {
     const outcome = outcomes[i];

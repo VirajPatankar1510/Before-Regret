@@ -38,7 +38,20 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
       2: 'Government Facility Detected',
       3: 'Area Not Yet Supported',
     };
-    const headline = layerHeadline[report.blockedAtLayer as number] || 'Residential Address Required';
+    // A blocked layer is not the same as a finding, and the headline used to conflate them. The
+    // gate fails closed when one of its four external facility datasets errors or times out, and
+    // that lands on layer 2 -- so a homeowner whose check merely did not complete was shown
+    // "Government Facility Detected" above a message saying verification was temporarily
+    // unavailable. The heading asserted a detection the system had explicitly not made, about
+    // someone's house. Reported by a reader who saw it on an ordinary residential address.
+    //
+    // Only blockedAtLayer and the message reach this component (see server.ts), not the gate's
+    // own result code, so the message is what distinguishes the two cases.
+    const reason = report.rejectionReason || '';
+    const didNotComplete = /temporarily unavailable|try again|unreadable response|returned an error/i.test(reason);
+    const headline = didNotComplete
+      ? 'Verification Did Not Complete'
+      : layerHeadline[report.blockedAtLayer as number] || 'Residential Address Required';
 
     return (
       <div className="max-w-4xl mx-auto px-4 py-12 space-y-6 font-sans">
