@@ -623,8 +623,36 @@ ${SITE_FOOTER}
       process.exit(1);
     }
     const dHead = damSource.slice(0, dWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
-    const dBody = damSource.slice(dWrap);
+    const dBodyRaw = damSource.slice(dWrap);
     const DAM_URL = 'https://www.beforeregret.com/research/high-hazard-dams/';
+
+    // The press kit, injected into the study's own "Cite it, check it, take it apart" section.
+    //
+    // Both halves exist because of how a story actually gets written. A reporter needs the county
+    // table as a spreadsheet to find their own patch and check our arithmetic, and an editor needs
+    // something that carries attribution through the copy desk -- an embedded widget keeps its
+    // credit line, a sentence with a URL in it frequently does not. Building the files without
+    // linking them here would have been the same as not building them.
+    const damKitIdx = dBodyRaw.indexOf('<div class="cite">');
+    if (damKitIdx < 0) {
+      console.error('[prerender-research] could not find the dam study cite block to attach the press kit to.');
+      process.exit(1);
+    }
+    const damKitSectionEnd = dBodyRaw.indexOf('</section>', damKitIdx);
+    if (damKitSectionEnd < 0) {
+      console.error('[prerender-research] dam cite block is not inside a section.');
+      process.exit(1);
+    }
+    const damKit = `
+<h3 style="margin-top:2.2em">The data</h3>
+<p>The full county table, 2,274 rows, one per US county with at least one dam classified high hazard potential. The same numbers as the lookup above.</p>
+<p style="margin-top:.7em"><a href="/research/data/high-hazard-dams-by-county.csv" download>high-hazard-dams-by-county.csv</a> &#183; <a href="/research/data/dams-high-hazard.json">the full figures as JSON</a></p>
+<p style="margin-top:.9em;font-size:.9rem;color:var(--muted)">If you total the county file it comes to 16,931 high-hazard dams, not the 17,049 quoted above, and that difference is in the records rather than in the arithmetic: 37 of them are not placed in one of the 50 states, and a further 81 carry no county. Every national figure on this page counts all 17,049. The 636 dams rated poor or unsatisfactory with no emergency action plan appear as 635 in the county file for the same reason.</p>
+<h3 style="margin-top:2.2em">Embed the county lookup</h3>
+<p>Free to use on any site. It sizes itself to its content and carries its own credit line.</p>
+<div class="code" style="margin-top:.7em">&lt;iframe src="${escapeHtmlAttr(DAM_URL)}embed/" width="100%" height="620" style="border:1px solid #ddd" title="High-hazard dams by county" loading="lazy"&gt;&lt;/iframe&gt;</div>
+`;
+    const dBody = dBodyRaw.slice(0, damKitSectionEnd) + damKit + dBodyRaw.slice(damKitSectionEnd);
     // Metadata is worded to the same standard as the page body: it reports what the inventory
     // RECORDS, attributes every assessment to the regulating agency, and never characterises any
     // dam as dangerous or any agency as negligent. A headline is the part most likely to be quoted
@@ -715,6 +743,99 @@ ${SITE_FOOTER}
     fs.mkdirSync(damDir, { recursive: true });
     fs.writeFileSync(path.join(damDir, 'index.html'), damHtml, 'utf8');
     console.log(`[prerender-research] Wrote static HTML for /research/high-hazard-dams/ (${Math.round(damHtml.length / 1024)} KB)`);
+
+    // ---- /research/high-hazard-dams/embed/ ----------------------------------------------------
+    // Built for reporters, and the reason is mechanical rather than decorative: an editor will
+    // strip an inline URL out of copy, but will not strip the attribution inside a chart they have
+    // already embedded. An embed is the link most likely to survive a copy edit, which is the
+    // whole point of pitching the study in the first place.
+    //
+    // Lifted from the source page rather than rewritten, exactly as the risk-without-price embed
+    // above is, so the two cannot drift apart. Every extraction asserts: a silent miss here ships
+    // an empty iframe onto somebody else's site, where nobody would tell us.
+    const dCssStart = damSource.indexOf('.lk-eyebrow{');
+    const dCssEnd = damSource.indexOf('.pull{');
+    const dMarkStart = damSource.indexOf('<div class="lookup">');
+    const dMarkEnd = damSource.indexOf('</header>');
+    const dDataStart = damSource.indexOf('<script type="application/json" id="dam-data">');
+    const dDataEnd = damSource.indexOf('</script>', dDataStart);
+    const dJsStart = damSource.indexOf('<script>', dDataEnd);
+    const dRootStart = damSource.indexOf(':root{');
+    const dRootEnd = damSource.indexOf('*{box-sizing:border-box}');
+    if (
+      dCssStart < 0 || dCssEnd < 0 || dMarkStart < 0 || dMarkEnd < 0 ||
+      dDataStart < 0 || dDataEnd < 0 || dJsStart < 0 || dRootStart < 0 || dRootEnd < 0
+    ) {
+      console.error('[prerender-research] could not locate the dam lookup widget for the embed build.');
+      process.exit(1);
+    }
+    const dLookupCss = damSource.slice(dCssStart, dCssEnd);
+    const dLookupMarkup = damSource.slice(dMarkStart, dMarkEnd).trim();
+    const dDataScript = damSource.slice(dDataStart, dDataEnd + '</script>'.length);
+    const dJsScript = damSource.slice(dJsStart);
+    const dRootVars = damSource.slice(dRootStart, dRootEnd);
+
+    // The caveat travels with the widget, always. Inside somebody else's article a bare county
+    // count reads as a danger ranking, which is precisely what the classification is not -- "high
+    // hazard potential" describes what is downstream of a dam, not how likely it is to fail. The
+    // study page can rely on surrounding paragraphs to establish that; an embed cannot rely on
+    // anything around it, so if the caveat is ever refactored out of the source this build stops
+    // rather than quietly shipping the number without it.
+    if (!dLookupMarkup.includes('lk-caveat')) {
+      console.error('[prerender-research] dam embed is missing its lk-caveat disclaimer; refusing to build.');
+      process.exit(1);
+    }
+
+    const damEmbedHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>High-hazard dams by county &mdash; Before Regret</title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="${escapeHtmlAttr(DAM_URL)}">
+${dHead.trim()}
+  <style>
+${dRootVars}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);margin:0;padding:16px;
+  font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.lookup{max-width:680px;margin:0 auto}
+h3{font-family:var(--mono);font-size:.78rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin:0}
+h4{margin:0}
+p{margin:0}
+${dLookupCss}
+.embed-credit{max-width:680px;margin:14px auto 0;font-family:var(--mono);font-size:.7rem;
+  color:var(--muted);text-align:right}
+.embed-credit a{color:var(--accent,#b4451f)}
+  </style>
+</head>
+<body>
+${dLookupMarkup}
+<p class="embed-credit"><a href="${escapeHtmlAttr(DAM_URL)}" target="_blank" rel="noopener">High-Hazard Dams by County</a> &mdash; Before Regret</p>
+${dDataScript}
+${dJsScript}
+<script>
+/* Reports its own height to the embedding page: the widget grows once a county is selected, so no
+   single iframe height is correct. The host's listener is optional -- without it the fallback
+   height in the snippet still renders a usable tool, it just does not follow the content. */
+(function(){
+  function post(){
+    var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+    try { parent.postMessage({ beforeRegretEmbedHeight: h }, '*'); } catch (e) {}
+  }
+  if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  window.addEventListener('load', post);
+  setTimeout(post, 60);
+})();
+</script>
+</body>
+</html>`;
+    const damEmbedDir = path.join(damDir, 'embed');
+    fs.mkdirSync(damEmbedDir, { recursive: true });
+    fs.writeFileSync(path.join(damEmbedDir, 'index.html'), damEmbedHtml, 'utf8');
+    console.log(`[prerender-research] Wrote /research/high-hazard-dams/embed/ (${Math.round(damEmbedHtml.length / 1024)} KB)`);
   }
 
   // The machine-readable figures behind every number on the page. Published deliberately: the study
@@ -732,6 +853,59 @@ ${SITE_FOOTER}
     const dataDir = path.join(process.cwd(), 'dist', 'research', 'data');
     fs.mkdirSync(dataDir, { recursive: true });
     fs.copyFileSync(zoneFigures, path.join(dataDir, 'flood-outside-zone.json'));
+  }
+
+  // The dam study's figures, as JSON and as CSV.
+  //
+  // CSV IS NOT REDUNDANT WITH THE JSON. A reporter on deadline opens a spreadsheet; they do not
+  // parse a nested object to find the county they are writing about. The county table is the part
+  // of this study anyone local actually wants -- 2,274 rows, one per county -- so it ships in the
+  // format that is one double-click from a sortable sheet. Column names are spelled out rather
+  // than kept as the page's internal short keys, because a header row is documentation for
+  // somebody who will never read this file.
+  const damFigures = path.join(process.cwd(), 'docs', 'data', 'dams-high-hazard.json');
+  if (fs.existsSync(damFigures)) {
+    const dataDir = path.join(process.cwd(), 'dist', 'research', 'data');
+    fs.mkdirSync(dataDir, { recursive: true });
+    fs.copyFileSync(damFigures, path.join(dataDir, 'dams-high-hazard.json'));
+
+    const dam = JSON.parse(fs.readFileSync(damFigures, 'utf8')) as {
+      nidUpdated?: string;
+      countyCols?: string[];
+      counties?: Array<Array<string | number>>;
+    };
+    const expectedCols = ['county', 'st', 'high', 'bad', 'noEap', 'both', 'unrated'];
+    const cols = dam.countyCols || [];
+    // Assert the shape rather than trusting it: this file is regenerated upstream, and a silently
+    // reordered column would publish a CSV whose headers describe the wrong numbers -- the single
+    // worst failure mode for a dataset whose whole purpose is to be quoted.
+    if (cols.length !== expectedCols.length || cols.some((c, i) => c !== expectedCols[i])) {
+      console.error(`[prerender-research] dams-high-hazard.json columns changed: ${JSON.stringify(cols)}`);
+      process.exit(1);
+    }
+    const rows = dam.counties || [];
+    if (rows.length === 0) {
+      console.error('[prerender-research] dams-high-hazard.json has no county rows; refusing to write an empty CSV.');
+      process.exit(1);
+    }
+    const header = [
+      'county',
+      'state',
+      'high_hazard_dams',
+      'condition_poor_or_unsatisfactory',
+      'no_emergency_action_plan_on_file',
+      'both_poor_condition_and_no_plan',
+      'condition_not_rated',
+    ];
+    const esc = (v: string | number) => {
+      const s = String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const csv = [header.join(','), ...rows.map((r) => r.map(esc).join(','))].join('\n') + '\n';
+    fs.writeFileSync(path.join(dataDir, 'high-hazard-dams-by-county.csv'), csv, 'utf8');
+    console.log(
+      `[prerender-research] Wrote high-hazard-dams-by-county.csv (${rows.length} counties, NID ${dam.nidUpdated || 'unknown'})`
+    );
   }
 
   console.log(`[prerender-research] Wrote static HTML for /research/risk-without-price/ (${Math.round(html.length / 1024)} KB)`);
