@@ -116,6 +116,29 @@ function describeMatch(item: any): string {
   return [road, city, state].filter(Boolean).join(', ');
 }
 
+// Dropdown suggestion text. Deliberately omits city and ZIP -- LocationIQ's own geocoding of a
+// matched coordinate can disagree with the Census geocoder on exactly those two fields while
+// agreeing on everything else. Reported case: 133 Wynooska Rd, Greentown PA 18426 -- LocationIQ's
+// address breakdown for that coordinate says "Greene, Pike County, Pennsylvania, 18325", Census
+// says "Greentown, PA 18426". Same county, same state, same street, different city/ZIP. Showing
+// the disputed fields in the dropdown, before the reader has even selected anything, read as the
+// tool taking the wrong address and reopened the same complaint after the actual selection bug had
+// already been fixed. County and state don't carry that disagreement, so this keeps them and drops
+// city/postcode -- the corrected city/state/ZIP is what the confirmation card shows once Census is
+// queried after selection (see the correction effect below).
+function suggestionLine(item: any): string {
+  const addr = item?.address || {};
+  const houseNumber = addr.house_number || '';
+  const road = addr.road || addr.street || addr.pedestrian || addr.footway || '';
+  const street = [houseNumber, road].filter(Boolean).join(' ');
+  const county = addr.county || '';
+  const state = addr.state_code ? String(addr.state_code).toUpperCase() : (addr.state || '');
+  if (street && (county || state)) {
+    return [street, county, state].filter(Boolean).join(', ');
+  }
+  return (item.display_name || '').replace(/,\s*United States$/i, '');
+}
+
 export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty }) => {
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
 
@@ -645,7 +668,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                   className="w-full text-left px-3.5 py-2.5 hover:bg-blue-600/20 transition-colors flex items-start gap-2.5 text-xs text-slate-200 cursor-pointer"
                 >
                   <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                  <span className="truncate leading-relaxed font-medium">{item.display_name}</span>
+                  <span className="truncate leading-relaxed font-medium">{suggestionLine(item)}</span>
                 </button>
               ))}
             </div>
