@@ -910,12 +910,30 @@ A. PROPERTY CLASSIFICATION DETECTOR:
 B. ZERO PROPERTY AGE / CONSTRUCTION YEAR RULE:
    - Do NOT output a yearBuilt field anywhere in the JSON response.
    - Do NOT mention, infer, or reference construction year, build era, or property age.
-   - For all building systems (roof, HVAC, electrical, water heater, sewer), state ONLY what the permit archive actually shows (e.g. "Most recent roofing permit on file: November 2008" or "No roofing permit found in the digitized archive").
 
-C. TWO-TIER STATUS BADGES:
-   - Use ONLY two confidence levels:
-     1. "Verified Record" (a specific permit or filing exists and is dated)
-     2. "No Record Found" (nothing on file in the digitized archive)
+C. NO PER-ADDRESS PERMIT ARCHIVE EXISTS -- DO NOT DESCRIBE ONE:
+   - BeforeRegret has no live connection to any municipal permit, inspection, or code-enforcement
+     database for any jurisdiction. For roof, HVAC, electrical, water heater, sewer, and any other
+     building system: do NOT state or imply that a permit record was checked, found, or not found
+     for this specific address. Never invent a date, filing, or "on file" / "digitized archive"
+     claim -- there is no archive to check. This applies even if it would sound more specific,
+     helpful, or authoritative; specific and false is worse than general and honest.
+   - What you MAY write for these systems: general, non-address-specific guidance appropriate to
+     the property's declared type and the area's building stock -- what a buyer should ask the
+     seller, what an inspector should check, and why it matters. This is area-level and educational
+     content, not a claim about this address's own records.
+   - A downstream check independently enforces this regardless of what you output here: any finding
+     that asserts a verified or no-record status without coming from an actual live data fetch
+     (only the neighborhood-census and seismic-hazard findings qualify) is automatically downgraded
+     and its address-specific text replaced before publication. Writing within this rule the first
+     time means your own wording is what a reader sees, instead of a generic replacement.
+
+D. TWO-TIER STATUS BADGES:
+   - Use ONLY two confidence levels, and only where you are describing something this report
+     actually did (e.g. the Census neighborhood profile, the USGS seismic lookup) -- never for the
+     building-system items covered by rule C above, which must always read as unverified:
+     1. "Verified Record" (a specific, real data source was actually consulted for this report)
+     2. "No Record Found" (that same real source was actually consulted and had nothing)
 
 ===================================================================================
 2. OUTPUT FORMAT & DEFENSE STANDARDS

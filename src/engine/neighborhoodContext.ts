@@ -235,28 +235,37 @@ export async function fetchNeighborhoodContextFinding(
       // close match is itself a real, reassuring finding -- it just doesn't warrant the stronger
       // "ask about age-adjusted comps" advice a large gap does.
       if (subjectYearBuilt && Number.isFinite(subjectYearBuilt)) {
+        // subjectYearBuilt is whatever the requester typed into the report form, not a value
+        // BeforeRegret has independently checked -- the form's own copy tells them so ("We can't
+        // verify it -- it's used exactly as you enter it"). Only tract.medianYearBuilt, the other
+        // side of this comparison, is the live Census figure. The headline used to read "This home
+        // was built in 1998" -- a flat factual assertion, on a finding badged CONFIRMED RECORD --
+        // built from a number the reader may have estimated or mistyped. If they got it wrong, the
+        // report would confidently state a wrong fact about their own house and label it verified.
+        // Every version below now attributes the year to the reader, not to BeforeRegret, while
+        // keeping the tract comparison itself stated as the fact it actually is.
         const subjectDelta = tract.medianYearBuilt - subjectYearBuilt;
         if (subjectDelta >= 15) {
           metrics.push({
-            label: 'This home vs. its block',
-            value: `Built ${subjectYearBuilt}`,
+            label: 'As you entered, vs. its block',
+            value: `You entered ${subjectYearBuilt}`,
             comparison: `${subjectDelta} yrs older than typical here`,
           });
-          headline = `This home was built in ${subjectYearBuilt} -- about ${subjectDelta} years older than the typical home on its own block.`;
+          headline = `Using the year you entered (${subjectYearBuilt}), this home is about ${subjectDelta} years older than the typical home on its own block.`;
           nextSteps.push(
             'Because this home is materially older than its neighbors, comparable sales nearby may be newer properties. Ask your agent whether the comps used were age-adjusted, and expect original-era systems here even where surrounding homes have been rebuilt.'
           );
         } else if (subjectDelta <= -15) {
           metrics.push({
-            label: 'This home vs. its block',
-            value: `Built ${subjectYearBuilt}`,
+            label: 'As you entered, vs. its block',
+            value: `You entered ${subjectYearBuilt}`,
             comparison: `${Math.abs(subjectDelta)} yrs newer than typical here`,
           });
-          headline = `This home was built in ${subjectYearBuilt} -- about ${Math.abs(subjectDelta)} years newer than the typical home on its own block.`;
+          headline = `Using the year you entered (${subjectYearBuilt}), this home is about ${Math.abs(subjectDelta)} years newer than the typical home on its own block.`;
         } else {
           metrics.push({
-            label: 'This home vs. its block',
-            value: `Built ${subjectYearBuilt}`,
+            label: 'As you entered, vs. its block',
+            value: `You entered ${subjectYearBuilt}`,
             comparison: 'In line with typical homes here',
           });
         }
