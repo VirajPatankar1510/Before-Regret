@@ -56,6 +56,7 @@ import {
   getGeneratedReportBody
 } from "./src/server/db.js";
 import { isLegacyGonePath } from './src/data/legacyUrls.js';
+import { mergedGuideTarget } from './src/data/prunedGuides.js';
 import { isClerkBackendConfigured } from "./src/server/clerkAuth.js";
 import { logAiCrawlerVisit } from "./src/server/aiCrawlerLog.js";
 
@@ -1491,6 +1492,22 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     next();
   });
 
+  // Guides folded into a stronger sibling by the 2026-09-02 prune (see src/data/prunedGuides.ts).
+  // 301 rather than 410 because these were competing with their survivor for the same query --
+  // six separate knob-and-tube guides, eight for termites -- so the signal should consolidate onto
+  // the survivor instead of evaporating. The counterpart deletions, which have no successor, are
+  // handled by status = 'removed' on the /guides/:slug route below.
+  //
+  // Registered here, before express.static, for the same reason the legacy handler is: a merged
+  // slug may still have a prerendered dist/guides/<slug>/index.html from the last deploy, and
+  // static would otherwise serve that page with a 200 until the next build removes it.
+  app.use((req, res, next) => {
+    const match = /^\/guides\/([^/]+)\/?$/.exec(req.path);
+    const target = match ? mergedGuideTarget(match[1]) : null;
+    if (target) return res.redirect(301, `/guides/${target}/`);
+    next();
+  });
+
   // Vite Integration for Dev / Static Assets in Prod
   // Dynamic import: vite is dev-only tooling with heavy transitive deps (esbuild, rollup) that
   // has no reason to load in production, and especially not inside a Vercel serverless function
@@ -1542,9 +1559,18 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
       if (!isDbConfigured()) return sendShellWithStatus(res, 200);
       try {
         const rows = await withDb((sql) => sql`
-          SELECT 1 FROM articles WHERE slug = ${req.params.slug} AND status = 'published' LIMIT 1
-        `);
-        sendShellWithStatus(res, rows.length > 0 ? 200 : 404);
+          SELECT status FROM articles WHERE slug = ${req.params.slug} LIMIT 1
+        `) as unknown as Array<{ status: string }>;
+        const row = rows[0];
+        // Three cases, not two -- exactly the shape the /county/:slug handler below uses. No row
+        // at all is a guessed or stale slug (404). status = 'removed' is real content deliberately
+        // retired by the 2026-09-02 prune (see src/data/prunedGuides.ts): 410, because 404 invites
+        // Google to keep re-checking a page that is never coming back, and this site is only
+        // crawled a few pages a day. A draft is also not published, and 404 is right for it -- an
+        // unpublished draft was never a public URL to begin with.
+        if (!row) return sendShellWithStatus(res, 404);
+        if (row.status === 'published') return sendShellWithStatus(res, 200);
+        return sendShellWithStatus(res, row.status === 'removed' ? 410 : 404);
       } catch (err) {
         console.error('[guides] slug-existence check failed, serving 200:', err);
         sendShellWithStatus(res, 200);
