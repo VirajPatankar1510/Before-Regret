@@ -148,6 +148,12 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   const [mapSearchError, setMapSearchError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  // Set when selectLocation writes the chosen address back into the search box, so the debounced
+  // suggestion effect below can tell "the reader typed something new" apart from "we just filled
+  // this in for them". Without it, picking a suggestion re-runs the search against the very
+  // address that was just picked, and the dropdown reopens on top of the confirmation card a
+  // moment later -- see the effect for the full report this came from.
+  const suppressNextSuggestRef = useRef(false);
 
   // True once the reader has picked an address, or while one is being resolved. Gates the whole
   // confirmation block below -- validation gate banner, property panel, submit button. This was
@@ -222,8 +228,24 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     return () => clearTimeout(timer);
   }, [selectedPinResult, declaredPropertyType, unitNumber]);
 
-  // Debounced auto-suggestions as user types in search
+  // Debounced auto-suggestions as user types in search.
+  //
+  // The early return on suppressNextSuggestRef fixes a reported bug that made the search box look
+  // completely broken. selectLocation writes the chosen address back into the box, which is a
+  // change to mapSearchQuery, which re-ran this effect against that address. The geocoder then
+  // returned a DIFFERENT, richer match for the fuller string it had just been handed -- for
+  // "133 Wynooska Road" it came back as "133, Wynooska Road, Rustic Acres Mobile Home Community,
+  // Roemersville, Greene Township, ..." -- so ~350ms after a successful click the dropdown
+  // reopened, on top of the confirmation card, showing an option the reader had not asked for.
+  //
+  // From the reader's side the selection had silently failed and the list would not go away. The
+  // reporter tried fifteen times. The click was working every time; this effect was undoing the
+  // visible result of it.
   useEffect(() => {
+    if (suppressNextSuggestRef.current) {
+      suppressNextSuggestRef.current = false;
+      return;
+    }
     if (!mapSearchQuery.trim() || mapSearchQuery.trim().length < 3) {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -323,7 +345,12 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
   const selectLocation = (lat: number, lon: number, name?: string, item?: any) => {
     setShowSuggestions(false);
-    if (name) setMapSearchQuery(name);
+    setSuggestions([]);
+    if (name) {
+      // Order matters: arm the guard BEFORE the state write that re-runs the suggestion effect.
+      suppressNextSuggestRef.current = true;
+      setMapSearchQuery(name);
+    }
     // Sets result state only. This used to coexist with a confirmation map that had to be
     // re-centred here; that map was removed on 2026-08-29 and nothing else needs to react to a
     // selection beyond the state set below.
