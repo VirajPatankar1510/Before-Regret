@@ -454,7 +454,24 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           `We found ${where || 'that street'}, but no records for that exact house number. Double-check the number, or try adding the ZIP code.`
         );
       } else if (results.length > 0) {
-        setMapSearchError('That looks like a city, county, or state. Please enter a specific street address (e.g. "301 Congress Ave, Austin, TX").');
+        // Two different situations reach here, and telling them apart matters because one of the
+        // messages accuses the reader of something they did not do.
+        //
+        // The geocoder falls back to a city-level match when it cannot resolve the street -- for
+        // "300 Lakeshore Dr, Lake Placid, NY 12946" it returns just "Lake Placid, Essex County,
+        // New York". The old single message said "That looks like a city, county, or state",
+        // which is a true description of what the GEOCODER returned and a false description of
+        // what the reader typed. Someone who typed a house number and a street was being told
+        // they had entered a city, which reads as being blamed for a mistake they did not make.
+        //
+        // So: if their own query starts with a house number, say the lookup failed, not that
+        // their input was wrong.
+        const looksLikeStreetAddress = /^\s*\d+[a-z]?[\s,-]/i.test(mapSearchQuery.trim());
+        setMapSearchError(
+          looksLikeStreetAddress
+            ? `We couldn't find that exact address in the property records. The closest match was ${describeMatch(results[0]) || 'the surrounding area'}. Check the street name and ZIP, or try a nearby house number.`
+            : 'That looks like a city, county, or state. Please enter a specific street address (e.g. "301 Congress Ave, Austin, TX").'
+        );
       } else {
         setMapSearchError("We couldn't find that address. Check the spelling, and include the city and state.");
       }
