@@ -9,6 +9,11 @@
       "source": "/research/no-plan-downstream/",
       "destination": "/research/high-hazard-dams/",
       "permanent": true
+    },
+    {
+      "source": "/guides/look-up-building-permits-by-address",
+      "destination": "/guides/look-up-building-permits-by-address/",
+      "permanent": true
     }
   ],
   "rewrites": [

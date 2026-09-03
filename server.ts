@@ -1521,6 +1521,20 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
   // ignored it: a canonical is a hint, and when two URLs both answer 200 Google is free to pick
   // the other one, which is exactly what happened. A 301 is a directive, so this is the fix.
   //
+  // THIS HANDLER IS NOT THE FIX FOR PRERENDERED GUIDES, and the comment above used to claim it
+  // was. Measured on the live deployment 2026-09-03, immediately after shipping it: a request to
+  // /guides/open-ground-mean-electrical-inspection (which HAS dist/guides/<slug>/index.html)
+  // answers 200 from Vercel's static layer -- x-vercel-cache: HIT, a single-region x-vercel-id --
+  // and never reaches this function at all. Vercel checks the filesystem BEFORE applying the
+  // rewrites in vercel.json, so the "/guides/:slug -> /api/index" rewrite only takes effect for
+  // slugs with no prerendered file. /guides/what-is-knob-and-tube-wiring (pruned, no file) does
+  // reach the function and does redirect; every published guide does not.
+  //
+  // The actual fix for published guides is the redirect entry in vercel.json, which is evaluated
+  // before the filesystem check. This handler is kept because it still covers the paths that do
+  // reach the function -- unpublished, mistyped and future slugs with no prerendered file -- and
+  // because a slug can lose its prerendered file between deploys.
+  //
   // Slash is the canonical direction because everything else on the site already agrees on it --
   // all 35 sitemap entries, every rel=canonical, every og:url. Redirecting the other way would
   // mean rewriting all of them.
@@ -1539,8 +1553,21 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
   app.use((req, res, next) => {
     const match = /^\/guides(?:\/([^/.]+))?$/.exec(req.path);
     if (!match) return next();
-    const suffix = req.originalUrl.slice(req.path.length); // preserve ?query (fragments never reach the server)
-    return res.redirect(301, `${match[1] ? `/guides/${match[1]}` : '/guides'}/${suffix}`);
+
+    // Do NOT rebuild the query from req.originalUrl. Vercel's "/guides/:slug -> /api/index"
+    // rewrite appends the captured param to the URL the function receives, so originalUrl for a
+    // clean request to /guides/foo arrives as "/guides/foo?slug=foo". Copying that suffix
+    // verbatim -- which the first version of this handler did -- redirected to
+    // /guides/foo/?slug=foo, inventing a THIRD duplicate URL and defeating the whole point of
+    // the redirect. Observed live on 2026-09-03 before this was fixed.
+    //
+    // 'slug' is dropped for that reason; everything else (utm_*, gclid, ref) is preserved, since
+    // discarding those would silently break campaign attribution on any link into a guide.
+    const params = new URLSearchParams(req.query as Record<string, string>);
+    params.delete('slug');
+    const query = params.toString();
+    const base = match[1] ? `/guides/${match[1]}` : '/guides';
+    return res.redirect(301, `${base}/${query ? `?${query}` : ''}`);
   });
 
   // Vite Integration for Dev / Static Assets in Prod
