@@ -1508,6 +1508,41 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
     next();
   });
 
+  // Trailing-slash normalization for /guides, and ONLY /guides.
+  //
+  // WHY. Both /guides/<slug> and /guides/<slug>/ returned 200 with no redirect between them, so
+  // Google indexed them as two separate URLs and split one page's signal across both. Measured
+  // 2026-09-03 on the site's second-strongest page: /guides/look-up-building-permits-by-address
+  // carried 157 impressions on the unslashed shape and 42 on the slashed one -- ~199 combined,
+  // reported as two mediocre pages instead of one good one. Same split on
+  // /guides/what-is-knob-and-tube-wiring (45 + 3).
+  //
+  // rel=canonical was already correct on both shapes and pointed at the slashed URL, and Google
+  // ignored it: a canonical is a hint, and when two URLs both answer 200 Google is free to pick
+  // the other one, which is exactly what happened. A 301 is a directive, so this is the fix.
+  //
+  // Slash is the canonical direction because everything else on the site already agrees on it --
+  // all 35 sitemap entries, every rel=canonical, every og:url. Redirecting the other way would
+  // mean rewriting all of them.
+  //
+  // SCOPED DELIBERATELY. /guides only, not a site-wide rule. /insights/<reportId> answers 200
+  // unslashed and is the URL shape handed to customers in report emails; a blanket normalizer
+  // would put a redirect hop in front of every one of those links for no indexing benefit, since
+  // those pages canonical to the homepage and are not meant to be indexed at all.
+  //
+  // CANNOT LOOP: the regex requires the path NOT to end in '/', and the destination always does.
+  //
+  // The slug pattern excludes '.' so a dotted path under /guides/ (a stray asset, a probe for
+  // /guides/sitemap.xml) is never rewritten into a directory URL that cannot exist. Verified
+  // 2026-09-03 that none of the 276 slugs in the database or in either prune list contains a dot,
+  // so this costs nothing today and fails safe if that ever changes.
+  app.use((req, res, next) => {
+    const match = /^\/guides(?:\/([^/.]+))?$/.exec(req.path);
+    if (!match) return next();
+    const suffix = req.originalUrl.slice(req.path.length); // preserve ?query (fragments never reach the server)
+    return res.redirect(301, `${match[1] ? `/guides/${match[1]}` : '/guides'}/${suffix}`);
+  });
+
   // Vite Integration for Dev / Static Assets in Prod
   // Dynamic import: vite is dev-only tooling with heavy transitive deps (esbuild, rollup) that
   // has no reason to load in production, and especially not inside a Vercel serverless function

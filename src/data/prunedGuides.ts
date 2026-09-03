@@ -1,4 +1,5 @@
-// The 2026-09-02 guide prune. 155 published guides -> 35.
+// The 2026-09-02 guide prune. 155 published guides -> 35, then -> 37 after two were restored on
+// 2026-09-03 (see the "off-niche" block below for which two and why the original call was wrong).
 //
 // WHY. Search Console (90 days) and Bing Webmaster (21 days) were joined against the published
 // guide list: 13 guides earned at least one click, 28 more earned impressions without clicks, and
@@ -113,15 +114,32 @@ export const REMOVED_GUIDE_SLUGS: readonly string[] = [
   'insurance-agents-wish-buyers-knew-about-coverage',
   'pest-inspectors-wish-buyers-knew-about-termites',
 
-  // --- off-niche (9) ---
+  // --- off-niche (7) ---
+  //
+  // RESTORED 2026-09-03, two slugs removed from this list: 'get-home-insurance-fuse-box' and
+  // 'how-common-are-title-insurance-claims'. Both were cut on an editorial "off-niche" judgement
+  // rather than on measurement, and the judgement was wrong. The 2026-09-02 GSC pull that drove
+  // this prune showed them at zero impressions -- but the pull covered a window in which Google
+  // had not yet started showing them. A day later they had 17 and 5 impressions and a click each,
+  // with the fuse-box guide sitting at average position 4.0. Every impression they have ever
+  // earned arrived in the seven days ending 2026-09-03; the 21 days before that were genuinely
+  // zero, which is why the earlier snapshot looked conclusive and was not.
+  //
+  // THE LESSON, because it will recur: on a domain this young, "zero impressions" and "not yet
+  // crawled into the index" are indistinguishable from inside a single Search Console snapshot.
+  // Before cutting on a zero, check whether the zero is stable across two windows (7d vs 28d) --
+  // a page whose 7d and 28d figures are IDENTICAL is a page that has only just started being
+  // shown, not a page nobody wants. See scripts/gsc-page-coverage.ts.
+  //
+  // Their topical siblings ('is-title-insurance-a-waste-of-money',
+  // 'fuse-boxes-catch-fire-safety-risks-home-buyers') stay cut: they had no impressions in either
+  // window and the restored guide now serves that query on its own.
   'data-centers-cause-property-values-drop',
   'houses-near-data-centers-cheaper',
   'land-lease-apartments-so-cheap',
   'purdue-federal-first-time-homebuyer-loans-worth',
   'property-tax-caps-create-lock-effect-buyers',
-  'how-common-are-title-insurance-claims',
   'is-title-insurance-a-waste-of-money',
-  'get-home-insurance-fuse-box',
   'fuse-boxes-catch-fire-safety-risks-home-buyers',
 
   // --- on-topic, never shown by either engine (58) ---
