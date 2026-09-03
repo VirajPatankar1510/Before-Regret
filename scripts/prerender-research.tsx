@@ -182,7 +182,17 @@ function escapeJsonForScriptTag(value: unknown): string {
 
 // Plain HTML, styled off the study's own custom properties. StaticFooterLinks is not reusable here:
 // it is Tailwind-classed, and this document never loads the app's stylesheet.
+// On a STUDY page "Research" is a link up to the index; on the index itself it is the current page
+// and stays plain text. Splitting them is what gives /research/ four inbound links from the studies
+// -- before this the word was inert on every page and the index had no inbound links at all.
 const SITE_NAV = `
+<nav class="sitebar" aria-label="Before Regret">
+  <a href="/" class="brand">Before&nbsp;Regret</a>
+  <span class="sitebar-sep" aria-hidden="true">&#183;</span>
+  <a href="/research/" class="brand">Research</a>
+</nav>`;
+
+const SITE_NAV_INDEX = `
 <nav class="sitebar" aria-label="Before Regret">
   <a href="/" class="brand">Before&nbsp;Regret</a>
   <span class="sitebar-sep" aria-hidden="true">&#183;</span>
@@ -254,10 +264,38 @@ async function run() {
     console.error('[prerender-research] kicker not found -- the source layout changed; check before shipping.');
     process.exit(1);
   }
-  const bodyMarkup = bodyMarkupRaw.replace(
+  const bodyMarkupKicker = bodyMarkupRaw.replace(
     kicker,
     '<p class="kicker">Published 30 August 2026 &#183; Free to reproduce with attribution</p>'
   );
+
+  // Press kit. This study's figures JSON has shipped to /research/data/ since it was written, but
+  // nothing on the page ever pointed at it -- a download nobody can find is a download nobody uses.
+  //
+  // The CSV here is STATE level, not county. Unlike the other three studies, this one's underlying
+  // table is a scatter of anonymous (risk, premium) pairs with no county names attached, so there
+  // is no county file to publish. Shipping the 51 state rows and saying so is better than implying
+  // a county breakdown exists.
+  const rwpKitIdx = bodyMarkupKicker.indexOf('<div class="cite">');
+  if (rwpKitIdx < 0) {
+    console.error('[prerender-research] could not find the risk-without-price cite block.');
+    process.exit(1);
+  }
+  const rwpKitEnd = bodyMarkupKicker.indexOf('</section>', rwpKitIdx);
+  if (rwpKitEnd < 0) {
+    console.error('[prerender-research] risk-without-price cite block is not inside a section.');
+    process.exit(1);
+  }
+  const rwpKit = `
+<h3 style="margin-top:2.2em">The data</h3>
+<p>Every figure on this page, and the state table behind the charts: 51 rows with the county count, median premium and modelled risk index for each.</p>
+<p style="margin-top:.7em"><a href="/research/data/risk-without-price-by-state.csv" download>risk-without-price-by-state.csv</a> &#183; <a href="/research/data/risk-without-price-figures.json">the full figures as JSON</a></p>
+<p style="margin-top:.9em;font-size:.9rem;color:var(--muted)">There is no county-level file for this study. The analysis runs on 3,093 county observations, but they are held as anonymous risk-and-premium pairs rather than a named table, so a county breakdown would have to be reconstructed rather than published. The state file and the JSON together contain every number quoted above.</p>
+<h3 style="margin-top:2.2em">Embed the county lookup</h3>
+<p>Free to use on any site. It sizes itself to its content and carries its own credit line.</p>
+<div class="code" style="margin-top:.7em">&lt;iframe src="${escapeHtmlAttr(CANONICAL_URL)}embed/" width="100%" height="620" style="border:1px solid #ddd" title="County homeowners insurance lookup" loading="lazy"&gt;&lt;/iframe&gt;</div>
+`;
+  const bodyMarkup = bodyMarkupKicker.slice(0, rwpKitEnd) + rwpKit + bodyMarkupKicker.slice(rwpKitEnd);
 
   const html = `<!doctype html>
 <html lang="en">
@@ -392,8 +430,30 @@ ${lookupScript}
       process.exit(1);
     }
     const cHead = coverSource.slice(0, cWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
-    const cBody = coverSource.slice(cWrap);
+    const cBodyRaw = coverSource.slice(cWrap);
     const COVER_URL = 'https://www.beforeregret.com/research/risk-without-cover/';
+
+    // Press kit, matching the other three studies.
+    const coverKitIdx = cBodyRaw.indexOf('<div class="cite">');
+    if (coverKitIdx < 0) {
+      console.error('[prerender-research] could not find the risk-without-cover cite block.');
+      process.exit(1);
+    }
+    const coverKitEnd = cBodyRaw.indexOf('</section>', coverKitIdx);
+    if (coverKitEnd < 0) {
+      console.error('[prerender-research] risk-without-cover cite block is not inside a section.');
+      process.exit(1);
+    }
+    const coverKit = `
+<h3 style="margin-top:2.2em">The data</h3>
+<p>Flood insurance take-up for 2,304 counties: how many homes sit inside a mapped flood zone, how many NFIP policies are in force, and the resulting rate.</p>
+<p style="margin-top:.7em"><a href="/research/data/flood-takeup-by-county.csv" download>flood-takeup-by-county.csv</a> &#183; <a href="/research/data/flood-takeup.json">the full figures as JSON</a></p>
+<p style="margin-top:.9em;font-size:.9rem;color:var(--muted)">The take-up column counts NFIP policies only. Private flood insurance has grown and is not in this file, so true coverage is higher than these numbers by an amount the data cannot measure. Read a low figure as "NFIP coverage is low here", not as "these homes are uninsured".</p>
+<h3 style="margin-top:2.2em">Embed the county lookup</h3>
+<p>Free to use on any site. It sizes itself to its content and carries its own credit line.</p>
+<div class="code" style="margin-top:.7em">&lt;iframe src="${escapeHtmlAttr(COVER_URL)}embed/" width="100%" height="680" style="border:1px solid #ddd" title="Flood insurance take-up by county" loading="lazy"&gt;&lt;/iframe&gt;</div>
+`;
+    const cBody = cBodyRaw.slice(0, coverKitEnd) + coverKit + cBodyRaw.slice(coverKitEnd);
     const COVER_TITLE =
       'Risk Without Cover: how few homes in US flood zones actually carry flood insurance';
     const COVER_DESC =
@@ -489,6 +549,94 @@ ${SITE_FOOTER}
     fs.mkdirSync(coverDir, { recursive: true });
     fs.writeFileSync(path.join(coverDir, 'index.html'), coverHtml, 'utf8');
     console.log(`[prerender-research] Wrote static HTML for /research/risk-without-cover/ (${Math.round(coverHtml.length / 1024)} KB)`);
+
+    // ---- /research/risk-without-cover/embed/ ---------------------------------------------------
+    const cCssStart = coverSource.indexOf('.lk-eyebrow{');
+    const cCssEnd = coverSource.indexOf('.pull{');
+    const cMarkStart = coverSource.indexOf('<div class="lookup">');
+    const cMarkEnd = coverSource.indexOf('</section>', cMarkStart);
+    const cDataStart = coverSource.indexOf('<script id="flood-data" type="application/json">');
+    const cDataEnd = coverSource.indexOf('</script>', cDataStart);
+    const cJsStart = coverSource.indexOf('<script>', cDataEnd);
+    const cRootStart = coverSource.indexOf(':root{');
+    const cRootEnd = coverSource.indexOf('*{box-sizing:border-box}');
+    if (
+      cCssStart < 0 || cCssEnd < 0 || cMarkStart < 0 || cMarkEnd < 0 ||
+      cDataStart < 0 || cDataEnd < 0 || cJsStart < 0 || cRootStart < 0 || cRootEnd < 0
+    ) {
+      console.error('[prerender-research] could not locate the cover lookup widget for the embed build.');
+      process.exit(1);
+    }
+    const cLookupCss = coverSource.slice(cCssStart, cCssEnd);
+    const cLookupMarkup = coverSource.slice(cMarkStart, cMarkEnd).trim();
+    const cDataScript = coverSource.slice(cDataStart, cDataEnd + '</script>'.length);
+    const cJsScript = coverSource.slice(cJsStart);
+    const cRootVars = coverSource.slice(cRootStart, cRootEnd);
+
+    // UNLIKE the other three widgets, this one carries no caveat of its own -- it was written to sit
+    // among the study's own paragraphs, which qualify it at length. An embed has no such context,
+    // and an unqualified take-up percentage is genuinely misleading: the figure counts NFIP policies
+    // only, so a low number reads as "these homes are uninsured" when what it means is "NFIP
+    // coverage is low here". The caveat below is the study's own wording from "What this cannot
+    // tell you", not a new claim written for the embed.
+    const coverEmbedCaveat =
+      '<p class="lk-caveat">Counts NFIP policies only. Private flood insurance has grown and is not ' +
+      'included, so true coverage is higher than these figures by an amount this data cannot ' +
+      'measure. Flood maps are also imperfect: a county with high take-up inside the mapped zone may ' +
+      'still have most of its exposed homes uncovered.</p>';
+
+    const coverEmbedHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flood insurance take-up by county &mdash; Before Regret</title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="${escapeHtmlAttr(COVER_URL)}">
+${cHead.trim()}
+  <style>
+${cRootVars}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);margin:0;padding:16px;
+  font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.lookup{max-width:680px;margin:0 auto}
+h3{font-family:var(--mono);font-size:.78rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin:0}
+h4{margin:0}
+p{margin:0}
+${cLookupCss}
+.embed-credit{max-width:680px;margin:14px auto 0;font-family:var(--mono);font-size:.7rem;
+  color:var(--muted);text-align:right}
+.embed-credit a{color:var(--accent,#b4451f)}
+  </style>
+</head>
+<body>
+${cLookupMarkup}
+${coverEmbedCaveat}
+<p class="embed-credit"><a href="${escapeHtmlAttr(COVER_URL)}" target="_blank" rel="noopener">Risk Without Cover</a> &mdash; Before Regret</p>
+${cDataScript}
+${cJsScript}
+<script>
+(function(){
+  function post(){
+    var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+    try { parent.postMessage({ beforeRegretEmbedHeight: h }, '*'); } catch (e) {}
+  }
+  if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  window.addEventListener('load', post);
+  setTimeout(post, 60);
+})();
+</script>
+</body>
+</html>`;
+    if (!coverEmbedHtml.includes('lk-caveat')) {
+      console.error('[prerender-research] cover embed lost its caveat; refusing to build.');
+      process.exit(1);
+    }
+    const coverEmbedDir = path.join(coverDir, 'embed');
+    fs.mkdirSync(coverEmbedDir, { recursive: true });
+    fs.writeFileSync(path.join(coverEmbedDir, 'index.html'), coverEmbedHtml, 'utf8');
+    console.log(`[prerender-research] Wrote /research/risk-without-cover/embed/ (${Math.round(coverEmbedHtml.length / 1024)} KB)`);
   }
 
   // ---- /research/outside-the-zone/ --------------------------------------------------------------
@@ -951,6 +1099,71 @@ ${dJsScript}
     const dataDir = path.join(process.cwd(), 'dist', 'research', 'data');
     fs.mkdirSync(dataDir, { recursive: true });
     fs.copyFileSync(figuresSrc, path.join(dataDir, 'risk-without-price-figures.json'));
+
+    const rwp = JSON.parse(fs.readFileSync(figuresSrc, 'utf8')) as {
+      states?: Array<{ st: string; n: number; prem: number; ins: number }>;
+    };
+    const rwpStates = rwp.states || [];
+    if (rwpStates.length === 0) {
+      console.error('[prerender-research] risk-without-price-figures.json has no state rows.');
+      process.exit(1);
+    }
+    const rwpMissing = rwpStates.filter(
+      (s) => typeof s.st !== 'string' || typeof s.n !== 'number' || typeof s.prem !== 'number' || typeof s.ins !== 'number'
+    );
+    if (rwpMissing.length > 0) {
+      console.error(`[prerender-research] risk-without-price state rows changed shape: ${JSON.stringify(rwpMissing[0])}`);
+      process.exit(1);
+    }
+    const rwpCsv =
+      ['state,counties_analysed,median_annual_premium_usd,modelled_risk_index']
+        .concat(rwpStates.map((s) => `${s.st},${s.n},${s.prem},${s.ins}`))
+        .join('\n') + '\n';
+    fs.writeFileSync(path.join(dataDir, 'risk-without-price-by-state.csv'), rwpCsv, 'utf8');
+    console.log(`[prerender-research] Wrote risk-without-price-by-state.csv (${rwpStates.length} states)`);
+  }
+
+  // Risk Without Cover's figures, which had never shipped at all -- the page linked nothing and the
+  // JSON stayed in docs/. County table, 2,304 rows.
+  const takeupSrc = path.join(process.cwd(), 'docs', 'data', 'flood-takeup.json');
+  if (fs.existsSync(takeupSrc)) {
+    const dataDir = path.join(process.cwd(), 'dist', 'research', 'data');
+    fs.mkdirSync(dataDir, { recursive: true });
+    fs.copyFileSync(takeupSrc, path.join(dataDir, 'flood-takeup.json'));
+
+    const tk = JSON.parse(fs.readFileSync(takeupSrc, 'utf8')) as {
+      cols?: string[];
+      counties?: Array<Array<string | number | null>>;
+    };
+    const tkExpected = ['county', 'st', 'takeup', 'pol', 'homes', 'rate'];
+    const tkCols = tk.cols || [];
+    if (tkCols.length !== tkExpected.length || tkCols.some((c, i) => c !== tkExpected[i])) {
+      console.error(`[prerender-research] flood-takeup.json columns changed: ${JSON.stringify(tkCols)}`);
+      process.exit(1);
+    }
+    const tkRows = tk.counties || [];
+    if (tkRows.length === 0) {
+      console.error('[prerender-research] flood-takeup.json has no county rows.');
+      process.exit(1);
+    }
+    // Column names spell out that take-up is NFIP-only. The whole study rests on that limit, and a
+    // header reading plain "takeup" invites a reader to treat it as all flood insurance.
+    const tkHeader = [
+      'county',
+      'state',
+      'nfip_takeup_rate_inside_mapped_zone_pct',
+      'nfip_policies_in_force',
+      'homes_inside_mapped_zone',
+      'modelled_flood_risk_index',
+    ];
+    const tkEsc = (v: string | number | null) => {
+      if (v === null || v === undefined) return '';
+      const s = String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const tkCsv = [tkHeader.join(','), ...tkRows.map((r) => r.map(tkEsc).join(','))].join('\n') + '\n';
+    fs.writeFileSync(path.join(dataDir, 'flood-takeup-by-county.csv'), tkCsv, 'utf8');
+    console.log(`[prerender-research] Wrote flood-takeup-by-county.csv (${tkRows.length} counties)`);
   }
 
   // Same contract for the third study: it invites checking, so the figures behind it ship too --
@@ -1056,6 +1269,135 @@ ${dJsScript}
   }
 
   console.log(`[prerender-research] Wrote static HTML for /research/risk-without-price/ (${Math.round(html.length / 1024)} KB)`);
+
+  // ---- /research/ ------------------------------------------------------------------------------
+  // The index, which did not exist until 2026-09-02: /research/ answered 404 while four studies sat
+  // underneath it. Journalists trim URLs, so anyone reading one study who wanted to see the others
+  // hit a dead page. The four also linked to nothing and received only a footer link, so they were
+  // isolated from each other.
+  //
+  // Written as a real page rather than a link list. The pitch is "here is a body of work", and one
+  // URL that shows four studies with their methods, datasets and embeds makes that case in a way
+  // four scattered links cannot. It is also the URL a journalist would cite for the research in
+  // general rather than for one finding.
+  //
+  // Head reuses headParts (fonts + the shared study stylesheet) so the index cannot drift away from
+  // the pages it lists.
+  const STUDIES: Array<{ url: string; title: string; standfirst: string; finding: string; source: string; data: string[]; embed: boolean; published: string; }> = [
+    {
+      url: '/research/risk-without-price/',
+      title: 'Risk Without Price',
+      standfirst: 'Whether US homeowners insurance premiums track the modelled risk of the county they cover.',
+      finding: 'Across 3,093 counties, modelled hazard explains part of what people pay, but two counties facing the same modelled risk can differ by more than double.',
+      source: 'Census ACS &middot; FEMA National Risk Index',
+      data: ['risk-without-price-by-state.csv', 'risk-without-price-figures.json'],
+      embed: true,
+      published: '30 August 2026',
+    },
+    {
+      url: '/research/risk-without-cover/',
+      title: 'Risk Without Cover',
+      standfirst: 'Flood is excluded from standard homeowners policies. How many people bought the separate one?',
+      finding: 'In the typical county, roughly one home in seven inside a mapped flood zone carries an NFIP policy, and take-up does not track flood risk.',
+      source: 'FEMA NFIP &middot; Census ACS',
+      data: ['flood-takeup-by-county.csv', 'flood-takeup.json'],
+      embed: true,
+      published: '31 August 2026',
+    },
+    {
+      url: '/research/outside-the-zone/',
+      title: 'Outside the Zone',
+      standfirst: 'The flood map decides who is required to buy insurance. What happens to everyone else?',
+      finding: 'More than one paid flood claim in four came from outside the mapped high-risk zone. In Texas it was about half.',
+      source: 'FEMA NFIP claims &middot; 1,921 counties',
+      data: ['outside-the-zone-by-county.csv', 'flood-outside-zone.json'],
+      embed: true,
+      published: '1 September 2026',
+    },
+    {
+      url: '/research/high-hazard-dams/',
+      title: 'High-Hazard Dams by County',
+      standfirst: 'What the national dam inventory records about condition and emergency planning, read together.',
+      finding: 'Of 17,049 dams classified high hazard potential, about one in six carries a condition rating of poor or unsatisfactory. 636 of those also have no emergency action plan on file.',
+      source: 'USACE National Inventory of Dams',
+      data: ['high-hazard-dams-by-county.csv', 'dams-high-hazard.json'],
+      embed: true,
+      published: '1 September 2026',
+    },
+  ];
+  const INDEX_URL = 'https://www.beforeregret.com/research/';
+  const indexCards = STUDIES.map((s) => `
+    <article class="rcard">
+      <h2><a href="${s.url}">${s.title}</a></h2>
+      <p class="rcard-stand">${s.standfirst}</p>
+      <p class="rcard-find">${s.finding}</p>
+      <p class="rcard-meta">${s.source} &middot; published ${s.published}</p>
+      <p class="rcard-meta">Data: ${s.data.map((f) => `<a href="/research/data/${f}">${f}</a>`).join(' &middot; ')}${s.embed ? ' &middot; embeddable lookup' : ''}</p>
+    </article>`).join('\n');
+
+  const indexHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research &mdash; Before Regret</title>
+  <meta name="description" content="Four original analyses of US public housing-risk data: insurance pricing against modelled risk, flood insurance take-up, flood claims paid outside the mapped zone, and the condition and emergency planning status of high-hazard dams. Every figure downloadable, every method published.">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <link rel="canonical" href="${escapeHtmlAttr(INDEX_URL)}">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Before Regret">
+  <meta property="og:url" content="${escapeHtmlAttr(INDEX_URL)}">
+  <meta property="og:title" content="Research &mdash; Before Regret">
+  <meta property="og:image" content="${escapeHtmlAttr(OG_IMAGE)}">
+  <meta name="twitter:card" content="summary_large_image">
+${headParts.trim()}
+  <style>${EXTRA_CSS}
+.rhead{max-width:1000px;margin:0 auto;padding:44px 0 0}
+.rhead h1{font-family:var(--disp);font-size:clamp(2rem,5vw,3rem);line-height:1.06;margin:.3em 0 0}
+.rhead p{max-width:64ch;margin:1em 0 0}
+.rlist{max-width:1000px;margin:0 auto;padding:14px 0 0;display:grid;grid-template-columns:1fr;gap:0}
+.rcard{padding:30px 0;border-top:1px solid var(--rule)}
+.rcard h2{font-family:var(--disp);font-size:clamp(1.35rem,2.6vw,1.8rem);line-height:1.15;margin:0}
+.rcard h2 a{color:var(--ink);text-decoration:none;border-bottom:2px solid var(--rule)}
+.rcard h2 a:hover{border-bottom-color:var(--price);color:var(--price)}
+.rcard-stand{margin:.55em 0 0;color:var(--muted);max-width:66ch}
+.rcard-find{margin:.7em 0 0;max-width:66ch}
+.rcard-meta{margin:.7em 0 0;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.rcard-meta a{color:var(--muted);border-bottom:1px solid var(--rule);text-decoration:none}
+.rcard-meta a:hover{color:var(--price);border-bottom-color:var(--price)}
+.rnote{max-width:1000px;margin:0 auto;padding:34px 0 0;border-top:1px solid var(--rule)}
+.rnote h3{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 .7em}
+.rnote p{max-width:66ch;margin:0 0 .8em}
+  </style>
+</head>
+<body>
+${SITE_NAV_INDEX}
+<div class="wrap">
+  <header class="rhead">
+    <!-- No "Before Regret / Research" kicker here: the nav directly above already says exactly
+         that, and on this page it would read twice in three lines. The study pages carry a dated
+         byline in this slot instead, which is why it does not repeat there. -->
+    <h1>Research</h1>
+    <p>Four analyses of US public housing-risk data, each built from named federal files and published with the figures behind it. They exist because the questions were ours before they were anyone else's: we kept needing numbers that nobody had put together, so we put them together.</p>
+  </header>
+  <div class="rlist">
+${indexCards}
+  </div>
+  <section class="rnote">
+    <h3>For journalists</h3>
+    <p>Every study publishes its county or state table as a CSV, its full figures as JSON, and an interactive county lookup you can embed on your own site. All of it is free to use with attribution, and the embeds carry their own credit line, so nothing needs to be asked for.</p>
+    <p>Each study also states what it cannot tell you, and where its own totals do not reconcile. If a number here does not match something you have, that section is the first place to look, and if it still does not add up we would rather hear from you than not.</p>
+    <p>Corrections, questions and data requests: <a href="mailto:hello@beforeregret.com">hello@beforeregret.com</a>.</p>
+  </section>
+</div>
+${SITE_FOOTER}
+</body>
+</html>`;
+  const indexDir = path.join(process.cwd(), 'dist', 'research');
+  fs.mkdirSync(indexDir, { recursive: true });
+  fs.writeFileSync(path.join(indexDir, 'index.html'), indexHtml, 'utf8');
+  console.log(`[prerender-research] Wrote /research/ index listing ${STUDIES.length} studies`);
 }
 
 run().catch((err) => {

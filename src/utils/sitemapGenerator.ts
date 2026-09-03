@@ -160,6 +160,10 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       // follow' and has real prerendered content to back that up. /topic-ads and /report-ads, the
       // two checkout pages this page routes to, stay noindex and are correctly absent.
       { loc: `${BASE_URL}/advertise/`, lastmod: today, changefreq: 'monthly', priority: '0.6' },
+      // The research index (added 2026-09-02, when /research/ was still answering 404 with four
+      // studies underneath it). Unlike the studies it lists, this one legitimately changes whenever
+      // a study is added, so it takes `today` rather than a frozen date.
+      { loc: `${BASE_URL}/research/`, lastmod: today, changefreq: 'monthly', priority: '0.8' },
       // The research study (scripts/prerender-research.tsx). Listed with a fixed lastmod rather
       // than `today`: it is a dated analysis of a fixed data vintage, and re-declaring it modified
       // on every build would be a false freshness signal on the one page here whose whole value is
