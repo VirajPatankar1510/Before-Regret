@@ -1,6 +1,7 @@
 ==========================================================================
 BEFORE REGRET - PRESS OUTREACH
 Risk Without Price: who to email, and what to send
+High-Hazard Dams: a pitch block, no addresses yet (see the end)
 ==========================================================================
 
 Six emails, each written for the specific editor it is addressed to.
@@ -237,6 +238,109 @@ Best regards,
 Viraj Patankar
 Before Regret
 hello@beforeregret.com
+
+==========================================================================
+HIGH-HAZARD DAMS - PITCH BLOCK
+Added 4 September 2026
+==========================================================================
+
+The six emails above pitch Risk Without Price to Insurance Journal. This
+block pitches a different study to a different beat, and it is deliberately
+NOT addressed to anyone yet.
+
+WHY NO NAMES HERE. Every address in this pack was copied from Insurance
+Journal's own published submissions page and dated. There is no equivalent
+verified list for the infrastructure beat, and inventing a reporter's name or
+address would be worse than sending nothing. Find the person first - the
+byline on any recent state dam-safety story, or the ASDSO conference press
+list - then paste the body below under their name.
+
+WHO THIS IS FOR: infrastructure, public-safety and state-government
+reporters, and local desks in a state with a lot of these dams. It is a
+stronger local story than a national one.
+
+--------------------------------------------------------------------------
+GET THE NUMBER RIGHT
+--------------------------------------------------------------------------
+
+There are three separate figures here and they are easy to blur into one.
+Do not.
+
+  17,049   dams classified high hazard potential (of 92,766 in the inventory)
+   2,791   of those rated Poor or Unsatisfactory        - 16.4%
+   2,476   of those with NO emergency action plan       - 14.5%
+     636   in BOTH groups: poor or unsatisfactory AND no plan on file
+
+636 is the intersection. It is the number to lead with, and it is the one
+that gets miscopied as "over 2,000 dams in poor condition with no emergency
+plan" - which is 2,476 and 2,791 mashed together and describes neither group.
+If a reporter writes that back to you, correct it before it runs.
+
+--------------------------------------------------------------------------
+SUBJECT:
+636 US dams are rated poor or unsatisfactory and have no emergency action plan on file
+--------------------------------------------------------------------------
+
+Dear [NAME],
+
+I have pulled a county-level read of the US Army Corps of Engineers National
+Inventory of Dams that may be useful to you, and one figure in it is the
+story.
+
+The inventory holds 92,766 dams. 17,049 carry a hazard classification of
+High, meaning failure is expected to cause loss of human life - a statement
+about consequences, not about condition. Of those 17,049:
+
+  - 2,791 (16.4%) have a recorded condition of Poor or Unsatisfactory
+  - 2,476 (14.5%) have no emergency action plan on file
+  - 636 are in both groups
+
+An emergency action plan is a procedural document: who is notified, in what
+order, and usually the inundation mapping showing who is downstream. Condition
+and plan status are separate fields in the inventory, which is what makes the
+overlap worth reporting rather than assuming.
+
+Four things I would want stated in any coverage, because they cut against the
+alarming reading:
+
+  1. A further 3,784 high-hazard dams (22.2%) have NO condition rating
+     recorded at all. A missing rating is not a good rating, and it is not a
+     bad one either - it is missing.
+  2. 77.4% of high-hazard dams (13,201) DO have an emergency action plan.
+  3. The median high-hazard dam has a last inspection date of 2023, and among
+     those rated Poor or Unsatisfactory the median assessment date is also
+     2023. These records exist because an active inspection regime produced
+     them. The story is what the file shows, not that nobody is looking.
+  4. The inventory does not publish the reasoning behind any condition
+     assessment, and age does not determine condition - the same file holds
+     dams of similar vintage rated Satisfactory.
+
+The county table covers 2,274 counties with at least one high-hazard dam, so
+there is a local cut for almost any newsroom. One note if you total it: the
+county file comes to 16,931 rather than 17,049, because 37 dams are not
+placed in a state and 81 carry no county. The 636 appears as 635 there for
+the same reason. Every national figure above counts all 17,049.
+
+Method, the full county table as CSV, and every chart as a downloadable
+image:
+https://www.beforeregret.com/research/high-hazard-dams/
+
+I am glad to pull the cut for your state or county.
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+--------------------------------------------------------------------------
+IF THEY WANT A LOCAL ANGLE
+--------------------------------------------------------------------------
+
+Send the county rows for their state from
+beforeregret.com/research/data/high-hazard-dams-by-county.csv and the chart
+image from beforeregret.com/research/data/high-hazard-dams-exhibit-1.png -
+both are public and free to reuse with credit. The per-county cut is the
+thing no wire service is giving them.
 
 ==========================================================================
 IF SOMEONE REPLIES
