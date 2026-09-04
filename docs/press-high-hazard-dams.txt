@@ -1,0 +1,264 @@
+==========================================================================
+HIGH-HAZARD DAMS - PRESS OUTREACH
+Five pitches. Copy one, paste it, send it.
+Written 4 September 2026 against the study as published.
+==========================================================================
+
+HOW TO USE THIS FILE
+
+Each pitch below is a different story, not the same story with a different
+name at the top. Pick the one that matches the desk you are writing to and
+send that one only. If you send two of these to the same newsroom they will
+read as two people pitching, which is worse than sending nothing.
+
+Every number here was taken from the published study and its county file. If
+a reporter checks one, it will hold.
+
+WHAT TO FILL IN: only the name. There are no verified addresses in this file
+and none should be invented - find the byline on a recent dam-safety or
+state-infrastructure story and write to that person. A pitch to the wrong
+desk with the right data still goes in the bin.
+
+
+--------------------------------------------------------------------------
+THE THREE NUMBERS, AND THE ONE THAT GETS MISQUOTED
+--------------------------------------------------------------------------
+
+  17,049   dams classified high hazard potential (of 92,766 in the inventory)
+   2,791   of those rated Poor or Unsatisfactory              16.4%
+   2,476   of those with no emergency action plan on file     14.5%
+     636   in BOTH groups
+
+636 is the intersection and it is the number to lead with. The version that
+gets written by mistake is "over 2,000 dams in poor condition with no
+emergency plan" - that is 2,476 and 2,791 run together and describes neither
+group. If it comes back to you in a draft, correct it before it prints. A
+correction you volunteer buys more credibility than the story costs.
+
+"High hazard potential" is a statement about consequences, not condition. It
+means failure is expected to cause loss of life. Reporters conflate it with
+"dangerous dam" constantly, and getting that right in your first email is the
+fastest way to sound like you know the dataset.
+
+
+==========================================================================
+PITCH 1 - NATIONAL INFRASTRUCTURE OR PUBLIC-SAFETY DESK
+The angle: what the inventory does not know
+==========================================================================
+
+SUBJECT:
+636 US dams are rated poor or unsatisfactory and have no emergency action plan
+
+Dear [Name],
+
+I have finished a county-level read of the Army Corps' National Inventory of
+Dams, and the finding I would lead with is not the one I expected.
+
+Of 17,049 dams classified high hazard potential - meaning failure is expected
+to cost lives - 2,791 are rated Poor or Unsatisfactory and 2,476 have no
+emergency action plan on file. 636 are in both groups. That overlap is the
+story: condition and planning are recorded as separate fields, so a dam can
+be structurally sound with no plan, or have a plan and be failing, and only
+636 are both at once.
+
+The number underneath it is arguably worse. A further 3,784 high-hazard dams
+- 22.2% - carry no condition rating at all. Not a bad rating: no rating. Not
+rated, not available, or blank. For more than one high-hazard dam in five,
+the public record does not say what condition it is in.
+
+Two things that cut against the alarming version, and I would want both in
+any coverage. 77.4% of high-hazard dams do have an emergency action plan. And
+the median high-hazard dam has a last inspection date of 2023 - among those
+rated Poor or Unsatisfactory, the median assessment date is also 2023. These
+records exist because an active inspection regime produced them. The story is
+what the file shows, not that nobody is looking.
+
+Method, the full county table, and every chart as a downloadable image:
+https://www.beforeregret.com/research/high-hazard-dams/
+
+Happy to pull the cut for any state you want to look at.
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+
+==========================================================================
+PITCH 2 - NORTH CAROLINA STATE DESK
+The angle: NC leads the country on this measure
+==========================================================================
+
+SUBJECT:
+North Carolina has more dams in poor condition without an emergency plan than any other state
+
+Dear [Name],
+
+North Carolina tops a national list I would rather no state topped, and the
+county detail is available.
+
+In a county-level read of the Army Corps' National Inventory of Dams, North
+Carolina has 120 dams that are both rated Poor or Unsatisfactory and have no
+emergency action plan on file - the highest count of any state. New Mexico is
+second with 80, Texas third with 70.
+
+The wider state picture: 1,678 North Carolina dams carry a high hazard
+potential classification, 247 of those are rated Poor or Unsatisfactory, and
+635 have no emergency action plan recorded. Wake County alone accounts for 11
+of the overlap group, out of 208 high-hazard dams; Macon County has 7 out of
+33, which is a far higher share of a much smaller inventory.
+
+Worth saying plainly: high hazard potential describes consequences, not
+condition. It means a failure is expected to cause loss of life given what is
+downstream. North Carolina's large count partly reflects that it simply has a
+lot of dams in the inventory.
+
+I can send the North Carolina rows as a spreadsheet - every county, with the
+four counts broken out - within the hour.
+
+Method and the national picture:
+https://www.beforeregret.com/research/high-hazard-dams/
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+
+==========================================================================
+PITCH 3 - NEW MEXICO / EL PASO-LAS CRUCES REGIONAL DESK
+The angle: concentration, not volume
+==========================================================================
+
+SUBJECT:
+30 of Doña Ana County's 41 high-hazard dams are rated poor with no emergency plan
+
+Dear [Name],
+
+Most state-level dam stories are about big states with big inventories. New
+Mexico is the opposite, and that is what makes it a story.
+
+New Mexico has 255 dams classified high hazard potential - a small inventory
+by national standards. But 80 of them are both rated Poor or Unsatisfactory
+and have no emergency action plan on file. That is second in the country
+behind North Carolina, which has six and a half times as many high-hazard
+dams.
+
+The concentration is sharper still at county level. Doña Ana County has 41
+high-hazard dams, and 30 of them are in that overlap group - roughly three in
+four. Grant County has 8 of 15. I have not found another county in the
+national file with a comparable share.
+
+The honest caveats: high hazard potential is a statement about what is
+downstream, not about condition, and the inventory does not publish the
+reasoning behind any condition assessment. Nationally the median high-hazard
+dam was last inspected in 2023, so these ratings come from a regime that is
+active rather than absent.
+
+I can send the New Mexico county rows straight away, or the whole national
+file if it is useful.
+
+https://www.beforeregret.com/research/high-hazard-dams/
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+
+==========================================================================
+PITCH 4 - WASHINGTON DC METRO DESK
+The angle: it is next door
+==========================================================================
+
+SUBJECT:
+Half of Prince George's County's high-hazard dams are rated poor with no emergency plan
+
+Dear [Name],
+
+A national dataset with a very local number in it, on your side of the river.
+
+Prince George's County has 23 dams classified high hazard potential, meaning
+failure is expected to cause loss of life. 12 of them - just over half - are
+both rated Poor or Unsatisfactory and have no emergency action plan on file.
+Maryland's statewide figure is 26, so nearly half the state's total sits in
+one county in the DC suburbs.
+
+For scale: 636 dams nationally are in that overlap group, spread across 37
+states and 2,274 counties that have any high-hazard dam at all. Twelve in a
+single suburban county is a concentration worth a phone call to the Maryland
+Dam Safety programme.
+
+What I would not write without checking: an emergency action plan is a
+procedural document - notification order and usually inundation mapping - and
+"none on file" is a record-keeping fact, not proof no planning exists.
+Condition and plan status are separate fields in the inventory, which is
+exactly why the overlap is worth reporting rather than assuming.
+
+Maryland county rows available on request; the national method and charts are
+at https://www.beforeregret.com/research/high-hazard-dams/
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+
+==========================================================================
+PITCH 5 - DATA, GRAPHICS OR VISUAL DESK
+The angle: here is the file, take it
+==========================================================================
+
+SUBJECT:
+County-level dam condition data, free to reuse - CSV and chart files included
+
+Dear [Name],
+
+This is a dataset offer rather than a story pitch, in case it is useful to
+whoever is building graphics on infrastructure.
+
+I have published a county-level read of the Army Corps' National Inventory of
+Dams: 2,274 counties, every one with at least one dam classified high hazard
+potential. Each row carries five counts - high-hazard dams, those rated Poor
+or Unsatisfactory, those with no emergency action plan, those in both groups,
+and those with no condition rating recorded at all.
+
+  CSV     beforeregret.com/research/data/high-hazard-dams-by-county.csv
+  Charts  beforeregret.com/research/data/high-hazard-dams-exhibit-1.png
+          (also .svg; exhibit-2 is the state ranking)
+
+Everything is free to reuse with credit. The charts are exported as flat PNG
+and standalone SVG specifically so they can be dropped into a page or a
+layout without asking us for anything.
+
+One discrepancy to know about before you total the file: it sums to 16,931
+high-hazard dams rather than the 17,049 in the national figures, because 37
+dams are not placed in a state and 81 carry no county. The 636 overlap
+appears as 635 for the same reason. Every national number we publish counts
+all 17,049.
+
+Suggested credit line, if you use it:
+  "Analysis of the National Inventory of Dams by BeforeRegret"
+
+Method and definitions:
+https://www.beforeregret.com/research/high-hazard-dams/
+
+Best regards,
+Viraj Patankar
+Before Regret
+hello@beforeregret.com
+
+
+==========================================================================
+IF SOMEONE REPLIES
+==========================================================================
+
+Answer the same day. The single most useful thing you can offer is the county
+rows for their patch, and it takes two minutes - filter the CSV by state and
+send it as an attachment, not a link.
+
+If they ask whether a specific dam is dangerous, do not answer it. The
+inventory records a condition rating and a plan status; it does not assess
+risk of failure, and the study says so. Point them at the state dam safety
+office, which is the body that actually holds that judgement. Declining that
+question is what makes the rest of your numbers trustworthy.
