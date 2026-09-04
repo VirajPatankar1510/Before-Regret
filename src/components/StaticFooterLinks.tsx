@@ -1,7 +1,6 @@
 import React from 'react';
 import { BookOpen, ShieldCheck } from 'lucide-react';
 import { PREFERRED_SOURCE_URL, PREFERRED_SOURCE_LABEL } from '../data/preferredSource';
-import { BookPromoFooterLink } from './BookPromo';
 
 export interface FooterGuideSummary {
   slug: string;
@@ -60,7 +59,6 @@ export function StaticFooterLinks({ guides }: StaticFooterLinksProps) {
           </div>
           <ul className="space-y-2">
             <li><a href="/about/" className="hover:text-white font-bold text-blue-300 block py-1.5">About &amp; Methodology</a></li>
-            <li><BookPromoFooterLink /></li>
             {/* The research study is a standalone static document (scripts/prerender-research.tsx),
                 not an SPA route, so it is unreachable from the app's own navigation. This block is
                 the only crawlable path to it from the rest of the site, and it renders on every

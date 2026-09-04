@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { BOOK, BOOK_LINK_REL } from '../src/data/book';
 
 // Static HTML generator for /research/risk-without-price/ -- the national homeowners-insurance
 // study.
@@ -209,7 +208,6 @@ const SITE_FOOTER = `
       <li><a href="/guides/">Editorial guides</a></li>
       <li><a href="/about/">About &amp; methodology</a></li>
       <li><a href="/advertise/">Advertise with us</a></li>
-      <li><a href="${BOOK.url}" target="_blank" rel="${BOOK_LINK_REL}">${BOOK.title} (our book)</a></li>
     </ul>
   </div>
   <div>

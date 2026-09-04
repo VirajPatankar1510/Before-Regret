@@ -2,8 +2,9 @@ import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { BOOK, BOOK_LINK_REL } from '../data/book';
 
-// Promo units for the site's own book. Two shapes: a card (guide pages and the homepage) and a
-// one-line footer link.
+// The promo card for the site's own book, rendered on every guide page and on the homepage.
+// A one-line footer variant existed alongside it and was removed on request 2026-09-04; the card
+// is now the only placement.
 //
 // DELIBERATELY HOOK-FREE, AND DELIBERATELY A PLAIN <a>. Every other block that appears both in
 // the live app and in the prerendered HTML exists twice in this codebase -- Footer.tsx and
@@ -58,9 +59,9 @@ export const BookPromoCard: React.FC<{ className?: string }> = ({ className = ''
         rel={BOOK_LINK_REL}
         aria-hidden="true"
         tabIndex={-1}
-        // Centred while the card is stacked, flush left once it goes side-by-side at sm. A
-        // left-aligned cover above full-width text reads as a stray thumbnail on a phone.
-        className="shrink-0 self-center sm:self-start"
+        // Flush left at every width. It was briefly centred while the card is stacked on a phone
+        // (2026-09-04) and reverted the same day on request.
+        className="shrink-0 self-start"
       >
         <picture>
           <source srcSet="/images/fruitful-home-cover.webp" type="image/webp" />
@@ -101,15 +102,4 @@ export const BookPromoCard: React.FC<{ className?: string }> = ({ className = ''
       </div>
     </div>
   </aside>
-);
-
-export const BookPromoFooterLink: React.FC = () => (
-  <a
-    href={BOOK.url}
-    target="_blank"
-    rel={BOOK_LINK_REL}
-    className="hover:text-white cursor-pointer block py-1.5"
-  >
-    {BOOK.title} <span className="text-slate-500">(our book)</span> →
-  </a>
 );
