@@ -43,6 +43,57 @@ const PITCH =
   'way the house faces, how the ground falls, where the water goes. The conditions no amount of ' +
   'money will change after you sign.';
 
+// A narrow-column version of the pitch. The card's full paragraph is four lines in an 848px
+// content column and eleven in a 260px rail, which stops being a pitch and becomes a wall.
+const PITCH_SHORT =
+  'A viewing gives you twenty minutes, and most of it goes on things you could change later ' +
+  'anyway. This book is about the other list: the conditions no amount of money will change ' +
+  'after you sign.';
+
+// Right-rail skyscraper for guide pages, desktop only. The caller owns the sticky wrapper and the
+// breakpoint that hides it -- see GuidePageView.tsx -- so this component is just the unit.
+//
+// Uses its own 520x832 cover rather than the card's 300x480 one: the rail renders it at 260px, so
+// the smaller file would land at roughly 1.15x and read soft on a retina screen. Two files rather
+// than one srcset because the two placements are in different components with different widths,
+// and a shared srcset would have to carry a `sizes` string encoding both layouts -- more moving
+// parts than simply naming the right asset in each place.
+export const BookPromoSkyscraper: React.FC = () => (
+  <aside
+    aria-label={`Book: ${BOOK.title}`}
+    className="bg-gradient-to-br from-amber-50/70 to-white border border-amber-200/70 rounded-2xl p-5 shadow-sm"
+  >
+    <a href={BOOK.url} target="_blank" rel={BOOK_LINK_REL} aria-hidden="true" tabIndex={-1} className="block">
+      <picture>
+        <source srcSet="/images/fruitful-home-cover-lg.webp" type="image/webp" />
+        <img
+          src="/images/fruitful-home-cover-lg.jpg"
+          alt=""
+          width={520}
+          height={832}
+          loading="lazy"
+          decoding="async"
+          className="w-full h-auto shadow-md ring-1 ring-black/10"
+        />
+      </picture>
+    </a>
+
+    <h2 className="mt-4 text-base font-extrabold text-slate-900 leading-snug">{BOOK.title}</h2>
+    <p className="mt-1 text-xs font-medium text-slate-600 leading-snug">{BOOK.subtitle}</p>
+    <p className="mt-3 text-xs text-slate-700 leading-relaxed">{PITCH_SHORT}</p>
+
+    <a
+      href={BOOK.url}
+      target="_blank"
+      rel={BOOK_LINK_REL}
+      className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors shadow-sm"
+    >
+      <span>View on Amazon</span>
+      <ArrowUpRight className="w-3.5 h-3.5" />
+    </a>
+  </aside>
+);
+
 export const BookPromoCard: React.FC<{ className?: string }> = ({ className = '' }) => (
   <aside
     aria-label={`Book: ${BOOK.title}`}

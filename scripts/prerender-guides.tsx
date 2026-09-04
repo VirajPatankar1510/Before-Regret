@@ -10,7 +10,7 @@ import { pickRelatedGuides, GuideSummary } from '../src/utils/relatedGuides';
 import { buildPageTitle } from '../src/utils/pageTitle';
 import { pickCountiesForGuide, CountyTopicInput, GUIDE_TOPICS, permitGuideCountySlug } from '../src/utils/countyGuideTopics.js';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
-import { BookPromoCard } from '../src/components/BookPromo';
+import { BookPromoCard, BookPromoSkyscraper } from '../src/components/BookPromo';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 import { resolveArticleSchemaImage } from '../src/utils/articleImage.js';
 import type { PrerenderedRouteKey } from '../src/routeChunks.js';
@@ -216,7 +216,7 @@ function GuideStaticBody({
   return (
     <div className="bg-slate-50 min-h-screen pb-16">
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
+        <div className="max-w-4xl lg:max-w-6xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
           <a href="/" className="hover:text-blue-600">Home</a>
           <span>/</span>
           <a href="/guides/" className="hover:text-blue-600">Editorial Guides</a>
@@ -225,7 +225,8 @@ function GuideStaticBody({
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <div className="max-w-4xl lg:max-w-6xl mx-auto px-4 sm:px-6 py-8 lg:flex lg:gap-8 lg:items-start">
+        <div className="space-y-8 lg:flex-1 lg:min-w-0">
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
           <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
             <span className={`px-2.5 py-1 font-bold text-[11px] rounded-lg ${article.articleType === 'news' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}`}>
@@ -329,7 +330,7 @@ function GuideStaticBody({
         {/* Same unit and same position as GuidePageView.tsx -- not a static twin, the actual
             component. BookPromo is hook-free and links off-site, so one definition serves both
             the live tree and this prerender. See src/components/BookPromo.tsx. */}
-        <BookPromoCard />
+        <BookPromoCard className="lg:hidden" />
 
         {/* Static twin of GuidePageView.tsx's FAQ accordion -- rendered fully expanded here since
             this HTML has no JS-driven toggle state; the live client swaps in the interactive
@@ -374,6 +375,17 @@ function GuideStaticBody({
             How we research and write these guides
           </a>
         </p>
+        </div>
+
+        {/* Same unit and same breakpoint as GuidePageView.tsx. */}
+        {/* Plain div, not <aside>: BookPromoSkyscraper renders its own <aside> with the
+            accessible name, and nesting one inside another would announce two landmarks for one
+            unit. This wrapper only carries the column width and the breakpoint. */}
+        <div className="hidden lg:block lg:w-[300px] lg:shrink-0">
+          <div className="sticky top-8">
+            <BookPromoSkyscraper />
+          </div>
+        </div>
       </div>
 
       <StaticFooterLinks guides={footerGuides} />

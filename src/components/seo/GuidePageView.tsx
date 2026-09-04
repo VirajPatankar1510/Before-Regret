@@ -5,7 +5,7 @@ import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../../
 import { resolveKnownSource } from '../../data/knownSources';
 import { ArticleClosingNote } from './ArticleClosingNote';
 import { GuideAdSlot } from '../GuideAdSlot';
-import { BookPromoCard } from '../BookPromo';
+import { BookPromoCard, BookPromoSkyscraper } from '../BookPromo';
 import { ContentLink } from '../home/ContentLink';
 import { pickRelatedGuides, GuideSummary } from '../../utils/relatedGuides';
 import { buildPageTitle } from '../../utils/pageTitle';
@@ -243,7 +243,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
 
       {/* Breadcrumbs */}
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
+        <div className="max-w-4xl lg:max-w-6xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
           <ContentLink href="/" onNavigate={onNavigate} className="hover:text-blue-600">Home</ContentLink>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <ContentLink href="/guides/" onNavigate={onNavigate} className="hover:text-blue-600">Editorial Guides</ContentLink>
@@ -252,7 +252,8 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <div className="max-w-4xl lg:max-w-6xl mx-auto px-4 sm:px-6 py-8 lg:flex lg:gap-8 lg:items-start">
+        <div className="space-y-8 lg:flex-1 lg:min-w-0">
 
         {/* Guide Header */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
@@ -349,7 +350,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             conversion, so the book sits below both rather than competing with either. A reader
             who has finished the guide and scanned the related ones is the one most likely to
             want a longer treatment of the same subject. See src/components/BookPromo.tsx. */}
-        <BookPromoCard />
+        <BookPromoCard className="lg:hidden" />
 
         {/* FAQ accordion -- admin-entered, per-article. Placed after Related Guides and before
             Sources: it's genuine reader content (unlike Sources, which is closer to citation
@@ -435,6 +436,20 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             onClose={() => setIsErrorModalOpen(false)}
           />
         )}
+
+        </div>
+
+        {/* Right-rail skyscraper, desktop only. Hidden below lg, where the in-flow card above
+            carries the book instead -- the two are never both visible. Sticky so it stays beside
+            a long guide rather than scrolling away in the first screenful. */}
+        {/* Plain div, not <aside>: BookPromoSkyscraper renders its own <aside> with the
+            accessible name, and nesting one inside another would announce two landmarks for one
+            unit. This wrapper only carries the column width and the breakpoint. */}
+        <div className="hidden lg:block lg:w-[300px] lg:shrink-0">
+          <div className="sticky top-8">
+            <BookPromoSkyscraper />
+          </div>
+        </div>
 
       </div>
     </div>
