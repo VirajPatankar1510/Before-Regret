@@ -58,7 +58,9 @@ export const BookPromoCard: React.FC<{ className?: string }> = ({ className = ''
         rel={BOOK_LINK_REL}
         aria-hidden="true"
         tabIndex={-1}
-        className="shrink-0 self-start"
+        // Centred while the card is stacked, flush left once it goes side-by-side at sm. A
+        // left-aligned cover above full-width text reads as a stray thumbnail on a phone.
+        className="shrink-0 self-center sm:self-start"
       >
         <picture>
           <source srcSet="/images/fruitful-home-cover.webp" type="image/webp" />
@@ -69,7 +71,10 @@ export const BookPromoCard: React.FC<{ className?: string }> = ({ className = ''
             height={480}
             loading="lazy"
             decoding="async"
-            className="w-28 sm:w-32 h-auto rounded-lg shadow-md ring-1 ring-black/10"
+            // Square corners at both breakpoints. A printed cover has square corners, and rounding
+            // only one breakpoint would read as a bug rather than a choice. The shadow and hairline
+            // ring stay -- they are what separate a mostly-dark cover from the amber card behind it.
+            className="w-28 sm:w-32 h-auto shadow-md ring-1 ring-black/10"
           />
         </picture>
       </a>
