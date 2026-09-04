@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { BOOK, BOOK_LINK_REL } from '../data/book';
 
 // Promo units for the site's own book. Two shapes: a card (guide pages and the homepage) and a
@@ -21,12 +21,14 @@ import { BOOK, BOOK_LINK_REL } from '../data/book';
 // API, and an image would be the only external asset on an otherwise self-contained page. Text
 // only, which also means the promo costs nothing on a page whose whole problem is getting crawled.
 //
-// FRAMING. The label says the book comes from this site, because it does. Presenting a book the
-// site owns as a neutral reading recommendation would be an undisclosed material connection --
-// the same standard the vendor ad slot already meets with its "Ad" badge in both its sold and
-// unsold states.
-
-const LABEL = 'From the team behind BeforeRegret';
+// FRAMING. The card carried a "From the team behind BeforeRegret" label and a
+// "Paperback and Kindle - by Morgan Ellis" byline; both were removed on request 2026-09-04, so
+// the card is now title, subtitle, pitch and button. Nothing here asserts that the book is a
+// third-party pick either -- there is no "recommended" or "we like", and the aside is labelled as
+// a book for screen readers rather than as editorial. If a disclosure is ever wanted back, the
+// cheapest version is a two-word neutral badge in the slot the label used to occupy; the vendor
+// ad slot's "Ad" badge is the precedent. BOOK.author and BOOK.formats stay in src/data/book.ts as
+// the record of the listing even though nothing renders them now.
 
 // The pitch. Drawn from the book's actual argument -- the three lists, and the twenty minutes a
 // viewing gives you -- not from marketing copy. Nothing here claims a result.
@@ -38,22 +40,17 @@ const PITCH =
 
 export const BookPromoCard: React.FC<{ className?: string }> = ({ className = '' }) => (
   <aside
-    aria-label="Book from BeforeRegret"
+    aria-label={`Book: ${BOOK.title}`}
     className={`bg-gradient-to-br from-amber-50/70 to-white border border-amber-200/70 rounded-3xl p-6 sm:p-8 shadow-sm ${className}`}
   >
-    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-amber-800">
-      <BookOpen className="w-3.5 h-3.5" />
-      <span>{LABEL}</span>
-    </div>
-
-    <h2 className="mt-3 text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
+    <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
       {BOOK.title}
     </h2>
     <p className="mt-1 text-sm sm:text-base font-medium text-slate-600">{BOOK.subtitle}</p>
 
     <p className="mt-4 text-sm text-slate-700 leading-relaxed max-w-2xl">{PITCH}</p>
 
-    <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+    <div className="mt-6">
       <a
         href={BOOK.url}
         target="_blank"
@@ -63,9 +60,6 @@ export const BookPromoCard: React.FC<{ className?: string }> = ({ className = ''
         <span>View on Amazon</span>
         <ArrowUpRight className="w-4 h-4" />
       </a>
-      <span className="text-xs text-slate-500">
-        {BOOK.formats} · by {BOOK.author}
-      </span>
     </div>
   </aside>
 );
