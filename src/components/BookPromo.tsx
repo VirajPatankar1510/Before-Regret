@@ -17,9 +17,13 @@ import { BOOK, BOOK_LINK_REL } from '../data/book';
 // interactivity here, you will have created a fourth pair of twins -- don't, unless the feature
 // genuinely requires it.
 //
-// NO COVER IMAGE. Amazon's product images may not be hotlinked outside the Product Advertising
-// API, and an image would be the only external asset on an otherwise self-contained page. Text
-// only, which also means the promo costs nothing on a page whose whole problem is getting crawled.
+// COVER IMAGE IS SELF-HOSTED, NOT HOTLINKED. Amazon's own product images may not be used outside
+// the Product Advertising API, so the file in public/images is the author's cover supplied
+// directly. Resized from the 1250x2000, 412 KB original down to 300x480 -- roughly 2.3x the width
+// it actually renders at, which is enough for a retina screen and nothing more -- and served as
+// webp with a jpg fallback, matching Logo.tsx's <picture> pattern. 31 KB. It loads lazily and
+// carries explicit width/height, because this card sits below the fold on all 38 pages that
+// render it and an image without intrinsic dimensions reflows the page as it arrives.
 //
 // FRAMING. The card carried a "From the team behind BeforeRegret" label and a
 // "Paperback and Kindle - by Morgan Ellis" byline; both were removed on request 2026-09-04, so
@@ -43,23 +47,53 @@ export const BookPromoCard: React.FC<{ className?: string }> = ({ className = ''
     aria-label={`Book: ${BOOK.title}`}
     className={`bg-gradient-to-br from-amber-50/70 to-white border border-amber-200/70 rounded-3xl p-6 sm:p-8 shadow-sm ${className}`}
   >
-    <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
-      {BOOK.title}
-    </h2>
-    <p className="mt-1 text-sm sm:text-base font-medium text-slate-600">{BOOK.subtitle}</p>
-
-    <p className="mt-4 text-sm text-slate-700 leading-relaxed max-w-2xl">{PITCH}</p>
-
-    <div className="mt-6">
+    <div className="flex flex-col sm:flex-row sm:items-start gap-5 sm:gap-7">
+      {/* The cover links too: on a promo card the artwork is the thing a reader reaches for
+          first, and a picture that does nothing when clicked reads as broken. aria-hidden with
+          tabIndex -1 keeps it out of the tab order and off screen readers, so this does not
+          become a second identical link announced before the real one. */}
       <a
         href={BOOK.url}
         target="_blank"
         rel={BOOK_LINK_REL}
-        className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-xl transition-colors shadow-sm"
+        aria-hidden="true"
+        tabIndex={-1}
+        className="shrink-0 self-start"
       >
-        <span>View on Amazon</span>
-        <ArrowUpRight className="w-4 h-4" />
+        <picture>
+          <source srcSet="/images/fruitful-home-cover.webp" type="image/webp" />
+          <img
+            src="/images/fruitful-home-cover.jpg"
+            alt=""
+            width={300}
+            height={480}
+            loading="lazy"
+            decoding="async"
+            className="w-28 sm:w-32 h-auto rounded-lg shadow-md ring-1 ring-black/10"
+          />
+        </picture>
       </a>
+
+      <div className="min-w-0">
+        <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
+          {BOOK.title}
+        </h2>
+        <p className="mt-1 text-sm sm:text-base font-medium text-slate-600">{BOOK.subtitle}</p>
+
+        <p className="mt-4 text-sm text-slate-700 leading-relaxed">{PITCH}</p>
+
+        <div className="mt-6">
+          <a
+            href={BOOK.url}
+            target="_blank"
+            rel={BOOK_LINK_REL}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-xl transition-colors shadow-sm"
+          >
+            <span>View on Amazon</span>
+            <ArrowUpRight className="w-4 h-4" />
+          </a>
+        </div>
+      </div>
     </div>
   </aside>
 );
