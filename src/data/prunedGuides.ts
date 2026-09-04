@@ -1,5 +1,19 @@
 // The 2026-09-02 guide prune. 155 published guides -> 35, then -> 37 after two were restored on
-// 2026-09-03 (see the "off-niche" block below for which two and why the original call was wrong).
+// 2026-09-03, then -> 42 after the first batch of county permit guides came back on 2026-09-04.
+//
+// THE COUNTY PERMIT GUIDES ARE COMING BACK IN BATCHES, and the reason is measurement, not regret.
+// scripts/keyword-opportunities.ts showed that the queries this domain is closest to winning are
+// county permit lookups: "l&i permit search" at position 6.3, "permit history by address" at 5.0,
+// "cook county permit portal" at 9.6, "san bernardino permit lookup" at 8.0. Every one of the six
+// county permit guides this prune spared ranks page one for its own county. The prune cut
+// twenty-five more, including Los Angeles, Harris, Maricopa, San Diego and Clark -- the largest
+// housing markets in the country -- on the same "zero impressions" reading that was wrong about
+// get-home-insurance-fuse-box.
+//
+// FIVE AT A TIME, NOT TWENTY-FIVE. This prune existed for a real reason: 155 guides in 19 days on
+// a domain with no inbound links is the scaled-content shape Google suppresses at site level.
+// Restoring the whole set at once would recreate it. See scripts/restore-county-permit-guides.ts,
+// which also explains why the restored pages are edited rather than merely re-published.
 //
 // WHY. Search Console (90 days) and Bing Webmaster (21 days) were joined against the published
 // guide list: 13 guides earned at least one click, 28 more earned impressions without clicks, and
@@ -70,41 +84,38 @@ export const MERGED_GUIDE_SLUGS: Readonly<Record<string, string>> = {
  * Guides removed with no successor. Served as 410.
  *
  * Three groups, kept in one list because they get identical treatment:
- *   - 25 county permit guides: the geographic axis, already concluded to be the wrong bet. The six
- *     county permit guides that DO have impressions (Philadelphia, Cook, Miami-Dade, San
- *     Bernardino, Bronx, Middlesex) are deliberately absent from this list.
+ *   - 20 county permit guides. This was 25, and the framing was "the geographic axis, already
+ *     concluded to be the wrong bet." That conclusion was wrong: the geographic axis is the only
+ *     thing on this domain ranking page one for commercial US queries. Five came back on
+ *     2026-09-04 (Los Angeles, Harris, Maricopa, San Diego, Clark) and the rest are candidates in
+ *     later batches. The eleven county permit guides now published are deliberately absent here.
  *   - 6 "what X wish buyers knew" guides: one headline formula filled six times with a different
  *     trade -- the most legible scaled-content signature in the library.
  *   - 9 off-niche guides, plus 58 on-topic guides that have simply never been shown by either
  *     engine in three months.
  */
 export const REMOVED_GUIDE_SLUGS: readonly string[] = [
-  // --- county permit guides (25) ---
+  // --- county permit guides (20 remaining; 5 restored 2026-09-04) ---
   'check-building-permit-history-before-buying-travis-county-tx',
   'check-building-permits-alameda-county-ca',
   'check-building-permits-bexar-county-tx',
   'check-building-permits-brooklyn-ny',
   'check-building-permits-broward-county-fl',
-  'check-building-permits-clark-county-nv',
   'check-building-permits-dallas-county-tx',
   'check-building-permits-fulton-county-ga',
   'check-building-permits-hillsborough-county-fl',
-  'check-building-permits-los-angeles-county-ca',
   'check-building-permits-manhattan-ny',
-  'check-building-permits-maricopa-county-az',
   'check-building-permits-orange-county-ca',
   'check-building-permits-orange-county-fl',
   'check-building-permits-palm-beach-county-fl',
   'check-building-permits-queens-ny',
   'check-building-permits-riverside-county-ca',
   'check-building-permits-sacramento-county-ca',
-  'check-building-permits-san-diego-county-ca',
   'check-building-permits-santa-clara-county-ca',
   'check-building-permits-seattle-wa',
   'check-building-permits-suffolk-county-ny',
   'check-building-permits-tarrant-county-tx',
   'check-building-permits-wayne-county-mi',
-  'check-harris-county-permit-history-before-buying',
 
   // --- the "what X wish buyers knew" template (6) ---
   'buyers-wish-they-asked-before-waiving-inspection-contingency',

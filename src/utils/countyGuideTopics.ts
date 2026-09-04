@@ -118,6 +118,9 @@ export function pickCountiesForGuide(
 // older slug shape. All seven verified against the real county_data rows, not guessed.
 const PERMIT_GUIDE_COUNTY_ALIASES: Record<string, string> = {
   'check-building-permits-bronx-ny': 'bronx-county-ny',
+  // Restored 2026-09-04. Its slug predates the check-building-permits-<county> convention, so
+  // permitGuideCountySlug's prefix check never matches it and only this alias links it to Harris.
+  'check-harris-county-permit-history-before-buying': 'harris-county-tx',
 };
 
 const PERMIT_GUIDE_SLUG_PREFIX = 'check-building-permits-';
