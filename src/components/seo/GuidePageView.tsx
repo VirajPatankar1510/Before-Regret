@@ -319,6 +319,17 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           </div>
         </div>
 
+        {/* The site's own book, mobile and tablet only -- desktop carries it in the right rail
+            instead (see the aside at the foot of this file), so the two are never both visible.
+            Placed directly after the article body: the reader has just finished the thing they
+            came for, which is the moment a longer treatment of the same subject lands best. It
+            used to sit after Related Guides, where on a phone it arrived below a long article AND
+            a link grid, deep enough that it read as page furniture rather than an offer.
+            Still BELOW the vendor ad slot above the article body, which is sold inventory, and
+            immediately ABOVE the closing note rather than displacing it -- the free-report CTA is
+            this page's primary conversion and stays the last thing before Related Guides. */}
+        <BookPromoCard className="lg:hidden" />
+
         <ArticleClosingNote onNavigate={onNavigate} />
 
         {/* Related Guides: placed after our own conversion CTA, not before it -- the closing note
@@ -344,13 +355,6 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             </div>
           </div>
         )}
-
-        {/* The site's own book. Placed AFTER Related Guides on purpose: the vendor ad slot above
-            the article body is sold inventory and the closing note is this page's primary
-            conversion, so the book sits below both rather than competing with either. A reader
-            who has finished the guide and scanned the related ones is the one most likely to
-            want a longer treatment of the same subject. See src/components/BookPromo.tsx. */}
-        <BookPromoCard className="lg:hidden" />
 
         {/* FAQ accordion -- admin-entered, per-article. Placed after Related Guides and before
             Sources: it's genuine reader content (unlike Sources, which is closer to citation

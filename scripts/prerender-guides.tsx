@@ -267,6 +267,11 @@ function GuideStaticBody({
           <div className="max-w-none">{renderArticleMarkdown(article.bodyMarkdown)}</div>
         </div>
 
+        {/* Same unit and same position as GuidePageView.tsx -- not a static twin, the actual
+            component. Directly after the article body and above the closing note; desktop hides
+            it in favour of the right rail. */}
+        <BookPromoCard className="lg:hidden" />
+
         <ArticleClosingNote onNavigate={noNav} />
 
         {/* Real-identity match, not a relevance guess -- this guide is ABOUT permitCounty, so it
@@ -326,11 +331,6 @@ function GuideStaticBody({
             </div>
           </div>
         )}
-
-        {/* Same unit and same position as GuidePageView.tsx -- not a static twin, the actual
-            component. BookPromo is hook-free and links off-site, so one definition serves both
-            the live tree and this prerender. See src/components/BookPromo.tsx. */}
-        <BookPromoCard className="lg:hidden" />
 
         {/* Static twin of GuidePageView.tsx's FAQ accordion -- rendered fully expanded here since
             this HTML has no JS-driven toggle state; the live client swaps in the interactive
