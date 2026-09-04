@@ -8,6 +8,7 @@ import { PricingSection } from './home/PricingSection';
 import { FaqSection } from './home/FaqSection';
 import { ClosingCtaSection } from './home/ClosingCtaSection';
 import { GuideCardsSection } from './home/GuideCardsSection';
+import { BookPromoCard } from './BookPromo';
 import { HomeData, buildGuideClusters, pickResearchPages } from '../utils/homeContent';
 
 interface HeroProps {
@@ -200,6 +201,15 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
           internal-linking fix for county pages stuck in "Discovered - not indexed" (see
           CountyLinksSection.tsx). Sits right after the guide library, before the FAQ, mirroring the
           exact position in scripts/prerender-homepage.tsx so the static and client renders match. */}
+
+      {/* 5c. OUR BOOK -- same position as scripts/prerender-homepage.tsx so the static and
+          client renders match. Below the hero search and pricing on purpose: the homepage's job
+          is turning an address lookup into a report. */}
+      <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <BookPromoCard />
+        </div>
+      </section>
 
       {/* 6. FREQUENTLY ASKED QUESTIONS */}
       <FaqSection />

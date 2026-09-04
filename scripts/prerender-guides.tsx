@@ -10,6 +10,7 @@ import { pickRelatedGuides, GuideSummary } from '../src/utils/relatedGuides';
 import { buildPageTitle } from '../src/utils/pageTitle';
 import { pickCountiesForGuide, CountyTopicInput, GUIDE_TOPICS, permitGuideCountySlug } from '../src/utils/countyGuideTopics.js';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
+import { BookPromoCard } from '../src/components/BookPromo';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 import { resolveArticleSchemaImage } from '../src/utils/articleImage.js';
 import type { PrerenderedRouteKey } from '../src/routeChunks.js';
@@ -324,6 +325,11 @@ function GuideStaticBody({
             </div>
           </div>
         )}
+
+        {/* Same unit and same position as GuidePageView.tsx -- not a static twin, the actual
+            component. BookPromo is hook-free and links off-site, so one definition serves both
+            the live tree and this prerender. See src/components/BookPromo.tsx. */}
+        <BookPromoCard />
 
         {/* Static twin of GuidePageView.tsx's FAQ accordion -- rendered fully expanded here since
             this HTML has no JS-driven toggle state; the live client swaps in the interactive

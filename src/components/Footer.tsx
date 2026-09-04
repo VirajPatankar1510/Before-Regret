@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ShieldCheck, ArrowRight, BookOpen } from 'lucide-react';
 import { Logo } from './Logo';
+import { BookPromoFooterLink } from './BookPromo';
 import { ContentLink } from './home/ContentLink';
 import { PREFERRED_SOURCE_URL, PREFERRED_SOURCE_LABEL } from '../data/preferredSource';
 
@@ -156,6 +157,13 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
               </div>
               <ul className="space-y-2">
                 <li><ContentLink href="/about/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">About & Methodology</ContentLink></li>
+                {/* Our book. In THIS column, not the Editorial Guides list above, because that
+                    list is wrapped in `guides.length > 0` and disappears until the guides fetch
+                    resolves -- on the homepage in dev it never rendered at all. This column has no
+                    such condition. Plain <a> (external), same as the research links below. */}
+                <li>
+                  <BookPromoFooterLink />
+                </li>
                 {/* Plain <a>, NOT ContentLink, for the same reason as the external link below:
                     /research/ is a standalone static document (scripts/prerender-research.tsx),
                     not an SPA route. ContentLink would preventDefault and hand the path to

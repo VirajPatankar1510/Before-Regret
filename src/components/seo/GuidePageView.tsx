@@ -5,6 +5,7 @@ import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../../
 import { resolveKnownSource } from '../../data/knownSources';
 import { ArticleClosingNote } from './ArticleClosingNote';
 import { GuideAdSlot } from '../GuideAdSlot';
+import { BookPromoCard } from '../BookPromo';
 import { ContentLink } from '../home/ContentLink';
 import { pickRelatedGuides, GuideSummary } from '../../utils/relatedGuides';
 import { buildPageTitle } from '../../utils/pageTitle';
@@ -342,6 +343,13 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
             </div>
           </div>
         )}
+
+        {/* The site's own book. Placed AFTER Related Guides on purpose: the vendor ad slot above
+            the article body is sold inventory and the closing note is this page's primary
+            conversion, so the book sits below both rather than competing with either. A reader
+            who has finished the guide and scanned the related ones is the one most likely to
+            want a longer treatment of the same subject. See src/components/BookPromo.tsx. */}
+        <BookPromoCard />
 
         {/* FAQ accordion -- admin-entered, per-article. Placed after Related Guides and before
             Sources: it's genuine reader content (unlike Sources, which is closer to citation

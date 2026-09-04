@@ -9,6 +9,7 @@ import { PricingSection } from '../src/components/home/PricingSection';
 import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
 import { HOMEPAGE_FAQS } from '../src/components/home/FaqSection';
 import { GuideCardsSection } from '../src/components/home/GuideCardsSection';
+import { BookPromoCard } from '../src/components/BookPromo';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { isDbConfigured } from '../src/server/db.js';
 import { loadHomepageData } from '../src/server/homepageApi.js';
@@ -131,6 +132,15 @@ function HomeStaticBody({ data }: { data: HomeData }) {
           county link renders as a plain crawlable <a href> -- the point of prerendering this: 100
           county pages get a direct inbound link from the domain's strongest page instead of only a
           third-hop path through the footer's /counties/ hub link. See CountyLinksSection.tsx. */}
+
+      {/* Same position as src/components/Hero.tsx: after the guide library, before the FAQ.
+          Below the hero search and the pricing section on purpose -- the homepage's job is turning
+          an address lookup into a report, and the book must not compete with that. */}
+      <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <BookPromoCard />
+        </div>
+      </section>
 
       <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 border-t border-slate-200/80">
         <div className="max-w-4xl mx-auto space-y-12">
