@@ -22,3 +22,7 @@ backups/
 # `git add -A` run during that window commits it. One reached the repo in 94baad9 this way.
 ~$*
 .~lock.*#
+
+# Customer correspondence drafts: these contain real names, email addresses and home
+# addresses, and this repository is public. Never commit them.
+docs/reply-*.md
