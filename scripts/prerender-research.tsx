@@ -286,11 +286,45 @@ async function run() {
     console.error('[prerender-research] risk-without-price cite block is not inside a section.');
     process.exit(1);
   }
+
+// A newsroom block: the exhibits as files a reporter can actually use, and a citation sentence
+// they can paste without having to work out how to name us.
+//
+// WHY THE CHART FILES EXIST AT ALL. The exhibits on these pages are inline <svg> whose colours
+// come from CSS custom properties on the page. Saved or copied out of the page they render
+// colourless, so until now a reporter could read a chart here but could not take one. The .png and
+// .svg exports are written by scripts/render-research-charts.py.
+//
+// The citation line is deliberately a plain sentence with the source named inside it. A reporter
+// under deadline will paste it as-is; if it said only "BeforeRegret" they would have to go and
+// find out what the underlying data was, and most would simply not cite at all.
+function newsroomBlock(opts: {
+  title: string; url: string; source: string; published: string;
+  sentence: string; charts: Array<{ file: string; label: string }>;
+}): string {
+  const links = opts.charts.map((c) =>
+    `<a href="/research/data/${c.file}.png" download>${c.label} (PNG)</a> &#183; <a href="/research/data/${c.file}.svg" download>SVG</a>`
+  ).join('<br>');
+  return `
+<h3 style="margin-top:2.2em">The charts, as files</h3>
+<p>Every exhibit on this page as a high-contrast image, free to reuse with credit. The PNG drops
+straight into a document or a slide; the SVG stays sharp at any size.</p>
+<p style="margin-top:.7em">${links}</p>
+
+<h3 style="margin-top:2.2em">Cite this</h3>
+<p style="margin-top:.7em;font-size:.95rem">${opts.sentence}</p>
+<p style="margin-top:.7em;font-size:.9rem;color:var(--muted)">${escapeHtmlAttr(opts.title)}, BeforeRegret, ${opts.published}. Source: ${opts.source}. ${escapeHtmlAttr(opts.url)}</p>
+`;
+}
+
   const rwpKit = `
 <h3 style="margin-top:2.2em">The data</h3>
 <p>Every figure on this page, and the state table behind the charts: 51 rows with the county count, median premium and modelled risk index for each.</p>
 <p style="margin-top:.7em"><a href="/research/data/risk-without-price-by-state.csv" download>risk-without-price-by-state.csv</a> &#183; <a href="/research/data/risk-without-price-figures.json">the full figures as JSON</a></p>
 <p style="margin-top:.9em;font-size:.9rem;color:var(--muted)">There is no county-level file for this study. The analysis runs on 3,093 county observations, but they are held as anonymous risk-and-premium pairs rather than a named table, so a county breakdown would have to be reconstructed rather than published. The state file and the JSON together contain every number quoted above.</p>
+${newsroomBlock({ title: 'Risk Without Price', url: `${escapeHtmlAttr(CANONICAL_URL)}`, source: 'Census ACS &#183; FEMA National Risk Index', published: '30 August 2026',
+  sentence: 'Across 3,093 US counties, modelled hazard explains part of what homeowners pay for insurance, but two counties facing the same modelled risk can differ by more than double, according to an analysis of Census and FEMA National Risk Index data by BeforeRegret.',
+  charts: [{ file: 'risk-without-price-exhibit-1', label: 'Exhibit 1' }, { file: 'risk-without-price-exhibit-2', label: 'Exhibit 2' }, { file: 'risk-without-price-exhibit-3', label: 'Exhibit 3' }, { file: 'risk-without-price-exhibit-4', label: 'Exhibit 4' }, { file: 'risk-without-price-exhibit-5', label: 'Exhibit 5' }] })}
 <h3 style="margin-top:2.2em">Embed the county lookup</h3>
 <p>Free to use on any site. It sizes itself to its content and carries its own credit line.</p>
 <div class="code" style="margin-top:.7em">&lt;iframe src="${escapeHtmlAttr(CANONICAL_URL)}embed/" width="100%" height="620" style="border:1px solid #ddd" title="County homeowners insurance lookup" loading="lazy"&gt;&lt;/iframe&gt;</div>
@@ -449,6 +483,9 @@ ${lookupScript}
 <p>Flood insurance take-up for 2,304 counties: how many homes sit inside a mapped flood zone, how many NFIP policies are in force, and the resulting rate.</p>
 <p style="margin-top:.7em"><a href="/research/data/flood-takeup-by-county.csv" download>flood-takeup-by-county.csv</a> &#183; <a href="/research/data/flood-takeup.json">the full figures as JSON</a></p>
 <p style="margin-top:.9em;font-size:.9rem;color:var(--muted)">The take-up column counts NFIP policies only. Private flood insurance has grown and is not in this file, so true coverage is higher than these numbers by an amount the data cannot measure. Read a low figure as "NFIP coverage is low here", not as "these homes are uninsured".</p>
+${newsroomBlock({ title: 'Risk Without Cover', url: `${escapeHtmlAttr(COVER_URL)}`, source: 'FEMA NFIP &#183; Census ACS', published: '31 August 2026',
+  sentence: 'In the typical US county, roughly one home in seven inside a mapped flood zone carries an NFIP flood policy, and take-up does not track flood risk, according to an analysis of FEMA and Census data by BeforeRegret.',
+  charts: [{ file: 'risk-without-cover-exhibit-1', label: 'Exhibit 1' }, { file: 'risk-without-cover-exhibit-2', label: 'Exhibit 2' }] })}
 <h3 style="margin-top:2.2em">Embed the county lookup</h3>
 <p>Free to use on any site. It sizes itself to its content and carries its own credit line.</p>
 <div class="code" style="margin-top:.7em">&lt;iframe src="${escapeHtmlAttr(COVER_URL)}embed/" width="100%" height="680" style="border:1px solid #ddd" title="Flood insurance take-up by county" loading="lazy"&gt;&lt;/iframe&gt;</div>
@@ -678,6 +715,9 @@ ${cJsScript}
 <p style="margin-top:.7em"><a href="/research/data/outside-the-zone-by-county.csv" download>outside-the-zone-by-county.csv</a> &#183; <a href="/research/data/flood-outside-zone.json">the full figures as JSON</a></p>
 <p style="margin-top:.9em;font-size:.9rem;color:var(--muted)">Three things to know before you quote the file. The county rows total 2,487,348 classifiable claims rather than the 2,578,413 counted nationally, because not every claim on record carries a county that can be matched; the national and state figures on this page are not built up from the county table. The take-up column is blank for 263 counties rather than zero &#8212; blank means no rate is published for that county, including the 22 where the computed rate exceeded 100%, which the source attributes to structure-count errors, and reading a blank as a zero would invert what it means.</p>
 <p style="margin-top:.7em;font-size:.9rem;color:var(--muted)">And six names appear twice, because they are genuinely two places: Baltimore MD, St. Louis MO, and Fairfax, Richmond, Franklin and Roanoke in Virginia each exist as both an independent city and a separate county. The two rows are different jurisdictions with different claims histories. The file does not say which is which, so if you are writing about one of those six, check the count against the source before you publish rather than picking a row.</p>
+${newsroomBlock({ title: 'Outside the Zone', url: `${escapeHtmlAttr(ZONE_URL)}`, source: 'FEMA NFIP claims &#183; 1,921 counties', published: '1 September 2026',
+  sentence: 'More than one paid NFIP flood claim in four came from outside the mapped high-risk flood zone, and in Texas it was about half, according to an analysis of FEMA claims data by BeforeRegret.',
+  charts: [{ file: 'outside-the-zone-exhibit-1', label: 'Exhibit 1' }, { file: 'outside-the-zone-exhibit-2', label: 'Exhibit 2' }] })}
 <h3 style="margin-top:2.2em">Embed the county lookup</h3>
 <p>Free to use on any site. It sizes itself to its content and carries its own credit line.</p>
 <div class="code" style="margin-top:.7em">&lt;iframe src="${escapeHtmlAttr(ZONE_URL)}embed/" width="100%" height="640" style="border:1px solid #ddd" title="Flood claims outside the mapped high-risk zone, by county" loading="lazy"&gt;&lt;/iframe&gt;</div>
@@ -902,6 +942,9 @@ ${zJsScript}
 <p>The full county table, 2,274 rows, one per US county with at least one dam classified high hazard potential. The same numbers as the lookup above.</p>
 <p style="margin-top:.7em"><a href="/research/data/high-hazard-dams-by-county.csv" download>high-hazard-dams-by-county.csv</a> &#183; <a href="/research/data/dams-high-hazard.json">the full figures as JSON</a></p>
 <p style="margin-top:.9em;font-size:.9rem;color:var(--muted)">If you total the county file it comes to 16,931 high-hazard dams, not the 17,049 quoted above, and that difference is in the records rather than in the arithmetic: 37 of them are not placed in one of the 50 states, and a further 81 carry no county. Every national figure on this page counts all 17,049. The 636 dams rated poor or unsatisfactory with no emergency action plan appear as 635 in the county file for the same reason.</p>
+${newsroomBlock({ title: 'High-Hazard Dams by County', url: `${escapeHtmlAttr(DAM_URL)}`, source: 'USACE National Inventory of Dams', published: '1 September 2026',
+  sentence: 'Of 17,049 US dams classified high hazard potential, about one in six carries a condition rating of poor or unsatisfactory, and 636 of those have no emergency action plan on file, according to an analysis of the National Inventory of Dams by BeforeRegret.',
+  charts: [{ file: 'high-hazard-dams-exhibit-1', label: 'Exhibit 1' }, { file: 'high-hazard-dams-exhibit-2', label: 'Exhibit 2' }] })}
 <h3 style="margin-top:2.2em">Embed the county lookup</h3>
 <p>Free to use on any site. It sizes itself to its content and carries its own credit line.</p>
 <div class="code" style="margin-top:.7em">&lt;iframe src="${escapeHtmlAttr(DAM_URL)}embed/" width="100%" height="620" style="border:1px solid #ddd" title="High-hazard dams by county" loading="lazy"&gt;&lt;/iframe&gt;</div>

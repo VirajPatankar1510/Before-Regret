@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 200" width="620" height="200" class="chart" role="img"><style>
+  .chart { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+  .chart .grid { stroke: #D2D9D8; stroke-width: 1; }
+  .chart text { font-family: "IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace; font-size: 11px; fill: #5C6B72; }
+  .chart .end { text-anchor: end; }
+  .chart .mid { text-anchor: middle; }
+  .chart .sm { font-size: 11px; }
+  .chart .tiny { font-size: 8.5px; }
+  .chart .nm { font-size: 13px; fill: #12212B; }
+  .chart .big { font-size: 17px; font-weight: 600; fill: #12212B; }
+  .chart .track { fill: #E2E6E5; }
+  .chart .bar.price { fill: #B4232A; }
+  .chart .bar.risk { fill: #1E7A8C; }
+</style><rect width="620" height="200" fill="#F6F7F6"/>
+  <text class="nm" x="0" y="18">Inside the mapped zone</text>
+  <rect class="track" x="0" y="28" width="620" height="34"/>
+  <rect class="bar risk" x="0" y="28" width="297.0" height="34"/>
+  <text class="big" x="8" y="52" style="fill:var(--paper)">47.9%</text>
+  <text class="sm" x="0" y="80">1,839,101 policies against 3,839,194 homes</text>
+
+  <text class="nm" x="0" y="126">Outside the mapped zone</text>
+  <rect class="track" x="0" y="136" width="620" height="34"/>
+  <rect class="bar price" x="0" y="136" width="7.8" height="34"/>
+  <text class="big" x="12" y="160">1.25%</text>
+  <text class="sm" x="0" y="188">1,321,764 policies against 105,487,685 homes</text>
+</svg>

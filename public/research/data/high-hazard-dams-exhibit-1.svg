@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 766 250" width="766" height="250" class="chart" role="img"><style>
+  .chart { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+  .chart text { font-family: "IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace; font-size: 11px; fill: #5C6B72; }
+  .chart .end { text-anchor: end; }
+  .chart .sm { font-size: 11px; }
+  .chart .tiny { font-size: 9px; }
+  .chart .big { font-size: 15px; font-weight: 600; fill: #12212B; }
+  .chart .track { fill: #E2E6E5; }
+  .chart .bar.price { fill: #B4232A; }
+  .chart .bar.risk { fill: #1E7A8C; }
+</style><rect width="766" height="250" fill="#F6F7F6"/><rect class="track" x="200" y="26" width="410" height="30"/><rect class="bar risk" x="200" y="26" width="410.0" height="30"/><text class="end sm" x="192" y="46">All dams in the inventory</text><text class="big" x="620" y="47">92,766</text><rect class="track" x="200" y="82" width="410" height="30"/><rect class="bar risk" x="200" y="82" width="349.3" height="30"/><text class="end sm" x="192" y="102">Classified high hazard potential</text><text class="big" x="559.2773794438662" y="103">17,049</text><text class="tiny" x="200" y="126">a classification of potential consequences, not of condition</text><rect class="track" x="200" y="138" width="410" height="30"/><rect class="bar price" x="200" y="138" width="284.4" height="30"/><text class="end sm" x="192" y="158">Condition recorded poor or unsatisfactory</text><text class="big" x="494.40727737509917" y="159">2,791</text><text class="tiny" x="200" y="182">16.4% of those</text><rect class="track" x="200" y="194" width="410" height="30"/><rect class="bar price" x="200" y="194" width="231.4" height="30"/><text class="end sm" x="192" y="214">No emergency action plan on file</text><text class="big" x="441.39268066689147" y="215">636</text><text class="tiny" x="200" y="238">as recorded in this release</text></svg>

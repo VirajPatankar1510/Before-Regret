@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 272" width="900" height="272" class="chart" role="img"><style>
+  .chart { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+  .chart .grid { stroke: #D2D9D8; stroke-width: 1; }
+  .chart .axis { stroke: #12212B; stroke-width: 1.2; }
+  .chart .dot { fill: rgba(18,33,43,.32); }
+  .chart .fit { stroke: #B4232A; stroke-width: 2.5; stroke-dasharray: 7 5; }
+  .chart .fit-lbl { fill: #B4232A; font-weight: 600; }
+  .chart text { font-family: "IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace; font-size: 11px; fill: #5C6B72; }
+  .chart .end { text-anchor: end; }
+  .chart .mid { text-anchor: middle; }
+  .chart .lbl { font-size: 10.5px; letter-spacing: .04em; }
+  .chart .sm { font-size: 11px; }
+  .chart .tiny { font-size: 8.5px; }
+  .chart .nm { font-size: 13px; fill: #12212B; }
+  .chart .big { font-size: 17px; font-weight: 600; fill: #12212B; }
+  .chart .dim { opacity: .72; }
+  .chart .track { fill: #E2E6E5; }
+  .chart .bar.price { fill: #B4232A; }
+  .chart .bar.risk { fill: #1E7A8C; }
+  .chart .bar.neutral { fill: #5C6B72; }
+  .chart .conn { stroke: #D2D9D8; stroke-width: 2; }
+  .chart .lo { fill: #1E7A8C; }
+  .chart .hi { fill: #B4232A; }
+  .chart .risk-t { fill: #1E7A8C; font-weight: 600; letter-spacing: .06em; }
+  .chart .price-t { fill: #B4232A; font-weight: 600; letter-spacing: .06em; }
+</style><rect width="900" height="272" fill="#F6F7F6"/><text x="268" y="43" class="ax end nm">State of residence</text><rect x="282" y="22" width="522" height="30" class="track"/><rect x="282" y="22" width="227.6" height="30" class="bar price"/><text x="522" y="43" class="ax big">0.436</text><text x="268" y="101" class="ax end nm">Hazard risk</text><rect x="282" y="80" width="522" height="30" class="track"/><rect x="282" y="80" width="102.3" height="30" class="bar risk"/><text x="396" y="101" class="ax big">0.196</text><text x="268" y="159" class="ax end nm">State + risk</text><rect x="282" y="138" width="522" height="30" class="track"/><rect x="282" y="138" width="240.6" height="30" class="bar neutral"/><text x="535" y="159" class="ax big">0.461</text><text x="268" y="217" class="ax end nm">State + risk + home value</text><rect x="282" y="196" width="522" height="30" class="track"/><rect x="282" y="196" width="319.5" height="30" class="bar neutral"/><text x="613" y="217" class="ax big">0.612</text><text x="282" y="262" class="ax lbl">R&#178; on log premium &#183; 3,093 counties &#183; unweighted. Household-weighted: state 0.651, risk 0.298.</text></svg>
