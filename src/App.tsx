@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -313,8 +313,113 @@ export function App() {
     window.scrollTo(0, 0);
   };
 
+  // The report currently in state, readable from inside the mount effect's popstate listener.
+  // That listener is registered once with [] deps, so it closes over the FIRST render's `report`
+  // forever; without this ref it would always look like there is no report loaded and refetch on
+  // every Back press.
+  const reportRef = useRef<PropertyReport | null>(null);
+  useEffect(() => { reportRef.current = report; }, [report]);
+
+  // Loads a report permalink (/insights/:id, /report/:id, ?reportId=). Extracted so that the mount
+  // effect and the popstate handler go through exactly one implementation -- they used to differ,
+  // and that difference WAS the back-button bug: popstate skipped /insights/ entirely, so pressing
+  // Back from a guide to a report changed the URL and left the guide on screen.
+  const loadReportById = (id: string) => {
+    setIsLoading(true);
+    // The retry against /api/report/:id that used to sit here has been dropped: server.ts serves
+    // /api/insights, /api/report and /api/reports from one handler, so the "fallback" was a second
+    // request to the same code guaranteed to give the same answer.
+    fetch(`/api/insights/${id}`)
+      .then((res) => {
+        // 503 means we could not reach the database, which is not the same as "this report does
+        // not exist" -- telling someone their report is gone when the truth is "we can't look
+        // right now" is its own kind of wrong answer, so it gets a distinct, retryable message.
+        if (res.status === 503) throw new Error('REPORT_UNAVAILABLE');
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && contentType.includes('application/json')) return res.json();
+        throw new Error('REPORT_NOT_FOUND');
+      })
+      .then((data) => {
+        if (data && data.success && data.report) {
+          setReport(data.report);
+          setPseoRoute({ type: 'none' });
+          setCurrentStep('REPORT');
+        } else {
+          throw new Error('REPORT_NOT_FOUND');
+        }
+      })
+      .catch((err) => {
+        // Previously this called createFallbackReport(null, null) and rendered the result, which
+        // with no property argument invents "1204 Oakridge Dr, Austin, TX 78701" -- a specific
+        // street address the visitor never searched, presented as their report. A report we cannot
+        // load is now a 404 page, which is the honest answer and the only safe one: this permalink
+        // is the thing people share, and a shared link that quietly shows the wrong property is
+        // worse than one that plainly says it expired.
+        console.warn('Could not load report from permalink:', err);
+        setPseoRoute({
+          type: 'reportUnavailable',
+          reportFailure: err?.message === 'REPORT_UNAVAILABLE' ? 'unavailable' : 'not_found',
+        });
+        setCurrentStep('PSEO');
+      })
+      .finally(() => setIsLoading(false));
+  };
+
   // Check URL on mount for standalone report permalinks & pSEO routes
   useEffect(() => {
+    // Handle browser popstate.
+    //
+    // This used to do NOTHING for /insights/ and /report/ paths -- the else-if explicitly excluded
+    // them -- which meant pressing Back onto a report permalink moved the URL and left the
+    // previous page rendered. Reproduced on production 2026-09-04: from a report, click through to
+    // /about/, press Back, and the address bar reads /insights/rep_... while the About page is
+    // still on screen.
+    //
+    // That was one of two back-button bugs found the same day. The other -- see the IIFE below --
+    // meant this listener was never registered at all when the app booted on a pSEO route, so
+    // fixing only this one would have left Back broken for anyone arriving from search.
+    const handlePopState = () => {
+      const popPathname = window.location.pathname;
+      if (resolveRouteFromPath(popPathname)) return;
+
+      if (popPathname === '/') {
+        setCurrentStep('HOME');
+        setPseoRoute({ type: 'none' });
+        return;
+      }
+
+      const permalink = popPathname.match(/^\/(?:insights|report)\/([^/]+)\/?$/);
+      if (permalink) {
+        const id = permalink[1];
+        // Already in state -- the common case, since Back usually returns to the report the user
+        // just came from. Re-render it directly rather than refetching, so the view snaps back
+        // instead of flashing a loading state for something we are already holding.
+        if (reportRef.current && reportRef.current.id === id) {
+          setPseoRoute({ type: 'none' });
+          setCurrentStep('REPORT');
+        } else {
+          loadReportById(id);
+        }
+        return;
+      }
+
+      setPseoRoute({ type: 'notFound' });
+      setCurrentStep('PSEO');
+    };
+    window.addEventListener('popstate', handlePopState);
+
+    // Resolve whatever route the app booted on.
+    //
+    // WRAPPED IN AN IIFE ON PURPOSE. This block returns early in several places -- most commonly
+    // the very first check, `if (resolveRouteFromPath(pathname)) return`, which fires for every
+    // guide page, /guides/, /about/, /advertise/ and every other pSEO route. Those returns used to
+    // exit the EFFECT, and the popstate listener was registered after them, so on any of those
+    // routes the listener was never attached at all: pressing Back changed the URL and left the
+    // previous view on screen. That is most of the site's search landing pages. Reproduced
+    // 2026-09-04: load /guides/, click into a guide, press Back -- the URL returns to /guides/ and
+    // the guide is still rendered. Registering the listener above this block, and confining the
+    // early returns to the IIFE, is the fix.
+    (() => {
     const pathname = window.location.pathname;
     const searchParams = new URLSearchParams(window.location.search);
 
@@ -357,47 +462,7 @@ export function App() {
     }
 
     if (reportIdFromUrl && reportIdFromUrl.length > 0) {
-      setIsLoading(true);
-      // The retry against /api/report/:id that used to sit here has been dropped: server.ts serves
-      // /api/insights, /api/report and /api/reports from one handler, so the "fallback" was a second
-      // request to the same code guaranteed to give the same answer.
-      fetch(`/api/insights/${reportIdFromUrl}`)
-        .then((res) => {
-          // 503 means we could not reach the database, which is not the same as "this report does
-          // not exist" -- telling someone their report is gone when the truth is "we can't look
-          // right now" is its own kind of wrong answer, so it gets a distinct, retryable message.
-          if (res.status === 503) throw new Error('REPORT_UNAVAILABLE');
-          const contentType = res.headers.get('content-type') || '';
-          if (res.ok && contentType.includes('application/json')) {
-            return res.json();
-          }
-          throw new Error('REPORT_NOT_FOUND');
-        })
-        .then((data) => {
-          if (data && data.success && data.report) {
-            setReport(data.report);
-            setCurrentStep('REPORT');
-          } else {
-            throw new Error('REPORT_NOT_FOUND');
-          }
-        })
-        .catch((err) => {
-          // Previously this called createFallbackReport(null, null) and rendered the result, which
-          // with no property argument invents "1204 Oakridge Dr, Austin, TX 78701" -- a specific
-          // street address the visitor never searched, presented as their report. That was the
-          // client-side twin of the server's own fabricating fallback, so fixing only the API would
-          // have left the same lie reachable by a different route. A report we cannot load is now
-          // a 404 page, which is the honest answer and the only safe one: this permalink is the
-          // thing people share, and a shared link that quietly shows the wrong property is worse
-          // than one that plainly says it expired.
-          console.warn('Could not load report from permalink:', err);
-          setPseoRoute({
-            type: 'reportUnavailable',
-            reportFailure: err?.message === 'REPORT_UNAVAILABLE' ? 'unavailable' : 'not_found',
-          });
-          setCurrentStep('PSEO');
-        })
-        .finally(() => setIsLoading(false));
+      loadReportById(reportIdFromUrl);
     } else if (!isRoot) {
       // No pSEO route matched, not the homepage, and no report permalink found here -- this is a
       // genuinely unrecognized URL. Render an honest 404 instead of silently falling back to the
@@ -406,20 +471,8 @@ export function App() {
       setCurrentStep('PSEO');
     }
 
-    // Handle browser popstate
-    const handlePopState = () => {
-      const popPathname = window.location.pathname;
-      if (!resolveRouteFromPath(popPathname)) {
-        if (popPathname === '/') {
-          setCurrentStep('HOME');
-          setPseoRoute({ type: 'none' });
-        } else if (!popPathname.startsWith('/insights/') && !popPathname.startsWith('/report/')) {
-          setPseoRoute({ type: 'notFound' });
-          setCurrentStep('PSEO');
-        }
-      }
-    };
-    window.addEventListener('popstate', handlePopState);
+    })();
+
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
