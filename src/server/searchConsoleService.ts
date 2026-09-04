@@ -57,7 +57,11 @@ function base64url(input: Buffer | string): string {
 // Exchanges the service account's private key for a short-lived OAuth access token. Not cached
 // across calls -- this is an admin-only, low-frequency tool (a founder occasionally checking
 // topic ideas), not a hot path worth the complexity of token-expiry bookkeeping.
-async function getAccessToken(): Promise<string> {
+/** Exported so one-off analysis scripts (scripts/keyword-opportunities.ts) can call the
+ *  Search Console REST API directly with the same service-account auth the functions below use,
+ *  instead of re-implementing the JWT exchange or being limited to their fixed dimensions and
+ *  row caps. Read-only scope either way. */
+export async function getAccessToken(): Promise<string> {
   const email = process.env.GSC_SERVICE_ACCOUNT_EMAIL!;
   const privateKey = process.env.GSC_SERVICE_ACCOUNT_PRIVATE_KEY!.replace(/\\n/g, '\n');
 
