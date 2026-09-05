@@ -38,6 +38,12 @@ export const KNOWN_SOURCES: KnownSource[] = [
   // which did resolve): govinfo.gov/content/pkg/GAOREPORTS-GAO-07-401. Worth clicking once to
   // confirm before relying on it.
   { key: 'GAO', name: 'U.S. Government Accountability Office', url: 'https://www.gao.gov' },
+  // Deck construction is governed by the IRC (section R507 since the 2015 edition) and by the
+  // American Wood Council's DCA6, the prescriptive deck guide most building departments hand out
+  // and many adopt by reference. Neither body had an entry here, and this file requires one before
+  // an article may cite an organization. Both URLs returned 200 on two separate checks 2026-09-05.
+  { key: 'ICC', name: 'International Code Council', url: 'https://www.iccsafe.org' },
+  { key: 'AWC', name: 'American Wood Council', url: 'https://awc.org' },
 ];
 
 export function resolveKnownSource(key: string): KnownSource | undefined {
