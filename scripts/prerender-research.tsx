@@ -1449,6 +1449,31 @@ ${SITE_FOOTER}
       fs.copyFileSync(src, path.join(dataDir, f));
     }
     console.log('[prerender-research] Published storm-and-premium county CSV + figures JSON');
+
+    // ---- /research/allegheny-storm-premium/embed/ ---------------------------------------------
+    // Unlike the other four embeds, this one is not sliced back out of the study document. Those
+    // extract markup and CSS with indexOf() against the study's exact internals (".lk-eyebrow{",
+    // "</header>", ".pull{"), so a cosmetic edit upstream can ship an empty iframe onto someone
+    // else's site -- a failure nobody would report to us. build-allegheny-study.ts emits the widget
+    // once, from the same data as the page, and this copies the finished file.
+    const ALG_EMBED_SRC = path.join(process.cwd(), 'docs', 'allegheny-storm-premium.embed.html');
+    if (!fs.existsSync(ALG_EMBED_SRC)) {
+      console.error('[prerender-research] allegheny embed missing -- run scripts/build-allegheny-study.ts.');
+      process.exit(1);
+    }
+    const algEmbed = fs.readFileSync(ALG_EMBED_SRC, 'utf8');
+    // The caveat and the credit are the two things that must never be lost in transit: one keeps a
+    // count of reports from reading as a hazard ranking, the other is why the embed exists at all.
+    for (const required of ['lk-caveat', 'embed-credit', 'alg-data']) {
+      if (!algEmbed.includes(required)) {
+        console.error(`[prerender-research] allegheny embed is missing ${required}; refusing to build.`);
+        process.exit(1);
+      }
+    }
+    const algEmbedDir = path.join(algDir, 'embed');
+    fs.mkdirSync(algEmbedDir, { recursive: true });
+    fs.writeFileSync(path.join(algEmbedDir, 'index.html'), algEmbed, 'utf8');
+    console.log(`[prerender-research] Wrote /research/allegheny-storm-premium/embed/ (${Math.round(algEmbed.length / 1024)} KB)`);
   }
 
   const STUDIES: Array<{ url: string; title: string; standfirst: string; finding: string; source: string; data: string[]; embed: boolean; published: string; }> = [
@@ -1499,7 +1524,7 @@ ${SITE_FOOTER}
       finding: 'Across the 100 most populous counties, recorded storm frequency and the share of households paying top-band premiums are effectively unrelated (Spearman -0.101). Allegheny is the extreme case: 3rd highest storm count, 6th lowest share paying over $3,000.',
       source: 'NOAA Storm Events &middot; Census ACS B25141 &middot; EPA radon zones',
       data: ['storm-and-premium-counties.csv', 'storm-and-premium-figures.json'],
-      embed: false,
+      embed: true,
       published: '6 September 2026',
     },
   ];

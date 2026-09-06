@@ -197,6 +197,24 @@ hello@beforeregret.com
 
 
 ==========================================================================
+THE EMBED - OFFER IT, IT IS THE LINK THAT SURVIVES
+==========================================================================
+
+An editor will strip an inline URL out of your copy. They will not strip the
+credit line inside a chart the page has already embedded. So if a reporter
+takes the story, offer them this before they retype a number:
+
+  <iframe src="https://www.beforeregret.com/research/allegheny-storm-premium/embed/"
+          width="100%" height="420" style="border:1px solid #e5e0d8"
+          title="Storm frequency and insurance cost by county"
+          loading="lazy"></iframe>
+
+It is a lookup for all 100 counties, so it works in a story about any of them,
+not only Allegheny. No tracking, nothing to sign, and it carries the two
+caveats that stop a count of reports being read as a hazard ranking.
+
+
+==========================================================================
 IF A REPORTER COMES BACK
 ==========================================================================
 
