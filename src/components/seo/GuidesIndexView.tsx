@@ -25,7 +25,7 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
   const [loadError, setLoadError] = useState<string | null>(null);
   // Filtering is CLIENT-SIDE ONLY, and that is a hard constraint rather than an implementation
   // shortcut. scripts/prerender-guides.tsx renders this page's crawler-facing static twin, and its
-  // entire job is to give all 158 published guides one crawlable inbound link from a single hub.
+  // entire job is to give every published guide one crawlable inbound link from a single hub.
   // Anything that removed links from that static HTML would trade the page's whole SEO purpose for
   // a browsing convenience. So the prerender still emits every guide, unfiltered; this state only
   // narrows what a booted human sees.

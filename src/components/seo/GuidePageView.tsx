@@ -420,7 +420,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
 
         {/* Correction path. A BUTTON, never a link: no href means nothing for a crawler to follow,
             no new URL to index, and no internal link equity redirected away from real content --
-            which is what a "/report-an-error" page linked from all 159 guides would have done.
+            which is what a "/report-an-error" page linked from every guide would have done.
             Client-only by design too, so the prerendered HTML a crawler reads is unchanged. */}
         <div className="flex justify-center pt-2">
           <button

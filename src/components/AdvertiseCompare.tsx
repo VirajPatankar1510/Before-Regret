@@ -40,6 +40,22 @@ interface AdvertiseCompareProps {
 // click for SPA routing when onNavigate is supplied -- the same component Footer.tsx and the
 // homepage's content sections already use for this identical reason.
 //
+// DO NOT PUT A COUNT OF GUIDES IN THIS PAGE'S COPY. It said "32 county guides" and "119 national
+// guides" for weeks after the 2026-09-02 prune took the real figures to 11 and 38 -- so a page
+// selling ad placements was advertising roughly three times the inventory that existed. Nobody
+// could actually buy a removed page (guideAdsApi.ts filters to status='published'), so the cost was
+// credibility rather than a broken sale, but a vendor who clicked through would have found a third
+// of what was promised.
+//
+// The figures were not wrong when written; they went stale, and a hand-typed number on a sales page
+// has no way of noticing. Three separate places carried the county figure and a fourth phrasing
+// ("there are 32 of them") survived a count-based grep -- it was only caught by reading the
+// rendered page. So the numbers are gone rather than corrected: "county guides" and "national
+// guides" describe the products accurately at any inventory level and cannot drift.
+//
+// If a specific figure ever seems worth the persuasion, derive it at build time from
+// status='published' in scripts/prerender-advertise.tsx. Do not retype one here.
+//
 // Exported so scripts/prerender-advertise.tsx can build this page's FAQPage JSON-LD directly from
 // this array rather than a hand-copied duplicate -- the same drift risk buildCountyMeta in
 // prerender-counties.tsx was written to avoid, here avoided by sharing the source instead.
@@ -111,7 +127,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             </h1>
             <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
               Put your number on the article your next customer is already reading -- including
-              11 county guides covering permit lookups in the largest US metros. Self-serve, paid
+              county guides covering permit lookups in the largest US metros. Self-serve, paid
               once, live within minutes, and yours alone for the full 30 days.
             </p>
           </div>
@@ -205,11 +221,11 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <ul className="text-xs sm:text-sm text-slate-600 space-y-2.5 flex-1">
               <li className="flex items-start gap-2">
                 <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong className="text-slate-900">11 county guides</strong> cover permit lookups in the largest US metros -- Cook, Los Angeles, Maricopa, Harris, Miami-Dade and more. Everyone reading one is researching that county.</span>
+                <span><strong className="text-slate-900">County guides</strong> cover permit lookups in the largest US metros -- Cook, Los Angeles, Maricopa, Harris, Miami-Dade and more. Everyone reading one is researching that county.</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-                <span>38 national guides cover a single problem for readers anywhere -- a good fit if you serve many cities</span>
+                <span>National guides each cover a single problem for readers anywhere -- a good fit if you serve many cities</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />

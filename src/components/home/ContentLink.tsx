@@ -9,7 +9,7 @@ interface ContentLinkProps {
 
 /**
  * Always a real <a href> -- the homepage's whole job in these sections is to pass link equity to
- * ~40 guide and county pages, and a <button onClick> (the pattern Footer.tsx uses) is invisible to
+ * the guide pages it lists, and a <button onClick> (the pattern Footer.tsx uses) is invisible to
  * a crawler. When an onNavigate handler is supplied by the client app, the click is intercepted for
  * SPA routing; the static prerender passes none, so the markup degrades to an ordinary link.
  *

@@ -26,7 +26,7 @@ export const BOOK = {
 // `sponsored` because this is promotional inventory, sitewide, pointing at a commercial
 // destination the site itself profits from. It is not a paid placement in the usual sense -- the
 // site owns the book -- but Google's guidance is to mark advertising and promotional links, and a
-// self-promotion repeated across 37 guide pages plus a sitewide footer is exactly the pattern
+// self-promotion repeated across every guide page plus a sitewide footer is exactly the pattern
 // that guidance exists for. Marking it costs nothing: the link's job is to send readers, not to
 // pass ranking signal to Amazon.
 //

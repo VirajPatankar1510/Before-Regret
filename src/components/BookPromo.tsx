@@ -23,7 +23,7 @@ import { BOOK, BOOK_LINK_REL } from '../data/book';
 // directly. Resized from the 1250x2000, 412 KB original down to 300x480 -- roughly 2.3x the width
 // it actually renders at, which is enough for a retina screen and nothing more -- and served as
 // webp with a jpg fallback, matching Logo.tsx's <picture> pattern. 31 KB. It loads lazily and
-// carries explicit width/height, because this card sits below the fold on all 38 pages that
+// carries explicit width/height, because this card sits below the fold on every page that
 // render it and an image without intrinsic dimensions reflows the page as it arrives.
 //
 // FRAMING. The card carried a "From the team behind BeforeRegret" label and a
