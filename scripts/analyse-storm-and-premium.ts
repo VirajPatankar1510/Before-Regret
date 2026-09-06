@@ -191,7 +191,20 @@ async function main() {
     pearsonRawEventsVsPctOver3000: Number(corr(raw, counties.map((c) => c.pctOver3000)).toFixed(3)),
   };
 
+  // Year-built by decade, keyed by GEOID. Kept out of the main figures file because it is ten
+  // extra columns nobody reading the storm analysis needs, and used by the North Texas study whose
+  // whole argument is the shape of that distribution rather than any single summary of it.
+  const yearBuiltOut: Record<string, Record<string, number>> = {};
+  for (const r of rows) {
+    const yb = j(r.census_year_built_json);
+    const bare = String(r.county_name).toUpperCase().replace(/ COUNTY$/, '').trim();
+    const opts = gaz.get(`${r.state_abbrev}|${bare}`) || [];
+    const pick = opts.length > 1 ? (opts.find((o) => !/\scity$/i.test(o.name)) || opts[0]) : opts[0];
+    yearBuiltOut[pick.geoid] = yb;
+  }
+
   fs.mkdirSync(OUT_DIR, { recursive: true });
+  fs.writeFileSync(path.join(OUT_DIR, 'storm-and-premium-yearbuilt.json'), `${JSON.stringify(yearBuiltOut, null, 1)}\n`);
   const cols = ['geoid', 'county', 'state', 'population', 'landSqMi', 'housingUnits', 'pctPre1950', 'pctPre1980',
     'radonZone', 'stormEvents', 'eventsPerSqMi', 'hail', 'tornado', 'flood', 'thunderstormWind',
     'mortgagedHouseholds', 'pctUnder1000', 'pctOver3000'];

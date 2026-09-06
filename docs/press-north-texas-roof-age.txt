@@ -1,0 +1,225 @@
+==========================================================================
+BUILT TOGETHER, DUE TOGETHER - NORTH TEXAS PRESS OUTREACH
+Three pitches. Copy one, paste it, send it.
+Written 6 September 2026 against the study as published.
+==========================================================================
+
+HOW TO USE THIS FILE
+
+Aimed at newsrooms covering Collin and Denton counties and the wider DFW
+metro. The story is about those counties specifically; a national desk has no
+reason to care and will not run it.
+
+One pitch per newsroom. Find the byline on a recent DFW housing, insurance or
+weather story and write to that person. There are no contact addresses in this
+file and none should be invented. The only address for your signature is
+hello@beforeregret.com.
+
+
+--------------------------------------------------------------------------
+THE THREE NUMBERS
+--------------------------------------------------------------------------
+
+   50.9%   of Collin County's 421,938 homes were built in the 2000s or 2010s
+   50.7%   the same for Denton County's 364,120 homes
+
+   1,240   hailstorms recorded across Tarrant, Denton, Collin and Dallas
+           counties, 2015-2024
+
+  3 of 100 counties in the study have BOTH at least 45% of their housing in
+           one twenty-year window AND at least 100 recorded hailstorms.
+           Two of the three - Collin and Denton - share a border.
+           The third is Wake County, North Carolina.
+
+The argument in one line: roofs go on when houses go up, so a county built in
+one burst has roofs that come due together rather than one at a time - and
+these two sit in a hail corridor that wears roofs out faster.
+
+
+--------------------------------------------------------------------------
+THE SENTENCE THAT WILL GET MISQUOTED, AND THE ONE WE DELIBERATELY DID NOT WRITE
+--------------------------------------------------------------------------
+
+"Half the roofs in Collin County are about to fail."
+
+  The study does not say that and you should not let it print. Decade of
+  construction is not roof age: a house built in 2005 may have been re-roofed
+  twice since, and hail claims are one of the commonest reasons it would have
+  been. What the concentration figure establishes is when the housing - and so
+  the FIRST roof on it - arrived. It sets the clock. It does not read it.
+
+"New houses in Collin and Denton cost the most in America to insure."
+
+  This is the obvious version of the story and we cut it on purpose, so if a
+  reporter reaches for it, here is why they should not. Collin and Denton do
+  sit near the top for the share of households paying over $3,000 a year. But
+  the Census reports premiums in absolute dollar BANDS, so a county of
+  expensive houses puts more households over $3,000 whatever its weather does.
+  Collin and Denton are affluent DFW suburbs. Hidalgo County has similarly new
+  housing, is also in Texas, also gets hail, and has only 6.0% of households in
+  the top band - because houses there cost less.
+
+  Separating price from wealth needs median home values, which are not in this
+  dataset, so the study makes no claim about what anyone pays. Saying that out
+  loud is what makes the rest of the numbers trustworthy.
+
+
+==========================================================================
+PITCH 1 - HOUSING, GROWTH OR REAL ESTATE DESK
+The angle: what building a county in twenty years does to it afterwards
+==========================================================================
+
+SUBJECT:
+Half of Collin County's housing went up in one 20-year window - and it's in a hail corridor
+
+Dear [Name],
+
+I have been running a county-level analysis of US housing age against NOAA's
+storm record, and the North Texas result is the one I did not expect.
+
+50.9% of Collin County's 421,938 homes were built in the 2000s or 2010s.
+Denton is 50.7%. Those are the sixth and seventh most concentrated housing
+stocks among the 100 most populous US counties - most places built up
+gradually, and these two did not.
+
+That would be a curiosity on its own. What makes it a story is where it
+happened. Denton recorded 355 hailstorms between 2015 and 2024 and Collin 283,
+third and fifth of the hundred counties. Across Tarrant, Denton, Collin and
+Dallas the ten-year total is 1,240.
+
+Roofs go on when houses go up. In a county built gradually, roof replacement
+is a rolling cost spread across every year. In a county built in one burst, it
+is a cohort - and roof age is one of the few things a home insurer asks about a
+specific property, with carriers moving to actual cash value, raising the
+wind-and-hail deductible, or declining once a roof passes a certain age.
+
+Screening all 100 counties for both conditions - at least 45% of housing in one
+twenty-year window and at least 100 hailstorms - leaves three counties. Two of
+them share a border, and they are Collin and Denton.
+
+Study, method, limitations and the full county file:
+https://www.beforeregret.com/research/north-texas-roof-age/
+
+[Your name]
+hello@beforeregret.com
+
+
+==========================================================================
+PITCH 2 - WEATHER OR CLIMATE DESK
+The angle: Tarrant has more hail and does not have this problem
+==========================================================================
+
+SUBJECT:
+Tarrant gets more hail than Denton. Denton has the harder roof problem. Here's why
+
+Dear [Name],
+
+A counterintuitive result from a county-level read of NOAA's Storm Events
+database that I think is worth a look.
+
+Tarrant County recorded 416 hailstorms between 2015 and 2024 - second among the
+100 most populous US counties, and more than either Denton (355) or Collin
+(283). On hail alone Tarrant is the story.
+
+But hail frequency is only half of what determines whether a county faces a
+synchronised roof-replacement problem. The other half is when the housing was
+built. Tarrant's stock is spread out: 32.7% in its busiest twenty years. Collin
+and Denton are at 50.9% and 50.7%. Tarrant has the hail without the cohort -
+its roofs were not all installed at once, so they do not expire at once.
+
+Run the screen across all 100 counties and only three have both concentrated
+construction and heavy hail. Fort Bend County is more concentrated than either
+North Texas county and recorded 33 hailstorms. Clark County, Nevada is built
+the same way and recorded 28. Synchronised construction is common;
+synchronised construction under hail is not.
+
+One methodological note rather than letting you find it: I use raw hail counts,
+not hail per square mile. Across these counties event density correlates with
+population density at Spearman +0.681, because NOAA logs reports and a storm
+nobody witnesses is often never written down.
+
+Full study and the county file, free to reuse:
+https://www.beforeregret.com/research/north-texas-roof-age/
+
+[Your name]
+hello@beforeregret.com
+
+
+==========================================================================
+PITCH 3 - CONSUMER OR PERSONAL FINANCE DESK
+The angle: what a DFW buyer should ask before they sign
+==========================================================================
+
+SUBJECT:
+A practical question for DFW buyers: how old is the roof, really?
+
+Dear [Name],
+
+Something concrete for readers buying in Collin or Denton counties, out of a
+county-level analysis I have just published.
+
+Over half the homes in each county were built in the 2000s or 2010s, and the
+two counties recorded 638 hailstorms between them from 2015 to 2024. Roof age
+is one of the few property-specific things a home insurer underwrites on, and
+in a county where the housing all went up together, a very large number of
+original roofs reach the same age at the same time.
+
+The practical version for a buyer is a short list of questions that cost
+nothing to ask: when was the roof last replaced, was it a full replacement or a
+repair, was it a hail claim, and what does a carrier quote on this specific
+address before the option period ends rather than after. The answer changes the
+price of the house, and it is knowable in advance.
+
+I want to be straight about one thing the study does NOT say, because the
+obvious headline is wrong: it does not claim these counties pay the most for
+insurance. The Census reports premiums in absolute dollar bands, so wealthier
+counties show more households in the top band regardless of weather, and
+separating the two needs home values I do not have.
+
+Study, method and the 100-county dataset:
+https://www.beforeregret.com/research/north-texas-roof-age/
+
+[Your name]
+hello@beforeregret.com
+
+
+==========================================================================
+THE EMBED - OFFER IT
+==========================================================================
+
+An editor will strip an inline URL out of copy and will not strip the credit
+line inside a widget already embedded in the page:
+
+  <iframe src="https://www.beforeregret.com/research/north-texas-roof-age/embed/"
+          width="100%" height="420" style="border:1px solid #e5e0d8"
+          title="Storm frequency and insurance cost by county"
+          loading="lazy"></iframe>
+
+It covers all 100 counties, so it works in a story about any of them.
+
+
+==========================================================================
+IF A REPORTER COMES BACK
+==========================================================================
+
+"How many roofs are actually past their service life?"
+  Unknown, and the study says so. The ACS records when a structure was built,
+  not when its roof was last replaced. Anyone publishing a count of failing
+  roofs in Collin County is estimating. Do not become their source for it.
+
+"Isn't fifteen to thirty years a very wide range for a roof?"
+  Yes, and that is the honest range - it depends on product, installation,
+  ventilation and what the weather has done. The study quotes the range rather
+  than a single number for that reason. If a reporter wants a firmer figure,
+  send them to a roofing trade body or a carrier's own underwriting guidance
+  rather than letting them attribute a specific number to us.
+
+"Are you selling something?"
+  Yes, and say so first: BeforeRegret sells a property report to home buyers.
+  The study is free, the data is public domain, and the analysis does not
+  depend on the product.
+
+"Can I have Wake County, or my own county?"
+  The CSV covers all 100. Wake, North Carolina is the third county that clears
+  the screen - 45.0% concentration, 122 hailstorms - and that is a legitimate
+  separate story for a Raleigh newsroom.

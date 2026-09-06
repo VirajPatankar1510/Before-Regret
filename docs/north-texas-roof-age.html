@@ -1,0 +1,690 @@
+<style>
+  .wrap{max-width:46rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;font:16px/1.65 Charter,Georgia,'Times New Roman',serif;color:#1a1a1a}
+  .wrap *{box-sizing:border-box}
+  .kicker{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a6d3b;margin:0 0 .9rem}
+  .wrap h1{font-size:2.35rem;line-height:1.12;margin:0 0 1rem;font-weight:600;letter-spacing:-.015em}
+  .standfirst{font-size:1.16rem;line-height:1.6;color:#3d3d3d;margin:0 0 2rem}
+  .wrap h2{font:700 12px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a6d3b;margin:2.75rem 0 .5rem;padding-top:1.5rem;border-top:1px solid #e5e0d8}
+  .wrap h3{font-size:1.32rem;line-height:1.35;font-weight:600;margin:0 0 .9rem;letter-spacing:-.01em}
+  .wrap p{margin:0 0 1.1rem}
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:1px;background:#e5e0d8;border:1px solid #e5e0d8;margin:0 0 2rem}
+  .fig{background:#fdfcfa;padding:1rem .9rem}
+  .fig b{display:block;font:700 1.65rem/1.1 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em}
+  .fig span{display:block;font:400 12px/1.4 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b;margin-top:.3rem}
+  .finding{background:#faf8f4;border-left:3px solid #8a6d3b;padding:1.1rem 1.2rem;margin:0 0 1.4rem;font-size:1.02rem}
+  .finding p{margin:0}
+  table{width:100%;border-collapse:collapse;font:400 13px/1.45 ui-sans-serif,system-ui,sans-serif;margin:0 0 .6rem}
+  th{text-align:left;font-weight:700;border-bottom:2px solid #1a1a1a;padding:.5rem .4rem;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#4a4a4a}
+  td{border-bottom:1px solid #ece8e1;padding:.45rem .4rem}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  tr.me td{background:#fdf6e7;font-weight:700}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 1.6rem}
+  .tall{max-height:26rem;overflow-y:auto}
+  .cap{font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b;margin:0 0 1.8rem}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;margin:0 0 .4rem}
+  .cols h4{font:700 12px/1.3 ui-sans-serif,system-ui,sans-serif;margin:0 0 .6rem;color:#1a1a1a}
+  .bar-row{display:grid;grid-template-columns:4.6rem 1fr 3rem;align-items:center;gap:.4rem;margin-bottom:.3rem;font:400 11px/1.3 ui-sans-serif,system-ui,sans-serif}
+  .bar-label{color:#4a4a4a}
+  .bar{height:10px;background:#8a6d3b;display:block;min-width:2px}
+  .bar-val{text-align:right;font-variant-numeric:tabular-nums;color:#4a4a4a}
+  .cite{background:#f5f2ec;border:1px solid #e5e0d8;padding:1.1rem 1.2rem;font:400 13px/1.6 ui-sans-serif,system-ui,sans-serif;margin:2.5rem 0 0}
+  .cite b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a6d3b;margin-bottom:.5rem}
+  .snippet{background:#fff;border:1px solid #e5e0d8;padding:.7rem .8rem;margin:.7rem 0;overflow-x:auto;font:400 11.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#4a4a4a;white-space:pre}
+  .cite code{font:400 12px ui-monospace,SFMono-Regular,Menlo,monospace;background:#fff;padding:.1em .3em;border:1px solid #e5e0d8}
+  .wrap a{color:#8a6d3b}
+  footer.spine{margin:2rem 0 0;padding-top:1.2rem;border-top:1px solid #e5e0d8;font:400 12.5px/1.7 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
+
+  .lookup{border:1px solid #e5e0d8;background:#fdfcfa;padding:1.1rem 1.2rem;margin:0 0 2rem}
+  .lk-eyebrow{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a6d3b;margin:0 0 .7rem}
+  .lookup select{width:100%;font:400 15px/1.4 ui-sans-serif,system-ui,sans-serif;padding:.55rem .6rem;border:1px solid #cfc8bd;background:#fff;color:#1a1a1a;border-radius:2px}
+  .lk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(7.5rem,1fr));gap:1px;background:#e5e0d8;border:1px solid #e5e0d8;margin:.9rem 0 0}
+  .lk-cell{background:#fdfcfa;padding:.65rem .7rem}
+  .lk-cell b{display:block;font:700 1.25rem/1.1 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em}
+  .lk-cell span{display:block;font:400 11px/1.35 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b;margin-top:.25rem}
+  .lk-types{font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#4a4a4a;margin:.7rem 0 0}
+  .lk-caveat{font:400 11.5px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b;margin:.8rem 0 0;border-top:1px solid #ece8e1;padding-top:.7rem}
+  @media(max-width:560px){.wrap h1{font-size:1.85rem}.cols{grid-template-columns:1fr;gap:1.2rem}}
+</style>
+
+<div class="wrap">
+  <p class="kicker">Regional analysis &middot; Collin and Denton counties, Texas</p>
+  <h1>Built together, due together</h1>
+  <p class="standfirst">Half the houses in two North Texas counties went up inside the same twenty
+  years, in one of the country's heaviest hail corridors. Roofs do not age one house at a time
+  here &mdash; they age in a cohort, and the cohort comes due together.</p>
+
+  <div class="figs">
+    <div class="fig"><b>50.9%</b><span>of Collin County's 421,938 homes were built 2000s or 2010s</span></div>
+    <div class="fig"><b>50.7%</b><span>the same for Denton County, the 7th most concentrated stock of the 100</span></div>
+    <div class="fig"><b>1,240</b><span>hailstorms recorded across the four DFW counties, 2015&ndash;2024</span></div>
+    <div class="fig"><b>3 of 100</b><span>counties are both this concentrated and this hail-exposed</span></div>
+  </div>
+
+  <div class="lookup">
+    <p class="lk-eyebrow">Look up any of the 100 counties</p>
+    <label for="lkpick" style="position:absolute;left:-9999px">Choose a county</label>
+    <select id="lkpick"><option value="">Choose a county&hellip;</option></select>
+    <div id="lkout" aria-live="polite"></div>
+    <p class="lk-caveat">NOAA records <em>reports</em> of severe weather, not a census of it, so
+    counts describe how often something damaging was written down. Insurance shares are what
+    mortgaged households told the Census they pay, in bands &mdash; there is no average premium in
+    this data and none should be quoted from it.</p>
+  </div>
+
+  <h2>The screen</h2>
+  <h3>Two conditions, applied to all 100 counties, leave three standing.</h3>
+
+  <p>Take the share of a county's housing built in its busiest twenty-year window &mdash; a crude
+  measure of whether the place went up gradually or in a burst. Then take the number of hailstorms
+  NOAA recorded there between 2015 and 2024. Ask for at least 45% in one window and
+  at least 100 hailstorms, and almost nothing qualifies.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>County</th><th class="n">Built in one 20 years</th><th>Which years</th><th class="n">Hailstorms</th><th class="n">Housing units</th></tr></thead>
+      <tbody>
+      <tr class="me">
+        <td>Denton, TX</td><td class="n">50.7%</td><td>2000s–2010s</td>
+        <td class="n">355</td><td class="n">364,120</td>
+      </tr>
+      <tr class="me">
+        <td>Collin, TX</td><td class="n">50.9%</td><td>2000s–2010s</td>
+        <td class="n">283</td><td class="n">421,938</td>
+      </tr>
+      <tr>
+        <td>Wake, NC</td><td class="n">45.0%</td><td>2000s–2010s</td>
+        <td class="n">122</td><td class="n">481,999</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">All 100 counties screened. Two of the three survivors share a border.</p>
+
+  <p>Denton ranks 3rd of the hundred for recorded hail and Collin
+  5th. They are also the 6th and
+  7th most concentrated housing stocks in the study. Very few places in
+  America are both.</p>
+
+  <h2>Why concentration is not the finding on its own</h2>
+  <h3>Plenty of counties were built in a burst. Almost none of them get hailed on.</h3>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>County</th><th class="n">Built in one 20 years</th><th>Which years</th><th class="n">Hailstorms</th></tr></thead>
+      <tbody>
+      <tr>
+        <td>Kings, NY</td><td class="n">55.6%</td><td>pre-1940–1940s</td><td class="n">2</td>
+      </tr>
+      <tr>
+        <td>Fort bend, TX</td><td class="n">55.4%</td><td>2000s–2010s</td><td class="n">33</td>
+      </tr>
+      <tr>
+        <td>Clark, NV</td><td class="n">54.3%</td><td>1990s–2000s</td><td class="n">28</td>
+      </tr>
+      <tr>
+        <td>San francisco, CA</td><td class="n">54.1%</td><td>pre-1940–1940s</td><td class="n">10</td>
+      </tr>
+      <tr>
+        <td>Suffolk, MA</td><td class="n">51.0%</td><td>pre-1940–1940s</td><td class="n">6</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">The most concentrated housing stocks that see almost no hail. Brooklyn, San
+  Francisco and Philadelphia are concentrated in pre-1940 construction; Fort Bend and Clark are
+  modern, like Collin and Denton, but sit outside the hail corridor.</p>
+
+  <p>That is the comparison that matters. Fort Bend County is more concentrated than either North
+  Texas county &mdash; 55.4% of its homes went up
+  in the 2000s–2010s &mdash; and recorded
+  33 hailstorms in ten years against Denton's
+  355. Clark County, Nevada is built the same way and recorded
+  28. Synchronised construction is common. Synchronised
+  construction under hail is not.</p>
+
+  <h2>What that does to a roof</h2>
+  <h3>The component hail destroys is the one with a fixed service life.</h3>
+
+  <p>Hail damages roofs before it damages anything else, and an asphalt shingle roof has a finite
+  life regardless of what the sky does &mdash; commonly quoted at fifteen to thirty years depending
+  on product and installation. Insurers price on that directly: roof age is one of the few things an
+  underwriter asks about a specific house, and past a certain age carriers move from replacement
+  cost to actual cash value, raise the wind and hail deductible, or decline the risk.</p>
+
+  <p>In a county where the housing arrived gradually, that is a rolling problem. Some roofs are new,
+  some are old, and the replacement bill for the county is spread across every year. Allegheny
+  County, Pennsylvania has housing from every decade and a largest single decade of
+  28.2%, which is the ordinary case.</p>
+
+  <div class="cols">
+    <div>
+      <h4>Collin County, TX</h4>
+      <div class="bar-row">
+        <span class="bar-label">pre-1940</span>
+        <span class="bar" style="width:2%"></span>
+        <span class="bar-val">0.6%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1940s</span>
+        <span class="bar" style="width:2%"></span>
+        <span class="bar-val">0.5%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1950s</span>
+        <span class="bar" style="width:3%"></span>
+        <span class="bar-val">0.9%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1960s</span>
+        <span class="bar" style="width:7%"></span>
+        <span class="bar-val">2.2%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1970s</span>
+        <span class="bar" style="width:23%"></span>
+        <span class="bar-val">6.9%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1980s</span>
+        <span class="bar" style="width:45%"></span>
+        <span class="bar-val">13.5%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1990s</span>
+        <span class="bar" style="width:68%"></span>
+        <span class="bar-val">20.4%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">2000s</span>
+        <span class="bar" style="width:84%"></span>
+        <span class="bar-val">25.3%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">2010s</span>
+        <span class="bar" style="width:85%"></span>
+        <span class="bar-val">25.6%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">2020s</span>
+        <span class="bar" style="width:14%"></span>
+        <span class="bar-val">4.3%</span>
+      </div>
+    </div>
+    <div>
+      <h4>Allegheny County, PA</h4>
+      <div class="bar-row">
+        <span class="bar-label">pre-1940</span>
+        <span class="bar" style="width:94%"></span>
+        <span class="bar-val">28.2%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1940s</span>
+        <span class="bar" style="width:28%"></span>
+        <span class="bar-val">8.5%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1950s</span>
+        <span class="bar" style="width:60%"></span>
+        <span class="bar-val">17.9%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1960s</span>
+        <span class="bar" style="width:40%"></span>
+        <span class="bar-val">12.0%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1970s</span>
+        <span class="bar" style="width:35%"></span>
+        <span class="bar-val">10.6%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1980s</span>
+        <span class="bar" style="width:24%"></span>
+        <span class="bar-val">7.1%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">1990s</span>
+        <span class="bar" style="width:19%"></span>
+        <span class="bar-val">5.6%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">2000s</span>
+        <span class="bar" style="width:17%"></span>
+        <span class="bar-val">5.0%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">2010s</span>
+        <span class="bar" style="width:16%"></span>
+        <span class="bar-val">4.7%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">2020s</span>
+        <span class="bar" style="width:2%"></span>
+        <span class="bar-val">0.5%</span>
+      </div>
+    </div>
+  </div>
+  <p class="cap">Share of housing units by decade built. Bars scaled to 30%. Census ACS 5-year.</p>
+
+  <div class="finding">
+    <p>Collin and Denton did not arrive gradually. Over half of each county's housing went up in a
+    single twenty-year window, which means the original roofs went on in that window too. They do
+    not come due one house at a time; they come due together, in a place that records a hailstorm
+    somewhere in the county roughly every ten days of the storm season.</p>
+  </div>
+
+  <h2>The county with the hail but not the timing</h2>
+  <h3>Tarrant records more hail than either and does not have this problem in the same shape.</h3>
+
+  <p>Tarrant County logged 416 hailstorms over the decade, 2nd
+  of the 100 counties and more than Denton or Collin. But its housing is spread much
+  more evenly &mdash; 32.7% in its busiest twenty years, against Collin's
+  50.9% &mdash; so Tarrant has the hail without the cohort. Its roofs were not all
+  installed at once and do not expire at once.</p>
+
+  <p>That difference is the whole argument. Hail frequency alone does not create a synchronised
+  replacement wave, and neither does concentrated construction alone. It takes both, and across the
+  100 counties examined here only 3 have both.</p>
+
+  <h2>Method</h2>
+  <h3>How this was built.</h3>
+
+  <p>Housing counts by decade of construction are American Community Survey 5-year estimates, year
+  structure built, expressed as a share of total housing units. Concentration is the largest
+  combined share of any two adjacent decade buckets &mdash; a twenty-year window that moves, not a
+  fixed one. Hail counts are every county-tagged hail entry in NOAA's Storm Events Database for the
+  ten calendar years 2015&ndash;2024. The comparison set is the 100 counties in
+  31 states with complete data.</p>
+
+  <p>Raw hail counts are used rather than hail per square mile, for the reason set out in the
+  companion study: across these counties, event density correlates with population density at a
+  Spearman coefficient of 0.681,
+  because NOAA records reports and an unwitnessed storm is frequently never written down.</p>
+
+  <h2>Limitations</h2>
+  <h3>What this cannot tell you.</h3>
+
+  <p>This study deliberately does not use insurance prices, and the reason is worth stating because
+  the obvious version of this story does. ACS table B25141 reports premiums in absolute dollar
+  bands, so a county of expensive houses places more households above $3,000 whatever its weather
+  does. Collin and Denton do sit high on that measure, and they are also affluent; Hidalgo County
+  has similarly new housing, sits in Texas, and has only 6.0% of households in the top band.
+  Separating the two would need median home values, which are not in this dataset, so no claim is
+  made here about what anyone pays.</p>
+
+  <p>Decade of construction is not roof age. A roof installed in 2005 may have been replaced twice
+  since, particularly after a hail claim, and the ACS does not track that. What the concentration
+  measure establishes is when the housing &mdash; and therefore the first roof on it &mdash;
+  arrived, which sets the clock rather than reading it.</p>
+
+  <p>The twenty-year window is a choice. A fifteen- or thirty-year window would rank counties
+  differently, and the full table below is published so a different threshold can be applied to the
+  same numbers. The 45% and 100 cut-offs were chosen to be round, not to
+  produce three survivors.</p>
+
+  <p>Nothing here describes an individual property. Every figure is a county aggregate.</p>
+
+  <h2>Appendix</h2>
+  <h3>All 100 counties by housing concentration.</h3>
+
+  <div class="scroll tall">
+    <table>
+      <thead><tr><th class="n">#</th><th>County</th><th class="n">Peak 20yr</th><th>Years</th><th class="n">Hail</th></tr></thead>
+      <tbody>
+      <tr>
+        <td class="n">1</td><td>Kings, NY</td><td class="n">56%</td>
+        <td>pre-1940–1940s</td><td class="n">2</td></tr>
+      <tr>
+        <td class="n">2</td><td>Fort bend, TX</td><td class="n">55%</td>
+        <td>2000s–2010s</td><td class="n">33</td></tr>
+      <tr>
+        <td class="n">3</td><td>Clark, NV</td><td class="n">54%</td>
+        <td>1990s–2000s</td><td class="n">28</td></tr>
+      <tr>
+        <td class="n">4</td><td>San francisco, CA</td><td class="n">54%</td>
+        <td>pre-1940–1940s</td><td class="n">10</td></tr>
+      <tr>
+        <td class="n">5</td><td>Suffolk, MA</td><td class="n">51%</td>
+        <td>pre-1940–1940s</td><td class="n">6</td></tr>
+      <tr class="me">
+        <td class="n">6</td><td>Collin, TX</td><td class="n">51%</td>
+        <td>2000s–2010s</td><td class="n">283</td></tr>
+      <tr class="me">
+        <td class="n">7</td><td>Denton, TX</td><td class="n">51%</td>
+        <td>2000s–2010s</td><td class="n">355</td></tr>
+      <tr>
+        <td class="n">8</td><td>Philadelphia, PA</td><td class="n">51%</td>
+        <td>pre-1940–1940s</td><td class="n">16</td></tr>
+      <tr>
+        <td class="n">9</td><td>Gwinnett, GA</td><td class="n">50%</td>
+        <td>1990s–2000s</td><td class="n">20</td></tr>
+      <tr>
+        <td class="n">10</td><td>New york, NY</td><td class="n">49%</td>
+        <td>pre-1940–1940s</td><td class="n">4</td></tr>
+      <tr>
+        <td class="n">11</td><td>Nassau, NY</td><td class="n">48%</td>
+        <td>1950s–1960s</td><td class="n">10</td></tr>
+      <tr>
+        <td class="n">12</td><td>Will, IL</td><td class="n">47%</td>
+        <td>1990s–2000s</td><td class="n">89</td></tr>
+      <tr>
+        <td class="n">13</td><td>Hidalgo, TX</td><td class="n">47%</td>
+        <td>1990s–2000s</td><td class="n">50</td></tr>
+      <tr>
+        <td class="n">14</td><td>Pinellas, FL</td><td class="n">46%</td>
+        <td>1970s–1980s</td><td class="n">5</td></tr>
+      <tr>
+        <td class="n">15</td><td>Lee, FL</td><td class="n">45%</td>
+        <td>1990s–2000s</td><td class="n">14</td></tr>
+      <tr>
+        <td class="n">16</td><td>Utah, UT</td><td class="n">45%</td>
+        <td>2000s–2010s</td><td class="n">10</td></tr>
+      <tr class="me">
+        <td class="n">17</td><td>Wake, NC</td><td class="n">45%</td>
+        <td>2000s–2010s</td><td class="n">122</td></tr>
+      <tr>
+        <td class="n">18</td><td>Palm beach, FL</td><td class="n">45%</td>
+        <td>1970s–1980s</td><td class="n">48</td></tr>
+      <tr>
+        <td class="n">19</td><td>Bronx, NY</td><td class="n">44%</td>
+        <td>pre-1940–1940s</td><td class="n">2</td></tr>
+      <tr>
+        <td class="n">20</td><td>Queens, NY</td><td class="n">44%</td>
+        <td>pre-1940–1940s</td><td class="n">3</td></tr>
+      <tr>
+        <td class="n">21</td><td>Broward, FL</td><td class="n">44%</td>
+        <td>1970s–1980s</td><td class="n">54</td></tr>
+      <tr>
+        <td class="n">22</td><td>Cobb, GA</td><td class="n">43%</td>
+        <td>1980s–1990s</td><td class="n">22</td></tr>
+      <tr>
+        <td class="n">23</td><td>Providence, RI</td><td class="n">43%</td>
+        <td>pre-1940–1940s</td><td class="n">10</td></tr>
+      <tr>
+        <td class="n">24</td><td>Fairfax, VA</td><td class="n">42%</td>
+        <td>1970s–1980s</td><td class="n">51</td></tr>
+      <tr>
+        <td class="n">25</td><td>Travis, TX</td><td class="n">42%</td>
+        <td>2000s–2010s</td><td class="n">147</td></tr>
+      <tr>
+        <td class="n">26</td><td>Honolulu, HI</td><td class="n">41%</td>
+        <td>1960s–1970s</td><td class="n">1</td></tr>
+      <tr>
+        <td class="n">27</td><td>Ventura, CA</td><td class="n">41%</td>
+        <td>1960s–1970s</td><td class="n">0</td></tr>
+      <tr>
+        <td class="n">28</td><td>Mecklenburg, NC</td><td class="n">40%</td>
+        <td>2000s–2010s</td><td class="n">38</td></tr>
+      <tr>
+        <td class="n">29</td><td>Orange, CA</td><td class="n">40%</td>
+        <td>1960s–1970s</td><td class="n">3</td></tr>
+      <tr>
+        <td class="n">30</td><td>San diego, CA</td><td class="n">40%</td>
+        <td>1970s–1980s</td><td class="n">11</td></tr>
+      <tr>
+        <td class="n">31</td><td>Dupage, IL</td><td class="n">40%</td>
+        <td>1970s–1980s</td><td class="n">58</td></tr>
+      <tr>
+        <td class="n">32</td><td>Maricopa, AZ</td><td class="n">40%</td>
+        <td>1990s–2000s</td><td class="n">82</td></tr>
+      <tr>
+        <td class="n">33</td><td>Riverside, CA</td><td class="n">39%</td>
+        <td>1990s–2000s</td><td class="n">7</td></tr>
+      <tr>
+        <td class="n">34</td><td>Essex, MA</td><td class="n">39%</td>
+        <td>pre-1940–1940s</td><td class="n">20</td></tr>
+      <tr>
+        <td class="n">35</td><td>Essex, NJ</td><td class="n">39%</td>
+        <td>pre-1940–1940s</td><td class="n">2</td></tr>
+      <tr>
+        <td class="n">36</td><td>San bernardino, CA</td><td class="n">38%</td>
+        <td>1970s–1980s</td><td class="n">13</td></tr>
+      <tr>
+        <td class="n">37</td><td>Santa clara, CA</td><td class="n">38%</td>
+        <td>1960s–1970s</td><td class="n">33</td></tr>
+      <tr>
+        <td class="n">38</td><td>San mateo, CA</td><td class="n">38%</td>
+        <td>1950s–1960s</td><td class="n">9</td></tr>
+      <tr>
+        <td class="n">39</td><td>Wayne, MI</td><td class="n">38%</td>
+        <td>1940s–1950s</td><td class="n">23</td></tr>
+      <tr>
+        <td class="n">40</td><td>Orange, FL</td><td class="n">38%</td>
+        <td>1990s–2000s</td><td class="n">47</td></tr>
+      <tr>
+        <td class="n">41</td><td>Milwaukee, WI</td><td class="n">38%</td>
+        <td>pre-1940–1940s</td><td class="n">70</td></tr>
+      <tr>
+        <td class="n">42</td><td>Erie, NY</td><td class="n">38%</td>
+        <td>pre-1940–1940s</td><td class="n">31</td></tr>
+      <tr>
+        <td class="n">43</td><td>Suffolk, NY</td><td class="n">38%</td>
+        <td>1960s–1970s</td><td class="n">17</td></tr>
+      <tr>
+        <td class="n">44</td><td>Cuyahoga, OH</td><td class="n">37%</td>
+        <td>pre-1940–1940s</td><td class="n">39</td></tr>
+      <tr>
+        <td class="n">45</td><td>Middlesex, MA</td><td class="n">37%</td>
+        <td>pre-1940–1940s</td><td class="n">47</td></tr>
+      <tr>
+        <td class="n">46</td><td>St. louis, MO</td><td class="n">37%</td>
+        <td>1950s–1960s</td><td class="n">77</td></tr>
+      <tr>
+        <td class="n">47</td><td>Fulton, GA</td><td class="n">37%</td>
+        <td>1990s–2000s</td><td class="n">30</td></tr>
+      <tr>
+        <td class="n">48</td><td>Allegheny, PA</td><td class="n">37%</td>
+        <td>pre-1940–1940s</td><td class="n">115</td></tr>
+      <tr>
+        <td class="n">49</td><td>Polk, FL</td><td class="n">36%</td>
+        <td>1990s–2000s</td><td class="n">28</td></tr>
+      <tr>
+        <td class="n">50</td><td>Hudson, NJ</td><td class="n">36%</td>
+        <td>pre-1940–1940s</td><td class="n">0</td></tr>
+      <tr>
+        <td class="n">51</td><td>Pima, AZ</td><td class="n">36%</td>
+        <td>1970s–1980s</td><td class="n">54</td></tr>
+      <tr>
+        <td class="n">52</td><td>Snohomish, WA</td><td class="n">36%</td>
+        <td>1990s–2000s</td><td class="n">0</td></tr>
+      <tr>
+        <td class="n">53</td><td>Bergen, NJ</td><td class="n">35%</td>
+        <td>1950s–1960s</td><td class="n">42</td></tr>
+      <tr>
+        <td class="n">54</td><td>Westchester, NY</td><td class="n">35%</td>
+        <td>pre-1940–1940s</td><td class="n">16</td></tr>
+      <tr>
+        <td class="n">55</td><td>Cook, IL</td><td class="n">35%</td>
+        <td>pre-1940–1940s</td><td class="n">171</td></tr>
+      <tr>
+        <td class="n">56</td><td>Montgomery, MD</td><td class="n">34%</td>
+        <td>1970s–1980s</td><td class="n">58</td></tr>
+      <tr>
+        <td class="n">57</td><td>Sacramento, CA</td><td class="n">34%</td>
+        <td>1970s–1980s</td><td class="n">2</td></tr>
+      <tr>
+        <td class="n">58</td><td>Bexar, TX</td><td class="n">34%</td>
+        <td>2000s–2010s</td><td class="n">268</td></tr>
+      <tr>
+        <td class="n">59</td><td>Hillsborough, FL</td><td class="n">34%</td>
+        <td>2000s–2010s</td><td class="n">13</td></tr>
+      <tr>
+        <td class="n">60</td><td>Dallas, TX</td><td class="n">34%</td>
+        <td>1970s–1980s</td><td class="n">186</td></tr>
+      <tr>
+        <td class="n">61</td><td>Bernalillo, NM</td><td class="n">33%</td>
+        <td>1970s–1980s</td><td class="n">63</td></tr>
+      <tr>
+        <td class="n">62</td><td>Worcester, MA</td><td class="n">33%</td>
+        <td>pre-1940–1940s</td><td class="n">62</td></tr>
+      <tr>
+        <td class="n">63</td><td>Lake, IL</td><td class="n">33%</td>
+        <td>1980s–1990s</td><td class="n">64</td></tr>
+      <tr>
+        <td class="n">64</td><td>Contra costa, CA</td><td class="n">33%</td>
+        <td>1970s–1980s</td><td class="n">12</td></tr>
+      <tr>
+        <td class="n">65</td><td>Macomb, MI</td><td class="n">33%</td>
+        <td>1960s–1970s</td><td class="n">26</td></tr>
+      <tr>
+        <td class="n">66</td><td>Los angeles, CA</td><td class="n">33%</td>
+        <td>1950s–1960s</td><td class="n">9</td></tr>
+      <tr>
+        <td class="n">67</td><td>Dekalb, GA</td><td class="n">33%</td>
+        <td>1970s–1980s</td><td class="n">14</td></tr>
+      <tr>
+        <td class="n">68</td><td>Harris, TX</td><td class="n">33%</td>
+        <td>2000s–2010s</td><td class="n">149</td></tr>
+      <tr>
+        <td class="n">69</td><td>Prince george's, MD</td><td class="n">33%</td>
+        <td>1960s–1970s</td><td class="n">16</td></tr>
+      <tr>
+        <td class="n">70</td><td>Tarrant, TX</td><td class="n">33%</td>
+        <td>1990s–2000s</td><td class="n">416</td></tr>
+      <tr>
+        <td class="n">71</td><td>Norfolk, MA</td><td class="n">33%</td>
+        <td>pre-1940–1940s</td><td class="n">15</td></tr>
+      <tr>
+        <td class="n">72</td><td>Tulsa, OK</td><td class="n">32%</td>
+        <td>1970s–1980s</td><td class="n">215</td></tr>
+      <tr>
+        <td class="n">73</td><td>El paso, CO</td><td class="n">32%</td>
+        <td>1990s–2000s</td><td class="n">717</td></tr>
+      <tr>
+        <td class="n">74</td><td>Pierce, WA</td><td class="n">32%</td>
+        <td>1990s–2000s</td><td class="n">0</td></tr>
+      <tr>
+        <td class="n">75</td><td>Baltimore, MD</td><td class="n">32%</td>
+        <td>1950s–1960s</td><td class="n">45</td></tr>
+      <tr>
+        <td class="n">76</td><td>Kern, CA</td><td class="n">32%</td>
+        <td>1970s–1980s</td><td class="n">8</td></tr>
+      <tr>
+        <td class="n">77</td><td>Miami-dade, FL</td><td class="n">32%</td>
+        <td>1970s–1980s</td><td class="n">52</td></tr>
+      <tr>
+        <td class="n">78</td><td>El paso, TX</td><td class="n">32%</td>
+        <td>2000s–2010s</td><td class="n">57</td></tr>
+      <tr>
+        <td class="n">79</td><td>Hamilton, OH</td><td class="n">31%</td>
+        <td>pre-1940–1940s</td><td class="n">79</td></tr>
+      <tr>
+        <td class="n">80</td><td>San joaquin, CA</td><td class="n">31%</td>
+        <td>1990s–2000s</td><td class="n">2</td></tr>
+      <tr>
+        <td class="n">81</td><td>Oakland, MI</td><td class="n">31%</td>
+        <td>1960s–1970s</td><td class="n">25</td></tr>
+      <tr>
+        <td class="n">82</td><td>Monroe, NY</td><td class="n">31%</td>
+        <td>pre-1940–1940s</td><td class="n">15</td></tr>
+      <tr>
+        <td class="n">83</td><td>Oklahoma, OK</td><td class="n">31%</td>
+        <td>1960s–1970s</td><td class="n">296</td></tr>
+      <tr>
+        <td class="n">84</td><td>Fresno, CA</td><td class="n">30%</td>
+        <td>1970s–1980s</td><td class="n">2</td></tr>
+      <tr>
+        <td class="n">85</td><td>Middlesex, NJ</td><td class="n">30%</td>
+        <td>1950s–1960s</td><td class="n">29</td></tr>
+      <tr>
+        <td class="n">86</td><td>Duval, FL</td><td class="n">30%</td>
+        <td>1990s–2000s</td><td class="n">69</td></tr>
+      <tr>
+        <td class="n">87</td><td>Jefferson, AL</td><td class="n">30%</td>
+        <td>1960s–1970s</td><td class="n">46</td></tr>
+      <tr>
+        <td class="n">88</td><td>Shelby, TN</td><td class="n">30%</td>
+        <td>1970s–1980s</td><td class="n">51</td></tr>
+      <tr>
+        <td class="n">89</td><td>Multnomah, OR</td><td class="n">30%</td>
+        <td>pre-1940–1940s</td><td class="n">0</td></tr>
+      <tr>
+        <td class="n">90</td><td>Davidson, TN</td><td class="n">29%</td>
+        <td>2000s–2010s</td><td class="n">64</td></tr>
+      <tr>
+        <td class="n">91</td><td>Salt lake, UT</td><td class="n">29%</td>
+        <td>1970s–1980s</td><td class="n">29</td></tr>
+      <tr>
+        <td class="n">92</td><td>Jackson, MO</td><td class="n">28%</td>
+        <td>1960s–1970s</td><td class="n">127</td></tr>
+      <tr>
+        <td class="n">93</td><td>Jefferson, KY</td><td class="n">28%</td>
+        <td>1950s–1960s</td><td class="n">60</td></tr>
+      <tr>
+        <td class="n">94</td><td>Alameda, CA</td><td class="n">28%</td>
+        <td>1960s–1970s</td><td class="n">19</td></tr>
+      <tr>
+        <td class="n">95</td><td>Montgomery, PA</td><td class="n">28%</td>
+        <td>1950s–1960s</td><td class="n">59</td></tr>
+      <tr>
+        <td class="n">96</td><td>Franklin, OH</td><td class="n">28%</td>
+        <td>1970s–1980s</td><td class="n">79</td></tr>
+      <tr>
+        <td class="n">97</td><td>Hennepin, MN</td><td class="n">27%</td>
+        <td>1970s–1980s</td><td class="n">132</td></tr>
+      <tr>
+        <td class="n">98</td><td>King, WA</td><td class="n">27%</td>
+        <td>2000s–2010s</td><td class="n">0</td></tr>
+      <tr>
+        <td class="n">99</td><td>Denver, CO</td><td class="n">26%</td>
+        <td>2000s–2010s</td><td class="n">142</td></tr>
+      <tr>
+        <td class="n">100</td><td>Marion, IN</td><td class="n">26%</td>
+        <td>1950s–1960s</td><td class="n">67</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cite">
+    <b>Cite this</b>
+    Before Regret, &ldquo;Built together, due together: synchronised housing construction and hail
+    exposure in North Texas.&rdquo; Analysis of Census ACS year-built estimates and NOAA Storm
+    Events across 100 US counties. Full county dataset:
+    <a href="https://www.beforeregret.com/research/data/storm-and-premium-counties.csv">CSV</a> &middot;
+    <a href="https://www.beforeregret.com/research/data/storm-and-premium-figures.json">JSON</a>.
+    Questions and corrections: hello@beforeregret.com
+  </div>
+
+  <div class="cite">
+    <b>Embed the county lookup</b>
+    Free to use, no tracking, no attribution required beyond the credit line it carries.
+    <pre class="snippet">&lt;iframe src="https://www.beforeregret.com/research/north-texas-roof-age/embed/"
+        width="100%" height="420" style="border:1px solid #e5e0d8"
+        title="Storm frequency and insurance cost by county"
+        loading="lazy"&gt;&lt;/iframe&gt;</pre>
+    It posts its own height to the parent page as <code>beforeRegretEmbedHeight</code> if you want
+    it to resize with the content.
+  </div>
+
+  <footer class="spine">
+    Sources: US Census Bureau, American Community Survey 5-year, year structure built; NOAA National
+    Centers for Environmental Information, Storm Events Database, 2015&ndash;2024. All US Government
+    works.<br>
+    Analysis by Before Regret. Published 6 September 2026.<br>
+    Related: <a href="/research/allegheny-storm-premium/">Third Stormiest, Sixth Cheapest</a> &#183;
+    <a href="/research/risk-without-price/">Risk Without Price</a> &#183;
+    <a href="/research/risk-without-cover/">Risk Without Cover</a> &#183;
+    <a href="/research/outside-the-zone/">Outside the Zone</a>
+  </footer>
+</div>
+<script type="application/json" id="alg-data">[{"n":"Alameda, CA","e":170,"f":125,"u":32.1,"o":11.3,"p":66.4,"r":2,"t":"Flood 120 &middot; Hail 19 &middot; Debris Flow 14"},{"n":"Allegheny, PA","e":1108,"f":330,"u":58.8,"o":2.9,"p":77.2,"r":1,"t":"Thunderstorm Wind 528 &middot; Flash Flood 279 &middot; Hail 115"},{"n":"Baltimore, MD","e":620,"f":266,"u":42,"o":5.7,"p":59.5,"r":1,"t":"Thunderstorm Wind 299 &middot; Flash Flood 146 &middot; Flood 120"},{"n":"Bergen, NJ","e":342,"f":167,"u":30.1,"o":10,"p":74.6,"r":2,"t":"Flash Flood 134 &middot; Thunderstorm Wind 120 &middot; Hail 42"},{"n":"Bernalillo, NM","e":139,"f":25,"u":47.3,"o":4.4,"p":47.8,"r":1,"t":"Hail 63 &middot; Thunderstorm Wind 41 &middot; Flash Flood 25"},{"n":"Bexar, TX","e":647,"f":191,"u":28.6,"o":9.2,"p":37.4,"r":3,"t":"Hail 268 &middot; Flash Flood 185 &middot; Thunderstorm Wind 102"},{"n":"Bronx, NY","e":85,"f":26,"u":33.5,"o":14.9,"p":79.7,"r":3,"t":"Flash Flood 23 &middot; Winter Weather 15 &middot; Thunderstorm Wind 11"},{"n":"Broward, FL","e":284,"f":73,"u":23,"o":48.3,"p":50.3,"r":3,"t":"Thunderstorm Wind 77 &middot; Flood 59 &middot; Hail 54"},{"n":"Clark, NV","e":337,"f":150,"u":59.3,"o":3.3,"p":17.8,"r":3,"t":"Flash Flood 140 &middot; Thunderstorm Wind 112 &middot; Hail 28"},{"n":"Cobb, GA","e":141,"f":13,"u":27.3,"o":8.7,"p":28,"r":1,"t":"Thunderstorm Wind 69 &middot; Hail 22 &middot; Drought 17"},{"n":"Collin, TX","e":545,"f":33,"u":11,"o":26,"p":11,"r":3,"t":"Hail 283 &middot; Thunderstorm Wind 83 &middot; Heat 34"},{"n":"Contra costa, CA","e":70,"f":44,"u":29.7,"o":12.3,"p":53.8,"r":2,"t":"Flood 44 &middot; Hail 12 &middot; Debris Flow 9"},{"n":"Cook, IL","e":1034,"f":175,"u":39.8,"o":6.2,"p":74.1,"r":2,"t":"Thunderstorm Wind 519 &middot; Hail 171 &middot; Flood 108"},{"n":"Cuyahoga, OH","e":359,"f":57,"u":51,"o":3.6,"p":81,"r":2,"t":"Thunderstorm Wind 198 &middot; Flash Flood 47 &middot; Hail 39"},{"n":"Dallas, TX","e":593,"f":114,"u":18.2,"o":20.9,"p":45.9,"r":3,"t":"Hail 186 &middot; Thunderstorm Wind 140 &middot; Flash Flood 103"},{"n":"Davidson, TN","e":695,"f":57,"u":32.9,"o":8.5,"p":42.5,"r":1,"t":"Thunderstorm Wind 428 &middot; Hail 64 &middot; Flash Flood 41"},{"n":"Dekalb, GA","e":202,"f":17,"u":27.5,"o":8.9,"p":45.5,"r":1,"t":"Thunderstorm Wind 127 &middot; Flash Flood 16 &middot; Hail 14"},{"n":"Denton, TX","e":672,"f":59,"u":12,"o":24.6,"p":12.8,"r":3,"t":"Hail 355 &middot; Thunderstorm Wind 111 &middot; Flash Flood 40"},{"n":"Denver, CO","e":194,"f":9,"u":27.9,"o":16.2,"p":57.4,"r":1,"t":"Hail 142 &middot; Thunderstorm Wind 36 &middot; Flash Flood 9"},{"n":"Dupage, IL","e":395,"f":62,"u":35.3,"o":5.7,"p":54.3,"r":2,"t":"Thunderstorm Wind 157 &middot; Hail 58 &middot; Flood 39"},{"n":"Duval, FL","e":692,"f":93,"u":27.2,"o":11.8,"p":41,"r":3,"t":"Thunderstorm Wind 293 &middot; Heavy Rain 159 &middot; Flood 72"},{"n":"El paso, CO","e":1128,"f":87,"u":22.8,"o":15.9,"p":36.2,"r":1,"t":"Hail 717 &middot; Heavy Rain 250 &middot; Flash Flood 80"},{"n":"El paso, TX","e":126,"f":38,"u":46,"o":4.1,"p":39.5,"r":3,"t":"Hail 57 &middot; Flash Flood 38 &middot; Thunderstorm Wind 29"},{"n":"Erie, NY","e":285,"f":56,"u":62,"o":2.1,"p":77.1,"r":1,"t":"Thunderstorm Wind 171 &middot; Flash Flood 35 &middot; Hail 31"},{"n":"Essex, MA","e":232,"f":79,"u":24.6,"o":11.4,"p":69.4,"r":1,"t":"Thunderstorm Wind 117 &middot; Flood 49 &middot; Flash Flood 30"},{"n":"Essex, NJ","e":118,"f":75,"u":26.9,"o":12.5,"p":74.9,"r":2,"t":"Flash Flood 72 &middot; Thunderstorm Wind 40 &middot; Flood 3"},{"n":"Fairfax, VA","e":904,"f":337,"u":38.4,"o":9.2,"p":43.9,"r":1,"t":"Thunderstorm Wind 378 &middot; Flood 245 &middot; Flash Flood 92"},{"n":"Fort bend, TX","e":134,"f":25,"u":17.9,"o":28.6,"p":13.3,"r":3,"t":"Thunderstorm Wind 39 &middot; Hail 33 &middot; Flash Flood 25"},{"n":"Franklin, OH","e":415,"f":78,"u":48.5,"o":3.4,"p":52.2,"r":1,"t":"Thunderstorm Wind 157 &middot; Hail 79 &middot; Winter Weather 65"},{"n":"Fresno, CA","e":468,"f":263,"u":43.5,"o":5.8,"p":48.7,"r":2,"t":"Flood 243 &middot; Dense Fog 37 &middot; Debris Flow 36"},{"n":"Fulton, GA","e":246,"f":50,"u":29.5,"o":13.2,"p":33.3,"r":1,"t":"Thunderstorm Wind 155 &middot; Flash Flood 50 &middot; Hail 30"},{"n":"Gwinnett, GA","e":222,"f":12,"u":25.6,"o":7.9,"p":14.1,"r":1,"t":"Thunderstorm Wind 139 &middot; Hail 20 &middot; Drought 16"},{"n":"Hamilton, OH","e":439,"f":110,"u":44.3,"o":4.3,"p":73,"r":1,"t":"Thunderstorm Wind 154 &middot; Hail 79 &middot; Flash Flood 72"},{"n":"Harris, TX","e":524,"f":105,"u":22,"o":23.5,"p":38.1,"r":3,"t":"Thunderstorm Wind 177 &middot; Hail 149 &middot; Flash Flood 100"},{"n":"Hennepin, MN","e":370,"f":13,"u":26.2,"o":13.9,"p":60.3,"r":1,"t":"Thunderstorm Wind 136 &middot; Hail 132 &middot; Winter Storm 28"},{"n":"Hidalgo, TX","e":225,"f":57,"u":38.8,"o":6,"p":17.9,"r":3,"t":"Thunderstorm Wind 84 &middot; Hail 50 &middot; Flood 30"},{"n":"Hillsborough, FL","e":118,"f":20,"u":20.4,"o":21.9,"p":31.4,"r":2,"t":"Thunderstorm Wind 60 &middot; Flood 20 &middot; Lightning 14"},{"n":"Honolulu, HI","e":339,"f":68,"u":44.8,"o":14.2,"p":57.9,"r":3,"t":"Heavy Rain 255 &middot; Flash Flood 57 &middot; Flood 11"},{"n":"Hudson, NJ","e":135,"f":67,"u":37.4,"o":10.2,"p":63.6,"r":2,"t":"Flash Flood 65 &middot; Winter Weather 15 &middot; Thunderstorm Wind 14"},{"n":"Jackson, MO","e":480,"f":80,"u":23.5,"o":8.6,"p":65,"r":1,"t":"Thunderstorm Wind 206 &middot; Hail 127 &middot; Flash Flood 70"},{"n":"Jefferson, AL","e":305,"f":50,"u":34.8,"o":7,"p":58.1,"r":2,"t":"Thunderstorm Wind 158 &middot; Flash Flood 47 &middot; Hail 46"},{"n":"Jefferson, KY","e":461,"f":120,"u":31.2,"o":7.1,"p":63,"r":1,"t":"Thunderstorm Wind 244 &middot; Flash Flood 82 &middot; Hail 60"},{"n":"Kern, CA","e":445,"f":308,"u":50.9,"o":4,"p":43.9,"r":2,"t":"Flood 245 &middot; Flash Flood 63 &middot; Debris Flow 51"},{"n":"King, WA","e":11,"f":1,"u":38.8,"o":8.9,"p":46.6,"r":3,"t":"Heavy Rain 8 &middot; Lightning 1 &middot; Debris Flow 1"},{"n":"Kings, NY","e":68,"f":28,"u":31.3,"o":21.1,"p":81,"r":3,"t":"Thunderstorm Wind 33 &middot; Flash Flood 28 &middot; Lightning 4"},{"n":"Lake, IL","e":339,"f":39,"u":32.7,"o":9.3,"p":46.8,"r":2,"t":"Thunderstorm Wind 119 &middot; Hail 64 &middot; Flash Flood 20"},{"n":"Lee, FL","e":108,"f":20,"u":25.8,"o":22.3,"p":20.7,"r":3,"t":"Thunderstorm Wind 38 &middot; Flood 20 &middot; Tornado 17"},{"n":"Los angeles, CA","e":143,"f":89,"u":39.5,"o":11.1,"p":71.1,"r":2,"t":"Flash Flood 89 &middot; Thunderstorm Wind 23 &middot; Debris Flow 15"},{"n":"Macomb, MI","e":181,"f":23,"u":48,"o":2.4,"p":58,"r":3,"t":"Thunderstorm Wind 91 &middot; Hail 26 &middot; Flood 13"},{"n":"Maricopa, AZ","e":1282,"f":438,"u":50,"o":3.9,"p":29.4,"r":2,"t":"Thunderstorm Wind 672 &middot; Flash Flood 387 &middot; Hail 82"},{"n":"Marion, IN","e":279,"f":41,"u":39.8,"o":4.2,"p":59.3,"r":1,"t":"Thunderstorm Wind 125 &middot; Hail 67 &middot; Flash Flood 25"},{"n":"Mecklenburg, NC","e":228,"f":35,"u":37.6,"o":5.9,"p":26,"r":3,"t":"Thunderstorm Wind 116 &middot; Hail 38 &middot; Flash Flood 22"},{"n":"Miami-dade, FL","e":333,"f":131,"u":23.1,"o":49.2,"p":50.7,"r":2,"t":"Flood 95 &middot; Thunderstorm Wind 75 &middot; Hail 52"},{"n":"Middlesex, MA","e":495,"f":138,"u":26.7,"o":11.2,"p":69.1,"r":1,"t":"Thunderstorm Wind 295 &middot; Flood 107 &middot; Hail 47"},{"n":"Middlesex, NJ","e":402,"f":86,"u":39.9,"o":4.4,"p":58.1,"r":2,"t":"Thunderstorm Wind 123 &middot; Flash Flood 72 &middot; Winter Weather 38"},{"n":"Milwaukee, WI","e":316,"f":21,"u":56.4,"o":2.2,"p":79.8,"r":2,"t":"Hail 70 &middot; Winter Weather 68 &middot; Thunderstorm Wind 57"},{"n":"Monroe, NY","e":265,"f":36,"u":70.2,"o":1.4,"p":69.8,"r":2,"t":"Thunderstorm Wind 124 &middot; High Wind 30 &middot; Flash Flood 20"},{"n":"Montgomery, MD","e":779,"f":280,"u":36.5,"o":9,"p":49.1,"r":1,"t":"Thunderstorm Wind 425 &middot; Flood 163 &middot; Flash Flood 117"},{"n":"Montgomery, PA","e":527,"f":114,"u":36,"o":7.5,"p":62.2,"r":1,"t":"Thunderstorm Wind 333 &middot; Flash Flood 98 &middot; Hail 59"},{"n":"Multnomah, OR","e":32,"f":5,"u":53.8,"o":5.5,"p":61,"r":2,"t":"Heavy Rain 13 &middot; Debris Flow 5 &middot; Flood 4"},{"n":"Nassau, NY","e":184,"f":79,"u":15.6,"o":19.7,"p":86.1,"r":3,"t":"Thunderstorm Wind 83 &middot; Flash Flood 78 &middot; Lightning 11"},{"n":"New york, NY","e":41,"f":19,"u":50.4,"o":16.3,"p":78.7,"r":3,"t":"Flash Flood 19 &middot; Thunderstorm Wind 17 &middot; Hail 4"},{"n":"Norfolk, MA","e":237,"f":77,"u":24.7,"o":13.8,"p":67.9,"r":2,"t":"Thunderstorm Wind 126 &middot; Flood 58 &middot; Flash Flood 19"},{"n":"Oakland, MI","e":229,"f":13,"u":36.7,"o":5.9,"p":58.9,"r":2,"t":"Thunderstorm Wind 157 &middot; Hail 25 &middot; Heavy Snow 11"},{"n":"Oklahoma, OK","e":864,"f":134,"u":18,"o":24,"p":54.9,"r":3,"t":"Hail 296 &middot; Thunderstorm Wind 238 &middot; Flash Flood 118"},{"n":"Orange, CA","e":119,"f":65,"u":37.3,"o":10.1,"p":57.4,"r":3,"t":"Flood 39 &middot; Heavy Rain 28 &middot; Flash Flood 26"},{"n":"Orange, FL","e":156,"f":11,"u":19,"o":20.4,"p":27.1,"r":3,"t":"Thunderstorm Wind 63 &middot; Hail 47 &middot; Lightning 8"},{"n":"Palm beach, FL","e":304,"f":66,"u":17.5,"o":46.1,"p":33.7,"r":3,"t":"Thunderstorm Wind 91 &middot; Hail 48 &middot; Flood 46"},{"n":"Philadelphia, PA","e":383,"f":92,"u":38.6,"o":4.8,"p":84.2,"r":3,"t":"Thunderstorm Wind 136 &middot; Flash Flood 73 &middot; Winter Weather 40"},{"n":"Pierce, WA","e":5,"f":1,"u":42.1,"o":6.5,"p":43,"r":3,"t":"Debris Flow 2 &middot; Tornado 1 &middot; Heavy Rain 1"},{"n":"Pima, AZ","e":549,"f":187,"u":59.5,"o":2.6,"p":39.5,"r":2,"t":"Thunderstorm Wind 246 &middot; Flash Flood 179 &middot; Hail 54"},{"n":"Pinellas, FL","e":185,"f":8,"u":20.5,"o":27.2,"p":59.1,"r":3,"t":"Thunderstorm Wind 58 &middot; Lightning 49 &middot; Tropical Storm 23"},{"n":"Polk, FL","e":101,"f":1,"u":25.7,"o":12.6,"p":31.9,"r":2,"t":"Thunderstorm Wind 37 &middot; Hail 28 &middot; Tropical Storm 14"},{"n":"Prince george's, MD","e":346,"f":116,"u":31.9,"o":7.7,"p":54.3,"r":2,"t":"Thunderstorm Wind 212 &middot; Flood 75 &middot; Flash Flood 41"},{"n":"Providence, RI","e":197,"f":82,"u":27.9,"o":9.7,"p":75.9,"r":2,"t":"Thunderstorm Wind 85 &middot; Flood 43 &middot; Flash Flood 39"},{"n":"Queens, NY","e":112,"f":59,"u":33.3,"o":12.2,"p":83.6,"r":3,"t":"Flash Flood 58 &middot; Thunderstorm Wind 42 &middot; Lightning 6"},{"n":"Riverside, CA","e":380,"f":206,"u":34.2,"o":7,"p":30.2,"r":2,"t":"Flash Flood 133 &middot; Flood 73 &middot; Heavy Rain 57"},{"n":"Sacramento, CA","e":133,"f":110,"u":43.8,"o":5.1,"p":49.2,"r":3,"t":"Flood 105 &middot; Heavy Rain 12 &middot; Flash Flood 5"},{"n":"Salt lake, UT","e":193,"f":16,"u":59.6,"o":4.3,"p":44.5,"r":2,"t":"Thunderstorm Wind 143 &middot; Hail 29 &middot; Flash Flood 11"},{"n":"San bernardino, CA","e":655,"f":443,"u":39.6,"o":7,"p":43.8,"r":2,"t":"Flash Flood 359 &middot; Flood 84 &middot; Heavy Rain 64"},{"n":"San diego, CA","e":445,"f":242,"u":34.9,"o":9.9,"p":50.6,"r":3,"t":"Flood 153 &middot; Flash Flood 89 &middot; Heavy Rain 83"},{"n":"San francisco, CA","e":191,"f":74,"u":27.9,"o":16.2,"p":77.2,"r":2,"t":"Flood 74 &middot; Strong Wind 43 &middot; Rip Current 18"},{"n":"San joaquin, CA","e":48,"f":33,"u":40.6,"o":5.8,"p":45.1,"r":3,"t":"Flood 31 &middot; Heavy Rain 7 &middot; Funnel Cloud 4"},{"n":"San mateo, CA","e":85,"f":42,"u":30.6,"o":13.3,"p":73.3,"r":2,"t":"Flood 40 &middot; Debris Flow 18 &middot; Hail 9"},{"n":"Santa clara, CA","e":189,"f":115,"u":37.8,"o":8.8,"p":60.4,"r":2,"t":"Flood 107 &middot; Hail 33 &middot; Debris Flow 24"},{"n":"Shelby, TN","e":440,"f":67,"u":26.8,"o":11,"p":55.3,"r":3,"t":"Thunderstorm Wind 177 &middot; Flash Flood 60 &middot; Heat 52"},{"n":"Snohomish, WA","e":8,"f":5,"u":44.5,"o":6.1,"p":36,"r":3,"t":"Flood 4 &middot; Funnel Cloud 2 &middot; Debris Flow 1"},{"n":"St. louis, MO","e":270,"f":32,"u":23.2,"o":12.5,"p":69.2,"r":2,"t":"Thunderstorm Wind 106 &middot; Hail 77 &middot; Flash Flood 27"},{"n":"Suffolk, MA","e":269,"f":51,"u":32.4,"o":18.9,"p":73.4,"r":3,"t":"Thunderstorm Wind 65 &middot; High Wind 42 &middot; Strong Wind 33"},{"n":"Suffolk, NY","e":364,"f":110,"u":16.5,"o":18.1,"p":68.7,"r":3,"t":"Thunderstorm Wind 213 &middot; Flash Flood 110 &middot; Hail 17"},{"n":"Tarrant, TX","e":931,"f":90,"u":13.9,"o":20.8,"p":33.8,"r":3,"t":"Hail 416 &middot; Thunderstorm Wind 241 &middot; Flash Flood 74"},{"n":"Travis, TX","e":431,"f":101,"u":25.4,"o":12.2,"p":25.1,"r":3,"t":"Hail 147 &middot; Thunderstorm Wind 102 &middot; Flash Flood 96"},{"n":"Tulsa, OK","e":769,"f":169,"u":17.5,"o":14.3,"p":52.7,"r":3,"t":"Thunderstorm Wind 273 &middot; Hail 215 &middot; Flash Flood 138"},{"n":"Utah, UT","e":108,"f":19,"u":60,"o":3.9,"p":26.1,"r":2,"t":"Thunderstorm Wind 73 &middot; Flash Flood 14 &middot; Hail 10"},{"n":"Ventura, CA","e":57,"f":44,"u":36.2,"o":11.3,"p":56.3,"r":1,"t":"Flash Flood 43 &middot; Thunderstorm Wind 7 &middot; Debris Flow 4"},{"n":"Wake, NC","e":650,"f":156,"u":34.5,"o":5.5,"p":18.8,"r":2,"t":"Thunderstorm Wind 300 &middot; Flash Flood 152 &middot; Hail 122"},{"n":"Wayne, MI","e":248,"f":32,"u":45.3,"o":4.2,"p":80.5,"r":3,"t":"Thunderstorm Wind 132 &middot; Hail 23 &middot; Lakeshore Flood 22"},{"n":"Westchester, NY","e":247,"f":114,"u":28.5,"o":20.6,"p":76.9,"r":3,"t":"Thunderstorm Wind 115 &middot; Flash Flood 108 &middot; Hail 16"},{"n":"Will, IL","e":438,"f":58,"u":30.9,"o":4.6,"p":37.2,"r":2,"t":"Thunderstorm Wind 199 &middot; Hail 89 &middot; Flood 37"},{"n":"Worcester, MA","e":511,"f":140,"u":28.7,"o":5.9,"p":64.7,"r":1,"t":"Thunderstorm Wind 281 &middot; Flood 89 &middot; Hail 62"}]</script>
+<script>
+(function(){
+  var d=JSON.parse(document.getElementById('alg-data').textContent);
+  var s=document.getElementById('lkpick'),o=document.getElementById('lkout');
+  d.forEach(function(c,i){var e=document.createElement('option');e.value=i;e.textContent=c.n;s.appendChild(e);});
+  function cell(v,l){return '<div class="lk-cell"><b>'+v+'</b><span>'+l+'</span></div>';}
+  s.addEventListener('change',function(){
+    if(s.value===''){o.innerHTML='';return;}
+    var c=d[+s.value];
+    o.innerHTML='<div class="lk-grid">'
+      +cell(c.e.toLocaleString(),'severe weather events, 2015&ndash;2024')
+      +cell(c.u.toFixed(1)+'%','pay under $1,000 a year')
+      +cell(c.o.toFixed(1)+'%','pay over $3,000 a year')
+      +cell(c.p.toFixed(1)+'%','of homes built before 1980')
+      +cell(c.f.toLocaleString(),'floods and flash floods')
+      +cell(c.r===null?'&mdash;':'Zone '+c.r,'EPA radon zone')
+      +'</div><p class="lk-types">Most common: '+c.t+'</p>';
+  });
+})();
+</script>
