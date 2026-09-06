@@ -26,14 +26,14 @@ import path from 'path';
 const SOURCE = path.join(process.cwd(), 'docs', 'risk-without-price.html');
 
 const CANONICAL_URL = 'https://www.beforeregret.com/research/risk-without-price/';
-const TITLE = 'Risk Without Price: what Americans report paying to insure their homes vs. modelled hazard risk';
+const TITLE = 'Homeowners insurance rates by state and county: US data';
 // Written to match how people actually phrase this in search -- "homeowners insurance rates by
 // state", "average home insurance cost" -- rather than restating the headline finding a second
 // time. The page's own data answers those queries; the description is where a searcher finds out
 // that it does. There is deliberately no <meta name="keywords">: Google dropped support for it in
 // 2009 and it does nothing but tell competitors what you are targeting.
 const DESCRIPTION =
-  'Homeowners insurance rates by state and by county, measured from what households report paying. Across 3,093 U.S. counties and 50.7 million mortgaged households, state of residence explains more than twice as much of the premium as the modelled natural-hazard risk a home faces.';
+  'What US households report paying to insure their homes, by state and county, free to reuse. 3,093 counties and 50.7 million mortgaged households.';
 const OG_IMAGE = 'https://www.beforeregret.com/og-image.png';
 const PUBLISHED = '2026-08-30';
 
@@ -41,6 +41,11 @@ const PUBLISHED = '2026-08-30';
 // that it is a reproducible analysis of two named public datasets, and those are the types that say
 // so in a way an answer engine can read. citation/isBasedOn name the actual sources so the
 // provenance survives being quoted without the surrounding prose.
+// Display budget, asserted rather than trusted: this was over when the check was added, so
+// the page was being truncated in results. buildPageTitle guards the guides; nothing guarded these.
+if (TITLE.length > 60) { console.error(`[prerender-research] TITLE is ${TITLE.length} chars, over 60.`); process.exit(1); }
+if (DESCRIPTION.length > 155) { console.error(`[prerender-research] DESCRIPTION is ${DESCRIPTION.length} chars, over 155.`); process.exit(1); }
+
 const JSON_LD = [
   {
     '@context': 'https://schema.org',
@@ -492,9 +497,15 @@ ${newsroomBlock({ title: 'Risk Without Cover', url: `${escapeHtmlAttr(COVER_URL)
 `;
     const cBody = cBodyRaw.slice(0, coverKitEnd) + coverKit + cBodyRaw.slice(coverKitEnd);
     const COVER_TITLE =
-      'Risk Without Cover: how few homes in US flood zones actually carry flood insurance';
+      'Flood insurance take-up by county: NFIP data';
     const COVER_DESC =
-      'Flood insurance take-up by county. Across 2,304 US counties and 3.75 million homes inside FEMA-mapped flood zones, the median county covers 15% of them, and take-up does not track flood risk.';
+      'How few homes inside FEMA-mapped flood zones carry flood insurance, by county, free to reuse. In the median county, about one home in seven.';
+
+    // Display budget, asserted rather than trusted: this was over when the check was added, so
+    // the page was being truncated in results. buildPageTitle guards the guides; nothing guarded these.
+    if (COVER_TITLE.length > 60) { console.error(`[prerender-research] COVER_TITLE is ${COVER_TITLE.length} chars, over 60.`); process.exit(1); }
+    if (COVER_DESC.length > 155) { console.error(`[prerender-research] COVER_DESC is ${COVER_DESC.length} chars, over 155.`); process.exit(1); }
+
     const COVER_LD = [
       {
         '@context': 'https://schema.org',
@@ -724,9 +735,15 @@ ${newsroomBlock({ title: 'Outside the Zone', url: `${escapeHtmlAttr(ZONE_URL)}`,
 `;
     const zBody = zBodyRaw.slice(0, zoneKitEnd) + zoneKit + zBodyRaw.slice(zoneKitEnd);
     const ZONE_TITLE =
-      'Outside the Zone: how much US flood insurance is paid outside the flood zone';
+      'NFIP flood claims paid outside the flood zone, by county';
     const ZONE_DESC =
-      'More than a quarter of every NFIP flood insurance claim ever paid went to a property rated outside the mapped high-risk zone -- $20.6 billion across 2.58 million claims -- while only 1.25% of homes outside those zones carry any flood cover.';
+      'More than one paid NFIP flood claim in four went to a property outside the mapped high-risk zone. County data for 1,921 counties, free to reuse.';
+
+    // Display budget, asserted rather than trusted: this was over when the check was added, so
+    // the page was being truncated in results. buildPageTitle guards the guides; nothing guarded these.
+    if (ZONE_TITLE.length > 60) { console.error(`[prerender-research] ZONE_TITLE is ${ZONE_TITLE.length} chars, over 60.`); process.exit(1); }
+    if (ZONE_DESC.length > 155) { console.error(`[prerender-research] ZONE_DESC is ${ZONE_DESC.length} chars, over 155.`); process.exit(1); }
+
     const ZONE_LD = [
       {
         '@context': 'https://schema.org',
@@ -956,9 +973,15 @@ ${newsroomBlock({ title: 'High-Hazard Dams by County', url: `${escapeHtmlAttr(DA
     // out of context, so it carries the "as recorded" framing rather than relying on the body to
     // supply it.
     const DAM_TITLE =
-      'High-Hazard Dams by County: condition and emergency plan status in the National Inventory of Dams';
+      'High-hazard dams by county: condition and emergency plans';
     const DAM_DESC =
-      'A county-level summary of the US Army Corps of Engineers National Inventory of Dams: how many dams are classified high hazard potential, what condition assessments are recorded for them, and whether an emergency action plan is on file. All assessments are those of the responsible regulating agencies.';
+      'US dams rated high hazard potential, by county, free to reuse. 2,791 are rated poor or unsatisfactory and 636 of those have no emergency action plan.';
+
+    // Display budget, asserted rather than trusted: this was over when the check was added, so
+    // the page was being truncated in results. buildPageTitle guards the guides; nothing guarded these.
+    if (DAM_TITLE.length > 60) { console.error(`[prerender-research] DAM_TITLE is ${DAM_TITLE.length} chars, over 60.`); process.exit(1); }
+    if (DAM_DESC.length > 155) { console.error(`[prerender-research] DAM_DESC is ${DAM_DESC.length} chars, over 155.`); process.exit(1); }
+
     const DAM_LD = [
       {
         '@context': 'https://schema.org',
@@ -1619,6 +1642,7 @@ ${SITE_FOOTER}
     fs.writeFileSync(path.join(ntxEmbedDir, 'index.html'), ntxEmbed, 'utf8');
     console.log(`[prerender-research] Wrote /research/north-texas-roof-age/embed/ (${Math.round(ntxEmbed.length / 1024)} KB)`);
   }
+
 
   const STUDIES: Array<{ url: string; title: string; standfirst: string; finding: string; source: string; data: string[]; embed: boolean; published: string; }> = [
     {
