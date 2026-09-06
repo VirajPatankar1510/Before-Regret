@@ -244,14 +244,18 @@ ${typeBars}
   which the EPA recommends action. ${zone1.length} of the 100 counties carry that designation.
   Among them, Allegheny has the ${ord(rZone1Old)}-largest share of pre-1950 housing:
   ${pct(A.pctPre1950)} of its ${num(A.housingUnits)} units, with ${pct(A.pctPre1980)} built before
-  1980 &mdash; the ${ord(rPre80)}-oldest stock of the hundred.</p>
+  1980 &mdash; the ${ord(rPre80)}-oldest stock of the hundred. The
+  <a href="/guides/us-housing-age-ranking-oldest-vs-newest-counties/">counties with the oldest
+  housing stock nationally</a> are ranked on the same measure.</p>
 
   <p>Construction era matters for radon because passive radon-resistant construction is a modern
   technique. The methods now written into model codes as radon-resistant new construction post-date
   the great majority of Allegheny's housing by decades, so most homes here were not built to resist
   it and were not tested when they were sold. No homeowners policy covers radon mitigation, and no
   premium reflects it. It is a several-thousand-dollar remediation that a buyer either finds during
-  the inspection period or inherits.</p>
+  the inspection period or inherits &mdash; and if a test comes back high mid-purchase,
+  <a href="/guides/negotiate-radon-mitigation-after-inspection/">who pays for radon mitigation is
+  negotiable</a> on a contingency and a deadline.</p>
 
   <div class="finding">
     <p>Both of the county's largest hazards &mdash; inland flooding and radon &mdash; sit outside
