@@ -1,4 +1,8 @@
 import 'dotenv/config';
+// This machine's system resolver refuses the Neon endpoint (see scripts/lib/neon-curl.ts),
+// which failed this script silently mid-session. Script-only: the deployed server resolves
+// Neon normally and has no curl to shell out to.
+import './lib/neon-curl.js';
 import fs from 'fs';
 import path from 'path';
 import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } from '../src/utils/sitemapGenerator';

@@ -1,0 +1,226 @@
+==========================================================================
+THIRD STORMIEST, SIXTH CHEAPEST - PITTSBURGH PRESS OUTREACH
+Three pitches. Copy one, paste it, send it.
+Written 6 September 2026 against the study as published.
+==========================================================================
+
+HOW TO USE THIS FILE
+
+This is a regional pack, not a national one. Every pitch below is aimed at a
+newsroom that covers Allegheny County, and the story only works because it is
+about their county specifically. Sending it to a national desk wastes it.
+
+Each pitch is a different story for a different desk. Send one per newsroom.
+Two of these to the same masthead reads as two people pitching, which is
+worse than sending nothing.
+
+WHAT TO FILL IN: only the name. There are no contact addresses in this file
+and none should be invented - find the byline on a recent Pittsburgh housing,
+weather or consumer story and write to that person. The only address that
+belongs in your signature is hello@beforeregret.com.
+
+Every number here comes from the published study and its county file. If a
+reporter checks one, it holds.
+
+
+--------------------------------------------------------------------------
+THE FOUR NUMBERS
+--------------------------------------------------------------------------
+
+   1,108   severe weather events recorded in Allegheny County, 2015-2024
+           3rd highest of the 100 counties studied; the median is 285
+
+   58.8%   of the county's 206,078 mortgaged households report paying
+           under $1,000 a year to insure the home - 7th highest share
+
+    2.9%   report paying over $3,000 - 6th LOWEST share of the 100
+
+  Zone 1   EPA radon designation, the highest of three, on a housing stock
+           that is 77.2% pre-1980 and 36.7% pre-1950
+
+The comparison that makes it land: Oklahoma County, Oklahoma recorded 864
+severe weather events over the same decade - fewer than Allegheny - and 24.0%
+of its mortgaged households pay over $3,000. Allegheny records more weather
+and charges a quarter as many households that much.
+
+
+--------------------------------------------------------------------------
+THE TWO SENTENCES THAT WILL GET MISQUOTED
+--------------------------------------------------------------------------
+
+"Pittsburgh has the cheapest home insurance in America."
+
+  It does not say that and you should correct it before it prints. The ACS
+  reports what households say they pay, in bands, with no published mean, so
+  no county in this study has an average premium and none is calculated. What
+  the data supports is a share: 58.8% report paying under $1,000, which is
+  7th highest among the 100 counties examined. It also covers mortgaged
+  households only - owners without a mortgage face no lender requirement and
+  are not in the table at all.
+
+"Allegheny is the third stormiest county in America."
+
+  Third of the 100 counties in this study, which are large-population
+  counties, not third of all 3,143. And NOAA's database records REPORTS of
+  severe weather. A storm that damages nothing in an empty place often goes
+  unrecorded, so the counts describe how often something damaging was written
+  down here, not a physical storm frequency.
+
+Volunteering both corrections in your first email is the fastest way to sound
+like you know the dataset rather than like you are selling something.
+
+
+==========================================================================
+PITCH 1 - HOUSING, REAL ESTATE OR CONSUMER DESK
+The angle: what a cheap premium is actually buying
+==========================================================================
+
+SUBJECT:
+Allegheny County's cheap home insurance isn't a bargain - it's a coverage gap
+
+Dear [Name],
+
+I have finished a county-level analysis crossing NOAA's storm records against
+what Census respondents say they pay to insure their homes, and Allegheny
+County came out as the sharpest outlier in the set.
+
+Between 2015 and 2024 NOAA recorded 1,108 severe weather events in the county
+- the third-highest of the 100 large counties I examined, against a median of
+285. Yet 58.8% of Allegheny's mortgaged households report paying under $1,000
+a year for homeowners insurance, and only 2.9% pay over $3,000. Oklahoma
+County recorded fewer events over the same decade and eight times as many
+households pay in the top band.
+
+The explanation is not that insurers have mispriced Pittsburgh. It is what
+the county's weather consists of. Allegheny's two most common event types are
+thunderstorm wind (528) and flooding (330 floods and flash floods, 4th of the
+100). A standard HO-3 policy covers the wind. It does not cover the flood -
+that is a separate NFIP or private policy - so the premium is low partly
+because the policy is not carrying the county's second-largest exposure.
+
+There is a second uncovered risk in the same place. The EPA puts Allegheny in
+radon Zone 1, its highest category, and 77.2% of the county's 604,558 housing
+units were built before 1980, which is before radon-resistant construction
+entered model codes. No homeowners policy covers radon mitigation either.
+
+The full study, method and the 100-county dataset are here, free to reuse:
+https://www.beforeregret.com/research/allegheny-storm-premium/
+
+Happy to walk through the method or pull the numbers for a specific
+neighbourhood if that is useful.
+
+[Your name]
+hello@beforeregret.com
+
+
+==========================================================================
+PITCH 2 - WEATHER, ENVIRONMENT OR SCIENCE DESK
+The angle: the county's weather is not what people think it is
+==========================================================================
+
+SUBJECT:
+Allegheny County logged 528 thunderstorm wind events in a decade - 2nd of 100
+
+Dear [Name],
+
+Pittsburgh does not have a reputation as a severe weather county, and the
+NOAA record disagrees fairly strongly.
+
+Over 2015-2024, Allegheny County logged 1,108 severe weather events. Broken
+down: 528 thunderstorm wind events, which is second among the 100 large
+counties I examined; 279 flash floods and 51 floods, fourth; 115 hailstorms;
+12 tornadoes. The median county in the study recorded 285 events in total.
+
+The composition is the interesting part. Allegheny's profile is wind and
+water, not the hail and tornado activity that dominates the southern plains -
+which is exactly why it does not register culturally as a storm county
+despite the counts.
+
+I should flag a methodological point rather than let you find it: I do not
+normalise by area, and the reason is measurable. Across these 100 counties,
+events per square mile correlates with population density at a Spearman
+coefficient of +0.681. NOAA logs reports, and an unwitnessed storm is often
+not logged, so density largely maps where people live. Raw counts relate only
+weakly to land area (+0.156) and population (+0.113), so raw counts are what
+the study uses.
+
+Study, method, limitations and the full county file:
+https://www.beforeregret.com/research/allegheny-storm-premium/
+
+Everything is public-domain federal data - NOAA Storm Events, ACS, EPA radon
+zones, Census Gazetteer - and the CSV is linked from the page if you want to
+run your own cut.
+
+[Your name]
+hello@beforeregret.com
+
+
+==========================================================================
+PITCH 3 - DATA, INVESTIGATIONS OR BUSINESS DESK
+The angle: the national pattern this county is the extreme case of
+==========================================================================
+
+SUBJECT:
+Storm frequency and home insurance price are barely related - here's the county file
+
+Dear [Name],
+
+Across the 100 most populous US counties, how often severe weather is
+recorded in a county tells you almost nothing about what its residents pay to
+insure their homes. The rank correlation between recorded storm events and
+the share of mortgaged households paying over $3,000 a year is -0.101.
+Effectively nothing, and slightly negative.
+
+Allegheny County is the cleanest illustration: third-highest storm count of
+the hundred, sixth-lowest share paying in the top premium band.
+
+I think the honest read is not that insurers are getting it wrong. It is that
+the perils driving the count in places like Allegheny - inland flooding above
+all - are written outside the homeowners policy, so the premium and the
+weather are measuring different things. A national analysis I published in
+August found roughly three quarters of FEMA's modelled building loss falls on
+perils a standard HO-3 excludes, which is the same finding at national scale.
+
+The county-level file behind this is free to reuse and covers 100 counties in
+31 states: storm counts by event type, housing age by decade, ACS insurance
+cost bands, EPA radon zone, land area.
+
+  Study:   https://www.beforeregret.com/research/allegheny-storm-premium/
+  CSV:     https://www.beforeregret.com/research/data/storm-and-premium-counties.csv
+  JSON:    https://www.beforeregret.com/research/data/storm-and-premium-figures.json
+
+If you want the same cut for a different metro before you commit to it, tell
+me which county and I will send it.
+
+[Your name]
+hello@beforeregret.com
+
+
+==========================================================================
+IF A REPORTER COMES BACK
+==========================================================================
+
+"Can you give me an average premium for Allegheny County?"
+  No, and neither can anyone else from this source. ACS B25141 publishes
+  banded counts, not a mean. Anyone quoting a county average homeowners
+  premium is using modelled or quoted rates from a private vendor, which is a
+  different measure from what households report paying. Say so - it is the
+  answer that makes the rest of your numbers trustworthy.
+
+"Are you selling something?"
+  Yes, and say so plainly: BeforeRegret sells a property report to home
+  buyers. The study is free, the data is public domain and free to reuse, and
+  the analysis does not depend on the product. Volunteering this is better
+  than having it discovered.
+
+"Does this mean people in Pittsburgh are underinsured?"
+  The data cannot say that. It shows what households report paying and what
+  the county's recorded hazards are. Whether an individual household is
+  underinsured depends on their policy, their deductible, whether they carry
+  flood cover separately, and their property - none of which is in this file.
+  The defensible statement is narrower: the county's two largest exposures
+  are both outside a standard policy.
+
+"Can I have the data for my county?"
+  The CSV covers all 100. If their county is not among them, say so rather
+  than estimating it.

@@ -166,6 +166,7 @@ function render(items) {
 const SOURCES = [
   { txt: 'docs/Before-Regret-Press-Outreach.txt', docx: 'docs/Before-Regret-Press-Outreach.docx' },
   { txt: 'docs/press-high-hazard-dams.txt', docx: 'docs/press-high-hazard-dams.docx' },
+  { txt: 'docs/press-allegheny-storm-premium.txt', docx: 'docs/press-allegheny-storm-premium.docx' },
 ];
 
 (async () => {
