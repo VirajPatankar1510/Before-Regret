@@ -1,61 +1,76 @@
-// Makes Neon reachable from this machine by routing its HTTP transport through curl.
+// Makes Neon reachable from a machine whose DNS resolver refuses the endpoint.
 //
 //   import './lib/neon-curl.js';   // side-effect import, BEFORE anything that touches the db
 //
-// WHY. Node's undici hangs on api.c-4.us-east-2.aws.neon.tech from this machine -- every address,
-// IPv4 and IPv6 alike -- and returns UND_ERR_CONNECT_TIMEOUT after 10s, while curl reaches the same
-// endpoint in well under a second. src/server/countyDataFetcher.ts documents the identical fault
-// against api.census.gov and services.arcgis.com and solves it the same way, but its curlFetch is
-// GET-only; the Neon serverless driver POSTs a JSON body with auth headers, so it needs its own.
-//
-// The retry-loop workaround used elsewhere in this project (5-8 attempts with sleeps) works when
-// the fault is intermittent and fails outright when it is not -- ten consecutive attempts returned
-// nothing while building this. A shim removes the coin flip rather than re-flipping it.
-//
-// neonConfig.fetchFunction is the supported hook. Passing fetchFunction through neon(url, {...})
-// is NOT honoured by the driver, which is the trap worth knowing.
-import { spawnSync } from 'node:child_process';
-import { neonConfig } from '@neondatabase/serverless';
-
-// THE ACTUAL FAULT, diagnosed 2026-09-06. This machine's system resolver REFUSES the Neon endpoint:
+// THE FAULT, diagnosed 2026-09-06 on this workstation:
 //
 //     host api.c-4.us-east-2.aws.neon.tech   ->  not found: 5(REFUSED)
 //     dig +short @1.1.1.1 <same host>        ->  16.59.10.57  18.226.241.3  13.58.18.166
 //
-// So it is a DNS refusal, not a network partition -- which is why the symptom presented two
-// different ways all session and why retry loops sometimes "fixed" it: undici caches a resolution
-// and reports ENOTFOUND when it has none and a connect timeout when it has a stale one, while curl
-// reports "Could not resolve host" immediately. Nothing was ever wrong with the route.
+// A DNS refusal, not a network partition, which is why the symptom presented two ways all session
+// and why retry loops sometimes appeared to fix it: undici reports ENOTFOUND when it has no
+// resolution and a connect timeout when it has a stale one. Nothing was ever wrong with the route.
 //
-// Resolving through 1.1.1.1 once and pinning the answer with --resolve removes the local resolver
-// from the path entirely. Cached for the process, since a per-query dig would be wasteful.
-let pinned: string[] | null = null;
+// THIS IS A LOCAL WORKAROUND AND MUST STAY ONE. The first version installed itself unconditionally
+// and broke the Vercel build: `npm run build` runs generate-sitemap.ts, Vercel's build image does
+// have curl, so the shim took over a connection that was working perfectly and Neon rejected the
+// request with "could not parse the HTTP request body: expected value at line 1 column 1" -- the
+// driver does not always hand fetch() a string body, and String(bodyBuffer) is not the body.
+//
+// So there are now three guards, and the shim no-ops unless all three pass:
+//   1. Not in CI or on Vercel. Those environments resolve Neon normally; there is nothing to fix.
+//   2. curl and dig both exist.
+//   3. dig via 1.1.1.1 actually returns addresses for the host being requested.
+// Anything else leaves the platform's own fetch in place, which is the behaviour that was always
+// correct everywhere except here.
+import { spawnSync } from 'node:child_process';
+import { neonConfig } from '@neondatabase/serverless';
+
+const IN_CI = Boolean(process.env.VERCEL || process.env.CI || process.env.GITHUB_ACTIONS);
+
+function has(bin: string): boolean {
+  const r = spawnSync('which', [bin], { encoding: 'utf8' });
+  return r.status === 0 && Boolean((r.stdout || '').trim());
+}
+
+const resolved = new Map<string, string[]>();
 function resolveHost(host: string): string[] {
-  if (pinned) return pinned;
+  if (resolved.has(host)) return resolved.get(host)!;
   const dig = spawnSync('dig', ['+short', '+time=3', '+tries=2', '@1.1.1.1', host], { encoding: 'utf8' });
-  const ips = (dig.stdout || '')
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => /^\d{1,3}(\.\d{1,3}){3}$/.test(l));
-  pinned = ips;
+  const ips = (dig.stdout || '').split('\n').map((l) => l.trim()).filter((l) => /^\d{1,3}(\.\d{1,3}){3}$/.test(l));
+  resolved.set(host, ips);
   return ips;
 }
 
-// Only the surface the driver actually uses: ok, status, text(), json().
+// Body may arrive as a string, a Buffer, or a Uint8Array. Decoding it wrongly is what produced the
+// empty-body rejection above, so each case is handled explicitly rather than via String().
+function bodyToString(body: unknown): string | null {
+  if (body == null) return null;
+  if (typeof body === 'string') return body;
+  if (Buffer.isBuffer(body)) return body.toString('utf8');
+  if (body instanceof Uint8Array) return Buffer.from(body).toString('utf8');
+  return null;
+}
+
 function curlFetch(input: any, init: any = {}): Promise<any> {
   const url = typeof input === 'string' ? input : input?.url;
+  let host = '';
+  try { host = new URL(url).hostname; } catch { /* fall through to the native path below */ }
+
+  const ips = host ? resolveHost(host) : [];
+  const body = bodyToString(init.body);
+  // If anything about this request is not something the shim can faithfully reproduce, hand it
+  // back to the platform rather than sending a request that differs from the one asked for.
+  if (!host || ips.length === 0 || (init.body != null && body === null)) {
+    return fetch(input, init);
+  }
+
   const args = ['-4', '-sS', '--max-time', '45', '-X', init.method || 'GET'];
-
-  try {
-    const host = new URL(url).hostname;
-    for (const ip of resolveHost(host)) args.push('--resolve', `${host}:443:${ip}`);
-  } catch { /* not a parseable URL; let curl fail with its own message */ }
-
+  for (const ip of ips) args.push('--resolve', `${host}:443:${ip}`);
   const headers = init.headers || {};
   const entries = typeof headers.entries === 'function' ? [...headers.entries()] : Object.entries(headers);
   for (const [k, v] of entries) args.push('-H', `${k}: ${v}`);
-
-  if (init.body) args.push('--data-binary', typeof init.body === 'string' ? init.body : String(init.body));
+  if (body !== null) args.push('--data-binary', body);
   args.push('-w', '\n%{http_code}', url);
 
   const res = spawnSync('curl', args, { encoding: 'utf8', maxBuffer: 200 * 1024 * 1024 });
@@ -64,7 +79,7 @@ function curlFetch(input: any, init: any = {}): Promise<any> {
   }
   const out = res.stdout || '';
   const cut = out.lastIndexOf('\n');
-  const body = cut === -1 ? out : out.slice(0, cut);
+  const text = cut === -1 ? out : out.slice(0, cut);
   const status = Number((cut === -1 ? '' : out.slice(cut + 1)).trim()) || 0;
 
   return Promise.resolve({
@@ -72,9 +87,11 @@ function curlFetch(input: any, init: any = {}): Promise<any> {
     status,
     statusText: String(status),
     headers: { get: () => null },
-    text: async () => body,
-    json: async () => JSON.parse(body),
+    text: async () => text,
+    json: async () => JSON.parse(text),
   });
 }
 
-(neonConfig as any).fetchFunction = curlFetch;
+if (!IN_CI && has('curl') && has('dig')) {
+  (neonConfig as any).fetchFunction = curlFetch;
+}
