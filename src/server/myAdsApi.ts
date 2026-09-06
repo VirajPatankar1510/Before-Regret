@@ -5,21 +5,19 @@ import { requiresLicenceNumber } from '../data/sponsoredVendors.js';
 import { PRICE_PER_SLOT_USD as GUIDE_PRICE_USD, SLOT_DURATION_DAYS as RENEWAL_DAYS } from './guideAdsApi.js';
 import { PRICE_PER_BUNDLE_USD as ZIP_PRICE_USD, ZIPS_PER_BUNDLE } from './zipAdsApi.js';
 import { GUIDE_AD_TIER_PRICES_USD, normaliseTier, priceForTier } from './adPricing.js';
-import { getClickSummaries } from './adClicksApi.js';
 
-// The vendor-facing placement manager (/my-ads). Its job: proof of purchase, expiry, edit, renew,
-// and -- since click tracking landed -- what the placement actually did.
+// The vendor-facing placement manager (/my-ads). Its job: proof of purchase, expiry, contact-detail
+// edits, and renewal.
 //
-// This file used to state that it carried "zero traffic/impression stats by design," and half of
-// that is still true and deliberate: impressions are NOT reported, because prerendered guide pages
-// are served by the CDN and never reach this process, so any view count would be invented (same
-// limitation funnelApi.ts documents for sessions). What changed is clicks, which genuinely do
-// reach the server and are now counted (see adClicksApi.ts). The original stance was defensible
-// for a one-time sale and untenable for a renewing product: a vendor with no evidence has no basis
-// to renew except faith, so churn was the designed-in outcome of every placement.
+// It carries no traffic or performance figures. Impressions never could be reported -- prerendered
+// guide pages are served by the CDN and never reach this process, so any view count would be
+// invented rather than measured (the same limitation funnelApi.ts documents for sessions). Clicks
+// do reach the server and are still recorded in vendor_ad_clicks by adClicksApi.ts, but they are
+// no longer surfaced here; that table is read directly when the question is whether the ad unit
+// works at all, which is an operator question rather than something the placement manager answers.
 //
-// The copy still avoids the word "dashboard" -- what's reported here is one honest number, not an
-// analytics suite, and naming it as more than it is would set up the same disappointment. Keyed
+// The copy avoids the word "dashboard" throughout, which matters more now than it did: this is a
+// placement manager, and naming it as an analytics surface would promise what it does not do. Keyed
 // by clerk_user_id, the column added to guide_ad_orders/zip_ad_orders alongside checkout -- see
 // db.ts for why contact_email alone can't be trusted as a stable identity (it's a client-
 // synthesized `user.email || uid@beforeregret.com` fallback, not guaranteed consistent across
@@ -151,16 +149,6 @@ export function registerMyAdsRoutes(app: Express) {
         paypal_capture_id: string | null; order_created_at: string;
       };
 
-      // Click counts, fetched once per ad kind rather than per placement. See adClicksApi.ts for
-      // what a "click" is defined as (one visitor, one target, one day) and why impressions are
-      // deliberately absent -- prerendered pages never reach this server, so a "times shown"
-      // figure would be invented rather than measured.
-      const [guideClicks, zipClicks] = await Promise.all([
-        getClickSummaries('guide', (guideRows as unknown as GuidePurchaseRow[]).map((r) => r.purchase_id)),
-        getClickSummaries('zip', (zipRows as unknown as ZipPurchaseRow[]).map((r) => r.purchase_id)),
-      ]);
-      const noClicks = { totalClicks: 0, phoneClicks: 0, websiteClicks: 0, last7Days: 0 };
-
       const now = Date.now();
       const guidePlacements = (guideRows as unknown as GuidePurchaseRow[]).map((r) => ({
         purchaseId: r.purchase_id,
@@ -191,7 +179,6 @@ export function registerMyAdsRoutes(app: Express) {
         // Whether this placement's price is locked to what was actually paid, rather than tracking
         // the tier. Shown to the vendor so a founding rate is visible as a thing they hold.
         priceLocked: r.price_usd !== null,
-        clicks: guideClicks.get(r.purchase_id) ?? noClicks,
       }));
       const zipPlacements = (zipRows as unknown as ZipPurchaseRow[]).map((r) => ({
         purchaseId: r.purchase_id,
@@ -209,7 +196,6 @@ export function registerMyAdsRoutes(app: Express) {
         paidThrough: r.paid_through,
         active: new Date(r.paid_through).getTime() > now,
         contactEdited: r.contact_edited,
-        clicks: zipClicks.get(r.purchase_id) ?? noClicks,
       }));
 
       const orders = [

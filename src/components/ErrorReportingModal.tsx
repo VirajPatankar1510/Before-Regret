@@ -18,8 +18,8 @@ import { Flag, X, Send, AlertCircle, CheckCircle2, Clock, Loader2 } from 'lucide
 // lie.
 //
 // On the guide path specifically: this is opened by a BUTTON, never a link. That is deliberate --
-// a <button> has no href, creates no crawlable URL, and passes no authority, so putting it on all
-// 159 guides adds nothing for a crawler to follow and cannot dilute internal link equity or create
+// a <button> has no href, creates no crawlable URL, and passes no authority, so putting it on every
+// guide adds nothing for a crawler to follow and cannot dilute internal link equity or create
 // a thin indexable page. A "/report-an-error" route linked from every guide would have done all
 // three.
 

@@ -172,52 +172,7 @@ export function registerAdClickRoutes(app: Express) {
   });
 }
 
-export interface AdClickSummary {
-  totalClicks: number;
-  phoneClicks: number;
-  websiteClicks: number;
-  last7Days: number;
-}
-
-/**
- * Click counts for a set of placements, keyed by purchase id. Used by /my-ads to show a vendor
- * what their placement actually did. Returns zeros rather than nulls for placements with no
- * clicks: unlike the conversion rates in funnelApi.ts (null there means "no denominator yet, and a
- * displayed 0% would read as a measured failure"), a placement that has been live and received no
- * clicks HAS been measured, and zero is the true answer.
- */
-export async function getClickSummaries(
-  adKind: 'guide' | 'zip',
-  purchaseIds: number[]
-): Promise<Map<number, AdClickSummary>> {
-  const out = new Map<number, AdClickSummary>();
-  for (const id of purchaseIds) {
-    out.set(id, { totalClicks: 0, phoneClicks: 0, websiteClicks: 0, last7Days: 0 });
-  }
-  if (purchaseIds.length === 0 || !isDbConfigured()) return out;
-  try {
-    const rows = await withDb((sql) => sql`
-      SELECT purchase_id,
-             count(*)::int                                                        AS total,
-             count(*) FILTER (WHERE target = 'phone')::int                        AS phone,
-             count(*) FILTER (WHERE target = 'website')::int                      AS website,
-             count(*) FILTER (WHERE click_day > current_date - 7)::int            AS last7
-      FROM vendor_ad_clicks
-      WHERE ad_kind = ${adKind} AND purchase_id = ANY(${purchaseIds})
-      GROUP BY purchase_id
-    `);
-    for (const r of rows as unknown as Array<{
-      purchase_id: number; total: number; phone: number; website: number; last7: number;
-    }>) {
-      out.set(r.purchase_id, {
-        totalClicks: r.total,
-        phoneClicks: r.phone,
-        websiteClicks: r.website,
-        last7Days: r.last7,
-      });
-    }
-  } catch (err) {
-    console.error('[ad-clicks] summary query failed:', err);
-  }
-  return out;
-}
+// Clicks are still RECORDED here -- /out/ and the beacon above both write to vendor_ad_clicks --
+// because that table is how this project answers "is the ad unit working at all", and it is read
+// directly in analysis rather than through the app. What was removed was the per-placement summary
+// helper that fed the vendor-facing view; the data it aggregated is still being collected.

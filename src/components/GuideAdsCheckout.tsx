@@ -30,7 +30,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'How many people will see my ad?',
-    a: "We don't track or guarantee impressions, clicks, or leads -- you're buying a fixed placement for the window, not a performance number.",
+    a: "We don't guarantee impressions, clicks, or leads -- you're buying a fixed placement for the window, not a performance number. Views can't be measured from our side either: guide pages are served from a cache that never reaches our server.",
   },
   {
     q: 'Can I pick more than one guide?',

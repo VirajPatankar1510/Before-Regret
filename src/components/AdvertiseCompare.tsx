@@ -50,13 +50,13 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'How many people will see my ad?',
-    // Rewritten when click tracking shipped. The old answer ("we don't track impressions, clicks,
-    // or leads") became false about clicks the moment /out/ started counting them, and leaving it
-    // would have understated the one piece of evidence a vendor gets. The impressions half is still
-    // true and still stated plainly: guide pages are served from a CDN, so views genuinely cannot
-    // be measured here, and a page that claimed otherwise would be inventing a number in our own
-    // favour. Deliberately does not promise a volume -- see the traffic sentence.
-    a: "We report clicks, not impressions. Every time a reader taps your phone number or your website link we count it (once per person per day, bots excluded), and you'll see the running total on your My Placements page -- so at the end of 30 days you have a real number rather than a guess. We can't report how many times a page was viewed: guide pages are served from a cache that never touches our server, so any view count we showed you would be made up. We also don't guarantee a volume. This site is new and its traffic is still small; you're buying a fixed placement and an honest count of what it did.",
+    // Answers what the buyer is actually purchasing -- a fixed, exclusive placement for a fixed
+    // window -- rather than a projected audience. Two things stay stated plainly because both are
+    // true and both work against us: views genuinely cannot be measured (guide pages are served
+    // from a CDN and never reach this server, so any figure here would be invented in our own
+    // favour), and the traffic is small. A vendor who finds that out after paying churns and tells
+    // people; one who reads it here and buys anyway knows what they bought.
+    a: "We don't guarantee a number, and we won't invent one. Guide pages are served from a cache that never touches our server, so we genuinely cannot tell you how many times a page was viewed -- any figure we quoted would be made up. What you are buying is specific and checkable instead: a fixed placement on an article you choose, yours exclusively for 30 days, with no one else advertising on that page. This site is new and its traffic is still small, which is what the price reflects.",
   },
   {
     q: 'Can I cancel or get a refund?',
@@ -111,8 +111,8 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             </h1>
             <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
               Put your number on the article your next customer is already reading -- including
-              32 county guides covering permit lookups in the largest US metros. Self-serve, paid
-              once, live within minutes, and we send you a real click count at the end of 30 days.
+              11 county guides covering permit lookups in the largest US metros. Self-serve, paid
+              once, live within minutes, and yours alone for the full 30 days.
             </p>
           </div>
 
@@ -173,7 +173,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             {/* Two prices shown, not one. This card described a single flat rate until county
                 guides became their own tier -- a local contractor reading "nationwide reach,
                 $7.99" concluded this product wasn't for them and went to Report Ads, which is
-                the opposite of the right answer now that 32 county guides exist. */}
+                the opposite of the right answer now that county guides are their own tier. */}
             <div className="text-3xl font-black text-slate-900">
               $7.99 <span className="text-sm font-normal text-slate-500">/ national guide</span>
             </div>
@@ -205,11 +205,11 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <ul className="text-xs sm:text-sm text-slate-600 space-y-2.5 flex-1">
               <li className="flex items-start gap-2">
                 <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong className="text-slate-900">32 county guides</strong> cover permit lookups in the largest US metros -- Cook, Los Angeles, Maricopa, Harris, Miami-Dade and more. Everyone reading one is researching that county.</span>
+                <span><strong className="text-slate-900">11 county guides</strong> cover permit lookups in the largest US metros -- Cook, Los Angeles, Maricopa, Harris, Miami-Dade and more. Everyone reading one is researching that county.</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-                <span>119 national guides cover a single problem for readers anywhere -- a good fit if you serve many cities</span>
+                <span>38 national guides cover a single problem for readers anywhere -- a good fit if you serve many cities</span>
               </li>
               <li className="flex items-start gap-2">
                 <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
@@ -341,8 +341,8 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               matters more here than product symmetry. */}
           <span className="font-bold text-slate-900">Not sure which one? </span>
           If you work one metro, start with a <span className="font-semibold text-emerald-700">county guide</span> --
-          it's the placement where every reader is researching that county, and there are 32 of them
-          covering the largest US metros. If you'd take a customer from anywhere, a national guide reaches
+          it's the placement where every reader is researching that county, and they cover the
+          largest US metros. If you'd take a customer from anywhere, a national guide reaches
           readers on one specific problem for $7.99. Report Ads are worth adding once you want to reach
           people pulling a full report on an exact address, rather than reading about a problem. Nothing
           stops you from buying more than one.
