@@ -166,11 +166,12 @@ const html = `<style>
 </style>
 
 <div class="wrap">
-  <p class="kicker">Regional analysis &middot; Allegheny County, Pennsylvania</p>
+  <p class="kicker">Regional analysis &middot; Allegheny County (Pittsburgh), Pennsylvania</p>
   <h1>Third stormiest, sixth cheapest</h1>
-  <p class="standfirst">Across the 100 most populous US counties, Allegheny records more severe
-  weather than all but two &mdash; and prices home insurance like one of the calmest places in the
-  country. The gap is not a bargain. It is a description of what the policy does not cover.</p>
+  <p class="standfirst">Across the 100 most populous US counties, Allegheny &mdash; the county
+  that contains Pittsburgh &mdash; records more severe weather than all but two, and prices home
+  insurance like one of the calmest places in the country. The gap is not a bargain. It is a
+  description of what the policy does not cover.</p>
 
   <div class="figs">
     <div class="fig"><b>${num(A.stormEvents)}</b><span>severe weather events recorded 2015&ndash;2024, against a median of ${num(medStorm)} across the 100 counties</span></div>
@@ -191,7 +192,7 @@ const html = `<style>
   close to four times the median of ${num(medStorm)}. On thunderstorm wind alone the county ranks
   ${ord(rWind)}; on flooding, ${ord(rFlood)}.</p>
 
-  <p>Insurance prices there do not read like that at all. ${pct(A.pctUnder1000)} of Allegheny's
+  <p>Insurance prices in Pittsburgh and the rest of the county do not read like that at all. ${pct(A.pctUnder1000)} of Allegheny's
   ${num(A.mortgagedHouseholds)} mortgaged households told the American Community Survey they pay
   less than $1,000 a year to insure the home &mdash; the ${ord(rUnder)}-highest share of cheap cover in
   the dataset. Only ${pct(A.pctOver3000)} pay more than $3,000.</p>
@@ -257,6 +258,26 @@ ${typeBars}
     the homeowners policy entirely. A cheap premium in Allegheny County is an accurate price for the
     narrow set of risks the policy actually carries, and says nothing about the two that it does not.</p>
   </div>
+
+
+  <h2>For newsrooms</h2>
+  <h3>Free to reuse, including the underlying county data.</h3>
+
+  <p>This analysis and its data are published under a Creative Commons Attribution 4.0 licence, so
+  a newsroom can republish the figures, redraw the charts, or run its own cut without asking. The
+  three source datasets are all US Government works and public domain in their own right: the NOAA
+  Storm Events Database, the Census Bureau's American Community Survey (year structure built, and
+  table B25141 on homeowners insurance costs), and the EPA Map of Radon Zones.</p>
+
+  <p>If you are looking for Pittsburgh storm statistics, Allegheny County flood data, or home
+  insurance costs by county, the numbers on this page are the whole of what we hold and the files
+  below are the whole of the working. Two things are worth knowing before you quote them: NOAA
+  counts are reports rather than a census of weather, and the ACS publishes insurance costs in
+  bands, so there is no average premium here for any county.</p>
+
+  <p>Happy to pull the same cut for a different county, walk through the method, or check a figure
+  before it prints &mdash; hello@beforeregret.com. If you find an error, say so and it will be
+  corrected on the page with a note.</p>
 
   <h2>Method</h2>
   <h3>How this was built.</h3>

@@ -1356,8 +1356,12 @@ ${dJsScript}
     const aHead = algSource.slice(0, aWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
     const aBody = algSource.slice(aWrap);
     const ALG_URL = 'https://www.beforeregret.com/research/allegheny-storm-premium/';
-    const ALG_TITLE = 'Third Stormiest, Sixth Cheapest: storm frequency and insurance price in Allegheny County';
-    const ALG_DESC = 'Allegheny County, Pennsylvania records the third-highest severe weather count of the 100 most populous US counties and the sixth-lowest share of households paying over $3,000 to insure a home. An analysis of NOAA Storm Events, ACS table B25141 and EPA radon zones.';
+    const ALG_TITLE = 'Pittsburgh storm and home insurance data (Allegheny County)';
+    const ALG_DESC = 'Storm and home insurance statistics for Pittsburgh and Allegheny County, free to reuse. Third-highest severe weather count of 100 US counties.';
+
+
+    if (ALG_TITLE.length > 60) { console.error(`[prerender-research] ALG_TITLE is ${ALG_TITLE.length} chars, over the 60-char display budget.`); process.exit(1); }
+    if (ALG_DESC.length > 155) { console.error(`[prerender-research] ALG_DESC is ${ALG_DESC.length} chars, over 155.`); process.exit(1); }
 
     const ALG_LD = [
       {
@@ -1440,7 +1444,10 @@ ${SITE_FOOTER}
     // study has to let a reporter check its arithmetic against the same rows.
     const dataDir = path.join(process.cwd(), 'dist', 'research', 'data');
     fs.mkdirSync(dataDir, { recursive: true });
-    for (const f of ['storm-and-premium-counties.csv', 'storm-and-premium-figures.json']) {
+    // yearbuilt.json publishes too: the North Texas study's central claim is a concentration
+    // figure derived from these decade buckets, and a reporter who cannot recompute it from the
+    // published files cannot check it. It was generated and left unpublished on the first pass.
+    for (const f of ['storm-and-premium-counties.csv', 'storm-and-premium-figures.json', 'storm-and-premium-yearbuilt.json']) {
       const src = path.join(process.cwd(), 'docs', 'data', f);
       if (!fs.existsSync(src)) {
         console.error(`[prerender-research] ${f} is missing -- run scripts/analyse-storm-and-premium.ts.`);
@@ -1506,8 +1513,12 @@ ${SITE_FOOTER}
     const nHead = ntxSource.slice(0, nWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
     const nBody = ntxSource.slice(nWrap);
     const NTX_URL = 'https://www.beforeregret.com/research/north-texas-roof-age/';
-    const NTX_TITLE = 'Built Together, Due Together: synchronised housing and hail exposure in North Texas';
-    const NTX_DESC = 'Over half the housing in Collin and Denton counties, Texas was built inside a single twenty-year window, under two of the ten heaviest hail records in the country. Only three of 100 US counties are both this concentrated and this hail-exposed.';
+    const NTX_TITLE = 'Dallas-Fort Worth hail data: Collin and Denton counties';
+    const NTX_DESC = 'Hail and housing-age statistics for Collin and Denton counties near Dallas-Fort Worth, free to reuse. 638 hailstorms recorded, 2015 to 2024.';
+
+
+    if (NTX_TITLE.length > 60) { console.error(`[prerender-research] NTX_TITLE is ${NTX_TITLE.length} chars, over the 60-char display budget.`); process.exit(1); }
+    if (NTX_DESC.length > 155) { console.error(`[prerender-research] NTX_DESC is ${NTX_DESC.length} chars, over 155.`); process.exit(1); }
 
     const NTX_LD = [
       {
@@ -1656,7 +1667,7 @@ ${SITE_FOOTER}
       standfirst: 'Half the housing in two North Texas counties went up inside one twenty-year window, in the heaviest hail corridor in the country.',
       finding: 'Screening all 100 counties for both concentrated construction and heavy hail leaves three standing, and two of them share a border. Roofs there do not age one house at a time.',
       source: 'Census ACS year built &middot; NOAA Storm Events',
-      data: ['storm-and-premium-counties.csv', 'storm-and-premium-figures.json'],
+      data: ['storm-and-premium-counties.csv', 'storm-and-premium-figures.json', 'storm-and-premium-yearbuilt.json'],
       embed: true,
       published: '6 September 2026',
     },
@@ -1666,7 +1677,7 @@ ${SITE_FOOTER}
       standfirst: 'Allegheny County records more severe weather than almost anywhere, and insures for less than almost anywhere. Why those are the same fact.',
       finding: 'Across the 100 most populous counties, recorded storm frequency and the share of households paying top-band premiums are effectively unrelated (Spearman -0.101). Allegheny is the extreme case: 3rd highest storm count, 6th lowest share paying over $3,000.',
       source: 'NOAA Storm Events &middot; Census ACS B25141 &middot; EPA radon zones',
-      data: ['storm-and-premium-counties.csv', 'storm-and-premium-figures.json'],
+      data: ['storm-and-premium-counties.csv', 'storm-and-premium-figures.json', 'storm-and-premium-yearbuilt.json'],
       embed: true,
       published: '6 September 2026',
     },
