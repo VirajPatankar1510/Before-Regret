@@ -13,13 +13,16 @@ import { preloadRouteChunk } from './routeChunks';
 // versioned with the app, and so it records a view on client-side route changes -- App.tsx swaps
 // routes without a document navigation, which a plain script tag would never see.
 import { Analytics } from '@vercel/analytics/react';
+// Suppresses events from our own browsers. See src/utils/analyticsFilter.ts for why the visitor
+// totals needed it and for the beforeSend contract this relies on.
+import { analyticsBeforeSend } from './utils/analyticsFilter';
 
 const mount = () => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <AuthProvider>
         <App />
-        <Analytics />
+        <Analytics beforeSend={analyticsBeforeSend} />
       </AuthProvider>
     </StrictMode>,
   );

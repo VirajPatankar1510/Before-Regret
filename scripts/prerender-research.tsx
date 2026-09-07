@@ -218,7 +218,22 @@ const SITE_NAV_INDEX = `
 // Deliberately NOT added to the embeds, which have their own shell below. An embed runs on someone
 // else's page, and putting a tracker in a widget you are asking a newsroom to trust is a cost that
 // outweighs knowing the number.
-const ANALYTICS_BEACON = '<script defer src="/_vercel/insights/script.js"></script>';
+// The inline block registers a beforeSend handler on window.vaq BEFORE the deferred script runs,
+// which is what lets it filter our own traffic on these pages the way <Analytics beforeSend> does
+// in the React app. The script replays window.vaq inside its init, ahead of the first pageview, so
+// the opening view is filtered too. Kept inline and dependency-free because these pages load no
+// bundle at all -- that is the whole reason they needed a beacon of their own.
+const ANALYTICS_BEACON = `<script>
+(function(){try{
+  var F='br-no-analytics',u=new URL(location.href);
+  if(u.searchParams.has('no-analytics')){
+    if(u.searchParams.get('no-analytics')!=='0')localStorage.setItem(F,'1');else localStorage.removeItem(F);
+  }
+  window.vaq=window.vaq||[];
+  window.vaq.push(['beforeSend',function(e){return localStorage.getItem(F)==='1'?null:e;}]);
+}catch(e){}})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>`;
 
 const SITE_FOOTER = `
 <nav class="sitelinks" aria-label="Site sections">
