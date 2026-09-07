@@ -204,6 +204,22 @@ const SITE_NAV_INDEX = `
   <span class="sitebar-here">Research</span>
 </nav>`;
 
+// Vercel Web Analytics. The research pages are standalone documents that never load the React
+// bundle, and @vercel/analytics is imported once in src/main.tsx -- so until now these seven pages
+// fired no beacon at all and were invisible in the dashboard. That is the wrong gap to have on the
+// only pages built to attract inbound links: a newsroom running the story and sending 200 people
+// would have shown up as nothing.
+//
+// It goes in THIS wrapper, not in docs/*.html, and that placement is load-bearing. The four older
+// studies have their embeds extracted from their source documents by slicing to end-of-file, so a
+// script tag added to docs/*.html would be swept into the iframe shipped to other people's sites.
+// Adding it here keeps the source documents untouched.
+//
+// Deliberately NOT added to the embeds, which have their own shell below. An embed runs on someone
+// else's page, and putting a tracker in a widget you are asking a newsroom to trust is a cost that
+// outweighs knowing the number.
+const ANALYTICS_BEACON = '<script defer src="/_vercel/insights/script.js"></script>';
+
 const SITE_FOOTER = `
 <nav class="sitelinks" aria-label="Site sections">
   <div>
@@ -365,6 +381,7 @@ ${headParts.trim()}
 ${SITE_NAV}
 ${bodyMarkup.trim()}
 ${SITE_FOOTER}
+${ANALYTICS_BEACON}
 </body>
 </html>`;
 
@@ -591,6 +608,7 @@ ${cHead.trim()}
 ${SITE_NAV}
 ${cBody.trim()}
 ${SITE_FOOTER}
+${ANALYTICS_BEACON}
 </body>
 </html>`;
     const coverDir = path.join(process.cwd(), 'dist', 'research', 'risk-without-cover');
@@ -829,6 +847,7 @@ ${zHead.trim()}
 ${SITE_NAV}
 ${zBody.trim()}
 ${SITE_FOOTER}
+${ANALYTICS_BEACON}
 </body>
 </html>`;
     const zoneDir = path.join(process.cwd(), 'dist', 'research', 'outside-the-zone');
@@ -1057,6 +1076,7 @@ ${dHead.trim()}
 ${SITE_NAV}
 ${dBody.trim()}
 ${SITE_FOOTER}
+${ANALYTICS_BEACON}
 </body>
 </html>`;
     const damDir = path.join(process.cwd(), 'dist', 'research', 'high-hazard-dams');
@@ -1456,6 +1476,7 @@ ${aHead.trim()}
 ${SITE_NAV}
 ${aBody.trim()}
 ${SITE_FOOTER}
+${ANALYTICS_BEACON}
 </body>
 </html>`;
     const algDir = path.join(process.cwd(), 'dist', 'research', 'allegheny-storm-premium');
@@ -1610,6 +1631,7 @@ ${nHead.trim()}
 ${SITE_NAV}
 ${nBody.trim()}
 ${SITE_FOOTER}
+${ANALYTICS_BEACON}
 </body>
 </html>`;
     const ntxDir = path.join(process.cwd(), 'dist', 'research', 'north-texas-roof-age');
@@ -1773,6 +1795,7 @@ ${indexCards}
   </section>
 </div>
 ${SITE_FOOTER}
+${ANALYTICS_BEACON}
 </body>
 </html>`;
   const indexDir = path.join(process.cwd(), 'dist', 'research');
