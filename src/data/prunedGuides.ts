@@ -121,7 +121,6 @@ export const REMOVED_GUIDE_SLUGS: readonly string[] = [
   'buyers-wish-they-asked-before-waiving-inspection-contingency',
   'contractors-wish-buyers-knew-about-renovation-costs',
   'home-inspectors-wish-buyers-knew-before-closing',
-  'hvac-techs-wish-buyers-knew-about-system-age',
   'insurance-agents-wish-buyers-knew-about-coverage',
   'pest-inspectors-wish-buyers-knew-about-termites',
 
@@ -154,7 +153,6 @@ export const REMOVED_GUIDE_SLUGS: readonly string[] = [
   'fuse-boxes-catch-fire-safety-risks-home-buyers',
 
   // --- on-topic, never shown by either engine (58) ---
-  '100-amp-service-enough-house-re-buying',
   'ask-home-inspector-before-hire-them',
   'backwater-valve-every-house-need-one',
   'bowing-basement-wall-actually-mean',
@@ -171,7 +169,6 @@ export const REMOVED_GUIDE_SLUGS: readonly string[] = [
   'fha-minimum-property-requirements-fails-them',
   'find-out-old-septic-system',
   'galvanized-steel-plumbing-need-replacing',
-  'get-home-insurance-flat-roof',
   'get-homeowners-insurance-wood-burning-fireplace-no-chimney-c',
   'happens-if-appraiser-flags-peeling-paint-pre-1978-house',
   'happens-if-house-has-open-building-department-violations',
@@ -183,10 +180,8 @@ export const REMOVED_GUIDE_SLUGS: readonly string[] = [
   'home-inspection-check-mold-behind-walls',
   'home-inspection-cover-retaining-walls',
   'home-inspection-include-level-2-chimney-inspection',
-  'home-inspection-include-septic-system',
   'home-inspection-test-well-pump-just-water-pressure',
   'home-inspector-actually-enter-crawlspace-just-look',
-  'home-solar-panels-don-t-own-affect-getting-insurance',
   'homes-becoming-uninsurable-before-closing-2026',
   'house-pass-full-inspection-but-fail-4-point',
   'houses-sale-show-as-active-when-they-re-under-contract',
@@ -204,14 +199,11 @@ export const REMOVED_GUIDE_SLUGS: readonly string[] = [
   'seller-s-pre-listing-inspection-isn-t-substitute-own',
   'sellers-usually-agree-fix-after-inspection',
   'septic-dye-test-enough',
-  'should-buy-house-s-already-had-foundation-repair',
   'should-use-home-inspector-recommended-by-realtor',
   'slab-leak-would-inspector-catch-one',
   'split-bus-electrical-panels-problem-buyers',
   'standard-home-inspection-check-asbestos',
-  'when-foundation-crack-need-structural-engineer',
   'when-reasonable-walk-away-after-inspection',
-  'who-s-responsible-shared-well-shared-driveway',
 ];
 
 /** The surviving slug for a merged guide, or null if this slug was not merged. */
