@@ -168,6 +168,7 @@ const SOURCES = [
   { txt: 'docs/press-high-hazard-dams.txt', docx: 'docs/press-high-hazard-dams.docx' },
   { txt: 'docs/press-allegheny-storm-premium.txt', docx: 'docs/press-allegheny-storm-premium.docx' },
   { txt: 'docs/press-north-texas-roof-age.txt', docx: 'docs/press-north-texas-roof-age.docx' },
+  { txt: 'docs/press-raise-or-remove.txt', docx: 'docs/press-raise-or-remove.docx' },
 ];
 
 (async () => {

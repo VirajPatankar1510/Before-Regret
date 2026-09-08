@@ -1,0 +1,363 @@
+{
+ "generated": "2026-09-08",
+ "source": {
+  "dataset": "FEMA Hazard Mitigation Assistance - Mitigated Properties",
+  "url": "https://www.fema.gov/api/open/v4/HazardMitigationAssistanceMitigatedProperties.csv",
+  "totalRecords": 99927,
+  "fiscalYears": [
+   1996,
+   2025
+  ]
+ },
+ "scope": {
+  "note": "Single-family properties where the action was Acquisition/Demolition or Elevation.",
+  "decisions": 32779,
+  "demolished": 24020,
+  "raised": 8759,
+  "demolishedShare": 0.732786235089539,
+  "ratio": 2.742322182897591,
+  "counties": 1196,
+  "zips": 4093
+ },
+ "regimes": {
+  "cutoff": 0.6,
+  "minStateN": 300,
+  "elevating": {
+   "states": 5,
+   "decisions": 8491,
+   "demolishedShare": 0.3107996702390767,
+   "byFoundation": [
+    {
+     "foundation": "Elevated on Piers, Piles, Posts or Columns",
+     "n": 978,
+     "demolishedShare": 0.17791411042944785
+    },
+    {
+     "foundation": "Slab on Grade",
+     "n": 4796,
+     "demolishedShare": 0.2639699749791493
+    },
+    {
+     "foundation": "Crawl Space",
+     "n": 1486,
+     "demolishedShare": 0.3021534320323015
+    },
+    {
+     "foundation": "Basement",
+     "n": 489,
+     "demolishedShare": 0.6666666666666666
+    }
+   ]
+  },
+  "removing": {
+   "states": 20,
+   "decisions": 21513,
+   "demolishedShare": 0.9070329568168084,
+   "byFoundation": [
+    {
+     "foundation": "Elevated on Piers, Piles, Posts or Columns",
+     "n": 1116,
+     "demolishedShare": 0.746415770609319
+    },
+    {
+     "foundation": "Slab on Grade",
+     "n": 6776,
+     "demolishedShare": 0.9070247933884298
+    },
+    {
+     "foundation": "Crawl Space",
+     "n": 7006,
+     "demolishedShare": 0.8838138738224379
+    },
+    {
+     "foundation": "Basement",
+     "n": 5066,
+     "demolishedShare": 0.9733517568101065
+    }
+   ]
+  },
+  "foundationSpreadElevating": 0.4887525562372188,
+  "foundationSpreadRemoving": 0.2269359862007876
+ },
+ "states": [
+  {
+   "state": "Louisiana",
+   "n": 4342,
+   "demolishedShare": 0.22593274988484568
+  },
+  {
+   "state": "Florida",
+   "n": 1218,
+   "demolishedShare": 0.33251231527093594
+  },
+  {
+   "state": "Virginia",
+   "n": 805,
+   "demolishedShare": 0.4049689440993789
+  },
+  {
+   "state": "New Jersey",
+   "n": 1649,
+   "demolishedShare": 0.41419041843541543
+  },
+  {
+   "state": "Washington",
+   "n": 477,
+   "demolishedShare": 0.5115303983228512
+  },
+  {
+   "state": "North Carolina",
+   "n": 2993,
+   "demolishedShare": 0.7153357834948213
+  },
+  {
+   "state": "South Carolina",
+   "n": 321,
+   "demolishedShare": 0.822429906542056
+  },
+  {
+   "state": "Alabama",
+   "n": 485,
+   "demolishedShare": 0.845360824742268
+  },
+  {
+   "state": "New York",
+   "n": 1333,
+   "demolishedShare": 0.8507126781695424
+  },
+  {
+   "state": "Texas",
+   "n": 4065,
+   "demolishedShare": 0.8824108241082411
+  },
+  {
+   "state": "Ohio",
+   "n": 968,
+   "demolishedShare": 0.9297520661157025
+  },
+  {
+   "state": "Pennsylvania",
+   "n": 1278,
+   "demolishedShare": 0.9381846635367762
+  },
+  {
+   "state": "Mississippi",
+   "n": 378,
+   "demolishedShare": 0.9391534391534392
+  },
+  {
+   "state": "Georgia",
+   "n": 580,
+   "demolishedShare": 0.9448275862068966
+  },
+  {
+   "state": "Kentucky",
+   "n": 1170,
+   "demolishedShare": 0.9606837606837607
+  },
+  {
+   "state": "Illinois",
+   "n": 949,
+   "demolishedShare": 0.964172813487882
+  },
+  {
+   "state": "Wisconsin",
+   "n": 605,
+   "demolishedShare": 0.9768595041322314
+  },
+  {
+   "state": "North Dakota",
+   "n": 354,
+   "demolishedShare": 0.980225988700565
+  },
+  {
+   "state": "Missouri",
+   "n": 773,
+   "demolishedShare": 0.9831824062095731
+  },
+  {
+   "state": "West Virginia",
+   "n": 1182,
+   "demolishedShare": 0.9856175972927242
+  },
+  {
+   "state": "Tennessee",
+   "n": 645,
+   "demolishedShare": 0.9968992248062015
+  },
+  {
+   "state": "Indiana",
+   "n": 870,
+   "demolishedShare": 0.9977011494252873
+  },
+  {
+   "state": "Iowa",
+   "n": 1681,
+   "demolishedShare": 0.998810232004759
+  },
+  {
+   "state": "Oklahoma",
+   "n": 488,
+   "demolishedShare": 1
+  },
+  {
+   "state": "Kansas",
+   "n": 395,
+   "demolishedShare": 1
+  }
+ ],
+ "byYear": [
+  {
+   "year": 1997,
+   "n": 141,
+   "demolishedShare": 0.6028368794326241
+  },
+  {
+   "year": 1998,
+   "n": 307,
+   "demolishedShare": 0.7068403908794788
+  },
+  {
+   "year": 1999,
+   "n": 1942,
+   "demolishedShare": 0.8990731204943357
+  },
+  {
+   "year": 2000,
+   "n": 579,
+   "demolishedShare": 0.8013816925734024
+  },
+  {
+   "year": 2001,
+   "n": 2247,
+   "demolishedShare": 0.9029817534490432
+  },
+  {
+   "year": 2002,
+   "n": 752,
+   "demolishedShare": 0.9574468085106383
+  },
+  {
+   "year": 2003,
+   "n": 1644,
+   "demolishedShare": 0.6733576642335767
+  },
+  {
+   "year": 2004,
+   "n": 996,
+   "demolishedShare": 0.8855421686746988
+  },
+  {
+   "year": 2005,
+   "n": 1980,
+   "demolishedShare": 0.47878787878787876
+  },
+  {
+   "year": 2006,
+   "n": 478,
+   "demolishedShare": 0.7803347280334728
+  },
+  {
+   "year": 2007,
+   "n": 1227,
+   "demolishedShare": 0.8891605541972291
+  },
+  {
+   "year": 2008,
+   "n": 3230,
+   "demolishedShare": 0.8402476780185758
+  },
+  {
+   "year": 2009,
+   "n": 1142,
+   "demolishedShare": 0.8248686514886164
+  },
+  {
+   "year": 2010,
+   "n": 1414,
+   "demolishedShare": 0.8267326732673267
+  },
+  {
+   "year": 2011,
+   "n": 2699,
+   "demolishedShare": 0.8566135605779919
+  },
+  {
+   "year": 2012,
+   "n": 734,
+   "demolishedShare": 0.44686648501362397
+  },
+  {
+   "year": 2013,
+   "n": 1654,
+   "demolishedShare": 0.5036275695284159
+  },
+  {
+   "year": 2014,
+   "n": 676,
+   "demolishedShare": 0.665680473372781
+  },
+  {
+   "year": 2015,
+   "n": 698,
+   "demolishedShare": 0.6432664756446992
+  },
+  {
+   "year": 2016,
+   "n": 1295,
+   "demolishedShare": 0.6092664092664093
+  },
+  {
+   "year": 2017,
+   "n": 1626,
+   "demolishedShare": 0.7060270602706027
+  },
+  {
+   "year": 2018,
+   "n": 950,
+   "demolishedShare": 0.5642105263157895
+  },
+  {
+   "year": 2019,
+   "n": 1242,
+   "demolishedShare": 0.6465378421900161
+  },
+  {
+   "year": 2020,
+   "n": 757,
+   "demolishedShare": 0.618229854689564
+  },
+  {
+   "year": 2021,
+   "n": 353,
+   "demolishedShare": 0.3654390934844193
+  },
+  {
+   "year": 2022,
+   "n": 566,
+   "demolishedShare": 0.6749116607773852
+  },
+  {
+   "year": 2023,
+   "n": 327,
+   "demolishedShare": 0.636085626911315
+  },
+  {
+   "year": 2024,
+   "n": 773,
+   "demolishedShare": 0.628719275549806
+  },
+  {
+   "year": 2025,
+   "n": 340,
+   "demolishedShare": 0.6235294117647059
+  }
+ ],
+ "dataQuality": {
+  "foundationBlankOrOther": 2518,
+  "foundationBlankShare": 0.07681747460264193,
+  "rowsWithAmountPaid": 15665,
+  "amountPaidShare": 0.47789743433295706
+ },
+ "zipCount": 1461
+}

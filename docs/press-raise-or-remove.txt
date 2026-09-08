@@ -1,0 +1,224 @@
+==========================================================================
+RAISE OR REMOVE - PRESS OUTREACH
+Three pitches. Copy one, paste it, send it.
+Written 7 September 2026 against the study as published.
+==========================================================================
+
+HOW TO USE THIS FILE
+
+This is the first NATIONAL pack in the series - the Allegheny and North Texas
+packs are regional and go to local desks. This one goes to national climate,
+housing and data desks, and to the specialist newsletters that cover disaster
+policy.
+
+One pitch per newsroom. Two to the same masthead reads as two people pitching.
+
+WHAT TO FILL IN: only the name. There are no contact addresses in this file
+and none should be invented. The only address for your signature is
+hello@beforeregret.com.
+
+
+--------------------------------------------------------------------------
+THE FOUR NUMBERS
+--------------------------------------------------------------------------
+
+  32,779   FEMA-funded decisions on single-family homes, fiscal 1996-2025,
+           where the choice was buy-and-demolish or raise-in-place
+
+  24,020   were demolished.  8,759 were raised.  A ratio of 2.7 to 1
+
+  5 of 25  states do nearly all the elevating. Florida, Louisiana, New
+           Jersey, Virginia and Washington demolish 31.1% of the time.
+           The other twenty demolish 90.7% of the time.
+
+   48.9    percentage-point spread between foundation types in those five
+           states - 17.8% of pier-built homes removed against 66.7% of homes
+           with basements. In the other twenty the same spread is 22.7 points
+           against a base rate of 90.7%, which is to say it barely matters.
+
+The line that carries the whole study: whether a flooded house is raised or
+removed is decided first by the state, and only then by what it stands on.
+
+
+--------------------------------------------------------------------------
+THE THING TO CHECK BEFORE YOU WRITE IT
+--------------------------------------------------------------------------
+
+The obvious version of this story is "houses with basements get demolished" -
+93.4% of them nationally, against 46.3% of homes on piers. We nearly published
+that and it does not survive a check.
+
+Louisiana has pier-built housing AND raises houses. Iowa has basements AND
+demolishes them. State could explain the entire effect. Asking the question
+inside states instead of across them is what produces the real finding, which
+is that the foundation matters enormously in five states and almost not at all
+in the other twenty.
+
+If you use the national basement figure without that caveat, you are reporting
+a confound. The study says so in its own limitations, and we would rather you
+heard it from us.
+
+
+==========================================================================
+PITCH 1 - CLIMATE OR ENVIRONMENT DESK
+The angle: managed retreat is not a national policy, it is five states
+==========================================================================
+
+SUBJECT:
+The US demolishes 2.7 flooded homes for every one it raises - and five states do all the raising
+
+Dear [Name],
+
+I have finished an analysis of FEMA's Hazard Mitigation Assistance property
+file - every home the agency has paid to buy, demolish or elevate - and the
+national picture is more lopsided than the managed-retreat debate suggests.
+
+Across 32,779 single-family decisions between fiscal 1996 and 2025, 24,020
+homes were bought and demolished and 8,759 were raised in place. Demolition
+wins 2.7 to 1.
+
+The distribution is the story. Ranked by how often they demolish, the 25 states
+with meaningful volume do not form a spectrum - they form two groups with an
+empty gap between them. Florida, Louisiana, New Jersey, Virginia and Washington
+sit between 22.6% and 51.2%. Then nothing until North Carolina at 71.5%, after
+which twenty states run to 100%. Kansas and Oklahoma have never raised a
+single-family home with these grants.
+
+So "should America retreat or adapt" is not really a live national question.
+Twenty states have already answered it one way and five the other, and the line
+between them is not gradual.
+
+Study, method, limitations and the full state and ZIP files:
+https://www.beforeregret.com/research/raise-or-remove/
+
+Everything is public-domain federal data and the CSVs are linked from the page.
+
+[Your name]
+hello@beforeregret.com
+
+
+==========================================================================
+PITCH 2 - DATA OR INVESTIGATIONS DESK
+The angle: the confound, and what survives it
+==========================================================================
+
+SUBJECT:
+A dataset of 32,779 federal decisions on flooded homes - and the finding that nearly wasn't
+
+Dear [Name],
+
+Something for a data desk, including the part that failed.
+
+FEMA publishes every property its mitigation grants have paid to alter or
+remove - 99,927 records back to 1989, with county, ZIP, structure type and
+foundation type on each. Filtered to single-family homes facing the
+buy-or-raise choice, that is 32,779 decisions.
+
+Sorted by foundation, the answer looks obvious: 93.4% of homes with basements
+were demolished, against 46.3% of homes already on piers. Clean engineering
+gradient.
+
+It does not hold. Louisiana has pier-built housing and raises houses; Iowa has
+basements and demolishes them, so state could account for all of it. Asking
+within states splits the country: in the five states that use elevation at all,
+foundation moves the outcome by 48.9 points. In the other twenty it moves it by
+22.7 against a base rate of 90.7% - everything goes regardless of how it was
+built.
+
+The conditional version is the finding. I am sending it with the disconfirmation
+attached because that is the part a data desk will want to check, and the state
+and ZIP tables are published so you can run it yourself.
+
+https://www.beforeregret.com/research/raise-or-remove/
+
+[Your name]
+hello@beforeregret.com
+
+
+==========================================================================
+PITCH 3 - HOUSING, REAL ESTATE OR PERSONAL FINANCE DESK
+The angle: what it means for someone buying a house
+==========================================================================
+
+SUBJECT:
+What happens to a flooded house depends on your state first, your foundation second
+
+Dear [Name],
+
+A finding from federal data that has a practical edge for buyers, which is
+unusual for this subject.
+
+Across 32,779 FEMA-funded decisions on flooded single-family homes since 1996,
+73.3% ended with the house bought and demolished rather than raised. But that
+national figure hides two different countries. Five states - Florida,
+Louisiana, New Jersey, Virginia and Washington - demolish 31.1% of the time.
+The other twenty demolish 90.7% of the time.
+
+And in those five states, the foundation under the house changes the outcome
+more than anything else measured: 17.8% of homes on piers or piles were
+removed, against 66.7% of homes with basements. In the twenty that rarely
+elevate, that distinction nearly vanishes.
+
+For a buyer looking at a house near water, the order matters. Which state you
+are in sets whether saving the house is on the table at all. What it stands on
+decides the rest - and foundation type is something a home inspection tells you
+before you commit.
+
+There is also a ZIP lookup on the page covering the 1,461 ZIP codes with at
+least five decisions, so a reader can check their own area.
+
+https://www.beforeregret.com/research/raise-or-remove/
+
+[Your name]
+hello@beforeregret.com
+
+
+==========================================================================
+THE EMBED - OFFER IT
+==========================================================================
+
+An editor will strip an inline URL out of copy and will not strip the credit
+line inside a widget already in the page:
+
+  <iframe src="https://www.beforeregret.com/research/raise-or-remove/embed/"
+          width="100%" height="420" style="border:1px solid #e0dcd3"
+          title="FEMA home buyouts and elevations by ZIP code"
+          loading="lazy"></iframe>
+
+It covers 1,461 ZIP codes nationally, so it works in a story about anywhere.
+
+
+==========================================================================
+IF A REPORTER COMES BACK
+==========================================================================
+
+"Is this every buyout in America?"
+  No, and the study leads with that. These are FEMA-funded decisions only.
+  States, counties and cities run their own buyout programmes and homeowners
+  elevate privately; none of that is in the file. A ZIP with no record is not a
+  ZIP where nothing happened.
+
+"Is it a sample of flooded homes?"
+  No. A property is here because somebody applied for a grant and the
+  application succeeded. Every figure describes funded decisions, not houses at
+  risk, and the direction of that selection bias is unknown.
+
+"Did FEMA choose to demolish basement homes, or was raising them impossible?"
+  The data cannot separate preference from engineering constraint, and the
+  study says so. Lifting a house over a basement may simply be impractical. Do
+  not let anyone quote us as saying a state preferred to demolish a particular
+  house.
+
+"What did it cost?"
+  Unknown from this file. A payment amount is present on only 47.8% of the
+  relevant rows, which is why no cost-per-decision figure appears anywhere in
+  the study. Anyone publishing an average cost from this dataset is estimating.
+
+"Hasn't this been done?"
+  Partly, and say so first. The Natural Resources Defense Council and Climate
+  Central have both published analyses of FEMA acquisitions. What appears to be
+  new here is the cut by foundation type and the two-regime state split.
+
+"Are you selling something?"
+  Yes - BeforeRegret sells a property report to home buyers. The study is free,
+  the data is public domain, and the analysis does not depend on the product.
