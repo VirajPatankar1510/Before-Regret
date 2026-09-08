@@ -42,6 +42,19 @@ interface NoindexRoute {
 // can be: their ids are unbounded and unknown at build time, so they are covered by robots.txt
 // Disallow instead (see generateRobotsTxt in src/utils/sitemapGenerator.ts for that reasoning).
 const ROUTES: NoindexRoute[] = [
+  // The admin panel. App.tsx already sets 'noindex, nofollow' for this route, but that runs after
+  // hydration -- the static HTML the CDN serves is the generic SPA shell, which declares
+  // "index, follow". robots.txt disallows /admin, so a crawler never fetches the page and never
+  // renders the client-side correction, which leaves the one case where a URL can still be
+  // indexed: somebody links to it and Google indexes the address without content. A static shell
+  // closes that, and costs nothing. The panel itself was never exposed -- AdminGate.tsx gates the
+  // UI and every /api/admin route answers 401 without a session, verified against production.
+  {
+    dir: 'admin/seo',
+    title: 'Admin | BeforeRegret',
+    description: 'Internal administration interface. Not public content.',
+    canonical: 'https://www.beforeregret.com/admin/seo/',
+  },
   {
     dir: 'topic-ads',
     title: 'Topic Ads | BeforeRegret',
