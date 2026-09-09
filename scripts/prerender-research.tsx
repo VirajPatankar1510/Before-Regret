@@ -175,7 +175,74 @@ const JSON_LD = [
       },
     ],
   },
+  derivedDataset({
+    name: 'Homeowners insurance cost against natural hazard risk, by state and county',
+    description:
+      'What mortgaged households report paying annually for homeowners insurance, from ACS table B25141, joined to FEMA National Risk Index expected annual loss for every US county and state, with median home value as a control.',
+    url: CANONICAL_URL,
+    spatialCoverage: 'United States',
+    temporalCoverage: '2021-01-01/2023-12-31',
+    keywords: 'homeowners insurance cost, premiums, natural hazard risk, FEMA National Risk Index, American Community Survey, county data',
+    citation: [
+      'US Census Bureau, American Community Survey 5-year, table B25141',
+      'Federal Emergency Management Agency, National Risk Index',
+    ],
+    files: [
+      { path: 'risk-without-price-by-state.csv', format: 'text/csv' },
+      { path: 'risk-without-price-figures.json', format: 'application/json' },
+    ],
+  }),
 ];
+
+/**
+ * A top-level Dataset node declaring BeforeRegret as the CREATOR of a derived dataset.
+ *
+ * Distinct from the `isBasedOn` Datasets on each study, which name the federal SOURCES an analysis
+ * consumed -- those credit Census and FEMA, which is correct and is not a claim that we published
+ * anything. This node is the claim that the aggregated file on our own server is our work, which is
+ * what an answer engine needs in order to attribute a number to us rather than to the agency.
+ *
+ * WHY A FUNCTION AND NOT THREE MORE OBJECT LITERALS. There were three, written by copying the
+ * first, and all three carried the same `name`: "Storm frequency, housing age and reported
+ * insurance cost across 100 US counties". That was true only of the Allegheny study. On
+ * raise-or-remove it sat directly above a description about FEMA buyouts, so one node asserted two
+ * different datasets -- to the exact models this markup exists to inform. A constructor that takes
+ * the name as a required argument cannot drift that way.
+ *
+ * Every contentUrl passed here was verified to return 200 before being declared. A DataDownload
+ * pointing at a 404 is worse than no Dataset node at all.
+ */
+function derivedDataset(opts: {
+  name: string;
+  description: string;
+  url: string;
+  files: Array<{ path: string; format: 'text/csv' | 'application/json' }>;
+  spatialCoverage?: string;
+  temporalCoverage?: string;
+  keywords?: string;
+  citation?: string[];
+}): Record<string, any> {
+  if (!opts.files.length) throw new Error(`[prerender-research] ${opts.name}: a Dataset with no distribution is not worth declaring`);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: opts.name,
+    description: opts.description,
+    url: opts.url,
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+    isAccessibleForFree: true,
+    creator: { '@type': 'Organization', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
+    ...(opts.spatialCoverage ? { spatialCoverage: { '@type': 'Place', name: opts.spatialCoverage } } : {}),
+    ...(opts.temporalCoverage ? { temporalCoverage: opts.temporalCoverage } : {}),
+    ...(opts.keywords ? { keywords: opts.keywords } : {}),
+    ...(opts.citation ? { citation: opts.citation } : {}),
+    distribution: opts.files.map((f) => ({
+      '@type': 'DataDownload',
+      encodingFormat: f.format,
+      contentUrl: `https://www.beforeregret.com/research/data/${f.path}`,
+    })),
+  };
+}
 
 function escapeHtmlAttr(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -593,6 +660,23 @@ ${newsroomBlock({ title: 'Risk Without Cover', url: `${escapeHtmlAttr(COVER_URL)
           { '@type': 'ListItem', position: 2, name: 'Research', item: COVER_URL },
         ],
       },
+      derivedDataset({
+        name: 'NFIP flood insurance take-up rates by county',
+        description:
+          'Active NFIP flood insurance policies set against occupied housing units for every US county, giving the share of homes covered, alongside the FEMA National Risk Index riverine and coastal flood ratings for the same county.',
+        url: COVER_URL,
+        spatialCoverage: 'United States',
+        temporalCoverage: '2024-01-01/2025-12-31',
+        keywords: 'flood insurance, NFIP, take-up rate, coverage gap, FEMA National Risk Index, county data',
+        citation: [
+          'Federal Emergency Management Agency, National Flood Insurance Program policy statistics',
+          'US Census Bureau, American Community Survey 5-year',
+        ],
+        files: [
+          { path: 'flood-takeup-by-county.csv', format: 'text/csv' },
+          { path: 'flood-takeup.json', format: 'application/json' },
+        ],
+      }),
     ];
 
     const coverHtml = `<!doctype html>
@@ -832,6 +916,22 @@ ${newsroomBlock({ title: 'Outside the Zone', url: `${escapeHtmlAttr(ZONE_URL)}`,
           { '@type': 'ListItem', position: 2, name: 'Research', item: ZONE_URL },
         ],
       },
+      derivedDataset({
+        name: 'NFIP flood claims paid outside mapped high-risk flood zones, by county',
+        description:
+          'Counts and paid amounts of National Flood Insurance Program claims falling outside Special Flood Hazard Areas, by county, with the share of the county claims that arose outside the mapped high-risk zone.',
+        url: ZONE_URL,
+        spatialCoverage: 'United States',
+        temporalCoverage: '1978-01-01/2025-12-31',
+        keywords: 'flood claims, Special Flood Hazard Area, flood zone, NFIP, out-of-zone flooding, county data',
+        citation: [
+          'Federal Emergency Management Agency, NFIP Redacted Claims dataset',
+        ],
+        files: [
+          { path: 'outside-the-zone-by-county.csv', format: 'text/csv' },
+          { path: 'flood-outside-zone.json', format: 'application/json' },
+        ],
+      }),
     ];
 
     const zoneHtml = `<!doctype html>
@@ -1061,6 +1161,22 @@ ${newsroomBlock({ title: 'High-Hazard Dams by County', url: `${escapeHtmlAttr(DA
           { '@type': 'ListItem', position: 2, name: 'Research', item: DAM_URL },
         ],
       },
+      derivedDataset({
+        name: 'High-hazard-potential dams by county, with condition ratings',
+        description:
+          'Dams classified high-hazard-potential in the National Inventory of Dams, aggregated by county, with condition assessment ratings and the count rated poor or unsatisfactory.',
+        url: DAM_URL,
+        spatialCoverage: 'United States',
+        temporalCoverage: '2025-01-01/2025-12-31',
+        keywords: 'high-hazard dams, National Inventory of Dams, dam safety, condition assessment, county data',
+        citation: [
+          'US Army Corps of Engineers, National Inventory of Dams',
+        ],
+        files: [
+          { path: 'high-hazard-dams-by-county.csv', format: 'text/csv' },
+          { path: 'dams-high-hazard.json', format: 'application/json' },
+        ],
+      }),
     ];
 
     const damHtml = `<!doctype html>
@@ -1448,19 +1564,19 @@ ${dJsScript}
           'US Census Bureau, 2023 Gazetteer Files',
         ],
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'Dataset',
+      derivedDataset({
         name: 'Storm frequency, housing age and reported insurance cost across 100 US counties',
-        description: 'County-level severe weather counts by event type (NOAA Storm Events 2015-2024), housing units by construction era, EPA radon zone, land area, and the distribution of what mortgaged households report paying for homeowners insurance (ACS B25141).',
+        description:
+          'County-level severe weather counts by event type (NOAA Storm Events 2015-2024), housing units by construction era, EPA radon zone, land area, and the distribution of what mortgaged households report paying for homeowners insurance (ACS B25141).',
         url: ALG_URL,
-        license: 'https://creativecommons.org/licenses/by/4.0/',
-        creator: { '@type': 'Organization', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
-        distribution: [
-          { '@type': 'DataDownload', encodingFormat: 'text/csv', contentUrl: 'https://www.beforeregret.com/research/data/storm-and-premium-counties.csv' },
-          { '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: 'https://www.beforeregret.com/research/data/storm-and-premium-figures.json' },
+        spatialCoverage: 'United States',
+        temporalCoverage: '2015-01-01/2024-12-31',
+        keywords: 'severe weather, storm events, housing age, homeowners insurance cost, radon, county data',
+        files: [
+          { path: 'storm-and-premium-counties.csv', format: 'text/csv' },
+          { path: 'storm-and-premium-figures.json', format: 'application/json' },
         ],
-      },
+      }),
     ];
 
     const algHtml = `<!doctype html>
@@ -1603,19 +1719,19 @@ ${ANALYTICS_BEACON}
           'NOAA National Centers for Environmental Information, Storm Events Database, 2015-2024',
         ],
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'Dataset',
-        name: 'Storm frequency, housing age and reported insurance cost across 100 US counties',
-        description: 'County-level severe weather counts by event type (NOAA Storm Events 2015-2024), housing units by construction era, EPA radon zone, land area, and the distribution of what mortgaged households report paying for homeowners insurance (ACS B25141).',
+      derivedDataset({
+        name: 'Housing construction-era cohorts and storm exposure across 100 US counties',
+        description:
+          'County-level severe weather counts by event type (NOAA Storm Events 2015-2024), housing units by construction era, EPA radon zone, land area, and the distribution of what mortgaged households report paying for homeowners insurance (ACS B25141).',
         url: NTX_URL,
-        license: 'https://creativecommons.org/licenses/by/4.0/',
-        creator: { '@type': 'Organization', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
-        distribution: [
-          { '@type': 'DataDownload', encodingFormat: 'text/csv', contentUrl: 'https://www.beforeregret.com/research/data/storm-and-premium-counties.csv' },
-          { '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: 'https://www.beforeregret.com/research/data/storm-and-premium-figures.json' },
+        spatialCoverage: 'United States',
+        temporalCoverage: '2015-01-01/2024-12-31',
+        keywords: 'housing age cohorts, roof age, construction era, severe weather, North Texas, county data',
+        files: [
+          { path: 'storm-and-premium-counties.csv', format: 'text/csv' },
+          { path: 'storm-and-premium-figures.json', format: 'application/json' },
         ],
-      },
+      }),
     ];
 
     const ntxHtml = `<!doctype html>
@@ -1738,20 +1854,20 @@ ${ANALYTICS_BEACON}
           'Federal Emergency Management Agency, Hazard Mitigation Assistance Mitigated Properties',
         ],
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'Dataset',
-        name: 'Storm frequency, housing age and reported insurance cost across 100 US counties',
-        description: 'Every FEMA-funded acquisition/demolition and elevation of a single-family home, fiscal 1996-2025, aggregated by state and by ZIP code, with the share demolished rather than raised and a breakdown by foundation type.',
+      derivedDataset({
+        name: 'FEMA-funded acquisition and elevation decisions on single-family homes, by state and ZIP code',
+        description:
+          'Every FEMA-funded acquisition/demolition and elevation of a single-family home, fiscal 1996-2025, aggregated by state and by ZIP code, with the share demolished rather than raised and a breakdown by foundation type.',
         url: RR_URL,
-        license: 'https://creativecommons.org/licenses/by/4.0/',
-        creator: { '@type': 'Organization', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
-        distribution: [
-          { '@type': 'DataDownload', encodingFormat: 'text/csv', contentUrl: 'https://www.beforeregret.com/research/data/raise-or-remove-states.csv' },
-          { '@type': 'DataDownload', encodingFormat: 'text/csv', contentUrl: 'https://www.beforeregret.com/research/data/raise-or-remove-zips.csv' },
-          { '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: 'https://www.beforeregret.com/research/data/raise-or-remove-figures.json' },
+        spatialCoverage: 'United States',
+        temporalCoverage: '1996-01-01/2025-09-30',
+        keywords: 'FEMA buyouts, managed retreat, home elevation, flood mitigation, foundation type, ZIP code data',
+        files: [
+          { path: 'raise-or-remove-states.csv', format: 'text/csv' },
+          { path: 'raise-or-remove-zips.csv', format: 'text/csv' },
+          { path: 'raise-or-remove-figures.json', format: 'application/json' },
         ],
-      },
+      }),
     ];
 
     const rrHtml = `<!doctype html>
