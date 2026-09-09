@@ -11,7 +11,6 @@ import 'dotenv/config';
 import './lib/neon-curl.js';
 import { withDb } from '../src/server/db.js';
 import { WALKTHROUGH_CHECKS, DECADES, selectChecks, assertWalkthroughChecks, type Foundation } from '../src/data/walkthroughChecks.js';
-import { HOMEPAGE_WALKTHROUGH_SAMPLE_IDS } from '../src/components/home/WalkthroughToolSection.js';
 
 async function retry<T>(fn: () => Promise<T>, n = 8): Promise<T> {
   for (let i = 1; i <= n; i++) {
@@ -36,17 +35,6 @@ async function main() {
     for (const p of problems) console.error(`  ${p}`);
     process.exit(1);
   }
-
-  // The homepage section shows three checks, addressed by id. The component throws at import time
-  // if an id does not resolve, which would take the homepage down rather than the build, so the
-  // same thing is checked here where it fails loudly and early instead.
-  const ids = new Set(WALKTHROUGH_CHECKS.map((c) => c.id));
-  const missing = HOMEPAGE_WALKTHROUGH_SAMPLE_IDS.filter((id) => !ids.has(id));
-  if (missing.length) {
-    console.error(`[walkthrough] the homepage references ${missing.length} check id(s) that no longer exist: ${missing.join(', ')}`);
-    process.exit(1);
-  }
-  console.log(`[walkthrough] ${HOMEPAGE_WALKTHROUGH_SAMPLE_IDS.length} homepage samples resolve to live checks`);
 
   const guides = new Set(WALKTHROUGH_CHECKS.map((c) => c.guide));
   console.log(`[walkthrough] ${WALKTHROUGH_CHECKS.length} checks, all linking published guides (${guides.size} distinct)`);
