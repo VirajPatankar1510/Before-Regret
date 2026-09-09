@@ -14,6 +14,7 @@ import { createFallbackSummary, createFallbackReport } from './utils/reportFallb
 import { useAuth } from './context/AuthContext';
 
 import { applyHeadSeo } from './utils/headSeo';
+import { WALKTHROUGH_JSON_LD } from './data/walkthroughChecks';
 import { routeChunkLoaders } from './routeChunks';
 // Not a new dependency on the homepage's bundle: Hero.tsx (rendered by this file, never lazy)
 // already imports FaqSection, so this module is in the homepage graph regardless.
@@ -63,6 +64,7 @@ const TermsConditions = lazy(() => routeChunkLoaders.terms().then((m) => ({ defa
 const PrivacyPolicy = lazy(() => routeChunkLoaders.privacy().then((m) => ({ default: m.PrivacyPolicy })));
 const RefundPolicy = lazy(() => routeChunkLoaders.refunds().then((m) => ({ default: m.RefundPolicy })));
 const Disclaimer = lazy(() => routeChunkLoaders.disclaimer().then((m) => ({ default: m.Disclaimer })));
+const WalkthroughRadar = lazy(() => routeChunkLoaders.walkthrough().then((m) => ({ default: m.WalkthroughRadar })));
 const Accessibility = lazy(() => routeChunkLoaders.accessibility().then((m) => ({ default: m.Accessibility })));
 
 /** Shown only while a split chunk above is in flight -- never on a prerendered landing page. */
@@ -149,7 +151,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'reportUnavailable' | 'none';
+    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'walkthrough' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'reportUnavailable' | 'none';
     guideSlug?: string;
     // 'reportUnavailable' only. A report permalink is the link people actually SHARE, so the two
     // reasons it can fail need different words: a generic "404 — Page Not Found" tells someone who
@@ -203,6 +205,12 @@ export function App() {
     }
     if (path === '/topic-ads/' || path.startsWith('/topic-ads')) {
       setPseoRoute({ type: 'guideAds' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+
+    if (path === '/walkthrough/' || path.startsWith('/walkthrough')) {
+      setPseoRoute({ type: 'walkthrough' });
       setCurrentStep('PSEO');
       return true;
     }
@@ -673,6 +681,24 @@ export function App() {
           }
         ]
       });
+    } else if (pseoRoute.type === 'walkthrough') {
+      // Indexable, and typed HowTo because that is literally what the page is: a set of physical
+      // steps with a stated duration. It is also the schema an answer engine reads when someone
+      // asks what to check at a viewing.
+      //
+      // The steps are named by ROOM rather than listing all 25 checks. Which checks render depends
+      // on era and foundation, and structured data has to describe what is actually on the page --
+      // enumerating every check here would declare steps that most visitors never see.
+      //
+      // Must stay in sync with scripts/prerender-walkthrough.tsx by hand, the same discipline
+      // prerender-advertise.tsx and prerender-legal-pages.tsx already rely on.
+      applyHeadSeo({
+        title: 'The 20-Minute Walkthrough Checklist | BeforeRegret',
+        description: 'A free phone checklist of what to physically look at during a house viewing, by decade built and foundation type. No sign-up and no address needed.',
+        canonicalUrl: 'https://www.beforeregret.com/walkthrough/',
+        robotsDirective: 'index, follow',
+        jsonLdSchema: WALKTHROUGH_JSON_LD
+      });
     } else if (pseoRoute.type === 'vendors') {
       applyHeadSeo({
         title: 'Report Ads | BeforeRegret',
@@ -1054,6 +1080,9 @@ export function App() {
             )}
             {pseoRoute.type === 'accessibility' && (
               <Accessibility onBackToHome={handleNewSearch} onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'walkthrough' && (
+              <WalkthroughRadar />
             )}
             {pseoRoute.type === 'paymentSuccess' && (
               <PaymentSuccess />

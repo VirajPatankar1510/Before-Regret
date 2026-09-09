@@ -534,3 +534,44 @@ export function assertWalkthroughChecks(publishedSlugs: Set<string>): string[] {
   }
   return problems;
 }
+
+/**
+ * The page's structured data, shared between App.tsx's applyHeadSeo call and
+ * scripts/prerender-walkthrough.tsx.
+ *
+ * One exported constant rather than two hand-kept copies: /advertise and the legal pages each
+ * maintain their schema twice and rely on discipline to keep them equal, which is a drift risk this
+ * route does not need to inherit.
+ */
+export const WALKTHROUGH_URL = 'https://www.beforeregret.com/walkthrough/';
+
+export const WALKTHROUGH_JSON_LD: Array<Record<string, unknown>> = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: 'How to check a house during a 20-minute viewing',
+    description:
+      'A room-by-room list of things a buyer can physically look at during a normal house viewing, selected by the decade the house was built and what it sits on.',
+    totalTime: 'PT20M',
+    url: WALKTHROUGH_URL,
+    isAccessibleForFree: true,
+    supply: { '@type': 'HowToSupply', name: 'A phone with a torch' },
+    author: { '@id': 'https://www.beforeregret.com/#organization' },
+    publisher: { '@id': 'https://www.beforeregret.com/#organization' },
+    step: [
+      { '@type': 'HowToStep', name: 'Outside, before you go in', text: 'Look at the roof from the street, walk the lawn for a green stripe over the sewer line, and check the perimeter for an old oil tank fill pipe.' },
+      { '@type': 'HowToStep', name: 'Utility room or garage', text: 'Read the brand name on the electrical panel door, photograph the water heater date sticker, and look at the cable markings entering the panel.' },
+      { '@type': 'HowToStep', name: 'Kitchen and bathrooms', text: 'Open a cabinet under a sink and look at the supply pipe material and the shape of the drain trap.' },
+      { '@type': 'HowToStep', name: 'Basement or crawl space', text: 'Light the bottom of the walls for white salt deposits, look at the main drain stack, and check the foundation wall for cracks or evidence of past repair.' },
+      { '@type': 'HowToStep', name: 'Before you leave', text: 'Ask the agent which improvements were permitted and whether you can see the closed permits.' },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+      { '@type': 'ListItem', position: 2, name: 'The 20-Minute Walkthrough Checklist', item: WALKTHROUGH_URL },
+    ],
+  },
+];

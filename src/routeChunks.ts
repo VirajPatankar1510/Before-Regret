@@ -38,6 +38,11 @@ export const routeChunkLoaders = {
   // long as the download takes. Same regression this whole file exists to prevent for the other
   // routes below.
   advertise: () => import('./components/AdvertiseCompare'),
+  // Same reasoning as /advertise: prerendered, indexable, and therefore able to be blanked to a
+  // spinner on mount if its chunk is not resolved before createRoot(). This one matters more than
+  // most -- the page exists to be opened on a phone in a driveway, so a flash while a chunk
+  // downloads on a bad signal is the whole product failing at the only moment it is used.
+  walkthrough: () => import('./components/WalkthroughRadar'),
 } as const;
 
 export type PrerenderedRouteKey = keyof typeof routeChunkLoaders;
@@ -65,6 +70,7 @@ export const routeChunkSources: Record<PrerenderedRouteKey, string> = {
   disclaimer: 'src/components/Disclaimer.tsx',
   accessibility: 'src/components/Accessibility.tsx',
   advertise: 'src/components/AdvertiseCompare.tsx',
+  walkthrough: 'src/components/WalkthroughRadar.tsx',
 };
 
 /**
@@ -82,6 +88,7 @@ export const routeChunkSources: Record<PrerenderedRouteKey, string> = {
 export function prerenderedRouteForPath(pathname: string): PrerenderedRouteKey | null {
   const path = pathname.endsWith('/') ? pathname : `${pathname}/`;
 
+  if (path.startsWith('/walkthrough')) return 'walkthrough';
   if (path.startsWith('/about')) return 'about';
   if (path.startsWith('/support')) return 'support';
   if (path.startsWith('/terms')) return 'terms';

@@ -160,6 +160,10 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       // follow' and has real prerendered content to back that up. /topic-ads and /report-ads, the
       // two checkout pages this page routes to, stay noindex and are correctly absent.
       { loc: `${BASE_URL}/advertise/`, lastmod: today, changefreq: 'monthly', priority: '0.6' },
+      // The free walkthrough checklist. Priority 0.8 rather than 0.6: it is a tool rather than a
+      // marketing page, it is the page most likely to be linked to from outside, and every check on
+      // it routes to a guide -- so a crawler that finds this one finds 23 others.
+      { loc: `${BASE_URL}/walkthrough/`, lastmod: today, changefreq: 'monthly', priority: '0.8' },
       // The research index (added 2026-09-02, when /research/ was still answering 404 with four
       // studies underneath it). Unlike the studies it lists, this one legitimately changes whenever
       // a study is added, so it takes `today` rather than a frozen date.
