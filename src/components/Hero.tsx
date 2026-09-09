@@ -8,6 +8,7 @@ import { PricingSection } from './home/PricingSection';
 import { FaqSection } from './home/FaqSection';
 import { ClosingCtaSection } from './home/ClosingCtaSection';
 import { GuideCardsSection } from './home/GuideCardsSection';
+import { WalkthroughToolSection } from './home/WalkthroughToolSection';
 import { BookPromoCard } from './BookPromo';
 import { HomeData, buildGuideClusters, pickResearchPages } from '../utils/homeContent';
 
@@ -186,6 +187,11 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
           content library. A landing page makes its offer early; the library below is there for
           whoever isn't ready yet, not a detour before the price. */}
       <PricingSection onScrollToSearch={handleScrollToSearch} />
+
+      {/* 4b. FREE WALKTHROUGH TOOL -- the no-signup entry point to /walkthrough/. After pricing,
+          not before it: a free call to action immediately above a price competes with the one
+          commercial ask the homepage makes. Same position in scripts/prerender-homepage.tsx. */}
+      <WalkthroughToolSection onNavigate={onNavigate} />
 
       {/* 5. GUIDE LIBRARY -- a diverse sample of real guide cards, explicitly framed as free
           content separate from the report (see GuideCardsSection.tsx for why the framing matters

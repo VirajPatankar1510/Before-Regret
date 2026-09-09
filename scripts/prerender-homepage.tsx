@@ -9,6 +9,7 @@ import { PricingSection } from '../src/components/home/PricingSection';
 import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
 import { HOMEPAGE_FAQS } from '../src/components/home/FaqSection';
 import { GuideCardsSection } from '../src/components/home/GuideCardsSection';
+import { WalkthroughToolSection } from '../src/components/home/WalkthroughToolSection';
 import { BookPromoCard } from '../src/components/BookPromo';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { isDbConfigured } from '../src/server/db.js';
@@ -122,6 +123,8 @@ function HomeStaticBody({ data }: { data: HomeData }) {
       {/* Same order and position as src/components/Hero.tsx. No onNavigate is passed, so
           ContentLink renders plain crawlable <a href> markup here -- the point of prerendering
           this section: its guide card links get picked up from the domain's strongest page. */}
+      {/* Mirrors src/components/Hero.tsx's position exactly -- see that file's comment. */}
+      <WalkthroughToolSection />
       <GuideCardsSection
         clusters={clusters}
         research={research}
