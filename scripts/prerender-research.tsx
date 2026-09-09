@@ -416,7 +416,7 @@ straight into a document or a slide; the SVG stays sharp at any size.</p>
 
 <h3 style="margin-top:2.2em">Cite this</h3>
 <p style="margin-top:.7em;font-size:.95rem">${opts.sentence}</p>
-<p style="margin-top:.7em;font-size:.9rem;color:var(--muted)">${escapeHtmlAttr(opts.title)}, BeforeRegret, ${opts.published}. Source: ${opts.source}. ${escapeHtmlAttr(opts.url)}</p>
+<p style="margin-top:.7em;font-size:.9rem;color:var(--muted)">${escapeHtmlAttr(opts.title)}, Before Regret, ${opts.published}. Source: ${opts.source}. ${escapeHtmlAttr(opts.url)}</p>
 `;
 }
 
@@ -1842,7 +1842,7 @@ ${ANALYTICS_BEACON}
         alternativeHeadline: 'Across 32,779 federally funded decisions, a flooded American home is demolished 2.7 times for every one that is raised',
         description: RR_DESC,
         url: RR_URL,
-        datePublished: '2026-09-06',
+        datePublished: '2026-09-08',
         dateModified: '2026-09-06',
         inLanguage: 'en-US',
         isAccessibleForFree: true,
@@ -2094,6 +2094,50 @@ ${ANALYTICS_BEACON}
   console.log(`[prerender-research] Wrote /research/ index listing ${STUDIES.length} studies`);
 
   verifyAdvertisedResearchUrls();
+  verifyPublicationDatesAgree();
+}
+
+/**
+ * A study's visible "Published <date>" line and its schema datePublished must be the same day.
+ *
+ * They were not. raise-or-remove displayed 7 September 2026 while its ScholarlyArticle declared
+ * 2026-09-06, because the visible string lives in docs/raise-or-remove.html (written by
+ * build-raise-or-remove-study.ts) and the schema string lives here, so the two drifted the moment
+ * one was edited. Git says the study actually landed on 2026-09-08, so both were wrong and in
+ * different directions -- which is the tell that nothing was comparing them.
+ *
+ * On a page whose entire pitch to an answer engine is "cite this as primary research", the visible
+ * byline disagreeing with the structured metadata is the worst small defect available: it is
+ * exactly the field a citation carries.
+ */
+function verifyPublicationDatesAgree(): void {
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+  const dist = path.join(process.cwd(), 'dist', 'research');
+  const problems: string[] = [];
+
+  for (const dir of fs.readdirSync(dist, { withFileTypes: true })) {
+    if (!dir.isDirectory()) continue;
+    const file = path.join(dist, dir.name, 'index.html');
+    if (!fs.existsSync(file)) continue;
+    const html = fs.readFileSync(file, 'utf8');
+
+    const schema = html.match(/"datePublished":\s*"(\d{4})-(\d{2})-(\d{2})"/);
+    const visible = html.match(/Published\s+(\d{1,2})\s+([A-Z][a-z]+)\s+(\d{4})/);
+    if (!schema) { problems.push(`${dir.name}: no datePublished in schema`); continue; }
+    if (!visible) continue; // the index page and the four older studies carry no "Published" line
+
+    const mi = MONTHS.indexOf(visible[2]);
+    if (mi < 0) { problems.push(`${dir.name}: unparseable visible month "${visible[2]}"`); continue; }
+    const vis = `${visible[3]}-${String(mi + 1).padStart(2, '0')}-${visible[1].padStart(2, '0')}`;
+    const sch = `${schema[1]}-${schema[2]}-${schema[3]}`;
+    if (vis !== sch) problems.push(`${dir.name}: page says ${vis}, schema says ${sch}`);
+  }
+
+  if (problems.length) {
+    throw new Error(`[prerender-research] publication date mismatch:\n  ${problems.join('\n  ')}`);
+  }
+  console.log('[prerender-research] Verified every visible publication date matches its schema datePublished');
 }
 
 /**

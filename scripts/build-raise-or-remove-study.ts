@@ -32,7 +32,7 @@ const ZIPS = path.join(process.cwd(), 'docs', 'data', 'raise-or-remove-zips.json
 const OUT = path.join(process.cwd(), 'docs', 'raise-or-remove.html');
 const OUT_EMBED = path.join(process.cwd(), 'docs', 'raise-or-remove.embed.html');
 
-const PUBLISHED = '7 September 2026';
+const PUBLISHED = '8 September 2026';
 const STUDY_URL = 'https://www.beforeregret.com/research/raise-or-remove/';
 const TITLE_SHORT = 'Raise or Remove';
 
