@@ -83,6 +83,9 @@ const CheckCard: React.FC<{
       <p className="mt-2 text-sm text-slate-700">
         <span className="font-medium text-slate-900">Looking for: </span>{check.lookingFor}
       </p>
+      {/* Written for all 25 checks from the start and, until now, rendered for none of them -- the
+          one line that answers "why am I doing this?" while someone is halfway down the list. */}
+      <p className="mt-1.5 text-xs text-slate-500 leading-relaxed">{check.whyItMatters}</p>
       {answer === 'flag' && (
         <div className="mt-3 rounded-md bg-amber-50 border border-amber-200 p-3">
           <p className="text-sm text-amber-900">{check.flagMeans}</p>
@@ -90,30 +93,30 @@ const CheckCard: React.FC<{
             href={`/guides/${check.guide}/`}
             className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-amber-900 underline underline-offset-2"
           >
-            What this actually means <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+            What this means <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
           </a>
         </div>
       )}
       {answer === 'unsure' && (
         <div className="mt-3 rounded-md bg-slate-50 border border-slate-200 p-3">
           <p className="text-sm text-slate-700">
-            Note it and move on. Unsure is a normal answer to most of these, and it belongs on the
-            list you hand your inspector.
+            Totally fine. Half of these are hard to judge in someone else's house, and
+            &ldquo;couldn&rsquo;t tell&rdquo; is exactly the kind of thing your inspector should settle.
           </p>
           <a
             href={`/guides/${check.guide}/`}
             className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-slate-800 underline underline-offset-2"
           >
-            Read this before the inspection <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+            Read up before the inspection <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
           </a>
         </div>
       )}
     </div>
     <div className="grid grid-cols-3 border-t border-slate-200" role="group" aria-label={check.prompt}>
       {([
-        ['pass', 'Looks OK', Check],
-        ['flag', 'Flag it', Flag],
-        ['unsure', 'Unsure', HelpCircle],
+        ['pass', 'Looks fine', Check],
+        ['flag', 'Saw it', Flag],
+        ['unsure', "Couldn't tell", HelpCircle],
       ] as Array<[Answer, string, typeof Check]>).map(([value, label, Icon], i) => (
         <button
           key={value}
@@ -173,25 +176,25 @@ export const WalkthroughRadar: React.FC = () => {
       '',
     ];
     if (flagged.length) {
-      lines.push('THINGS I FLAGGED, please confirm in writing:', '');
+      lines.push('THINGS I SPOTTED -- please confirm these in writing:', '');
       flagged.forEach((c, i) => {
         lines.push(`${i + 1}. ${c.lookingFor}`);
         lines.push(`   ${c.flagMeans}`, '');
       });
     }
     if (unsure.length) {
-      lines.push('THINGS I COULD NOT TELL:', '');
+      lines.push('THINGS I COULD NOT TELL FROM LOOKING:', '');
       unsure.forEach((c, i) => lines.push(`${i + 1}. ${c.prompt}`, ''));
     }
     const qs = sellerQuestions?.questions ?? [];
     if (qs.length) {
-      lines.push('QUESTIONS FOR THE SELLER OR AGENT, based on the age of the house:', '');
+      lines.push('QUESTIONS FOR THE SELLER OR AGENT, based on how old the house is:', '');
       qs.forEach((q, i) => lines.push(`${i + 1}. ${q.question}`, `   (${q.whatToListenFor})`, ''));
     }
     if (!flagged.length && !unsure.length && !qs.length) {
-      lines.push('Nothing flagged on the walkthrough.', '');
+      lines.push('Nothing stood out on the walkthrough.', '');
     }
-    lines.push('Compiled with the free walkthrough checklist at https://www.beforeregret.com/walkthrough/');
+    lines.push('Put together with the free walkthrough checklist at https://www.beforeregret.com/walkthrough/');
     return lines.join('\n');
   }, [started, decade, foundation, flagged, unsure, sellerQuestions]);
 
@@ -214,14 +217,14 @@ export const WalkthroughRadar: React.FC = () => {
           The 20-minute walkthrough checklist
         </h1>
         <p className="mt-3 text-slate-700">
-          Two questions, then a list of things to physically look at while you are inside. Built for
-          a phone, in a driveway, before you go in. Nothing is sent anywhere and nothing is stored
-          but your own answers, on your own device.
+          Answer two questions and get a short list of things to actually look at while you are
+          inside. Built for your phone, in the driveway, before you walk in. No sign-up, no address,
+          nothing sent anywhere.
         </p>
 
         <fieldset className="mt-8">
           <legend className="text-sm font-bold uppercase tracking-wide text-slate-500 mb-3">
-            1 · Roughly when was it built?
+            First &mdash; roughly when was it built?
           </legend>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {DECADES.map((d) => (
@@ -242,13 +245,13 @@ export const WalkthroughRadar: React.FC = () => {
             ))}
           </div>
           <p className="mt-2 text-xs text-slate-500">
-            The listing usually says. A decade either way changes very little.
+            The listing almost always says. A decade either way barely changes the list.
           </p>
         </fieldset>
 
         <fieldset className="mt-8">
           <legend className="text-sm font-bold uppercase tracking-wide text-slate-500 mb-3">
-            2 · What is it sitting on?
+            And what is it sitting on?
           </legend>
           <div className="grid gap-2">
             {FOUNDATIONS.map((f) => (
@@ -273,10 +276,18 @@ export const WalkthroughRadar: React.FC = () => {
           </div>
         </fieldset>
 
-        <p className="mt-8 text-sm text-slate-600 border-t border-slate-200 pt-4">
-          This is a prompt list, not an inspection. It tells you where to point your attention and
-          what to ask about afterwards. It cannot tell you whether anything is actually wrong, and
-          nothing here replaces a licensed inspector.
+        <div className="mt-8 rounded-lg bg-blue-50 border border-blue-200 p-4">
+          <p className="text-sm text-blue-900">
+            <span className="font-semibold">Yes, you are allowed to do this.</span> Opening a cabinet
+            under the sink, looking in the breaker box, and asking about permits are all normal at a
+            showing. Agents expect it. You are buying the place, not visiting it.
+          </p>
+        </div>
+
+        <p className="mt-6 text-sm text-slate-600 border-t border-slate-200 pt-4">
+          This is not an inspection and it cannot tell you whether anything is actually wrong. It
+          tells you where to look and what to ask about afterwards. You still want a licensed
+          inspector.
         </p>
       </div>
     );
@@ -302,9 +313,9 @@ export const WalkthroughRadar: React.FC = () => {
 
       <div className="sticky top-0 z-10 -mx-4 px-4 py-3 bg-white/95 backdrop-blur border-b border-slate-200">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-semibold text-slate-900">{answered} of {shown.length} checked</span>
+          <span className="font-semibold text-slate-900">{answered} of {shown.length} done</span>
           <span className="text-slate-600">
-            {flagged.length} flagged{unsure.length ? ` · ${unsure.length} unsure` : ''}
+            {flagged.length} to ask about{unsure.length ? ` · ${unsure.length} unsure` : ''}
           </span>
         </div>
         <div className="mt-2 h-1.5 rounded-full bg-slate-200 overflow-hidden">
@@ -352,16 +363,16 @@ export const WalkthroughRadar: React.FC = () => {
           className="mt-4 w-full rounded-lg border border-dashed border-slate-300 py-3 text-sm font-semibold text-slate-600 hover:border-slate-400"
           style={{ minHeight: 48 }}
         >
-          Show {ifTime.length} more, if you have time
+          Show {ifTime.length} more, if you have time left
         </button>
       )}
 
       {answered > 0 && (
         <section className="mt-8 border-t border-slate-200 pt-6">
-          <h2 className="text-lg font-extrabold text-slate-900">Hand this to your inspector</h2>
+          <h2 className="text-lg font-extrabold text-slate-900">Send this to your inspector</h2>
           <p className="mt-1 text-sm text-slate-700">
-            What you flagged, what you could not tell, and the questions worth asking about a house
-            of this age. Copy it into an email or a text.
+            Everything you spotted, everything you were not sure about, and the questions worth
+            asking about a house this old. Copy it straight into a text or an email.
           </p>
           <div className="mt-3 flex gap-2">
             <button
@@ -370,11 +381,11 @@ export const WalkthroughRadar: React.FC = () => {
               className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
               style={{ minHeight: 48 }}
             >
-              <Copy className="w-4 h-4" aria-hidden="true" />{copied ? 'Copied' : 'Copy the list'}
+              <Copy className="w-4 h-4" aria-hidden="true" />{copied ? 'Copied' : 'Copy it'}
             </button>
             <button
               type="button"
-              onClick={() => { if (window.confirm('Clear every answer for this house?')) setState((s) => ({ ...s, answers: {} })); }}
+              onClick={() => { if (window.confirm('Start this house over? Your answers will be cleared.')) setState((s) => ({ ...s, answers: {} })); }}
               className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
               style={{ minHeight: 48 }}
             >
@@ -391,8 +402,8 @@ export const WalkthroughRadar: React.FC = () => {
       )}
 
       <p className="mt-8 text-sm text-slate-600 border-t border-slate-200 pt-4">
-        A prompt list, not an inspection. Flagging something here means it is worth asking about, not
-        that anything is wrong with the house. Nothing replaces a licensed inspector.
+        Not an inspection. Marking something here means it is worth asking about, not that anything
+        is wrong with the house. You still want a licensed inspector.
       </p>
     </div>
   );
