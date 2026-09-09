@@ -416,7 +416,7 @@ straight into a document or a slide; the SVG stays sharp at any size.</p>
 
 <h3 style="margin-top:2.2em">Cite this</h3>
 <p style="margin-top:.7em;font-size:.95rem">${opts.sentence}</p>
-<p style="margin-top:.7em;font-size:.9rem;color:var(--muted)">${escapeHtmlAttr(opts.title)}, Before Regret, ${opts.published}. Source: ${opts.source}. ${escapeHtmlAttr(opts.url)}</p>
+<p style="margin-top:.7em;font-size:.9rem;color:var(--muted)">${escapeHtmlAttr(opts.title)}, Before Regret, ${opts.published}. Data source: ${opts.source}. ${escapeHtmlAttr(opts.url)}</p>
 `;
 }
 
@@ -2123,9 +2123,13 @@ function verifyPublicationDatesAgree(): void {
     const html = fs.readFileSync(file, 'utf8');
 
     const schema = html.match(/"datePublished":\s*"(\d{4})-(\d{2})-(\d{2})"/);
-    const visible = html.match(/Published\s+(\d{1,2})\s+([A-Z][a-z]+)\s+(\d{4})/);
+    // Two visible formats: the three newer studies print "Published 8 September 2026", the four
+    // older ones print a newsroom byline "<Title>, Before Regret, 31 August 2026." Both are checked
+    // -- a guard that silently skipped four of seven pages would have looked like it was working.
+    const visible = html.match(/Published\s+(\d{1,2})\s+([A-Z][a-z]+)\s+(\d{4})/)
+      ?? html.match(/,\s*Before Regret,\s*(\d{1,2})\s+([A-Z][a-z]+)\s+(\d{4})\./);
     if (!schema) { problems.push(`${dir.name}: no datePublished in schema`); continue; }
-    if (!visible) continue; // the index page and the four older studies carry no "Published" line
+    if (!visible) continue; // /research/ index itself carries no publication date
 
     const mi = MONTHS.indexOf(visible[2]);
     if (mi < 0) { problems.push(`${dir.name}: unparseable visible month "${visible[2]}"`); continue; }
