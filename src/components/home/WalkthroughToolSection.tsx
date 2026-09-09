@@ -38,8 +38,7 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
         </h2>
         <p className="mt-2 text-sm sm:text-base text-slate-700 leading-relaxed">
           Tell us roughly when the house was built and what it sits on, and get a short list of
-          things worth checking while you are standing there. Built for your phone. No address, no
-          email, nothing sent anywhere.
+          things worth checking while you are standing there.
         </p>
       </div>
 
