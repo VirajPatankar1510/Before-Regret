@@ -167,28 +167,41 @@ export const WalkthroughRadar: React.FC = () => {
     [started, decade],
   );
 
-  const handoff = useMemo(() => {
+  // The buyer's own notes, addressed to nobody.
+  //
+  // This used to be a handoff document: headed "Send this to your inspector" and opening with
+  // "THINGS I SPOTTED -- please confirm these in writing". Two problems with that. A list of
+  // instructions from a layperson reads like a work order to a professional, which is a poor way to
+  // start a working relationship. And it quietly changed what the tool was for: a person filling in
+  // a form for somebody else pays a different kind of attention than a person keeping notes for
+  // themselves, and the second one is the point.
+  //
+  // So it is a record now, in the first person, with no imperative aimed at anyone. The buyer can
+  // still do whatever they like with it -- including showing it to their inspector, which is a
+  // normal thing to do and which most inspectors welcome. The difference is that the document no
+  // longer presumes to give a professional their instructions.
+  const notes = useMemo(() => {
     if (!started) return '';
     const lines: string[] = [
-      `Walkthrough notes — ${DECADES.find((d) => d.mid === decade)?.label ?? ''} home, ${
+      `My walkthrough notes — ${DECADES.find((d) => d.mid === decade)?.label ?? ''} home, ${
         FOUNDATIONS.find((f) => f.id === foundation)?.label.toLowerCase() ?? ''
       } foundation`,
       '',
     ];
     if (flagged.length) {
-      lines.push('THINGS I SPOTTED -- please confirm these in writing:', '');
+      lines.push('WHAT I SAW', '');
       flagged.forEach((c, i) => {
         lines.push(`${i + 1}. ${c.lookingFor}`);
         lines.push(`   ${c.flagMeans}`, '');
       });
     }
     if (unsure.length) {
-      lines.push('THINGS I COULD NOT TELL FROM LOOKING:', '');
+      lines.push('WHAT I COULD NOT TELL FROM LOOKING', '');
       unsure.forEach((c, i) => lines.push(`${i + 1}. ${c.prompt}`, ''));
     }
     const qs = sellerQuestions?.questions ?? [];
     if (qs.length) {
-      lines.push('QUESTIONS FOR THE SELLER OR AGENT, based on how old the house is:', '');
+      lines.push('WORTH ASKING ABOUT, GIVEN HOW OLD THE HOUSE IS', '');
       qs.forEach((q, i) => lines.push(`${i + 1}. ${q.question}`, `   (${q.whatToListenFor})`, ''));
     }
     if (!flagged.length && !unsure.length && !qs.length) {
@@ -198,8 +211,8 @@ export const WalkthroughRadar: React.FC = () => {
     return lines.join('\n');
   }, [started, decade, foundation, flagged, unsure, sellerQuestions]);
 
-  const copyHandoff = () => {
-    navigator.clipboard.writeText(handoff).then(
+  const copyNotes = () => {
+    navigator.clipboard.writeText(notes).then(
       () => { setCopied(true); setTimeout(() => setCopied(false), 1600); },
       () => { /* clipboard blocked; the textarea below is still selectable */ },
     );
@@ -369,15 +382,15 @@ export const WalkthroughRadar: React.FC = () => {
 
       {answered > 0 && (
         <section className="mt-8 border-t border-slate-200 pt-6">
-          <h2 className="text-lg font-extrabold text-slate-900">Send this to your inspector</h2>
+          <h2 className="text-lg font-extrabold text-slate-900">Your notes from this house</h2>
           <p className="mt-1 text-sm text-slate-700">
-            Everything you spotted, everything you were not sure about, and the questions worth
-            asking about a house this old. Copy it straight into a text or an email.
+            What you saw, what you could not tell, and what is worth asking about given how old
+            the house is. Keep it for yourself, or paste it wherever you are tracking houses.
           </p>
           <div className="mt-3 flex gap-2">
             <button
               type="button"
-              onClick={copyHandoff}
+              onClick={copyNotes}
               className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
               style={{ minHeight: 48 }}
             >
@@ -394,8 +407,8 @@ export const WalkthroughRadar: React.FC = () => {
           </div>
           <textarea
             readOnly
-            value={handoff}
-            aria-label="Notes to hand your inspector"
+            value={notes}
+            aria-label="Your walkthrough notes"
             className="mt-3 w-full h-56 rounded-lg border border-slate-300 p-3 font-mono text-xs text-slate-800"
           />
         </section>
