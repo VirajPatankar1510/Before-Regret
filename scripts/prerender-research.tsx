@@ -2092,6 +2092,53 @@ ${ANALYTICS_BEACON}
   fs.mkdirSync(indexDir, { recursive: true });
   fs.writeFileSync(path.join(indexDir, 'index.html'), indexHtml, 'utf8');
   console.log(`[prerender-research] Wrote /research/ index listing ${STUDIES.length} studies`);
+
+  verifyAdvertisedResearchUrls();
+}
+
+/**
+ * llms.txt advertises every study page and its derived data files to answer engines. Those URLs are
+ * hand-written in prerender-guides.tsx, which runs BEFORE this script and therefore cannot check
+ * them -- four of the thirteen data files do not exist until the lines above create them.
+ *
+ * So the check runs here, at the end of the last prerender step, by reading the llms.txt that was
+ * already written and confirming every /research/ URL in it resolves to a file on disk. A CSV named
+ * in that file but missing from the build would advertise a 404 to every crawler that reads it,
+ * which is worse than not listing the data at all.
+ *
+ * Also checks the Dataset schema's contentUrls for the same reason: a DataDownload pointing at
+ * nothing is a broken claim of authorship, not a weak one.
+ */
+function verifyAdvertisedResearchUrls(): void {
+  const dist = path.join(process.cwd(), 'dist');
+  const PREFIX = 'https://www.beforeregret.com';
+  const missing: string[] = [];
+
+  const check = (url: string, source: string) => {
+    const rel = url.slice(PREFIX.length);
+    const file = rel.endsWith('/') ? path.join(dist, rel, 'index.html') : path.join(dist, rel);
+    if (!fs.existsSync(file)) missing.push(`${source} -> ${rel}`);
+  };
+
+  const llmsPath = path.join(dist, 'llms.txt');
+  if (!fs.existsSync(llmsPath)) throw new Error('[prerender-research] dist/llms.txt is missing; prerender-guides must run first');
+  const llms = fs.readFileSync(llmsPath, 'utf8');
+  const advertised = [...llms.matchAll(new RegExp(`${PREFIX}/research/[^\\s)\`]+`, 'g'))].map((m) => m[0]);
+  if (advertised.length === 0) throw new Error('[prerender-research] llms.txt advertises no research URLs at all');
+  for (const u of new Set(advertised)) check(u, 'llms.txt');
+
+  for (const dir of fs.readdirSync(path.join(dist, 'research'), { withFileTypes: true })) {
+    if (!dir.isDirectory()) continue;
+    const page = path.join(dist, 'research', dir.name, 'index.html');
+    if (!fs.existsSync(page)) continue;
+    const html = fs.readFileSync(page, 'utf8');
+    for (const m of html.matchAll(/"contentUrl":\s*"([^"]+)"/g)) check(m[1], `${dir.name} Dataset`);
+  }
+
+  if (missing.length) {
+    throw new Error(`[prerender-research] ${missing.length} advertised URL(s) do not exist in dist:\n  ${missing.join('\n  ')}`);
+  }
+  console.log(`[prerender-research] Verified ${new Set(advertised).size} llms.txt research URLs and every Dataset contentUrl resolve in dist`);
 }
 
 run().catch((err) => {
