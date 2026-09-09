@@ -243,7 +243,7 @@ export const WALKTHROUGH_CHECKS: WalkthroughCheck[] = [
   {
     id: 'accordion-trap',
     zone: 'Kitchen and bathrooms',
-    prompt: 'While that cabinet is open, look at the drain pipe curving down from the sink.',
+    prompt: 'Open the cabinet under a bathroom or kitchen sink and look at the drain pipe curving down from the plughole.',
     lookingFor: 'A ribbed, concertina-style flexible plastic pipe instead of a smooth rigid P-trap, or a joint held with tape.',
     whyItMatters: 'A corrugated trap catches waste in its ridges and is not permitted under most plumbing codes, so it is a reliable sign that unpermitted work was done somewhere in the house.',
     flagMeans: 'Treat it as a prompt rather than a defect: ask what other work was done by the same hand, and check the permit record for the property.',
@@ -490,6 +490,12 @@ export function assertWalkthroughChecks(publishedSlugs: Set<string>): string[] {
     if (!publishedSlugs.has(c.guide)) problems.push(`${c.id}: guide "${c.guide}" is not a published guide`);
     if (c.minYear > c.maxYear) problems.push(`${c.id}: minYear ${c.minYear} is after maxYear ${c.maxYear}`);
     if (!c.prompt.trim().endsWith('.') && !c.prompt.trim().endsWith('?')) problems.push(`${c.id}: prompt is not a sentence`);
+    // Every prompt must stand alone. accordion-trap opened with "While that cabinet is open",
+    // which read correctly next to the polybutylene check and dangled on any house too new to be
+    // shown it -- and the era gating means no check can assume another was displayed.
+    for (const dependent of ['while that', 'while you', 'as above', 'same cabinet', 'that same']) {
+      if (c.prompt.toLowerCase().includes(dependent)) problems.push(`${c.id}: prompt depends on another check being shown first`);
+    }
     for (const [field, value] of Object.entries({ prompt: c.prompt, lookingFor: c.lookingFor, whyItMatters: c.whyItMatters, flagMeans: c.flagMeans })) {
       if (value.length < 40) problems.push(`${c.id}: ${field} is too short to be useful`);
     }
