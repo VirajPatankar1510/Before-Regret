@@ -152,7 +152,18 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
       image: resolveArticleSchemaImage(article.bodyMarkdown),
       datePublished: article.publishedAt,
       dateModified: article.updatedAt || article.publishedAt,
-      author: { '@type': 'Organization', name: 'Before Regret' },
+      // author and publisher both POINT AT the Organization node rather than restating it inline.
+      // That node is already on every page with @id .../#organization (see index.html), carrying
+      // logo, sameAs and alternateName; an inline {Organization, name} duplicate creates a second,
+      // thinner entity for the same publisher and asks a consumer to reconcile them. A reference
+      // to an @id declared on the same page is the schema.org way to say "the one you already have".
+      //
+      // publisher was absent entirely. Google lists it as recommended on Article, and it is the
+      // field that says who stands behind the page -- the exact question an answer engine is asking
+      // when it decides whether to repeat a claim.
+      author: { '@id': 'https://www.beforeregret.com/#organization' },
+      publisher: { '@id': 'https://www.beforeregret.com/#organization' },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
     },
     {
       '@context': 'https://schema.org',

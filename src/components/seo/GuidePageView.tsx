@@ -167,10 +167,11 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           'image': resolveArticleSchemaImage(article.bodyMarkdown),
           'datePublished': article.publishedAt,
           'dateModified': article.updatedAt || article.publishedAt,
-          'author': {
-            '@type': 'Organization',
-            'name': 'Before Regret'
-          }
+          // Static twin: scripts/prerender-guides.tsx does the same, and explains why these are
+          // @id references to the page's existing Organization node rather than inline duplicates.
+          'author': { '@id': 'https://www.beforeregret.com/#organization' },
+          'publisher': { '@id': 'https://www.beforeregret.com/#organization' },
+          'mainEntityOfPage': { '@type': 'WebPage', '@id': canonicalUrl }
         },
         {
           '@context': 'https://schema.org',
