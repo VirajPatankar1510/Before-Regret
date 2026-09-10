@@ -696,7 +696,11 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               onFocus={() => {
                 if (suggestions.length > 0) setShowSuggestions(true);
               }}
-              placeholder="Enter your full street address..."
+              // A worked example, not an instruction. "Enter your full street address..." told
+              // people the format but not what a real one looks like, so the example lived as a
+              // separate line under the box; in the field it does both jobs and removes a line of
+              // chrome from the hero.
+              placeholder="e.g. 301 Congress Ave, Austin, TX"
               className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-transparent focus:outline-none"
             />
           </div>

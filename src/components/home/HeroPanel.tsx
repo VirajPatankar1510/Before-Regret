@@ -1,5 +1,4 @@
 import React from 'react';
-import { getInspectionPriorities } from '../../engine/inspectionPriorities';
 
 /**
  * The homepage hero, shared by src/components/Hero.tsx and scripts/prerender-homepage.tsx.
@@ -27,81 +26,18 @@ import { getInspectionPriorities } from '../../engine/inspectionPriorities';
  * that machinery, and the LCP element becomes the headline -- text, in the static HTML, painting
  * as soon as the inlined stylesheet lands.
  *
- * WHAT REPLACES IT is the thing the product actually does. The right-hand card is live output from
- * getInspectionPriorities for a labelled example address, with the engine's own cost figures. A
- * photograph of a house says "houses"; three real findings with real dollar ranges say what you get
- * for typing an address in. It cannot drift out of date, because it is not a screenshot -- it is
- * the engine, called at render.
+ * WHAT REPLACES IT is nothing, deliberately. An interim version carried a card of live
+ * getInspectionPriorities output for an example address, which was good evidence and still one more
+ * thing to read before reaching the search box. The hero's job is a headline, a sentence and an
+ * address field; the proof belongs in the sections below it, where a visitor who wants it has
+ * already decided to keep scrolling.
  *
  * The ground is a flat ink with a hairline grid, which is a plat map and a ledger rather than a
  * gradient, and costs one CSS rule instead of a network request.
+ *
+ * The worked example that used to sit under the box as its own line is now the search field's
+ * placeholder, so it does the same job without spending a line.
  */
-
-// A deliberately ordinary example, labelled as one. 1972 is old enough to carry era rules a buyer
-// would not think of, and Harris County is both the largest county this site has permit coverage
-// for and one of the documented expansive-soil regions, so the county-gated rules fire and the card
-// shows the era-plus-county behaviour rather than the generic national fallback.
-const EXAMPLE = { year: 1972, county: 'Harris County', state: 'TX' } as const;
-
-const EXAMPLE_RESULT = getInspectionPriorities(EXAMPLE.year, EXAMPLE.county, EXAMPLE.state);
-
-/** Three is what fits without the card competing with the search box for attention. */
-const EXAMPLE_ITEMS = (EXAMPLE_RESULT?.priorities ?? []).slice(0, 3);
-
-/**
- * The engine's costToCheck strings are written for the report, where there is room for a sentence
- * ("Usually included in a general inspection -- just ask them to record the brand"). The card needs
- * the number. This pulls the first dollar figure or range out, and falls back to nothing rather
- * than to a truncated sentence, because a card is not the place to half-quote the engine.
- */
-function costChip(value: string | null | undefined): string | null {
-  if (!value) return null;
-  if (/^free/i.test(value.trim())) return 'Free';
-  const range = value.match(/\$[\d,]+(?:\s*[–-]\s*\$?[\d,]+)?/);
-  return range ? range[0].replace(/\s*[–-]\s*/, ' – ') : null;
-}
-
-const EvidenceCard: React.FC = () => {
-  if (!EXAMPLE_RESULT || EXAMPLE_ITEMS.length === 0) return null;
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm overflow-hidden">
-      <div className="flex items-baseline justify-between gap-3 px-5 py-3.5 border-b border-white/10 bg-white/[0.03]">
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-blue-300">
-          Example report
-        </span>
-        <span className="font-mono text-[10px] text-slate-400">
-          {EXAMPLE_RESULT.priorities.length} items
-        </span>
-      </div>
-
-      <p className="px-5 pt-4 pb-3 text-sm text-slate-300">
-        A <span className="text-white font-semibold">{EXAMPLE.year}</span> home in{' '}
-        <span className="text-white font-semibold">{EXAMPLE_RESULT.regionLabel}</span>
-      </p>
-
-      <ul className="px-5 pb-5 space-y-3">
-        {EXAMPLE_ITEMS.map((item) => {
-          const chip = costChip(item.costToCheck);
-          return (
-            <li key={item.id} className="flex items-start gap-3">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" aria-hidden="true" />
-              <span className="flex-1">
-                <span className="block text-sm text-white leading-snug">{item.title}</span>
-                {chip && (
-                  <span className="mt-0.5 block font-mono text-[11px] text-slate-400">{chip} to check</span>
-                )}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-
-      <p className="px-5 py-3 border-t border-white/10 text-[11px] text-slate-400">
-        Plus the questions to ask the seller, and what to verify before you sign.
-      </p>
-    </div>
-  );
-};
 
 interface HeroPanelProps {
   /**
@@ -136,13 +72,7 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
     />
 
     <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-14 pb-16 sm:pt-20 sm:pb-20">
-      <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-
-        <div className="lg:col-span-7">
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-blue-300">
-            Public records · All 50 states
-          </p>
-
+      <div className="max-w-2xl">
           {/* Mixed faces on purpose. Crimson Pro is already loaded for the site and goes unused
               above the fold; setting the one emotional word in it -- the word the brand is named
               for -- gives the headline a voice that Inter alone does not have, without turning
@@ -165,7 +95,7 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
                  mounted one. aria-hidden and inert: it must never take focus or be read out. */
               <div aria-hidden="true" className="rounded-2xl bg-slate-900/70 border border-white/10 p-2 flex gap-2">
                 <div className="flex-1 rounded-xl bg-slate-950/60 border border-white/10 px-4 py-3 text-slate-500 text-sm">
-                  Enter your full street address…
+                  e.g. 301 Congress Ave, Austin, TX
                 </div>
                 <div className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white">Search</div>
               </div>
@@ -173,8 +103,7 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
           </div>
 
           <p className="mt-4 text-sm text-slate-400">
-            <span className="text-slate-300">Your first report is free.</span> No credit card required.{' '}
-            <span className="text-slate-500">e.g. 301 Congress Ave, Austin, TX</span>
+            <span className="text-slate-300">Your first report is free.</span> No credit card required.
           </p>
 
           <a
@@ -183,13 +112,7 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
           >
             See a sample report
             <span aria-hidden="true">&rarr;</span>
-          </a>
-        </div>
-
-        <div className="lg:col-span-5">
-          <EvidenceCard />
-        </div>
-
+        </a>
       </div>
     </div>
   </section>
