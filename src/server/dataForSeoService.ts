@@ -188,3 +188,103 @@ export async function fetchBacklinkSummary(target: string): Promise<BacklinkSumm
     referringMainDomains: Number(r.referring_main_domains ?? 0),
   };
 }
+
+// --- Keywords -----------------------------------------------------------------------------------
+//
+// WHY THIS SECTION EXISTS, and it is not a nice-to-have. Every other kind of number in this project
+// is sourced: costs come from src/engine/inspectionPriorities.ts, positions come from fetchSerpResults
+// above, backlink counts come from the endpoints above. KEYWORDS WERE THE ONE EXCEPTION -- they were
+// being reasoned out rather than measured, which is a polite way of saying invented. A search volume
+// that came from judgement rather than an API is indistinguishable, once written into a script, from
+// one that was measured, and it is wrong far more often than it feels wrong.
+//
+// These two functions close that gap, and scripts/assert-keyword-provenance.ts makes closing it
+// mandatory rather than optional.
+
+export interface KeywordVolume {
+  keyword: string;
+  /** Google Ads average monthly searches. NULL IS MEANINGFUL and is preserved rather than coerced
+   *  to 0: it means Google returned no volume for this term, which is a different fact from "this
+   *  term is searched zero times" and must not be silently rounded into it. */
+  searchVolume: number | null;
+  /** Google Ads competition for ADVERTISERS. This is not ranking difficulty and the two are
+   *  routinely confused -- see docs/organic-difficulty notes. Kept because it is returned, not
+   *  because it answers "can we rank". */
+  competition: string | null;
+  competitionIndex: number | null;
+  cpc: number | null;
+  lowTopOfPageBid: number | null;
+  highTopOfPageBid: number | null;
+}
+
+/**
+ * Real Google Ads search volumes for a batch of keywords.
+ *
+ * Batched deliberately: this endpoint prices per REQUEST, not per keyword, so one call carrying
+ * 200 terms costs the same as one carrying 2. Ask for everything at once.
+ */
+export async function fetchKeywordVolumes(
+  keywords: string[],
+  opts: { locationName?: string; languageCode?: string } = {}
+): Promise<KeywordVolume[]> {
+  if (!keywords.length) return [];
+  if (keywords.length > 1000) throw new Error('DataForSEO accepts at most 1000 keywords per request.');
+  const result = await post<Record<string, unknown>>('/keywords_data/google_ads/search_volume/live', [{
+    keywords,
+    location_name: opts.locationName ?? 'United States',
+    language_code: opts.languageCode ?? 'en',
+  }]);
+  return result.map((r) => ({
+    keyword: String(r.keyword ?? ''),
+    searchVolume: r.search_volume == null ? null : Number(r.search_volume),
+    competition: r.competition == null ? null : String(r.competition),
+    competitionIndex: r.competition_index == null ? null : Number(r.competition_index),
+    cpc: r.cpc == null ? null : Number(r.cpc),
+    lowTopOfPageBid: r.low_top_of_page_bid == null ? null : Number(r.low_top_of_page_bid),
+    highTopOfPageBid: r.high_top_of_page_bid == null ? null : Number(r.high_top_of_page_bid),
+  }));
+}
+
+export interface KeywordSuggestion extends KeywordVolume {
+  /** DataForSEO Labs' own 0-100 ranking-difficulty estimate. Unlike `competition` above, this one
+   *  IS about organic difficulty -- but it is a modelled score, not a measurement, and it says
+   *  nothing about whether THIS domain can rank. Treat it as a sort key, never as a verdict. */
+  keywordDifficulty: number | null;
+}
+
+/**
+ * Long-tail expansions of a seed phrase, each with its own volume.
+ *
+ * This is the function that replaces guessing. Asked "what should we target for polybutylene",
+ * the honest answer is whatever this returns -- not whatever sounds plausible.
+ */
+export async function fetchKeywordSuggestions(
+  seed: string,
+  opts: { limit?: number; locationName?: string; languageCode?: string } = {}
+): Promise<KeywordSuggestion[]> {
+  const result = await post<{ items?: Array<Record<string, unknown>> }>(
+    '/dataforseo_labs/google/keyword_suggestions/live',
+    [{
+      keyword: seed,
+      location_name: opts.locationName ?? 'United States',
+      language_code: opts.languageCode ?? 'en',
+      limit: opts.limit ?? 100,
+      include_serp_info: false,
+    }]
+  );
+  return (result[0]?.items ?? []).map((i) => {
+    const info = (i.keyword_info ?? {}) as Record<string, unknown>;
+    const props = (i.keyword_properties ?? {}) as Record<string, unknown>;
+    return {
+      keyword: String(i.keyword ?? ''),
+      searchVolume: info.search_volume == null ? null : Number(info.search_volume),
+      competition: info.competition == null ? null : String(info.competition),
+      competitionIndex: info.competition_index == null ? null : Number(info.competition_index),
+      cpc: info.cpc == null ? null : Number(info.cpc),
+      lowTopOfPageBid: info.low_top_of_page_bid == null ? null : Number(info.low_top_of_page_bid),
+      highTopOfPageBid: info.high_top_of_page_bid == null ? null : Number(info.high_top_of_page_bid),
+      keywordDifficulty:
+        props.keyword_difficulty == null ? null : Number(props.keyword_difficulty),
+    };
+  }).filter((k) => k.keyword);
+}
