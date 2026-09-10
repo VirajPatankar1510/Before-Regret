@@ -84,6 +84,13 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
         searchBox={<AddressSearchBox onSelectProperty={onSelectProperty} />}
       />
 
+      {/* 2. FREE WALKTHROUGH TOOL. Directly under the hero, and moved here from below the pricing
+          block on purpose: the earlier position protected the commercial ask from a competing
+          free one, which is a real concern and the wrong trade for a tool nobody had found. A
+          visitor who is not ready to type an address now meets something they can use in one tap
+          rather than five sections of scrolling. Same position in scripts/prerender-homepage.tsx. */}
+      <WalkthroughToolSection onNavigate={onNavigate} />
+
       {/* 2. WHAT A LISTING WON'T TELL YOU */}
       <ListingOmissionsSection />
 
@@ -94,11 +101,6 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
           content library. A landing page makes its offer early; the library below is there for
           whoever isn't ready yet, not a detour before the price. */}
       <PricingSection onScrollToSearch={handleScrollToSearch} />
-
-      {/* 4b. FREE WALKTHROUGH TOOL -- the no-signup entry point to /walkthrough/. After pricing,
-          not before it: a free call to action immediately above a price competes with the one
-          commercial ask the homepage makes. Same position in scripts/prerender-homepage.tsx. */}
-      <WalkthroughToolSection onNavigate={onNavigate} />
 
       {/* 5. GUIDE LIBRARY -- a diverse sample of real guide cards, explicitly framed as free
           content separate from the report (see GuideCardsSection.tsx for why the framing matters

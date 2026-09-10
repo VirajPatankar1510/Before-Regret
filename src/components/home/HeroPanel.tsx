@@ -56,15 +56,15 @@ interface HeroPanelProps {
 }
 
 export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef }) => (
-  <section className="relative isolate overflow-hidden bg-[#0A0F1A] text-white">
+  <section className="relative isolate overflow-hidden bg-white text-slate-900 border-b border-slate-200">
     {/* Hairline grid. A records product, not a gradient. Pure CSS, no request, and it fades out
         before it reaches the copy so it never competes with the headline. */}
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 opacity-[0.35]"
+      className="pointer-events-none absolute inset-0 opacity-60"
       style={{
         backgroundImage:
-          'linear-gradient(to right, rgba(148,163,184,0.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.07) 1px, transparent 1px)',
+          'linear-gradient(to right, rgba(100,116,139,0.09) 1px, transparent 1px), linear-gradient(to bottom, rgba(100,116,139,0.09) 1px, transparent 1px)',
         backgroundSize: '64px 64px',
         maskImage: 'radial-gradient(ellipse 90% 70% at 50% 0%, #000 40%, transparent 100%)',
         WebkitMaskImage: 'radial-gradient(ellipse 90% 70% at 50% 0%, #000 40%, transparent 100%)',
@@ -74,7 +74,7 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
     <div
       aria-hidden="true"
       className="pointer-events-none absolute inset-x-0 top-0 h-[420px]"
-      style={{ background: 'radial-gradient(ellipse 60% 100% at 50% 0%, rgba(37,99,235,0.16), transparent 70%)' }}
+      style={{ background: 'radial-gradient(ellipse 60% 100% at 50% 0%, rgba(37,99,235,0.06), transparent 70%)' }}
     />
 
     <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-14 pb-16 sm:pt-20 sm:pb-20">
@@ -83,13 +83,13 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
               above the fold; setting the one emotional word in it -- the word the brand is named
               for -- gives the headline a voice that Inter alone does not have, without turning
               into a decorative serif hero. */}
-          <h1 className="mt-4 font-sans text-[2.1rem] leading-[1.08] sm:text-5xl lg:text-[3.4rem] font-extrabold tracking-[-0.02em] text-white">
+          <h1 className="mt-4 font-sans text-[2.1rem] leading-[1.08] sm:text-5xl lg:text-[3.4rem] font-extrabold tracking-[-0.02em] text-slate-900">
             Could you{' '}
-            <span className="font-serif font-semibold italic tracking-normal text-blue-300">regret</span>{' '}
+            <span className="font-serif font-semibold italic tracking-normal text-blue-600">regret</span>{' '}
             moving here?
           </h1>
 
-          <p className="mt-5 mx-auto max-w-xl text-base sm:text-lg text-slate-300 leading-relaxed">
+          <p className="mt-5 mx-auto max-w-xl text-base sm:text-lg text-slate-600 leading-relaxed">
             Search any US residential address and get the checks that actually matter for a home of
             its age and county, the exact questions to ask the seller, and a clear list of what to
             verify before you sign.
@@ -99,8 +99,8 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
             {searchBox ?? (
               /* Non-interactive replica, present only so the static hero is the same height as the
                  mounted one. aria-hidden and inert: it must never take focus or be read out. */
-              <div aria-hidden="true" className="rounded-2xl bg-slate-900/70 border border-white/10 p-2 flex gap-2">
-                <div className="flex-1 rounded-xl bg-slate-950/60 border border-white/10 px-4 py-3 text-slate-500 text-sm">
+              <div aria-hidden="true" className="rounded-2xl bg-white border border-slate-200 shadow-lg p-3 flex gap-2">
+                <div className="flex-1 rounded-xl bg-slate-50 border border-slate-300 px-4 py-3 text-slate-400 text-sm">
                   e.g. 301 Congress Ave, Austin, TX
                 </div>
                 <div className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white">Search</div>
@@ -108,12 +108,12 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
             )}
           </div>
 
-          <p className="mt-4 text-sm text-slate-300">Your first report is free.</p>
-          <p className="mt-1 text-sm text-slate-400">No credit card required.</p>
+          <p className="mt-4 text-sm font-semibold text-slate-900">Your first report is free.</p>
+          <p className="mt-1 text-sm text-slate-500">No credit card required.</p>
 
           <a
             href="/sample-report/"
-            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-300 hover:text-blue-200 underline underline-offset-4 decoration-blue-300/40"
+            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800 underline underline-offset-4 decoration-blue-300"
           >
             See a sample report
             <span aria-hidden="true">&rarr;</span>

@@ -55,6 +55,9 @@ function HomeStaticBody({ data }: { data: HomeData }) {
           substitutes a non-interactive replica of identical height. */}
       <HeroPanel />
 
+      {/* Mirrors src/components/Hero.tsx's position exactly -- see that file's comment. */}
+      <WalkthroughToolSection />
+
       <ListingOmissionsSection />
       <HowItWorksSection />
       <PricingSection onScrollToSearch={noop} />
@@ -62,8 +65,6 @@ function HomeStaticBody({ data }: { data: HomeData }) {
       {/* Same order and position as src/components/Hero.tsx. No onNavigate is passed, so
           ContentLink renders plain crawlable <a href> markup here -- the point of prerendering
           this section: its guide card links get picked up from the domain's strongest page. */}
-      {/* Mirrors src/components/Hero.tsx's position exactly -- see that file's comment. */}
-      <WalkthroughToolSection />
       <GuideCardsSection
         clusters={clusters}
         research={research}

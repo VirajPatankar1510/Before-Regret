@@ -79,21 +79,21 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
         </div>
 
         {/* Card 2: Additional Reports $14.99 */}
-        <div className="bg-slate-900 text-white border border-slate-800 rounded-3xl p-8 shadow-lg relative flex flex-col justify-between space-y-6">
+        <div className="bg-white text-slate-900 border-2 border-blue-600 rounded-3xl p-8 shadow-lg relative flex flex-col justify-between space-y-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
                 <span className="text-xs font-bold text-blue-400 uppercase tracking-wider block">Additional Reports</span>
-                <h3 className="font-sans text-xl font-bold text-white">Pay-As-You-Go</h3>
+                <h3 className="font-sans text-xl font-bold text-slate-900">Pay-As-You-Go</h3>
               </div>
-              <div className="text-3xl font-black text-white">$14.99 <span className="text-xs font-normal text-slate-400">/ report</span></div>
+              <div className="text-3xl font-black text-slate-900">$14.99 <span className="text-xs font-normal text-slate-500">/ report</span></div>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed">
               For subsequent address lookups. Pay only when you research a new home.
             </p>
 
-            <ul className="space-y-2.5 text-xs text-slate-300">
+            <ul className="space-y-2.5 text-xs text-slate-600">
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-400 shrink-0" />
                 <span>Everything in the free report</span>

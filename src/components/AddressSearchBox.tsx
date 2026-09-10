@@ -674,10 +674,10 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     <div className="w-full max-w-4xl mx-auto space-y-4 text-left">
 
       {/* Search Bar */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 backdrop-blur-md shadow-lg relative z-30">
+      <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-4 shadow-lg relative z-30">
         <form onSubmit={handleMapSearch} className="flex items-center gap-2 relative">
-          <div className="relative flex-1 flex items-center bg-slate-950 border border-slate-700 focus-within:border-blue-500 rounded-xl px-3 py-2 transition-all">
-            <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
+          <div className="relative flex-1 flex items-center bg-slate-50 border border-slate-300 focus-within:border-blue-500 rounded-xl px-3 py-2 transition-all">
+            <Search className="w-4 h-4 text-slate-500 mr-2 shrink-0" />
             {/* aria-label, not a visible <label>: this is the homepage's primary conversion control
                 and its design is a placeholder-only search field, but a placeholder is not an
                 accessible name (it vanishes on input and is skipped by some screen readers), so the
@@ -701,7 +701,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               // separate line under the box; in the field it does both jobs and removes a line of
               // chrome from the hero.
               placeholder="e.g. 301 Congress Ave, Austin, TX"
-              className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-transparent focus:outline-none"
+              className="w-full text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 bg-transparent focus:outline-none"
             />
           </div>
           <button
@@ -714,15 +714,15 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
           {/* Search Auto-suggestions Dropdown */}
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden max-h-64 overflow-y-auto divide-y divide-slate-800">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 overflow-hidden max-h-64 overflow-y-auto divide-y divide-slate-100">
               {suggestions.map((item, idx) => (
                 <button
                   key={item.place_id || idx}
                   type="button"
                   onClick={() => selectLocation(parseFloat(item.lat), parseFloat(item.lon), item.display_name, item)}
-                  className="w-full text-left px-3.5 py-2.5 hover:bg-blue-600/20 transition-colors flex items-start gap-2.5 text-xs text-slate-200 cursor-pointer"
+                  className="w-full text-left px-3.5 py-2.5 hover:bg-blue-50 transition-colors flex items-start gap-2.5 text-xs text-slate-700 cursor-pointer"
                 >
-                  <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                   <span className="truncate leading-relaxed font-medium">{suggestionLine(item)}</span>
                 </button>
               ))}
@@ -759,7 +759,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       {gateState && gateState.status === 'blocked' && !gateState.isDismissed && (
         <div className="bg-amber-950/90 border border-amber-500/40 rounded-2xl p-3.5 text-xs font-medium text-amber-200 shadow-2xl backdrop-blur-md animate-fade-in flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
             <div className="font-bold text-amber-300 text-sm">
               {gateState.message}
             </div>
@@ -767,7 +767,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           <button
             type="button"
             onClick={() => setGateState(prev => prev ? { ...prev, isDismissed: true } : null)}
-            className="text-amber-400 hover:text-white font-bold cursor-pointer shrink-0 text-xs"
+            className="text-amber-600 hover:text-amber-700 font-bold cursor-pointer shrink-0 text-xs"
           >
             Dismiss
           </button>
@@ -776,12 +776,12 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
       {/* Property Confirmation Panel */}
       {(selectedPinResult || isReverseGeocoding) && (
-        <div className="bg-slate-900/95 border border-slate-700/90 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-white shadow-2xl backdrop-blur-md space-y-3">
+        <div className="bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-slate-900 shadow-xl space-y-3">
             <div className="min-w-0 space-y-0.5 sm:space-y-1">
-              <div className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="text-[10px] font-mono font-bold text-blue-600 uppercase tracking-wider flex items-center gap-1.5">
                 {isReverseGeocoding ? (
                   <span className="flex items-center gap-1.5 text-blue-300">
-                    <Loader2 className="w-3 h-3 animate-spin text-blue-400 shrink-0" />
+                    <Loader2 className="w-3 h-3 animate-spin text-blue-600 shrink-0" />
                     <span>Looking Up Address...</span>
                   </span>
                 ) : (
@@ -794,10 +794,10 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
               {selectedPinResult && (
                 <>
-                  <div className="text-xs sm:text-base font-bold text-white truncate leading-tight sm:leading-normal">
+                  <div className="text-xs sm:text-base font-bold text-slate-900 truncate leading-tight sm:leading-normal">
                     {selectedPinResult.displayName}
                   </div>
-                  <div className="text-[11px] sm:text-xs text-slate-400 truncate">
+                  <div className="text-[11px] sm:text-xs text-slate-500 truncate">
                     {[selectedPinResult.city, selectedPinResult.state, selectedPinResult.county].filter(Boolean).join(', ')}
                   </div>
                 </>
@@ -807,7 +807,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             {selectedPinResult && commercialHint && !commercialHintDismissed && (
               <div className="bg-amber-950/60 border border-amber-600/40 rounded-xl p-2.5 text-[11px] text-amber-200 flex items-start justify-between gap-2">
                 <span>This address looks like it might be a business, not a home. Double-check before continuing.</span>
-                <button type="button" onClick={() => setCommercialHintDismissed(true)} className="text-amber-400 hover:text-white font-bold shrink-0 cursor-pointer">Dismiss</button>
+                <button type="button" onClick={() => setCommercialHintDismissed(true)} className="text-amber-600 hover:text-amber-700 font-bold shrink-0 cursor-pointer">Dismiss</button>
               </div>
             )}
 
@@ -816,11 +816,11 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 <button
                   type="button"
                   onClick={() => setShowPropertyTypeModal(true)}
-                  className="w-full flex items-center justify-between gap-2 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 transition-all cursor-pointer"
+                  className="w-full flex items-center justify-between gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 transition-all cursor-pointer"
                 >
-                  <span className="text-xs text-slate-300">
-                    <span className="text-slate-400">Property type: </span>
-                    <span className="font-bold text-white">
+                  <span className="text-xs text-slate-600">
+                    <span className="text-slate-500">Property type: </span>
+                    <span className="font-bold text-slate-900">
                       {declaredPropertyType === 'single_family'
                         ? 'Single-Family Home'
                         : declaredPropertyType === 'condo_or_multifamily'
@@ -828,13 +828,13 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                           : 'Other'}
                     </span>
                   </span>
-                  <span className="text-[11px] font-bold text-blue-400 shrink-0">Edit</span>
+                  <span className="text-[11px] font-bold text-blue-600 shrink-0">Edit</span>
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={() => setShowPropertyTypeModal(true)}
-                  className="w-full flex items-center justify-between gap-2 bg-slate-800/60 hover:bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer"
+                  className="w-full flex items-center justify-between gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg px-3 py-2.5 text-xs font-bold text-slate-700 hover:text-slate-900 transition-all cursor-pointer"
                 >
                   <span>What type of property is this?</span>
                   <ArrowRight className="w-3.5 h-3.5 shrink-0" />
@@ -901,21 +901,21 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           onClick={() => setShowPropertyTypeModal(false)}
         >
           <div
-            className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4"
+            className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 space-y-1">
-                <div className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider">
+                <div className="text-[10px] font-mono font-bold text-blue-600 uppercase tracking-wider">
                   Step 2 of 2
                 </div>
-                <h3 className="text-base sm:text-lg font-bold text-white">What type of property is this?</h3>
-                <p className="text-xs text-slate-400 truncate">{selectedPinResult.displayName}</p>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900">What type of property is this?</h3>
+                <p className="text-xs text-slate-500 truncate">{selectedPinResult.displayName}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowPropertyTypeModal(false)}
-                className="text-slate-400 hover:text-white shrink-0 cursor-pointer"
+                className="text-slate-500 hover:text-slate-900 shrink-0 cursor-pointer"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -925,7 +925,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             {commercialHint && !commercialHintDismissed && (
               <div className="bg-amber-950/60 border border-amber-600/40 rounded-xl p-2.5 text-[11px] text-amber-200 flex items-start justify-between gap-2">
                 <span>This address looks like it might be a business, not a home. Double-check before continuing.</span>
-                <button type="button" onClick={() => setCommercialHintDismissed(true)} className="text-amber-400 hover:text-white font-bold shrink-0 cursor-pointer">Dismiss</button>
+                <button type="button" onClick={() => setCommercialHintDismissed(true)} className="text-amber-600 hover:text-amber-700 font-bold shrink-0 cursor-pointer">Dismiss</button>
               </div>
             )}
 
@@ -957,13 +957,13 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 onChange={(e) => setUnitNumber(e.target.value)}
                 placeholder="Unit number (e.g. #705)"
                 autoFocus
-                className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
+                className="w-full text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 bg-slate-50 border border-slate-300 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
               />
             )}
 
-            <div className="space-y-1.5 pt-1 border-t border-slate-800">
-              <label htmlFor="year-built-input" className="block text-[11px] font-bold text-slate-300 pt-2">
-                Year built <span className="font-normal text-slate-400">— usually on the listing</span>
+            <div className="space-y-1.5 pt-1 border-t border-slate-200">
+              <label htmlFor="year-built-input" className="block text-[11px] font-bold text-slate-600 pt-2">
+                Year built <span className="font-normal text-slate-500">— usually on the listing</span>
               </label>
               <input
                 id="year-built-input"
@@ -972,9 +972,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 value={yearBuilt}
                 onChange={(e) => setYearBuilt(e.target.value.replace(/\D/g, '').slice(0, 4))}
                 placeholder="e.g. 1968"
-                className="w-full text-xs sm:text-sm text-white placeholder:text-slate-500 bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
+                className="w-full text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 bg-slate-50 border border-slate-300 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
               />
-              <p className="text-[10px] text-slate-400 leading-relaxed">
+              <p className="text-[10px] text-slate-500 leading-relaxed">
                 Lets us show which checks matter most for homes of that era. We can't verify it — it's used exactly as you enter it. Don't know it exactly? A close estimate is fine.
               </p>
             </div>
