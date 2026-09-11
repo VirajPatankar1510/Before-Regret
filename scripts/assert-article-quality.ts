@@ -85,6 +85,27 @@ const WINDOW = 100;
  *  data actually answers, and a guard that only says no is worth less than one that says where. */
 const CLUSTER_WANTS = 3;
 
+/** RULE 7: AI-cliché vocabulary. HARD FAIL, and deliberately NOT a flat banned-word list.
+ *
+ *  Measuring a naive list against the published library first was what saved it. "Seamless" appears
+ *  twice and both are literal -- synthetic stucco "engineered to look seamless", and a "new, seamless
+ *  HDPE pipe" pulled through a bore. "Leverage" appears ten times, every one the NOUN, contractual
+ *  leverage under an inspection contingency, which is a term of art in this subject. Banning either
+ *  outright would have produced exactly the false positives that get a guard commented out.
+ *
+ *  So the metaphorical uses are banned and the literal ones are left alone: "regulatory landscape"
+ *  but not landscaping, "leveraging" the verb but not negotiating leverage, "seamless experience"
+ *  but not seamless cladding. Words with no legitimate use in a home-inspection guide are banned
+ *  outright. Currently 11 "crucial" and 3 "when it comes to" exist and will need editing out. */
+const CLICHES: Array<[string, RegExp]> = [
+  ['no legitimate use here', /\b(delve[sd]?|delving|tapestry|demystif\w+|myriad|plethora|realm of|pivotal|in conclusion|moreover|furthermore|a testament to|navigating the complexities|it'?s worth noting|embark on)\b/i],
+  ['metaphorical landscape', /\b(regulatory|current|evolving|changing|competitive|digital|modern)\s+landscape\b|\blandscape\s+of\s+(?!architecture|design)/i],
+  ['leverage as a verb', /\b(to|can|will|should|must|help[s]?\s+you)\s+leverage\b|\bleveraging\b/i],
+  ['seamless as a metaphor', /\bseamless(ly)?\s+(experience|integration|process|transition|journey)\b/i],
+  ['filler', /\b(it is important to note|when it comes to|needless to say|at the end of the day|in today'?s world)\b/i],
+  ['empty intensifier', /\bcrucial\b/i],
+];
+
 type Row = { slug: string; title: string; quick_answer: string | null; body_markdown: string };
 
 function carrierClaims(r: Row): string[] {
@@ -126,8 +147,15 @@ function carrierClaims(r: Row): string[] {
 const COST = /\$[\d,]{3,}/;
 const NUMBERED_STANDARD = /\b(NFPA|NEC|IRC|IBC|ASTM|ASCE|ANSI|UL)\s*[\d][\d.\-]*/i;
 
-/** RULE 3: quick_answer is the TL;DR above the fold. All 57 guides have one; keep it that way. */
+/** RULE 3: quick_answer is the TL;DR above the fold. All 57 guides have one; keep it that way.
+ *
+ *  A CEILING AS WELL AS A FLOOR, added 2026-09-11 after measuring the device split. 63.3% of this
+ *  site's Google clicks come from mobile, on 37.3% of the impressions -- mobile converts three times
+ *  better than desktop, so the phone is the real reader. quick_answer is the block that reader sees
+ *  before scrolling, and at 643 characters it is a wall of text on a 375px screen. Current spread:
+ *  min 281, median 426, max 643, with 21 guides over 450. Ceiling is grandfathered. */
 const QA_MIN = 120;
+const QA_MAX = 450;
 
 /** RULE 4: no engagement-bait. HARD FAIL -- zero guides violate it today, so strictness is free.
  *
@@ -186,6 +214,8 @@ async function main() {
     const thin = rows.filter(failsRule2).map((r) => r.slug).sort();
     const echo = rows.filter(failsRule5).map((r) => r.slug).sort();
     const noTopic = rows.filter((r) => !guideTopic(r.slug, r.title)).map((r) => r.slug).sort();
+    const longQa = rows.filter((r) => (r.quick_answer ?? '').trim().length > QA_MAX).map((r) => r.slug).sort();
+    const cliche = rows.filter((r) => CLICHES.some(([, re]) => re.test(r.body_markdown))).map((r) => r.slug).sort();
     fs.mkdirSync(path.dirname(GRANDFATHER), { recursive: true });
     fs.writeFileSync(GRANDFATHER, `${JSON.stringify({
       note: 'Guides that predate these rules. BOTH lists may only SHRINK. Removing a slug from ' +
@@ -195,6 +225,8 @@ async function main() {
       slugs: thin,
       definitionEchoTitles: echo,
       noTopicMatch: noTopic,
+      longTldr: longQa,
+      cliches: cliche,
     }, null, 2)}\n`);
     console.log(`  seeded ${thin.length} thin + ${echo.length} definition-echo + ${noTopic.length} no-topic -> data/quality-grandfathered.json`);
     return;
@@ -209,6 +241,8 @@ async function main() {
   const grandfathered = new Set(gf);
   const grandfatheredTitles = new Set(gfTitles);
   const grandfatheredCluster = new Set<string>(gfFile.noTopicMatch ?? []);
+  const grandfatheredTldr = new Set<string>(gfFile.longTldr ?? []);
+  const grandfatheredCliche = new Set<string>(gfFile.cliches ?? []);
 
   const hard: string[] = [];
   const warn: string[] = [];
@@ -219,6 +253,21 @@ async function main() {
     if (!r.quick_answer || !r.quick_answer.trim()) hard.push(`[tldr] ${r.slug}: no quick_answer`);
     else if (r.quick_answer.trim().length < QA_MIN) {
       hard.push(`[tldr] ${r.slug}: quick_answer ${r.quick_answer.trim().length} chars, under ${QA_MIN}`);
+    } else if (r.quick_answer.trim().length > QA_MAX) {
+      const msg = `[tldr] ${r.slug}: quick_answer ${r.quick_answer.trim().length} chars, over ${QA_MAX} — a wall of text on a phone`;
+      if (grandfatheredTldr.has(r.slug)) warn.push(`${msg} (grandfathered)`);
+      else hard.push(msg);
+    }
+
+    // Rule 7: AI-cliché vocabulary. Grandfathered per SLUG rather than per phrase: these are
+    // cheap word-level edits, so the list should empty fast, and a per-phrase list would grow
+    // stale the moment anyone rewrote a sentence.
+    for (const [label, re] of CLICHES) {
+      const m = r.body_markdown.match(re);
+      if (!m) continue;
+      const msg = `[cliche] ${r.slug}: "${m[0].trim()}" (${label})`;
+      if (grandfatheredCliche.has(r.slug)) warn.push(`${msg} (grandfathered)`);
+      else hard.push(msg);
     }
 
     if (failsRule2(r)) {

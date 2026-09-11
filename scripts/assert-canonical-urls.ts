@@ -70,11 +70,61 @@ function main() {
     }
   }
 
+  // -------------------------------------------------------------------------------------------
+  // STRUCTURED DATA, checked here rather than in the pre-publish gate.
+  //
+  // The obvious place looked like the content gate, "assert the markdown contains JSON-LD". It does
+  // not and never will: the markdown body holds prose, and every schema block is composed at
+  // prerender time from database columns. Asserting it on the source would test the wrong artifact
+  // and pass while the rendered page shipped bare. This runs over dist/, which is what Google and
+  // every LLM retrieval engine actually fetch.
+  //
+  // Article + FAQPage + BreadcrumbList are required on a guide because all three already ship on
+  // all of them -- so this is a regression gate, not a migration. A guide whose faq_json emptied
+  // would silently lose its FAQPage and nothing else would notice.
+  const REQUIRED_GUIDE_SCHEMA = ['Article', 'FAQPage', 'BreadcrumbList'];
+  const guideDirs = fs.existsSync(path.join(DIST, 'guides'))
+    ? fs.readdirSync(path.join(DIST, 'guides'), { withFileTypes: true }).filter((d) => d.isDirectory())
+    : [];
+  let schemaChecked = 0;
+  for (const d of guideDirs) {
+    const f = path.join(DIST, 'guides', d.name, 'index.html');
+    if (!fs.existsSync(f)) continue;
+    const html = fs.readFileSync(f, 'utf8');
+    schemaChecked++;
+    const blocks = [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+    if (!blocks.length) { bad.push(`guides/${d.name}  [schema]  no JSON-LD at all`); continue; }
+    // Parse rather than regex the type names: a block that does not parse is invisible to every
+    // consumer, and looks identical to a valid one under a substring match.
+    const types = new Set<string>();
+    for (const b of blocks) {
+      try {
+        const walk = (v: unknown): void => {
+          if (Array.isArray(v)) v.forEach(walk);
+          else if (v && typeof v === 'object') {
+            const t = (v as Record<string, unknown>)['@type'];
+            if (typeof t === 'string') types.add(t);
+            Object.values(v as Record<string, unknown>).forEach(walk);
+          }
+        };
+        walk(JSON.parse(b[1]));
+      } catch (e) {
+        bad.push(`guides/${d.name}  [schema]  JSON-LD does not parse: ${(e as Error).message.slice(0, 60)}`);
+      }
+    }
+    for (const need of REQUIRED_GUIDE_SCHEMA) {
+      if (!types.has(need)) bad.push(`guides/${d.name}  [schema]  missing ${need}`);
+    }
+  }
+
   console.log(`\n  canonical URLs`);
   console.log(`    scanned ${scanned} shipped file(s) in dist/`);
+  console.log(`    schema checked on ${schemaChecked} guide page(s): ${REQUIRED_GUIDE_SCHEMA.join(' + ')}`);
 
   if (bad.length) {
-    console.error(`\n  FAILED -- ${bad.length} guide URL(s) emitted WITHOUT a trailing slash:`);
+    const slashCount = bad.filter((b) => !b.includes('[schema]')).length;
+    const schemaCount = bad.length - slashCount;
+    console.error(`\n  FAILED -- ${slashCount} bare URL(s), ${schemaCount} schema problem(s):`);
     for (const b of bad.slice(0, 25)) console.error(`    - ${b}`);
     if (bad.length > 25) console.error(`    ... and ${bad.length - 25} more`);
     console.error(
