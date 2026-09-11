@@ -1,0 +1,4620 @@
+{
+  "source": "gsc",
+  "endpoint": "openseo mcp get_search_console_performance (measured impressions, not market volume)",
+  "captured_at": "2026-09-11T08:24:52.371Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "site_url": "https://www.beforeregret.com/",
+  "date_range": "2026-06-08..2026-09-08",
+  "keywords": [
+    {
+      "keyword": "eifs stucco evaluations",
+      "search_volume": 197,
+      "clicks": 2,
+      "impressions": 197,
+      "position": 44.8,
+      "ctr": 1.02
+    },
+    {
+      "keyword": "100 amp house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 30,
+      "ctr": 0
+    },
+    {
+      "keyword": "100 amp service",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6,
+      "ctr": 0
+    },
+    {
+      "keyword": "300-dob-9400",
+      "search_volume": 10,
+      "clicks": 0,
+      "impressions": 10,
+      "position": 68.1,
+      "ctr": 0
+    },
+    {
+      "keyword": "89141",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6,
+      "ctr": 0
+    },
+    {
+      "keyword": "alameda radon testing",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 33,
+      "ctr": 0
+    },
+    {
+      "keyword": "aluminum wiring insurance",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 26,
+      "ctr": 0
+    },
+    {
+      "keyword": "are building permits public",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 81,
+      "ctr": 0
+    },
+    {
+      "keyword": "are building permits public record",
+      "search_volume": 6,
+      "clicks": 0,
+      "impressions": 6,
+      "position": 23,
+      "ctr": 0
+    },
+    {
+      "keyword": "are building permits public records",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 88.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "are permit applications public record",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "are permits public record",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 53,
+      "ctr": 0
+    },
+    {
+      "keyword": "are sump pumps covered by home warranty",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 56,
+      "ctr": 0
+    },
+    {
+      "keyword": "ball and tube wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 70,
+      "ctr": 0
+    },
+    {
+      "keyword": "bituminized fiber pipe",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 18.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "bituminous fiber pipe",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 57,
+      "ctr": 0
+    },
+    {
+      "keyword": "bituminous fiber sewer pipe",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 62,
+      "ctr": 0
+    },
+    {
+      "keyword": "breaker double tap",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 61.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "building history by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permit and inspection records chicago",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 29,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permit history by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 62,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permit look up",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 67,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permit lookup",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 38,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permit los angeles",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 38,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permit miami",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 70,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permit records",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 27,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permit search",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 38,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permit search by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 72,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permit violations",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 54,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permits by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 54,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permits by zip code",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1,
+      "ctr": 0
+    },
+    {
+      "keyword": "building permits records",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 58,
+      "ctr": 0
+    },
+    {
+      "keyword": "building reports and testimonies philadelphia pa",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 26.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "building violation lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6,
+      "ctr": 0
+    },
+    {
+      "keyword": "building violations lookup",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 9.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "bulb and tube wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 82,
+      "ctr": 0
+    },
+    {
+      "keyword": "buy county",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 86,
+      "ctr": 0
+    },
+    {
+      "keyword": "can orangeburg pipe be saved",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 50.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "can seller walk away after inspection",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 59,
+      "ctr": 0
+    },
+    {
+      "keyword": "can you double tap a breaker",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 53,
+      "ctr": 0
+    },
+    {
+      "keyword": "can you look up permits on a house",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 85.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "cast iron drain pipes problems",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 69,
+      "ctr": 0
+    },
+    {
+      "keyword": "cast iron pipe damage",
+      "search_volume": 63,
+      "clicks": 0,
+      "impressions": 63,
+      "position": 84.6,
+      "ctr": 0
+    },
+    {
+      "keyword": "cast iron sewer pipe corrosion",
+      "search_volume": 41,
+      "clicks": 0,
+      "impressions": 41,
+      "position": 70.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "cast iron sewer pipe corrosion anderson",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 74,
+      "ctr": 0
+    },
+    {
+      "keyword": "check for permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 70,
+      "ctr": 0
+    },
+    {
+      "keyword": "check permits for a property",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6,
+      "ctr": 0
+    },
+    {
+      "keyword": "check permits on a house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 5,
+      "ctr": 0
+    },
+    {
+      "keyword": "chicago permit lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of las vegas citizen access portal",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 9,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of las vegas permit search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 36,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of miami code enforcement search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 38,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of miami dade inspection",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 67,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of miami dade inspections",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 51,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of miami permit search",
+      "search_volume": 9,
+      "clicks": 0,
+      "impressions": 9,
+      "position": 68.6,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of miami permit status",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 57,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of miami violation search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 37,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of philadelphia permit search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 61,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of san bernardino permit portal",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of san bernardino permit search",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 13,
+      "ctr": 0
+    },
+    {
+      "keyword": "city of south miami permit search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 50,
+      "ctr": 0
+    },
+    {
+      "keyword": "city permits search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 9,
+      "ctr": 0
+    },
+    {
+      "keyword": "clark county citizen access portal",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 17.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "clark county permit lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 20,
+      "ctr": 0
+    },
+    {
+      "keyword": "clark county permits search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 22,
+      "ctr": 0
+    },
+    {
+      "keyword": "common title insurance claims",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 37.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "construction permits los angeles",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 59,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county building code violations search by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 20,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county building department",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 19.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county building permit",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 22.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county building permit search",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 24,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county building permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 20,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county department of building and zoning",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 16,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county il permit search",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 10.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county permit",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 33.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county permit application",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 23,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county permit lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 13,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county permit portal",
+      "search_volume": 6,
+      "clicks": 0,
+      "impressions": 6,
+      "position": 9.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county permit search",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 15,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county permit status",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 17.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county permits",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 23.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county permits search",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 18.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county permitting",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 27.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "cook county zoning",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 43,
+      "ctr": 0
+    },
+    {
+      "keyword": "county estates",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 68.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "county of los angeles permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 24,
+      "ctr": 0
+    },
+    {
+      "keyword": "county plots",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 68,
+      "ctr": 0
+    },
+    {
+      "keyword": "county property searches",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 56,
+      "ctr": 0
+    },
+    {
+      "keyword": "cpsc water heater explosion temperature pressure relief valve",
+      "search_volume": 14,
+      "clicks": 0,
+      "impressions": 14,
+      "position": 47.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "dade county inspection routes",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 30,
+      "ctr": 0
+    },
+    {
+      "keyword": "dade county inspections",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 36,
+      "ctr": 0
+    },
+    {
+      "keyword": "dade county permit search",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 36,
+      "ctr": 0
+    },
+    {
+      "keyword": "dade county permit status",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 33,
+      "ctr": 0
+    },
+    {
+      "keyword": "dade county plans tracking",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 21.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "define reverse polarity",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 64.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "do home inspections check for asbestos",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 46.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "do home inspectors test for asbestos",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 44,
+      "ctr": 0
+    },
+    {
+      "keyword": "do inspectors check for asbestos",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 51,
+      "ctr": 0
+    },
+    {
+      "keyword": "do va loans require a termite inspection",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 8.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "do va loans require termite inspection",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 7.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "does a home inspection check for asbestos",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 59,
+      "ctr": 0
+    },
+    {
+      "keyword": "does cast iron pipe rust",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 61,
+      "ctr": 0
+    },
+    {
+      "keyword": "does home inspection check for asbestos",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 45.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "does home inspection test for asbestos",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 50,
+      "ctr": 0
+    },
+    {
+      "keyword": "does homeowners insurance cover sump pump failure",
+      "search_volume": 9,
+      "clicks": 0,
+      "impressions": 9,
+      "position": 44.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "does knob and tube have a ground",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 63,
+      "ctr": 0
+    },
+    {
+      "keyword": "does knob and tube wiring have to be replaced",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 67,
+      "ctr": 0
+    },
+    {
+      "keyword": "does va require a termite inspection",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8,
+      "ctr": 0
+    },
+    {
+      "keyword": "does va require termite inspection",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 9.6,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tap breaker",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 67,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tap breakers",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 61,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tap circuit breaker",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 73,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tap electrical panel",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 57,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tap main breaker",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 53,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tap wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 66,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tapped",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 64.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tapped breaker",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 70,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tapped breakers",
+      "search_volume": 17,
+      "clicks": 0,
+      "impressions": 17,
+      "position": 66.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tapped circuit breaker",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 70,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tapping breakers",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 56,
+      "ctr": 0
+    },
+    {
+      "keyword": "double tapping electrical panel",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 62,
+      "ctr": 0
+    },
+    {
+      "keyword": "double taps electrical",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 54,
+      "ctr": 0
+    },
+    {
+      "keyword": "double taps on electrical panel",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 69,
+      "ctr": 0
+    },
+    {
+      "keyword": "double-tapped breaker",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 66,
+      "ctr": 0
+    },
+    {
+      "keyword": "efis stucco evaluations",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 38,
+      "ctr": 0
+    },
+    {
+      "keyword": "eifs inspection",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 63,
+      "ctr": 0
+    },
+    {
+      "keyword": "eifs moisture testing",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 71,
+      "ctr": 0
+    },
+    {
+      "keyword": "eifs stucco inspection",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 71,
+      "ctr": 0
+    },
+    {
+      "keyword": "eifs testing",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 53,
+      "ctr": 0
+    },
+    {
+      "keyword": "electrical double tap",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 72,
+      "ctr": 0
+    },
+    {
+      "keyword": "electrical knob",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 70.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "electrical open ground",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 41,
+      "ctr": 0
+    },
+    {
+      "keyword": "electrical open ground meaning",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 8,
+      "ctr": 0
+    },
+    {
+      "keyword": "electrical outlet reverse polarity",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 55,
+      "ctr": 0
+    },
+    {
+      "keyword": "electrical panel double tap",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 52,
+      "ctr": 0
+    },
+    {
+      "keyword": "electrical reverse polarity",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 38,
+      "ctr": 0
+    },
+    {
+      "keyword": "encino building permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 34,
+      "ctr": 0
+    },
+    {
+      "keyword": "energov miami dade county",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 9,
+      "ctr": 0
+    },
+    {
+      "keyword": "eps portal miami dade",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 31.4,
+      "ctr": 0
+    },
+    {
+      "keyword": "examples of title insurance claims",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 97,
+      "ctr": 0
+    },
+    {
+      "keyword": "ez portal san bernardino",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "failed termite inspection va loan",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 41,
+      "ctr": 0
+    },
+    {
+      "keyword": "federal pacific electric stab lok panels",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 39,
+      "ctr": 0
+    },
+    {
+      "keyword": "find building permits by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 12,
+      "ctr": 0
+    },
+    {
+      "keyword": "find permits for my house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 87,
+      "ctr": 0
+    },
+    {
+      "keyword": "flat roof home insurance",
+      "search_volume": 7,
+      "clicks": 0,
+      "impressions": 7,
+      "position": 19,
+      "ctr": 0
+    },
+    {
+      "keyword": "flat roof house insurance",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 8.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "flat roof insurance",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 26,
+      "ctr": 0
+    },
+    {
+      "keyword": "folio number miami",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 28,
+      "ctr": 0
+    },
+    {
+      "keyword": "foundation crack structural engineer",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 59,
+      "ctr": 0
+    },
+    {
+      "keyword": "fpe stab lok",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 61,
+      "ctr": 0
+    },
+    {
+      "keyword": "fpe stab lok panel",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 38.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "free building permit search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 9,
+      "ctr": 0
+    },
+    {
+      "keyword": "g open in extension box means",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 6.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "ground open",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 37,
+      "ctr": 0
+    },
+    {
+      "keyword": "home inspection asbestos",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 47,
+      "ctr": 0
+    },
+    {
+      "keyword": "home inspection termite damage",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 66.6,
+      "ctr": 0
+    },
+    {
+      "keyword": "home inspection veterans administration ca",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 33.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "home insurance for flat roofs",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 9,
+      "ctr": 0
+    },
+    {
+      "keyword": "home permit history",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 64,
+      "ctr": 0
+    },
+    {
+      "keyword": "homeowners insurance fuse box",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 7,
+      "ctr": 0
+    },
+    {
+      "keyword": "hot and neutral reverse",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 46,
+      "ctr": 0
+    },
+    {
+      "keyword": "hot and neutral reversed",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 40,
+      "ctr": 0
+    },
+    {
+      "keyword": "hot and neutral wires reversed",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 55,
+      "ctr": 0
+    },
+    {
+      "keyword": "hot neutral reverse",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 38.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "hot neutral reverse meaning",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 46,
+      "ctr": 0
+    },
+    {
+      "keyword": "house knob electrical",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 54,
+      "ctr": 0
+    },
+    {
+      "keyword": "house permit history",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 39.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "house permit lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 9,
+      "ctr": 0
+    },
+    {
+      "keyword": "how did knob and tube wiring work",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 56,
+      "ctr": 0
+    },
+    {
+      "keyword": "how do i find permits for my house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "how knob and tube wiring works",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 61,
+      "ctr": 0
+    },
+    {
+      "keyword": "how long after buying a house can you complain",
+      "search_volume": 6,
+      "clicks": 0,
+      "impressions": 6,
+      "position": 34,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to check building permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to check for mold behind drywall",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 59,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to check for open permits on a home in coral gables",
+      "search_volume": 14,
+      "clicks": 0,
+      "impressions": 14,
+      "position": 46.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to check for permits on a house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 84,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to check for reverse polarity",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 49.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to check if a house has planning permission",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 17,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to check if contractor pulled permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to check permit history on a property",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 4,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to check permits on a house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 91,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to check reverse polarity",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 49,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to detect mold behind walls",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 91.2,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to determine age of roof for insurance",
+      "search_volume": 9,
+      "clicks": 0,
+      "impressions": 9,
+      "position": 78.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to find an open ground in a circuit",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 34,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to find building permits online",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 36.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to find old building permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 97,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to find old permits on a house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 94,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to find open permits on a house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to find out if a building permit was obtained",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 71,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to find out if a house has code violations",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 70,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to find out if someone has a building permit",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 44.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to find permit history for a house",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 3,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to find permits for a property",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 86,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to find permits for my house",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 66,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to identify federal pacific electrical panel",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 87,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to identify stab-lok breakers",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 60,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to identify synthetic stucco",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 85,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to look up a building permit",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 65,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to look up a certificate of occupancy",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to look up building permits",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 21,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to look up building permits by address",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 32.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to look up building permits online",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 68,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to look up permits on a property",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 74,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to pull permits on a house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to pull permits on a property",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to search for permits on a house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 88,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to see permits pulled on a house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 77,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to see what permits have been pulled on a house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 29,
+      "ctr": 0
+    },
+    {
+      "keyword": "how to test for reverse polarity",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 48,
+      "ctr": 0
+    },
+    {
+      "keyword": "hvac system age buyer concern",
+      "search_volume": 8,
+      "clicks": 0,
+      "impressions": 8,
+      "position": 2.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "idis city of los angeles",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 6.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "idis ladbs",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 6,
+      "ctr": 0
+    },
+    {
+      "keyword": "idis los angeles",
+      "search_volume": 22,
+      "clicks": 0,
+      "impressions": 22,
+      "position": 8,
+      "ctr": 0
+    },
+    {
+      "keyword": "if a home inspector tests/inspects a receptacle, and it has reversed polarity, the inspector should _____",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "if termites found during inspection",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "in idaho",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "inspection route miami dade",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 46,
+      "ctr": 0
+    },
+    {
+      "keyword": "insurance for flat roofs",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7,
+      "ctr": 0
+    },
+    {
+      "keyword": "is 100 amps enough for a house",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 6.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "is a pest inspection required for va loans",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "is a termite inspection required for a va loan",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 10.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "is cast iron pipe magnetic",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1,
+      "ctr": 0
+    },
+    {
+      "keyword": "is double tapping a circuit breaker acceptable",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 52.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "is reverse polarity dangerous",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 44,
+      "ctr": 0
+    },
+    {
+      "keyword": "is sump pump failure covered by insurance",
+      "search_volume": 7,
+      "clicks": 0,
+      "impressions": 7,
+      "position": 61.4,
+      "ctr": 0
+    },
+    {
+      "keyword": "is termite inspection required for va loan",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "is this a good site?",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1,
+      "ctr": 0
+    },
+    {
+      "keyword": "is title insurance a waste of money",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 41.6,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob & tube wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 76,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 72,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and spool wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 87,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and tube",
+      "search_volume": 29,
+      "clicks": 0,
+      "impressions": 29,
+      "position": 72.2,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and tube electric",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 75.2,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and tube electrical",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 74,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and tube electrical wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 67,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and tube outlet",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 67,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and tube outlet box",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 15,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and tube wiring",
+      "search_volume": 21,
+      "clicks": 0,
+      "impressions": 21,
+      "position": 70.4,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and tube wiring explained",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 64,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and tube wiring history",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 60,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob and tubes",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 69,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob electrical wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 69,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob tube wiring diagram",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 5,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob tubing",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 75,
+      "ctr": 0
+    },
+    {
+      "keyword": "knob-and-tube wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 65,
+      "ctr": 0
+    },
+    {
+      "keyword": "knobs and tubes",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6,
+      "ctr": 0
+    },
+    {
+      "keyword": "know and tube",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 85,
+      "ctr": 0
+    },
+    {
+      "keyword": "l and i permit lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "l&i permit look up",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "l&i permit search",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 6.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "la building dept",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 33,
+      "ctr": 0
+    },
+    {
+      "keyword": "la county building permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 22,
+      "ctr": 0
+    },
+    {
+      "keyword": "la county construction permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 21,
+      "ctr": 0
+    },
+    {
+      "keyword": "la county permit search by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 17,
+      "ctr": 0
+    },
+    {
+      "keyword": "la county permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 25,
+      "ctr": 0
+    },
+    {
+      "keyword": "ladbs building records",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 43,
+      "ctr": 0
+    },
+    {
+      "keyword": "ladbs permit search",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 27,
+      "ctr": 0
+    },
+    {
+      "keyword": "ladbs permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 37,
+      "ctr": 0
+    },
+    {
+      "keyword": "las vegas building permit search",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 27,
+      "ctr": 0
+    },
+    {
+      "keyword": "las vegas nevada",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 5,
+      "ctr": 0
+    },
+    {
+      "keyword": "ln reverse",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 35,
+      "ctr": 0
+    },
+    {
+      "keyword": "local building department records",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 48,
+      "ctr": 0
+    },
+    {
+      "keyword": "look up building permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 59,
+      "ctr": 0
+    },
+    {
+      "keyword": "look up building violations",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 6,
+      "ctr": 0
+    },
+    {
+      "keyword": "look up certificate of occupancy",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "look up code violations",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "look up permit by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 64,
+      "ctr": 0
+    },
+    {
+      "keyword": "look up permits by address",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 7.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "los angeles building permits",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 31,
+      "ctr": 0
+    },
+    {
+      "keyword": "los angeles building records",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 31,
+      "ctr": 0
+    },
+    {
+      "keyword": "los angeles county building permit",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 19,
+      "ctr": 0
+    },
+    {
+      "keyword": "los angeles county certificate of occupancy",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 32,
+      "ctr": 0
+    },
+    {
+      "keyword": "los angeles county permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 24,
+      "ctr": 0
+    },
+    {
+      "keyword": "los angeles sign permits",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 8,
+      "ctr": 0
+    },
+    {
+      "keyword": "los angeles sign pertmits",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 8.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami building permit search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 57,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami code violation search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 37,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade building permit search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 61,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade building permit status",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 54,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade building portal",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 32,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade code enforcement case search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 35,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade code enforcement search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 30,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county building permit search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 61,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county code enforcement search",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 27,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county inspection",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 64,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county inspection routes and results",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 39,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county inspections",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 46,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county permit search",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 58.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county permit search by address",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 38,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county permit status",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 37,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county permit tracking",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 32,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county plans tracking",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 32.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county print permit card",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 55,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade county routes and results",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 35,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade inspection",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 72,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade inspection route",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 54.2,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade inspection routes and results",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 42,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade permit application status",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 48,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade permit card",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 39,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade permit search",
+      "search_volume": 6,
+      "clicks": 0,
+      "impressions": 6,
+      "position": 50.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade permit search by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 36,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade permit status",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 41,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade permit tracking",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 28.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade permits and inspections",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 64,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade plan tracking",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 21.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade plans tracking",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 34,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade process number",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 39,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade property permit search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 57,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade roofing inspection codes",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 54,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade route inspection",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 49,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade routes",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 41,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade routes and results",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 34,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade tracking",
+      "search_volume": 10,
+      "clicks": 0,
+      "impressions": 10,
+      "position": 20.9,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade unsafe structures search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 33,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami dade violation search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 29,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami permit search",
+      "search_volume": 7,
+      "clicks": 0,
+      "impressions": 7,
+      "position": 56.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami-dade code enforcement search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 29,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami-dade county permit portal",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 36,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami-dade county permit search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 41,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami-dade inspection routes and results",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 38,
+      "ctr": 0
+    },
+    {
+      "keyword": "miami-dade inspections",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 68,
+      "ctr": 0
+    },
+    {
+      "keyword": "miamidade inspection route",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 56,
+      "ctr": 0
+    },
+    {
+      "keyword": "miamidade plans tracking",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 34,
+      "ctr": 0
+    },
+    {
+      "keyword": "miamidade.gov permit search",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 41,
+      "ctr": 0
+    },
+    {
+      "keyword": "need inspect region code for ll address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 17,
+      "ctr": 0
+    },
+    {
+      "keyword": "north miami permit search",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 43,
+      "ctr": 0
+    },
+    {
+      "keyword": "ocf",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7,
+      "ctr": 0
+    },
+    {
+      "keyword": "open groud",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 56,
+      "ctr": 0
+    },
+    {
+      "keyword": "open ground",
+      "search_volume": 13,
+      "clicks": 0,
+      "impressions": 13,
+      "position": 27.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "open ground artinya",
+      "search_volume": 13,
+      "clicks": 0,
+      "impressions": 13,
+      "position": 4.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "open ground circuit",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 40,
+      "ctr": 0
+    },
+    {
+      "keyword": "open ground definition",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 57,
+      "ctr": 0
+    },
+    {
+      "keyword": "open ground electrical",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 33.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "open ground electrical meaning",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 5,
+      "ctr": 0
+    },
+    {
+      "keyword": "open ground meaning",
+      "search_volume": 15,
+      "clicks": 0,
+      "impressions": 15,
+      "position": 29.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "open ground que significa",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 7.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "open ground reverse polarity",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 22,
+      "ctr": 0
+    },
+    {
+      "keyword": "open ground solutions",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 30,
+      "ctr": 0
+    },
+    {
+      "keyword": "opened ground",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 51,
+      "ctr": 0
+    },
+    {
+      "keyword": "orange berg",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 82,
+      "ctr": 0
+    },
+    {
+      "keyword": "orange bird pipe",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 69.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "orange bird sewer pipe",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 67,
+      "ctr": 0
+    },
+    {
+      "keyword": "orange sewer pipe",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 61.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "orangeburg pipe",
+      "search_volume": 7,
+      "clicks": 0,
+      "impressions": 7,
+      "position": 70.1,
+      "ctr": 0
+    },
+    {
+      "keyword": "orangeburg pipe failure indianapolis",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 85,
+      "ctr": 0
+    },
+    {
+      "keyword": "orangeburg pipe failure muncie",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 80,
+      "ctr": 0
+    },
+    {
+      "keyword": "orangeburg pipe insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "orangeburg pipes",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 86,
+      "ctr": 0
+    },
+    {
+      "keyword": "orangeburg piping",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 61,
+      "ctr": 0
+    },
+    {
+      "keyword": "orangeburg plumbing",
+      "search_volume": 26,
+      "clicks": 0,
+      "impressions": 26,
+      "position": 82.1,
+      "ctr": 0
+    },
+    {
+      "keyword": "orangeburg sewer pipe problems",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 58,
+      "ctr": 0
+    },
+    {
+      "keyword": "outlet reverse polarity",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 32.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "paper pipes",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 47,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit check",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit drawings los angeles",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 38.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit history",
+      "search_volume": 9,
+      "clicks": 0,
+      "impressions": 9,
+      "position": 16.1,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit history by address",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 5,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit look up",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit look up by address",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 26.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit lookup by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit number lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit search by address",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 28.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit search hialeah",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 50.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "permit search miami",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 42,
+      "ctr": 0
+    },
+    {
+      "keyword": "permits los angeles",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 36,
+      "ctr": 0
+    },
+    {
+      "keyword": "permits pulled for my house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1,
+      "ctr": 0
+    },
+    {
+      "keyword": "permits pulled on my house",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 69.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "pest inspection for va loan",
+      "search_volume": 10,
+      "clicks": 0,
+      "impressions": 10,
+      "position": 42.1,
+      "ctr": 0
+    },
+    {
+      "keyword": "philadelphia building permit search",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 10.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "philadelphia code violation lookup",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 20.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "philadelphia code violation lookup free",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 17,
+      "ctr": 0
+    },
+    {
+      "keyword": "philadelphia l&i permit search",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 8.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "philadelphia l&i permit search by address",
+      "search_volume": 9,
+      "clicks": 0,
+      "impressions": 9,
+      "position": 10.1,
+      "ctr": 0
+    },
+    {
+      "keyword": "philadelphia permit lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "philadelphia permit search",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 12.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "philadelphia permits search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 17,
+      "ctr": 0
+    },
+    {
+      "keyword": "plan tracking miami dade",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 36,
+      "ctr": 0
+    },
+    {
+      "keyword": "plans tracking miami dade",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 36,
+      "ctr": 0
+    },
+    {
+      "keyword": "plumbing permit lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7,
+      "ctr": 0
+    },
+    {
+      "keyword": "polarity code",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 45,
+      "ctr": 0
+    },
+    {
+      "keyword": "polarity reversed",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 50,
+      "ctr": 0
+    },
+    {
+      "keyword": "polybutylene leak",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 19,
+      "ctr": 0
+    },
+    {
+      "keyword": "print permit card miami dade",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 45,
+      "ctr": 0
+    },
+    {
+      "keyword": "prior repair",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 2,
+      "ctr": 0
+    },
+    {
+      "keyword": "property activity report",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 26.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "property permit history",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 26,
+      "ctr": 0
+    },
+    {
+      "keyword": "property permit lookup",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 70.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "property permit records",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 64.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "property permit search",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7,
+      "ctr": 0
+    },
+    {
+      "keyword": "property violation lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8,
+      "ctr": 0
+    },
+    {
+      "keyword": "property violation search",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 7.6,
+      "ctr": 0
+    },
+    {
+      "keyword": "que es open ground en electricidad",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 7.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "que significa open ground en electricidad",
+      "search_volume": 8,
+      "clicks": 0,
+      "impressions": 8,
+      "position": 7.6,
+      "ctr": 0
+    },
+    {
+      "keyword": "qué significa conexión a tierra abierta",
+      "search_volume": 19,
+      "clicks": 0,
+      "impressions": 19,
+      "position": 5.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "real estate county",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 54.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "real estate municipality",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 77,
+      "ctr": 0
+    },
+    {
+      "keyword": "residential building permits los angeles county",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 45,
+      "ctr": 0
+    },
+    {
+      "keyword": "retaining wall inspection",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 73,
+      "ctr": 0
+    },
+    {
+      "keyword": "retaining wall inspector",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 71,
+      "ctr": 0
+    },
+    {
+      "keyword": "rev polarity",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 61.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "reverse polarity",
+      "search_volume": 26,
+      "clicks": 0,
+      "impressions": 26,
+      "position": 62.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "reverse polarity definition",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 51,
+      "ctr": 0
+    },
+    {
+      "keyword": "reverse polarity electrical",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 44,
+      "ctr": 0
+    },
+    {
+      "keyword": "reverse polarity meaning",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 46,
+      "ctr": 0
+    },
+    {
+      "keyword": "reverse polarity outlet",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 46,
+      "ctr": 0
+    },
+    {
+      "keyword": "reverse polarity receptacle",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 47.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "reverse polarity wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 43,
+      "ctr": 0
+    },
+    {
+      "keyword": "reverse receptacle",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 53,
+      "ctr": 0
+    },
+    {
+      "keyword": "reversed hot and neutral",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 42,
+      "ctr": 0
+    },
+    {
+      "keyword": "reversed polarity",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 66,
+      "ctr": 0
+    },
+    {
+      "keyword": "reversed polarity definition",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 48.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "reversed polarity meaning",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 41,
+      "ctr": 0
+    },
+    {
+      "keyword": "reversed polarity outlet",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 45.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "rock",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1,
+      "ctr": 0
+    },
+    {
+      "keyword": "rod and tube wiring",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 72.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "routes and results miami dade",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 45,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino as built documentation",
+      "search_volume": 7,
+      "clicks": 0,
+      "impressions": 7,
+      "position": 12.4,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino as built drawings",
+      "search_volume": 6,
+      "clicks": 0,
+      "impressions": 6,
+      "position": 12.2,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino as built plans",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 15.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino as builts",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 14.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino building permit",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 15.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino building permit search",
+      "search_volume": 11,
+      "clicks": 0,
+      "impressions": 11,
+      "position": 8.1,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino building permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 14,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino county building permit search",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 14.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino county building permits",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 16.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino county permits search by address",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino permit lookup",
+      "search_volume": 6,
+      "clicks": 0,
+      "impressions": 6,
+      "position": 9,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino permit portal",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino permit search",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 8,
+      "ctr": 0
+    },
+    {
+      "keyword": "san bernardino permitting",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 15.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "san diego county permits",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 36,
+      "ctr": 0
+    },
+    {
+      "keyword": "san diego permit lookup",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 19,
+      "ctr": 0
+    },
+    {
+      "keyword": "search for building permits by address",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 34,
+      "ctr": 0
+    },
+    {
+      "keyword": "search for permits by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 71,
+      "ctr": 0
+    },
+    {
+      "keyword": "search permit by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "search permits by address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 90,
+      "ctr": 0
+    },
+    {
+      "keyword": "see permits on property",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 5,
+      "ctr": 0
+    },
+    {
+      "keyword": "settlement crack",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 23.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "sewer pipe corrosion",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 91,
+      "ctr": 0
+    },
+    {
+      "keyword": "shape of roof for insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 55,
+      "ctr": 0
+    },
+    {
+      "keyword": "signs of mold behind drywall",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 99,
+      "ctr": 0
+    },
+    {
+      "keyword": "splicing romex",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 32,
+      "ctr": 0
+    },
+    {
+      "keyword": "stab loc",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 52,
+      "ctr": 0
+    },
+    {
+      "keyword": "stab lock",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 41,
+      "ctr": 0
+    },
+    {
+      "keyword": "stab lok",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 51.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "stab lok panel",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 26,
+      "ctr": 0
+    },
+    {
+      "keyword": "stab lok sub panel",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 32.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "stab-lok panels",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 86,
+      "ctr": 0
+    },
+    {
+      "keyword": "sump pump backup insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 63,
+      "ctr": 0
+    },
+    {
+      "keyword": "sump pump coverage",
+      "search_volume": 36,
+      "clicks": 0,
+      "impressions": 36,
+      "position": 72.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "sump pump failed basement flooded insurance",
+      "search_volume": 8,
+      "clicks": 0,
+      "impressions": 8,
+      "position": 67.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "sump pump failure coverage",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 73,
+      "ctr": 0
+    },
+    {
+      "keyword": "sump pump failure insurance",
+      "search_volume": 8,
+      "clicks": 0,
+      "impressions": 8,
+      "position": 16.1,
+      "ctr": 0
+    },
+    {
+      "keyword": "sump pump failure insurance coverage",
+      "search_volume": 40,
+      "clicks": 0,
+      "impressions": 40,
+      "position": 51.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "sump pump insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 61,
+      "ctr": 0
+    },
+    {
+      "keyword": "sump pump insurance rider",
+      "search_volume": 7,
+      "clicks": 0,
+      "impressions": 7,
+      "position": 70.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "sump pump overflow coverage",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 64,
+      "ctr": 0
+    },
+    {
+      "keyword": "sump pump overflow insurance coverage",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 53,
+      "ctr": 0
+    },
+    {
+      "keyword": "tar paper pipe",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 56,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite inspection for va",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 57,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite inspection for va loan",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 57,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite inspection for va refinance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 73,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite inspection laws for va loans",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 29,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite inspection report for closing",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 89,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite inspection required for va loan",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite inspection va",
+      "search_volume": 10,
+      "clicks": 0,
+      "impressions": 10,
+      "position": 61.9,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite inspections for va loans",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 12,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite inspections loan",
+      "search_volume": 16,
+      "clicks": 0,
+      "impressions": 16,
+      "position": 58.6,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite inspections va refinance",
+      "search_volume": 17,
+      "clicks": 0,
+      "impressions": 17,
+      "position": 65.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite report for refinancing vail",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 82,
+      "ctr": 0
+    },
+    {
+      "keyword": "termite report for va loan",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 11,
+      "ctr": 0
+    },
+    {
+      "keyword": "tpr pipe",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 38,
+      "ctr": 0
+    },
+    {
+      "keyword": "tpr plumbing",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "tpr valves",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 32.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "tube and knob wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 62,
+      "ctr": 0
+    },
+    {
+      "keyword": "tube and wire",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 42,
+      "ctr": 0
+    },
+    {
+      "keyword": "tube electrical wiring",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 73.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "tube wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 69,
+      "ctr": 0
+    },
+    {
+      "keyword": "tuberculation in pipes",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 58.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "unincorporated cook county permits online",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 10.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "usda loan pest inspection",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 87,
+      "ctr": 0
+    },
+    {
+      "keyword": "va loan pest inspection",
+      "search_volume": 11,
+      "clicks": 0,
+      "impressions": 11,
+      "position": 40.8,
+      "ctr": 0
+    },
+    {
+      "keyword": "va loan pest inspection requirements",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "va loan termite inspection",
+      "search_volume": 10,
+      "clicks": 0,
+      "impressions": 10,
+      "position": 34.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "va loan termite inspection requirements",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 8,
+      "ctr": 0
+    },
+    {
+      "keyword": "va loan termite inspection who pays",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 40.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "va loans termite inspections",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 57.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "va local requirements",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 38,
+      "ctr": 0
+    },
+    {
+      "keyword": "va pest inspection",
+      "search_volume": 20,
+      "clicks": 0,
+      "impressions": 20,
+      "position": 46.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "va pest inspection form",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 76.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "va pest inspection requirements",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 45.6,
+      "ctr": 0
+    },
+    {
+      "keyword": "va termite inspection",
+      "search_volume": 17,
+      "clicks": 0,
+      "impressions": 17,
+      "position": 22.2,
+      "ctr": 0
+    },
+    {
+      "keyword": "va termite inspection asheville",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 40,
+      "ctr": 0
+    },
+    {
+      "keyword": "va termite inspection cost",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 81,
+      "ctr": 0
+    },
+    {
+      "keyword": "va termite inspection delaware",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 86.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "va termite inspection florida",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 93,
+      "ctr": 0
+    },
+    {
+      "keyword": "va termite inspection form",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 56.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "va termite inspection form pdf",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 53,
+      "ctr": 0
+    },
+    {
+      "keyword": "va termite inspection map",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 33,
+      "ctr": 0
+    },
+    {
+      "keyword": "va termite inspection requirements",
+      "search_volume": 6,
+      "clicks": 0,
+      "impressions": 6,
+      "position": 26.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "water backup and sump pump overflow coverage",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 69,
+      "ctr": 0
+    },
+    {
+      "keyword": "water backup sump pump coverage",
+      "search_volume": 24,
+      "clicks": 0,
+      "impressions": 24,
+      "position": 61,
+      "ctr": 0
+    },
+    {
+      "keyword": "what about title insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3,
+      "ctr": 0
+    },
+    {
+      "keyword": "what are double taps on electrical panel",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 62,
+      "ctr": 0
+    },
+    {
+      "keyword": "what are settlement cracks",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 39,
+      "ctr": 0
+    },
+    {
+      "keyword": "what causes reverse polarity",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 44,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does an open ground mean",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 22,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does an open ground outlet mean",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 37.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does hot and neutral reversed mean",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 45,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does it mean when you have an open ground",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 28,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does knob and tube wire look like",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 41,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does open ground mean",
+      "search_volume": 18,
+      "clicks": 0,
+      "impressions": 18,
+      "position": 27.4,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does open ground mean in electrical",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 32,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does open ground mean on an outlet",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 34,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does open ground mean on an outlet tester",
+      "search_volume": 14,
+      "clicks": 0,
+      "impressions": 14,
+      "position": 27.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does open ground mean on outlet",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 33,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does open ground outlet mean",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 38,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does orangeburg pipe look like",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does reverse polarity mean",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 38.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does reverse polarity mean on an outlet",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 32,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does reversed polarity mean",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 29,
+      "ctr": 0
+    },
+    {
+      "keyword": "what does wrong polarity indicator mean",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 54,
+      "ctr": 0
+    },
+    {
+      "keyword": "what if the heating system is completely blocked by personal storage items, making it inaccessible?",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 8.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is a double tap breaker",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 65,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is a double tapped breaker",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 72,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is a open ground",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 31,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is a reverse polarity",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 64.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is a stab lok breaker",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 79,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is a stab lok electrical panel",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 87,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is a tpr valve",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 74.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is an open ground",
+      "search_volume": 10,
+      "clicks": 0,
+      "impressions": 10,
+      "position": 26.3,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is an open ground circuit",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 39,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is an open ground outlet",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 39,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is double tap wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 53,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is double tapped breaker",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 75,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is knob and tube",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 84.6,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is knob and tube electrical wiring",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 82,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is knob and tube wiring",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 86.4,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is knob and tube wiring in a home",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 74,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is knob and tube wiring in a house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 83,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is knob and tube wiring?",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 82,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is open ground",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is open ground electrical outlet",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 35,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is open ground mean",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is orangeburg pipe",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 66.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is orangeburg sewer pipe",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 68,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is reverse polarity",
+      "search_volume": 5,
+      "clicks": 0,
+      "impressions": 5,
+      "position": 55,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is reverse polarity in electricity",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 46,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is reversed polarity",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 59,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is stab lok circuit breakers",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 78,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is the process if active termites are found during a wdir inspection for a property sale",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 12,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is tpr valve on hot water heater",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 47,
+      "ctr": 0
+    },
+    {
+      "keyword": "what is tube wiring",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 83.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "what to do before a home inspection",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 59,
+      "ctr": 0
+    },
+    {
+      "keyword": "whats knob and tube wiring",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 91,
+      "ctr": 0
+    },
+    {
+      "keyword": "when did they stop using orangeburg pipe",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 51,
+      "ctr": 0
+    },
+    {
+      "keyword": "when to walk away after home inspection",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 44.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "when was orangeburg pipe used",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 75.5,
+      "ctr": 0
+    },
+    {
+      "keyword": "where can i see projects before permits are filed",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 77,
+      "ctr": 0
+    },
+    {
+      "keyword": "who is responsible for termite inspection seller or buyer",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 87,
+      "ctr": 0
+    },
+    {
+      "keyword": "who pays for termite inspection buyer or seller",
+      "search_volume": 7,
+      "clicks": 0,
+      "impressions": 7,
+      "position": 73.7,
+      "ctr": 0
+    },
+    {
+      "keyword": "why are cast iron pipes bad",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 36,
+      "ctr": 0
+    },
+    {
+      "keyword": "why are zinsco panels dangerous",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3,
+      "ctr": 0
+    },
+    {
+      "keyword": "will homeowners insurance cover aluminum wiring",
+      "search_volume": 21,
+      "clicks": 0,
+      "impressions": 21,
+      "position": 36.4,
+      "ctr": 0
+    },
+    {
+      "keyword": "wiring tube and knob",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 72,
+      "ctr": 0
+    },
+    {
+      "keyword": "workmanship check",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 70,
+      "ctr": 0
+    },
+    {
+      "keyword": "yes",
+      "search_volume": 8,
+      "clicks": 0,
+      "impressions": 8,
+      "position": 6.9,
+      "ctr": 0
+    },
+    {
+      "keyword": "yes please",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "yes, please explain both",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10,
+      "ctr": 0
+    },
+    {
+      "keyword": "zinsco breaker box",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3,
+      "ctr": 0
+    },
+    {
+      "keyword": "zinsco breaker replacement",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3,
+      "ctr": 0
+    },
+    {
+      "keyword": "zinsco electrical panel recall",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3,
+      "ctr": 0
+    },
+    {
+      "keyword": "zinsco panel",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 5.3,
+      "ctr": 0
+    }
+  ]
+}

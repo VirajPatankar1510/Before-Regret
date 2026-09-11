@@ -52,7 +52,41 @@ export interface TargetKeyword {
   rationale: string;
 }
 
-export const TARGET_KEYWORDS: TargetKeyword[] = [];
+export const TARGET_KEYWORDS: TargetKeyword[] = [
+  {
+    keyword: 'eifs stucco evaluations',
+    capture: '2026-09-08-gsc-queries',
+    slug: 'standard-home-inspection-check-eifs-stucco-moisture',
+    rationale:
+      'The ONLY query on the whole site that earned a Google click in three months: 2 clicks from ' +
+      '197 impressions at position 44.8. Earning clicks from page five means the intent match is ' +
+      'real and the ranking is the only thing missing.',
+  },
+  {
+    keyword: 'idis los angeles',
+    capture: '2026-09-08-gsc-queries',
+    slug: 'check-building-permits-los-angeles-county-ca',
+    rationale:
+      '22 impressions at position 8.0 and zero clicks. Page one, real demand, no click -- the ' +
+      'definition of a title and snippet problem rather than a ranking one.',
+  },
+  {
+    keyword: 'va termite inspection',
+    capture: '2026-09-08-gsc-queries',
+    slug: 'va-loan-require-termite-inspection',
+    rationale:
+      '17 impressions at position 22.2, the largest striking-distance query pointing at a guide ' +
+      'that already exists and now carries real WDI cost figures from the engine.',
+  },
+  {
+    keyword: 'does va require termite inspection',
+    capture: '2026-09-08-gsc-queries',
+    slug: 'va-loan-require-termite-inspection',
+    rationale:
+      'Same page, 5 impressions at position 9.6 -- already on page one, so the two together show ' +
+      'the question form ranks far better than the noun form and the page should lean that way.',
+  },
+];
 
 /** Sources that constitute measurement. Anything else is someone's opinion wearing a number. */
 export const VALID_SOURCES: ProvenanceSource[] = ['dataforseo', 'openseo', 'gsc', 'bing'];

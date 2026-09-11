@@ -87,12 +87,22 @@ function main() {
   // Live slugs, so a keyword cannot be aimed at a page that does not exist. Read from the sitemap
   // rather than the database: this runs at build time on Vercel, where the DB may be unreachable,
   // and a gate that cannot run is a gate that gets removed.
-  const sitemapPath = path.join(ROOT, 'public', 'sitemap.xml');
+  // public/sitemap.xml is an INDEX -- it lists the other sitemaps and contains no guide URLs at
+  // all. Reading it found zero slugs, which made the slug check below silently skip: a guard that
+  // cannot fail. Read the guides sitemap, and assert it actually yielded slugs, so the same
+  // vacuousness cannot return unnoticed.
+  const sitemapPath = path.join(ROOT, 'public', 'sitemaps', 'sitemap-guides.xml');
   const slugs = new Set<string>();
   if (fs.existsSync(sitemapPath)) {
     for (const m of fs.readFileSync(sitemapPath, 'utf8').matchAll(/\/guides\/([a-z0-9-]+)\//g)) {
       slugs.add(m[1]);
     }
+  }
+  if (TARGET_KEYWORDS.length && slugs.size === 0) {
+    problems.push(
+      `no guide slugs read from ${path.relative(ROOT, sitemapPath)} -- the slug check would be ` +
+      `vacuous, so it is failed instead of skipped`
+    );
   }
 
   const seen = new Set<string>();
