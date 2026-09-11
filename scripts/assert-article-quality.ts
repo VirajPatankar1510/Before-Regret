@@ -111,6 +111,42 @@ const NUMBERED_STANDARD = /\b(NFPA|NEC|IRC|IBC|ASTM|ASCE|ANSI|UL)\s*[\d][\d.\-]*
 /** RULE 3: quick_answer is the TL;DR above the fold. All 57 guides have one; keep it that way. */
 const QA_MIN = 120;
 
+/** RULE 4: no engagement-bait. HARD FAIL -- zero guides violate it today, so strictness is free.
+ *
+ *  §7 is built on a 2016 Google deck saying a POSITIVE reaction is the signal. Withholding the
+ *  answer to force a scroll produces the opposite reaction, and it is the obvious way to misread
+ *  "optimise for user signals" into padding for dwell time. The TL;DR must answer the question, not
+ *  advertise that an answer exists further down. */
+const TEASER = /\b(read on|keep reading|we'?ll (explain|show|cover|dive)|find out below|see below|more on (that|this) below|in this (guide|article|post),? we|let'?s (dive|explore|take a look)|stay tuned|you might be surprised|the answer may surprise)\b/i;
+
+/** RULE 5: a title may not be a bare definition echo. GRANDFATHERED.
+ *
+ *  NARROW ON PURPOSE. An earlier draft flagged any question-formula title and caught "How to
+ *  Legalize an Unpermitted Deck" -- which plainly promises an outcome. A guard with false positives
+ *  gets deleted, so this matches only "What Is X?" and "What Does X Mean?" with nothing after them:
+ *  titles that restate the query and promise nothing. "How to…" promises an outcome by
+ *  construction, and "Can You…?" promises a yes or no, which is also an outcome. */
+/*  THIRD attempt at this pattern, and the failures are worth recording because each was the same
+ *  mistake getting narrower. v1 flagged every question title, catching "How to Legalize an
+ *  Unpermitted Deck". v2 flagged every "What Is…?" ending in a question mark, catching "What Is
+ *  Orangeburg Pipe AND WHY DOES IT COLLAPSE?" -- a title with a perfectly good second clause. A
+ *  definition echo is a "What is X" title with NOTHING ELSE IN IT, so the test is now the absence
+ *  of a second clause, not the presence of an opening. */
+function isDefinitionEcho(title: string): boolean {
+  const t = title.trim();
+  if (!/^(what is|what are|what does)\b/i.test(t)) return false;
+  // A QUESTION MARK IS ALSO A CLAUSE SEPARATOR. v3 missed this and flagged "What Does 'Amateur
+  // Workmanship' Mean? Warning Signs" -- a title that had an outcome appended to it hours earlier.
+  const afterQ = t.includes('?') ? t.slice(t.indexOf('?') + 1).trim() : '';
+  if (afterQ.split(/\s+/).filter(Boolean).length >= 2) return false;
+  // Any of these introduces a second clause, which is where the outcome lives.
+  if (/[:–—]|\s-\s/.test(t)) return false;
+  if (/\b(and|or|but)\b/i.test(t)) return false;
+  // A second interrogative beyond the opening one ("…and why", "…, who").
+  if (/\b(why|who|how|when|which)\b/i.test(t.replace(/^what\s+(is|are|does)\b/i, ''))) return false;
+  return true;
+}
+
 async function main() {
   let rows: Row[] | null = null;
   for (let a = 1; a <= 4 && !rows; a++) {
@@ -126,25 +162,32 @@ async function main() {
   if (!rows) throw new Error('ABORT: database unreachable after 4 attempts');
 
   const failsRule2 = (r: Row) => !COST.test(r.body_markdown) && !NUMBERED_STANDARD.test(r.body_markdown);
+  const failsRule5 = (r: Row) => isDefinitionEcho(String(r.title));
 
   if (SEED) {
-    const list = rows.filter(failsRule2).map((r) => r.slug).sort();
+    const thin = rows.filter(failsRule2).map((r) => r.slug).sort();
+    const echo = rows.filter(failsRule5).map((r) => r.slug).sort();
     fs.mkdirSync(path.dirname(GRANDFATHER), { recursive: true });
     fs.writeFileSync(GRANDFATHER, `${JSON.stringify({
-      note: 'Guides that predate the reproducibility rule. This list may only SHRINK. ' +
-            'Removing a slug means the guide now carries a cost figure or a numbered standard.',
+      note: 'Guides that predate these rules. BOTH lists may only SHRINK. Removing a slug from ' +
+            '"slugs" means the guide now carries a cost figure or a numbered standard; removing ' +
+            'one from "definitionEchoTitles" means its title now promises an outcome.',
       seeded_at: new Date().toISOString().slice(0, 10),
-      slugs: list,
+      slugs: thin,
+      definitionEchoTitles: echo,
     }, null, 2)}\n`);
-    console.log(`  seeded ${list.length} grandfathered slug(s) -> data/quality-grandfathered.json`);
+    console.log(`  seeded ${thin.length} thin + ${echo.length} definition-echo title(s) -> data/quality-grandfathered.json`);
     return;
   }
 
   if (!fs.existsSync(GRANDFATHER)) {
     throw new Error(`ABORT: ${path.relative(ROOT, GRANDFATHER)} missing. Run with --seed once.`);
   }
-  const gf: string[] = JSON.parse(fs.readFileSync(GRANDFATHER, 'utf8')).slugs;
+  const gfFile = JSON.parse(fs.readFileSync(GRANDFATHER, 'utf8'));
+  const gf: string[] = gfFile.slugs ?? [];
+  const gfTitles: string[] = gfFile.definitionEchoTitles ?? [];
   const grandfathered = new Set(gf);
+  const grandfatheredTitles = new Set(gfTitles);
 
   const hard: string[] = [];
   const warn: string[] = [];
@@ -160,6 +203,16 @@ async function main() {
     if (failsRule2(r)) {
       if (grandfathered.has(r.slug)) warn.push(`[reproducible] ${r.slug} (grandfathered)`);
       else hard.push(`[reproducible] ${r.slug}: no cost figure and no numbered standard`);
+    }
+
+    // Engagement-bait: check the TL;DR and the article's opening, which is where a teaser lives.
+    const opening = `${r.quick_answer ?? ''}\n${String(r.body_markdown).slice(0, 700)}`;
+    const tease = opening.match(TEASER);
+    if (tease) hard.push(`[bait] ${r.slug}: "${tease[0]}" — answer the question, do not advertise it`);
+
+    if (failsRule5(r)) {
+      if (grandfatheredTitles.has(r.slug)) warn.push(`[title] ${r.slug} (grandfathered)`);
+      else hard.push(`[title] ${r.slug}: "${r.title}" is a bare definition echo, promises no outcome`);
     }
   }
 
