@@ -58,9 +58,10 @@ export const TARGET_KEYWORDS: TargetKeyword[] = [
     capture: '2026-09-08-gsc-queries',
     slug: 'standard-home-inspection-check-eifs-stucco-moisture',
     rationale:
-      'The ONLY query on the whole site that earned a Google click in three months: 2 clicks from ' +
-      '197 impressions at position 44.8. Earning clicks from page five means the intent match is ' +
-      'real and the ranking is the only thing missing.',
+      '2 clicks from 197 impressions at position 44.8 — earning clicks from page five means the ' +
+      'intent match is real and the ranking is the only thing missing. (An earlier version of this ' +
+      'note called it the only clicked query on the site. That was wrong: the query dimension omits ' +
+      'anonymised low-volume queries, and page-level data shows 50 clicks across 26 pages.)',
   },
   {
     keyword: 'idis los angeles',
