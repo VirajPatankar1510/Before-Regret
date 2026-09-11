@@ -54,5 +54,8 @@
     "not-inspected-due-storage-mean-inspection-report",
     "open-ground-mean-electrical-inspection",
     "typical-settlement-cracking-mean-inspection-report"
+  ],
+  "noTopicMatch": [
+    "us-housing-age-ranking-oldest-vs-newest-counties"
   ]
 }

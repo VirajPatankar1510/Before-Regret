@@ -29,6 +29,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import './lib/neon-curl.js';
 import { withDb } from '../src/server/db.js';
+import { guideTopic } from '../src/utils/relatedGuides.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const GRANDFATHER = path.join(ROOT, 'data', 'quality-grandfathered.json');
@@ -66,6 +67,23 @@ const INSURANCE_CONTEXT = /\b(insur\w*|carrier|policy|policies|underwrit\w*|prem
 const UNDERWRITING = /\b(insure[sd]?|insuring|cover(s|ed|age)?|underwrit\w*|declin\w*|den(y|ies|ied)|refus\w*|accept\w*|exclude[sd]?|cancel\w*|non-?renew\w*|require[sd]?|allow\w*|writes?)\b/i;
 /** Characters either side of the carrier name to consider "adjacent". */
 const WINDOW = 100;
+
+/** RULE 6: every guide must land in a topic cluster, and a cluster wants 3+ members. GRANDFATHERED.
+ *
+ *  This is §2 of the content standard, and it was the last rule with no enforcement at all. It
+ *  matters because Related Guides is the ONLY mechanism moving authority between pages on a domain
+ *  with almost no backlinks: a guide matching no topic receives no internal links and gives none,
+ *  so a crawler can reach it only from the sitemap.
+ *
+ *  Two tiers. Matching NO topic is a hard fail for new content -- it means the slug and title share
+ *  no vocabulary with any bucket in GUIDE_TOPIC_PATTERNS, which is usually a sign the guide is off
+ *  the site's subject entirely. Being the SOLE member of a topic is a warning rather than a failure:
+ *  somebody has to write the first one, and refusing to let a cluster start would freeze the library
+ *  in its current shape.
+ *
+ *  The run also prints thin clusters, because "which topic needs another guide" is the question this
+ *  data actually answers, and a guard that only says no is worth less than one that says where. */
+const CLUSTER_WANTS = 3;
 
 type Row = { slug: string; title: string; quick_answer: string | null; body_markdown: string };
 
@@ -167,6 +185,7 @@ async function main() {
   if (SEED) {
     const thin = rows.filter(failsRule2).map((r) => r.slug).sort();
     const echo = rows.filter(failsRule5).map((r) => r.slug).sort();
+    const noTopic = rows.filter((r) => !guideTopic(r.slug, r.title)).map((r) => r.slug).sort();
     fs.mkdirSync(path.dirname(GRANDFATHER), { recursive: true });
     fs.writeFileSync(GRANDFATHER, `${JSON.stringify({
       note: 'Guides that predate these rules. BOTH lists may only SHRINK. Removing a slug from ' +
@@ -175,8 +194,9 @@ async function main() {
       seeded_at: new Date().toISOString().slice(0, 10),
       slugs: thin,
       definitionEchoTitles: echo,
+      noTopicMatch: noTopic,
     }, null, 2)}\n`);
-    console.log(`  seeded ${thin.length} thin + ${echo.length} definition-echo title(s) -> data/quality-grandfathered.json`);
+    console.log(`  seeded ${thin.length} thin + ${echo.length} definition-echo + ${noTopic.length} no-topic -> data/quality-grandfathered.json`);
     return;
   }
 
@@ -188,6 +208,7 @@ async function main() {
   const gfTitles: string[] = gfFile.definitionEchoTitles ?? [];
   const grandfathered = new Set(gf);
   const grandfatheredTitles = new Set(gfTitles);
+  const grandfatheredCluster = new Set<string>(gfFile.noTopicMatch ?? []);
 
   const hard: string[] = [];
   const warn: string[] = [];
@@ -216,6 +237,22 @@ async function main() {
     }
   }
 
+  // --- Rule 6: clusters ---------------------------------------------------------------------
+  const topics = new Map<string, string[]>();
+  for (const r of rows) {
+    const t = guideTopic(r.slug, r.title);
+    const key = t ?? '(none)';
+    if (!topics.has(key)) topics.set(key, []);
+    topics.get(key)!.push(r.slug);
+  }
+  for (const slug of topics.get('(none)') ?? []) {
+    if (grandfatheredCluster.has(slug)) warn.push(`[cluster] ${slug} matches no topic (grandfathered)`);
+    else hard.push(`[cluster] ${slug}: matches no topic in GUIDE_TOPIC_PATTERNS — it will receive no Related Guides links`);
+  }
+  const singletons = [...topics].filter(([t, s]) => t !== '(none)' && s.length === 1);
+  const thin = [...topics].filter(([t, s]) => t !== '(none)' && s.length > 1 && s.length < CLUSTER_WANTS);
+  for (const [t, s] of singletons) warn.push(`[cluster] "${t}" has one member (${s[0]}) — a cluster wants ${CLUSTER_WANTS}+`);
+
   // A grandfathered slug that now passes should be removed from the list -- the ratchet only
   // tightens if someone is told when it can.
   const fixed = gf.filter((s) => { const r = rows!.find((x) => x.slug === s); return r && !failsRule2(r); });
@@ -229,6 +266,13 @@ async function main() {
     for (const s of fixed) console.log(`      ${s}`);
   }
   if (gone.length) console.log(`    ${gone.length} grandfathered slug(s) no longer published (safe to drop)`);
+
+  if (thin.length) {
+    console.log(`\n    clusters under ${CLUSTER_WANTS} members -- the next guide is worth most here:`);
+    for (const [t, s] of thin.sort((a, b) => a[1].length - b[1].length)) {
+      console.log(`      ${t} (${s.length})`);
+    }
+  }
 
   if (hard.length) {
     console.error(`\n  FAILED -- ${hard.length} violation(s):`);
