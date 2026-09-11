@@ -117,14 +117,48 @@ function main() {
     }
   }
 
+  // -------------------------------------------------------------------------------------------
+  // TITLE AND META BUDGETS ON EVERY INDEXABLE PAGE.
+  //
+  // The 60/155 budgets were enforced only in the publishing scripts, which means only on pages that
+  // come from the database. An OpenSEO audit found /research/ carrying a 394-character description
+  // hardcoded in a prerenderer, and /sample-report/ with a 69-character title in a hand-authored
+  // file under public/ that Vite copies verbatim. Two different origins, one gap: the budget lived
+  // in the publishing path rather than in the built output. dist/ is where every origin meets.
+  //
+  // NOINDEX PAGES ARE SKIPPED, and that is the point rather than a loophole. The same audit flagged
+  // seven /embed/ iframes for having no meta description; they carry noindex, and a search engine
+  // does not show a snippet for a page it will not index. Nine findings, two real.
+  for (const f of walk(DIST).filter((p) => p.endsWith('index.html'))) {
+    const html = fs.readFileSync(f, 'utf8');
+    if (/<meta[^>]+name="robots"[^>]*content="[^"]*noindex/i.test(html)) continue;
+    const rel = `/${path.relative(DIST, path.dirname(f))}/`.replace('/./', '/');
+    const decode = (v: string) => v.replace(/&mdash;/g, '\u2014').replace(/&amp;/g, '&')
+      .replace(/&#(\d+);/g, (_m, d) => String.fromCharCode(Number(d))).replace(/&quot;/g, '"');
+    const title = decode((html.match(/<title>([\s\S]*?)<\/title>/) ?? [, ''])[1]).trim();
+    const meta = decode((html.match(/<meta[^>]+name="description"[^>]+content="([^"]*)"/) ?? [, ''])[1]).trim();
+    if (!title) bad.push(`${rel}  [title]  missing`);
+    else if (title.length > 60) bad.push(`${rel}  [title]  ${title.length} chars, over 60`);
+    if (!meta) bad.push(`${rel}  [meta]  missing on an indexable page`);
+    else if (meta.length > 155) bad.push(`${rel}  [meta]  ${meta.length} chars, over 155`);
+  }
+
   console.log(`\n  canonical URLs`);
   console.log(`    scanned ${scanned} shipped file(s) in dist/`);
   console.log(`    schema checked on ${schemaChecked} guide page(s): ${REQUIRED_GUIDE_SCHEMA.join(' + ')}`);
 
   if (bad.length) {
-    const slashCount = bad.filter((b) => !b.includes('[schema]')).length;
-    const schemaCount = bad.length - slashCount;
-    console.error(`\n  FAILED -- ${slashCount} bare URL(s), ${schemaCount} schema problem(s):`);
+    // Count each class rather than assuming everything that is not schema is a bare URL. The
+    // previous version reported a 95-character title as "1 bare URL(s)", which sends the reader
+    // looking for the wrong defect.
+    const count = (tag: string) => bad.filter((b) => b.includes(`[${tag}]`)).length;
+    const parts = [
+      [count('absolute') + count('href') + count('markdown'), 'bare URL'],
+      [count('schema'), 'schema problem'],
+      [count('title') + count('meta'), 'title/meta overrun'],
+    ] as Array<[number, string]>;
+    const summary = parts.filter(([n]) => n > 0).map(([n, l]) => `${n} ${l}${n === 1 ? '' : 's'}`);
+    console.error(`\n  FAILED -- ${summary.join(', ')}:`);
     for (const b of bad.slice(0, 25)) console.error(`    - ${b}`);
     if (bad.length > 25) console.error(`    ... and ${bad.length - 25} more`);
     console.error(

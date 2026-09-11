@@ -2034,7 +2034,7 @@ ${ANALYTICS_BEACON}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Research &mdash; Before Regret</title>
-  <meta name="description" content="Seven original analyses of US public housing-risk data: insurance pricing against modelled risk, flood insurance take-up, flood claims paid outside the mapped zone, the condition and emergency planning status of high-hazard dams, storm frequency against what households actually pay to insure, and synchronised housing construction under hail. Every figure downloadable, every method published.">
+  <meta name="description" content="Seven original analyses of US housing-risk data: insurance pricing against modelled risk, flood claims outside mapped zones, and high-hazard dams.">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
   <link rel="canonical" href="${escapeHtmlAttr(INDEX_URL)}">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
