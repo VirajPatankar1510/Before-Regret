@@ -65,8 +65,19 @@ const CARRIERS = [
 const AMBIGUOUS = ['Nationwide', 'Travelers', 'Progressive', 'Hippo', 'Encompass', 'Foremost'];
 const INSURANCE_CONTEXT = /\b(insur\w*|carrier|policy|policies|underwrit\w*|premium|deductible)\b/i;
 const UNDERWRITING = /\b(insure[sd]?|insuring|cover(s|ed|age)?|underwrit\w*|declin\w*|den(y|ies|ied)|refus\w*|accept\w*|exclude[sd]?|cancel\w*|non-?renew\w*|require[sd]?|allow\w*|writes?)\b/i;
-/** Characters either side of the carrier name to consider "adjacent". */
-const WINDOW = 100;
+/** SENTENCE-LEVEL, not a character window. The first version looked +/-100 characters either side
+ *  of the carrier name and missed this, which is exactly the shape the rule exists to catch:
+ *
+ *    "Citizens Property Insurance Corporation, Florida's insurer of last resort, states that
+ *     dwellings 20 years old or newer with polybutylene piping may be eligible for coverage..."
+ *
+ *  "Citizens Property" sits at index 0 and "eligible for coverage" at index ~160, so an apposition
+ *  clause pushed the verb clean out of the window. A wider window is the wrong fix -- the real unit
+ *  is the sentence, because that is where a claim is made. Splitting on sentence boundaries also
+ *  stops a carrier in one sentence pairing with a verb in the next. */
+function sentencesOf(body: string): string[] {
+  return body.replace(/\n+/g, ' ').split(/(?<=[.!?])\s+/);
+}
 
 /** RULE 6: every guide must land in a topic cluster, and a cluster wants 3+ members. GRANDFATHERED.
  *
@@ -113,27 +124,31 @@ function carrierClaims(r: Row): string[] {
   const lo = body.toLowerCase();
   const hits: string[] = [];
 
-  for (const c of CARRIERS) {
-    let i = lo.indexOf(c);
-    while (i >= 0) {
-      const win = body.slice(Math.max(0, i - WINDOW), i + c.length + WINDOW);
-      if (UNDERWRITING.test(win)) {
-        hits.push(`"${c}" near an underwriting verb: ...${win.replace(/\s+/g, ' ').slice(0, 130)}...`);
-        break;
+  // A SOURCED CLAIM IS NOT AN INVENTED ONE. The rule exists to stop us asserting what a named
+  // insurer does from no evidence. A sentence that attributes the statement AND links to the source
+  // is the opposite of that -- it is exactly what §4 asks for. Verified against the real case:
+  // Citizens Property Insurance publishes its polybutylene eligibility rule, and the guide reported
+  // it correctly but without the link. So a carrier sentence carrying an external citation passes;
+  // one without a link still fails.
+  const CITED = /\]\(https?:\/\/[^)]+\)/;
+  const seen = new Set<string>();
+  for (const sent of sentencesOf(body)) {
+    if (CITED.test(sent)) continue;
+    const sl = sent.toLowerCase();
+    for (const c of CARRIERS) {
+      if (!sl.includes(c) || seen.has(c)) continue;
+      if (UNDERWRITING.test(sent)) {
+        seen.add(c);
+        hits.push(`"${c}" + underwriting verb in one sentence: ${sent.replace(/\s+/g, ' ').slice(0, 150)}`);
       }
-      i = lo.indexOf(c, i + 1);
     }
-  }
-
-  // Ambiguous names need the capitalised form AND insurance context AND an underwriting verb.
-  // All three, because any two of them still match ordinary prose about costs or nationwide rules.
-  for (const c of AMBIGUOUS) {
-    const re = new RegExp(`\\b${c}\\b`, 'g');
-    for (const m of body.matchAll(re)) {
-      const win = body.slice(Math.max(0, m.index! - WINDOW), m.index! + c.length + WINDOW);
-      if (INSURANCE_CONTEXT.test(win) && UNDERWRITING.test(win)) {
-        hits.push(`"${c}" (carrier reading) near an underwriting verb: ...${win.replace(/\s+/g, ' ').slice(0, 130)}...`);
-        break;
+    // Ambiguous names need the capitalised form AND insurance context AND an underwriting verb, all
+    // three, because any two still match ordinary prose about costs or nationwide rules.
+    for (const c of AMBIGUOUS) {
+      if (!new RegExp(`\\b${c}\\b`).test(sent) || seen.has(c)) continue;
+      if (INSURANCE_CONTEXT.test(sent) && UNDERWRITING.test(sent)) {
+        seen.add(c);
+        hits.push(`"${c}" (carrier reading) + underwriting verb: ${sent.replace(/\s+/g, ' ').slice(0, 150)}`);
       }
     }
   }
