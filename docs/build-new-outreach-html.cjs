@@ -25,7 +25,7 @@ const EMAILS = [
     body: [
       'Dear WESA news desk,', '',
       'I have finished a county-level analysis that puts Allegheny County in an unusual position, and the local number is the story rather than the national one.', '',
-      'Across the 100 largest US counties by housing stock, using NOAA Storm Events for 2015-2024 and Census ACS table B25141 for what mortgaged households report actually paying:', '',
+      'Across the 100 most populous US counties, using NOAA Storm Events for 2015-2024 and Census ACS table B25141 for what mortgaged households report actually paying:', '',
       '1,108 severe weather events recorded in Allegheny County over the decade, third highest of the 100. The median county recorded 285.',
       '58.8% of the county’s 206,078 mortgaged households report paying under $1,000 a year to insure the home, seventh highest share.',
       '2.9% report paying over $3,000, sixth lowest share of the hundred.', '',
@@ -44,7 +44,7 @@ const EMAILS = [
     body: [
       'Dear PublicSource,', '',
       'Something for a data or accountability desk, with the caveat attached.', '',
-      'I have analysed the 100 largest US counties on three public federal sources: NOAA Storm Events 2015-2024, Census ACS table B25141, and the EPA radon map. Allegheny County comes out third for severe weather frequency, with 1,108 recorded events against a 100-county median of 285, while 58.8% of its 206,078 mortgaged households report paying under $1,000 a year to insure the home, and only 2.9% report paying over $3,000.', '',
+      'I have analysed the 100 most populous US counties on three public federal sources: NOAA Storm Events 2015-2024, Census ACS table B25141, and the EPA radon map. Allegheny County comes out third for severe weather frequency, with 1,108 recorded events against a 100-county median of 285, while 58.8% of its 206,078 mortgaged households report paying under $1,000 a year to insure the home, and only 2.9% report paying over $3,000.', '',
       'The housing context matters for your readers specifically: 77.2% of the county’s stock is pre-1980 and 36.7% is pre-1950, on an EPA Zone 1 radon designation, the highest of three.', '',
       'What I cannot tell you is why the price sits where it does. The ACS reports bands, not premiums, so this is descriptive. Rate regulation, loss history, construction cost and market structure all plausibly contribute and this data separates none of them. I would rather say that up front than have it surface in an edit.', '',
       'The full county table is published as CSV and the figures as JSON, free to reuse with attribution:',
@@ -59,7 +59,7 @@ const EMAILS = [
     body: [
       'Dear news desk,', '',
       'A finding about Collin and Denton counties that I do not think has been reported, from Census ACS year-built estimates and NOAA Storm Events.', '',
-      'Of the 100 largest US counties by housing stock, only three have both at least 45% of their homes built inside a single twenty-year window and at least 100 recorded hailstorms in 2015-2024. Two of the three share a border, and they are Collin and Denton. The third is Wake County, North Carolina.', '',
+      'Of the 100 most populous US counties, only three have both at least 45% of their homes built inside a single twenty-year window and at least 100 recorded hailstorms in 2015-2024. Two of the three share a border, and they are Collin and Denton. The third is Wake County, North Carolina.', '',
       '50.9% of Collin County’s 421,938 homes were built in the 2000s or 2010s.',
       '50.7% the same for Denton County’s 364,120 homes.',
       '1,240 hailstorms recorded across Tarrant, Denton, Collin and Dallas counties over the decade.', '',
@@ -77,7 +77,7 @@ const EMAILS = [
     body: [
       'Dear Fort Worth Report,', '',
       'A North Texas finding with a Tarrant County angle, from public federal data.', '',
-      'Across Tarrant, Denton, Collin and Dallas counties, NOAA recorded 1,240 hailstorms between 2015 and 2024. What makes the region unusual nationally is what that weather is landing on. Of the 100 largest US counties by housing stock, only three combine at least 45% of homes built in one twenty-year window with at least 100 recorded hailstorms, and two of them, Collin and Denton, are your neighbours.', '',
+      'Across Tarrant, Denton, Collin and Dallas counties, NOAA recorded 1,240 hailstorms between 2015 and 2024. What makes the region unusual nationally is what that weather is landing on. Of the 100 most populous US counties, only three combine at least 45% of homes built in one twenty-year window with at least 100 recorded hailstorms, and two of them, Collin and Denton, are your neighbours.', '',
       'Tarrant’s own housing is spread across more decades than Collin’s or Denton’s, which is the contrast worth drawing: the same hail corridor, a different replacement profile, and so a different exposure for homeowners and for the market.', '',
       'One caveat I would rather give you than have you find: decade of construction is not roof age. It establishes when the first roof went on, not what is up there now. Hail claims are one of the commonest reasons a roof would already have been replaced.', '',
       'Full county table as CSV, figures as JSON, free to reuse with attribution:',
@@ -92,7 +92,7 @@ const EMAILS = [
     body: [
       'Dear Texas Tribune,', '',
       'A statewide-interest finding from Census and NOAA data, offered with its limits attached.', '',
-      'Of the 100 largest US counties by housing stock, exactly three have at least 45% of their homes built within a single twenty-year window and at least 100 recorded hailstorms in 2015-2024. Two of the three are Texan and adjoining: Collin, where 50.9% of 421,938 homes went up in the 2000s or 2010s, and Denton, at 50.7% of 364,120. The third is Wake County, North Carolina.', '',
+      'Of the 100 most populous US counties, exactly three have at least 45% of their homes built within a single twenty-year window and at least 100 recorded hailstorms in 2015-2024. Two of the three are Texan and adjoining: Collin, where 50.9% of 421,938 homes went up in the 2000s or 2010s, and Denton, at 50.7% of 364,120. The third is Wake County, North Carolina.', '',
       'Across the four-county DFW core, NOAA recorded 1,240 hailstorms over that decade.', '',
       'The policy-relevant version is about timing rather than damage. Housing built in a burst produces replacement demand in a burst, and Texas has the clearest example of that in the country sitting in a hail corridor. It is a question about the insurance market and the roofing trade as much as about weather.', '',
       'What the data does not support: any claim about how many roofs are currently failing. Construction decade sets the clock on the first roof; it does not tell you what has been replaced since.', '',

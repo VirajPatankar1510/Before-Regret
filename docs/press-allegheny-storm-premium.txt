@@ -1,5 +1,5 @@
 ==========================================================================
-THIRD STORMIEST, SIXTH CHEAPEST - PITTSBURGH PRESS OUTREACH
+RECORDED STORMS vs REPORTED INSURANCE COST - PITTSBURGH OUTREACH
 Three pitches. Copy one, paste it, send it.
 Written 6 September 2026 against the study as published.
 ==========================================================================
@@ -38,10 +38,14 @@ THE FOUR NUMBERS
   Zone 1   EPA radon designation, the highest of three, on a housing stock
            that is 77.2% pre-1980 and 36.7% pre-1950
 
-The comparison that makes it land: Oklahoma County, Oklahoma recorded 864
-severe weather events over the same decade - fewer than Allegheny - and 24.0%
-of its mortgaged households pay over $3,000. Allegheny records more weather
-and charges a quarter as many households that much.
+THE COMPARISON THAT MAKES IT LAND - lead with this, not the four numbers:
+
+   Allegheny County    1,108 recorded events    2.9% pay $3,000+
+   Oklahoma County       864 recorded events   24.0% pay $3,000+
+
+Allegheny recorded MORE severe weather and has an 8.3x smaller share of
+households in the top cost band. That single contrast is the story; the other
+numbers are support for it.
 
 
 --------------------------------------------------------------------------
@@ -76,23 +80,25 @@ The angle: what a cheap premium is actually buying
 ==========================================================================
 
 SUBJECT:
-Allegheny County's cheap home insurance isn't a bargain - it's a coverage gap
+Pittsburgh records a lot of severe weather. Its insurance costs don't show it
 
 Dear [Name],
 
-I have finished a county-level analysis crossing NOAA's storm records against
-what Census respondents say they pay to insure their homes, and Allegheny
-County came out as the sharpest outlier in the set.
+I found an unusual Pittsburgh-area insurance pattern in federal data.
+Allegheny County recorded 1,108 severe weather events from 2015-2024, the
+third-highest of the 100 counties I compared - yet only 2.9% of its mortgaged
+households report paying $3,000+ a year to insure the home. Oklahoma County
+recorded fewer events (864) and 24.0% of its households report that band.
 
 Between 2015 and 2024 NOAA recorded 1,108 severe weather events in the county
-- the third-highest of the 100 large counties I examined, against a median of
+- the third-highest of the 100 most populous US counties, against a median of
 285. Yet 58.8% of Allegheny's mortgaged households report paying under $1,000
 a year for homeowners insurance, and only 2.9% pay over $3,000. Oklahoma
 County recorded fewer events over the same decade and eight times as many
 households pay in the top band.
 
-The explanation is not that insurers have mispriced Pittsburgh. It is what
-the county's weather consists of. Allegheny's two most common event types are
+One likely explanation - and I want to be careful to call it that, because
+this data cannot establish cause - is what the county's weather consists of. Allegheny's two most common event types are
 thunderstorm wind (528) and flooding (330 floods and flash floods, 4th of the
 100). A standard HO-3 policy covers the wind. It does not cover the flood -
 that is a separate NFIP or private policy - so the premium is low partly
@@ -127,8 +133,8 @@ Pittsburgh does not have a reputation as a severe weather county, and the
 NOAA record disagrees fairly strongly.
 
 Over 2015-2024, Allegheny County logged 1,108 severe weather events. Broken
-down: 528 thunderstorm wind events, which is second among the 100 large
-counties I examined; 279 flash floods and 51 floods, fourth; 115 hailstorms;
+down: 528 thunderstorm wind events, second among the 100 most populous US
+counties; 279 flash floods and 51 floods, fourth; 115 hailstorms;
 12 tornadoes. The median county in the study recorded 285 events in total.
 
 The composition is the interesting part. Allegheny's profile is wind and
@@ -171,8 +177,8 @@ insure their homes. The rank correlation between recorded storm events and
 the share of mortgaged households paying over $3,000 a year is -0.101.
 Effectively nothing, and slightly negative.
 
-Allegheny County is the cleanest illustration: third-highest storm count of
-the hundred, sixth-lowest share paying in the top premium band.
+Allegheny County is the cleanest illustration: third-highest recorded storm
+count of the hundred, sixth-lowest share reporting the top cost band.
 
 I think the honest read is not that insurers are getting it wrong. It is that
 the perils driving the count in places like Allegheny - inland flooding above

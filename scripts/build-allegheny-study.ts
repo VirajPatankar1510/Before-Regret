@@ -16,11 +16,18 @@
 // piece is an argument about that outlier rather than a profile of a place. The next county in the
 // series gets a different argument or it does not get written.
 //
-// The argument: Allegheny records the third-highest severe weather count of the 100 counties, and
-// prices insurance like one of the calmest. That is not a mispricing story, which is what it looks
-// like at first -- it is a coverage story. Its two largest exposures, inland flooding and radon,
-// are both outside a standard HO-3 policy, so the premium is low precisely because the policy is
-// not carrying the local risk. That connects to this project's own earlier national finding that
+// The argument: Allegheny records the third-highest severe weather count of the 100 counties, yet
+// only a small share of its mortgaged households report the highest insurance-cost band. That looks
+// at first like a mispricing story; the more likely reading is a coverage one. Its two largest
+// exposures, inland flooding and radon, both sit outside a standard HO-3 policy.
+//
+// WHAT THIS PAGE MAY NOT CLAIM, after a journalist review on 2026-09-11. The ACS reports cost BANDS,
+// not premiums, so nothing here may be phrased as a price ranking -- "sixth cheapest" was removed for
+// exactly that reason, since the page's own limitations section says average premiums are unknown.
+// NOAA records REPORTED events, and reporting scales with population and spotter networks, so
+// "third stormiest" became "third-highest recorded count". And the flood explanation is a hypothesis
+// consistent with the data, not a demonstrated cause -- property values, deductibles, coverage
+// limits, construction type and underwriting all sit uncontrolled. That connects to this project's own earlier national finding that
 // three quarters of modelled loss falls on perils HO-3 excludes.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -48,8 +55,8 @@ const counties: County[] = fig.counties;
 const A = counties.find((c) => c.county === 'ALLEGHENY' && c.state === 'PA');
 if (!A) throw new Error('ABORT: Allegheny County not found in the figures file');
 
-// Ranks are computed, never typed. "Third stormiest, sixth cheapest" is the headline; if the data
-// moves and it stops being true, the assertions below stop the build rather than shipping a lie.
+// Ranks are computed, never typed. If the data moves and a claim stops being true, the assertions
+// below stop the build rather than shipping a lie.
 const rankDesc = (key: keyof County) => [...counties].sort((a, b) => (b[key] as number) - (a[key] as number)).findIndex((c) => c.geoid === A.geoid) + 1;
 const rankAsc = (key: keyof County) => [...counties].sort((a, b) => (a[key] as number) - (b[key] as number)).findIndex((c) => c.geoid === A.geoid) + 1;
 
@@ -68,9 +75,22 @@ const medStorm = med('stormEvents');
 const zone1 = counties.filter((c) => c.radonZone === 1);
 const rZone1Old = [...zone1].sort((a, b) => b.pctPre1950 - a.pctPre1950).findIndex((c) => c.geoid === A.geoid) + 1;
 
-if (rStorm !== 3) throw new Error(`ABORT: headline says third stormiest, data says ${rStorm}`);
-if (rCheap !== 6) throw new Error(`ABORT: headline says sixth cheapest, data says ${rCheap}`);
+// The headline claim is now "more recorded storms than all but two", which is rStorm <= 3, and the
+// contrast with Oklahoma County. Both are asserted rather than trusted.
+if (rStorm !== 3) throw new Error(`ABORT: standfirst says all but two, data says rank ${rStorm}`);
 if (A.radonZone !== 1) throw new Error('ABORT: Allegheny is no longer EPA radon Zone 1');
+
+// The comparison county, looked up rather than typed, so a data refresh cannot leave the contrast
+// quoting a stale figure.
+const O = counties.find((c) => c.county === 'OKLAHOMA' && c.state === 'OK');
+if (!O) throw new Error('ABORT: Oklahoma County not found in the figures file');
+if (!(O.stormEvents < A.stormEvents)) {
+  throw new Error(`ABORT: the contrast needs Oklahoma to record FEWER events; ${O.stormEvents} vs ${A.stormEvents}`);
+}
+if (!(O.pctOver3000 > A.pctOver3000)) {
+  throw new Error('ABORT: the contrast needs Oklahoma to report a HIGHER $3,000+ share');
+}
+const ratio3000 = O.pctOver3000 / A.pctOver3000;
 
 // Ordinals are computed from live ranks, so "3rd" cannot be hard-coded. 11-13 are the trap.
 const ord = (n: number) => {
@@ -167,16 +187,23 @@ const html = `<style>
 
 <div class="wrap">
   <p class="kicker">Regional analysis &middot; Allegheny County (Pittsburgh), Pennsylvania</p>
-  <h1>Third stormiest, sixth cheapest</h1>
-  <p class="standfirst">Across the 100 most populous US counties, Allegheny &mdash; the county
-  that contains Pittsburgh &mdash; records more severe weather than all but two, and prices home
-  insurance like one of the calmest places in the country. The gap is not a bargain. It is a
-  description of what the policy does not cover.</p>
+  <h1>More recorded storms than almost anywhere. Insurance costs that don&rsquo;t follow.</h1>
+  <p class="standfirst">Across the ${counties.length} most populous US counties, Allegheny &mdash; the county
+  that contains Pittsburgh &mdash; has more recorded severe weather than all but two, yet only
+  ${pct(A.pctOver3000)} of its mortgaged households report paying more than $3,000 a year to insure
+  the home. In Oklahoma County, with fewer recorded events, ${pct(O.pctOver3000)} do. That is an
+  ${ratio3000.toFixed(1)}&times; difference. One likely reason is what a standard policy leaves out.</p>
+
+  <div class="figs" style="margin-bottom:0">
+    <div class="fig"><b>${pct(A.pctOver3000)}</b><span>of Allegheny mortgaged households report paying $3,000+ a year &mdash; against ${pct(O.pctOver3000)} in Oklahoma County, which recorded <b>fewer</b> severe weather events</span></div>
+  </div>
+  <p class="cap" style="margin-top:6px"><a href="data/storm-and-premium-counties.csv">Download the complete ${counties.length}-county dataset (CSV)</a>
+  &middot; <a href="#method">Methodology and sources</a></p>
 
   <div class="figs">
     <div class="fig"><b>${num(A.stormEvents)}</b><span>severe weather events recorded 2015&ndash;2024, against a median of ${num(medStorm)} across the 100 counties</span></div>
     <div class="fig"><b>${pct(A.pctUnder1000)}</b><span>of mortgaged households report paying under $1,000 a year to insure the home</span></div>
-    <div class="fig"><b>${pct(A.pctOver3000)}</b><span>pay more than $3,000 &mdash; the ${ord(rCheap)} lowest share of the 100</span></div>
+    <div class="fig"><b>${pct(A.pctOver3000)}</b><span>pay more than $3,000 &mdash; the ${ord(rCheap)}-lowest share among the ${counties.length}</span></div>
     <div class="fig"><b>Zone 1</b><span>EPA radon designation, the highest of three</span></div>
   </div>
 
@@ -194,8 +221,8 @@ const html = `<style>
 
   <p>Insurance prices in Pittsburgh and the rest of the county do not read like that at all. ${pct(A.pctUnder1000)} of Allegheny's
   ${num(A.mortgagedHouseholds)} mortgaged households told the American Community Survey they pay
-  less than $1,000 a year to insure the home &mdash; the ${ord(rUnder)}-highest share of cheap cover in
-  the dataset. Only ${pct(A.pctOver3000)} pay more than $3,000.</p>
+  less than $1,000 a year to insure the home &mdash; the ${ord(rUnder)}-highest share reporting that
+  band in the dataset. Only ${pct(A.pctOver3000)} pay more than $3,000.</p>
 
   <div class="finding">
     <p>Oklahoma County, Oklahoma records ${num(peers.find((c) => c.county === 'OKLAHOMA')!.stormEvents)}
@@ -225,7 +252,7 @@ ${peerRows}
 ${typeBars}
   <p class="cap">Allegheny County by event type, NOAA Storm Events Database, 2015&ndash;2024.</p>
 
-  <p>That distinction is the whole explanation, and it is not favourable. A standard HO-3
+  <p>That distinction is the most likely explanation, though this data cannot prove it. A standard HO-3
   homeowners policy covers wind. It does not cover flood &mdash; flood is written separately,
   through the National Flood Insurance Program or a private equivalent, and a household that has
   not bought it is uncovered for the second most common event type in the county. Allegheny logged
@@ -283,7 +310,7 @@ ${typeBars}
   before it prints &mdash; hello@beforeregret.com. If you find an error, say so and it will be
   corrected on the page with a note.</p>
 
-  <h2>Method</h2>
+  <h2 id="method">Method</h2>
   <h3>How this was built.</h3>
 
   <p>Storm counts are every county-tagged entry in NOAA's Storm Events Database for the ten calendar
@@ -342,7 +369,7 @@ ${allRows}
 
   <div class="cite">
     <b>Cite this</b>
-    Before Regret, &ldquo;Third stormiest, sixth cheapest: storm frequency and insurance price in
+    Before Regret, &ldquo;Recorded storm frequency and reported home-insurance costs in
     Allegheny County.&rdquo; Analysis of NOAA Storm Events, ACS B25141 and EPA radon zones across
     ${fig.coverage.counties} US counties. Full county dataset:
     <a href="https://www.beforeregret.com/research/data/storm-and-premium-counties.csv">CSV</a> &middot;
@@ -393,5 +420,5 @@ fs.writeFileSync(OUT_EMBED, embed);
 fs.writeFileSync(OUT, html);
 console.log(`wrote ${path.relative(process.cwd(), OUT)}  (${(html.length / 1024).toFixed(1)} KB)`);
 console.log(`wrote ${path.relative(process.cwd(), OUT_EMBED)}  (${(embed.length / 1024).toFixed(1)} KB, ${lookupData.length} counties)`);
-console.log(`  storm rank ${rStorm}/100, cheapest-premium rank ${rCheap}/100, radon zone ${A.radonZone}`);
+console.log(`  storm rank ${rStorm}/100, $3k+ share rank ${rCheap}/100, radon zone ${A.radonZone}`);
 console.log(`  ${num(A.stormEvents)} events | ${pct(A.pctUnder1000)} under $1k | ${pct(A.pctOver3000)} over $3k | ${pct(A.pctPre1980)} pre-1980`);
