@@ -1,0 +1,811 @@
+{
+  "source": "dataforseo",
+  "endpoint": "/dataforseo_labs/google/keyword_suggestions/live",
+  "captured_at": "2026-09-11T13:29:00.325Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "query": "polybutylene",
+  "keywords": [
+    {
+      "keyword": "polybutylene succinate",
+      "search_volume": 550000,
+      "competition": "0.09",
+      "competition_index": null,
+      "cpc": 3.19,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene",
+      "search_volume": 12100,
+      "competition": "0.02",
+      "competition_index": null,
+      "cpc": 32.36,
+      "keyword_difficulty": 6
+    },
+    {
+      "keyword": "polybutylene terephthalate keycaps",
+      "search_volume": 9900,
+      "competition": "0.66",
+      "competition_index": null,
+      "cpc": 0.56,
+      "keyword_difficulty": 6
+    },
+    {
+      "keyword": "polybutylene terephthalate",
+      "search_volume": 9900,
+      "competition": "0.03",
+      "competition_index": null,
+      "cpc": 1.59,
+      "keyword_difficulty": 22
+    },
+    {
+      "keyword": "pipes polybutylene",
+      "search_volume": 8100,
+      "competition": "0.13",
+      "competition_index": null,
+      "cpc": 24.39,
+      "keyword_difficulty": 10
+    },
+    {
+      "keyword": "pipe polybutylene",
+      "search_volume": 8100,
+      "competition": "0.13",
+      "competition_index": null,
+      "cpc": 24.39,
+      "keyword_difficulty": 10
+    },
+    {
+      "keyword": "polybutylene pipe",
+      "search_volume": 8100,
+      "competition": "0.13",
+      "competition_index": null,
+      "cpc": 24.39,
+      "keyword_difficulty": 10
+    },
+    {
+      "keyword": "plumbing polybutylene",
+      "search_volume": 8100,
+      "competition": "0.13",
+      "competition_index": null,
+      "cpc": 24.39,
+      "keyword_difficulty": 9
+    },
+    {
+      "keyword": "polybutylene piping",
+      "search_volume": 6600,
+      "competition": "0.11",
+      "competition_index": null,
+      "cpc": 24.82,
+      "keyword_difficulty": 10
+    },
+    {
+      "keyword": "polybutylene pipes",
+      "search_volume": 6600,
+      "competition": "0.11",
+      "competition_index": null,
+      "cpc": 24.82,
+      "keyword_difficulty": 5
+    },
+    {
+      "keyword": "polybutylene plumbing",
+      "search_volume": 2400,
+      "competition": "0.13",
+      "competition_index": null,
+      "cpc": 24.61,
+      "keyword_difficulty": 4
+    },
+    {
+      "keyword": "what is polybutylene plumbing",
+      "search_volume": 1000,
+      "competition": "0.06",
+      "competition_index": null,
+      "cpc": 15.69,
+      "keyword_difficulty": 1
+    },
+    {
+      "keyword": "what is a polybutylene pipe",
+      "search_volume": 1000,
+      "competition": "0.06",
+      "competition_index": null,
+      "cpc": 15.69,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "what is polybutylene pipe",
+      "search_volume": 1000,
+      "competition": "0.06",
+      "competition_index": null,
+      "cpc": 15.69,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "what are polybutylene pipes",
+      "search_volume": 1000,
+      "competition": "0.06",
+      "competition_index": null,
+      "cpc": 15.69,
+      "keyword_difficulty": 1
+    },
+    {
+      "keyword": "what is polybutylene terephthalate",
+      "search_volume": 880,
+      "competition": "0",
+      "competition_index": null,
+      "cpc": null,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipe fittings",
+      "search_volume": 720,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.62,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "fittings for polybutylene pipe",
+      "search_volume": 720,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.62,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene sharkbite",
+      "search_volume": 480,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.37,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene terephthalate market",
+      "search_volume": 480,
+      "competition": "0",
+      "competition_index": null,
+      "cpc": null,
+      "keyword_difficulty": 2
+    },
+    {
+      "keyword": "sharkbite for polybutylene",
+      "search_volume": 480,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.37,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "sharkbite max polybutylene adapters",
+      "search_volume": 480,
+      "competition": "0.62",
+      "competition_index": null,
+      "cpc": 0.17,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene shark bite",
+      "search_volume": 480,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.37,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "sharkbite polybutylene",
+      "search_volume": 480,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.37,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene terephthalate fabric",
+      "search_volume": 390,
+      "competition": "0.01",
+      "competition_index": null,
+      "cpc": null,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "how to identify polybutylene pipes",
+      "search_volume": 390,
+      "competition": "0.03",
+      "competition_index": null,
+      "cpc": 0.05,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene plumbing in florida",
+      "search_volume": 320,
+      "competition": "0.18",
+      "competition_index": null,
+      "cpc": 54.58,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene plumbing replacement cost",
+      "search_volume": 320,
+      "competition": "0.43",
+      "competition_index": null,
+      "cpc": 31.2,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "should i buy a house with polybutylene pipes",
+      "search_volume": 320,
+      "competition": "0.02",
+      "competition_index": null,
+      "cpc": 13.22,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "should i buy a house with polybutylene pipe",
+      "search_volume": 320,
+      "competition": "0.02",
+      "competition_index": null,
+      "cpc": 13.22,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "replacing polybutylene pipes cost",
+      "search_volume": 320,
+      "competition": "0.43",
+      "competition_index": null,
+      "cpc": 31.2,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "sharkbite polybutylene adapter",
+      "search_volume": 320,
+      "competition": "0.61",
+      "competition_index": null,
+      "cpc": 0.39,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipes replacement cost",
+      "search_volume": 320,
+      "competition": "0.43",
+      "competition_index": null,
+      "cpc": 31.2,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene to pex adapter",
+      "search_volume": 320,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.52,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipes in florida",
+      "search_volume": 320,
+      "competition": "0.18",
+      "competition_index": null,
+      "cpc": 54.58,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "cost to replace polybutylene plumbing",
+      "search_volume": 320,
+      "competition": "0.43",
+      "competition_index": null,
+      "cpc": 31.2,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene plumbing florida",
+      "search_volume": 320,
+      "competition": "0.18",
+      "competition_index": null,
+      "cpc": 54.58,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "replace polybutylene pipes cost",
+      "search_volume": 320,
+      "competition": "0.43",
+      "competition_index": null,
+      "cpc": 31.2,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pex adapter",
+      "search_volume": 320,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.52,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "cost of replacing polybutylene pipe",
+      "search_volume": 320,
+      "competition": "0.43",
+      "competition_index": null,
+      "cpc": 31.2,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "cost to replace polybutylene pipes",
+      "search_volume": 320,
+      "competition": "0.43",
+      "competition_index": null,
+      "cpc": 31.2,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipes florida",
+      "search_volume": 320,
+      "competition": "0.18",
+      "competition_index": null,
+      "cpc": 54.58,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "shark bite polybutylene adapter",
+      "search_volume": 320,
+      "competition": "0.61",
+      "competition_index": null,
+      "cpc": 0.39,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "replacing polybutylene pipes",
+      "search_volume": 260,
+      "competition": "0.34",
+      "competition_index": null,
+      "cpc": 13.57,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "sharkbite polybutylene fittings",
+      "search_volume": 260,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.32,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipes vs pex",
+      "search_volume": 260,
+      "competition": "0.2",
+      "competition_index": null,
+      "cpc": 4.71,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "replace polybutylene plumbing",
+      "search_volume": 260,
+      "competition": "0.34",
+      "competition_index": null,
+      "cpc": 13.57,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "replace polybutylene pipes",
+      "search_volume": 260,
+      "competition": "0.34",
+      "competition_index": null,
+      "cpc": 13.57,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene succinate properties",
+      "search_volume": 260,
+      "competition": "0.04",
+      "competition_index": null,
+      "cpc": 2.8,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipe replacement",
+      "search_volume": 260,
+      "competition": "0.34",
+      "competition_index": null,
+      "cpc": 13.57,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene sharkbite fittings",
+      "search_volume": 260,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.32,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene plumbing vs pex",
+      "search_volume": 260,
+      "competition": "0.2",
+      "competition_index": null,
+      "cpc": 4.71,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "sharkbite fittings for polybutylene",
+      "search_volume": 260,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.32,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipe vs pex",
+      "search_volume": 260,
+      "competition": "0.2",
+      "competition_index": null,
+      "cpc": 4.71,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene plumbing replacement",
+      "search_volume": 260,
+      "competition": "0.34",
+      "competition_index": null,
+      "cpc": 13.57,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene plumbing fittings",
+      "search_volume": 260,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.67,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "pex pipe vs polybutylene",
+      "search_volume": 260,
+      "competition": "0.2",
+      "competition_index": null,
+      "cpc": 4.71,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene fittings",
+      "search_volume": 260,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 0.67,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "what is polybutylene",
+      "search_volume": 210,
+      "competition": "0.03",
+      "competition_index": null,
+      "cpc": 5.31,
+      "keyword_difficulty": 8
+    },
+    {
+      "keyword": "polybutylene vs pex",
+      "search_volume": 210,
+      "competition": "0.09",
+      "competition_index": null,
+      "cpc": 0.02,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "pex vs polybutylene",
+      "search_volume": 210,
+      "competition": "0.09",
+      "competition_index": null,
+      "cpc": 0.02,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene succinate plastic",
+      "search_volume": 210,
+      "competition": "0.04",
+      "competition_index": null,
+      "cpc": null,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene adapter",
+      "search_volume": 210,
+      "competition": "0.93",
+      "competition_index": null,
+      "cpc": 0.36,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene supply lines",
+      "search_volume": 210,
+      "competition": "0.05",
+      "competition_index": null,
+      "cpc": 0.1,
+      "keyword_difficulty": 3
+    },
+    {
+      "keyword": "blue polybutylene pipe",
+      "search_volume": 210,
+      "competition": "0.15",
+      "competition_index": null,
+      "cpc": 12.59,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipe lawsuit",
+      "search_volume": 170,
+      "competition": "0.05",
+      "competition_index": null,
+      "cpc": 5.89,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "sharkbite max polybutylene adapter",
+      "search_volume": 170,
+      "competition": "0.54",
+      "competition_index": null,
+      "cpc": 0.41,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene plumbing lawsuit",
+      "search_volume": 170,
+      "competition": "0.05",
+      "competition_index": null,
+      "cpc": 5.89,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "cost of replacing polybutylene pipes",
+      "search_volume": 140,
+      "competition": "0.49",
+      "competition_index": null,
+      "cpc": 45.53,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "1 2 polybutylene fittings",
+      "search_volume": 140,
+      "competition": "0.99",
+      "competition_index": null,
+      "cpc": 0.4,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipe replacement cost",
+      "search_volume": 140,
+      "competition": "0.49",
+      "competition_index": null,
+      "cpc": 45.53,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "1/2 polybutylene fittings",
+      "search_volume": 140,
+      "competition": "0.99",
+      "competition_index": null,
+      "cpc": 0.4,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "what is polybutylene piping",
+      "search_volume": 140,
+      "competition": "0.07",
+      "competition_index": null,
+      "cpc": 13.59,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "when was polybutylene plumbing banned",
+      "search_volume": 140,
+      "competition": "0.02",
+      "competition_index": null,
+      "cpc": 1.22,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipe replacement costs",
+      "search_volume": 140,
+      "competition": "0.49",
+      "competition_index": null,
+      "cpc": 45.53,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "when was polybutylene plumbing used",
+      "search_volume": 140,
+      "competition": "0.01",
+      "competition_index": null,
+      "cpc": null,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene to pex",
+      "search_volume": 140,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 3.88,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene terephthalate lashes",
+      "search_volume": 140,
+      "competition": "0.7",
+      "competition_index": null,
+      "cpc": 0.22,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "what is polybutylene pipes",
+      "search_volume": 140,
+      "competition": "0.07",
+      "competition_index": null,
+      "cpc": 13.59,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "how much does it cost to replace polybutylene plumbing",
+      "search_volume": 110,
+      "competition": "0.37",
+      "competition_index": null,
+      "cpc": 5.27,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "sharkbite fittings for polybutylene pipe",
+      "search_volume": 110,
+      "competition": "0.91",
+      "competition_index": null,
+      "cpc": 0.06,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "issues with polybutylene plumbing",
+      "search_volume": 110,
+      "competition": "0.15",
+      "competition_index": null,
+      "cpc": 18.68,
+      "keyword_difficulty": 3
+    },
+    {
+      "keyword": "polybutylene sharkbite vs regular",
+      "search_volume": 110,
+      "competition": "0.24",
+      "competition_index": null,
+      "cpc": 0.07,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene plumbing issues",
+      "search_volume": 110,
+      "competition": "0.15",
+      "competition_index": null,
+      "cpc": 18.68,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "pex polybutylene adapter",
+      "search_volume": 110,
+      "competition": "0.98",
+      "competition_index": null,
+      "cpc": 0.43,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "pex to polybutylene",
+      "search_volume": 110,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 1.36,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene plumbing problems",
+      "search_volume": 110,
+      "competition": "0.15",
+      "competition_index": null,
+      "cpc": 18.68,
+      "keyword_difficulty": 3
+    },
+    {
+      "keyword": "polybutylene water pipe",
+      "search_volume": 110,
+      "competition": "0.37",
+      "competition_index": null,
+      "cpc": 17.46,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene water pipes",
+      "search_volume": 110,
+      "competition": "0.37",
+      "competition_index": null,
+      "cpc": 17.46,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipe issues",
+      "search_volume": 110,
+      "competition": "0.15",
+      "competition_index": null,
+      "cpc": 18.68,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "problems with polybutylene plumbing",
+      "search_volume": 110,
+      "competition": "0.15",
+      "competition_index": null,
+      "cpc": 18.68,
+      "keyword_difficulty": 2
+    },
+    {
+      "keyword": "polybutylene succinate market",
+      "search_volume": 110,
+      "competition": "0.02",
+      "competition_index": null,
+      "cpc": 0.01,
+      "keyword_difficulty": 9
+    },
+    {
+      "keyword": "how much does it cost to replace polybutylene pipes",
+      "search_volume": 110,
+      "competition": "0.37",
+      "competition_index": null,
+      "cpc": 5.27,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "3/8 polybutylene to 1/2 pex",
+      "search_volume": 110,
+      "competition": "1",
+      "competition_index": null,
+      "cpc": 1.73,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene terephthalate polymer",
+      "search_volume": 110,
+      "competition": "0.01",
+      "competition_index": null,
+      "cpc": null,
+      "keyword_difficulty": 3
+    },
+    {
+      "keyword": "how much does it cost to replace polybutylene piping",
+      "search_volume": 110,
+      "competition": "0.37",
+      "competition_index": null,
+      "cpc": 5.27,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene pipe problems",
+      "search_volume": 110,
+      "competition": "0.15",
+      "competition_index": null,
+      "cpc": 18.68,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "pex to polybutylene adapter",
+      "search_volume": 110,
+      "competition": "0.98",
+      "competition_index": null,
+      "cpc": 0.43,
+      "keyword_difficulty": 0
+    },
+    {
+      "keyword": "polybutylene plumbing pipe",
+      "search_volume": 90,
+      "competition": "0.19",
+      "competition_index": null,
+      "cpc": 2.78,
+      "keyword_difficulty": 1
+    },
+    {
+      "keyword": "polybutylene terephthalate resin",
+      "search_volume": 90,
+      "competition": "0.02",
+      "competition_index": null,
+      "cpc": null,
+      "keyword_difficulty": 3
+    }
+  ]
+}
