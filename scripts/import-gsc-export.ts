@@ -88,7 +88,10 @@ function main() {
   };
   // Search Console: "Top queries, Clicks, Impressions, CTR, Position".
   // Bing Webmaster: "Query, Clicks, Impressions, ...  Avg. position".
-  const iQ = col('top queries', 'query', 'queries', 'search term');
+  // Search Console writes "Top queries"; Bing's Keyword Report writes "Keyword", singular. Both
+  // spellings are listed rather than loosened into a substring match, so a file with no query
+  // column still fails loudly instead of binding to whatever column happens to sort first.
+  const iQ = col('top queries', 'query', 'queries', 'keyword', 'keywords', 'search term');
   const iC = col('clicks');
   const iI = col('impressions');
   const iP = col('position', 'avg. position', 'average position');
