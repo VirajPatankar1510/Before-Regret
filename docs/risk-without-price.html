@@ -33,7 +33,7 @@ h3{font-family:var(--mono);font-size:.78rem;font-weight:600;letter-spacing:.14em
   text-transform:uppercase;color:var(--muted)}
 /* Question headings in the FAQ block. Deliberately a plain serif rather than the mono/uppercase
    h3 treatment: these are real questions a reader scans, not section labels. */
-h4{font-family:var(--serif);font-size:1.12rem;line-height:1.35;font-weight:600;
+h4,h3.faq-q{font-family:var(--serif);font-size:1.12rem;line-height:1.35;font-weight:600;
   margin:0;color:var(--ink);text-wrap:balance}
 h4+p{margin-top:.4em}
 .stack>h4{margin-top:1.9em}
@@ -194,7 +194,7 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
 <section class="spine" id="lookup">
  <div class="lookup">
   <p class="lk-eyebrow">Interactive &#183; all 3,093 counties</p>
-  <h3>Look up your county</h3>
+  <h2>Look up your county</h2>
   <p class="lk-intro">All 3,093 counties in the study. Type a county or state to see what its
   mortgaged homeowners report paying, and what counties facing the same modelled hazard pay.
   Comparison ranges use counties with at least 5,000 mortgaged households, the same basis as
@@ -210,7 +210,7 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
 
   <div class="lk-out" id="lkout" aria-live="polite">
     <p class="lk-sub">Median annual premium</p>
-    <h4 class="lk-name" id="lkname"></h4>
+    <p class="lk-name" id="lkname"></p>
     <p class="lk-head" id="lkprem"></p>
     <div class="lk-grid">
       <div><span class="v" id="lkrate"></span><span class="k">Covered-peril loss rate per $1,000 of building value</span></div>
@@ -258,7 +258,7 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
 </section>
 
 <section class="spine stack">
-  <h3>The question</h3>
+  <h2>The question</h2>
   <h2>Does what you pay reflect what you actually risk?</h2>
   <p>Homeowners insurance is sold as a price on risk. Rate filings are justified to regulators on
   expected losses; consumers are told premiums rise because hazards rise. That is a testable claim,
@@ -463,34 +463,34 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
   <h3>Questions</h3>
   <h2>What this study answers</h2>
 
-  <h4>Which state has the highest homeowners insurance rates?</h4>
+  <h3 class="faq-q">Which state has the highest homeowners insurance rates?</h3>
   <p>Florida, at a household-weighted median of <b>$2,012</b> a year, followed by Louisiana ($1,877),
   Oklahoma ($1,807), Texas ($1,767) and Colorado ($1,717). These are ACS 5-year 2023 figures centred
   near 2021 and do not reflect the 2023&#8211;2025 increases.</p>
 
-  <h4>Which state has the lowest homeowners insurance rates?</h4>
+  <h3 class="faq-q">Which state has the lowest homeowners insurance rates?</h3>
   <p>Utah, at <b>$855</b> a year, then Nevada ($896), Idaho ($903), Oregon ($912) and Maine ($914).
   The spread between the most and least expensive state is about 2.4&#215;.</p>
 
-  <h4>What is the average homeowners insurance premium in the United States?</h4>
+  <h3 class="faq-q">What is the average homeowners insurance premium in the United States?</h3>
   <p>The household-weighted median across 3,093 counties is <b>$1,317</b> a year for
   mortgaged owner-occupied homes. That is what households report paying in the American Community
   Survey, not a quoted rate for a model home.</p>
 
-  <h4>Do homeowners insurance rates reflect actual risk?</h4>
+  <h3 class="faq-q">Do homeowners insurance rates reflect actual risk?</h3>
   <p>Only weakly. Across 3,093 counties, FEMA&#8217;s modelled hazard risk explains <b>20%</b> of the
   variation in what people pay, while state of residence alone explains <b>44%</b> &#8212; more than
   twice as much. Counties facing the same modelled hazard differ in price by a median of
   <b>2.3&#215;</b>.</p>
 
-  <h4>Why doesn&#8217;t homeowners insurance cover flood damage?</h4>
+  <h3 class="faq-q">Why doesn&#8217;t homeowners insurance cover flood damage?</h3>
   <p>Flood is excluded from standard HO-3 policies and requires separate NFIP or private cover. It is
   not a small exclusion: inland flooding alone accounts for <b>59.2%</b> of FEMA&#8217;s modelled
   annual building loss in the United States, and earthquake &#8212; also excluded &#8212; a further
   <b>16.1%</b>. In total <b>76.5%</b> of modelled building loss falls outside the policy most
   homeowners buy.</p>
 
-  <h4>How many US homes face earthquake risk without earthquake cover?</h4>
+  <h3 class="faq-q">How many US homes face earthquake risk without earthquake cover?</h3>
   <p>In the 158 counties FEMA scores at or above 95 for earthquake risk, <b>22,030,850</b> homes
   &#8212; 57% of the housing stock there &#8212; were built before 1980, predating the substantially
   strengthened seismic provisions of the 1976 Uniform Building Code. US codes had carried seismic

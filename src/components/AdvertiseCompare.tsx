@@ -151,6 +151,11 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
         {/* How it works -- the page used to cut straight from the hero into the two pricing
             cards, which read as a spec sheet rather than something that walks a vendor toward a
             decision. Three steps, no jargon, sets up why the two cards below are worth reading. */}
+        {/* The section had no heading at all -- the step cards were h3 sitting directly under the
+            page h1, which is the heading-order skip an accessibility audit flagged on 2026-09-11.
+            Adding the heading the comment above already implies fixes the skip AND gives the
+            section the label a screen-reader user needs to know what the three cards are. */}
+        <h2 className="font-serif text-xl font-bold text-slate-900 mb-4">How it works</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           {[
             { icon: ListChecks, step: '1', title: 'Pick a plan', body: 'Topic Ads put you on an article you choose -- a county permit guide if you work one metro, a national guide if you do not. Report Ads target 3 ZIP codes inside property reports.' },

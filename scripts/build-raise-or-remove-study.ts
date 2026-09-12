@@ -187,7 +187,7 @@ ${LOOKUP_CSS}
   ${LOOKUP_MARKUP}
 
   <div class="cta">
-    <h4>A ZIP code is not a house</h4>
+    <h2>A ZIP code is not a house</h2>
     <p>Everything above is an aggregate. It cannot tell you whether the house you are looking at
     floods, whether it has ever been damaged, or whether it would be bought or raised &mdash; and a
     ZIP with a long grant history contains plenty of homes that have never taken on water.</p>
