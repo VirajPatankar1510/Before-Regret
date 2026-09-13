@@ -1,6 +1,6 @@
 {
   "note": "Guides that predate these rules. BOTH lists may only SHRINK. Removing a slug from \"slugs\" means the guide now carries a cost figure or a numbered standard; removing one from \"definitionEchoTitles\" means its title now promises an outcome.",
-  "seeded_at": "2026-09-11",
+  "seeded_at": "2026-09-13",
   "slugs": [
     "100-amp-service-enough-house-re-buying",
     "amateur-workmanship-mean-home-inspection-report",
@@ -45,7 +45,6 @@
     "us-housing-age-ranking-oldest-vs-newest-counties",
     "when-foundation-crack-need-structural-engineer",
     "who-s-responsible-shared-well-shared-driveway",
-    "why-cast-iron-pipes-corrode",
     "will-zinsco-panel-fail-4-point-inspection"
   ],
   "definitionEchoTitles": [
@@ -78,8 +77,7 @@
     "open-ground-mean-electrical-inspection",
     "spot-polybutylene-pipes-before-buying-house",
     "standard-home-inspection-check-eifs-stucco-moisture",
-    "what-is-knob-and-tube-wiring",
-    "why-cast-iron-pipes-corrode"
+    "what-is-knob-and-tube-wiring"
   ],
   "cliches": []
 }
