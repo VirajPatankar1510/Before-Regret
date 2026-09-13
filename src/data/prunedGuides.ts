@@ -61,8 +61,16 @@ export const MERGED_GUIDE_SLUGS: Readonly<Record<string, string>> = {
   'va-loan-require-termite-inspection': 'standard-home-inspection-include-termites',
   'home-inspector-check-rodent-termite-damage-attic': 'standard-home-inspection-include-termites',
 
-  // Polybutylene: survivor is the site's best-performing Bing page.
-  'get-home-insurance-polybutylene-plumbing': 'spot-polybutylene-pipes-before-buying-house',
+  // Polybutylene: the identification guide is the site's best-performing Bing page, so it took all
+  // three of these when the map was written. That was right at the time -- it was the only
+  // polybutylene page left standing.
+  //
+  // RETARGETED 2026-09-13. The insurance one now has an exact match. Its slug says
+  // "get-home-insurance", and a 2026-09-13 Bing pull shows the dead URL still drawing 9 impressions,
+  // so the intent arriving there is insurance, not identification. Sending it to a page about
+  // spotting grey pipe answered a question the visitor had not asked. The other two are genuinely
+  // about the pipe rather than the policy and stay where they are.
+  'get-home-insurance-polybutylene-plumbing': 'polybutylene-pipes-home-insurance',
   'should-replace-polybutylene-pipes-wait-leak': 'spot-polybutylene-pipes-before-buying-house',
   'polybutylene-pipes-always-leak': 'spot-polybutylene-pipes-before-buying-house',
 
