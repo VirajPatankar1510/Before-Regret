@@ -1,0 +1,1131 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster api GetQueryStats (measured impressions, not market volume)",
+  "captured_at": "2026-09-13T06:43:18.508Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "site_url": "https://www.beforeregret.com",
+  "keywords": [
+    {
+      "keyword": "polybutylene pipe",
+      "search_volume": 10,
+      "clicks": 2,
+      "impressions": 10,
+      "position": 50
+    },
+    {
+      "keyword": "https://www.beforeregret.com/",
+      "search_volume": 6,
+      "clicks": 2,
+      "impressions": 6,
+      "position": 5
+    },
+    {
+      "keyword": "what is polybutylene piping",
+      "search_volume": 5,
+      "clicks": 1,
+      "impressions": 5,
+      "position": 31
+    },
+    {
+      "keyword": "polybutylene pipes",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 4
+    },
+    {
+      "keyword": "how to get a clue report for a home buying guide",
+      "search_volume": 4,
+      "clicks": 0,
+      "impressions": 4,
+      "position": 3
+    },
+    {
+      "keyword": "polybutylene pipe plumbing",
+      "search_volume": 3,
+      "clicks": 1,
+      "impressions": 3,
+      "position": 37
+    },
+    {
+      "keyword": "polybutylene plumbing",
+      "search_volume": 3,
+      "clicks": 0,
+      "impressions": 3,
+      "position": 2
+    },
+    {
+      "keyword": "what does rev polarity mean on an electric tester",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 4
+    },
+    {
+      "keyword": "what happens if a termite infestation is found during a home inspection",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 3
+    },
+    {
+      "keyword": "should i buy a house with hoa in lawsuit",
+      "search_volume": 2,
+      "clicks": 1,
+      "impressions": 2,
+      "position": 2
+    },
+    {
+      "keyword": "if my sump pump fails is it covered under insurance",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 2
+    },
+    {
+      "keyword": "polybutylene pipes negotiation tips",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 6
+    },
+    {
+      "keyword": "should an inspector test the tpr valve on a water heater?  trec sop",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 7
+    },
+    {
+      "keyword": "polybutylene pipes assessment",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 8
+    },
+    {
+      "keyword": "homeowners insurance is blaming sump pump failure on seepage in basement",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 3
+    },
+    {
+      "keyword": "is polybutylene pipe good",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 12
+    },
+    {
+      "keyword": "how do i identify a zinsco style electrical panel produced by challenger",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 2
+    },
+    {
+      "keyword": "what is the problem that occurs when there is a stab-lok electrical panel box in place?",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 8
+    },
+    {
+      "keyword": "how to tell if you have polybutylene pipes",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 10
+    },
+    {
+      "keyword": "how can you prove age of roof",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 4
+    },
+    {
+      "keyword": "will i need a permit to remodel my home at 1960 & 1968 live oak circle, azlo, tx",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 8
+    },
+    {
+      "keyword": "insurance prorate roof age",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 3
+    },
+    {
+      "keyword": "epa testing for underground oil tanks in a residential transaction",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 5
+    },
+    {
+      "keyword": "is sump pump fire damage covered by home owners insurance",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 2
+    },
+    {
+      "keyword": "epermits address search for as builts",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 8
+    },
+    {
+      "keyword": "does fha require other structuresto meet  mprs",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 2
+    },
+    {
+      "keyword": "what could happen if a buyer does not require the seller to order a clue report before closing?",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 1
+    },
+    {
+      "keyword": "are septic tanks included in home inspection",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 1
+    },
+    {
+      "keyword": "to get a clue report for a home recommendations",
+      "search_volume": 2,
+      "clicks": 0,
+      "impressions": 2,
+      "position": 2
+    },
+    {
+      "keyword": "will security first allow polybutylene piping for dp1 policies now",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "polybutylene why doesnt insurance like it",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "if the end of a copper discharge pipe on a tpr  valve is blue and white what does it mean",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 9
+    },
+    {
+      "keyword": "polybutylene plumbing and home insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "will lemonade insure a home with an unfenced pool",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "does single strand aluminum wire fail insurance underwriting",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "polybutylene pipe fittings",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 28
+    },
+    {
+      "keyword": "buying a house with knob and tube wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 4
+    },
+    {
+      "keyword": "buyer backs out after inspection repairs",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7
+    },
+    {
+      "keyword": "wdo pest inspection report paid invoice",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "wdo inspections explained",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10
+    },
+    {
+      "keyword": "appraisal inspection for a gfci outlet with",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 4
+    },
+    {
+      "keyword": "does outlet need to ne gfci to oass house inspection or grandfathered",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "is there anyway at all to get out of the champaign county association of realtors contract?  inspection was bad so buyer wants out",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "does homeowners insurance cover knob and tube wiring in home missiouri",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 4
+    },
+    {
+      "keyword": "nly the current owner can request a property’s clue report; past owners cannot insure.com.",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "aluminum wiring exclusionin property insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "what insurance carriers in the state of indiana will accept an unfenced swimming pool",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "home inspectors report receptacles with reversed polarity as potentially hazardous because",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "how can homeowners identify polybutylene pipes?",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "who responsible for an alabama wood infestation report the buyer or seller",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7
+    },
+    {
+      "keyword": "to get a clue report for a home pros and cons buying guide",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "does knob and tube wiring can you sell the cooper for money not home just the wire. again i'm not selling the house i'm just talking about the wire",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 4
+    },
+    {
+      "keyword": "before regret.com",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "pierce county, wa fema disaster",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7
+    },
+    {
+      "keyword": "buying a house with knob and tube",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "when is a wdo report required",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "what is the hazard of having a tpr valve of improper diameter",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "if the main water line is polybutylene is there insurance for that",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "will insurance companies redrum my coverage if i have knob and tube wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7
+    },
+    {
+      "keyword": "can a house with knob and tube wiring be financed",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "what does a wdo report",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "gfi outlet for mobile home xan it oass inspection without it",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "signs a home was unpermitted",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "auto club insurance for home with aluminum wiring",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "polybutylene pipes problems",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 260
+    },
+    {
+      "keyword": "does insurance cover the floor repairs if the sump pump fails",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "does  home uinsurance cover sumop pump failure",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "how to find out about unpermitted work in a house i want to buy",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "will salt damage cast iron pipes",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8
+    },
+    {
+      "keyword": "is branch circuit aluminum wiring ok for state farm home insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "does home insurance cover sump pump fire",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "do insurnace compnaies deny alanium wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8
+    },
+    {
+      "keyword": "detailed by street or apn sequoia solar project",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10
+    },
+    {
+      "keyword": "what years did zinsco own challenger",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10
+    },
+    {
+      "keyword": "securityreadytoopencatdoorsbut2010",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 9
+    },
+    {
+      "keyword": "polybutylene pipe plumbing, fitting",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 26
+    },
+    {
+      "keyword": "polybutylene  pipe system",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 135
+    },
+    {
+      "keyword": "how to get a clue report for a home pros and buying guide",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "sump pump failure covered by insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 5
+    },
+    {
+      "keyword": "what years did zinsco own challenger panels",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "polybutylene pipe articles",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 29
+    },
+    {
+      "keyword": "if radon mitigation was paid to the buyer at closing didn't do can you get the money back",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "if radon mitigation was paid to the buyer at closing buyerdidn't do can you get the money back",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "polybutylene pipe characteristics, issues, freezing, piping, connection, heating, water supply, hot water supply, deterioration",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8
+    },
+    {
+      "keyword": "buying a house can i get clue report",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "will insurance companies insures homes containing knob and tube wiring? real estate mortgae loans to buyers of housrs containing knob snd tube wiring?",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "polybutylene pipe evaluation",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 16
+    },
+    {
+      "keyword": "polybutylene  pipe assessment",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 29
+    },
+    {
+      "keyword": "what is an electrical  polarity reversal in a residential circuit",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 5
+    },
+    {
+      "keyword": "polybutylene water pipe",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 95
+    },
+    {
+      "keyword": "is there a specific outlet in home to pass an inspection",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "what is insurance sump pump coverage",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10
+    },
+    {
+      "keyword": "is branch circuit aluminum wiring ok for state farm home insurance if the home was built in 2005",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "if my sump pump lost power will my insurance cover water into my basement",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "ow to check permit status in hillsborough county fl",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 6
+    },
+    {
+      "keyword": "how can i pull a clue report on a prospective home purchase",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "is how to identify unpermitted additions in a home worth it",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8
+    },
+    {
+      "keyword": "to get a clue report for a home recommendations recommendations",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "can you get insurance on a home that has aluminum wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "will liberty insurancce insure a 1932 house that has some knob and tube wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "roof maintenance records prove roof age condition insurance adjuster dispute",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 4
+    },
+    {
+      "keyword": "100 amp federal pacific (fpe) panel insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "how to identify unpermitted additions in a home",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "simposons i have the buyers remorse",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6
+    },
+    {
+      "keyword": "best how to get a clue report for a buying guide",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "is sump pump failure considered ground water on insurance policy",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 5
+    },
+    {
+      "keyword": "oklahoma roof age dispute insurance adjuster proof building permit contractor invoice",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6
+    },
+    {
+      "keyword": "if sump pump fails does insurance cover",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "would you move into a home with an fpe stablok",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "does homeowners insurance cover you if your sump pump stops working",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "intact insurance stab lok panels",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 5
+    },
+    {
+      "keyword": "would a buyer be put off buying a house in cashmer chch if a main bedroom comes off the dining room",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 9
+    },
+    {
+      "keyword": "why swimming pool and trampoline a liability hazard in home policy insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "oahu hawaii construction trends and drainage regulations 2026",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6
+    },
+    {
+      "keyword": "if solar panels are only leased and not owned by the insured does the insurance company owe to detach and reset or is that the responsbility of hte solar provided",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "does state farm home owners insurance cover sump pump malfunction problems",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6
+    },
+    {
+      "keyword": "clue report real estate",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10
+    },
+    {
+      "keyword": "how to choose how to get a clue report for a home",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "how do i get proof of my roof age",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "if with solar panels public liability insurance is missing. how will it affect the buyer",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "if an hoa is in litigation will it affect fha status",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6
+    },
+    {
+      "keyword": "is missing material defect missing gfci",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "old challenger panel boards with aluminum bus",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7
+    },
+    {
+      "keyword": "how to prove roof age to insurance adjuster allstate documentation",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "philadelphia l&i violation lookup",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8
+    },
+    {
+      "keyword": "is flooding due to failure of sump pump a covered personal homeowners property loss",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "where is polybutylene piping in a property",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "is challenger electrical breaker equivalent to sablock or zinsco panels",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "how to get a clue report for a property you are buying",
+      "search_volume": 1,
+      "clicks": 1,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "is aluminum wiring covered by insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "home insurance for homes with nobe and tube electrical",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10
+    },
+    {
+      "keyword": "how to find building permits pulled on a new construction, hillsborough county,",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 5
+    },
+    {
+      "keyword": "how to choose how to get a clue report for a home for beginners",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "how to choose unpermitted work home buying risk measure sustainability explained near me",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "what if i did renovations without a permit 35 years ago",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "an inspector observes one receptacle in a kitchen that tests with reverse polarity, while nearby receptacles test correctly. what is the most appropriate conclusion?",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 5
+    },
+    {
+      "keyword": "which manufacturers made challenger panels in usa",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8
+    },
+    {
+      "keyword": "will sump pump not running void insurance",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6
+    },
+    {
+      "keyword": "should you buy home with wall deflection basement ai suggestion",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "what to do if you regret buying a house",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 4
+    },
+    {
+      "keyword": "do home inspectors actually look for mold in crawlspace",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "miami-dade county property search building permits certificate of use zoning illegal efficiency address",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6
+    },
+    {
+      "keyword": "does idaho require a wdo report",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7
+    },
+    {
+      "keyword": "can i back out of buying a house because age of septic system",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 3
+    },
+    {
+      "keyword": "how to get a clue report for a home for beginners",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "9040 sw 25 st miami fl 33165 permits code enforcement",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 5
+    },
+    {
+      "keyword": "how to get a clue report for a home reviews",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 4
+    },
+    {
+      "keyword": "can a house insurane be cancelled because of an outdoor trampoline",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "the buyer should require a seller to order a clue report to find out what?",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "sump pump insurance meanng",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7
+    },
+    {
+      "keyword": "how to report a sump pump failure for a home insurance claim",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 6
+    },
+    {
+      "keyword": "is how to get a clue report for a home for beginners worth it",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 8
+    },
+    {
+      "keyword": "how to get a clue report for a home pros and cons",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "does polybutylene pipes have red or blue lines on them",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "what is a dr wdo report",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 1
+    },
+    {
+      "keyword": "does fl insurance companies cover homes wotj single strand aluminum wiring",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 10
+    },
+    {
+      "keyword": "should you buy home with wall deflection basement",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "how to get a clue report for a home buying guide reviews",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 2
+    },
+    {
+      "keyword": "why do people remorse when buying a house?",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7
+    },
+    {
+      "keyword": "how do plumbers tell in there is polybutylene piping in the walls",
+      "search_volume": 1,
+      "clicks": 0,
+      "impressions": 1,
+      "position": 7
+    }
+  ]
+}
