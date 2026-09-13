@@ -51,7 +51,19 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<an
 }
 
 async function main() {
-  const range = arg('range') ?? 'last_3_months';
+  // EXPLICIT DATES, NOT dateRange. The tool's convenience windows set the end date ~3 days back
+  // "for GSC data lag", so every capture silently omitted its most recent days -- measured at 444
+  // impressions and 5 clicks between last_3_months and today. Fresh rows are incomplete and will
+  // rise on a later pull, which is a reason to re-pull, not a reason to discard them: a capture
+  // that stops three days short makes "did the change work" unanswerable for three days.
+  //
+  // Defaults to the full 16-month lookback so the window is the site's entire history rather than
+  // an arbitrary slice; --days narrows it.
+  const days = Number(arg('days') ?? 480);
+  const end = new Date();
+  const start = new Date(end.getTime() - days * 86_400_000);
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+  const range = arg('range');
 
   const projects = await callTool('list_projects', {});
   const project = (projects.projects ?? projects.items ?? [])[0];
@@ -63,7 +75,9 @@ async function main() {
   let siteUrl = '', startDate = '', endDate = '';
   for (let startRow = 0; startRow < 25000; startRow += 500) {
     const sc = await callTool('get_search_console_performance', {
-      projectId, dimensions: ['query'], dateRange: range, rowLimit: 500, startRow,
+      projectId, dimensions: ['query'], rowLimit: 500, startRow,
+      // A --range wins if given, for reproducing an older capture exactly.
+      ...(range ? { dateRange: range } : { startDate: iso(start), endDate: iso(end) }),
     });
     siteUrl ||= sc.siteUrl; startDate ||= sc.startDate; endDate ||= sc.endDate;
     const rows: Row[] = sc.rows ?? [];
