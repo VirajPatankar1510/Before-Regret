@@ -42,13 +42,24 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
 
           <div className="border-b border-slate-200 pb-6 space-y-3">
             <p className="text-xs font-medium text-slate-400">About BeforeRegret</p>
+            {/* The h1 is a definition, not a process label. See the long note in
+                scripts/prerender-legal-pages.tsx for why this page carries the weight of stating
+                the site's identity: the domain served an unrelated product until 2026-07-31, and
+                search engines were still describing THAT product in September. */}
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              How we research and write this site
+              BeforeRegret is free property research for US home buyers
             </h1>
             <p className="text-sm text-slate-600 leading-relaxed">
-              BeforeRegret is a property research product owned and operated by <strong>Atmostellar</strong>. This
-              page explains, specifically and honestly, what's a live data check, what's AI-assisted writing, what
-              rules that writing has to follow, and how to tell us when something's wrong.
+              Enter any US residential address and get a free report: a live seismic hazard check, address
+              validation against US Census records, the inspection priorities that matter for a home of that
+              decade and county, and the exact questions to ask the seller. Alongside the reports we publish
+              free guides on specific defects &mdash; polybutylene pipes, Federal Pacific panels, cast iron
+              sewer lines &mdash; and original analyses of federal housing data.
+            </p>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              The site is owned and operated by <strong>Atmostellar</strong>. The rest of this page explains,
+              specifically and honestly, what's a live data check, what's AI-assisted writing, what rules that
+              writing has to follow, and how to tell us when something's wrong.
             </p>
           </div>
 

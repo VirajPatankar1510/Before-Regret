@@ -146,17 +146,39 @@ const ACCESSIBILITY_BREADCRUMB: Record<string, any> = {
 const PAGES: LegalPageConfig[] = [
   {
     outputPath: 'about',
-    title: 'How We Research and Write BeforeRegret | Methodology',
-    description: 'How BeforeRegret verifies live data, writes AI-assisted guides under a fixed set of sourcing rules, and handles corrections.',
+    // TITLE AND H1 ANSWER "what is BeforeRegret", which nothing on this site previously did.
+    //
+    // Both used to lead with methodology -- title "How We Research and Write BeforeRegret |
+    // Methodology", h1 "How we research and write this site". The definition was on the page, but
+    // buried in the third sentence under two headings that both signalled PROCESS, not IDENTITY.
+    //
+    // Why that matters more here than on a normal site: this domain served a different product.
+    // beforeregret.com was pointed at a relationship/regret Q&A platform on 2026-06-23 (commit
+    // dec5ffe, with automated sitemap generation added the same day) and did not pivot to US
+    // property research until 2026-07-31 (commit e976887) -- roughly five weeks indexed under the
+    // wrong identity. src/data/legacyUrls.ts records how durable that proved: Google still had
+    // /guides/narcissistic-gaslighting-vs-healthy-disagreements as "Submitted and indexed" while
+    // it answered 404 for months, and /city/mumbai likewise.
+    //
+    // Confirmed still live on 2026-09-15: Google's AI Mode, asked "what is this before regret
+    // website?", described a platform for "life reflection" and "capturing personal histories" --
+    // the OLD product, not anything written on this site today. Every old URL now correctly
+    // answers 410, but a 410 retires a PAGE; it does not replace an ENTITY. This page is the
+    // replacement signal, so it has to state plainly what the site is before explaining how it
+    // works.
+    title: 'About BeforeRegret: Free Property Research for US Buyers',
+    description: 'BeforeRegret is a free property research site for US home buyers. What we check live, how our guides are sourced and written, and how we fix mistakes.',
     canonicalUrl: 'https://www.beforeregret.com/about/',
     robots: 'index, follow',
     jsonLd: [
       {
         '@context': 'https://schema.org',
         '@type': 'AboutPage',
-        name: 'How we research and write this site',
+        name: 'About BeforeRegret',
+        description: 'BeforeRegret is a free, address-based property research site for US home buyers, published by Atmostellar. This page explains what is checked live, how the guides are sourced and written, and how corrections are handled.',
         url: 'https://www.beforeregret.com/about/',
         isPartOf: { '@type': 'WebSite', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
+        mainEntity: { '@id': 'https://www.beforeregret.com/#organization' },
       },
       ABOUT_BREADCRUMB,
     ],

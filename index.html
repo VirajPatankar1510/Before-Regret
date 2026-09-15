@@ -84,17 +84,19 @@
 
          Every field below is verifiable. sameAs carries the official LinkedIn company page, in its
          vanity-slug form (LinkedIn's own canonical, and more durable than the numeric-ID URL the
-         same page also answers on). Supplied first-hand by the site's owner, and note it could NOT
-         be verified by fetching it from here: LinkedIn answers automated clients with HTTP 999 and
-         redirects logged-out browsers to a login wall, so an outside check proves nothing either
-         way. Asserted on the owner's word -- a different thing from a guess, but worth re-checking
-         by hand if the page is ever renamed or removed. A sameAs pointing somewhere dead is worse
-         than none at all, because the property exists specifically so a search engine can CONFIRM
-         identity against another source.
+         same page also answers on).
+
+         This comment used to say the link could NOT be checked from here, on the grounds that
+         LinkedIn answers automated clients with HTTP 999. Re-tested 2026-09-15 with a Googlebot
+         UA: it returned 200 and 212KB, and the served HTML names "Before Regret" 61 times and
+         beforeregret.com 6 times. So the corroboration link is live and fetchable, and the
+         property is doing the job it exists for. Do not remove it on the old assumption.
 
          For that confirmation to run in BOTH directions, the LinkedIn page's own Website field
          must point back at https://www.beforeregret.com. Without the return link this is a one-way
-         claim and does far less work.
+         claim and does far less work. A sameAs pointing somewhere dead is worse than none at all,
+         because the property exists specifically so a search engine can CONFIRM identity against
+         another source -- so re-check by hand if the page is ever renamed or removed.
 
          Still deliberately omitted rather than guessed: foundingDate, employee count and any
          rating, none of which are stated anywhere on this site. Same rule the content itself
