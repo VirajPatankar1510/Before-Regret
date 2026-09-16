@@ -74,7 +74,7 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   ['environmental', /radon|asbestos|lead[- ]paint|\bmold\b|oil[- ]tank|underground[- ]storage|methane/],
   ['permits', /permit|unpermitted|code[- ]enforcement|zoning|violation/],
   ['insurance', /insur|clue[- ]report|carrier|\bpolicy\b|premium|uninsurable|4[- ]point/],
-  ['transaction', /contingen|escrow|closing|\bseller\b|negotiat|apprais|walk[- ]away|\bhoa\b|earnest|disclosure|inspector/],
+  ['transaction', /contingen|escrow|closing|\bseller\b|negotiat|apprais|walk[- ]away|\bhoa\b|earnest|disclosure|inspector|property[- ]tax|assessment/],
 ];
 
 /** The topic bucket a guide belongs to, or null when nothing matches. Exported for testing. */

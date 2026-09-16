@@ -160,7 +160,13 @@ function carrierClaims(r: Row): string[] {
  *  is a definition, and a definition earns no click: an AI Overview capture on 2026-09-10 showed
  *  Google reproducing one of these guides in full and citing nobody. Grandfathered. */
 const COST = /\$[\d,]{3,}/;
-const NUMBERED_STANDARD = /\b(NFPA|NEC|IRC|IBC|ASTM|ASCE|ANSI|UL)\s*[\d][\d.\-]*/i;
+// The optional letter before the digits is not slack -- it is required to match the real world.
+// ASTM designations are ALWAYS a committee letter then a number (E2356, D7338, C1193), so the
+// original /ASTM\s*[\d]/ could not match a single correctly written ASTM citation and silently
+// pushed writers toward a worse standard or an invented cost figure. Found 2026-09-17 when a
+// verified "ASTM E2356" citation failed this gate. ANSI (Z535), UL (UL 94) and NFPA (NFPA 13)
+// take the same shape. A digit is still mandatory, so a bare "per ASTM" still fails.
+const NUMBERED_STANDARD = /\b(NFPA|NEC|IRC|IBC|ASTM|ASCE|ANSI|UL)\s*[A-Z]?\s?[\d][\d.\-]*/i;
 
 /** RULE 3: quick_answer is the TL;DR above the fold. All 57 guides have one; keep it that way.
  *

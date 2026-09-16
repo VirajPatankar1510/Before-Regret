@@ -166,7 +166,6 @@ export const REMOVED_GUIDE_SLUGS: readonly string[] = [
   'bowing-basement-wall-actually-mean',
   'breaker-boxes-go-bad-lifespan-warning-signs',
   'buyers-remorse-after-buying-a-house',
-  'buying-house-reset-property-tax-assessment-sale-price',
   'circuit-breaker-box-be-bathroom',
   'close-house-active-roof-leak',
   'did-lender-require-repairs-before-closing',
@@ -185,7 +184,6 @@ export const REMOVED_GUIDE_SLUGS: readonly string[] = [
   'happens-if-septic-system-fails-before-closing',
   'hoa-foreclose-if-pay-mortgage',
   'home-inspection-check-attic-proper-insulation',
-  'home-inspection-check-mold-behind-walls',
   'home-inspection-cover-retaining-walls',
   'home-inspection-include-level-2-chimney-inspection',
   'home-inspection-test-well-pump-just-water-pressure',
@@ -201,7 +199,6 @@ export const REMOVED_GUIDE_SLUGS: readonly string[] = [
   'needs-be-done-before-home-inspection',
   'old-too-old-water-heater-re-inheriting',
   'older-roof-automatically-fail-4-point-inspection',
-  'prove-roof-age-for-insurance',
   'regret-buying-a-house',
   'repair-request-vs-price-credit-vs-escrow-holdback-which-ask',
   'seller-s-pre-listing-inspection-isn-t-substitute-own',
@@ -210,8 +207,6 @@ export const REMOVED_GUIDE_SLUGS: readonly string[] = [
   'should-use-home-inspector-recommended-by-realtor',
   'slab-leak-would-inspector-catch-one',
   'split-bus-electrical-panels-problem-buyers',
-  'standard-home-inspection-check-asbestos',
-  'when-reasonable-walk-away-after-inspection',
 ];
 
 /** The surviving slug for a merged guide, or null if this slug was not merged. */
