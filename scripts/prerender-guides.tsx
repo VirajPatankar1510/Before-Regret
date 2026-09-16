@@ -767,11 +767,13 @@ BeforeRegret does not fabricate data. If a claim in these guides isn't backed by
 
 ## API
 
-Read-only, cached (1 hour), rate-limited (30 requests/minute/IP, no signup required). Full docs: https://www.beforeregret.com/api/v1/docs
+Read-only and open: **no API key, no signup, no account**. Cached 1 hour, rate-limited to 30 requests/minute/IP. **CORS is enabled for all origins**, so it can be called directly from a browser. Full docs: https://www.beforeregret.com/api/v1/docs
 
-- \`GET /api/v1/counties\` -- every verified county (slug, name, state, population)
-- \`GET /api/v1/county/{slug}\` -- FEMA National Risk Index (all 18 hazard scores), EPA radon zone, Census housing-age distribution, and NOAA storm-event history for one county, with a fetchedAt timestamp
+- \`GET /api/v1/counties\` -- every county with a complete verified record (slug, name, state, population). Start here; the slugs the other endpoint takes come from this list.
+- \`GET /api/v1/county/{slug}\` -- FEMA National Risk Index hazard scores, EPA radon zone, Census housing-age distribution, and NOAA storm-event history for one county, each with the fetchedAt timestamp of the agency query it came from. The NRI defines 18 hazard types and a county carries the subset that applies to it, so a record holds roughly 14-17 rather than all 18 -- Miami-Dade has no avalanche score, Alameda no hurricane.
 - \`GET /api/v1/guides\` -- every published guide (slug, title, meta description, publish date)
+
+Values are sourced from the named federal agency and are not model-generated or estimated. If a county is absent, one of the source agencies has not been independently verified for it yet -- there is no partial or best-effort record. Free to use; a link back is appreciated, not required.
 
 ## Report
 
