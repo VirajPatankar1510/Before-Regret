@@ -17,11 +17,18 @@
 // impressions move together at Pearson r = 0.936, both fell on the same day, so AI Overviews were
 // not absorbing those queries. See [[beforeregret-definitional-cluster-collapse]].
 //
-// WHAT THE CAPTURE IS FOR. Same provenance discipline as data/keywords/*.json: a dated file with
-// its source and window, so a later claim about this channel cites a measurement rather than a
-// memory. This report has no query dimension -- pages, countries, devices and a daily series are
-// all Google gives -- so the shape differs from the keyword captures and is deliberately not
-// pretending to be one.
+// WHY data/ai-features/ AND NOT data/keywords/. It went in data/keywords/ first and broke the
+// build, which is the correct outcome: assert-keyword-provenance.ts validates every file there as
+// a KEYWORD capture, and requires a source from its own list plus a `keywords` array. This report
+// has no query dimension at all -- pages, countries, devices and a daily series are everything
+// Google gives -- so it can satisfy neither without lying about what it is. An empty keywords
+// array to appease a gate is exactly the kind of technically-passing falsehood the gate exists to
+// stop.
+//
+// It keeps the same provenance discipline -- dated file, source, endpoint, window, cost -- because
+// that discipline is about citing measurements rather than memories, and applies to any
+// measurement. It simply is not a keyword capture and no longer sits where keyword captures are
+// policed.
 import 'dotenv/config';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -29,7 +36,7 @@ import { fileURLToPath } from 'node:url';
 import { getAccessToken } from '../src/server/searchConsoleService.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OUT_DIR = path.join(ROOT, 'data', 'keywords');
+const OUT_DIR = path.join(ROOT, 'data', 'ai-features');
 const SITE = 'https://www.beforeregret.com';
 
 /** GSC exports are `Label,Number` with the label possibly containing commas. Split on the LAST. */
@@ -121,7 +128,7 @@ async function main() {
   const id = `${new Date().toISOString().slice(0, 10)}-gsc-ai-features`;
   fs.writeFileSync(path.join(OUT_DIR, `${id}.json`), `${JSON.stringify(capture, null, 2)}\n`);
 
-  console.log(`\n  wrote data/keywords/${id}.json`);
+  console.log(`\n  wrote data/ai-features/${id}.json`);
   console.log(`  window ${start} .. ${end}`);
   console.log(`  AI-feature impressions : ${deviceTotal}`);
   console.log(`  web impressions same window: ${webTotal}  (AI is ${(deviceTotal / webTotal * 100).toFixed(1)}% of it)`);

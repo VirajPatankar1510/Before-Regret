@@ -7,7 +7,7 @@
 // -----------------------------------------------------------------------------------------------
 // THE HYPOTHESIS, AND WHY IT IS ONLY A HYPOTHESIS.
 //
-// The first Generative AI Features export (2026-08-18..09-14, see data/keywords/) let each page's
+// The first Generative AI Features export (2026-08-18..09-14, see data/ai-features/) let each page's
 // AI-feature impressions be divided by its web impressions. Comparing the 8 highest-share pages
 // (mean 36.2%) against the 8 lowest (4.5%), exactly one attribute separated them:
 //
@@ -54,7 +54,7 @@ import { withDb } from '../src/server/db.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const APPLY = process.env.APPLY === 'true';
-const CAPTURE = path.join(ROOT, 'data', 'keywords', '2026-09-17-gsc-ai-features.json');
+const CAPTURE = path.join(ROOT, 'data', 'ai-features', '2026-09-17-gsc-ai-features.json');
 const MANIFEST = path.join(ROOT, 'data', 'ai-verdict-test.json');
 
 const VERDICT = /^(no|yes|generally|usually|often|in most|not |it can|probably|rarely|sometimes|only)\b/i;
