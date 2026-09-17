@@ -26,3 +26,8 @@ backups/
 # Customer correspondence drafts: these contain real names, email addresses and home
 # addresses, and this repository is public. Never commit them.
 docs/reply-*.md
+
+# Generated short-form video assets. The GENERATOR is versioned; its output is not --
+# it is regenerated from the study CSV on demand and would otherwise add a few hundred
+# files of derived artefacts per batch.
+assets/short-video/
