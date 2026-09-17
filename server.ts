@@ -1485,9 +1485,30 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
   // before the dev/prod split so `npm run dev` behaves the same as production.
   // The list itself now lives in src/data/legacyUrls.ts so scripts/legacy-url-audit.ts asserts
   // against exactly what this handler enforces, rather than a re-typed copy that can drift.
+  // WHAT A VISITOR SEES, changed 2026-09-17. This used to answer with the plain-text sentence
+  // "Gone -- this page was part of a previous version of this site and has been permanently
+  // removed." The status code was right and the body was a mistake: it announced to anyone who
+  // landed here that the domain used to be something else, which is the exact impression the
+  // /about/ rewrite is working to undo. And people DO land here -- Search Console's Generative AI
+  // report for the 28 days to 2026-09-17 shows Google still surfacing /refund-policy,
+  // /privacy-policy and several /county/ URLs inside AI answers while all of them answer 410.
+  //
+  // It now serves the ordinary app shell with a 410, which is what the pruned-guide and county
+  // handlers further down already do -- so all three 410 paths look identical to a human and none
+  // of them discusses the site's history. Google's behaviour is unchanged: the status code is what
+  // it reads, and that is still 410.
+  //
+  // The shell path is computed here rather than reusing sendShellWithStatus, which is scoped
+  // inside the production branch further down; this handler deliberately runs before the dev/prod
+  // split so `npm run dev` behaves like production. Falls back to a bare status if the shell is
+  // absent, which is the case in a dev tree that has never been built.
   app.use((req, res, next) => {
     if (isLegacyGonePath(req.path)) {
-      return res.status(410).type('text/plain').send('Gone -- this page was part of a previous version of this site and has been permanently removed.');
+      const shell = path.join(process.cwd(), 'dist', 'shell.html');
+      if (fs.existsSync(shell)) {
+        return res.status(410).type('text/html').send(fs.readFileSync(shell, 'utf8'));
+      }
+      return res.sendStatus(410);
     }
     next();
   });

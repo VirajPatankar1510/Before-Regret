@@ -41,6 +41,21 @@ export const LEGACY_GONE_PATHS: readonly string[] = [
   '/guides/red-flag-evaluation-boundary-matrix',
   '/guides/narcissistic-gaslighting-vs-healthy-disagreements',
   '/guides/codependency-vs-interdependence-autonomy-score',
+  // A FIFTH, found 2026-09-17 the same way and missed by the 2026-08-26 sweep: it was answering
+  // 404 rather than 410, alone among every previous-product URL. Found by listing every page
+  // Search Console has EVER reported (2025-05-24 to date, 109 URLs), subtracting the published
+  // slugs, and checking the status of what was left -- a wider window than the 28-day report the
+  // earlier sweep used, which is why it surfaced now and not then. It had 1 impression.
+  //
+  // The distinction is the whole reason this file exists: 404 tells Google the URL might come
+  // back and to keep re-checking; 410 tells it to drop the URL. On a site crawled a few pages a
+  // day, a re-check of a dead relationship-psychology page is crawl budget taken from a live one.
+  //
+  // WORTH KNOWING FOR THE NEXT SWEEP: Search Console only reports URLs with at least one
+  // impression, so this method cannot enumerate previous-product URLs that never earned one.
+  // There may be more; they are invisible to every instrument available here, and they cost
+  // nothing while nobody requests them.
+  '/guides/emotional-cheating-vs-close-friendship-boundaries',
   '/counties',
 ];
 
