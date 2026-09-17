@@ -41,16 +41,30 @@ pages**, mean 230 impr/page/28d. This format also responds to deliberate work: t
 gainers on the site were LA County (+218, after a title fix) and EIFS (+118, after query
 targeting).
 
-## Leading hypothesis, explicitly unproven
+## The hypothesis was AI Overviews. It was REFUTED on 2026-09-17.
 
-AI Overview absorption on definitional queries. It fits the intent-selectivity, the suddenness,
-and the standing open-ground case (indexed, unshown, while an AI Overview reproduced the content
-citing nobody).
+Search Console's Generative AI Features report (UI export; there is no API) gives AI-feature
+impressions per day. Against web impressions over the same window:
 
-**It cannot be confirmed with the tools available.** Search Console folds AI Overview impressions
-into ordinary web results and does not break them out — `fetchSearchAppearance()` returns only
-`TRANSLATED_RESULT` here. DataForSEO is paused. **Label it hypothesis. Do not plan as if proven,
-and do not assert it to the user as fact.**
+```
+Sep 3   571 web   97 AI
+Sep 4   428 web   94 AI
+Sep 5   285 web   27 AI    <- both collapse, same day
+```
+
+**Pearson r = 0.936 across 28 days.** Absorption would have shown AI impressions RISING while web
+fell. They fell together, so the event hit both surfaces — a Google-side visibility change, not a
+format shift.
+
+Also corrected: this file previously said Search Console "folds AI Overview impressions into
+ordinary web results and does not break them out." It does break them out.
+`fetchSearchAppearance()` returning only `TRANSLATED_RESULT` is a narrower API dimension that was
+misread as proof of absence.
+
+**What follows: the deprioritisation below is REOPENED, not reversed.** The cluster really did go
+to near-zero and stayed there, so do not rush back into definitional content. What changed is that
+there is no longer a reason to believe the format is structurally doomed — the cause is simply
+unknown. Pull `scripts/import-ai-features.ts` on a fresh export before reasoning about this again.
 
 ## What follows for decisions
 
