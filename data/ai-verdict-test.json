@@ -1,0 +1,439 @@
+{
+  "hypothesis": "A quick_answer opening with a verdict raises the page's share of Generative AI Feature impressions.",
+  "started": "2026-09-17",
+  "baseline_capture": "2026-09-17-gsc-ai-features.json",
+  "baseline_window": "2026-08-18..2026-09-14",
+  "readout": "Export Generative AI Features again after >=28 days, run import-ai-features.ts, then compare each page's ai/web share against the baseline below. Treatment moving while control stays flat is the only result that means anything.",
+  "limits": [
+    "n=3",
+    "quick_answer also faces human readers, so web impressions may move too",
+    "export is manual, so timing is not controlled"
+  ],
+  "treatment": [
+    {
+      "slug": "va-loan-require-termite-inspection",
+      "before": "A VA loan requires a termite inspection if the property is located in an area designated by the Department of Veterans Affairs as having a moderate to very high risk of wood-destroying insect activity. In these mandatory zones, a clear pest inspection report must be submitted before the mortgage can close.",
+      "after": "Only in designated zones. A VA loan requires a termite inspection where the property sits in an area the Department of Veterans Affairs designates as moderate to very high risk for wood-destroying insect activity. In those zones a clear pest inspection report must reach the lender before the mortgage can close; outside them it is not required."
+    },
+    {
+      "slug": "homeowners-insurance-cover-failed-sump-pump",
+      "before": "Standard homeowners insurance policies typically exclude damage from sump pump failure or water backing up through drains, as these are often considered maintenance issues or forms of flood-related damage. Specialized \"water backup and sump overflow\" endorsements are generally required to cover such incidents, but these are distinct from flood insurance.",
+      "after": "Generally no. Standard homeowners policies typically exclude damage from sump pump failure or water backing up through drains, treating them as maintenance issues or as flood-related damage. A separate \"water backup and sump overflow\" endorsement is usually what covers it, and that endorsement is distinct from flood insurance."
+    },
+    {
+      "slug": "reverse-polarity-mean-electrical-inspection",
+      "before": "Reverse polarity on an electrical inspection report means that the hot and neutral wires connected to a standard outlet are reversed at the terminal connections. While plugged-in devices may still receive power, this wiring defect keeps internal components energized even when a device is turned off, creating an electric shock hazard for occupants.",
+      "after": "Yes, it is a shock hazard. Reverse polarity means the hot and neutral wires at a standard outlet are reversed at the terminal connections. Plugged-in devices still receive power, but internal components stay energised even when the device is switched off, which is what creates the risk to anyone using them."
+    }
+  ],
+  "baseline": [
+    {
+      "slug": "check-building-permits-clark-county-nv",
+      "ai": 35,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "look-up-building-permits-by-address",
+      "ai": 73,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-maricopa-county-az",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "spot-polybutylene-pipes-before-buying-house",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-san-diego-county-ca",
+      "ai": 36,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "legalize-unpermitted-deck",
+      "ai": 14,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-san-bernardino-county-ca",
+      "ai": 52,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "negotiate-radon-mitigation-after-inspection",
+      "ai": 0,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "home-inspection-check-underground-oil-tanks",
+      "ai": 0,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "amateur-workmanship-mean-home-inspection-report",
+      "ai": 1,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "reverse-polarity-mean-electrical-inspection",
+      "ai": 27,
+      "qa_opens_with_verdict": false,
+      "arm": "treatment"
+    },
+    {
+      "slug": "federal-pacific-stab-lok-panel-inspectors-flag",
+      "ai": 17,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-code-violations-property-online",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "who-s-responsible-shared-well-shared-driveway",
+      "ai": 42,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "splice-romex-knob-tube-wiring",
+      "ai": 26,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "100-amp-service-enough-house-re-buying",
+      "ai": 29,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "home-inspection-include-septic-system",
+      "ai": 4,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "get-insurance-house-trampoline-unfenced-pool",
+      "ai": 0,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "tpr-valve-inspectors-always-check",
+      "ai": 12,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "how-common-are-title-insurance-claims",
+      "ai": 5,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "knob-tube-wiring-have-be-replaced-before-closing",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "find-unpermitted-work-before-buying",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "home-insurance-aerial-photos-roof",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "us-housing-age-ranking-oldest-vs-newest-counties",
+      "ai": 9,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "home-inspection-check-mold-behind-walls",
+      "ai": 14,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "polybutylene-pipes-home-insurance",
+      "ai": 0,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-miami-dade-county-fl",
+      "ai": 22,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-orange-county-ca",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "what-is-knob-and-tube-wiring",
+      "ai": 1,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "standard-home-inspection-check-eifs-stucco-moisture",
+      "ai": 40,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "why-cast-iron-pipes-corrode",
+      "ai": 8,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-queens-ny",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "buy-house-active-hoa-lawsuit",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "double-tapped-breaker-did-inspector-flag",
+      "ai": 8,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-bronx-ny",
+      "ai": 7,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "need-gfci-outlets-pass-home-inspection",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "home-solar-panels-don-t-own-affect-getting-insurance",
+      "ai": 6,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "get-clue-report-before-buying-house",
+      "ai": 0,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "get-home-insurance-aluminum-wiring",
+      "ai": 60,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "will-zinsco-panel-fail-4-point-inspection",
+      "ai": 18,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "standard-home-inspection-include-termites",
+      "ai": 1,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "seller-back-out-after-accepting-inspection-response",
+      "ai": 1,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "wdo-report-who-supposed-order",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "not-inspected-due-storage-mean-inspection-report",
+      "ai": 8,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "typical-settlement-cracking-mean-inspection-report",
+      "ai": 4,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "orangeburg-pipe-collapse",
+      "ai": 15,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-philadelphia-county-pa",
+      "ai": 35,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "homeowners-insurance-cover-failed-sump-pump",
+      "ai": 40,
+      "qa_opens_with_verdict": false,
+      "arm": "treatment"
+    },
+    {
+      "slug": "check-building-permits-cook-county-il",
+      "ai": 25,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "open-ground-mean-electrical-inspection",
+      "ai": 34,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "get-home-insurance-fuse-box",
+      "ai": 41,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "standard-home-inspection-check-asbestos",
+      "ai": 14,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-riverside-county-ca",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-middlesex-county-ma",
+      "ai": 7,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-los-angeles-county-ca",
+      "ai": 21,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "evidence-prior-repair-mean-home-inspection-report",
+      "ai": 15,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "happens-if-termite-infestation-found-during-home-inspection",
+      "ai": 20,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-tarrant-county-tx",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-building-permits-dallas-county-tx",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "when-foundation-crack-need-structural-engineer",
+      "ai": 12,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "get-home-insurance-flat-roof",
+      "ai": 16,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "va-loan-require-termite-inspection",
+      "ai": 13,
+      "qa_opens_with_verdict": false,
+      "arm": "treatment"
+    },
+    {
+      "slug": "should-buy-house-s-already-had-foundation-repair",
+      "ai": 1,
+      "qa_opens_with_verdict": true,
+      "arm": "control"
+    },
+    {
+      "slug": "buying-house-reset-property-tax-assessment-sale-price",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "hvac-techs-wish-buyers-knew-about-system-age",
+      "ai": 2,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "prove-roof-age-for-insurance",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "when-reasonable-walk-away-after-inspection",
+      "ai": 6,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    },
+    {
+      "slug": "check-harris-county-permit-history-before-buying",
+      "ai": 0,
+      "qa_opens_with_verdict": false,
+      "arm": "control"
+    }
+  ]
+}
