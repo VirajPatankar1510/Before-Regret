@@ -28,32 +28,85 @@ import { LEGACY_URLS_TO_VERIFY, isLegacyGonePath } from '../src/data/legacyUrls.
 const BASE = 'https://www.beforeregret.com';
 const SKIP_GSC = process.argv.includes('--no-gsc');
 
-// Real, current pages. Anything here that showed up as "not published" would be a false alarm
-// from the coverage query's own URL-shape matching, not a legacy URL.
-const CURRENT_PAGES = new Set([
-  '/', '/guides/', '/counties/', '/about/', '/terms/', '/privacy/', '/refunds/',
-  '/disclaimer/', '/accessibility/', '/support/', '/advertise/', '/topic-ads/', '/report-ads/',
-  // Trailing-slash-less duplicates of real pages. Both serve 200 and both carry a canonical
-  // pointing at the slash form, so Google consolidates them -- not an eviction problem.
-  '/guides', '/privacy', '/terms', '/about', '/counties',
-]);
-
-async function statusOf(path: string, userAgent?: string): Promise<number> {
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      const res = await fetch(`${BASE}${path}`, {
-        method: 'GET',
-        redirect: 'manual',
-        headers: userAgent ? { 'User-Agent': userAgent } : {},
-        signal: AbortSignal.timeout(20000),
-      });
-      return res.status;
-    } catch {
-      if (attempt === 3) return 0; // 0 = never got an answer, reported as unknown rather than a pass
-      await new Promise((r) => setTimeout(r, 1000 * attempt));
+// What this site currently claims is live, READ FROM THE SITEMAP rather than hand-kept.
+//
+// FIXED 2026-09-17. This used to be a hardcoded Set, and it had gone wrong in both directions:
+//
+//   - It omitted /research/ and the seven study URLs, which are prerendered from docs/ and appear
+//     in no database table. The audit therefore counted seven LIVE pages as surviving legacy URLs
+//     -- 23 of the 27 "legacy" impressions in the last 7 days were the research studies doing
+//     exactly what they are supposed to do. It then told you to add them to legacyUrls.ts, which
+//     would have 410'd the site's best content.
+//   - It listed '/counties/' and '/counties' as CURRENT. They are 410 and are IN the legacy list.
+//     A genuinely dead URL was whitelisted as healthy, which is the failure mode that matters:
+//     the audit could never have reported it.
+//
+// The sitemap is the site's own statement of what is live, generated at build time from the
+// database and the prerender scripts. Reading it means this set cannot drift from reality the way
+// a hand-kept copy did. Fetched once, from production, so it reflects what is deployed rather than
+// what is on this machine.
+async function fetchLivePaths(): Promise<Set<string>> {
+  const paths = new Set<string>();
+  const index = await fetch(`${BASE}/sitemap.xml`, { signal: AbortSignal.timeout(20000) }).then((r) => r.text());
+  const children = [...index.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  if (children.length === 0) throw new Error('ABORT: /sitemap.xml listed no child sitemaps -- cannot establish what is live');
+  for (const child of children) {
+    const xml = await fetch(child, { signal: AbortSignal.timeout(20000) }).then((r) => r.text());
+    for (const m of xml.matchAll(/<loc>([^<]+)<\/loc>/g)) {
+      const path = m[1].replace(BASE, '');
+      paths.add(path);
+      paths.add(path.replace(/\/$/, '')); // the slash-less shape 308s to this one; not an eviction problem
     }
   }
-  return 0;
+  if (paths.size < 20) throw new Error(`ABORT: sitemap yielded only ${paths.size} paths -- refusing to audit against a truncated list`);
+  return paths;
+}
+
+/** The status a path SETTLES on, following our own redirects, plus the chain that got there.
+ *
+ *  FIXED 2026-09-17. This used to return the first status and stop, so the five /guides/ legacy
+ *  URLs were reported FAIL at 308 and the script declared "the eviction has REGRESSED" on every
+ *  run. They were fine: server.ts normalises /guides/<slug> to /guides/<slug>/ before any handler
+ *  sees it, so the real answer is one hop away and it is 410. A checker that cannot follow its own
+ *  site's redirect cannot tell a working eviction from a broken one -- and a verdict that cries
+ *  wolf every run is worse than no verdict, because it trains you to skip reading it.
+ *
+ *  Still manual rather than redirect:'follow' so the hops are visible in the output: a legacy URL
+ *  that 301s somewhere REAL is a different bug from one that 410s, and both would look identical
+ *  under an automatic follow. Cross-origin hops are refused rather than chased.
+ */
+async function resolveStatus(path: string, userAgent?: string): Promise<{ status: number; chain: number[] }> {
+  const chain: number[] = [];
+  let target = path;
+  for (let hop = 0; hop < 4; hop++) {
+    let res: Response | null = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        res = await fetch(`${BASE}${target}`, {
+          method: 'GET',
+          redirect: 'manual',
+          headers: userAgent ? { 'User-Agent': userAgent } : {},
+          signal: AbortSignal.timeout(20000),
+        });
+        break;
+      } catch {
+        if (attempt === 3) return { status: 0, chain }; // 0 = no answer; reported as unknown, never as a pass
+        await new Promise((r) => setTimeout(r, 1000 * attempt));
+      }
+    }
+    if (!res) return { status: 0, chain };
+    chain.push(res.status);
+    if (res.status < 300 || res.status >= 400) return { status: res.status, chain };
+    const loc = res.headers.get('location');
+    if (!loc) return { status: res.status, chain };
+    if (/^https?:\/\//i.test(loc) && !loc.startsWith(BASE)) return { status: res.status, chain }; // off-site: not ours to follow
+    target = loc.startsWith(BASE) ? loc.slice(BASE.length) : loc;
+  }
+  return { status: 0, chain }; // redirect loop
+}
+
+async function statusOf(path: string, userAgent?: string): Promise<number> {
+  return (await resolveStatus(path, userAgent)).status;
 }
 
 const GOOGLEBOT = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
@@ -64,10 +117,11 @@ async function main() {
   for (const path of LEGACY_URLS_TO_VERIFY) {
     // Checked as Googlebot specifically: the thing that matters is what the crawler is told, and a
     // CDN or edge rule that treats bots differently would be invisible to a plain request.
-    const [plain, bot] = await Promise.all([statusOf(path), statusOf(path, GOOGLEBOT)]);
-    const ok = plain === 410 && bot === 410;
+    const [plain, bot] = await Promise.all([resolveStatus(path), resolveStatus(path, GOOGLEBOT)]);
+    const ok = plain.status === 410 && bot.status === 410;
     if (!ok) failures++;
-    console.log(`  ${ok ? 'OK  ' : 'FAIL'} ${path.padEnd(46)} plain=${plain} googlebot=${bot}`);
+    const via = bot.chain.length > 1 ? ` via ${bot.chain.join(' -> ')}` : '';
+    console.log(`  ${ok ? 'OK  ' : 'FAIL'} ${path.padEnd(46)} plain=${plain.status} googlebot=${bot.status}${via}`);
   }
   console.log(`\n  ${failures === 0 ? `All ${LEGACY_URLS_TO_VERIFY.length} legacy URLs return 410 to both.` : `${failures} URL(s) NOT returning 410 -- the eviction has regressed.`}`);
 
@@ -87,12 +141,16 @@ async function main() {
   const { withDb } = await import('../src/server/db.js');
   if (!isSearchConsoleConfigured()) { console.log('  Search Console is not configured -- skipping.'); return; }
 
-  const published = new Set<string>();
-  for (const r of (await withDb((sql) => sql`SELECT slug FROM articles WHERE status='published'`)) as any[]) {
-    published.add(`${BASE}/guides/${r.slug}/`);
-  }
-  for (const r of (await withDb((sql) => sql`SELECT slug FROM county_data WHERE data_complete=true`)) as any[]) {
-    published.add(`${BASE}/county/${r.slug}/`);
+  const live = await fetchLivePaths();
+  console.log(`  (sitemap says ${live.size / 2} URLs are live)\n`);
+
+  // Guides the 2026-09-02 prune removed. They 410 too, but they are THIS product's own pages --
+  // counting them as "the previous website" overstates the eviction and, worse, invites someone to
+  // add a current-product slug to legacyUrls.ts. Reported separately for that reason.
+  const prunedPaths = new Set<string>();
+  for (const r of (await withDb((sql) => sql`SELECT slug FROM articles WHERE status='removed'`)) as any[]) {
+    prunedPaths.add(`/guides/${r.slug}/`);
+    prunedPaths.add(`/guides/${r.slug}`);
   }
 
   const windows: Record<number, { urls: number; impressions: number; list: string[] }> = {};
@@ -100,7 +158,7 @@ async function main() {
     const pages = await fetchPagePerformance(days);
     const legacy = pages.filter((p) => {
       const path = p.page.replace(BASE, '');
-      return !published.has(p.page) && !CURRENT_PAGES.has(path) && !CURRENT_PAGES.has(path.replace(/\/$/, ''));
+      return !live.has(path) && !prunedPaths.has(path);
     });
     windows[days] = {
       urls: legacy.length,
@@ -121,8 +179,16 @@ async function main() {
     .map((l) => l.split('  ').pop()!.trim())
     .filter((p) => !isLegacyGonePath(p));
   if (uncovered.length > 0) {
-    console.log('\n  !! NOT COVERED by the 410 rules -- add these to src/data/legacyUrls.ts:');
-    for (const u of uncovered) console.log(`     ${u}`);
+    console.log('\n  !! NOT COVERED by any 410 rule -- these are URLs Google still shows that this');
+    console.log('     site neither publishes nor tombstones. Check each before adding it anywhere:');
+    for (const u of uncovered) {
+      const st = await resolveStatus(u, GOOGLEBOT);
+      const verdict = st.status === 410 ? 'already 410 (covered by another rule)'
+        : st.status === 404 ? 'answers 404 -- should be 410 if it is a previous-product URL'
+        : st.status === 200 ? 'answers 200 -- this is a LIVE page; do NOT tombstone it'
+        : `answers ${st.status}`;
+      console.log(`     ${u.padEnd(60)} ${verdict}`);
+    }
   }
 
   console.log('\n=== VERDICT ===');
