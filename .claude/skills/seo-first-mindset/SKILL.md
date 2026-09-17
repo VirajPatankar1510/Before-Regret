@@ -74,6 +74,7 @@ already on disk, is not evidence — it is a guess, and the Core Rules forbid ac
 ```bash
 npx tsx scripts/pull-gsc-via-openseo.ts     # Google queries -> data/keywords/<date>-gsc-queries.json
 npx tsx scripts/pull-bing-queries.ts        # Bing queries   -> data/keywords/<date>-bing-queries.json
+npx tsx scripts/import-ai-features.ts <dir> # GSC Generative AI Features (UI export -- no API exists)
 npx tsx scripts/gsc-page-coverage.ts 28     # which published URLs Google has actually shown
 npx tsx scripts/keyword-opportunities.ts    # striking-distance analysis
 ```
@@ -115,8 +116,14 @@ cost real effort to establish — re-deriving them wastes the budget the Mission
   page alive on either engine is alive.
 - **The constraint is indexing, not content.** Pages sit "Discovered – currently not indexed"
   while healthy, linked, unique and in the sitemap. More pages do not mean more impressions.
-- **Definitional intent underperforms here; navigational intent holds.** See
-  `references/search-intent.md` before proposing a "what does X mean" page.
+- **Definitional intent underperforms here; navigational intent holds** — but the REASON is now
+  unknown. The AI-Overview explanation was refuted 2026-09-17: AI and web impressions correlate at
+  r = 0.936 and fell together, so AI features were not absorbing those queries. The deprioritisation
+  is **reopened, not reversed**. See `references/search-intent.md`.
+- **Generative AI Features is ~14% of impressions and export-only.** 952 of 7,186 over
+  2026-08-18..09-14. The strongest predictor of appearing there is a `quick_answer` that OPENS with
+  a verdict (No / Generally / It can) — 5 of the top 8 pages, 0 of the bottom 8. Length, lists,
+  tables and heading count do not discriminate.
 - **Every page is served by the Node function** (`vercel.json` rewrites `/(.*)` → `/api/index`),
   and guides are prerendered at build time. A published row without a rebuild is a soft 404.
 

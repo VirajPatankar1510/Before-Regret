@@ -1,0 +1,625 @@
+{
+  "source": "gsc-generative-ai-features",
+  "endpoint": "Search Console UI export (no API exists -- searchAppearance exposes only TRANSLATED_RESULT)",
+  "captured_at": "2026-09-17T12:00:45.970Z",
+  "start_date": "2026-08-18",
+  "end_date": "2026-09-14",
+  "site_url": "https://www.beforeregret.com",
+  "cost_usd": 0,
+  "ai_impressions": 952,
+  "web_impressions_same_window": 7186,
+  "ai_share_of_web": 0.1325,
+  "pearson_r_ai_vs_web_daily": 0.936,
+  "daily": [
+    {
+      "date": "2026-08-18",
+      "ai": 6,
+      "web": 61
+    },
+    {
+      "date": "2026-08-19",
+      "ai": 4,
+      "web": 66
+    },
+    {
+      "date": "2026-08-20",
+      "ai": 11,
+      "web": 113
+    },
+    {
+      "date": "2026-08-21",
+      "ai": 14,
+      "web": 133
+    },
+    {
+      "date": "2026-08-22",
+      "ai": 12,
+      "web": 147
+    },
+    {
+      "date": "2026-08-23",
+      "ai": 7,
+      "web": 158
+    },
+    {
+      "date": "2026-08-24",
+      "ai": 16,
+      "web": 177
+    },
+    {
+      "date": "2026-08-25",
+      "ai": 10,
+      "web": 172
+    },
+    {
+      "date": "2026-08-26",
+      "ai": 21,
+      "web": 177
+    },
+    {
+      "date": "2026-08-27",
+      "ai": 11,
+      "web": 189
+    },
+    {
+      "date": "2026-08-28",
+      "ai": 15,
+      "web": 155
+    },
+    {
+      "date": "2026-08-29",
+      "ai": 15,
+      "web": 272
+    },
+    {
+      "date": "2026-08-30",
+      "ai": 15,
+      "web": 187
+    },
+    {
+      "date": "2026-08-31",
+      "ai": 30,
+      "web": 245
+    },
+    {
+      "date": "2026-09-01",
+      "ai": 69,
+      "web": 372
+    },
+    {
+      "date": "2026-09-02",
+      "ai": 93,
+      "web": 548
+    },
+    {
+      "date": "2026-09-03",
+      "ai": 97,
+      "web": 571
+    },
+    {
+      "date": "2026-09-04",
+      "ai": 94,
+      "web": 428
+    },
+    {
+      "date": "2026-09-05",
+      "ai": 27,
+      "web": 285
+    },
+    {
+      "date": "2026-09-06",
+      "ai": 36,
+      "web": 295
+    },
+    {
+      "date": "2026-09-07",
+      "ai": 45,
+      "web": 401
+    },
+    {
+      "date": "2026-09-08",
+      "ai": 66,
+      "web": 372
+    },
+    {
+      "date": "2026-09-09",
+      "ai": 49,
+      "web": 367
+    },
+    {
+      "date": "2026-09-10",
+      "ai": 36,
+      "web": 278
+    },
+    {
+      "date": "2026-09-11",
+      "ai": 49,
+      "web": 288
+    },
+    {
+      "date": "2026-09-12",
+      "ai": 29,
+      "web": 238
+    },
+    {
+      "date": "2026-09-13",
+      "ai": 25,
+      "web": 188
+    },
+    {
+      "date": "2026-09-14",
+      "ai": 50,
+      "web": 303
+    }
+  ],
+  "pages": [
+    {
+      "url": "https://www.beforeregret.com/guides/look-up-building-permits-by-address/",
+      "ai": 73
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/get-home-insurance-aluminum-wiring/",
+      "ai": 60
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/check-building-permits-san-bernardino-county-ca/",
+      "ai": 52
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/who-s-responsible-shared-well-shared-driveway/",
+      "ai": 42
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/get-home-insurance-fuse-box/",
+      "ai": 41
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/homeowners-insurance-cover-failed-sump-pump/",
+      "ai": 40
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/",
+      "ai": 40
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/check-building-permits-san-diego-county-ca/",
+      "ai": 36
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/check-building-permits-clark-county-nv/",
+      "ai": 35
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/check-building-permits-philadelphia-county-pa/",
+      "ai": 35
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/open-ground-mean-electrical-inspection/",
+      "ai": 34
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/100-amp-service-enough-house-re-buying/",
+      "ai": 29
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/reverse-polarity-mean-electrical-inspection/",
+      "ai": 27
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/",
+      "ai": 26
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/check-building-permits-cook-county-il/",
+      "ai": 25
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/check-building-permits-miami-dade-county-fl/",
+      "ai": 22
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/check-building-permits-los-angeles-county-ca/",
+      "ai": 21
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/happens-if-termite-infestation-found-during-home-inspection/",
+      "ai": 20
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/will-zinsco-panel-fail-4-point-inspection/",
+      "ai": 18
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/federal-pacific-stab-lok-panel-inspectors-flag/",
+      "ai": 17
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/look-up-building-permits-by-address",
+      "ai": 17
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/get-home-insurance-flat-roof/",
+      "ai": 16
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/evidence-prior-repair-mean-home-inspection-report/",
+      "ai": 15
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/orangeburg-pipe-collapse/",
+      "ai": 15
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/check-building-permit-history-by-address-any-us-county/",
+      "ai": 14
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/home-inspection-check-mold-behind-walls/",
+      "ai": 14
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/legalize-unpermitted-deck/",
+      "ai": 14
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/standard-home-inspection-check-asbestos/",
+      "ai": 14
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/",
+      "ai": 13
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/tpr-valve-inspectors-always-check/",
+      "ai": 12
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/when-foundation-crack-need-structural-engineer/",
+      "ai": 12
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/us-housing-age-ranking-oldest-vs-newest-counties/",
+      "ai": 9
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/double-tapped-breaker-did-inspector-flag/",
+      "ai": 8
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/not-inspected-due-storage-mean-inspection-report/",
+      "ai": 8
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/",
+      "ai": 8
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/check-building-permits-bronx-ny/",
+      "ai": 7
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/check-building-permits-middlesex-county-ma/",
+      "ai": 7
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/home-inspection-cover-retaining-walls/",
+      "ai": 6
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/home-solar-panels-don-t-own-affect-getting-insurance/",
+      "ai": 6
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/when-reasonable-walk-away-after-inspection/",
+      "ai": 6
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/how-common-are-title-insurance-claims/",
+      "ai": 5
+    },
+    {
+      "url": "https://www.beforeregret.com/county/miami-dade-county-fl/",
+      "ai": 4
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/home-inspection-include-septic-system/",
+      "ai": 4
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/polybutylene-pipes-always-leak/",
+      "ai": 4
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/typical-settlement-cracking-mean-inspection-report/",
+      "ai": 4
+    },
+    {
+      "url": "https://www.beforeregret.com/",
+      "ai": 3
+    },
+    {
+      "url": "https://www.beforeregret.com/accessibility/",
+      "ai": 3
+    },
+    {
+      "url": "https://www.beforeregret.com/county/king-county-wa/",
+      "ai": 3
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/hvac-techs-wish-buyers-knew-about-system-age/",
+      "ai": 2
+    },
+    {
+      "url": "https://www.beforeregret.com/county/alameda-county-ca/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/county/harris-county-tx/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/county/maricopa-county-az/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/amateur-workmanship-mean-home-inspection-report/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/happens-if-seller-didn-t-disclose-past-insurance-claim/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/seller-back-out-after-accepting-inspection-response/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/should-buy-house-s-already-had-foundation-repair/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/standard-home-inspection-include-termites/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/privacy-policy",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/refund-policy",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/research/north-texas-roof-age/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/research/raise-or-remove/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/research/risk-without-price/",
+      "ai": 1
+    },
+    {
+      "url": "https://www.beforeregret.com/terms/",
+      "ai": 1
+    }
+  ],
+  "countries": [
+    {
+      "country": "United States",
+      "ai": 809
+    },
+    {
+      "country": "Canada",
+      "ai": 32
+    },
+    {
+      "country": "India",
+      "ai": 21
+    },
+    {
+      "country": "United Kingdom",
+      "ai": 11
+    },
+    {
+      "country": "Mexico",
+      "ai": 6
+    },
+    {
+      "country": "Germany",
+      "ai": 5
+    },
+    {
+      "country": "Netherlands",
+      "ai": 4
+    },
+    {
+      "country": "Philippines",
+      "ai": 4
+    },
+    {
+      "country": "Thailand",
+      "ai": 4
+    },
+    {
+      "country": "Colombia",
+      "ai": 3
+    },
+    {
+      "country": "Spain",
+      "ai": 3
+    },
+    {
+      "country": "Taiwan",
+      "ai": 3
+    },
+    {
+      "country": "Vietnam",
+      "ai": 3
+    },
+    {
+      "country": "Australia",
+      "ai": 2
+    },
+    {
+      "country": "Denmark",
+      "ai": 2
+    },
+    {
+      "country": "Hong Kong",
+      "ai": 2
+    },
+    {
+      "country": "Hungary",
+      "ai": 2
+    },
+    {
+      "country": "Italy",
+      "ai": 2
+    },
+    {
+      "country": "South Korea",
+      "ai": 2
+    },
+    {
+      "country": "Norway",
+      "ai": 2
+    },
+    {
+      "country": "Romania",
+      "ai": 2
+    },
+    {
+      "country": "Serbia",
+      "ai": 2
+    },
+    {
+      "country": "South Africa",
+      "ai": 2
+    },
+    {
+      "country": "United Arab Emirates",
+      "ai": 1
+    },
+    {
+      "country": "Austria",
+      "ai": 1
+    },
+    {
+      "country": "Belgium",
+      "ai": 1
+    },
+    {
+      "country": "Bahamas",
+      "ai": 1
+    },
+    {
+      "country": "Algeria",
+      "ai": 1
+    },
+    {
+      "country": "Egypt",
+      "ai": 1
+    },
+    {
+      "country": "Guatemala",
+      "ai": 1
+    },
+    {
+      "country": "Indonesia",
+      "ai": 1
+    },
+    {
+      "country": "Ireland",
+      "ai": 1
+    },
+    {
+      "country": "Jamaica",
+      "ai": 1
+    },
+    {
+      "country": "Jordan",
+      "ai": 1
+    },
+    {
+      "country": "Japan",
+      "ai": 1
+    },
+    {
+      "country": "Malta",
+      "ai": 1
+    },
+    {
+      "country": "Malaysia",
+      "ai": 1
+    },
+    {
+      "country": "New Zealand",
+      "ai": 1
+    },
+    {
+      "country": "Pakistan",
+      "ai": 1
+    },
+    {
+      "country": "Panama",
+      "ai": 1
+    },
+    {
+      "country": "Papua New Guinea",
+      "ai": 1
+    },
+    {
+      "country": "Poland",
+      "ai": 1
+    },
+    {
+      "country": "Puerto Rico",
+      "ai": 1
+    },
+    {
+      "country": "Portugal",
+      "ai": 1
+    },
+    {
+      "country": "Saudi Arabia",
+      "ai": 1
+    },
+    {
+      "country": "Singapore",
+      "ai": 1
+    },
+    {
+      "country": "Sweden",
+      "ai": 1
+    }
+  ],
+  "devices": [
+    {
+      "device": "Desktop",
+      "ai": 501
+    },
+    {
+      "device": "Mobile",
+      "ai": 437
+    },
+    {
+      "device": "Tablet",
+      "ai": 14
+    }
+  ]
+}
