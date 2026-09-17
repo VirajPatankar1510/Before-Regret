@@ -252,6 +252,52 @@ function escapeJsonForScriptTag(value: unknown): string {
   return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
+// The site's Organization + WebSite entity, READ OUT OF dist/index.html rather than restated here.
+//
+// WHY THESE PAGES NEEDED THIS AT ALL. Guides inherit the entity for free: prerender-guides.tsx uses
+// dist/index.html as its template, and that file carries the block. The research documents are
+// standalone HTML assembled in this script, so they inherited nothing -- measured 2026-09-17, the
+// seven studies carried only ScholarlyArticle + Dataset and /research/ carried NO structured data
+// at all. That is exactly backwards: these are the pages a journalist or an answer engine would
+// cite, and they were the only ones on the domain asserting no publisher.
+//
+// WHY IT IS READ, NOT COPIED. A second copy of a 2.4 KB entity block is a second thing to keep in
+// sync, and it would drift the first time index.html's sameAs or description changed. Reading the
+// single source means it cannot. The assertions below make a shape change fail the BUILD rather
+// than silently ship eight pages with no entity -- which is how this defect went unnoticed.
+//
+// The block deliberately keeps index.html's shape, including carrying no data-seo attribute. On a
+// guide that attribute governs whether src/utils/headSeo.ts strips the node on a client-side route
+// change; these documents never load the React app, so it is inert here, but matching the source
+// exactly is what lets the assertion be a straight comparison.
+function readSiteEntityLd(distPath: string): string {
+  const indexPath = path.join(distPath, 'index.html');
+  if (!fs.existsSync(indexPath)) {
+    throw new Error('[prerender-research] dist/index.html not found -- run `vite build` first.');
+  }
+  const html = fs.readFileSync(indexPath, 'utf8');
+  // The GLOBAL block is the one with no data-seo attribute; page-specific blocks carry one.
+  const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
+  if (blocks.length !== 1) {
+    throw new Error(`[prerender-research] expected exactly 1 unattributed ld+json block in dist/index.html, found ${blocks.length}`);
+  }
+  const raw = blocks[0][1];
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (e) {
+    throw new Error(`[prerender-research] the site entity block in dist/index.html does not parse: ${(e as Error).message}`);
+  }
+  const nodes = (Array.isArray(parsed) ? parsed : [parsed]) as Array<Record<string, unknown>>;
+  const ids = nodes.map((n) => String(n['@id'] ?? ''));
+  for (const need of ['https://www.beforeregret.com/#organization', 'https://www.beforeregret.com/#website']) {
+    if (!ids.includes(need)) {
+      throw new Error(`[prerender-research] dist/index.html entity block is missing @id ${need} -- got ${ids.join(', ')}`);
+    }
+  }
+  return `  <script type="application/ld+json">${raw}</script>`;
+}
+
 // Plain HTML, styled off the study's own custom properties. StaticFooterLinks is not reusable here:
 // it is Tailwind-classed, and this document never loads the app's stylesheet.
 // On a STUDY page "Research" is a link up to the index; on the index itself it is the current page
@@ -344,6 +390,10 @@ async function run() {
     console.error(`[prerender-research] ${SOURCE} not found.`);
     process.exit(1);
   }
+  // Read once, reused by all eight documents. Throws if dist/index.html's entity block has moved
+  // or changed shape, which fails the build rather than shipping research pages with no publisher.
+  const SITE_ENTITY_LD = readSiteEntityLd(path.join(process.cwd(), 'dist'));
+
   const source = fs.readFileSync(SOURCE, 'utf8');
 
   // The source file is <title> + <link> font tags + <style> + markup. Split it so the head parts
@@ -457,6 +507,7 @@ ${newsroomBlock({ title: 'Risk Without Price', url: `${escapeHtmlAttr(CANONICAL_
   <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
 ${headParts.trim()}
   <style>${EXTRA_CSS}</style>
+${SITE_ENTITY_LD}
   <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(JSON_LD)}</script>
 </head>
 <body>
@@ -701,6 +752,7 @@ ${newsroomBlock({ title: 'Risk Without Cover', url: `${escapeHtmlAttr(COVER_URL)
   <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
 ${cHead.trim()}
   <style>${EXTRA_CSS}</style>
+${SITE_ENTITY_LD}
   <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(COVER_LD)}</script>
 </head>
 <body>
@@ -956,6 +1008,7 @@ ${newsroomBlock({ title: 'Outside the Zone', url: `${escapeHtmlAttr(ZONE_URL)}`,
   <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
 ${zHead.trim()}
   <style>${EXTRA_CSS}</style>
+${SITE_ENTITY_LD}
   <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(ZONE_LD)}</script>
 </head>
 <body>
@@ -1201,6 +1254,7 @@ ${newsroomBlock({ title: 'High-Hazard Dams by County', url: `${escapeHtmlAttr(DA
   <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
 ${dHead.trim()}
   <style>${EXTRA_CSS}</style>
+${SITE_ENTITY_LD}
   <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(DAM_LD)}</script>
 </head>
 <body>
@@ -1601,6 +1655,7 @@ ${dJsScript}
   <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
 ${aHead.trim()}
   <style>${EXTRA_CSS}</style>
+${SITE_ENTITY_LD}
   <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(ALG_LD)}</script>
 </head>
 <body>
@@ -1756,6 +1811,7 @@ ${ANALYTICS_BEACON}
   <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
 ${nHead.trim()}
   <style>${EXTRA_CSS}</style>
+${SITE_ENTITY_LD}
   <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(NTX_LD)}</script>
 </head>
 <body>
@@ -1892,6 +1948,7 @@ ${ANALYTICS_BEACON}
   <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
 ${rHead.trim()}
   <style>${EXTRA_CSS}</style>
+${SITE_ENTITY_LD}
   <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(RR_LD)}</script>
 </head>
 <body>
@@ -2028,6 +2085,40 @@ ${ANALYTICS_BEACON}
       <p class="rcard-meta">Data: ${s.data.map((f) => `<a href="/research/data/${f}">${f}</a>`).join(' &middot; ')}${s.embed ? ' &middot; embeddable lookup' : ''}</p>
     </article>`).join('\n');
 
+  // /research/ carried no structured data at all before 2026-09-17 -- not even the site entity.
+  // CollectionPage + ItemList describes what the page actually is: an ordered list of the studies
+  // it links to. Built from the same STUDIES array that renders the cards below, so the schema and
+  // the visible list cannot disagree -- a hand-kept copy would.
+  const INDEX_LD = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      '@id': `${INDEX_URL}#collection`,
+      name: 'Research — Before Regret',
+      url: INDEX_URL,
+      isPartOf: { '@id': 'https://www.beforeregret.com/#website' },
+      publisher: { '@id': 'https://www.beforeregret.com/#organization' },
+      mainEntity: {
+        '@type': 'ItemList',
+        numberOfItems: STUDIES.length,
+        itemListElement: STUDIES.map((st, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          url: `https://www.beforeregret.com${st.url}`,
+          name: st.title,
+        })),
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+        { '@type': 'ListItem', position: 2, name: 'Research', item: INDEX_URL },
+      ],
+    },
+  ];
+
   const indexHtml = `<!doctype html>
 <html lang="en">
 <head>
@@ -2044,6 +2135,8 @@ ${ANALYTICS_BEACON}
   <meta property="og:title" content="Research &mdash; Before Regret">
   <meta property="og:image" content="${escapeHtmlAttr(OG_IMAGE)}">
   <meta name="twitter:card" content="summary_large_image">
+${SITE_ENTITY_LD}
+  <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(INDEX_LD)}</script>
 ${headParts.trim()}
   <style>${EXTRA_CSS}
 .rhead{max-width:1000px;margin:0 auto;padding:44px 0 0}
