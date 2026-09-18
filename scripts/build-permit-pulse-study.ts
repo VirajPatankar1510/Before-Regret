@@ -147,7 +147,7 @@ const html = `<style>
     <div class="fig"><b>${f.findings.countiesHousesFell} of ${f.findings.eligibleCounties}</b><span>counties where house permits fell</span></div>
   </div>
 
-  <h2>Finding 01</h2>
+  <h2>Houses against apartments</h2>
   <h3>Three of the four categories fell. The fourth cancelled them.</h3>
   <div class="sizes">
 ${size.map((s) => {
@@ -160,26 +160,26 @@ ${size.map((s) => {
   <p class="cap">Change in permitted units by structure size, year to date through ${period}, ${priorYear} against ${year}. Source: US Census Bureau, Building Permits Survey.</p>
   <p>Single-family permits are ${sgn(size[0].changePct)}, from ${num(size[0].prior)} to
   ${num(size[0].current)} units. Two-unit buildings are ${sgn(size[1].changePct)}; three- and
-  four-unit buildings ${sgn(size[2].changePct)}. Only buildings of five units or more rose, by
-  ${sgn(size[3].changePct)} &mdash; ${num(size[3].current - size[3].prior)} additional units, which
+  four-unit buildings ${sgn(size[2].changePct)}. Only buildings of five units or more &mdash; the
+  multifamily category &mdash; rose, by
+  ${sgn(size[3].changePct)}: ${num(size[3].current - size[3].prior)} additional units, which
   is more than enough to offset the ${num(size[0].prior - size[0].current)} houses that were not
   permitted this year.</p>
   <div class="finding"><p>A year in which three of four construction categories declined reports as
   ${sgn(nat.all.changePct!)} and is described as flat. The composite is not wrong. It is just not
   about houses.</p></div>
 
-  <h2>Finding 02</h2>
-  <h3>Half of the counties we can measure are building fewer houses</h3>
-  <p>Of the ${f.findings.eligibleCounties} counties with enough permitting volume and enough
-  directly reported data to measure (see the method note below),
+  <h2>Single-family permits by county</h2>
+  <h3>Half of US counties are building fewer houses than last year</h3>
+  <p>Across the ${f.findings.eligibleCounties} counties large enough to measure reliably,
   ${f.findings.countiesHousesFell} &mdash;
   ${Math.round((100 * f.findings.countiesHousesFell) / f.findings.eligibleCounties)}% &mdash;
   permitted fewer single-family homes than in the same months of ${priorYear}. This is not
   concentrated in one region: those counties sit across ${states} states.</p>
 
-  <h2>Finding 03</h2>
+  <h2>When the headline misleads</h2>
   <h3>In ${f.findings.countiesTotalUpHousesFell} counties, "permits are up" means houses are down</h3>
-  <p>${f.findings.countiesTotalUp} of the eligible counties permitted more housing units this year
+  <p>${f.findings.countiesTotalUp} of those counties permitted more housing units this year
   than last. In ${f.findings.countiesTotalUpHousesFell} of them &mdash;
   ${Math.round((100 * f.findings.countiesTotalUpHousesFell) / f.findings.countiesTotalUp)}% &mdash;
   single-family permits fell at the same time. In those places a true statement about the local
@@ -210,7 +210,7 @@ ${worstHouses.map((c: any, i: number) => row(c, i)).join('\n')}
       </tbody>
     </table>
   </div>
-  <p class="cap">Counties permitting at least 250 houses in ${priorYear}, ranked by change in single-family permits. Restricting to counties of that size keeps the ranking from filling up with places where a dozen houses is a large percentage.</p>
+  <p class="cap">Counties permitting at least 250 houses in ${priorYear}, ranked by the change in single-family permits. Smaller counties are left out because a handful of houses there swings the percentage wildly.</p>
 
   <h2>Where houses rose most</h2>
   <div class="scroll">
@@ -221,29 +221,28 @@ ${bestHouses.map((c: any, i: number) => row(c, i)).join('\n')}
       </tbody>
     </table>
   </div>
-  <p class="cap">Same population and the same ranking, reversed.</p>
+  <p class="cap">The same counties, ranked the other way.</p>
 
-  <h2>Method</h2>
+  <h2>How this was counted</h2>
   <p>The Census Bureau's Building Permits Survey publishes residential permits for every US county
   each month. This compares the year-to-date file through ${period} ${year} against the file for the
-  same months of ${priorYear}, so the two cover identical calendar windows. Both are linked below.
-  Counties are joined on FIPS code, never on name: Harris County is 48201 in Texas and 13145 in
-  Georgia, and the two report very differently.</p>
-  <p>Of the ${num(f.countiesInFile)} counties in the file, ${f.findings.eligibleCounties} are
-  reported here. The rest are withheld for one of two reasons, both of which would otherwise
-  produce numbers that look precise and are not.</p>
-  <p><b>Too small to express as a percentage.</b> ${num(f.gates.suppressedThin)} counties permitted
-  fewer than ${f.gates.minUnits} units in either year. In a county that permitted eleven houses,
-  one subdivision is a ninety-percent swing.</p>
+  same months of ${priorYear}, so the two cover identical calendar windows. Both files are linked
+  at the foot of this page.</p>
+  <p>${num(f.countiesInFile)} counties appear in the Census file and
+  ${f.findings.eligibleCounties} of them are shown here. If yours is missing, it is for one of two
+  reasons.</p>
+  <p><b>It is too small for a percentage to mean anything.</b> ${num(f.gates.suppressedThin)}
+  counties permitted fewer than ${f.gates.minUnits} units in one of the two years. Where a county
+  permitted eleven houses, a single subdivision is a ninety-percent swing.</p>
   <p><b>Too much of the number is estimated.</b> The Census Bureau imputes permit counts for
   offices that do not report, and the file marks which units were actually reported.
-  ${num(f.gates.suppressedImputed)} counties fall below
-  ${Math.round(f.gates.minReportedShare * 100)}% directly reported and are withheld. Some are
-  entirely modelled: the file carries hundreds of units for counties where no permit office
-  reported anything at all. Those are estimates of a county, not a record of it, and they are not
-  used here.</p>
+  In ${num(f.gates.suppressedImputed)} counties fewer than
+  ${Math.round(f.gates.minReportedShare * 100)}% of the units were reported by an actual permit
+  office, so they are left out. In some the figure is entirely modelled &mdash; hundreds of units on
+  file for a county where no office reported anything. That is an estimate of a county rather than a
+  record of it.</p>
 
-  <h2>What this does not show</h2>
+  <h2>What the numbers don&rsquo;t show</h2>
   <p><b>Permits are not completions.</b> A permit is an intention to build, filed at the start.
   Some of these units will not be finished, and the ones that are will be finished across several
   years.</p>
@@ -254,9 +253,8 @@ ${bestHouses.map((c: any, i: number) => row(c, i)).join('\n')}
   labour, insurance and disaster rebuilding all plausibly contribute to any county's movement, and
   nothing here separates them. Where a county's figure looks dramatic, the cause is usually local
   and specific, and finding it means reading that county's own records.</p>
-  <p><b>Year-to-date figures are revised.</b> The Census Bureau revises earlier months as late
-  reports arrive, so a county's figure here may differ slightly from the same county next month.
-  This page is rebuilt against the current file each month rather than corrected in place.</p>
+  <p><b>These figures are revised.</b> The Census Bureau updates earlier months as late reports
+  arrive, so a county's number can shift slightly between one month and the next.</p>
 
   <div class="cite">
     <b>Cite it, check it, take it apart</b>
