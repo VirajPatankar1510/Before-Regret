@@ -1,5 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import {
+  OG_IMAGE, SITE_NAV, SITE_NAV_INDEX, ANALYTICS_BEACON, SITE_FOOTER, EXTRA_CSS,
+  escapeHtmlAttr, escapeJsonForScriptTag, readSiteEntityLd,
+} from './lib/site-chrome.js';
 
 // Static HTML generator for /research/risk-without-price/ -- the national homeowners-insurance
 // study.
@@ -26,7 +30,7 @@ import path from 'path';
 const SOURCE = path.join(process.cwd(), 'docs', 'risk-without-price.html');
 
 const CANONICAL_URL = 'https://www.beforeregret.com/research/risk-without-price/';
-const TITLE = 'Homeowners insurance rates by state and county: US data';
+const TITLE = 'Average Home Insurance Cost by County vs Hazard Risk';
 // Written to match how people actually phrase this in search -- "homeowners insurance rates by
 // state", "average home insurance cost" -- rather than restating the headline finding a second
 // time. The page's own data answers those queries; the description is where a searcher finds out
@@ -34,7 +38,7 @@ const TITLE = 'Homeowners insurance rates by state and county: US data';
 // 2009 and it does nothing but tell competitors what you are targeting.
 const DESCRIPTION =
   'What US households report paying to insure their homes, by state and county, free to reuse. 3,093 counties and 50.7 million mortgaged households.';
-const OG_IMAGE = 'https://www.beforeregret.com/og-image.png';
+
 const PUBLISHED = '2026-08-30';
 
 // Dataset + ScholarlyArticle rather than plain Article. This page's whole claim on being cited is
@@ -244,13 +248,9 @@ function derivedDataset(opts: {
   };
 }
 
-function escapeHtmlAttr(value: string): string {
-  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
 
-function escapeJsonForScriptTag(value: unknown): string {
-  return JSON.stringify(value).replace(/</g, '\\u003c');
-}
+
+
 
 // The site's Organization + WebSite entity, READ OUT OF dist/index.html rather than restated here.
 //
@@ -266,56 +266,11 @@ function escapeJsonForScriptTag(value: unknown): string {
 // single source means it cannot. The assertions below make a shape change fail the BUILD rather
 // than silently ship eight pages with no entity -- which is how this defect went unnoticed.
 //
-// The block deliberately keeps index.html's shape, including carrying no data-seo attribute. On a
-// guide that attribute governs whether src/utils/headSeo.ts strips the node on a client-side route
-// change; these documents never load the React app, so it is inert here, but matching the source
-// exactly is what lets the assertion be a straight comparison.
-function readSiteEntityLd(distPath: string): string {
-  const indexPath = path.join(distPath, 'index.html');
-  if (!fs.existsSync(indexPath)) {
-    throw new Error('[prerender-research] dist/index.html not found -- run `vite build` first.');
-  }
-  const html = fs.readFileSync(indexPath, 'utf8');
-  // The GLOBAL block is the one with no data-seo attribute; page-specific blocks carry one.
-  const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
-  if (blocks.length !== 1) {
-    throw new Error(`[prerender-research] expected exactly 1 unattributed ld+json block in dist/index.html, found ${blocks.length}`);
-  }
-  const raw = blocks[0][1];
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch (e) {
-    throw new Error(`[prerender-research] the site entity block in dist/index.html does not parse: ${(e as Error).message}`);
-  }
-  const nodes = (Array.isArray(parsed) ? parsed : [parsed]) as Array<Record<string, unknown>>;
-  const ids = nodes.map((n) => String(n['@id'] ?? ''));
-  for (const need of ['https://www.beforeregret.com/#organization', 'https://www.beforeregret.com/#website']) {
-    if (!ids.includes(need)) {
-      throw new Error(`[prerender-research] dist/index.html entity block is missing @id ${need} -- got ${ids.join(', ')}`);
-    }
-  }
-  return `  <script type="application/ld+json">${raw}</script>`;
-}
 
-// Plain HTML, styled off the study's own custom properties. StaticFooterLinks is not reusable here:
-// it is Tailwind-classed, and this document never loads the app's stylesheet.
-// On a STUDY page "Research" is a link up to the index; on the index itself it is the current page
-// and stays plain text. Splitting them is what gives /research/ four inbound links from the studies
-// -- before this the word was inert on every page and the index had no inbound links at all.
-const SITE_NAV = `
-<nav class="sitebar" aria-label="Before Regret">
-  <a href="/" class="brand">Before&nbsp;Regret</a>
-  <span class="sitebar-sep" aria-hidden="true">&#183;</span>
-  <a href="/research/" class="brand">Research</a>
-</nav>`;
 
-const SITE_NAV_INDEX = `
-<nav class="sitebar" aria-label="Before Regret">
-  <a href="/" class="brand">Before&nbsp;Regret</a>
-  <span class="sitebar-sep" aria-hidden="true">&#183;</span>
-  <span class="sitebar-here">Research</span>
-</nav>`;
+
+
+
 
 // Vercel Web Analytics. The research pages are standalone documents that never load the React
 // bundle, and @vercel/analytics is imported once in src/main.tsx -- so until now these seven pages
@@ -328,62 +283,11 @@ const SITE_NAV_INDEX = `
 // script tag added to docs/*.html would be swept into the iframe shipped to other people's sites.
 // Adding it here keeps the source documents untouched.
 //
-// Deliberately NOT added to the embeds, which have their own shell below. An embed runs on someone
-// else's page, and putting a tracker in a widget you are asking a newsroom to trust is a cost that
-// outweighs knowing the number.
-// The inline block registers a beforeSend handler on window.vaq BEFORE the deferred script runs,
-// which is what lets it filter our own traffic on these pages the way <Analytics beforeSend> does
-// in the React app. The script replays window.vaq inside its init, ahead of the first pageview, so
-// the opening view is filtered too. Kept inline and dependency-free because these pages load no
-// bundle at all -- that is the whole reason they needed a beacon of their own.
-const ANALYTICS_BEACON = `<script>
-(function(){try{
-  var F='br-no-analytics',u=new URL(location.href);
-  if(u.searchParams.has('no-analytics')){
-    if(u.searchParams.get('no-analytics')!=='0')localStorage.setItem(F,'1');else localStorage.removeItem(F);
-  }
-  window.vaq=window.vaq||[];
-  window.vaq.push(['beforeSend',function(e){return localStorage.getItem(F)==='1'?null:e;}]);
-}catch(e){}})();
-</script>
-<script defer src="/_vercel/insights/script.js"></script>`;
 
-const SITE_FOOTER = `
-<nav class="sitelinks" aria-label="Site sections">
-  <div>
-    <h4>Before Regret</h4>
-    <ul>
-      <li><a href="/">Research a property</a></li>
-      <li><a href="/guides/">Editorial guides</a></li>
-      <li><a href="/about/">About &amp; methodology</a></li>
-      <li><a href="/advertise/">Advertise with us</a></li>
-    </ul>
-  </div>
-  <div>
-    <h4>This study</h4>
-    <ul>
-      <li><a href="https://www.census.gov/programs-surveys/acs/" rel="noopener">U.S. Census Bureau, ACS</a></li>
-      <li><a href="https://hazards.fema.gov/nri/" rel="noopener">FEMA National Risk Index</a></li>
-      <li><a href="/support/">Corrections &amp; questions</a></li>
-    </ul>
-  </div>
-</nav>`;
 
-const EXTRA_CSS = `
-.sitebar{max-width:1000px;margin:0 auto;padding:22px 0 0;display:flex;align-items:baseline;gap:10px;
-  font-family:var(--mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase}
-.sitebar .brand{color:var(--ink);text-decoration:none;font-weight:600;border-bottom:1px solid var(--rule)}
-.sitebar .brand:hover{border-bottom-color:var(--price)}
-.sitebar-sep,.sitebar-here{color:var(--muted)}
-.sitelinks{max-width:1000px;margin:0 auto;padding:44px 0 0;border-top:1px solid var(--rule);
-  display:grid;grid-template-columns:1fr;gap:28px;font-family:var(--mono);font-size:.78rem}
-@media(min-width:640px){.sitelinks{grid-template-columns:1fr 1fr}}
-.sitelinks h4{margin:0 0 10px;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--muted);font-weight:600}
-.sitelinks ul{list-style:none;margin:0;padding:0}
-.sitelinks li{margin:0 0 7px}
-.sitelinks a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule)}
-.sitelinks a:hover{border-bottom-color:var(--price);color:var(--price)}`;
+
+
+
 
 async function run() {
   if (!fs.existsSync(SOURCE)) {
@@ -647,7 +551,7 @@ ${newsroomBlock({ title: 'Risk Without Cover', url: `${escapeHtmlAttr(COVER_URL)
 `;
     const cBody = cBodyRaw.slice(0, coverKitEnd) + coverKit + cBodyRaw.slice(coverKitEnd);
     const COVER_TITLE =
-      'Flood insurance take-up by county: NFIP data';
+      'How Many Homes in Flood Zones Have Flood Insurance';
     const COVER_DESC =
       'How few homes inside FEMA-mapped flood zones carry flood insurance, by county, free to reuse. In the median county, about one home in seven.';
 
@@ -904,7 +808,7 @@ ${newsroomBlock({ title: 'Outside the Zone', url: `${escapeHtmlAttr(ZONE_URL)}`,
 `;
     const zBody = zBodyRaw.slice(0, zoneKitEnd) + zoneKit + zBodyRaw.slice(zoneKitEnd);
     const ZONE_TITLE =
-      'NFIP flood claims paid outside the flood zone, by county';
+      'Do You Need Flood Insurance Outside a Flood Zone?';
     const ZONE_DESC =
       'More than one paid NFIP flood claim in four went to a property outside the mapped high-risk zone. County data for 1,921 counties, free to reuse.';
 
@@ -1160,7 +1064,7 @@ ${newsroomBlock({ title: 'High-Hazard Dams by County', url: `${escapeHtmlAttr(DA
     // out of context, so it carries the "as recorded" framing rather than relying on the body to
     // supply it.
     const DAM_TITLE =
-      'High-hazard dams by county: condition and emergency plans';
+      'Is There a High-Hazard Dam Near You? County Data';
     const DAM_DESC =
       'US dams rated high hazard potential, by county, free to reuse. 2,791 are rated poor or unsatisfactory and 636 of those have no emergency action plan.';
 
@@ -1584,7 +1488,7 @@ ${dJsScript}
     const aHead = algSource.slice(0, aWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
     const aBody = algSource.slice(aWrap);
     const ALG_URL = 'https://www.beforeregret.com/research/allegheny-storm-premium/';
-    const ALG_TITLE = 'Pittsburgh storm and home insurance data (Allegheny County)';
+    const ALG_TITLE = 'Home Insurance in Pittsburgh: Storms vs What You Pay';
     const ALG_DESC = 'Storm and home insurance statistics for Pittsburgh and Allegheny County, free to reuse. Third-highest severe weather count of 100 US counties.';
 
 
@@ -1743,7 +1647,7 @@ ${ANALYTICS_BEACON}
     const nHead = ntxSource.slice(0, nWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
     const nBody = ntxSource.slice(nWrap);
     const NTX_URL = 'https://www.beforeregret.com/research/north-texas-roof-age/';
-    const NTX_TITLE = 'Dallas-Fort Worth hail data: Collin and Denton counties';
+    const NTX_TITLE = 'Dallas-Fort Worth Hail and Roof Age by County';
     const NTX_DESC = 'Hail and housing-age statistics for Collin and Denton counties near Dallas-Fort Worth, free to reuse. 638 hailstorms recorded, 2015 to 2024.';
 
 
@@ -1883,7 +1787,7 @@ ${ANALYTICS_BEACON}
     const rHead = rrSource.slice(0, rWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
     const rBody = rrSource.slice(rWrap);
     const RR_URL = 'https://www.beforeregret.com/research/raise-or-remove/';
-    const RR_TITLE = 'FEMA home buyouts by state: demolished or raised';
+    const RR_TITLE = 'FEMA Flood Buyouts: Which Homes Get Demolished';
     const RR_DESC = 'FEMA bought and demolished 24,020 flooded single-family homes and raised 8,759, 1996-2025. Free state and ZIP data on buyouts versus elevation.';
 
 

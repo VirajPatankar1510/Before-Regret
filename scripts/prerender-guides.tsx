@@ -809,6 +809,10 @@ ${topicGuideSection}
 
 ${generalGuideSection}
 
+## Tools
+
+- [Sunlight by room](https://www.beforeregret.com/sunlight/): Free calculator. Given a US county and the compass direction a window faces, computes when direct sunlight reaches that room on the solstices and equinoxes -- first and last direct sun, total minutes, and minutes before 9am -- with an option for a nearby building or tree line. Answers "which direction should a house face" for a specific room rather than for the building: a south-facing house contains north-facing rooms. Uses the NOAA solar position algorithm and US Census Bureau 2023 Gazetteer county coordinates. 566 counties across 50 states.
+
 ## Site
 
 - [Homepage](https://www.beforeregret.com/): Address search and free property research report.

@@ -195,6 +195,11 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       // studies underneath it). Unlike the studies it lists, this one legitimately changes whenever
       // a study is added, so it takes `today` rather than a frozen date.
       { loc: `${BASE_URL}/research/`, lastmod: today, changefreq: 'monthly', priority: '0.8' },
+      // The free daylight tool. Priority 0.8 for the same reason /walkthrough/ has it: a tool is
+      // the page most likely to be linked to from outside, and inbound links are this property's
+      // actual constraint. Fixed lastmod -- the calculation is the same arithmetic every month, so
+      // re-stamping it on each build would be a freshness signal with nothing behind it.
+      { loc: `${BASE_URL}/sunlight/`, lastmod: '2026-09-18', changefreq: 'yearly', priority: '0.8' },
       // The research study (scripts/prerender-research.tsx). Listed with a fixed lastmod rather
       // than `today`: it is a dated analysis of a fixed data vintage, and re-declaring it modified
       // on every build would be a false freshness signal on the one page here whose whole value is

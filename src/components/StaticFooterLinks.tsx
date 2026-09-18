@@ -59,15 +59,20 @@ export function StaticFooterLinks({ guides }: StaticFooterLinksProps) {
           </div>
           <ul className="space-y-2">
             <li><a href="/about/" className="hover:text-white font-bold text-blue-300 block py-1.5">About &amp; Methodology</a></li>
-            {/* The research study is a standalone static document (scripts/prerender-research.tsx),
-                not an SPA route, so it is unreachable from the app's own navigation. This block is
-                the only crawlable path to it from the rest of the site, and it renders on every
-                prerendered page -- which is the point, given how much of this site sits in
-                "Discovered - currently not indexed" for want of internal links. */}
-            <li><a href="/research/risk-without-price/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research: Risk Without Price</a></li>
-            <li><a href="/research/risk-without-cover/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research: Risk Without Cover</a></li>
-            <li><a href="/research/outside-the-zone/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research: Outside the Zone</a></li>
-            <li><a href="/research/high-hazard-dams/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research: High-Hazard Dams</a></li>
+            {/* The studies and /sunlight/ are standalone static documents (prerender-research.tsx,
+                prerender-sunlight.tsx), not SPA routes, so they are unreachable from the app's own
+                navigation. These links are the only crawlable path to them from the rest of the
+                site, and they render on every prerendered page -- which matters, given how much of
+                this site sits in "Discovered - currently not indexed" for want of internal links.
+
+                ONE HUB LINK, NOT A LIST. This was four hardcoded study links, added when there were
+                four studies. It was never updated. By the time there were eight it was silently
+                omitting half of them, including the most recent -- so the footer that exists to
+                guarantee a crawl path had stopped providing one for the newest work. /research/
+                lists every study and is in the sitemap, so each one keeps its path and this stops
+                needing maintenance every time a study ships. */}
+            <li><a href="/research/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research &amp; Data</a></li>
+            <li><a href="/sunlight/" className="hover:text-white font-bold text-blue-300 block py-1.5">Sunlight by Room</a></li>
             <li><a href="/sample-report/" className="hover:text-white font-bold text-blue-300 block py-1.5">See a Sample Report</a></li>
             <li><a href="/advertise/" className="hover:text-white font-bold text-blue-300 block py-1.5">Advertise With Us</a></li>
             <li><a href="/support/" className="hover:text-white font-medium text-slate-300 block py-1.5">Customer Support</a></li>

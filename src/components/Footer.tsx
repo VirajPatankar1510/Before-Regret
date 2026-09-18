@@ -156,45 +156,32 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
               </div>
               <ul className="space-y-2">
                 <li><ContentLink href="/about/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">About & Methodology</ContentLink></li>
-                {/* Plain <a>, NOT ContentLink, for the same reason as the external link below:
-                    /research/ is a standalone static document (scripts/prerender-research.tsx),
-                    not an SPA route. ContentLink would preventDefault and hand the path to
-                    onNavigate, which has nothing to render for it -- the click would change the URL
-                    and blank the page. This needs a real document load. */}
+                {/* Plain <a>, NOT ContentLink: /research/ and /sunlight/ are standalone static
+                    documents (prerender-research.tsx, prerender-sunlight.tsx), not SPA routes.
+                    ContentLink would preventDefault and hand the path to onNavigate, which has
+                    nothing to render for them -- the click would change the URL and blank the page.
+                    These need a real document load.
+
+                    ONE HUB LINK, NOT A LIST. This was four hardcoded study links, added when there
+                    were four studies, and never updated. By the time there were eight it was
+                    silently omitting half of them -- so the footer that exists to guarantee a crawl
+                    path had stopped providing one for the newest work, which is the exact failure
+                    it was written to prevent. /research/ lists every study and is in the sitemap,
+                    so each keeps its path and this stops needing maintenance on every publish. */}
                 <li>
                   <a
-                    href="/research/risk-without-price/"
+                    href="/research/"
                     className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5"
                   >
-                    Research: Risk Without Price
-                  </a>
-                </li>
-                {/* The other two studies. Listed here rather than left to reach only through the
-                    first study's own body links: on a domain where most pages sit in "Discovered --
-                    currently not indexed", a two-hop-only path is the difference between a page
-                    being crawled and not. Same plain <a> reasoning as above. */}
-                <li>
-                  <a
-                    href="/research/risk-without-cover/"
-                    className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5"
-                  >
-                    Research: Risk Without Cover
+                    Research &amp; Data
                   </a>
                 </li>
                 <li>
                   <a
-                    href="/research/outside-the-zone/"
+                    href="/sunlight/"
                     className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5"
                   >
-                    Research: Outside the Zone
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/research/high-hazard-dams/"
-                    className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5"
-                  >
-                    Research: High-Hazard Dams
+                    Sunlight by Room
                   </a>
                 </li>
                 {/* Same reason as the research link above: /sample-report/ is a static file in
