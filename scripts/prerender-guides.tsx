@@ -733,6 +733,22 @@ async function run() {
     { slug: 'raise-or-remove', title: 'Raise or Remove',
       summary: 'Every FEMA-funded decision to buy and demolish or to elevate a flooded single-family home, fiscal 1996-2025: 32,779 decisions across 1,196 counties and 1,461 ZIP codes. 24,020 were demolished and 8,759 raised, a 73.3% demolition share. Five states do nearly all the elevating; foundation type moves the outcome only within those five.',
       data: ['raise-or-remove-states.csv', 'raise-or-remove-zips.csv', 'raise-or-remove-figures.json'] },
+    // Eighth study, and the only one rebuilt monthly. Its summary is READ from the figures file
+    // rather than typed, because llms.txt exists to tell an answer engine what this site currently
+    // holds -- and a hand-typed figure here would keep advertising last month's numbers to every
+    // retrieval pipeline that reads the file, which is worse than advertising nothing.
+    { slug: 'permit-pulse', title: 'Permit Pulse',
+      summary: ((): string => {
+        const p = path.join(process.cwd(), 'docs', 'data', 'permit-pulse-figures.json');
+        if (!fs.existsSync(p)) throw new Error('[prerender-guides] llms.txt lists permit-pulse but docs/data/permit-pulse-figures.json is missing -- run scripts/build-permit-pulse.ts');
+        const g = JSON.parse(fs.readFileSync(p, 'utf8'));
+        const sz = g.national.bySize as Array<{ label: string; prior: number; current: number; changePct: number }>;
+        const sg = (v: number) => `${v > 0 ? '+' : v < 0 ? '-' : ''}${Math.abs(v)}%`;
+        const through = new Date(`${g.period.yearToDateThrough}-01T00:00:00Z`)
+          .toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+        return `US residential building permits by county from the Census Building Permits Survey, rebuilt monthly. Year to date through ${through} against the same months a year earlier: all permitted units ${sg(g.national.all.changePct)} (${g.national.all.prior.toLocaleString('en-US')} to ${g.national.all.current.toLocaleString('en-US')}), single-family ${sg(sz[0].changePct)}, buildings of 5+ units ${sg(sz[3].changePct)}. Three of the four size classes fell; the composite is flat because the fourth offset them. House permits fell in ${g.findings.countiesHousesFell} of ${g.findings.eligibleCounties} counties passing the volume and reporting thresholds. Counties below 100 units or below 80% directly reported are withheld, not estimated.`;
+      })(),
+      data: ['permit-pulse-by-county.csv', 'permit-pulse-figures.json'] },
   ];
   // Asserted against docs/ rather than dist/, because prerender-research.tsx runs AFTER this script
   // in the build, so dist/research/ does not exist yet at this point. docs/<slug>.html is the source

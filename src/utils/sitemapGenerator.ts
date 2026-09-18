@@ -1,4 +1,31 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { withDb, isDbConfigured } from '../server/db.js';
+
+/** First publication of /research/permit-pulse/, and the floor for its sitemap lastmod. */
+const PERMIT_PULSE_PUBLISHED = '2026-09-18';
+
+/**
+ * When the Permit Pulse data was last refreshed, for its sitemap lastmod.
+ *
+ * Best-effort by design -- see the call site. dist/ is what exists at runtime on Vercel; docs/ is
+ * what exists when the sitemap is generated at the start of a build, before prerender-research has
+ * copied anything into dist. Neither being present is not an error worth failing on.
+ */
+function permitPulseLastmod(): string {
+  for (const p of [
+    path.join(process.cwd(), 'dist', 'research', 'data', 'permit-pulse-figures.json'),
+    path.join(process.cwd(), 'docs', 'data', 'permit-pulse-figures.json'),
+  ]) {
+    try {
+      const d = String(JSON.parse(fs.readFileSync(p, 'utf8')).generatedAt ?? '').slice(0, 10);
+      // Never advertise a lastmod older than the page itself, which is what a raw data period
+      // would give: the July file predates publication by two months.
+      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d > PERMIT_PULSE_PUBLISHED ? d : PERMIT_PULSE_PUBLISHED;
+    } catch { /* fall through to the next location, then to the published date */ }
+  }
+  return PERMIT_PULSE_PUBLISHED;
+}
 
 const BASE_URL = 'https://www.beforeregret.com';
 
@@ -179,6 +206,18 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       { loc: `${BASE_URL}/research/allegheny-storm-premium/`, lastmod: '2026-09-06', changefreq: 'yearly', priority: '0.8' },
       { loc: `${BASE_URL}/research/north-texas-roof-age/`, lastmod: '2026-09-06', changefreq: 'yearly', priority: '0.8' },
       { loc: `${BASE_URL}/research/raise-or-remove/`, lastmod: '2026-09-07', changefreq: 'yearly', priority: '0.8' },
+      // Permit Pulse is the exception to the rule stated above, and the only study that takes a
+      // moving lastmod. The other seven are frozen analyses of a fixed data vintage, so re-stamping
+      // them each build would claim a freshness they do not have. This one is genuinely rebuilt
+      // every month against a new Census file, so a frozen date would understate it instead --
+      // telling a crawler not to come back to the one page here that actually changes.
+      //
+      // `today` would be just as wrong, because most builds do not refresh the data. The date comes
+      // from the figures file's own generatedAt, which moves only when the data does. The read is
+      // best-effort on purpose: this module is also called by server.ts at runtime, where only
+      // dist/ is deployed and docs/ does not exist, so both locations are tried and the first
+      // publication date is the fallback. A sitemap is not worth throwing a request over.
+      { loc: `${BASE_URL}/research/permit-pulse/`, lastmod: permitPulseLastmod(), changefreq: 'monthly', priority: '0.8' },
       // The worked example of the actual product (public/sample-report/index.html -- a static file
       // Vite copies into dist/, so Vercel's filesystem priority serves it ahead of the SPA
       // catch-all rewrite, the same mechanism the prerender scripts rely on). Fixed lastmod for

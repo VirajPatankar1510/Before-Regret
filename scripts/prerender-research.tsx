@@ -2003,6 +2003,150 @@ ${ANALYTICS_BEACON}
   }
 
 
+  // ---- /research/permit-pulse/ ----------------------------------------------------------------
+  // The eighth study, and the first one that is not finished when it is published. The other seven
+  // are computed once from a historical file and frozen. Census publishes county building permits
+  // every month, so this page is rebuilt against a new file each month and its figures move.
+  //
+  // That changes two things about how it is handled here. datePublished stays fixed at first
+  // publication while dateModified tracks the data period, because the study is the same work each
+  // month and a page that claims to be newly published every month is lying about its own age.
+  // And the title and description must not carry a figure: they are the parts that get cached,
+  // quoted and indexed, and a number in them goes stale in four weeks while the page moves on.
+  //
+  // No embed widget. The county lookup here is inline and self-contained rather than extracted, for
+  // the reason the north-texas note gives -- slicing markup back out of a study with indexOf() can
+  // ship an empty iframe onto someone else's site, and nobody reports that failure to us.
+  const PP_SRC = path.join(process.cwd(), 'docs', 'permit-pulse.html');
+  if (fs.existsSync(PP_SRC)) {
+    const ppSource = fs.readFileSync(PP_SRC, 'utf8');
+    const pWrap = ppSource.indexOf('<div class="wrap">');
+    if (pWrap === -1) {
+      console.error('[prerender-research] permit-pulse.html has no document body.');
+      process.exit(1);
+    }
+    const pHead = ppSource.slice(0, pWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
+    const pBody = ppSource.slice(pWrap);
+    const PP_URL = 'https://www.beforeregret.com/research/permit-pulse/';
+
+    // The data period, read from the figures file rather than typed, so dateModified and the
+    // "data through" line cannot drift from what the page actually shows.
+    const ppFig = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'docs', 'data', 'permit-pulse-figures.json'), 'utf8'));
+    const ppPeriod: string = ppFig.period.yearToDateThrough;          // e.g. 2026-07
+    // dateModified is when this page was last REBUILT, not the period the data covers. Those are
+    // different things and conflating them produced a dateModified of 2026-07-01 against a
+    // datePublished of 2026-09-18 -- a page modified two months before it existed. The data period
+    // is expressed by the Dataset's temporalCoverage and by the page's own prose.
+    const ppModified = String(ppFig.generatedAt ?? '').slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(ppModified)) {
+      console.error('[prerender-research] permit-pulse figures carry no usable generatedAt for dateModified.');
+      process.exit(1);
+    }
+    if (ppModified < '2026-09-18') {
+      console.error(`[prerender-research] permit-pulse dateModified ${ppModified} precedes datePublished 2026-09-18.`);
+      process.exit(1);
+    }
+
+    const PP_TITLE = 'Building permits by county: houses vs apartments';
+    const PP_DESC = 'US residential building permits by county, updated monthly and free to reuse. Houses and apartments counted separately; imputed counties are withheld.';
+
+    if (PP_TITLE.length > 60) { console.error(`[prerender-research] PP_TITLE is ${PP_TITLE.length} chars, over the 60-char display budget.`); process.exit(1); }
+    if (PP_DESC.length > 155) { console.error(`[prerender-research] PP_DESC is ${PP_DESC.length} chars, over 155.`); process.exit(1); }
+    // A figure in the title or description outlives the month it was true in. Catch it here.
+    if (/\d{3,}|\d+(\.\d+)?%/.test(`${PP_TITLE} ${PP_DESC}`)) {
+      console.error('[prerender-research] PP_TITLE/PP_DESC carry a figure; these are republished monthly and must stay period-free.');
+      process.exit(1);
+    }
+
+    const PP_LD = [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'ScholarlyArticle',
+        headline: 'Permit Pulse',
+        alternativeHeadline:
+          'US residential building permits by county, counted separately for houses and for apartment buildings, updated monthly',
+        description: PP_DESC,
+        url: PP_URL,
+        datePublished: '2026-09-18',
+        dateModified: ppModified,
+        inLanguage: 'en-US',
+        isAccessibleForFree: true,
+        license: 'https://creativecommons.org/licenses/by/4.0/',
+        author: { '@type': 'Organization', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
+        publisher: { '@type': 'Organization', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
+        spatialCoverage: { '@type': 'Country', name: 'United States' },
+        citation: [
+          'US Census Bureau, Building Permits Survey, county files',
+        ],
+      },
+      derivedDataset({
+        name: 'US residential building permits by county, single-family and multifamily',
+        description:
+          'County-level residential building permits from the US Census Bureau Building Permits Survey, year to date against the same months of the prior year, split into single-family and multifamily units. Counties below 100 units or below 80% directly reported (rather than imputed for non-responding permit offices) are withheld rather than published.',
+        url: PP_URL,
+        spatialCoverage: 'United States',
+        // The window the data actually covers, which dateModified deliberately does not express:
+        // both years' files are year-to-date January through the same month.
+        temporalCoverage: `${ppFig.period.comparedWith.slice(0, 4)}-01-01/${ppPeriod}-31`,
+        keywords: 'building permits, residential construction, single-family, multifamily, housing starts, county data, Census Building Permits Survey',
+        files: [
+          { path: 'permit-pulse-by-county.csv', format: 'text/csv' },
+          { path: 'permit-pulse-figures.json', format: 'application/json' },
+        ],
+      }),
+    ];
+
+    const ppHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapeHtmlAttr(PP_TITLE)}</title>
+  <meta name="description" content="${escapeHtmlAttr(PP_DESC)}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <link rel="canonical" href="${escapeHtmlAttr(PP_URL)}">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Before Regret">
+  <meta property="og:url" content="${escapeHtmlAttr(PP_URL)}">
+  <meta property="og:title" content="${escapeHtmlAttr(PP_TITLE)}">
+  <meta property="og:description" content="${escapeHtmlAttr(PP_DESC)}">
+  <meta property="og:image" content="${escapeHtmlAttr(OG_IMAGE)}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${escapeHtmlAttr(PP_TITLE)}">
+  <meta name="twitter:description" content="${escapeHtmlAttr(PP_DESC)}">
+  <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
+${pHead.trim()}
+  <style>${EXTRA_CSS}</style>
+${SITE_ENTITY_LD}
+  <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(PP_LD)}</script>
+</head>
+<body>
+${SITE_NAV}
+${pBody.trim()}
+${SITE_FOOTER}
+${ANALYTICS_BEACON}
+</body>
+</html>`;
+    const ppDir = path.join(process.cwd(), 'dist', 'research', 'permit-pulse');
+    fs.mkdirSync(ppDir, { recursive: true });
+    fs.writeFileSync(path.join(ppDir, 'index.html'), ppHtml, 'utf8');
+    console.log(`[prerender-research] Wrote static HTML for /research/permit-pulse/ (${Math.round(ppHtml.length / 1024)} KB, data through ${ppPeriod})`);
+
+    const ppDataDir = path.join(process.cwd(), 'dist', 'research', 'data');
+    fs.mkdirSync(ppDataDir, { recursive: true });
+    for (const file of ['permit-pulse-by-county.csv', 'permit-pulse-figures.json']) {
+      const src = path.join(process.cwd(), 'docs', 'data', file);
+      if (!fs.existsSync(src)) {
+        console.error(`[prerender-research] ${file} is missing -- run scripts/build-permit-pulse.ts.`);
+        process.exit(1);
+      }
+      fs.copyFileSync(src, path.join(ppDataDir, file));
+    }
+    console.log('[prerender-research] Published permit-pulse county and figures files');
+  }
+
+
   const STUDIES: Array<{ url: string; title: string; standfirst: string; finding: string; source: string; data: string[]; embed: boolean; published: string; }> = [
     {
       url: '/research/risk-without-price/',
@@ -2073,6 +2217,30 @@ ${ANALYTICS_BEACON}
       data: ['storm-and-premium-counties.csv', 'storm-and-premium-figures.json', 'storm-and-premium-yearbuilt.json'],
       embed: true,
       published: '6 September 2026',
+    },
+    // The only card whose finding is INTERPOLATED rather than written. Every other study is frozen,
+    // so a typed sentence about it stays true; this one is rebuilt monthly and a typed sentence
+    // would be describing last month within four weeks. `published` is the first publication date
+    // and does not move -- the data period is carried on the card by the finding text instead.
+    {
+      url: '/research/permit-pulse/',
+      title: 'Permit Pulse',
+      standfirst: 'US residential building permits by county, rebuilt every month, with houses counted separately from apartment buildings.',
+      finding: ((): string => {
+        const g = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'docs', 'data', 'permit-pulse-figures.json'), 'utf8'));
+        const sz = g.national.bySize as Array<{ label: string; changePct: number }>;
+        const pc = (v: number) => `${v > 0 ? '+' : v < 0 ? '&minus;' : ''}${Math.abs(v)}%`;
+        const through = new Date(`${g.period.yearToDateThrough}-01T00:00:00Z`)
+          .toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+        return `Year to date through ${through}, total permits are ${pc(g.national.all.changePct)} ` +
+          `&mdash; a composite of three size classes falling and one rising. Single-family is ` +
+          `${pc(sz[0].changePct)}; buildings of five units or more are ${pc(sz[3].changePct)}. ` +
+          `House permits fell in ${g.findings.countiesHousesFell} of ${g.findings.eligibleCounties} measurable counties.`;
+      })(),
+      source: 'Census Building Permits Survey, county files',
+      data: ['permit-pulse-by-county.csv', 'permit-pulse-figures.json'],
+      embed: false,
+      published: '18 September 2026',
     },
   ];
   const INDEX_URL = 'https://www.beforeregret.com/research/';
