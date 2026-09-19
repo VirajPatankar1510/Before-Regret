@@ -87,6 +87,18 @@ const PLACEMENTS: Placement[] = [
       'A modern breaker panel matches breakers to the bus slot so the wrong rating does not fit.',
     labels: ['Edison', 'over-fusing', 'branch wiring', 'breaker', 'amp', 'panel', 'fuse'],
   },
+  {
+    slug: 'reverse-polarity-mean-electrical-inspection',
+    image: '/images/reverse-polarity-vs-correct-receptacle-wiring.webp',
+    anchor: '## Understanding Polarity in Standard Electrical Circuits',
+    alt:
+      'Two receptacles shown face-on for comparison. Correctly wired, the black hot conductor lands ' +
+      'on a brass terminal screw and the white neutral on a silver screw, with bare copper on the ' +
+      'green ground screw. With reverse polarity the two are swapped: white goes to the brass screw ' +
+      'and black to the silver one. The outlet still works, but the metal shell of a lamp socket ' +
+      'plugged into it stays energized.',
+    labels: ['brass', 'silver', 'hot', 'neutral', 'terminal', 'receptacle', 'shell', 'ground'],
+  },
 ];
 
 async function main() {
