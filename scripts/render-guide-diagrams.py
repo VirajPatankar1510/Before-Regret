@@ -185,9 +185,178 @@ def aluminum_vs_copper() -> Image.Image:
     return img
 
 
+def shared_well_driveway() -> Image.Image:
+    """
+    What is actually shared between two homes on a common well and a Y-shaped driveway.
+
+    Drawn only from what the guide states: a shared well comprises a submersible pump, a pressure
+    tank and water lines serving multiple homes; the pump is often wired to ONE owner's electrical
+    panel, so that owner pays the bill and the others reimburse; a Y-shaped driveway shares a single
+    entrance before splitting into private branches, and the shared portion is typically split
+    fifty-fifty.
+
+    LAYOUT NOTES, because the first attempt had three collisions. The well label sat above the
+    circle and ran into the title; it now sits beside it. A drawn electrical line from the well to
+    House A crossed the water line to the same house and neither was readable; the panel is a badge
+    on the house instead, which removes a line rather than routing around one. And the driveway
+    branches read as a single horizontal bar, so the branch labels now sit directly above their own
+    segments rather than floating at the edges.
+    """
+    img = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(img)
+    f_title, f_head, f_body, f_small = font(32, True), font(32, True), font(27), font(24)
+
+    SHARED, PRIVATE, ROADC = (217, 119, 6), (203, 213, 225), (226, 232, 240)
+    HOUSE, HOUSE_EDGE, WATER = (255, 255, 255), (100, 116, 139), (14, 116, 144)
+
+    d.text((70, 40), "WHAT IS SHARED, AND WHERE IT STOPS", font=f_title, fill=INK)
+
+    # the well, clear of the title, labelled beside itself rather than above
+    d.ellipse([494, 132, 570, 208], fill=WHITE, outline=WATER, width=4)
+    d.ellipse([518, 156, 546, 184], fill=WATER)
+    d.text((592, 152), "Shared well", font=f_head, fill=WATER)
+    d.text((592, 190), "pump, pressure tank, water lines", font=f_small, fill=MUTED)
+
+    for tx in (280, 784):
+        d.line([532, 208, tx, 290], fill=WATER, width=3)
+
+    for box, name in (((120, 290, 382, 460), "House A"), ((682, 290, 944, 460), "House B")):
+        d.rounded_rectangle(box, radius=12, fill=HOUSE, outline=HOUSE_EDGE, width=3)
+        centre(d, (box[0], box[1] + 34, box[2], box[1] + 86), name, f_head, INK)
+
+    # The surprise is that the pump's power comes off ONE panel. A badge, not a line: a drawn
+    # cable from the well to House A crossed the water line to the same house.
+    d.rounded_rectangle([140, 392, 362, 442], radius=10, fill=(255, 237, 213), outline=(217, 119, 6), width=2)
+    centre(d, (140, 392, 362, 442), "pump runs off this panel", f_small, (154, 52, 18))
+
+    # Y-shaped driveway: one entrance off the road, then two private branches
+    d.line([532, 700, 532, 570], fill=SHARED, width=52)
+    d.line([532, 570, 250, 570], fill=PRIVATE, width=46)
+    d.line([250, 570, 250, 466], fill=PRIVATE, width=46)
+    d.line([532, 570, 814, 570], fill=PRIVATE, width=46)
+    d.line([814, 570, 814, 466], fill=PRIVATE, width=46)
+
+    d.rectangle([60, 700, 980, 762], fill=ROADC)
+    d.text((72, 716), "public road", font=f_small, fill=MUTED)
+
+    d.text((196, 520), "private", font=f_body, fill=MUTED)
+    d.text((640, 520), "private", font=f_body, fill=MUTED)
+    d.text((580, 606), "shared portion", font=f_head, fill=SHARED)
+    d.text((580, 646), "typically split fifty-fifty", font=f_body, fill=MUTED)
+
+    # what makes any of it enforceable
+    d.rounded_rectangle([1030, 120, 1540, 420], radius=16, fill=WHITE, outline=(148, 163, 184), width=3)
+    d.text((1066, 152), "Enforceable", font=f_head, fill=INK)
+    for i, line in enumerate(["a recorded easement on the deed",
+                              "a written maintenance agreement",
+                              "a Shared Well Agreement naming",
+                              "who pays for what"]):
+        d.text((1066, 210 + i * 44), line, font=f_body, fill=MUTED)
+
+    d.rounded_rectangle([1030, 456, 1540, 672], radius=16, fill=WHITE, outline=(252, 165, 165), width=3)
+    d.text((1066, 488), "Not enforceable", font=f_head, fill=(153, 27, 27))
+    for i, line in enumerate(["a handshake with the current",
+                              "neighbour, which does not",
+                              "survive either house selling"]):
+        d.text((1066, 546 + i * 42), line, font=f_body, fill=MUTED)
+
+    d.line([60, 800, W - 60, 800], fill=(226, 232, 240), width=2)
+    d.text((60, 828), "The pump, the pressure tank and the water lines all wear out. An agreement that does not "
+                      "say who pays is the problem.", font=f_small, fill=MUTED)
+    return img
+
+
+def over_fusing() -> Image.Image:
+    """
+    Why an Edison-base fuse panel worries an underwriter: nothing physically prevents over-fusing.
+
+    Straight from the guide: screw-in fuses, known as Edison-base fuses, share the same thread size
+    across different amperage ratings, so a 15-amp circuit will happily accept a 20-amp or 30-amp
+    fuse. The wire in the wall is still 15-amp branch wiring, so it carries more current than the
+    conductors can handle and heats inside the wall before the fuse ever melts. A modern breaker is
+    matched to its bus slot, which is the difference.
+    """
+    img = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(img)
+    f_title, f_head, f_body, f_small, f_amp = font(32, True), font(31, True), font(27), font(24), font(30, True)
+
+    BRASS, GLASS, DANGER = (202, 138, 4), (254, 249, 195), (185, 28, 28)
+    EDGE = (148, 163, 184)
+
+    d.text((70, 40), "WHY A FUSE PANEL WORRIES AN UNDERWRITER", font=f_title, fill=INK)
+
+    def fuse(cx, top, amps, face):
+        # glass face with the rating printed on it
+        d.ellipse([cx - 52, top, cx + 52, top + 104], fill=face, outline=BRASS, width=4)
+        centre(d, (cx - 52, top, cx + 52, top + 104), amps, f_amp, INK)
+        # Edison base -- identical on all three, which is the entire point
+        d.rectangle([cx - 34, top + 104, cx + 34, top + 156], fill=(214, 211, 209), outline=BRASS, width=3)
+        for i in range(3):
+            y = top + 116 + i * 14
+            d.line([cx - 34, y, cx + 34, y], fill=BRASS, width=3)
+
+    for cx, amps in ((190, "15A"), (370, "20A"), (550, "30A")):
+        fuse(cx, 120, amps, GLASS)
+        d.line([cx, 288, cx, 342], fill=EDGE, width=3)
+        d.polygon([(cx - 10, 342), (cx + 10, 342), (cx, 360)], fill=EDGE)
+
+    d.text((70, 300), "same", font=f_small, fill=MUTED)
+    d.text((70, 328), "thread", font=f_small, fill=MUTED)
+
+    # one socket, and all three fit it
+    d.rounded_rectangle([120, 380, 620, 466], radius=12, fill=WHITE, outline=BRASS, width=4)
+    centre(d, (120, 380, 620, 466), "one Edison-base socket", f_head, INK)
+    # The left column ends at x=680; the right-hand panels start at 700. The guard measures from
+    # wherever the text actually starts, not from a fixed width -- a line beginning at x=152 has
+    # less room than one beginning at x=120, and checking a constant misses exactly that case.
+    LEFT_EDGE = 680
+
+    def left_text(xy, text, f, fill):
+        room = LEFT_EDGE - xy[0]
+        if d.textlength(text, font=f) > room:
+            raise SystemExit(f"ABORT: {text!r} needs {d.textlength(text, font=f):.0f}px, has {room}px before the right-hand panels")
+        d.text(xy, text, font=f, fill=fill)
+
+    left_text((120, 480), "All three screw in.", f_body, DANGER)
+    left_text((120, 514), "Nothing stops the wrong one.", f_body, DANGER)
+
+    # the wire is the thing that does not change
+    d.rounded_rectangle([120, 572, 680, 742], radius=12, fill=WHITE, outline=EDGE, width=3)
+    left_text((152, 598), "The branch wiring is still 15-amp", f_head, INK)
+    for i, line in enumerate(["It carries more current than the",
+                              "conductors can handle, and heats",
+                              "inside the wall."]):
+        left_text((152, 646 + i * 32), line, f_body, MUTED)
+
+    # what a breaker does differently
+    d.rounded_rectangle([700, 120, 1540, 400], radius=16, fill=WHITE, outline=EDGE, width=3)
+    d.text((736, 152), "A modern breaker panel", font=f_head, fill=INK)
+    for i, line in enumerate(["breakers are matched to the bus slot,",
+                              "so the wrong rating does not fit",
+                              "trips and resets instead of melting",
+                              "100 to 200+ amp service, against 30 to 60"]):
+        d.text((736, 212 + i * 44), line, font=f_body, fill=MUTED)
+
+    d.rounded_rectangle([700, 436, 1540, 690], radius=16, fill=(254, 242, 242), outline=(252, 165, 165), width=3)
+    d.text((736, 468), "This is called over-fusing", font=f_head, fill=DANGER)
+    for i, line in enumerate(["It is the single thing underwriters look",
+                              "for on a fuse panel, because it leaves no",
+                              "trace until something burns."]):
+        d.text((736, 528 + i * 44), line, font=f_body, fill=MUTED)
+
+    d.line([60, 780, W - 60, 780], fill=(226, 232, 240), width=2)
+    d.text((60, 808), "A fuse panel is not automatically uninsurable. An over-fused one is a different "
+                      "conversation.", font=f_small, fill=INK)
+    d.text((60, 846), "What a 4-point inspection records is the panel's condition and its service size.",
+           font=f_small, fill=MUTED)
+    return img
+
+
 DIAGRAMS = {
     "county-vs-city-permit-jurisdiction": jurisdiction,
     "single-strand-aluminum-vs-copper-wiring-identification": aluminum_vs_copper,
+    "shared-well-and-y-shaped-driveway-responsibility": shared_well_driveway,
+    "edison-base-fuse-over-fusing-risk": over_fusing,
 }
 
 

@@ -14,12 +14,14 @@ export interface ImageDimensions { width: number; height: number }
 
 export const IMAGE_DIMENSIONS: Record<string, ImageDimensions> = {
   '/images/county-vs-city-permit-jurisdiction.webp': { width: 1600, height: 900 },
+  '/images/edison-base-fuse-over-fusing-risk.webp': { width: 1600, height: 900 },
   '/images/eifs-vs-traditional-stucco-wall-cross-section.webp': { width: 1600, height: 995 },
   '/images/fruitful-home-cover-lg.webp': { width: 520, height: 832 },
   '/images/fruitful-home-cover.webp': { width: 300, height: 480 },
   '/images/knob-and-tube-vs-modern-sheathed-cable.webp': { width: 1600, height: 995 },
   '/images/open-ground-vs-bootleg-ground-receptacle-wiring.webp': { width: 1600, height: 873 },
   '/images/polybutylene-vs-pex-pipe-identification.webp': { width: 1600, height: 995 },
+  '/images/shared-well-and-y-shaped-driveway-responsibility.webp': { width: 1600, height: 900 },
   '/images/single-strand-aluminum-vs-copper-wiring-identification.webp': { width: 1600, height: 900 },
   '/images/fruitful-home-cover-lg.jpg': { width: 520, height: 832 },
   '/images/fruitful-home-cover.jpg': { width: 300, height: 480 },

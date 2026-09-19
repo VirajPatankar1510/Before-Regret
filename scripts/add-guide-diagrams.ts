@@ -61,6 +61,32 @@ const PLACEMENTS: Placement[] = [
     labels: ['single-strand', 'aluminum', 'copper', 'silver-grey', 'reddish-gold',
              'dead-front', 'junction box', 'receptacle', 'Alcan', 'Kaiser', 'General Cable'],
   },
+  {
+    slug: 'who-s-responsible-shared-well-shared-driveway',
+    image: '/images/shared-well-and-y-shaped-driveway-responsibility.webp',
+    anchor: '## The Legal Risks of Shared Property and Shared Utility Wells',
+    alt:
+      'Site diagram of two homes sharing a well and a Y-shaped driveway. The shared well feeds both ' +
+      'houses through a pump, pressure tank and water lines, with the pump wired to one house’s ' +
+      'panel so that owner pays the electricity. The driveway shares a single entrance from the ' +
+      'public road before splitting into private branches, and the shared portion is typically ' +
+      'split fifty-fifty. A recorded easement, a written maintenance agreement and a Shared Well ' +
+      'Agreement are enforceable; a handshake with the current neighbour is not.',
+    labels: ['easement', 'recorded', 'deed', 'maintenance agreement', 'shared well',
+             'driveway', 'pressure tank', 'fifty-fifty', 'handshake'],
+  },
+  {
+    slug: 'get-home-insurance-fuse-box',
+    image: '/images/edison-base-fuse-over-fusing-risk.webp',
+    anchor: '## The Three Main Risks That Trigger Insurance Refusals',
+    alt:
+      'Diagram showing why a fuse panel worries an underwriter. Screw-in Edison-base fuses rated ' +
+      '15A, 20A and 30A share an identical thread, so all three fit the same socket and nothing in ' +
+      'the panel prevents the wrong one being fitted. The branch wiring remains 15-amp and carries ' +
+      'more current than the conductors can handle, heating inside the wall. This is over-fusing. ' +
+      'A modern breaker panel matches breakers to the bus slot so the wrong rating does not fit.',
+    labels: ['Edison', 'over-fusing', 'branch wiring', 'breaker', 'amp', 'panel', 'fuse'],
+  },
 ];
 
 async function main() {
@@ -78,7 +104,10 @@ async function main() {
     if (!fs.existsSync(path.join(process.cwd(), 'public', p.image))) {
       throw new Error(`ABORT: ${p.image} has not been rendered`);
     }
-    if (body.includes(p.image)) throw new Error(`ABORT: ${p.slug} already carries this diagram`);
+    // Already placed is a skip, not a failure. This script holds every placement, so it gets
+    // re-run whenever one is added, and aborting on the first one already done would mean the
+    // list could never grow.
+    if (body.includes(p.image)) { console.log(`  ${p.slug}: already carries this diagram, skipping`); continue; }
     if (!body.includes(p.anchor)) throw new Error(`ABORT: ${p.slug} has no heading "${p.anchor}"`);
 
     // The rule that matters: nothing may exist only inside the image.
