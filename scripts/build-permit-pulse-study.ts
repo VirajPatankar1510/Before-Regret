@@ -87,7 +87,51 @@ const lookup = f.counties
   }))
   .sort((x: any, y: any) => x.n.localeCompare(y.n));
 
+// ---- the size-class chart, as an inline <svg class="chart"> -------------------------------------
+// It was a stack of styled divs, which reads fine on the page and is invisible to
+// scripts/render-research-charts.py -- that exporter walks docs/*.html for <svg class="chart"> and
+// rasterises it. So the newest and most newsworthy study was the one asset a reporter could not
+// lift out. Rebuilt in the same closed SVG subset the exporter supports (rect, line, text only:
+// no path, no transform, no <g>), with every colour a var() resolved from :root, which is how the
+// exporter recovers literal colours for a standalone file.
+const CH = { w: 620, rowH: 38, barH: 22, labelW: 112, plotL: 128, plotR: 556, valX: 568 };
+const CH_ZERO = (CH.plotL + CH.plotR) / 2;
+/** px per percentage point, scaled so the largest bar leaves a margin inside the plot. */
+const CH_SCALE = ((CH.plotR - CH.plotL) / 2 - 18) / Math.max(...size.map((s) => Math.abs(s.changePct)));
+/** +42 not +34: the axis label's BASELINE sits at +34, so a viewBox ending there clips its descenders. */
+const CH_H = size.length * CH.rowH + 42;
+
+const chartSvg = `<svg class="chart" viewBox="0 0 ${CH.w} ${CH_H}" role="img"
+  aria-label="Change in US residential building permits by structure size, year to date through ${period}, ${priorYear} against ${year}. ${size.map((s) => `${s.label} ${sgn(s.changePct)}`).join(', ')}.">
+${size.map((s, i) => {
+  const y = 20 + i * CH.rowH;
+  const len = Math.max(1, Math.abs(s.changePct) * CH_SCALE);
+  const x = s.changePct < 0 ? CH_ZERO - len : CH_ZERO;
+  const cls = s.changePct < 0 ? 'down' : 'up';
+  return `  <text class="lab" x="${CH.labelW}" y="${y + CH.barH / 2 + 4}">${s.label}</text>` +
+    `<rect class="track" x="${CH.plotL}" y="${y}" width="${CH.plotR - CH.plotL}" height="${CH.barH}"/>` +
+    `<rect class="${cls}" x="${x.toFixed(1)}" y="${y}" width="${len.toFixed(1)}" height="${CH.barH}"/>` +
+    `<text class="val ${cls}" x="${CH.valX}" y="${y + CH.barH / 2 + 4}">${sgn(s.changePct)}</text>`;
+}).join('\n')}
+  <line class="zero" x1="${CH_ZERO}" y1="14" x2="${CH_ZERO}" y2="${size.length * CH.rowH + 20}"/>
+  <text class="tiny mid" x="${CH_ZERO}" y="${size.length * CH.rowH + 34}">no change</text>
+</svg>`;
+
 const html = `<style>
+  :root{
+    --ink:#1a1a1a; --muted:#6b6b6b; --rule:#dfe5e2; --track:#eef2f0;
+    --down:#b4453a; --up:#2f6f5e; --accent:#2f6f5e;
+  }
+  .chart{width:100%;height:auto;display:block;margin:0 0 .6rem;font-family:ui-sans-serif,system-ui,sans-serif}
+  .chart text{fill:var(--ink);font-size:13px}
+  .chart .lab{text-anchor:end;fill:var(--muted)}
+  .chart .val{text-anchor:start;font-weight:700}
+  .chart .tiny{font-size:11px;fill:var(--muted)}
+  .chart .mid{text-anchor:middle}
+  .chart .track{fill:var(--track)}
+  .chart .down{fill:var(--down)}
+  .chart .up{fill:var(--up)}
+  .chart .zero{stroke:#9aa8a2;stroke-width:1}
   .wrap{max-width:46rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;font:16px/1.65 Charter,Georgia,'Times New Roman',serif;color:#1a1a1a}
   .wrap *{box-sizing:border-box}
   .kicker{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#2f6f5e;margin:0 0 .9rem}
@@ -149,14 +193,7 @@ const html = `<style>
 
   <h2>Houses against apartments</h2>
   <h3>Three of the four categories fell. The fourth cancelled them.</h3>
-  <div class="sizes">
-${size.map((s) => {
-  const w = Math.min(50, Math.round((Math.abs(s.changePct) / 12) * 50));
-  return `    <div class="srow"><span class="slabel">${s.label}</span>` +
-    `<span class="stray"><span class="sbar ${s.changePct < 0 ? 'dn' : 'up'}" style="width:${Math.max(1, w)}%"></span><span class="szero"></span></span>` +
-    `<span class="sval">${sgn(s.changePct)}</span></div>`;
-}).join('\n')}
-  </div>
+  ${chartSvg}
   <p class="cap">Change in permitted units by structure size, year to date through ${period}, ${priorYear} against ${year}. Source: US Census Bureau, Building Permits Survey.</p>
   <p>Single-family permits are ${sgn(size[0].changePct)}, from ${num(size[0].prior)} to
   ${num(size[0].current)} units. Two-unit buildings are ${sgn(size[1].changePct)}; three- and
@@ -257,7 +294,15 @@ ${bestHouses.map((c: any, i: number) => row(c, i)).join('\n')}
   arrive, so a county's number can shift slightly between one month and the next.</p>
 
   <div class="cite">
-    <b>Cite it, check it, take it apart</b>
+    <b>Use this</b>
+    <p style="margin:0 0 .6rem">The chart above, as a file you can put in a story:
+    <a href="/research/data/permit-pulse-exhibit-1.png" download>PNG</a> &middot;
+    <a href="/research/data/permit-pulse-exhibit-1.svg" download>SVG</a>. The county table, all
+    ${f.findings.eligibleCounties} rows:
+    <a href="/research/data/permit-pulse-by-county.csv" download>CSV</a> &middot;
+    <a href="/research/data/permit-pulse-figures.json">JSON</a>.</p>
+    <p style="margin:0 0 .6rem">Credit line: &ldquo;analysis of US Census Bureau Building Permits
+    Survey data by BeforeRegret&rdquo;, linking to this page.</p>
     <p style="margin:0 0 .6rem">Free to reuse with attribution under
     <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Every figure on this page
     is computed by BeforeRegret from the Census Bureau files named below. Nothing is restated from

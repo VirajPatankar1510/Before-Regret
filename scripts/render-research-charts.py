@@ -35,7 +35,7 @@ APPLY = os.environ.get("APPLY") == "1"
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 OUT = ROOT / "public" / "research" / "data"
-STUDIES = ["risk-without-price", "risk-without-cover", "outside-the-zone", "high-hazard-dams"]
+STUDIES = ["risk-without-price", "risk-without-cover", "outside-the-zone", "high-hazard-dams", "permit-pulse"]
 
 SCALE = 2
 FONT_REG = "/System/Library/Fonts/Menlo.ttc"

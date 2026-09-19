@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 336" role="img"
+     aria-labelledby="jt jd" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+  <title id="jt">Which authority holds a property's building permit records</title>
+  <desc id="jd">A single US county contains incorporated cities and unincorporated land. Permit records for an address in an unincorporated area are held by the county building department. Permit records for an address inside city limits are held by that city's own building department, not the county. Searching the county portal for an address inside a city returns nothing, which is not the same as no permits existing.</desc>
+
+  <rect width="620" height="336" fill="#f8fafc"/>
+
+  <!-- the county -->
+  <rect x="18" y="52" width="344" height="216" rx="10" fill="#ffffff" stroke="#94a3b8"
+        stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="190" y="40" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">ONE US COUNTY</text>
+
+  <!-- unincorporated land is whatever the cities do not cover -->
+  <text x="190" y="80" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Unincorporated area</text>
+  <text x="190" y="97" text-anchor="middle" font-size="11.5" fill="#64748b">no city government here</text>
+
+  <!-- incorporated cities sitting inside it -->
+  <rect x="42" y="116" width="136" height="62" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="110" y="144" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">City A</text>
+  <text x="110" y="161" text-anchor="middle" font-size="11.5" fill="#1d4ed8">incorporated</text>
+
+  <rect x="200" y="142" width="136" height="62" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="268" y="170" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">City B</text>
+  <text x="268" y="187" text-anchor="middle" font-size="11.5" fill="#1d4ed8">incorporated</text>
+
+  <!-- county records: straight out from the unincorporated band at the top -->
+  <line x1="300" y1="88" x2="386" y2="88" stroke="#94a3b8" stroke-width="1.5"/>
+  <circle cx="386" cy="88" r="3.5" fill="#94a3b8"/>
+  <text x="400" y="84" font-size="13" font-weight="700" fill="#334155">County building dept.</text>
+  <text x="400" y="102" font-size="12" fill="#64748b">for unincorporated land</text>
+
+  <!-- city records: City A routes DOWN and along, under City B, so no line crosses a box -->
+  <line x1="110" y1="180" x2="110" y2="240" stroke="#2563eb" stroke-width="1.5"/>
+  <line x1="110" y1="240" x2="386" y2="240" stroke="#2563eb" stroke-width="1.5"/>
+  <line x1="268" y1="206" x2="268" y2="240" stroke="#2563eb" stroke-width="1.5"/>
+  <circle cx="386" cy="240" r="3.5" fill="#2563eb"/>
+  <text x="400" y="236" font-size="13" font-weight="700" fill="#1e3a8a">That city&#8217;s own dept.</text>
+  <text x="400" y="254" font-size="12" fill="#1d4ed8">for addresses inside it</text>
+
+  <!-- the failure this causes, on two lines so neither runs past the edge -->
+  <rect x="18" y="296" width="584" height="1" fill="#e2e8f0"/>
+  <text x="18" y="316" font-size="11.5" fill="#475569">Searching the county portal for an address inside a city returns nothing.</text>
+  <text x="18" y="331" font-size="11.5" fill="#475569">That is not the same as no permits existing.</text>
+</svg>

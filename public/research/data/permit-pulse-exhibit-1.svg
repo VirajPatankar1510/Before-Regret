@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 194" width="620" height="194" class="chart" role="img"><style>
+  .chart { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+  .chart text { fill: #1a1a1a; font-size: 13px; }
+  .chart .lab { text-anchor: end; fill: #6b6b6b; }
+  .chart .val { text-anchor: start; font-weight: 700; }
+  .chart .tiny { font-size: 11px; fill: #6b6b6b; }
+  .chart .mid { text-anchor: middle; }
+  .chart .track { fill: #eef2f0; }
+  .chart .down { fill: #b4453a; }
+  .chart .up { fill: #2f6f5e; }
+  .chart .zero { stroke: #9aa8a2; stroke-width: 1; }
+</style><rect width="620" height="194" fill="#F6F7F6"/>
+  <text class="lab" x="112" y="35">1-unit</text><rect class="track" x="128" y="20" width="428" height="22"/><rect class="down" x="264.6" y="20" width="77.4" height="22"/><text class="val down" x="568" y="35">−3.2%</text>
+  <text class="lab" x="112" y="73">2-units</text><rect class="track" x="128" y="58" width="428" height="22"/><rect class="down" x="221.0" y="58" width="121.0" height="22"/><text class="val down" x="568" y="73">−5%</text>
+  <text class="lab" x="112" y="111">3-4 units</text><rect class="track" x="128" y="96" width="428" height="22"/><rect class="down" x="170.2" y="96" width="171.8" height="22"/><text class="val down" x="568" y="111">−7.1%</text>
+  <text class="lab" x="112" y="149">5+ units</text><rect class="track" x="128" y="134" width="428" height="22"/><rect class="up" x="342.0" y="134" width="196.0" height="22"/><text class="val up" x="568" y="149">+8.1%</text>
+  <line class="zero" x1="342" y1="14" x2="342" y2="172"/>
+  <text class="tiny mid" x="342" y="186">no change</text>
+</svg>
