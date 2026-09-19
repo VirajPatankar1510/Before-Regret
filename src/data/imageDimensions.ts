@@ -20,6 +20,7 @@ export const IMAGE_DIMENSIONS: Record<string, ImageDimensions> = {
   '/images/knob-and-tube-vs-modern-sheathed-cable.webp': { width: 1600, height: 995 },
   '/images/open-ground-vs-bootleg-ground-receptacle-wiring.webp': { width: 1600, height: 873 },
   '/images/polybutylene-vs-pex-pipe-identification.webp': { width: 1600, height: 995 },
+  '/images/single-strand-aluminum-vs-copper-wiring-identification.webp': { width: 1600, height: 900 },
   '/images/fruitful-home-cover-lg.jpg': { width: 520, height: 832 },
   '/images/fruitful-home-cover.jpg': { width: 300, height: 480 },
   '/hero-bg.jpg': { width: 1895, height: 830 },

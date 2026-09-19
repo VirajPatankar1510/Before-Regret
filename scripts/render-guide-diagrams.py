@@ -115,7 +115,80 @@ def jurisdiction() -> Image.Image:
     return img
 
 
-DIAGRAMS = {"county-vs-city-permit-jurisdiction": jurisdiction}
+def aluminum_vs_copper() -> Image.Image:
+    """
+    How an inspector tells single-strand aluminum branch wiring from copper.
+
+    Every element here is stated in the guide's own prose, which cites ASHI: the jacket is stamped
+    "AL", "ALUMINUM", "ALUM" or a period brand name (Alcan, Kaiser, General Cable); the bare
+    conductor is silver-grey for aluminum and reddish-gold for copper; and the three places an
+    inspector actually looks are the panel dead-front, open junction boxes and sampled receptacles.
+    Nothing is drawn here that the page does not already say in text.
+    """
+    img = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(img)
+    f_title, f_head, f_body, f_small, f_stamp = font(32, True), font(36, True), font(28), font(25), font(22, True)
+
+    AL_METAL, CU_METAL = (156, 163, 175), (184, 115, 51)
+    COL_W = 720   # left column stops short of the right-hand panels at x=830
+    JACKET, JACKET_EDGE = (241, 245, 249), (148, 163, 184)
+
+    d.text((70, 48), "TELLING ALUMINUM FROM COPPER AT THE TERMINAL", font=f_title, fill=INK)
+
+    def cable(x0, y0, label, sub, stamp, metal, accent):
+        # Jacket. The stamp is kept to what a real cable jacket actually prints -- a long
+        # explanatory phrase here overflowed the rectangle and got painted over by the conductor.
+        # The explanation lives in the label underneath instead, where it has room.
+        d.rounded_rectangle([x0, y0, x0 + 430, y0 + 96], radius=16, fill=JACKET, outline=JACKET_EDGE, width=3)
+        if d.textlength(stamp, font=f_stamp) > 378:
+            raise SystemExit(f"ABORT: jacket stamp {stamp!r} is wider than the jacket it is printed on")
+        d.text((x0 + 26, y0 + 34), stamp, font=f_stamp, fill=MUTED)
+        # bare conductor emerging from the cut end
+        d.rounded_rectangle([x0 + 430, y0 + 34, x0 + 610, y0 + 62], radius=14, fill=metal)
+        # terminal screw it lands on
+        d.ellipse([x0 + 606, y0 + 22, x0 + 662, y0 + 78], fill=(226, 232, 240), outline=LINE, width=3)
+        d.line([x0 + 620, y0 + 50, x0 + 648, y0 + 50], fill=MUTED, width=4)
+        d.text((x0, y0 + 128), label, font=f_head, fill=accent)
+        # Sub-label on its own lines, width-checked. As one long line it ran past x=830 and was
+        # painted over by the panels in the right-hand column -- "bare end" vanished on both cables.
+        for i, line in enumerate(sub):
+            if d.textlength(line, font=f_body) > COL_W:
+                raise SystemExit(f"ABORT: {line!r} is wider than the left column and will collide")
+            d.text((x0, y0 + 176 + i * 40), line, font=f_body, fill=MUTED)
+
+    cable(80, 140, "Single-strand aluminum",
+          ["jacket stamped AL or ALUMINUM", "silver-grey at the bare end"],
+          "AL   ALUMINUM", AL_METAL, INK)
+    cable(80, 420, "Copper",
+          ["no AL marking on the jacket", "reddish-gold at the bare end"],
+          "CU   COPPER", CU_METAL, INK)
+
+    # period brand names are an identifier in their own right
+    d.rounded_rectangle([830, 150, 1520, 340], radius=16, fill=WHITE, outline=JACKET_EDGE, width=3)
+    d.text((866, 182), "Also stamped on the jacket", font=f_head, fill=INK)
+    d.text((866, 236), "Alcan  ·  Kaiser  ·  General Cable", font=f_body, fill=CITY_SUB)
+    d.text((866, 280), "period brands used for aluminum branch wiring", font=f_small, fill=MUTED)
+
+    d.rounded_rectangle([830, 400, 1520, 672], radius=16, fill=WHITE, outline=JACKET_EDGE, width=3)
+    d.text((866, 430), "Where an inspector looks", font=f_head, fill=INK)
+    for i, where in enumerate(["behind the panel dead-front cover", "inside open junction boxes",
+                               "at sampled outlet receptacles"]):
+        y = 490 + i * 52
+        d.ellipse([870, y + 8, 886, y + 24], fill=CITY_EDGE)
+        d.text((908, y), where, font=f_body, fill=MUTED)
+
+    d.line([60, 760, W - 60, 760], fill=(226, 232, 240), width=2)
+    d.text((60, 788), "Aluminum branch wiring is not a defect in itself. What underwriters weigh is the",
+           font=f_small, fill=INK)
+    d.text((60, 826), "condition of the connections, and whether remediation was done and documented.",
+           font=f_small, fill=MUTED)
+    return img
+
+
+DIAGRAMS = {
+    "county-vs-city-permit-jurisdiction": jurisdiction,
+    "single-strand-aluminum-vs-copper-wiring-identification": aluminum_vs_copper,
+}
 
 
 def main():
