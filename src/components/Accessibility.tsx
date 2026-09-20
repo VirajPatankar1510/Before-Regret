@@ -56,9 +56,18 @@ export const Accessibility: React.FC<AccessibilityProps> = ({ onBackToHome, onNa
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Accessibility Statement
             </h1>
+            {/* Deliberately NOT phrased as "Before Regret (beforeregret.com), operated by
+                Atmostellar, is ..." -- it used to be, and that made this page the only place on the
+                site stating brand, domain and operator in one definitional sentence. A brand-name
+                search on 2026-09-20 returned an AI Overview describing BeforeRegret as a provider of
+                "accessibility statements and web services", citing this page, because nothing else
+                offered a sentence of that shape. The operator is still named below and in the
+                contact block; what changed is that the subject of the opening sentence is this
+                statement rather than the company. The definition now lives on the homepage, where it
+                belongs. */}
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <strong>Before Regret</strong> (beforeregret.com), operated by <strong>Atmostellar</strong>,
-              is intended to be usable by everyone, including people who use screen readers,
+              This statement describes how <strong>BeforeRegret</strong> approaches accessibility.
+              The site is intended to be usable by everyone, including people who use screen readers,
               keyboard-only navigation, screen magnification, or other assistive technology. This page
               explains what we have done, what we know is imperfect, and how to tell us when
               something on this site does not work for you.

@@ -89,10 +89,20 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
             moving here?
           </h1>
 
+          {/* The opening clause is deliberately a plain "X is Y" definition, and it is here in
+              prose rather than only in the Organization JSON-LD below. Searching the brand name on
+              2026-09-20 returned an AI Overview calling the site "an online platform that provides
+              accessibility statements and web services", sourced from /accessibility/ -- which was
+              the ONLY page on the site whose text stated brand, domain and operator in a
+              definitional sentence. The h1 above is a question and never names the brand, so a
+              generative answer had nothing else to quote. Schema did not help: the homepage already
+              carried correct Organization markup with a good description and it was ignored, because
+              that layer reads prose. Keep a sentence of this shape on the page. */}
           <p className="mt-5 mx-auto max-w-xl text-base sm:text-lg text-slate-600 leading-relaxed">
-            Search any US residential address and get the checks that actually matter for a home of
-            its age and county, the exact questions to ask the seller, and a clear list of what to
-            verify before you sign.
+            BeforeRegret is a free property research tool for US home buyers. Search any US
+            residential address and get the checks that actually matter for a home of its age and
+            county, the exact questions to ask the seller, and a clear list of what to verify before
+            you sign.
           </p>
 
           <div ref={searchBoxRef} id="address-search-box" className="mt-8 min-h-[76px] text-left">
