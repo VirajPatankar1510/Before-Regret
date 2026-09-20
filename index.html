@@ -84,7 +84,19 @@
 
          Every field below is verifiable. sameAs carries the official LinkedIn company page, in its
          vanity-slug form (LinkedIn's own canonical, and more durable than the numeric-ID URL the
-         same page also answers on).
+         same page also answers on), and the Facebook page.
+
+         FACEBOOK, added 2026-09-20. It was already ranking on the brand SERP unclaimed, so Google
+         was guessing at the relationship rather than being told. Checked in a real browser before
+         adding -- curl gets HTTP 400 from Facebook regardless of whether a page exists, so a
+         command-line check proves nothing here. The page is live, named "Before Regret",
+         categorised "Property service", and its Website field points at beforeregret.com.
+
+         Know what this profile is and is not: it is an older page the owner renamed, so the ~2.7K
+         followers came with the previous identity and are not a property-research audience. That is
+         fine for what sameAs is for -- corroborating that the entity exists and is who it says --
+         and it is why the page should not be judged on engagement. It is an identity signal, not a
+         distribution channel.
 
          This comment used to say the link could NOT be checked from here, on the grounds that
          LinkedIn answers automated clients with HTTP 999. Re-tested 2026-09-15 with a Googlebot
@@ -129,7 +141,8 @@
         "logo": "https://www.beforeregret.com/favicon.svg",
         "description": "Free, address-based property research for US home buyers and renters. Runs a live USGS seismic hazard check and validates the address against US Census records, then gives a curated, source-linked checklist of what to verify -- with anything not independently verified labeled as such rather than guessed.",
         "sameAs": [
-          "https://www.linkedin.com/company/before-regret/"
+          "https://www.linkedin.com/company/before-regret/",
+          "https://www.facebook.com/BeforeRegret"
         ],
         "knowsAbout": [
           "Home inspection reports",
