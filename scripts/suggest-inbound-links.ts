@@ -26,10 +26,45 @@
 // WHAT IT WILL NOT FIND, and this is the point rather than a limitation: if a new guide has no
 // honest anchor anywhere in its cluster, the correct output is nothing. That is a signal the guide
 // is disconnected from the library, which is Rule 6's concern, not a problem to paper over.
+//
+// WHY THE CANDIDATES ARE ORDERED BY THE SOURCE PAGE'S IMPRESSIONS.
+//
+// Every anchor this finds is honest, but they are not worth the same. A link from a page Google
+// actually shows carries more than one from a page that has never been served -- Google's
+// reasonable-surfer model weights a link by how likely it is to be followed, and a link nobody can
+// reach because its page draws no impressions is close to inert.
+//
+// The spread here is not marginal. Impressions over 28 days run from 481 on the San Bernardino
+// permit guide down to zero on eleven guides that have never been shown at all. Reviewing in
+// database order means the first anchors a human approves are as likely to sit on a dead page as
+// a live one, which is the difference between a link that moves the target and a link that only
+// tidies the graph.
+//
+// This changes the ORDER and the annotation, never the finding. The distinctiveness ceiling, the
+// honest-anchor rule and the refusal to invent prose are untouched -- the same sentences are
+// surfaced, best-placed source first. If Search Console is unconfigured or unreachable the script
+// falls back to database order and says so, because a link suggestion is still useful without it.
 import 'dotenv/config';
 import './lib/neon-curl.js';
 import { withDb } from '../src/server/db.js';
 import { guideTopic } from '../src/utils/relatedGuides.js';
+import { fetchPagePerformance, isSearchConsoleConfigured } from '../src/server/searchConsoleService.js';
+
+/** Impressions per guide slug over the last 28 days, or null when Search Console is unavailable. */
+async function sourceImpressions(): Promise<Map<string, number> | null> {
+  if (!isSearchConsoleConfigured()) return null;
+  try {
+    const rows = await fetchPagePerformance(28);
+    const m = new Map<string, number>();
+    for (const r of rows) {
+      const slug = r.page.match(/\/guides\/([a-z0-9-]+)\/?$/)?.[1];
+      if (slug) m.set(slug, (m.get(slug) ?? 0) + r.impressions);
+    }
+    return m;
+  } catch {
+    return null;
+  }
+}
 
 const TARGET = process.argv[2];
 const ALL_CLUSTERS = process.argv.includes('--all-clusters');
@@ -113,7 +148,20 @@ async function main() {
 
   const pool = rows.filter((r) => r.slug !== TARGET && (ALL_CLUSTERS || guideTopic(r.slug, r.title) === topic));
   const already = pool.filter((r) => String(r.body_markdown).includes(`/guides/${TARGET}/`));
-  console.log(`  ${pool.length} guide(s) in scope, ${already.length} already link here\n`);
+  console.log(`  ${pool.length} guide(s) in scope, ${already.length} already link here`);
+
+  // Best-placed source first. Sorted, not filtered: a zero-impression page still gets listed,
+  // because a page Google has not shown yet is not a page that will never be shown, and the
+  // anchor on it is just as honest.
+  const impressions = await sourceImpressions();
+  if (impressions) {
+    pool.sort((a, b) => (impressions.get(b.slug) ?? 0) - (impressions.get(a.slug) ?? 0));
+    const live = pool.filter((r) => (impressions.get(r.slug) ?? 0) > 0).length;
+    console.log(`  ordered by source impressions (28d): ${live} of ${pool.length} in scope have been shown by Google\n`);
+  } else {
+    console.log(`  Search Console unavailable -- listing in database order, so the first anchors`);
+    console.log(`  below are NOT necessarily the best-placed ones.\n`);
+  }
 
   let found = 0;
   for (const r of pool) {
@@ -128,7 +176,9 @@ async function main() {
     }
     if (!hits.length) continue;
     found += hits.length;
-    console.log(`  ${r.slug}`);
+    const imp = impressions?.get(r.slug);
+    const badge = impressions ? (imp ? `  [${imp} impr/28d]` : '  [never shown]') : '';
+    console.log(`  ${r.slug}${badge}`);
     for (const h of hits.slice(0, 3)) {
       console.log(`    [${h.matched.join(' + ')}]`);
       console.log(`    ${h.s.length > 200 ? `${h.s.slice(0, 200)}…` : h.s}`);
