@@ -222,6 +222,62 @@ export const GUIDE_CLUSTER_META: { id: string; title: string }[] = CLUSTER_RULES
   title: r.title,
 }));
 
+/** One section of the /guides/ hub: a cluster, or the catch-all that holds what is left. */
+export interface HubSection<T> {
+  id: string;
+  title: string;
+  guides: T[];
+}
+
+/**
+ * Groups the hub's guides into sections, in cluster precedence order, keeping EVERY guide.
+ *
+ * WHY THE HUB NEEDED THIS. The hub already clustered for humans -- the filter chips above the grid
+ * are built from GUIDE_CLUSTER_META -- but those are <button>s, and the default unfiltered render
+ * is one flat grid of every title. So the prerendered HTML a crawler reads, which is the only
+ * version that counts for search, carried no cluster structure at all: 68 sibling <h2>s and
+ * nothing saying what any run of them is about. This adds the sections to the markup itself.
+ *
+ * MINSIZE IS 2 HERE, NOT THE 3 buildGuideClusters USES, and the difference is deliberate. The note
+ * on GUIDE_CLUSTER_META already draws the distinction this relies on: "a filter chip that finds two
+ * guides is still a useful filter; a homepage card promising a topic and delivering two links is
+ * not, which is why only the latter has a floor." An index page is the filter case. Its job is to
+ * list the library, so a heading over two guides is ordinary; a heading over ONE reads as a
+ * mistake, which is where the floor belongs. On the 68-guide library that is 11 real sections and
+ * two stragglers.
+ *
+ * NOTHING IS EVER DROPPED. buildGuideClusters discards clusters under its floor because the
+ * homepage is a selection. The hub is the index -- the one page every guide must be reachable from
+ * in one click -- so a dropped guide is a deleted internal link, which is the opposite of what this
+ * property needs while indexing is its constraint. Short clusters and anything unclassified fall
+ * into the catch-all instead, and the caller asserts the count survives.
+ */
+export function groupGuidesForHub<T extends { slug: string; title: string }>(
+  guides: T[],
+  minSize = 2,
+): Array<HubSection<T>> {
+  const byCluster = new Map<string, T[]>();
+  const leftover: T[] = [];
+  for (const g of guides) {
+    const id = classifyGuideTopic(g);
+    if (!id) { leftover.push(g); continue; }
+    byCluster.set(id, [...(byCluster.get(id) ?? []), g]);
+  }
+
+  const sections: Array<HubSection<T>> = [];
+  // CLUSTER_RULES order, so the hub's sections and the filter chips read in the same sequence.
+  for (const meta of GUIDE_CLUSTER_META) {
+    const found = byCluster.get(meta.id) ?? [];
+    if (found.length >= minSize) sections.push({ id: meta.id, title: meta.title, guides: found });
+    else leftover.push(...found);
+  }
+  // Plain label on purpose. The catch-all is the one section that cannot promise a subject, so it
+  // does not pretend to have one -- naming it for a topic it only partly covers is the exact thing
+  // the minSize floor above exists to prevent.
+  if (leftover.length) sections.push({ id: 'more', title: 'More guides', guides: leftover });
+  return sections;
+}
+
 /** Evergreen buyer guides only -- excludes event-reactive news and the data-reference rankings. */
 export function isEvergreenGuide(article: HomeArticle): boolean {
   return (article.articleType ?? 'guide') === 'guide';

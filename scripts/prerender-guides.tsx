@@ -9,6 +9,7 @@ import { ArticleClosingNote } from '../src/components/seo/ArticleClosingNote';
 import { pickRelatedGuides, GuideSummary } from '../src/utils/relatedGuides';
 import { buildPageTitle } from '../src/utils/pageTitle';
 import { pickCountiesForGuide, CountyTopicInput, GUIDE_TOPICS, permitGuideCountySlug } from '../src/utils/countyGuideTopics.js';
+import { groupGuidesForHub } from '../src/utils/homeContent.js';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { BookPromoCard, BookPromoSkyscraper } from '../src/components/BookPromo';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
@@ -433,15 +434,30 @@ function GuidesIndexStaticBody({ guides, footerGuides }: { guides: GuideSummary[
               /counties/, which has answered 410 since the county retirement. */}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {guides.map((g) => (
-            <a
-              key={g.slug}
-              href={`/guides/${g.slug}/`}
-              className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 block"
-            >
-              <h2 className="text-sm font-bold text-slate-900 leading-snug">{g.title}</h2>
-            </a>
+        {/* Sectioned, not one flat grid. The heading levels change with it: the section is the h2
+            and a guide title is an h3 under it, which is what makes the section heading mean
+            anything. Before this, the page was 68 sibling h2s with nothing stating what any run of
+            them covered. Every guide still appears exactly once -- groupGuidesForHub sweeps short
+            clusters into a catch-all rather than dropping them, and the caller below asserts the
+            count survives, because a guide missing from the hub is a deleted internal link. */}
+        <div className="space-y-8">
+          {groupGuidesForHub(guides).map((section) => (
+            <section key={section.id}>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                {section.title}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {section.guides.map((g) => (
+                  <a
+                    key={g.slug}
+                    href={`/guides/${g.slug}/`}
+                    className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 block"
+                  >
+                    <h3 className="text-sm font-bold text-slate-900 leading-snug">{g.title}</h3>
+                  </a>
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       </div>

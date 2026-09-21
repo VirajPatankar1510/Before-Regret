@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
 import { ChevronRight, Loader2, BookOpen, Calendar, Search, X } from 'lucide-react';
 import { ContentLink } from '../home/ContentLink';
-import { classifyGuideTopic, GUIDE_CLUSTER_META } from '../../utils/homeContent';
+import { classifyGuideTopic, GUIDE_CLUSTER_META, groupGuidesForHub } from '../../utils/homeContent';
 
 interface GuidesIndexViewProps {
   onNavigate: (path: string) => void;
@@ -80,6 +80,31 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
   }, [guides, query, topic]);
 
   const isFiltering = Boolean(query.trim() || topic);
+
+  // One card definition, used by both the grouped and the filtered branch below. Extracted rather
+  // than duplicated: the two branches differ only in what wraps them, and a card that drifts
+  // between them is a difference nobody sees until a filter is applied.
+  const renderGuideCard = (g: GuideRow) => (
+    <ContentLink
+      key={g.slug}
+      href={`/guides/${g.slug}/`}
+      onNavigate={onNavigate}
+      className="block bg-white border border-slate-200 rounded-2xl p-5 space-y-2 text-left hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer group"
+    >
+      <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-700 leading-snug">
+        {g.title}
+      </h3>
+      {g.metaDescription && (
+        <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{g.metaDescription}</p>
+      )}
+      {g.publishedAt && (
+        <div className="flex items-center gap-1.5 text-[11px] text-slate-400 pt-1">
+          <Calendar className="w-3 h-3" />
+          <span>{new Date(g.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+        </div>
+      )}
+    </ContentLink>
+  );
 
   useEffect(() => {
     if (!guides) return;
@@ -237,32 +262,35 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
           </div>
         )}
 
+        {/* GROUPED WHEN BROWSING, FLAT WHEN FILTERING, and the first half of that has to match
+            scripts/prerender-guides.tsx exactly. The static hub now ships sections, so if this
+            mounted a flat grid over them the page would visibly reflow on hydration -- the same
+            LCP/CLS failure the hero comment in HeroPanel.tsx describes, on the page that links to
+            every guide. Filtered results stay flat on purpose: the user has already narrowed to one
+            topic, so re-sectioning a result set they chose adds a heading over their own filter.
+            Heading levels follow the structure -- section h2, guide title h3. */}
         {guides && guides.length > 0 && visibleGuides.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {visibleGuides.map((g) => (
-              <ContentLink
-                key={g.slug}
-                href={`/guides/${g.slug}/`}
-                onNavigate={onNavigate}
-                className="block bg-white border border-slate-200 rounded-2xl p-5 space-y-2 text-left hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer group"
-              >
-                <h2 className="text-sm font-bold text-slate-900 group-hover:text-blue-700 leading-snug">
-                  {g.title}
-                </h2>
-                {g.metaDescription && (
-                  <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
-                    {g.metaDescription}
-                  </p>
-                )}
-                {g.publishedAt && (
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-400 pt-1">
-                    <Calendar className="w-3 h-3" />
-                    <span>{new Date(g.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+          isFiltering ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {visibleGuides.map((g) => renderGuideCard(g))}
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {/* Type argument is explicit because visibleGuides' memo returns [] on the null
+                  branch, which leaves T to collapse to the constraint and hands the card a
+                  {slug,title} with no metaDescription or publishedAt. */}
+              {groupGuidesForHub<GuideRow>(visibleGuides).map((section) => (
+                <section key={section.id}>
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                    {section.title}
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {section.guides.map((g) => renderGuideCard(g))}
                   </div>
-                )}
-              </ContentLink>
-            ))}
-          </div>
+                </section>
+              ))}
+            </div>
+          )
         )}
       </div>
     </div>
