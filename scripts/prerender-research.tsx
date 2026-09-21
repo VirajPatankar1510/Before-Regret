@@ -216,6 +216,36 @@ const JSON_LD = [
  * Every contentUrl passed here was verified to return 200 before being declared. A DataDownload
  * pointing at a 404 is worse than no Dataset node at all.
  */
+/**
+ * The column names of a published CSV, read from the file, or null when it has no source in the
+ * repo. Feeds `variableMeasured`.
+ *
+ * WHY READ RATHER THAN TYPE. variableMeasured is the field that tells Google Dataset Search what a
+ * dataset actually contains, which is how it matches a searcher looking for "county single-family
+ * permits" to this rather than to the raw Census file. A hand-typed column list is a second copy of
+ * something that already exists, and it goes stale the first time a builder adds a column -- the
+ * same argument that made scripts/measure-images.py generate image dimensions instead of asserting
+ * them.
+ *
+ * FOUR OF THE EIGHT CSVs RETURN NULL HERE, and that is correct rather than a gap to paper over.
+ * Only permit-pulse, raise-or-remove (states and ZIPs) and storm-and-premium exist as files in
+ * docs/data/; flood-takeup, high-hazard-dams, outside-the-zone and risk-without-price are WRITTEN
+ * BY THIS SCRIPT further down, so at the moment the Dataset node is built they exist only in a
+ * previous build's dist/. Reading them from there would make the emitted schema depend on whether
+ * dist happened to be warm, which is the kind of difference that behaves one way locally and
+ * another in CI. Declaring no variableMeasured is honest; declaring a stale one is not. To close
+ * the remaining four, capture the header where each is written and pass it in.
+ */
+function csvColumns(file: string): string[] | null {
+  if (!file.endsWith('.csv')) return null;
+  const src = path.join(process.cwd(), 'docs', 'data', path.basename(file));
+  if (!fs.existsSync(src)) return null;
+  const header = fs.readFileSync(src, 'utf8').split('\n')[0]?.trim();
+  if (!header) return null;
+  const cols = header.split(',').map((c) => c.trim().replace(/^"|"$/g, '')).filter(Boolean);
+  return cols.length ? cols : null;
+}
+
 function derivedDataset(opts: {
   name: string;
   description: string;
@@ -225,8 +255,19 @@ function derivedDataset(opts: {
   temporalCoverage?: string;
   keywords?: string;
   citation?: string[];
+  /**
+   * When the figures behind this dataset were last computed -- NOT the build date. Pass it only
+   * from a real generation timestamp in the study's own figures JSON. Permit Pulse recomputes
+   * monthly and freshness is the whole point of it, so a dataset that never declares a
+   * dateModified looks permanently stale to anything reading the markup. Omitted where no true
+   * timestamp exists, because a date invented at build time would assert monthly freshness for
+   * studies that have not been recomputed since they were written.
+   */
+  dateModified?: string;
 }): Record<string, any> {
   if (!opts.files.length) throw new Error(`[prerender-research] ${opts.name}: a Dataset with no distribution is not worth declaring`);
+  // Derived from whichever distribution files have a readable source, deduped across them.
+  const measured = [...new Set(opts.files.flatMap((f) => csvColumns(f.path) ?? []))];
   return {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
@@ -240,6 +281,8 @@ function derivedDataset(opts: {
     ...(opts.temporalCoverage ? { temporalCoverage: opts.temporalCoverage } : {}),
     ...(opts.keywords ? { keywords: opts.keywords } : {}),
     ...(opts.citation ? { citation: opts.citation } : {}),
+    ...(opts.dateModified ? { dateModified: opts.dateModified } : {}),
+    ...(measured.length ? { variableMeasured: measured } : {}),
     distribution: opts.files.map((f) => ({
       '@type': 'DataDownload',
       encodingFormat: f.format,
@@ -1992,6 +2035,12 @@ ${ANALYTICS_BEACON}
         // The window the data actually covers, which dateModified deliberately does not express:
         // both years' files are year-to-date January through the same month.
         temporalCoverage: `${ppFig.period.comparedWith.slice(0, 4)}-01-01/${ppPeriod}-31`,
+        // The monthly recompute, taken from the builder's own generatedAt rather than from the
+        // clock. This is the one study that genuinely changes every month, and without the field
+        // nothing reading the markup could tell a dataset refreshed in the last four weeks from
+        // one written once and left. If the Census re-run stops happening, this correctly stops
+        // moving rather than tracking the build.
+        dateModified: ppFig.generatedAt,
         keywords: 'building permits, residential construction, single-family, multifamily, housing starts, county data, Census Building Permits Survey',
         files: [
           { path: 'permit-pulse-by-county.csv', format: 'text/csv' },

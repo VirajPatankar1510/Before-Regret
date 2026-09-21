@@ -139,10 +139,26 @@ export function registerPublicApiV1Routes(app: Express) {
   // unanswered preflight fails the request before the GET is ever attempted.
   app.options('/api/v1/*', (_req: Request, res: Response) => { res.sendStatus(204); });
 
-  app.get('/api/v1/docs', (_req: Request, res: Response) => {
+  // THE ROOT ANSWERS TOO, with the same document rather than a redirect or a stub.
+  //
+  // `app.use('/api/v1', cors)` above mounts middleware, not a route, so /api/v1 itself had no
+  // handler and fell through to the generic 404. That is a quiet failure with a real cost: the
+  // first thing anyone does with a base URL is open it, and a 404 there reads as "this API is
+  // dead" rather than "you wanted the /docs path".
+  //
+  // It fooled its own author on 2026-09-21. The bare root was tested, came back 404, and the API
+  // was written off as broken and unrouted -- while all four endpoints were serving 200s with live
+  // data and registerPublicApiV1Routes was mounted at server.ts:325 the whole time.
+  //
+  // Whoever hits the root is the reader worth keeping: a developer or a data cataloguer deciding
+  // in a single request whether this is worth using. Handing them the endpoint list costs nothing.
+  const docs = (_req: Request, res: Response) => {
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.json(DOCS_RESPONSE);
-  });
+  };
+  app.get('/api/v1', docs);
+  app.get('/api/v1/', docs);
+  app.get('/api/v1/docs', docs);
 
   app.get('/api/v1/counties', rateLimit, async (_req: Request, res: Response) => {
     if (!isDbConfigured()) {
