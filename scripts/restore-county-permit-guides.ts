@@ -3,6 +3,29 @@
 //   npx tsx scripts/restore-county-permit-guides.ts           # dry run
 //   APPLY=true npx tsx scripts/restore-county-permit-guides.ts
 //
+// -----------------------------------------------------------------------------------------------
+// STOP. DO NOT RESTORE BATCH 2. The measurement this file promised came back, and it failed.
+//
+// The rule set below was "five, then measure, then more", with the stop condition written down in
+// advance: if fewer than three of the five index, stop restoring. Measured 2026-09-21 on the GSC
+// page dimension, 28-day window, seventeen days after publication:
+//
+//   ZERO of five have been shown by Google. Not ranked badly -- never served once.
+//   Dallas, Orange, Queens, Riverside, Tarrant. Harris is the sixth and is also at zero.
+//
+// Six county permit guides published, six with no impressions, while 60 of 71 published URLs
+// across the rest of the site (85%) have been shown in the same window. So this is specific to
+// these pages, not the property.
+//
+// The condition was set to 3 of 5 and the result is 0 of 5, which is not a borderline call, and
+// restoring more would be the exact scaled-content shape the "FIVE, NOT TWENTY-FIVE" note below
+// exists to avoid -- now with evidence that the small batch did not clear either.
+//
+// WHAT WOULD CHANGE THIS: an inbound-link path to these pages, not more pages. They were restored
+// with verified portal links and clean prose, and it did not matter. Reopen only if one of the six
+// starts earning impressions on its own, or after the domain has external links pointing at it.
+// -----------------------------------------------------------------------------------------------
+//
 // WHY. scripts/keyword-opportunities.ts showed that the queries this site is closest to winning
 // are county permit lookups -- "l&i permit search" at 6.3, "look up building violations" at 6.0,
 // "permit history by address" at 5.0, "cook county permit portal" at 9.6, "san bernardino permit
