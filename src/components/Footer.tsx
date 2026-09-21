@@ -3,6 +3,7 @@ import { ShieldCheck, ArrowRight, BookOpen } from 'lucide-react';
 import { Logo } from './Logo';
 import { ContentLink } from './home/ContentLink';
 import { PREFERRED_SOURCE_URL, PREFERRED_SOURCE_LABEL } from '../data/preferredSource';
+import { pickFooterGuides } from '../data/footerGuides';
 
 interface FooterProps {
   onNewSearch: () => void;
@@ -49,9 +50,14 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
           // alongside the evergreen "how to" guides this list was built to showcase. A footer
           // that mixes "Does Buying a House Reset Property Tax Assessment" with "FEMA Declaration
           // DR-4906-WA" reads as incoherent -- a first-time visitor can't tell what the site is
-          // from a list like that. Filtering to article_type = 'guide' keeps this list what it
-          // was meant to be: a first impression of the evergreen editorial content.
-          setGuides(data.articles.filter((a: GuideSummary) => (a.articleType ?? 'guide') === 'guide').slice(0, 4));
+          // from a list like that. pickFooterGuides keeps that filter and adds the part that was
+          // missing: WHICH four, chosen by measured search performance rather than by whichever
+          // four happened to be written most recently. See src/data/footerGuides.ts.
+          //
+          // It must stay the same call scripts/prerender-guides.tsx makes. These four links appear
+          // on ~70 pages, so a served footer that disagrees with the hydrated one would swap the
+          // site's strongest internal links on every page at mount.
+          setGuides(pickFooterGuides(data.articles as GuideSummary[]));
         }
       })
         .catch(() => {});

@@ -10,6 +10,7 @@ import { pickRelatedGuides, GuideSummary } from '../src/utils/relatedGuides';
 import { buildPageTitle } from '../src/utils/pageTitle';
 import { pickCountiesForGuide, CountyTopicInput, GUIDE_TOPICS, permitGuideCountySlug } from '../src/utils/countyGuideTopics.js';
 import { groupGuidesForHub } from '../src/utils/homeContent.js';
+import { pickFooterGuides } from '../src/data/footerGuides.js';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { BookPromoCard, BookPromoSkyscraper } from '../src/components/BookPromo';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
@@ -520,12 +521,13 @@ async function run() {
     publishedAt: r.published_at,
   }));
 
-  // Same "evergreen guides only, first 4" selection Footer.tsx's own live fetch applies -- see
-  // StaticFooterLinks.tsx for why this list needs a static twin at all now.
-  const footerGuides: FooterGuideSummary[] = rows
-    .filter((r) => (r.article_type ?? 'guide') === 'guide')
-    .slice(0, 4)
-    .map((r) => ({ slug: r.slug, title: r.title }));
+  // Same selection Footer.tsx's live fetch applies, now that both read one list -- see
+  // src/data/footerGuides.ts for why the old "first 4 by published_at" was allocating the site's
+  // strongest internal signal by accident, and StaticFooterLinks.tsx for why this needs a static
+  // twin at all.
+  const footerGuides: FooterGuideSummary[] = pickFooterGuides(
+    rows.map((r) => ({ slug: r.slug, title: r.title, articleType: r.article_type })),
+  ).map((r) => ({ slug: r.slug, title: r.title }));
 
   // Powers the "Where This Comes Up" section -- links a guide about a housing-era defect (knob
   // and tube, FPE panels, polybutylene, etc.) to the verified counties where that era actually
