@@ -88,10 +88,10 @@ function rateLimit(req: Request, res: Response, next: NextFunction) {
 }
 
 const DOCS_RESPONSE = {
-  name: 'BeforeRegret Public API',
+  name: 'Before Regret Public API',
   version: 'v1',
   description:
-    'Real-data county hazard information (FEMA National Risk Index, EPA radon zones, Census housing-age distribution, NOAA storm-event history) for the counties BeforeRegret has complete data for. Every value is sourced from the cited government agency and carries the fetchedAt timestamp of that agency query -- nothing here is model-generated or estimated.',
+    'Real-data county hazard information (FEMA National Risk Index, EPA radon zones, Census housing-age distribution, NOAA storm-event history) for the counties Before Regret has complete data for. Every value is sourced from the cited government agency and carries the fetchedAt timestamp of that agency query -- nothing here is model-generated or estimated.',
   endpoints: {
     'GET /api/v1/counties': 'List every county currently available, with slug, name, state, and population.',
     'GET /api/v1/county/{slug}': 'Full hazard record for one county. Slugs come from /api/v1/counties, e.g. bronx-county-ny.',
@@ -102,7 +102,7 @@ const DOCS_RESPONSE = {
   auth: 'None. There is no key to request and no account to create.',
   attribution: 'Free to use. If you build something on this data, a link back to https://www.beforeregret.com is appreciated but not enforced.',
   fabricationPolicy:
-    "BeforeRegret does not fabricate data. If a county isn't returned, it means one or more of the four source agencies hasn't been independently verified for it yet -- there is no partial or best-effort record.",
+    "Before Regret does not fabricate data. If a county isn't returned, it means one or more of the four source agencies hasn't been independently verified for it yet -- there is no partial or best-effort record.",
   humanEquivalent: 'https://www.beforeregret.com/llms.txt',
 };
 

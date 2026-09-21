@@ -20,7 +20,7 @@ export const HowItWorksSection: React.FC = () => {
           {/* Header */}
           <div className="text-center max-w-2xl mx-auto">
             <h2 className="font-sans text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              How BeforeRegret Works
+              How Before Regret Works
             </h2>
           </div>
 
@@ -88,7 +88,7 @@ export const HowItWorksSection: React.FC = () => {
               <span>Independence statement</span>
             </div>
             <p className="text-xs leading-relaxed text-slate-600">
-              BeforeRegret isn't here to criticize builders, agents, or sellers — we believe transparency leads to better conversations and more confident decisions.
+              Before Regret isn't here to criticize builders, agents, or sellers — we believe transparency leads to better conversations and more confident decisions.
             </p>
           </div>
         </div>

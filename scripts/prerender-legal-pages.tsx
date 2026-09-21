@@ -166,16 +166,16 @@ const PAGES: LegalPageConfig[] = [
     // answers 410, but a 410 retires a PAGE; it does not replace an ENTITY. This page is the
     // replacement signal, so it has to state plainly what the site is before explaining how it
     // works.
-    title: 'About BeforeRegret: Free Property Research for US Buyers',
-    description: 'BeforeRegret is a free property research site for US home buyers. What we check live, how our guides are sourced and written, and how we fix mistakes.',
+    title: 'About Before Regret: Free Property Research for US Buyers',
+    description: 'Before Regret is a free property research site for US home buyers. What we check live, how our guides are sourced and written, and how we fix mistakes.',
     canonicalUrl: 'https://www.beforeregret.com/about/',
     robots: 'index, follow',
     jsonLd: [
       {
         '@context': 'https://schema.org',
         '@type': 'AboutPage',
-        name: 'About BeforeRegret',
-        description: 'BeforeRegret is a free, address-based property research site for US home buyers, published by Atmostellar. This page explains what is checked live, how the guides are sourced and written, and how corrections are handled.',
+        name: 'About Before Regret',
+        description: 'Before Regret is a free, address-based property research site for US home buyers, published by Atmostellar. This page explains what is checked live, how the guides are sourced and written, and how corrections are handled.',
         url: 'https://www.beforeregret.com/about/',
         isPartOf: { '@type': 'WebSite', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
         mainEntity: { '@id': 'https://www.beforeregret.com/#organization' },
@@ -187,8 +187,8 @@ const PAGES: LegalPageConfig[] = [
   },
   {
     outputPath: 'support',
-    title: 'BeforeRegret Support & Property Research FAQ',
-    description: 'Frequently asked questions regarding BeforeRegret public property record research, data sources, municipal permit checks, and report coverage.',
+    title: 'Before Regret Support & Property Research FAQ',
+    description: 'Frequently asked questions regarding Before Regret public property record research, data sources, municipal permit checks, and report coverage.',
     canonicalUrl: 'https://www.beforeregret.com/support/',
     robots: 'noindex, follow',
     jsonLd: [
@@ -198,10 +198,10 @@ const PAGES: LegalPageConfig[] = [
         mainEntity: [
           {
             '@type': 'Question',
-            name: 'Where does BeforeRegret source its property hazard data?',
+            name: 'Where does Before Regret source its property hazard data?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'BeforeRegret runs a live USGS seismic hazard check and validates your address against U.S. Census records automatically. The rest of the report is a curated, address-specific checklist linking directly to the real FEMA, EPA, USDA, U.S. DOT, FCC, and local municipal sources you would otherwise have to track down yourself -- clearly labeled as not yet independently verified until you check them.',
+              text: 'Before Regret runs a live USGS seismic hazard check and validates your address against U.S. Census records automatically. The rest of the report is a curated, address-specific checklist linking directly to the real FEMA, EPA, USDA, U.S. DOT, FCC, and local municipal sources you would otherwise have to track down yourself -- clearly labeled as not yet independently verified until you check them.',
             },
           },
           {
@@ -209,7 +209,7 @@ const PAGES: LegalPageConfig[] = [
             name: 'Are reports one-time flat fee or subscription based?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'Your first BeforeRegret property report is free. Additional reports are a one-time flat fee of $14.99 each -- there is no subscription or recurring charge for consumer reports.',
+              text: 'Your first Before Regret property report is free. Additional reports are a one-time flat fee of $14.99 each -- there is no subscription or recurring charge for consumer reports.',
             },
           },
         ],
@@ -221,8 +221,8 @@ const PAGES: LegalPageConfig[] = [
   },
   {
     outputPath: 'terms',
-    title: 'Terms of Service | BeforeRegret Property Intelligence',
-    description: 'Terms of service and user agreement for BeforeRegret public record property research and automated synthesis tools.',
+    title: 'Terms of Service | Before Regret Property Intelligence',
+    description: 'Terms of service and user agreement for Before Regret public record property research and automated synthesis tools.',
     canonicalUrl: 'https://www.beforeregret.com/terms/',
     robots: 'noindex, follow',
     jsonLd: [TERMS_BREADCRUMB],
@@ -231,8 +231,8 @@ const PAGES: LegalPageConfig[] = [
   },
   {
     outputPath: 'privacy',
-    title: 'Privacy Policy | BeforeRegret Property Intelligence',
-    description: 'Privacy policy detailing data handling, user anonymity, and secure public record lookup protocols at BeforeRegret.',
+    title: 'Privacy Policy | Before Regret Property Intelligence',
+    description: 'Privacy policy detailing data handling, user anonymity, and secure public record lookup protocols at Before Regret.',
     canonicalUrl: 'https://www.beforeregret.com/privacy/',
     robots: 'noindex, follow',
     jsonLd: [PRIVACY_BREADCRUMB],
@@ -241,8 +241,8 @@ const PAGES: LegalPageConfig[] = [
   },
   {
     outputPath: 'disclaimer',
-    title: 'Disclaimer | BeforeRegret',
-    description: 'Site-wide disclaimer covering professional advice, third-party government data, AI-generated content, and sponsored placements on BeforeRegret.',
+    title: 'Disclaimer | Before Regret',
+    description: 'Site-wide disclaimer covering professional advice, third-party government data, AI-generated content, and sponsored placements on Before Regret.',
     canonicalUrl: 'https://www.beforeregret.com/disclaimer/',
     robots: 'noindex, follow',
     jsonLd: [DISCLAIMER_BREADCRUMB],
@@ -255,8 +255,8 @@ const PAGES: LegalPageConfig[] = [
     // what someone looks for when they need to report a barrier, and a demand-letter recipient's
     // first question is whether it was publicly findable.
     outputPath: 'accessibility',
-    title: 'Accessibility Statement | BeforeRegret',
-    description: 'How BeforeRegret approaches accessibility, what is in place, known limitations, and how to report a barrier.',
+    title: 'Accessibility Statement | Before Regret',
+    description: 'How Before Regret approaches accessibility, what is in place, known limitations, and how to report a barrier.',
     canonicalUrl: 'https://www.beforeregret.com/accessibility/',
     robots: 'index, follow',
     jsonLd: [ACCESSIBILITY_BREADCRUMB],
@@ -265,8 +265,8 @@ const PAGES: LegalPageConfig[] = [
   },
   {
     outputPath: 'refunds',
-    title: 'Refund Policy & Satisfaction Guarantee | BeforeRegret',
-    description: 'BeforeRegret refund policy and customer support commitments for property research report orders.',
+    title: 'Refund Policy & Satisfaction Guarantee | Before Regret',
+    description: 'Before Regret refund policy and customer support commitments for property research report orders.',
     canonicalUrl: 'https://www.beforeregret.com/refunds/',
     robots: 'noindex, follow',
     jsonLd: [REFUNDS_BREADCRUMB],

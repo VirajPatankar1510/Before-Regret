@@ -41,13 +41,13 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs space-y-8">
 
           <div className="border-b border-slate-200 pb-6 space-y-3">
-            <p className="text-xs font-medium text-slate-400">About BeforeRegret</p>
+            <p className="text-xs font-medium text-slate-400">About Before Regret</p>
             {/* The h1 is a definition, not a process label. See the long note in
                 scripts/prerender-legal-pages.tsx for why this page carries the weight of stating
                 the site's identity: the domain served an unrelated product until 2026-07-31, and
                 search engines were still describing THAT product in September. */}
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              BeforeRegret is free property research for US home buyers
+              Before Regret is free property research for US home buyers
             </h1>
             <p className="text-sm text-slate-600 leading-relaxed">
               Enter any US residential address and get a free report: a live seismic hazard check, address
@@ -135,7 +135,7 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
               <span>What this site is not</span>
             </h2>
             <p className="text-sm text-slate-600 leading-relaxed">
-              BeforeRegret is a research and discovery tool, not a home inspection, a structural engineering
+              Before Regret is a research and discovery tool, not a home inspection, a structural engineering
               report, a legal title search, a property valuation, or professional financial or insurance advice.
               Nothing on this site establishes an advisory relationship between you and Atmostellar. Confirm
               anything that matters to your decision with a licensed professional before you rely on it.

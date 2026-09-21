@@ -21,7 +21,7 @@ export function createFallbackSummary(property: PropertySearchResult | null): Re
     usefulSourcesFound: 0,
     estimatedPages: 'Property Research Checklist',
     price: 0,
-    priceRationale: 'BeforeRegret does not yet have a live, verified data connection for this address. This checklist links you directly to the official public sources so you can look up the records yourself.',
+    priceRationale: 'Before Regret does not yet have a live, verified data connection for this address. This checklist links you directly to the official public sources so you can look up the records yourself.',
     includedCategories: [
       'Property Records',
       'Environment',
@@ -78,7 +78,7 @@ export function createFallbackReport(
       subject: 'Roof & Envelope Replacement Records',
       category: 'Property Records',
       status: 'NOT YET VERIFIED',
-      summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal roof permit records for this address.',
+      summaryText: 'Before Regret does not yet have a live, verified connection to municipal roof permit records for this address.',
       whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'Roofing materials experience atmospheric weathering over time and represent significant replacement costs if nearing end-of-life.',
       suggestedNextStep: 'Ask the seller for roof replacement receipts or contractor invoice documentation, and check the municipal permit portal directly.',
@@ -86,7 +86,7 @@ export function createFallbackReport(
         type: 'sellerQuestion',
         title: 'Roof Installation & Warranty',
         description: 'Has the roof ever been replaced or repaired, and do you have contractor invoices or warranty documentation?',
-        why: 'BeforeRegret has not yet independently verified permit records for this address.'
+        why: 'Before Regret has not yet independently verified permit records for this address.'
       },
       lastUpdated: 'Not yet integrated',
       sourceAgency: 'City Building Department'
@@ -96,7 +96,7 @@ export function createFallbackReport(
       subject: 'Main Electrical Service Panel',
       category: 'Property Records',
       status: 'NOT YET VERIFIED',
-      summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal electrical permit records for this address.',
+      summaryText: 'Before Regret does not yet have a live, verified connection to municipal electrical permit records for this address.',
       whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'A permitted electrical service panel meets modern safety standards for contemporary household appliances.',
       suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough, and check the municipal permit portal directly.',
@@ -104,7 +104,7 @@ export function createFallbackReport(
         type: 'walkthroughItem',
         title: 'Main Electrical Panel Walkthrough',
         description: 'Locate the main service panel in garage or utility area and confirm municipal inspection sticker.',
-        why: 'BeforeRegret has not yet independently verified permit records for this address.'
+        why: 'Before Regret has not yet independently verified permit records for this address.'
       },
       lastUpdated: 'Not yet integrated',
       sourceAgency: 'City Building Department'
@@ -114,7 +114,7 @@ export function createFallbackReport(
       subject: 'HVAC Compressor & Mechanical System',
       category: 'Property Records',
       status: 'NOT YET VERIFIED',
-      summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal mechanical permit records for this address.',
+      summaryText: 'Before Regret does not yet have a live, verified connection to municipal mechanical permit records for this address.',
       whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'Central cooling compressors experience declining efficiency over 12-15 year lifespans.',
       suggestedNextStep: 'Have your home inspector record the manufacturing date on the condenser unit dataplate.',
@@ -122,7 +122,7 @@ export function createFallbackReport(
         type: 'sellerQuestion',
         title: 'HVAC Age & Service History',
         description: 'What is the age of the central AC compressor, and are annual maintenance records available?',
-        why: 'BeforeRegret has not yet independently verified permit records for this address.'
+        why: 'Before Regret has not yet independently verified permit records for this address.'
       },
       lastUpdated: 'Not yet integrated',
       sourceAgency: 'City Mechanical Permitting Division'
@@ -132,7 +132,7 @@ export function createFallbackReport(
       subject: 'FEMA Flood Hazard Risk Zone',
       category: 'Environment',
       status: 'NOT YET VERIFIED',
-      summaryText: 'BeforeRegret does not yet have a live, verified connection to the FEMA National Flood Hazard Layer for this address.',
+      summaryText: 'Before Regret does not yet have a live, verified connection to the FEMA National Flood Hazard Layer for this address.',
       whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'Flood zone classification affects whether mortgage lenders require flood insurance.',
       suggestedNextStep: 'Look up the official flood zone yourself at the FEMA Flood Map Service Center before making assumptions about insurance requirements.',
@@ -140,7 +140,7 @@ export function createFallbackReport(
         type: 'disclosureLever',
         title: 'Flood Insurance Verification',
         description: 'Ask your insurance agent to pull the official FEMA flood zone determination for this address.',
-        why: 'BeforeRegret has not yet independently verified FEMA flood zone data for this address.'
+        why: 'Before Regret has not yet independently verified FEMA flood zone data for this address.'
       },
       lastUpdated: 'Not yet integrated',
       sourceAgency: 'FEMA Flood Map Service Center'
@@ -150,7 +150,7 @@ export function createFallbackReport(
       subject: 'EPA Indoor Radon Hazard Zone',
       category: 'Environment',
       status: 'NOT YET VERIFIED',
-      summaryText: 'BeforeRegret does not yet have a live, verified connection to USGS/EPA radon zone data for this address.',
+      summaryText: 'Before Regret does not yet have a live, verified connection to USGS/EPA radon zone data for this address.',
       whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'Radon is an odorless soil gas that can accumulate in ground-contact living spaces.',
       suggestedNextStep: 'Deploy a radon test monitor during your home inspection contingency window regardless of zone.',
@@ -158,7 +158,7 @@ export function createFallbackReport(
         type: 'walkthroughItem',
         title: 'Radon Test Monitor Placement',
         description: 'Ask your inspector to place a continuous radon monitor on the lowest livable floor during the contingency period.',
-        why: 'BeforeRegret has not yet independently verified radon zone data for this address.'
+        why: 'Before Regret has not yet independently verified radon zone data for this address.'
       },
       lastUpdated: 'Not yet integrated',
       sourceAgency: 'USGS / EPA Indoor Radon Map'
@@ -168,7 +168,7 @@ export function createFallbackReport(
       subject: 'Municipal Code Enforcement Standing',
       category: 'Neighborhood',
       status: 'NOT YET VERIFIED',
-      summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal code enforcement records for this address.',
+      summaryText: 'Before Regret does not yet have a live, verified connection to municipal code enforcement records for this address.',
       whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'Open code violations or municipal orders can affect closing and future liability.',
       suggestedNextStep: 'Check the municipal code enforcement portal directly before closing.',
@@ -214,7 +214,7 @@ export function createFallbackReport(
         'HVAC Mechanical System: Not yet independently verified. Have your inspector check the unit\'s manufacturing date during the walkthrough.'
       ],
       likelyRoutineSummary: [],
-      biggerPicture: 'BeforeRegret does not yet have a live, verified data connection to government records for this address. This checklist links you directly to the official public sources below so you can verify each item yourself before closing.'
+      biggerPicture: 'Before Regret does not yet have a live, verified data connection to government records for this address. This checklist links you directly to the official public sources below so you can verify each item yourself before closing.'
     }
   };
 }

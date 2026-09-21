@@ -30,7 +30,7 @@ export const ContactUs: React.FC<ContactUsProps> = ({ onBackToHome, onNavigate }
       setIsSubmitting(false);
       setIsSubmitted(true);
 
-      const emailSubject = `[BeforeRegret ${activeTab.toUpperCase()}] ${subject || 'Inquiry'}`;
+      const emailSubject = `[Before Regret ${activeTab.toUpperCase()}] ${subject || 'Inquiry'}`;
       const emailBody = `Sender Name: ${name}
 Sender Email: ${email}
 Category: ${activeTab === 'consumer' ? 'Free Consumer Report Question' : activeTab === 'vendor' ? 'Vendor Subscription & Billing' : 'Report Data Discrepancy Flag'}
@@ -156,7 +156,7 @@ ${message}`;
               )}
               {activeTab === 'error_flag' && (
                 <p>
-                  <strong>Data Discrepancy Flag:</strong> Found a discrepancy between a BeforeRegret report and an official government record? Report it here for rapid audit and correction by our data team.
+                  <strong>Data Discrepancy Flag:</strong> Found a discrepancy between a Before Regret report and an official government record? Report it here for rapid audit and correction by our data team.
                 </p>
               )}
             </div>
@@ -319,7 +319,7 @@ ${message}`;
                 <span>Informational Research Disclaimer</span>
               </div>
               <p className="leading-relaxed">
-                BeforeRegret property research reports are compiled strictly for preliminary informational research purposes. Reports are not physical home inspections, engineering assessments, legal title reviews, or financial valuations. All findings must be independently confirmed with licensed professionals before making property purchase or leasing decisions.
+                Before Regret property research reports are compiled strictly for preliminary informational research purposes. Reports are not physical home inspections, engineering assessments, legal title reviews, or financial valuations. All findings must be independently confirmed with licensed professionals before making property purchase or leasing decisions.
               </p>
             </div>
 
@@ -347,7 +347,7 @@ ${message}`;
                 Is the report accurate or guaranteed?
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                BeforeRegret reports assemble public data from official sources including FEMA, USGS, FCC, and municipal open data archives. Reports are provided on an <strong>"as-is"</strong> basis for preliminary research only. We do not warrant complete accuracy or real-time completeness, and reports are <strong>not guaranteed</strong> or a substitute for a licensed professional home inspection or engineering evaluation.
+                Before Regret reports assemble public data from official sources including FEMA, USGS, FCC, and municipal open data archives. Reports are provided on an <strong>"as-is"</strong> basis for preliminary research only. We do not warrant complete accuracy or real-time completeness, and reports are <strong>not guaranteed</strong> or a substitute for a licensed professional home inspection or engineering evaluation.
               </p>
             </div>
 
@@ -377,7 +377,7 @@ ${message}`;
                 How do I report incorrect information in a report?
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                If you identify a data error or discrepancy between a BeforeRegret report and an official municipal archive or GIS layer, select the <strong>"Data Discrepancy"</strong> tab above or email <strong>hello@beforeregret.com</strong>. Include the property address/zip code, the specific data field in question, and a link or citation to the official record. Our audit team reviews and corrects confirmed errors within 1–2 business days.
+                If you identify a data error or discrepancy between a Before Regret report and an official municipal archive or GIS layer, select the <strong>"Data Discrepancy"</strong> tab above or email <strong>hello@beforeregret.com</strong>. Include the property address/zip code, the specific data field in question, and a link or citation to the official record. Our audit team reviews and corrects confirmed errors within 1–2 business days.
               </p>
             </div>
 

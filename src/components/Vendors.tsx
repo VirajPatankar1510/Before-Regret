@@ -232,7 +232,7 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
             <span>Placement Performance Disclaimer</span>
           </div>
           <p className="leading-relaxed">
-            BeforeRegret does not guarantee a specific number of views, clicks, calls, or business outcomes from a sponsored placement. Placement visibility depends on report generation volume in your selected zip codes.
+            Before Regret does not guarantee a specific number of views, clicks, calls, or business outcomes from a sponsored placement. Placement visibility depends on report generation volume in your selected zip codes.
           </p>
         </div>
 

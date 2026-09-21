@@ -157,7 +157,7 @@ async function main() {
     zero_click_rate_at_start: '99.33% (7,291 impressions, 49 clicks, 2026-08-18..09-14)',
     primary_metric: 'brand queries in Search Console — 0 at start',
     secondary_metric: 'CTR on the six treated pages; expected to fall, which the hypothesis accepts',
-    not_tested: 'Brand in the title. " | BeforeRegret" is 14 of a 60-character budget and only 1 of 24 pages with 60+ impressions can take it without cutting keywords. Google also commonly appends the site name itself, and og:site_name is set sitewide.',
+    not_tested: 'Brand in the title. " | Before Regret" is 14 of a 60-character budget and only 1 of 24 pages with 60+ impressions can take it without cutting keywords. Google also commonly appends the site name itself, and og:site_name is set sitewide.',
     excluded_pages: ['va-loan-require-termite-inspection', 'homeowners-insurance-cover-failed-sump-pump', 'reverse-polarity-mean-electrical-inspection', 'why-cast-iron-pipes-corrode'],
     excluded_reason: 'Already carrying another live treatment — two treatments on one page makes both readouts worthless.',
     limits: ['n=6', 'Google rewrites meta descriptions, so the text shipped is not guaranteed to be shown', 'brand search is slow; a null result at 4 weeks means nothing either way'],

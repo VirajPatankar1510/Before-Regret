@@ -14,7 +14,7 @@ export const ArticleClosingNote: React.FC<ArticleClosingNoteProps> = ({ onNaviga
           Get Your Free Property Report
         </h2>
         <p className="text-sm sm:text-base text-blue-100 leading-relaxed max-w-2xl">
-          BeforeRegret pulls live seismic hazard data, validates the address, and builds era- and county-specific inspection priorities and seller questions into one report — with anything not yet independently verified clearly labeled, not guessed at.
+          Before Regret pulls live seismic hazard data, validates the address, and builds era- and county-specific inspection priorities and seller questions into one report — with anything not yet independently verified clearly labeled, not guessed at.
         </p>
       </div>
 

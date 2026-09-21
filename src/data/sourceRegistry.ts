@@ -76,7 +76,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     officialUrl: 'https://earthquake.usgs.gov/ws/designmaps/',
     dataTypes: ['Seismic Design Category', 'Spectral Acceleration Values'],
     isLive: true,
-    statusNote: 'Queried live for every generated report -- BeforeRegret\'s first live-confirmed report finding.',
+    statusNote: 'Queried live for every generated report -- Before Regret\'s first live-confirmed report finding.',
   },
 
   // --- Reference links only -- not yet queried by BeforeRegret ---
@@ -88,7 +88,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     officialUrl: 'https://msc.fema.gov/portal/search',
     dataTypes: ['Flood Zone Classification', 'FIRM Panel Numbers'],
     isLive: false,
-    statusNote: 'Not integrated: FEMA\'s own flood-data API is not reachable from BeforeRegret\'s servers. Check the official portal directly.',
+    statusNote: 'Not integrated: FEMA\'s own flood-data API is not reachable from Before Regret\'s servers. Check the official portal directly.',
   },
   {
     id: 'src_muni_permits',
@@ -108,7 +108,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     officialUrl: 'https://www.usa.gov/local-governments',
     dataTypes: ['Parcel Boundary', 'Assessed Value History', 'Year Built'],
     isLive: false,
-    statusNote: 'Not integrated: no county in the U.S. currently has a live, legally-cleared assessor connection in BeforeRegret. This is exactly why property type is requester-declared rather than auto-detected -- see the report\'s property type disclosure.',
+    statusNote: 'Not integrated: no county in the U.S. currently has a live, legally-cleared assessor connection in Before Regret. This is exactly why property type is requester-declared rather than auto-detected -- see the report\'s property type disclosure.',
   },
   {
     id: 'src_epa_envirofacts',
@@ -138,7 +138,7 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     officialUrl: 'https://broadbandmap.fcc.gov/',
     dataTypes: ['Fiber & Broadband Availability'],
     isLive: false,
-    statusNote: 'Not integrated yet: the public API requires an authenticated developer token BeforeRegret does not currently hold.',
+    statusNote: 'Not integrated yet: the public API requires an authenticated developer token Before Regret does not currently hold.',
   },
   {
     id: 'src_radon',

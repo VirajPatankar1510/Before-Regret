@@ -99,7 +99,7 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
               carried correct Organization markup with a good description and it was ignored, because
               that layer reads prose. Keep a sentence of this shape on the page. */}
           <p className="mt-5 mx-auto max-w-xl text-base sm:text-lg text-slate-600 leading-relaxed">
-            BeforeRegret is a free property research tool for US home buyers. Search any US
+            Before Regret is a free property research tool for US home buyers. Search any US
             residential address and get the checks that actually matter for a home of its age and
             county, the exact questions to ask the seller, and a clear list of what to verify before
             you sign.

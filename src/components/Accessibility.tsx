@@ -66,7 +66,7 @@ export const Accessibility: React.FC<AccessibilityProps> = ({ onBackToHome, onNa
                 statement rather than the company. The definition now lives on the homepage, where it
                 belongs. */}
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              This statement describes how <strong>BeforeRegret</strong> approaches accessibility.
+              This statement describes how <strong>Before Regret</strong> approaches accessibility.
               The site is intended to be usable by everyone, including people who use screen readers,
               keyboard-only navigation, screen magnification, or other assistive technology. This page
               explains what we have done, what we know is imperfect, and how to tell us when

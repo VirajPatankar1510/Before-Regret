@@ -510,7 +510,7 @@ export async function validateLayer2(lat: number, lon: number): Promise<Layer2Re
       return {
         passed: false,
         code: 'L2_GOVERNMENT_FACILITY_BLOCKED',
-        message: 'This location is a government or federal facility. BeforeRegret supports residential addresses only.',
+        message: 'This location is a government or federal facility. Before Regret supports residential addresses only.',
         matchedFacility: { source: source.label, name: outcome.name, agency: outcome.agency },
       };
     }
@@ -584,7 +584,7 @@ export function validateLayer3(
     return {
       passed: true,
       code: 'L3_DECLARED_SINGLE_FAMILY',
-      message: 'Property type as provided by the requester: single-family home. Not independently verified by BeforeRegret.',
+      message: 'Property type as provided by the requester: single-family home. Not independently verified by Before Regret.',
     };
   }
 
@@ -600,7 +600,7 @@ export function validateLayer3(
     return {
       passed: true,
       code: 'L3_DECLARED_CONDO_MULTIFAMILY',
-      message: 'Property type as provided by the requester: condo/multifamily unit. Not independently verified by BeforeRegret.',
+      message: 'Property type as provided by the requester: condo/multifamily unit. Not independently verified by Before Regret.',
     };
   }
 
@@ -608,7 +608,7 @@ export function validateLayer3(
   return {
     passed: false,
     code: 'L3_UNSUPPORTED_PROPERTY_TYPE',
-    message: "BeforeRegret doesn't yet support this property type. We currently cover single-family homes and condo/multifamily units with a specific unit number.",
+    message: "Before Regret doesn't yet support this property type. We currently cover single-family homes and condo/multifamily units with a specific unit number.",
   };
 }
 

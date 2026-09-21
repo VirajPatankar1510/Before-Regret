@@ -136,7 +136,7 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
       <div className="flex items-start gap-2.5 text-[11px] text-slate-500 leading-relaxed border-t border-slate-200 pt-4 mt-6">
         <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
         <p>
-          These are questions to ask, not verified answers -- BeforeRegret has not independently confirmed anything a
+          These are questions to ask, not verified answers -- Before Regret has not independently confirmed anything a
           seller or agent tells you. Get anything important in writing and confirm it with a licensed professional
           before your option period ends.
         </p>

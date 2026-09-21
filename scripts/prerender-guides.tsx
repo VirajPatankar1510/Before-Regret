@@ -616,8 +616,8 @@ async function run() {
   ];
   const indexHtml = applyHeadReplacements(template, {
     routeKey: 'guidesIndex',
-    title: 'Editorial Guides | BeforeRegret',
-    description: "Every BeforeRegret research guide in one place -- what to check for a home's age, permit history, and inspection blind spots before you sign.",
+    title: 'Editorial Guides | Before Regret',
+    description: "Every Before Regret research guide in one place -- what to check for a home's age, permit history, and inspection blind spots before you sign.",
     canonicalUrl: indexCanonicalUrl,
     jsonLd: indexJsonLd,
   }).replace('<div id="root"></div>', `<div id="root">${indexBodyHtml}</div>`);
@@ -775,11 +775,11 @@ async function run() {
   const countiesBlock = counties.length ? `\n## Counties (${counties.length} verified)\n\n${countiesListSection}\n` : '';
   const countyGuidesBlock = countyGuideSection.trim() ? `\n## Guides -- by county\n\n${countyGuideSection}\n` : '';
 
-  const llmsTxt = `# BeforeRegret
+  const llmsTxt = `# Before Regret
 
 > Free, address-based public property research for U.S. homebuyers and renters. Runs a live USGS seismic hazard check and validates the address against U.S. Census records automatically; everything else is a curated checklist linking to the real government source for each check (FEMA, EPA, USDA, U.S. DOT, FCC, local municipal records) -- clearly labeled as not yet independently verified until you follow the link and check it yourself. The first report is free; additional reports are a one-time $14.99 flat fee, no subscription.
 
-BeforeRegret does not fabricate data. If a claim in these guides isn't backed by a live check or a cited government source, it says so explicitly rather than guessing.
+Before Regret does not fabricate data. If a claim in these guides isn't backed by a live check or a cited government source, it says so explicitly rather than guessing.
 
 ## API
 
@@ -797,7 +797,7 @@ Address-based due-diligence report for a specific US residential address: a live
 
 ## Research
 
-Original analyses of public federal data, published free under CC BY 4.0 with the derived data files linked beside each. Every figure below is computed by BeforeRegret from the named federal source, not restated from another publisher.
+Original analyses of public federal data, published free under CC BY 4.0 with the derived data files linked beside each. Every figure below is computed by Before Regret from the named federal source, not restated from another publisher.
 
 ${researchSection}
 ${countiesBlock}${countyGuidesBlock}

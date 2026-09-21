@@ -31,7 +31,7 @@ import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticF
 import { withDb, isDbConfigured } from '../src/server/db.js';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 
-const TITLE = 'Advertise With Us | BeforeRegret';
+const TITLE = 'Advertise With Us | Before Regret';
 const DESCRIPTION = 'Compare Topic Ads and Report Ads to find the right fit for your business.';
 const CANONICAL_URL = 'https://www.beforeregret.com/advertise/';
 

@@ -24,7 +24,7 @@ import { withDb, isDbConfigured } from '../src/server/db.js';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 
 // Must match src/App.tsx's applyHeadSeo call for pseoRoute.type === 'walkthrough' exactly.
-const TITLE = 'The 20-Minute Walkthrough Checklist | BeforeRegret';
+const TITLE = 'The 20-Minute Walkthrough Checklist | Before Regret';
 const DESCRIPTION =
   'A free phone checklist of what to physically look at during a house viewing, by decade built and foundation type. No sign-up and no address needed.';
 

@@ -45,7 +45,7 @@ export const SourceRegistryModal: React.FC<SourceRegistryModalProps> = ({ isOpen
               Where This Report's Data Comes From
             </h2>
             <p className="text-xs text-slate-400">
-              {liveCount} of {OFFICIAL_SOURCE_REGISTRY.length} sources below are queried live by BeforeRegret. The rest are direct links to the official portal so you can check them yourself.
+              {liveCount} of {OFFICIAL_SOURCE_REGISTRY.length} sources below are queried live by Before Regret. The rest are direct links to the official portal so you can check them yourself.
             </p>
           </div>
           <button
@@ -94,7 +94,7 @@ export const SourceRegistryModal: React.FC<SourceRegistryModalProps> = ({ isOpen
               <span>How to read this list</span>
             </div>
             <p className="leading-relaxed">
-              <span className="font-semibold text-emerald-700">Live</span> means BeforeRegret actually calls that source's API for every report. Everything else is a direct link to the official government portal -- BeforeRegret has not independently queried it, and nothing about it should be treated as confirmed until you check it yourself.
+              <span className="font-semibold text-emerald-700">Live</span> means Before Regret actually calls that source's API for every report. Everything else is a direct link to the official government portal -- Before Regret has not independently queried it, and nothing about it should be treated as confirmed until you check it yourself.
             </p>
           </div>
 

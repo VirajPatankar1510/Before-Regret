@@ -51,20 +51,20 @@ const ROUTES: NoindexRoute[] = [
   // UI and every /api/admin route answers 401 without a session, verified against production.
   {
     dir: 'admin/seo',
-    title: 'Admin | BeforeRegret',
+    title: 'Admin | Before Regret',
     description: 'Internal administration interface. Not public content.',
     canonical: 'https://www.beforeregret.com/admin/seo/',
   },
   {
     dir: 'topic-ads',
-    title: 'Topic Ads | BeforeRegret',
+    title: 'Topic Ads | Before Regret',
     description:
-      'Self-serve topic-based ad placements on BeforeRegret -- $7.99 per slot, 30 days, open to any business.',
+      'Self-serve topic-based ad placements on Before Regret -- $7.99 per slot, 30 days, open to any business.',
     canonical: 'https://www.beforeregret.com/topic-ads/',
   },
   {
     dir: 'report-ads',
-    title: 'Report Ads | BeforeRegret',
+    title: 'Report Ads | Before Regret',
     description:
       'Vendor marketplace for home inspectors, contractors, and specialists to reach property buyers.',
     canonical: 'https://www.beforeregret.com/report-ads/',
@@ -74,34 +74,34 @@ const ROUTES: NoindexRoute[] = [
   // transaction that produced it, and a searcher landing on one has arrived at a dead end.
   {
     dir: 'report-ads/success',
-    title: 'Payment Confirmation | BeforeRegret',
-    description: 'Confirmation of a completed BeforeRegret report ad placement purchase.',
+    title: 'Payment Confirmation | Before Regret',
+    description: 'Confirmation of a completed Before Regret report ad placement purchase.',
     canonical: 'https://www.beforeregret.com/report-ads/success/',
   },
   {
     dir: 'topic-ads/success',
-    title: 'Payment Confirmation | BeforeRegret',
-    description: 'Confirmation of a completed BeforeRegret topic ad placement purchase.',
+    title: 'Payment Confirmation | Before Regret',
+    description: 'Confirmation of a completed Before Regret topic ad placement purchase.',
     canonical: 'https://www.beforeregret.com/topic-ads/success/',
   },
   {
     dir: 'payment-success',
-    title: 'Payment Confirmation | BeforeRegret',
-    description: 'Confirmation of a completed BeforeRegret payment.',
+    title: 'Payment Confirmation | Before Regret',
+    description: 'Confirmation of a completed Before Regret payment.',
     canonical: 'https://www.beforeregret.com/payment-success/',
   },
   {
     dir: 'payment-cancelled',
-    title: 'Payment Cancelled | BeforeRegret',
-    description: 'A BeforeRegret payment was cancelled before completing.',
+    title: 'Payment Cancelled | Before Regret',
+    description: 'A Before Regret payment was cancelled before completing.',
     canonical: 'https://www.beforeregret.com/payment-cancelled/',
   },
   // Signed-in advertiser dashboard ('myAds' in App.tsx) -- per-user content behind Clerk auth,
   // with nothing a search visitor could act on.
   {
     dir: 'my-ads',
-    title: 'My Placements | BeforeRegret',
-    description: 'Manage your active BeforeRegret ad placements.',
+    title: 'My Placements | Before Regret',
+    description: 'Manage your active Before Regret ad placements.',
     canonical: 'https://www.beforeregret.com/my-ads/',
   },
 ];

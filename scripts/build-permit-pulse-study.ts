@@ -302,10 +302,10 @@ ${bestHouses.map((c: any, i: number) => row(c, i)).join('\n')}
     <a href="/research/data/permit-pulse-by-county.csv" download>CSV</a> &middot;
     <a href="/research/data/permit-pulse-figures.json">JSON</a>.</p>
     <p style="margin:0 0 .6rem">Credit line: &ldquo;analysis of US Census Bureau Building Permits
-    Survey data by BeforeRegret&rdquo;, linking to this page.</p>
+    Survey data by Before Regret&rdquo;, linking to this page.</p>
     <p style="margin:0 0 .6rem">Free to reuse with attribution under
     <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Every figure on this page
-    is computed by BeforeRegret from the Census Bureau files named below. Nothing is restated from
+    is computed by Before Regret from the Census Bureau files named below. Nothing is restated from
     another publisher, and the derived table is published so the arithmetic can be checked.</p>
     <p style="margin:0 0 .6rem">Source files:
     <a href="${f.sourceUrls[0]}"><code>${f.sourceUrls[0].split('/').pop()}</code></a> and

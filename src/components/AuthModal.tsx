@@ -160,7 +160,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <span>Secure Authentication</span>
               </div>
               <h3 className="font-serif text-2xl font-black text-slate-900 tracking-tight">
-                Welcome to BeforeRegret
+                Welcome to Before Regret
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto">
                 Sign in to generate and save your property reports.

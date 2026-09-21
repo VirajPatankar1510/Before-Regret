@@ -67,7 +67,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           <div className="bg-amber-950/60 border border-amber-600/40 rounded-2xl p-6 space-y-3">
             <h2 className="text-lg font-bold text-amber-200">{headline}</h2>
             <p className="text-sm text-slate-200 leading-relaxed">
-              {report.rejectionReason || `BeforeRegret insight reports apply exclusively to residential properties. ${formattedAddress || 'This address'} could not be verified as a residential property.`}
+              {report.rejectionReason || `Before Regret insight reports apply exclusively to residential properties. ${formattedAddress || 'This address'} could not be verified as a residential property.`}
             </p>
           </div>
 
@@ -406,7 +406,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
               already hidden in print, which left the sentence dangling as "...reference-only? ."
               in the exported PDF. A modal-opening CTA has no meaning on paper anyway. */}
           <p className="print:hidden text-xs text-slate-500 leading-relaxed">
-            Want to see every public source BeforeRegret checks, and which ones are live vs. reference-only?{' '}
+            Want to see every public source Before Regret checks, and which ones are live vs. reference-only?{' '}
             <button
               onClick={() => setIsSourceModalOpen(true)}
               className="text-blue-600 hover:text-blue-800 font-semibold hover:underline cursor-pointer"
@@ -499,7 +499,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                   Records You Still Need to Pull
                 </h2>
                 <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">
-                  BeforeRegret has no live feed for these {pendingFindings.length} sources yet, so we haven't checked them for
+                  Before Regret has no live feed for these {pendingFindings.length} sources yet, so we haven't checked them for
                   this address. Each one links straight to the office that holds the record.
                 </p>
               </div>
@@ -540,7 +540,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             has to stay somewhere on every report. */}
         <div data-print-block className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-[11px] text-slate-500 leading-relaxed">
           <span className="font-bold text-slate-700 block uppercase font-mono tracking-wider mb-1">Disclaimer</span>
-          BeforeRegret links you to official public sources -- it does not perform physical engineering inspections, legal title searches, or property valuations. Findings marked <strong>Not Yet Verified</strong> are research leads, not established facts: confirm each one directly with the source agency before relying on it. Findings under <strong>Checked live for this address</strong> come from a query run against a government API for this address at the time this report was generated. That means the value was returned by the agency, not that the condition of your property has been verified -- and agencies update their data, so it can change. Physical building conditions should always be confirmed with a licensed home inspector before closing.
+          Before Regret links you to official public sources -- it does not perform physical engineering inspections, legal title searches, or property valuations. Findings marked <strong>Not Yet Verified</strong> are research leads, not established facts: confirm each one directly with the source agency before relying on it. Findings under <strong>Checked live for this address</strong> come from a query run against a government API for this address at the time this report was generated. That means the value was returned by the agency, not that the condition of your property has been verified -- and agencies update their data, so it can change. Physical building conditions should always be confirmed with a licensed home inspector before closing.
         </div>
 
       </main>
