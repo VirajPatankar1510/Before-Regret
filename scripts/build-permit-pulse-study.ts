@@ -370,3 +370,9 @@ console.log(`  period      ${f.period.yearToDateThrough} vs ${f.period.comparedW
 console.log(`  headline    all ${sgn(nat.all.changePct!)}, houses ${sgn(size[0].changePct)}, 5+ ${sgn(size[3].changePct)}`);
 console.log(`  counties    ${f.findings.eligibleCounties} eligible across ${states} states`);
 console.log(`  size classes that fell: ${fell.length} of 4 (${fell.map((s) => s.label).join(', ')})`);
+// The monthly re-run IS the change event for this study, and nothing announces it on its own --
+// IndexNow is only called from articlesApi.ts, which handles the articles table and knows nothing
+// about /research/. Printed here rather than invoked, because the page has to be rebuilt and
+// deployed before a search engine is told to come and look at it.
+console.log('\n  next: npm run build, deploy, then');
+console.log('        APPLY=true npx tsx scripts/submit-research-indexnow.ts');
