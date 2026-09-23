@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
-import { BOOK, BOOK_LINK_REL } from '../data/book';
+import { BOOK, BOOK_CLICK_PATH, BOOK_LINK_REL } from '../data/book';
 
 // The promo card for the site's own book, rendered on every guide page and on the homepage.
 // A one-line footer variant existed alongside it and was removed on request 2026-09-04; the card
@@ -63,7 +63,7 @@ export const BookPromoSkyscraper: React.FC = () => (
     aria-label={`Book: ${BOOK.title}`}
     className="bg-gradient-to-br from-amber-50/70 to-white border border-amber-200/70 rounded-2xl p-5 shadow-sm"
   >
-    <a href={BOOK.url} target="_blank" rel={BOOK_LINK_REL} aria-hidden="true" tabIndex={-1} className="block">
+    <a href={BOOK_CLICK_PATH} target="_blank" rel={BOOK_LINK_REL} aria-hidden="true" tabIndex={-1} className="block">
       <picture>
         <source srcSet="/images/fruitful-home-cover-lg.webp" type="image/webp" />
         <img
@@ -83,7 +83,7 @@ export const BookPromoSkyscraper: React.FC = () => (
     <p className="mt-3 text-xs text-slate-700 leading-relaxed">{PITCH_SHORT}</p>
 
     <a
-      href={BOOK.url}
+      href={BOOK_CLICK_PATH}
       target="_blank"
       rel={BOOK_LINK_REL}
       className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors shadow-sm"
@@ -105,7 +105,7 @@ export const BookPromoCard: React.FC<{ className?: string }> = ({ className = ''
           tabIndex -1 keeps it out of the tab order and off screen readers, so this does not
           become a second identical link announced before the real one. */}
       <a
-        href={BOOK.url}
+        href={BOOK_CLICK_PATH}
         target="_blank"
         rel={BOOK_LINK_REL}
         aria-hidden="true"
@@ -141,7 +141,7 @@ export const BookPromoCard: React.FC<{ className?: string }> = ({ className = ''
 
         <div className="mt-6">
           <a
-            href={BOOK.url}
+            href={BOOK_CLICK_PATH}
             target="_blank"
             rel={BOOK_LINK_REL}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-xl transition-colors shadow-sm"
