@@ -83,7 +83,18 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
               above the fold; setting the one emotional word in it -- the word the brand is named
               for -- gives the headline a voice that Inter alone does not have, without turning
               into a decorative serif hero. */}
+          {/* THE BRAND IS INSIDE THE H1, on purpose. Until 2026-09-24 the heading was only the
+              question, so the page's primary heading never named the site -- the brand lived in the
+              <title> and nowhere else prominent, while a brand search returned /accessibility/ above
+              this page. The question stays the headline a reader sees; the name sits above it as
+              a small line in the same element, so the heading states what the page IS and still
+              leads with the hook. The sr-only colon keeps it reading as two phrases to a screen
+              reader rather than "Before Regret Could you regret". Same component in the live hero
+              and the prerender, so both gain the same height and LCP is unaffected. */}
           <h1 className="mt-4 font-sans text-[2.1rem] leading-[1.08] sm:text-5xl lg:text-[3.4rem] font-extrabold tracking-[-0.02em] text-slate-900">
+            <span className="block mb-3 text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-blue-700 leading-none">
+              Before Regret<span className="sr-only">:</span>
+            </span>
             Could you{' '}
             <span className="font-serif font-semibold italic tracking-normal text-blue-600">regret</span>{' '}
             moving here?

@@ -171,7 +171,7 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+        { '@type': 'ListItem', position: 1, name: 'Before Regret', item: 'https://www.beforeregret.com/' },
         { '@type': 'ListItem', position: 2, name: 'Editorial Guides', item: 'https://www.beforeregret.com/guides/' },
         { '@type': 'ListItem', position: 3, name: article.title, item: canonicalUrl },
       ],
@@ -230,7 +230,7 @@ function GuideStaticBody({
     <div className="bg-slate-50 min-h-screen pb-16">
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
         <div className="max-w-4xl lg:max-w-6xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
-          <a href="/" className="hover:text-blue-600">Home</a>
+          <a href="/" className="hover:text-blue-600">Before Regret</a>
           <span>/</span>
           <a href="/guides/" className="hover:text-blue-600">Editorial Guides</a>
           <span>/</span>
@@ -414,7 +414,7 @@ function GuidesIndexStaticBody({ guides, footerGuides }: { guides: GuideSummary[
     <div className="bg-slate-50 min-h-screen pb-16">
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium">
-          <a href="/" className="hover:text-blue-600">Home</a>
+          <a href="/" className="hover:text-blue-600">Before Regret</a>
           <span>/</span>
           <span className="text-slate-900 font-bold">Editorial Guides</span>
         </div>
@@ -617,7 +617,7 @@ async function run() {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+        { '@type': 'ListItem', position: 1, name: 'Before Regret', item: 'https://www.beforeregret.com/' },
         { '@type': 'ListItem', position: 2, name: 'Editorial Guides', item: indexCanonicalUrl },
       ],
     },

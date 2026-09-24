@@ -39,7 +39,7 @@ const BREADCRUMB: Record<string, any> = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+    { '@type': 'ListItem', position: 1, name: 'Before Regret', item: 'https://www.beforeregret.com/' },
     { '@type': 'ListItem', position: 2, name: 'Advertise With Us', item: CANONICAL_URL },
   ],
 };

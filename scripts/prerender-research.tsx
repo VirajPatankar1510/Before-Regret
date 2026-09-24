@@ -116,7 +116,7 @@ const JSON_LD = [
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+      { '@type': 'ListItem', position: 1, name: 'Before Regret', item: 'https://www.beforeregret.com/' },
       { '@type': 'ListItem', position: 2, name: 'Research', item: CANONICAL_URL },
     ],
   },
@@ -654,7 +654,7 @@ ${newsroomBlock({ title: 'Risk Without Cover', url: `${escapeHtmlAttr(COVER_URL)
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+          { '@type': 'ListItem', position: 1, name: 'Before Regret', item: 'https://www.beforeregret.com/' },
           { '@type': 'ListItem', position: 2, name: 'Research', item: COVER_URL },
         ],
       },
@@ -911,7 +911,7 @@ ${newsroomBlock({ title: 'Outside the Zone', url: `${escapeHtmlAttr(ZONE_URL)}`,
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+          { '@type': 'ListItem', position: 1, name: 'Before Regret', item: 'https://www.beforeregret.com/' },
           { '@type': 'ListItem', position: 2, name: 'Research', item: ZONE_URL },
         ],
       },
@@ -1157,7 +1157,7 @@ ${newsroomBlock({ title: 'High-Hazard Dams by County', url: `${escapeHtmlAttr(DA
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+          { '@type': 'ListItem', position: 1, name: 'Before Regret', item: 'https://www.beforeregret.com/' },
           { '@type': 'ListItem', position: 2, name: 'Research', item: DAM_URL },
         ],
       },
@@ -2234,7 +2234,7 @@ ${ANALYTICS_BEACON}
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+        { '@type': 'ListItem', position: 1, name: 'Before Regret', item: 'https://www.beforeregret.com/' },
         { '@type': 'ListItem', position: 2, name: 'Research', item: INDEX_URL },
       ],
     },

@@ -570,7 +570,7 @@ export const WALKTHROUGH_JSON_LD: Array<Record<string, unknown>> = [
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.beforeregret.com/' },
+      { '@type': 'ListItem', position: 1, name: 'Before Regret', item: 'https://www.beforeregret.com/' },
       { '@type': 'ListItem', position: 2, name: 'The 20-Minute Walkthrough Checklist', item: WALKTHROUGH_URL },
     ],
   },

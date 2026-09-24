@@ -549,7 +549,7 @@ export function App() {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 1, 'name': 'Before Regret', 'item': 'https://www.beforeregret.com/' },
               { '@type': 'ListItem', 'position': 2, 'name': 'About & Methodology', 'item': 'https://www.beforeregret.com/about/' }
             ]
           }
@@ -588,7 +588,7 @@ export function App() {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 1, 'name': 'Before Regret', 'item': 'https://www.beforeregret.com/' },
               { '@type': 'ListItem', 'position': 2, 'name': 'Support & FAQ', 'item': 'https://www.beforeregret.com/support/' }
             ]
           }
@@ -605,7 +605,7 @@ export function App() {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 1, 'name': 'Before Regret', 'item': 'https://www.beforeregret.com/' },
               { '@type': 'ListItem', 'position': 2, 'name': 'Terms of Service', 'item': 'https://www.beforeregret.com/terms/' }
             ]
           }
@@ -622,7 +622,7 @@ export function App() {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 1, 'name': 'Before Regret', 'item': 'https://www.beforeregret.com/' },
               { '@type': 'ListItem', 'position': 2, 'name': 'Privacy Policy', 'item': 'https://www.beforeregret.com/privacy/' }
             ]
           }
@@ -639,7 +639,7 @@ export function App() {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 1, 'name': 'Before Regret', 'item': 'https://www.beforeregret.com/' },
               { '@type': 'ListItem', 'position': 2, 'name': 'Refund Policy', 'item': 'https://www.beforeregret.com/refunds/' }
             ]
           }
@@ -656,7 +656,7 @@ export function App() {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 1, 'name': 'Before Regret', 'item': 'https://www.beforeregret.com/' },
               { '@type': 'ListItem', 'position': 2, 'name': 'Disclaimer', 'item': 'https://www.beforeregret.com/disclaimer/' }
             ]
           }
@@ -675,7 +675,7 @@ export function App() {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+              { '@type': 'ListItem', 'position': 1, 'name': 'Before Regret', 'item': 'https://www.beforeregret.com/' },
               { '@type': 'ListItem', 'position': 2, 'name': 'Accessibility Statement', 'item': 'https://www.beforeregret.com/accessibility/' }
             ]
           }

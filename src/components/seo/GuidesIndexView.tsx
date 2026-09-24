@@ -118,7 +118,7 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
           '@context': 'https://schema.org',
           '@type': 'BreadcrumbList',
           'itemListElement': [
-            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.beforeregret.com/' },
+            { '@type': 'ListItem', 'position': 1, 'name': 'Before Regret', 'item': 'https://www.beforeregret.com/' },
             { '@type': 'ListItem', 'position': 2, 'name': 'Editorial Guides', 'item': canonicalUrl }
           ]
         },
@@ -140,7 +140,7 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
     <div className="bg-slate-50 min-h-screen pb-16">
       <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium">
-          <ContentLink href="/" onNavigate={onNavigate} className="hover:text-blue-600">Home</ContentLink>
+          <ContentLink href="/" onNavigate={onNavigate} className="hover:text-blue-600">Before Regret</ContentLink>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-slate-900 font-bold">Editorial Guides</span>
         </div>
