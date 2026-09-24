@@ -35,37 +35,41 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
       {/* Pricing Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
         
-        {/* Card 1: First Report Free */}
+        {/* Card 1: First Report Free.
+            Both card headers wrap instead of squeezing: at 375px the title and price shared one row
+            and "Pay-As-You-Go" broke across three lines with "/ report" orphaned from $14.99 -- on
+            the paid card, on the device most visitors use. flex-wrap drops the price below the
+            title when the row is too narrow; nowrap keeps each from splitting mid-word. */}
         <div className="bg-white border-2 border-blue-600 rounded-3xl p-8 shadow-lg relative flex flex-col justify-between space-y-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+            <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-b border-slate-200 pb-4">
               <div>
                 <span className="text-xs font-bold text-blue-600 uppercase tracking-wider block">First Report</span>
-                <h3 className="font-sans text-xl font-bold text-slate-900">Free Trial Report</h3>
+                <h3 className="font-sans text-xl font-bold text-slate-900">Free, no card needed</h3>
               </div>
               <div className="text-3xl font-black text-blue-600">$0</div>
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              1 free report per verified email address. No credit card required.
+              1 free report per verified email address.
             </p>
 
             <ul className="space-y-2.5 text-xs text-slate-700">
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-600 shrink-0" />
-                <span>Live seismic hazard + address validation</span>
+                <span>What to ask the seller</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-600 shrink-0" />
-                <span>Era & county-specific inspection priorities</span>
+                <span>What to inspect first, for its age and county</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-600 shrink-0" />
-                <span>Instant web link delivery at /insights/</span>
+                <span>Opens as a link you can come back to</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-600 shrink-0" />
-                <span>No credit card or payment required</span>
+                <span>Earthquake risk for the exact address</span>
               </li>
             </ul>
           </div>
@@ -74,19 +78,19 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
             onClick={handleGoToMap}
             className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-sm text-center"
           >
-            Claim Your Free Report
+            Check an address
           </button>
         </div>
 
         {/* Card 2: Additional Reports $14.99 */}
         <div className="bg-white text-slate-900 border-2 border-blue-600 rounded-3xl p-8 shadow-lg relative flex flex-col justify-between space-y-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+            <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-b border-slate-200 pb-4">
               <div>
                 <span className="text-xs font-bold text-blue-400 uppercase tracking-wider block">Additional Reports</span>
-                <h3 className="font-sans text-xl font-bold text-slate-900">Pay-As-You-Go</h3>
+                <h3 className="font-sans text-xl font-bold text-slate-900 whitespace-nowrap">Pay-As-You-Go</h3>
               </div>
-              <div className="text-3xl font-black text-slate-900">$14.99 <span className="text-xs font-normal text-slate-500">/ report</span></div>
+              <div className="text-3xl font-black text-slate-900 whitespace-nowrap">$14.99 <span className="text-xs font-normal text-slate-500">/ report</span></div>
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
@@ -113,7 +117,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
             onClick={handleGoToMap}
             className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-sm text-center"
           >
-            Search an Address
+            Check an address
           </button>
         </div>
 

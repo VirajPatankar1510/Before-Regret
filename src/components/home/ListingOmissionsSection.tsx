@@ -11,30 +11,41 @@ export const ListingOmissionsSection: React.FC = () => {
   // Each card names what the paid report actually produces today. Address validation is a real
   // capability but reads as internal plumbing rather than something a buyer values on its own, so
   // it's left out here -- it still runs on every report, just not sold as a headline feature.
+  //
+  // TITLES ARE WHAT A BUYER WOULD SAY, NOT WHAT AN ENGINEER WOULD. Revised 2026-09-24: these were
+  // "Inspection Budget Priorities" and "Seismic Design Category", and the seismic card led with
+  // "The ASCE 7-22 seismic design category engineers use" -- a standard almost no home buyer has
+  // heard of, promised third on a page read across a country where earthquake risk matters in only
+  // some regions. The findings still name the standard where it is the real source, because the
+  // content rules want a cited standard, but the headline is the question the buyer is asking.
+  //
+  // ORDER IS BY HOW MANY BUYERS IT HELPS. Seller questions and what to inspect first apply to every
+  // house; earthquake risk applies to some. "What we can't check yet" stays last on purpose -- it is
+  // the honest caveat, and it reads as one only after the reader has seen what IS covered.
   const categories = [
     {
-      icon: ClipboardCheck,
-      title: 'Inspection Budget Priorities',
-      publicFinding: 'Which checks are worth paying for on a home of this decade and county — and roughly what each costs to check versus to fix.'
-    },
-    {
       icon: MessageCircleQuestion,
-      title: 'Questions for the Seller',
+      title: 'What to ask the seller',
       publicFinding: 'The exact wording to use, why each question matters for this property, and what a reassuring answer sounds like.'
     },
     {
-      icon: Activity,
-      title: 'Seismic Design Category',
-      publicFinding: 'The ASCE 7-22 seismic design category engineers use, pulled live for this address’s coordinates.'
+      icon: ClipboardCheck,
+      title: 'What to inspect first',
+      publicFinding: 'Which inspections are worth paying for on a home of this age and county, and roughly what each costs to check versus to fix.'
     },
     {
       icon: CheckSquare,
-      title: 'Walkthrough Checklist',
-      publicFinding: 'What to look at with your own eyes during the visit, in a list you can tick off on your phone.'
+      title: 'What to look at during the visit',
+      publicFinding: 'A list of things to check with your own eyes on the day, that you can tick off on your phone.'
+    },
+    {
+      icon: Activity,
+      title: 'Earthquake risk for this address',
+      publicFinding: 'The seismic design category engineers use (ASCE 7-22), pulled live from the USGS for this exact address.'
     },
     {
       icon: ExternalLink,
-      title: 'What Still Needs Verification',
+      title: 'What we can’t check yet',
       publicFinding: 'Flood zone, permit history and similar records aren’t connected yet. We say so plainly and link you straight to the official source.'
     }
   ];

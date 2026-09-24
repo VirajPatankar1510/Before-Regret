@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Layers } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 export const HowItWorksSection: React.FC = () => {
   return (
@@ -68,20 +68,16 @@ export const HowItWorksSection: React.FC = () => {
         </div>
       </section>
 
-      {/* Why Not Just Check a Listing Site? + Independence Statement -- separated onto a plain
-          white band so they read as reassurance sitting after the process, not as steps within it. */}
-      <section className="py-10 sm:py-14 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-2">
-            <h3 className="font-sans text-sm font-bold text-slate-900 flex items-center gap-1.5">
-              <Layers className="w-4 h-4 text-blue-600 shrink-0" />
-              <span>Why not just check a listing site?</span>
-            </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Listing portals help you find a home — not flag problems with one. This report starts from what a careful buyer or their inspector would actually want to know before signing.
-            </p>
-          </div>
+      {/* Independence statement, on a plain white band so it reads as reassurance after the
+          process rather than a step within it.
 
+          A second card, "Why not just check a listing site?", sat beside it until 2026-09-24 and
+          was removed as a repeat: "What a Listing Won't Tell You" opens with the same argument
+          directly under the hero, and the FAQ asks the same question -- which is the copy that
+          feeds FAQPage schema, so that one is the version kept. Three statements of one point on
+          a page this long read as padding, and the page is long mostly because of repeats like it. */}
+      <section className="py-10 sm:py-14 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-2xl mx-auto">
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-2">
             <div className="flex items-center gap-1.5 text-xs font-sans font-bold text-blue-700 uppercase tracking-wider">
               <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0" />

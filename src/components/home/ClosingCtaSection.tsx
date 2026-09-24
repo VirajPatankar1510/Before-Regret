@@ -28,7 +28,7 @@ export const ClosingCtaSection: React.FC<ClosingCtaSectionProps> = ({ onScrollTo
             className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-lg hover:shadow-blue-500/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
           >
             <Search className="w-5 h-5" />
-            <span>Search Address Now</span>
+            <span>Check an address</span>
             <ArrowUp className="w-4 h-4 ml-1" />
           </button>
         </div>
