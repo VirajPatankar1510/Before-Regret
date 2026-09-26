@@ -34,6 +34,9 @@ import { guideTopic } from '../src/utils/relatedGuides.js';
 import { windowDay } from './solar-window.js';
 
 const APPLY = process.env.APPLY === 'true';
+// UPDATE=true rewrites the body of the already-published row instead of inserting. Body only: the
+// slug is the URL and never moves, and title, meta and quick_answer are left exactly as they are.
+const UPDATE = process.env.UPDATE === 'true';
 
 const BRIEF: ArticleBrief = {
   slug: 'south-facing-house-sun-by-direction',
@@ -126,13 +129,20 @@ async function main() {
   const REQUIRED = ['[NOAA]', HVAC_COST, 'front door', 'unobstructed', '/sunlight/'];
   for (const q of REQUIRED) if (!body.includes(q)) fail(`missing required text: "${q}"`);
   // Things this site has not measured and must not assert.
-  const BANNED = ['recall', 'save on energy', 'lower bills', 'energy savings', 'percent cheaper'];
+  // 'comparatively little in high summer' shipped on 2026-09-26 and was wrong by the article's own
+  // table: Chicago on 21 June gives south 8.1 hours, more than east or west. South's summer advantage
+  // north of the Sun Belt is the ANGLE the sun meets the glass at, not fewer hours, and the Phoenix
+  // result (south gets the least) does not generalise. Banned so the claim cannot come back.
+  const BANNED = ['recall', 'save on energy', 'lower bills', 'energy savings', 'percent cheaper',
+    'comparatively little in high summer'];
   for (const q of BANNED) if (body.toLowerCase().includes(q)) fail(`unsupported claim present: "${q}"`);
 
   // ---- links -------------------------------------------------------------------------------------
   const rows = (await withDb((sql) => sql`SELECT slug, status FROM articles`)) as unknown as Array<{ slug: string; status: string }>;
   const published = new Set(rows.filter((r) => r.status === 'published').map((r) => r.slug));
-  if (rows.some((r) => r.slug === BRIEF.slug)) fail(`slug ${BRIEF.slug} already exists in articles`);
+  const exists = rows.some((r) => r.slug === BRIEF.slug);
+  if (exists && !UPDATE) fail(`slug ${BRIEF.slug} already exists -- use UPDATE=true to revise the body`);
+  if (!exists && UPDATE) fail(`UPDATE=true but ${BRIEF.slug} does not exist yet`);
   for (const m of body.matchAll(/\]\(\/guides\/([a-z0-9-]+)\/?\)/g)) if (!published.has(m[1])) fail(`dead guide link: ${m[1]}`);
   for (const m of body.matchAll(/\]\((\/(?:sunlight|walkthrough)\/)\)/g)) {
     if (!fs.existsSync(path.join(process.cwd(), 'dist', m[1], 'index.html'))) fail(`tool page not built: ${m[1]}`);
@@ -155,7 +165,13 @@ async function main() {
   if (bad) throw new Error(`ABORT: ${bad} defect(s)`);
   console.log(`\n  ok  brief valid, budgets met, ${REQUIRED.length} required present, ${BANNED.length} unsupported absent`);
 
-  if (!APPLY) { console.log('\n  DRY RUN -- nothing written.\n'); return; }
+  if (!APPLY) { console.log(`\n  DRY RUN (${UPDATE ? 'update' : 'insert'}) -- nothing written.\n`); return; }
+
+  if (UPDATE) {
+    await withDb((sql) => sql`UPDATE articles SET body_markdown = ${body}, updated_at = now() WHERE slug = ${BRIEF.slug}`);
+    console.log(`  updated body of ${BRIEF.slug}\n  next: npm run build`);
+    return;
+  }
 
   // Inserted as published. The build will not pass until the guide carries FAQs (FAQPage is a
   // required guide schema in assert-canonical-urls.ts), so run the article-faqs skill next, then

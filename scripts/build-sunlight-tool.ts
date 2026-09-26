@@ -153,6 +153,15 @@ const html = `<style>
   <p>South-facing windows do get the most sun overall, and they get it through the middle of the
   day rather than at either end. In winter that is the warmest room in the house. In an
   un-shaded August it is the one nobody wants to sit in.</p>
+  <p>For every direction side by side, winter against summer, in a Chicago-latitude house and a
+  Phoenix one, see our guide to <a href="/guides/south-facing-house-sun-by-direction/">how much sun
+  each side of a south-facing house really gets</a>.</p>
+  <!-- The one inbound link the guide has an honest anchor for (2026-09-26). This section already
+       discusses exactly the guide's subject, which no existing guide does -- the inbound-link
+       suggester found nothing but false matches on the title word "really". The link runs this way
+       deliberately: the tool keeps "which direction should a house face" (choosing) and the guide
+       takes "south facing house" (evaluating), and a descriptive anchor from here tells a crawler
+       which page answers the second. -->
 
   <h2>A north facing house is not the bad one</h2>
   <p>This is the result that surprises people. In midsummer the sun rises well north of due east

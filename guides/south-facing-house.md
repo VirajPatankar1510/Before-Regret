@@ -28,7 +28,7 @@ In Chicago a south-facing window gets {{C.dec.south}} hours of direct sun on the
 
 The surprise is summer in the South and Southwest. In Phoenix on 21 June, a south-facing window gets {{P.jun.south}} hours of direct sun — less than east ({{P.jun.east}}), west ({{P.jun.west}}) or even north ({{P.jun.north}}). At midday the sun is {{P.jun.peak}}° up, almost overhead, and it rises and sets well north of east and west. A south wall with a modest roof overhang can be shaded for much of a summer day.
 
-So south is not simply the sunny side. Across most of the US it is the side that gets the most sun in winter and comparatively little in high summer, which is exactly the combination a buyer wants.
+Further north the hours tell a different story, and the angle is what matters. In Chicago a south window still gets the most direct sun on 21 June, {{C.jun.south}} hours against {{C.jun.east}} for east or west, but the June sun peaks there at {{C.jun.peak}}°, so it meets south-facing glass at a steep angle and less of its heat comes through, and a modest overhang keeps it out of the room altogether. East and west sun arrives low and close to head-on. That is why south is usually the easier side to keep comfortable in summer as well as the warmest in winter, which is exactly the combination a buyer wants.
 
 ## West is the side that heats the house
 
