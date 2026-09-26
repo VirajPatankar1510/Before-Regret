@@ -503,7 +503,7 @@ export function App() {
         // honest static copy back to the old "20+ Public Records" overclaim on every real visit,
         // since it runs on mount regardless of what the static HTML already says.
         title: 'Before Regret — Free US Property Research',
-        description: 'Search any US address for free -- live seismic hazard data, address validation, inspection priorities, and seller questions -- nothing fabricated.',
+        description: 'Before Regret is free property research for US home buyers: the questions to ask the seller and what to inspect first, for any US home.',
         canonicalUrl: 'https://www.beforeregret.com/',
         robotsDirective: 'index, follow',
         // FAQPage, NOT Organization/WebSite. Those two used to be re-declared here, which was a
