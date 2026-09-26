@@ -73,6 +73,12 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   ['pests', /termite|\bwdo\b|wood[- ]destroying|\bpests?\b|rodent|carpenter[- ]ant/],
   ['environmental', /radon|asbestos|lead[- ]paint|\bmold\b|oil[- ]tank|underground[- ]storage|methane/],
   ['permits', /permit|unpermitted|code[- ]enforcement|zoning|violation/],
+  // Which way a house and its windows face. Added 2026-09-24 with the first guide on it, because
+  // "south facing house" and its three siblings carry more measured US search volume (3,200/mo in the
+  // 2026-09-18 capture) than any topic the library already covered -- and no existing bucket would
+  // take it, so the cluster gate hard-failed the guide. Checked before insertion: the pattern matches
+  // no slug or title already published, so it moves nothing out of another cluster.
+  ['orientation', /\bfacing\b|orientation|sunlight|\bsun\b.*\b(side|direction|window)/],
   ['insurance', /insur|clue[- ]report|carrier|\bpolicy\b|premium|uninsurable|4[- ]point/],
   ['transaction', /contingen|escrow|closing|\bseller\b|negotiat|apprais|walk[- ]away|\bhoa\b|earnest|disclosure|inspector|property[- ]tax|assessment/],
 ];

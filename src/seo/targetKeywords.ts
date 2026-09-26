@@ -87,6 +87,16 @@ export const TARGET_KEYWORDS: TargetKeyword[] = [
       'Same page, 5 impressions at position 9.6 -- already on page one, so the two together show ' +
       'the question form ranks far better than the noun form and the page should lean that way.',
   },
+  {
+    keyword: 'south facing house',
+    capture: '2026-09-18-volumes-south-facing-house',
+    slug: 'south-facing-house-sun-by-direction',
+    rationale:
+      '1,300 US searches a month, the largest single query in the capture, with west (720), north ' +
+      '(590) and east (590) behind it -- more measured demand than any subject the library already ' +
+      'answered. /sunlight/ keeps "which direction should a house face" (the choosing intent); this ' +
+      'page takes the evaluating one, a buyer told a specific house faces a specific way.',
+  },
 ];
 
 /** Sources that constitute measurement. Anything else is someone's opinion wearing a number. */
