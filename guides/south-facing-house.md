@@ -1,4 +1,4 @@
-# South-Facing House: How Much Sun Each Side Really Gets
+# South-Facing House: Is It Better? Sun Hours by Direction
 
 When a listing or an agent says a house "faces south", they almost always mean the front door. The sun does not care about the front door. It cares about which way the windows face in the rooms you will actually use — the living room, the kitchen, the bedrooms — and in a lot of houses those are at the back. A house that "faces north" often has its best rooms looking south.
 

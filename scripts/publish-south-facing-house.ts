@@ -34,8 +34,8 @@ import { guideTopic } from '../src/utils/relatedGuides.js';
 import { windowDay } from './solar-window.js';
 
 const APPLY = process.env.APPLY === 'true';
-// UPDATE=true rewrites the body of the already-published row instead of inserting. Body only: the
-// slug is the URL and never moves, and title, meta and quick_answer are left exactly as they are.
+// UPDATE=true rewrites the title and body of the already-published row instead of inserting. The
+// slug is the URL and never moves; meta and quick_answer are left exactly as they are.
 const UPDATE = process.env.UPDATE === 'true';
 
 const BRIEF: ArticleBrief = {
@@ -46,7 +46,7 @@ const BRIEF: ArticleBrief = {
   who: 'a buyer who has just been told the house they toured faces south, and is trying to decide whether that is a real advantage or a line from the listing',
   want: 'to know how many hours of direct sun each side of a house actually gets in winter and in summer, and whether south is really the best way to face',
   achieve: 'to judge the rooms they would actually live in before making an offer, and to know when a sunny side means a hotter house and a harder-working air conditioner',
-  titlePromise: 'how much direct sun each side of the house gets, winter and summer',
+  titlePromise: 'whether a south-facing house is better, shown in hours of direct sun for each side',
 };
 
 // ---- figures, computed -------------------------------------------------------------------------
@@ -94,7 +94,12 @@ const fill = (s: string) =>
      return F[k];
    });
 
-const TITLE = 'South-Facing House: How Much Sun Each Side Really Gets';
+// Revised 2026-09-26, the day it published. The first title, "South-Facing House: How Much Sun Each
+// Side Really Gets", asked no yes/no question, while quick_answer opens "Generally yes" -- a verdict
+// answering a question the page never posed. The verdict opening is what the AI-features data says
+// gets a page cited, so the TITLE now asks the question the verdict answers, keyword still first.
+// The slug was left alone: it already carries the query, and moving a URL needs a redirect.
+const TITLE = 'South-Facing House: Is It Better? Sun Hours by Direction';
 const META = fill('A south window in Chicago gets {{C.dec.south}} hours of direct sun on the shortest day; a north one gets none. Every side, winter and summer.');
 const QUICK_ANSWER = fill(
   'Generally yes. Across most of the US a south-facing window gets the most winter sun, {{C.dec.south}} hours of direct sun ' +
@@ -168,8 +173,8 @@ async function main() {
   if (!APPLY) { console.log(`\n  DRY RUN (${UPDATE ? 'update' : 'insert'}) -- nothing written.\n`); return; }
 
   if (UPDATE) {
-    await withDb((sql) => sql`UPDATE articles SET body_markdown = ${body}, updated_at = now() WHERE slug = ${BRIEF.slug}`);
-    console.log(`  updated body of ${BRIEF.slug}\n  next: npm run build`);
+    await withDb((sql) => sql`UPDATE articles SET title = ${TITLE}, body_markdown = ${body}, updated_at = now() WHERE slug = ${BRIEF.slug}`);
+    console.log(`  updated title and body of ${BRIEF.slug}\n  next: npm run build`);
     return;
   }
 
