@@ -1,5 +1,81 @@
 import React from 'react';
 import { resolveKnownSource } from '../data/knownSources';
+import {
+  REUSABLE_DIAGRAMS,
+  DIAGRAM_CREDIT,
+  DIAGRAM_LICENSE_NAME,
+  DIAGRAM_LICENSE_URL,
+  diagramAnchorId,
+} from '../data/reusableDiagrams';
+import { IMAGE_DIMENSIONS } from '../data/imageDimensions';
+
+const SITE_ORIGIN = 'https://www.beforeregret.com';
+
+function escapeHtmlAttr(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// The collapsed reuse panel under a licensable diagram -- see src/data/reusableDiagrams.ts for why
+// it exists and why the terms are CC BY rather than "must link". Collapsed because the person
+// reading a guide is usually a buyer, for whom this is noise; the person it is for (an inspector,
+// a trade writing its own blog) will open it. A readonly <textarea> rather than a copy button so
+// it works in the prerendered HTML with no JavaScript at all.
+function DiagramReusePanel({ src, alt, pageUrl }: { src: string; alt: string; pageUrl: string }) {
+  const absoluteSrc = `${SITE_ORIGIN}${src}`;
+  const dims = IMAGE_DIMENSIONS[src];
+  const snippet =
+    `<figure>\n` +
+    `  <img src="${absoluteSrc}" alt="${escapeHtmlAttr(alt)}"${dims ? ` width="${dims.width}" height="${dims.height}"` : ''} loading="lazy">\n` +
+    `  <figcaption>Diagram: <a href="${pageUrl}">${DIAGRAM_CREDIT}</a>, ${DIAGRAM_LICENSE_NAME}</figcaption>\n` +
+    `</figure>`;
+  return (
+    <details id={diagramAnchorId(src)} className="mt-2 text-xs text-slate-500">
+      <summary className="cursor-pointer select-none text-center hover:text-slate-700">
+        Free to use with credit ({DIAGRAM_LICENSE_NAME})
+      </summary>
+      <div className="mt-3 space-y-2 text-left bg-slate-50 border border-slate-200 rounded-xl p-4 leading-relaxed">
+        <p>
+          You can use this diagram on your own website, in an inspection report or in training
+          material, including commercially. The one condition is credit to {DIAGRAM_CREDIT} as the
+          source.{' '}
+          <a
+            href={DIAGRAM_LICENSE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+          >
+            License terms
+          </a>
+        </p>
+        <label className="block font-medium text-slate-600" htmlFor={`${diagramAnchorId(src)}-code`}>
+          HTML with the credit already in place:
+        </label>
+        <textarea
+          id={`${diagramAnchorId(src)}-code`}
+          readOnly
+          rows={5}
+          value={snippet}
+          onFocus={(e) => e.currentTarget.select()}
+          className="w-full font-mono text-[11px] text-slate-700 bg-white border border-slate-200 rounded-lg p-2 resize-y"
+        />
+        <p>
+          Or{' '}
+          <a href={src} download className="text-blue-600 hover:text-blue-800 hover:underline font-medium">
+            download the image
+          </a>{' '}
+          and credit it as “Diagram: {DIAGRAM_CREDIT}” with a link to this page.
+        </p>
+      </div>
+    </details>
+  );
+}
+
+export interface RenderArticleOptions {
+  /** Canonical URL of the page the markdown renders on. Needed for a diagram's reuse panel, whose
+   *  credit link points back at the page the diagram was found on; without it the panel is not
+   *  rendered at all. */
+  pageUrl?: string;
+}
 
 // Small, dependency-free renderer for exactly the markdown subset the AI generation prompt
 // produces (see src/server/articleGenerator.ts): ## through ###### headers, **bold**, paragraphs,
@@ -89,7 +165,7 @@ export function parseInline(text: string): React.ReactNode[] {
   });
 }
 
-export function renderArticleMarkdown(markdown: string): React.ReactNode[] {
+export function renderArticleMarkdown(markdown: string, options: RenderArticleOptions = {}): React.ReactNode[] {
   const lines = markdown.split('\n');
   const blocks: React.ReactNode[] = [];
   let paragraphBuffer: string[] = [];
@@ -166,6 +242,9 @@ export function renderArticleMarkdown(markdown: string): React.ReactNode[] {
               <figcaption className="mt-2 text-xs text-slate-500 leading-relaxed text-center">
                 {parseInline(caption)}
               </figcaption>
+            )}
+            {options.pageUrl && REUSABLE_DIAGRAMS.has(src) && (
+              <DiagramReusePanel src={src} alt={alt} pageUrl={options.pageUrl} />
             )}
           </figure>
         );

@@ -1,0 +1,20 @@
+{
+  "_about": "Every known page that links to beforeregret.com, and who is behind it. Maintained by scripts/backlink-watch.ts (--add appends, the default run re-verifies). A trade business that cites a guide is also the warmest possible ad prospect: see the prospect fields, and pitch only once there are readers in their area.",
+  "links": [
+    {
+      "sourceUrl": "https://mgplumbingservices.com/plumbers-blog/how-long-do-cast-iron-drain-pipes-last/",
+      "targetUrl": "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/",
+      "anchorText": "Explanation of crown corrosion in cast iron",
+      "rel": "",
+      "firstSeen": "2026-09-27",
+      "sourcePublished": "2026-09-24",
+      "foundBy": "owner",
+      "business": "MG Plumbing Services LLC",
+      "trade": "plumbing",
+      "area": "Las Vegas, Henderson, North Las Vegas, Summerlin (NV)",
+      "notes": "Unsolicited. Cited as one of six sources in a cast iron lifespan post. Our Clark County permits guide is the nearest page with readers for their area.",
+      "lastChecked": "2026-09-27",
+      "lastStatus": "live"
+    }
+  ]
+}

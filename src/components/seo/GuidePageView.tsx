@@ -164,7 +164,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
           'headline': article.title,
           'description': article.metaDescription,
           // Static twin: scripts/prerender-guides.tsx resolves the same way.
-          'image': resolveArticleSchemaImage(article.bodyMarkdown),
+          'image': resolveArticleSchemaImage(article.bodyMarkdown, canonicalUrl),
           'datePublished': article.publishedAt,
           'dateModified': article.updatedAt || article.publishedAt,
           // Static twin: scripts/prerender-guides.tsx does the same, and explains why these are
@@ -316,7 +316,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
         {/* Article Body */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm text-sm">
           <div className="max-w-none">
-            {renderArticleMarkdown(article.bodyMarkdown)}
+            {renderArticleMarkdown(article.bodyMarkdown, { pageUrl: canonicalUrl })}
           </div>
         </div>
 

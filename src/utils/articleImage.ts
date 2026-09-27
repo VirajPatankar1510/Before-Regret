@@ -23,6 +23,12 @@ export const DEFAULT_ARTICLE_IMAGE = 'https://www.beforeregret.com/hero-bg.jpg';
 const SITE_ORIGIN = 'https://www.beforeregret.com';
 
 import { IMAGE_DIMENSIONS } from '../data/imageDimensions.js';
+import {
+  REUSABLE_DIAGRAMS,
+  DIAGRAM_CREDIT,
+  DIAGRAM_LICENSE_URL,
+  diagramAnchorId,
+} from '../data/reusableDiagrams.js';
 
 /**
  * The first block-level markdown image in an article body, as an absolute URL, or null.
@@ -55,9 +61,15 @@ export function extractFirstArticleImage(bodyMarkdown: string): string | null {
  * still produces valid schema -- it just loses width and height. Failing the build over a missing
  * measurement would make adding a picture harder than it needs to be.
  */
-export function resolveArticleSchemaImage(bodyMarkdown: string): string | Record<string, unknown> {
+export function resolveArticleSchemaImage(
+  bodyMarkdown: string,
+  /** The page's canonical URL. When given and the image is a reusable diagram, the ImageObject
+   *  carries licence metadata pointing at that page's reuse panel. */
+  pageUrl?: string,
+): string | Record<string, unknown> {
   const url = extractFirstArticleImage(bodyMarkdown) || DEFAULT_ARTICLE_IMAGE;
-  const dims = IMAGE_DIMENSIONS[url.replace(SITE_ORIGIN, '')];
+  const path = url.replace(SITE_ORIGIN, '');
+  const dims = IMAGE_DIMENSIONS[path];
   if (!dims) return url;
   return {
     '@type': 'ImageObject',
@@ -65,5 +77,19 @@ export function resolveArticleSchemaImage(bodyMarkdown: string): string | Record
     contentUrl: url,
     width: dims.width,
     height: dims.height,
+    // Google Images' "Licensable" label reads these (its image-metadata structured data): license
+    // is the terms, acquireLicensePage is where a person learns how to use it -- here, the
+    // diagram's own reuse panel on the page it appears on. Only for the allowlisted diagrams in
+    // src/data/reusableDiagrams.ts; the rendered panel and this metadata must describe the same
+    // set, which is why both read the same list and the same anchor function.
+    ...(pageUrl && REUSABLE_DIAGRAMS.has(path)
+      ? {
+          license: DIAGRAM_LICENSE_URL,
+          acquireLicensePage: `${pageUrl}#${diagramAnchorId(path)}`,
+          creditText: DIAGRAM_CREDIT,
+          creator: { '@type': 'Organization', '@id': `${SITE_ORIGIN}/#organization`, name: DIAGRAM_CREDIT },
+          copyrightNotice: DIAGRAM_CREDIT,
+        }
+      : {}),
   };
 }

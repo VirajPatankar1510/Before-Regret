@@ -124,6 +124,34 @@ export async function fetchBingCrawlStats(siteUrl: string): Promise<BingCrawlPoi
     .sort((a, b) => (a.date?.getTime() ?? 0) - (b.date?.getTime() ?? 0));
 }
 
+export interface BingLinkCount { url: string; count: number; }
+export interface BingLinkDetail { url: string; anchorText: string; }
+
+// Inbound links as Bing sees them: which of OUR pages have links (GetLinkCounts), then who links to
+// one of them (GetUrlLinks). Both paged, page index from 0. Free, and the only programmatic source
+// of referring pages this project has -- Search Console's Links report has no API. Bing is slow to
+// list a new link (the first earned one, 2026-09-24, was not in either call three days later), so
+// an empty result means "not seen yet", not "none exist". See scripts/backlink-watch.ts.
+export async function fetchBingLinkCounts(siteUrl: string): Promise<BingLinkCount[]> {
+  const out: BingLinkCount[] = [];
+  for (let page = 0; page < 50; page++) {
+    const d = await call<any>('GetLinkCounts', { siteUrl, page: String(page) });
+    for (const l of d?.Links || []) out.push({ url: l.Url, count: l.Count ?? 0 });
+    if (page + 1 >= (d?.TotalPages ?? 0)) break;
+  }
+  return out;
+}
+
+export async function fetchBingUrlLinks(siteUrl: string, link: string): Promise<BingLinkDetail[]> {
+  const out: BingLinkDetail[] = [];
+  for (let page = 0; page < 50; page++) {
+    const d = await call<any>('GetUrlLinks', { siteUrl, link, page: String(page) });
+    for (const l of d?.Details || []) out.push({ url: l.Url, anchorText: l.AnchorText ?? '' });
+    if (page + 1 >= (d?.TotalPages ?? 0)) break;
+  }
+  return out;
+}
+
 export async function fetchBingSubmissionQuota(siteUrl: string): Promise<BingSubmissionQuota> {
   const d = await call<any>('GetUrlSubmissionQuota', { siteUrl });
   return { dailyQuota: d?.DailyQuota ?? 0, monthlyQuota: d?.MonthlyQuota ?? 0 };

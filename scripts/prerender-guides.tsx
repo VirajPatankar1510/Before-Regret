@@ -151,7 +151,7 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
       headline: article.title,
       description: article.metaDescription,
       // The article's own first diagram where it has one -- see src/utils/articleImage.ts.
-      image: resolveArticleSchemaImage(article.bodyMarkdown),
+      image: resolveArticleSchemaImage(article.bodyMarkdown, canonicalUrl),
       datePublished: article.publishedAt,
       dateModified: article.updatedAt || article.publishedAt,
       // author and publisher both POINT AT the Organization node rather than restating it inline.
@@ -277,7 +277,7 @@ function GuideStaticBody({
         )}
 
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm text-sm">
-          <div className="max-w-none">{renderArticleMarkdown(article.bodyMarkdown)}</div>
+          <div className="max-w-none">{renderArticleMarkdown(article.bodyMarkdown, { pageUrl: `https://www.beforeregret.com/guides/${article.slug}/` })}</div>
         </div>
 
         {/* Same unit and same position as GuidePageView.tsx -- not a static twin, the actual
