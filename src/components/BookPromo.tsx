@@ -35,6 +35,20 @@ import { BOOK, BOOK_CLICK_PATH, BOOK_LINK_REL } from '../data/book';
 // ad slot's "Ad" badge is the precedent. BOOK.author and BOOK.formats stay in src/data/book.ts as
 // the record of the listing even though nothing renders them now.
 
+// The cover's alt text: what the picture shows, taken from the listing, and nothing else.
+//
+// It was alt="" until 2026-09-27, which is correct for a screen reader (the cover sits inside an
+// aria-hidden duplicate link, next to a visible title that already says the same thing) but Bing
+// Webmaster reports every empty alt as "missing" on every page this card renders on. A real
+// description costs a screen reader nothing here, because aria-hidden keeps it from being read.
+//
+// DELIBERATELY NO "Before Regret" IN IT. Asked for on 2026-09-27 to help the brand phrase rank;
+// declined for three reasons. The cover does not say it, and alt text describes the image. The
+// card's "From the team behind BeforeRegret" label was removed on the owner's request on
+// 2026-09-04, and the brand in the alt would put that tie back in a place nobody sees. And Google's
+// image guidance names keyword-filled alt text as spam, so it would risk more than it earns.
+const COVER_ALT = `Cover of ${BOOK.title}: ${BOOK.subtitle}`;
+
 // The pitch. Drawn from the book's actual argument -- the three lists, and the twenty minutes a
 // viewing gives you -- not from marketing copy. Nothing here claims a result.
 const PITCH =
@@ -68,7 +82,7 @@ export const BookPromoSkyscraper: React.FC = () => (
         <source srcSet="/images/fruitful-home-cover-lg.webp" type="image/webp" />
         <img
           src="/images/fruitful-home-cover-lg.jpg"
-          alt=""
+          alt={COVER_ALT}
           width={520}
           height={832}
           loading="lazy"
@@ -118,7 +132,7 @@ export const BookPromoCard: React.FC<{ className?: string }> = ({ className = ''
           <source srcSet="/images/fruitful-home-cover.webp" type="image/webp" />
           <img
             src="/images/fruitful-home-cover.jpg"
-            alt=""
+            alt={COVER_ALT}
             width={300}
             height={480}
             loading="lazy"
