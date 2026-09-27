@@ -1,0 +1,15 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-09-27T16:18:20.176Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "unpermitted work",
+    "unpermitted electrical",
+    "contractor found",
+    "previous owner"
+  ],
+  "keywords": []
+}

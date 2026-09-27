@@ -1,6 +1,6 @@
 ---
 name: write-guide
-description: The enforced pipeline for creating a new BeforeRegret guide article — pull real query data from the self-hosted OpenSEO MCP, pick a target from a persisted capture instead of inventing one, write and validate an ArticleBrief before drafting, draft against seven content rules, then run the pre-publish gate, publish, rebuild, earn inbound links and verify live. Use this whenever the user wants to write, create, draft, generate or plan a new guide or article for BeforeRegret, asks what to write next, asks which keyword or topic to target, wants content for a search query or cluster, or asks to publish an article to the articles table. Also use when asked to fix or extend an existing guide's cost data, titles or clusters. Do NOT use for FAQs on an existing article (use article-faqs) or for the research studies under /research/.
+description: The enforced pipeline for creating a new BeforeRegret guide article — gather demand evidence from first-party data only (this site's own Search Console and Bing accounts, plus what a person sees on a live results page), pick a target from a persisted capture instead of inventing one, write and validate an ArticleBrief before drafting, draft against seven content rules, then run the pre-publish gate, publish, rebuild, earn inbound links and verify live. Use this whenever the user wants to write, create, draft, generate or plan a new guide or article for BeforeRegret, asks what to write next, asks which keyword or topic to target, wants content for a search query or cluster, or asks to publish an article to the articles table. Also use when asked to fix or extend an existing guide's cost data, titles or clusters. Do NOT use for FAQs on an existing article (use article-faqs) or for the research studies under /research/.
 ---
 
 # Writing a BeforeRegret guide
@@ -13,29 +13,48 @@ All commands run from `/Users/viraj/Desktop/Claud Code/Before-Regret`.
 
 ---
 
-## 0. Pull the data
+## 0. Gather the evidence — first-party only
+
+**No paid or third-party SEO service.** OpenSEO and DataForSEO were retired on 2026-09-27 (credits
+exhausted; the owner chose not to depend on them again). The provenance gate now fails any new
+capture from them. Everything below reads this site's own free Search Console and Bing accounts.
 
 ```bash
-npx tsx scripts/pull-gsc-via-openseo.ts
+npx tsx scripts/pull-gsc-queries.ts        # every query Google has shown this site for, 16 months
+npx tsx scripts/pull-bing-queries.ts       # the same from Bing
+npx tsx scripts/topic-demand.ts "seed phrase" "another phrasing"   # a subject with no page yet
 ```
 
-Reads Search Console through the self-hosted OpenSEO MCP at `http://localhost:3001/mcp` and writes a
-capture into `data/keywords/`. If OpenSEO is not running: `cd ../open-seo && docker compose up -d`
-(needs `PATH="$HOME/.docker/bin:$PATH"`).
+`topic-demand.ts` is the step that used to be a keyword-volume lookup. Give it 2–4 word phrasings
+(one-word seeds drown in unrelated rows) and read which **tier** it reaches:
 
-Bing is separate — OpenSEO has no Bing tools. Export the **Keywords** table from Bing Webmaster
-Tools (Search Performance → *List By* → Keywords) and run
-`npx tsx scripts/import-gsc-export.ts <file>.csv --source bing`.
+| tier | what it found | what it lets you say |
+|---|---|---|
+| **1** | queries this site is already shown for, with the page shown | measured demand, and usually the page to UPDATE instead of creating a URL. Marked **WEAK** under 20 impressions: a hint, not demand. Discount machine-shaped queries no person would type |
+| **2** | Bing's own counts for the phrasing across all of Bing | real but unquantified demand. Thin sample, relative only: calibrated 0 exact / 9 broad for a query a paid tool had at 1,300/month on Google. **A zero is "unknown", never "no demand"** |
+| **3** | nothing | ask the owner to look: type the phrasings into Google in a private window and note autocomplete, People Also Ask and related searches, then `scripts/record-observation.ts --query … --where … --by owner`. That proves a query exists, never how many |
 
-**Never invent a keyword, a volume or a position.** Every number in an article traces to a file in
-`data/keywords/`.
+A person does the looking in tier 3. Never automate queries against a search engine: that is
+scraping, and it trips bot checks.
+
+**Never state a search volume.** No number of monthly searches may appear in a brief, an article or
+a recommendation unless it comes from a capture dated before 2026-09-27. Impressions from our own
+accounts are fine, labelled as ours ("this site was shown 146 times"), never as market size.
 
 ## 1. Pick the target query
 
-Read the captures. **Bing is the primary instrument**: it disclosed 100% of its clicks where
+Read the captures. **Bing is the primary query instrument**: it disclosed 100% of its clicks where
 Google's query dimension disclosed 4% (1,859/2 at query level vs 6,138/50 at page level over the
 same window). Never characterise performance from Google's query dimension — it is a
 disclosure-filtered sample, not a total.
+
+**Tier 1 pointing at an existing page means update that page first.** Default to extending the
+page Google already associates with the subject; a new URL beside it competes with it (see
+seo-first-mindset `references/cannibalization.md`).
+
+**Tier 3 may still be written, as an experiment.** State the stop condition in the brief before
+drafting — e.g. "indexed within 14 days and 20+ impressions within 45, or fold it into <existing
+page>". With no volume data, measuring after publishing is how demand gets established.
 
 Prefer a topic cluster with fewer than three members; step 5 prints them. Prefer a query with
 measured impressions and no clicks over one with neither.
@@ -44,7 +63,7 @@ measured impressions and no clicks over one with neither.
 
 Fill in `ArticleBrief` from `src/seo/articleBrief.ts` and call `validateBrief()`:
 
-`slug` · `targetQuery` · `capture` · `intent` · `who` · `want` · `achieve` · `titlePromise`
+`slug` · `targetQuery` · `capture` · `intent` · `who` · `want` · `achieve` · `titlePromise` · `stopCondition` (required when the capture is an observation)
 
 It rejects boilerplate, answers under 25 characters, three answers that are the same sentence, a
 definition-shaped `titlePromise` on transactional intent, and two briefs sharing a field. `who` must
@@ -144,7 +163,8 @@ reason to reconsider the guide, not to insert a sentence.
 
 Fetch the URL. Confirm the figures render, no markdown leaked, headings intact, and the page still
 ends on a next step rather than a price list. Later, re-run step 0 — the instrument that chose the
-query is the one that judges it.
+query is the one that judges it. For a tier-3 experiment, check the stop condition written in the
+brief on its date and act on it; an unmet one means fold or remove, not wait longer.
 
 ---
 

@@ -25,6 +25,29 @@ export function isBingKeywordResearchConfigured(): boolean {
   return Boolean(process.env.BING_WEBMASTER_API_KEY);
 }
 
+/**
+ * Bing's own count for ONE query over the last 90 days: exact-match and broad impressions across
+ * Bing, not just this site. Free, same key.
+ *
+ * READ IT AS RELATIVE, NEVER AS VOLUME. Calibrated 2026-09-27: "south facing house" returned 0 exact
+ * / 9 broad, for a query a paid tool had put at 1,300 US searches a month on Google, and "unpermitted
+ * work" returned 0 / 0. Bing's sample is thin, so a zero means UNKNOWN, not "nobody searches this",
+ * and a number here is only good for ranking one phrasing against another.
+ */
+export async function fetchBingKeyword(query: string): Promise<{ impressions: number; broadImpressions: number }> {
+  const apiKey = process.env.BING_WEBMASTER_API_KEY!;
+  const endDate = new Date();
+  const startDate = new Date(endDate.getTime() - 90 * 24 * 60 * 60 * 1000);
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+  const url = `https://ssl.bing.com/webmaster/api.svc/json/GetKeyword?${new URLSearchParams({
+    q: query, country: 'us', language: 'en-US', startDate: iso(startDate), endDate: iso(endDate), apikey: apiKey,
+  })}`;
+  const res = await fetch(url, { headers: { 'Content-Type': 'application/json; charset=utf-8' } });
+  if (!res.ok) throw new Error(`Bing GetKeyword failed (${res.status}): ${(await res.text()).slice(0, 300)}`);
+  const d = ((await res.json()) as { d?: { Impressions?: number; BroadImpressions?: number } }).d;
+  return { impressions: d?.Impressions ?? 0, broadImpressions: d?.BroadImpressions ?? 0 };
+}
+
 // 90 days, matching searchConsoleService.ts's window for consistency between the two sources.
 export async function fetchRelatedKeywords(seedTerm: string): Promise<BingKeywordRow[]> {
   const apiKey = process.env.BING_WEBMASTER_API_KEY!;

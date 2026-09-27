@@ -28,13 +28,15 @@ import {
   TARGET_KEYWORDS,
   VALID_SOURCES,
   STALE_AFTER_DAYS,
+  RETIRED_SOURCES,
+  RETIRED_ON,
   type ProvenanceSource,
 } from '../src/seo/targetKeywords.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CAPTURE_DIR = path.join(ROOT, 'data', 'keywords');
 
-/** The on-disk shape written by scripts/capture-keywords.ts. Anything under data/keywords/ that
+/** The on-disk shape every capture script writes (pull-gsc-queries, pull-bing-queries, topic-demand, record-observation). Anything under data/keywords/ that
  *  does not match is rejected rather than skipped -- a malformed capture must never read as an
  *  absent one, because absent is the state that silently permits an unbacked claim. */
 interface Capture {
@@ -68,6 +70,16 @@ function loadCaptures(): Map<string, Capture> {
       continue;
     }
     if (!c.endpoint) problems.push(`capture ${f} does not record which endpoint produced it`);
+    // Retired paid services: old captures remain dated measurements, a new one means something
+    // quietly started calling them again. See RETIRED_SOURCES in src/seo/targetKeywords.ts.
+    if (RETIRED_SOURCES.includes(c.source) && c.captured_at && c.captured_at.slice(0, 10) > RETIRED_ON) {
+      problems.push(`capture ${f} uses "${c.source}", retired on ${RETIRED_ON} -- use first-party sources (gsc, bing, observation)`);
+    }
+    // An observation is only as good as knowing who looked and where. Without both it is an
+    // unsourced claim with a file around it.
+    if (c.source === 'observation' && (!(c as any).observed_where || !(c as any).observed_by)) {
+      problems.push(`capture ${f} is an observation without observed_where and observed_by`);
+    }
     if (!c.captured_at || Number.isNaN(Date.parse(c.captured_at))) {
       problems.push(`capture ${f} has no parseable captured_at`);
       continue;
@@ -155,7 +167,7 @@ function main() {
     for (const p of problems) console.error(`    - ${p}`);
     console.error(
       `\n  A keyword may only be listed in src/seo/targetKeywords.ts once an API has actually\n` +
-      `  returned it. Capture one with:  npx tsx scripts/capture-keywords.ts --seed "<phrase>"\n`
+      `  returned it. Capture one with:  npx tsx scripts/topic-demand.ts "<phrase>"  (or pull-gsc-queries.ts / record-observation.ts)\n`
     );
     process.exit(1);
   }

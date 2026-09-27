@@ -20,18 +20,25 @@ below the one it implies.
   roughly 5% of clicks disclosed. Later re-measured at 668 queries / 2,570 impressions / 3 clicks
   against 60 clicks page-level.
   **Use it for which queries exist. Never use it to count clicks or to score a page.**
-- **OpenSEO's GSC insights.** Same underlying data, different default window
-  (`last_28_days`, ending ~3 days back). Discrepancies against the GSC UI have been traced to
-  windowing every time. Pass explicit dates.
+- **Bing keyword counts** — `fetchBingKeyword` / `GetRelatedKeywords`, via `scripts/topic-demand.ts`.
+  All of Bing, not just this site, but a thin sample: calibrated 2026-09-27 at 0 exact / 9 broad
+  over 90 days for "south facing house", which a paid tool had put at 1,300 US searches a month on
+  Google. **Relative only. A zero is "unknown", never "no demand".**
 
-## Tier 3 — third-party, paid, currently unavailable
+## Tier 3 — observed, unquantified
 
-- **DataForSEO** (keyword volume, SERP, backlinks) reaches this project *through* OpenSEO.
-  They are separate, unaffiliated products; OpenSEO is MIT and self-hosted at `localhost:3001`,
-  DataForSEO is a paid vendor.
-  **Status: paused, $0.28 balance.** Live SERP checks are not affordable. Do not plan around them.
-  **Cost discipline:** a single `keyword_suggestions` call cost **$0.3757** — 4× a prior estimate.
-  Price a call before making it.
+- **A person looking at a live results page** — autocomplete, People Also Ask, related searches —
+  recorded with `scripts/record-observation.ts` (who looked, where, when). An engine only suggests
+  what people search, so it proves a query EXISTS. It never supports a number. A person does the
+  looking; automated querying of a search engine is scraping and is not done here.
+
+## Retired — do not use
+
+- **OpenSEO and DataForSEO**, retired 2026-09-27: credits exhausted, and the owner decided not to
+  depend on paid or third-party SEO services again. Captures made before that date stay valid as
+  dated measurements (the south-facing volumes, for example). `assert-keyword-provenance.ts` fails
+  any capture from either source dated after it. **Never state a monthly search volume that is not
+  in one of those old captures.**
 
 ## Tier 4 — inference
 
@@ -42,6 +49,8 @@ Permitted, but must be labelled as inference and must name the observation it re
 - Memory of a number from earlier in a session. Re-pull it.
 - A figure in a doc without a capture id.
 - Volume or difficulty for a query that appears in no capture.
+- A Bing keyword count of zero read as "nobody searches this".
+- Our own impressions described as market size. "Shown 146 times on this site" is not "146 searches".
 - **A page's absence from a report when the page is 410.** A removed URL earns zero impressions
   by construction. "No measured demand" for a removed page is guaranteed, not informative.
 

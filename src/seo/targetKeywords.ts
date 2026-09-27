@@ -25,20 +25,34 @@
 // launder recalled figures into apparently-sourced ones. That is precisely the failure this file is
 // meant to prevent, so the file starts empty and fills up only as captures land.
 //
-// To populate it:  npx tsx scripts/capture-keywords.ts --seed "polybutylene pipe"
+// To populate it (first-party only since 2026-09-27 -- see RETIRED_SOURCES below):
+//   npx tsx scripts/pull-gsc-queries.ts                      # queries this site is shown for
+//   npx tsx scripts/pull-bing-queries.ts                     # the same, from Bing
+//   npx tsx scripts/topic-demand.ts "seed phrase" ...        # evidence for a subject with no page yet
+//   npx tsx scripts/record-observation.ts --query ... --where ... --by ...   # what a person saw
 // Then add the keyword here with the capture id the script prints.
 
 export type ProvenanceSource =
-  /** DataForSEO, called directly by scripts/capture-keywords.ts. */
+  /** DataForSEO, called directly by scripts/capture-keywords.ts. RETIRED 2026-09-27: credits ran
+   *  out and the owner chose to stop depending on paid or third-party SEO services. Existing
+   *  captures stay valid as dated measurements; the gate refuses any new one. */
   | 'dataforseo'
-  /** A self-hosted or hosted OpenSEO instance. Same underlying data -- OpenSEO is a front end over
-   *  DataForSEO -- but recorded distinctly so a capture is always traceable to the thing that made
-   *  the call. */
+  /** A self-hosted OpenSEO instance -- a front end over DataForSEO. RETIRED with it, same terms. */
   | 'openseo'
-  /** Exported from Google Search Console. Measured, not modelled: these are OUR impressions. */
+  /** Google Search Console, this site's own account (scripts/pull-gsc-queries.ts,
+   *  scripts/topic-demand.ts, or a UI export). Measured, not modelled: these are OUR impressions. */
   | 'gsc'
-  /** Exported from Bing Webmaster Tools. */
-  | 'bing';
+  /** Bing Webmaster Tools, this site's own account: our query report, plus Bing's keyword counts
+   *  (thin sample -- relative only). */
+  | 'bing'
+  /** A person looked at a live results page and wrote down what the engine suggested
+   *  (scripts/record-observation.ts). Proves a query exists; never carries a volume. */
+  | 'observation';
+
+/** Sources no new capture may use. A capture from one of these dated after RETIRED_ON fails the
+ *  gate, so the retired services cannot quietly come back through a stray script. */
+export const RETIRED_SOURCES: ProvenanceSource[] = ['dataforseo', 'openseo'];
+export const RETIRED_ON = '2026-09-27';
 
 export interface TargetKeyword {
   keyword: string;
@@ -100,7 +114,7 @@ export const TARGET_KEYWORDS: TargetKeyword[] = [
 ];
 
 /** Sources that constitute measurement. Anything else is someone's opinion wearing a number. */
-export const VALID_SOURCES: ProvenanceSource[] = ['dataforseo', 'openseo', 'gsc', 'bing'];
+export const VALID_SOURCES: ProvenanceSource[] = ['dataforseo', 'openseo', 'gsc', 'bing', 'observation'];
 
 /** A capture older than this is stale enough that volumes should be re-pulled before being used to
  *  justify new work. The assertion warns rather than fails -- an old measurement is still a

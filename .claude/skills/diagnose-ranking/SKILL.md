@@ -42,7 +42,7 @@ Never diagnose from the URL alone. Get its measured position and the queries it 
 
 ```bash
 npx tsx scripts/gsc-page-coverage.ts 28        # position and impressions per URL
-npx tsx scripts/pull-gsc-via-openseo.ts        # query-level, writes a capture
+npx tsx scripts/pull-gsc-queries.ts            # query-level, writes a capture
 npx tsx scripts/bing-report.ts                 # Bing discloses ~100% of its clicks
 ```
 
@@ -57,9 +57,9 @@ showed ~5% of clicks here. The page dimension is the honest one.
 ## 1. Find who actually ranks — do not assume
 
 Run a real search for the query the page is losing on, and take the pages that are genuinely
-above it. `WebSearch` is free and returns the live SERP. DataForSEO's `get_serp_results` costs
-credits and **that account has been returning HTTP 402 on every endpoint since 2026-09-18**, so
-assume the free path is the only one until someone says it has been topped up.
+above it. `WebSearch` is free and returns the live SERP, or ask the owner to look in a private
+window. DataForSEO's SERP endpoint was retired on 2026-09-27 with the rest of the paid tooling, so
+there is no paid path.
 
 Pick 3–5 competitors. Include at least one that is *not* a national brand, or the whole
 comparison collapses into "they are Progressive and we are not", which you knew already.

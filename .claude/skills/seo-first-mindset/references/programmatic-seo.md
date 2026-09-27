@@ -47,8 +47,9 @@ and both assumptions are known to be optimistic. Label it as such whenever you c
 
 A 410'd page earns zero impressions by construction. Checking the query captures for a removed
 county's demand returns zero for every one of them — that is arithmetic, not a finding. Scoring
-restore candidates needs external volume data (DataForSEO, currently paused) or a comparable-metro
-argument stated plainly as an inference.
+restore candidates needs a comparable-metro argument stated plainly as an inference, Bing's own
+keyword counts from `scripts/topic-demand.ts` (relative only), or an observation recorded by a
+person. External volume data (DataForSEO) was retired on 2026-09-27 and is not coming back.
 
 ## Rules
 

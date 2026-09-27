@@ -16,7 +16,7 @@ exactly that case, and 6 of 13 click-earning pages once had zero Google impressi
 Always pull both:
 
 ```bash
-npx tsx scripts/pull-gsc-via-openseo.ts
+npx tsx scripts/pull-gsc-queries.ts
 npx tsx scripts/pull-bing-queries.ts
 ```
 

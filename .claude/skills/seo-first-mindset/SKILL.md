@@ -34,6 +34,10 @@ Skip for private code, internal tooling, non-public pages, or tasks with no sear
 
 ## Core rules
 - Never invent SEO data, sources, rankings, volume, or traffic.
+- First-party data only: this site's own Search Console and Bing accounts, production HTML, the
+  database, and what a person sees on a live results page. No paid or third-party SEO service —
+  OpenSEO and DataForSEO were retired on 2026-09-27 and the build refuses new captures from them.
+- No monthly search volume may be stated unless it comes from a capture dated before 2026-09-27.
 - Label fact, observation, calculation, inference, hypothesis, recommendation.
 - Prefer first-party evidence: GSC, analytics, crawl, production HTML.
 - Default to updating existing assets, not creating new URLs.
@@ -72,8 +76,10 @@ already on disk, is not evidence — it is a guess, and the Core Rules forbid ac
 **EVIDENCE — pull, never recall**
 
 ```bash
-npx tsx scripts/pull-gsc-via-openseo.ts     # Google queries -> data/keywords/<date>-gsc-queries.json
+npx tsx scripts/pull-gsc-queries.ts         # Google queries -> data/keywords/<date>-gsc-queries.json
 npx tsx scripts/pull-bing-queries.ts        # Bing queries   -> data/keywords/<date>-bing-queries.json
+npx tsx scripts/topic-demand.ts "phrase"... # demand evidence (tiers 1-3) for a subject with no page
+npx tsx scripts/record-observation.ts ...   # what a person saw on a live SERP (proves existence, no volume)
 npx tsx scripts/import-ai-features.ts <dir> # GSC Generative AI Features (UI export -- no API exists)
 npx tsx scripts/gsc-page-coverage.ts 28     # which published URLs Google has actually shown
 npx tsx scripts/keyword-opportunities.ts    # striking-distance analysis

@@ -47,6 +47,13 @@ export interface ArticleBrief {
   achieve: string;
   /** The outcome the TITLE promises. Must be something the body delivers. */
   titlePromise: string;
+  /** When demand is only OBSERVED (a record-observation.ts capture, no numbers), the article is an
+   *  experiment and must say up front what result would count as failure and what happens then --
+   *  e.g. "indexed within 14 days and 20+ impressions within 45, else fold into <slug>". Required
+   *  for an observed capture; optional otherwise. Added 2026-09-27 when paid volume data was
+   *  retired: measuring after publishing is now how demand gets established, and a test with no
+   *  stop condition never ends. */
+  stopCondition?: string;
 }
 
 /** Phrases that mean the field was filled in to get past the validator rather than to say
@@ -87,6 +94,10 @@ export function validateBrief(b: ArticleBrief): void {
   // most likely way to satisfy the length check without doing the work.
   const three = [b.who, b.want, b.achieve].map((s) => s.trim().toLowerCase());
   if (new Set(three).size !== 3) fail('who / want / achieve are not three distinct answers');
+
+  if (/-observed-/.test(b.capture) && (b.stopCondition ?? '').trim().length < 30) {
+    fail('capture is an observation (no measured demand), so the brief needs a stopCondition of 30+ chars: what result counts as failure, by when, and what happens then');
+  }
 
   // INTENT MATCHING. A transactional or navigational searcher already knows what the thing is;
   // opening by defining it is the specific failure §7 names. Checked against the title here, and
