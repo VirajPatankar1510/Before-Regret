@@ -54,12 +54,12 @@ Permitted, but must be labelled as inference and must name the observation it re
 - **A page's absence from a report when the page is 410.** A removed URL earns zero impressions
   by construction. "No measured demand" for a removed page is guaranteed, not informative.
 
-## The metadata trap
+## The success-envelope trap
 
-`appendix/user_data` is a free DataForSEO endpoint that returns `20000` (success) even when the
-account is paused. It was once read as proof the integration was live; the real endpoints
-returned `40201 paused`. **Verify a paid integration against a paid endpoint.**
-Documented in `docs/ai-overview-schema.md` §7.
+An API can answer HTTP 200 with an error inside the body. Bing Webmaster does it (an `ErrorCode`
+field in a 200 response), and it was once how a paused paid integration passed for live. **Check
+the body for a tool-level error, not just the status code** -- `bingWebmasterService.ts`'s `call()`
+does exactly this.
 
 ## Verify before reporting
 
