@@ -1,0 +1,69 @@
+{
+  "source": "observation",
+  "endpoint": "seen by a person on a live results page: Google US results page (gl=us, hl=en), People also ask + People also search for, three searches: 'contractor found unpermitted work', 'found unpermitted electrical during remodel', 'do contractors have to report unpermitted work'",
+  "captured_at": "2026-09-28T07:25:33.870Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "observed_where": "Google US results page (gl=us, hl=en), People also ask + People also search for, three searches: 'contractor found unpermitted work', 'found unpermitted electrical during remodel', 'do contractors have to report unpermitted work'",
+  "observed_by": "Claude in the in-app browser, at the owner's request (not signed in)",
+  "note": "'what happens if an inspector finds unpermitted work' appeared in People also ask on all three pages and in related searches on two. Ranking pages: Reddit r/HomeImprovement and r/Construction, shovels.ai, shipshape.ai, Rocket Mortgage, local realtor blogs, a law firm, phila.gov, CHI 311, CSLB (CA contractor board building-permit violation referral). A first attempt the same morning hit Google's unusual-traffic check and was not worked around.",
+  "keywords": [
+    {
+      "keyword": "what happens if an inspector finds unpermitted work",
+      "search_volume": null
+    },
+    {
+      "keyword": "contractor found unpermitted work",
+      "search_volume": null
+    },
+    {
+      "keyword": "found unpermitted electrical during remodel",
+      "search_volume": null
+    },
+    {
+      "keyword": "do contractors have to report unpermitted work",
+      "search_volume": null
+    },
+    {
+      "keyword": "are contractors responsible for permits",
+      "search_volume": null
+    },
+    {
+      "keyword": "do electricians always pull permits",
+      "search_volume": null
+    },
+    {
+      "keyword": "can a contractor get in trouble for not pulling a permit",
+      "search_volume": null
+    },
+    {
+      "keyword": "can you sue a contractor for not pulling permits",
+      "search_volume": null
+    },
+    {
+      "keyword": "contractor did not pull permit",
+      "search_volume": null
+    },
+    {
+      "keyword": "how to get a permit after work is done",
+      "search_volume": null
+    },
+    {
+      "keyword": "how to permit unpermitted work",
+      "search_volume": null
+    },
+    {
+      "keyword": "do contractors have to report unpermitted work in california",
+      "search_volume": null
+    },
+    {
+      "keyword": "contractor found unpermitted work florida",
+      "search_volume": null
+    },
+    {
+      "keyword": "contractor found unpermitted work california",
+      "search_volume": null
+    }
+  ]
+}

@@ -111,6 +111,16 @@ export const TARGET_KEYWORDS: TargetKeyword[] = [
       'answered. /sunlight/ keeps "which direction should a house face" (the choosing intent); this ' +
       'page takes the evaluating one, a buyer told a specific house faces a specific way.',
   },
+  {
+    keyword: 'contractor found unpermitted work',
+    capture: '2026-09-28-observed-what-happens-if-an-inspector-finds-unper',
+    slug: 'unpermitted-work-behind-the-wall',
+    rationale:
+      'OBSERVED, not measured: seen on a US Google results page on 2026-09-28 with "what happens if an inspector finds ' +
+      'unpermitted work" in People also ask on all three related searches. Written for contractors, who buy the ads and cite ' +
+      'the site. An experiment: by 2026-12-27 it must be shown for a contractor query or cited by a trade site, or it is folded ' +
+      'into amateur-workmanship-mean-home-inspection-report.',
+  },
 ];
 
 /** Sources that constitute measurement. Anything else is someone's opinion wearing a number. */
