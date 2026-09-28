@@ -35,7 +35,15 @@ npx tsx scripts/topic-demand.ts "seed phrase" "another phrasing"   # a subject w
 | **3** | nothing | ask the owner to look: type the phrasings into Google in a private window and note autocomplete, People Also Ask and related searches, then `scripts/record-observation.ts --query … --where … --by owner`. That proves a query exists, never how many |
 
 A person does the looking in tier 3. Never automate queries against a search engine: that is
-scraping, and it trips bot checks.
+scraping, and it trips bot checks. Tried from the in-app browser on 2026-09-28: Google answered
+with an "unusual traffic" CAPTCHA and Bing silently served junk results (Microsoft login pages in
+Turkish and Dutch for a contractor query). Neither is an observation, and a bot check is never to be
+worked around.
+
+**The owner is in Mumbai, so autocomplete is NOT a US signal.** Google localises suggestions by IP:
+the same session showed Indian trending searches. Observe from a US results page instead --
+`https://www.google.com/search?q=<query>&gl=us&hl=en` -- and record **People also ask** and
+**People also search for**, not autocomplete. Say `gl=us results page` in `--where`.
 
 **Never state a search volume.** No number of monthly searches may appear in a brief, an article or
 a recommendation unless it comes from a capture dated before 2026-09-27. Impressions from our own
