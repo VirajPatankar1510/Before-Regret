@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { ArrowLeft, Radar, ShieldCheck, BookOpen, FlagTriangleRight, Bot, ListChecks } from 'lucide-react';
+import { ContentLink } from './home/ContentLink';
 
 interface AboutMethodologyProps {
   onBackToHome: () => void;
@@ -49,12 +50,43 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Before Regret is free property research for US home buyers
             </h1>
+            {/* The overview below is word for word the one on the LinkedIn company page, and the
+                Instagram and Facebook bios are cut from the same sentences (2026-10-01). Google does
+                not yet read "before regret" as this site -- a US search for the bare phrase, and even
+                for the domain, returns pages about deathbed regrets -- and the same description of
+                the entity, in the same words, on the site and on every profile that links to it is
+                the association being built. Change it here and on those profiles together, or not
+                at all. Its first line is omitted because the h1 above says exactly that. */}
             <p className="text-sm text-slate-600 leading-relaxed">
-              Enter any US residential address and get a free report: a live seismic hazard check, address
-              validation against US Census records, the inspection priorities that matter for a home of that
-              decade and county, and the exact questions to ask the seller. Alongside the reports we publish
-              free guides on specific defects &mdash; polybutylene pipes, Federal Pacific panels, cast iron
-              sewer lines &mdash; and original analyses of federal housing data.
+              Enter any US address and you get the questions to ask the seller, what to inspect first for that
+              home's age and county, and the earthquake risk for that exact address. Anything we have not
+              independently verified is labeled that way, not guessed. Start free; a full property report is $14.99.
+            </p>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Alongside it: a{' '}
+              <ContentLink href="/walkthrough/" onNavigate={onNavigate} className="text-blue-600 hover:underline font-semibold">
+                viewing checklist
+              </ContentLink>{' '}
+              for what to look at during a showing, a{' '}
+              <ContentLink href="/sunlight/" onNavigate={onNavigate} className="text-blue-600 hover:underline font-semibold">
+                sun tool
+              </ContentLink>{' '}
+              that shows when direct sun reaches a window through the year for your county and the way the window
+              faces, and source-linked{' '}
+              <ContentLink href="/guides/" onNavigate={onNavigate} className="text-blue-600 hover:underline font-semibold">
+                guides
+              </ContentLink>{' '}
+              on what buyers take on with a house, from wiring and plumbing to permits, insurance and inspection
+              reports.
+            </p>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              For contractors and local trades:{' '}
+              <ContentLink href="/advertise/" onNavigate={onNavigate} className="text-blue-600 hover:underline font-semibold">
+                put your business on the guides and reports buyers read
+              </ContentLink>{' '}
+              while they research a home. County guides cover permit lookups in the largest US metros, national
+              guides each cover one problem, and Report Ads target three ZIP codes inside property reports.
+              Self-serve, paid once, live within minutes, 30 days, no subscription.
             </p>
             <p className="text-sm text-slate-600 leading-relaxed">
               The site is owned and operated by <strong>Atmostellar</strong>. The rest of this page explains,

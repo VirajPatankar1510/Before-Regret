@@ -110,7 +110,7 @@ async function main() {
   if (META.length < 70 || META.length > 155) fail(`meta ${META.length} chars, outside 70-155`);
   if (QUICK_ANSWER.length < 120 || QUICK_ANSWER.length > 450) fail(`quick_answer ${QUICK_ANSWER.length} chars, outside 120-450`);
   if (!/^(Generally|No|Yes|It can)\b/.test(QUICK_ANSWER)) fail('quick_answer does not open with a verdict');
-  const topic = guideTopic(`${BRIEF.slug} ${TITLE}`);
+  const topic = guideTopic(BRIEF.slug, TITLE);
   if (topic !== 'permits') fail(`cluster resolved to "${topic}", expected permits`);
   if (!/\$[\d,]{3,}/.test(body)) fail('no cost figure in body (reproducibility rule)');
 
