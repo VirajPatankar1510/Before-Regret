@@ -533,17 +533,23 @@ export function App() {
       // linked, not just present. See AboutMethodology.tsx for why it's process-transparency
       // content rather than a fabricated author bio.
       applyHeadSeo({
-        title: 'How We Research and Write BeforeRegret | Methodology',
-        description: 'How BeforeRegret verifies live data, writes AI-assisted guides under a fixed set of sourcing rules, and handles corrections.',
+        // Static twin: scripts/prerender-legal-pages.tsx. These must match it exactly. The prerender
+        // was retitled on 2026-09-15 and this copy was not, so for two weeks every browser (and
+        // Google's renderer) swapped the correct title for the old "How We Research and Write
+        // BeforeRegret | Methodology" about a second after load -- caught 2026-10-01.
+        title: 'About Before Regret: Free Property Research for US Buyers',
+        description: 'Before Regret is a free property research site for US home buyers. What we check live, how our guides are sourced and written, and how we fix mistakes.',
         canonicalUrl: 'https://www.beforeregret.com/about/',
         robotsDirective: 'index, follow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
             '@type': 'AboutPage',
-            'name': 'How we research and write this site',
+            'name': 'About Before Regret',
+            'description': 'Before Regret is a free, address-based property research site for US home buyers, published by Atmostellar. This page explains what is checked live, how the guides are sourced and written, and how corrections are handled.',
             'url': 'https://www.beforeregret.com/about/',
-            'isPartOf': { '@type': 'WebSite', 'name': 'Before Regret', 'url': 'https://www.beforeregret.com/' }
+            'isPartOf': { '@type': 'WebSite', 'name': 'Before Regret', 'url': 'https://www.beforeregret.com/' },
+            'mainEntity': { '@id': 'https://www.beforeregret.com/#organization' }
           },
           {
             '@context': 'https://schema.org',
@@ -557,8 +563,8 @@ export function App() {
       });
     } else if (pseoRoute.type === 'support') {
       applyHeadSeo({
-        title: 'BeforeRegret Support & Property Research FAQ',
-        description: 'Frequently asked questions regarding BeforeRegret public property record research, data sources, municipal permit checks, and report coverage.',
+        title: 'Before Regret Support & Property Research FAQ',
+        description: 'Frequently asked questions regarding Before Regret public property record research, data sources, municipal permit checks, and report coverage.',
         canonicalUrl: 'https://www.beforeregret.com/support/',
         robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
@@ -568,10 +574,10 @@ export function App() {
             'mainEntity': [
               {
                 '@type': 'Question',
-                'name': 'Where does BeforeRegret source its property hazard data?',
+                'name': 'Where does Before Regret source its property hazard data?',
                 'acceptedAnswer': {
                   '@type': 'Answer',
-                  'text': 'BeforeRegret runs a live USGS seismic hazard check and validates your address against U.S. Census records automatically. The rest of the report is a curated, address-specific checklist linking directly to the real FEMA, EPA, USDA, U.S. DOT, FCC, and local municipal sources you would otherwise have to track down yourself -- clearly labeled as not yet independently verified until you check them.'
+                  'text': 'Before Regret runs a live USGS seismic hazard check and validates your address against U.S. Census records automatically. The rest of the report is a curated, address-specific checklist linking directly to the real FEMA, EPA, USDA, U.S. DOT, FCC, and local municipal sources you would otherwise have to track down yourself -- clearly labeled as not yet independently verified until you check them.'
                 }
               },
               {
@@ -579,7 +585,7 @@ export function App() {
                 'name': 'Are reports one-time flat fee or subscription based?',
                 'acceptedAnswer': {
                   '@type': 'Answer',
-                  'text': 'Your first BeforeRegret property report is free. Additional reports are a one-time flat fee of $14.99 each -- there is no subscription or recurring charge for consumer reports.'
+                  'text': 'Your first Before Regret property report is free. Additional reports are a one-time flat fee of $14.99 each -- there is no subscription or recurring charge for consumer reports.'
                 }
               }
             ]
@@ -596,8 +602,8 @@ export function App() {
       });
     } else if (pseoRoute.type === 'terms') {
       applyHeadSeo({
-        title: 'Terms of Service | BeforeRegret Property Intelligence',
-        description: 'Terms of service and user agreement for BeforeRegret public record property research and automated synthesis tools.',
+        title: 'Terms of Service | Before Regret Property Intelligence',
+        description: 'Terms of service and user agreement for Before Regret public record property research and automated synthesis tools.',
         canonicalUrl: 'https://www.beforeregret.com/terms/',
         robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
@@ -613,8 +619,8 @@ export function App() {
       });
     } else if (pseoRoute.type === 'privacy') {
       applyHeadSeo({
-        title: 'Privacy Policy | BeforeRegret Property Intelligence',
-        description: 'Privacy policy detailing data handling, user anonymity, and secure public record lookup protocols at BeforeRegret.',
+        title: 'Privacy Policy | Before Regret Property Intelligence',
+        description: 'Privacy policy detailing data handling, user anonymity, and secure public record lookup protocols at Before Regret.',
         canonicalUrl: 'https://www.beforeregret.com/privacy/',
         robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
@@ -630,8 +636,8 @@ export function App() {
       });
     } else if (pseoRoute.type === 'refunds') {
       applyHeadSeo({
-        title: 'Refund Policy & Satisfaction Guarantee | BeforeRegret',
-        description: 'BeforeRegret refund policy and customer support commitments for property research report orders.',
+        title: 'Refund Policy & Satisfaction Guarantee | Before Regret',
+        description: 'Before Regret refund policy and customer support commitments for property research report orders.',
         canonicalUrl: 'https://www.beforeregret.com/refunds/',
         robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
@@ -647,8 +653,8 @@ export function App() {
       });
     } else if (pseoRoute.type === 'disclaimer') {
       applyHeadSeo({
-        title: 'Disclaimer | BeforeRegret',
-        description: 'Site-wide disclaimer covering professional advice, third-party government data, AI-generated content, and sponsored placements on BeforeRegret.',
+        title: 'Disclaimer | Before Regret',
+        description: 'Site-wide disclaimer covering professional advice, third-party government data, AI-generated content, and sponsored placements on Before Regret.',
         canonicalUrl: 'https://www.beforeregret.com/disclaimer/',
         robotsDirective: 'noindex, nofollow',
         jsonLdSchema: [
@@ -666,8 +672,8 @@ export function App() {
       // indexable, unlike the other legal pages: the point of an accessibility statement is that
       // someone looking for how to report a barrier can actually find it, including via search.
       applyHeadSeo({
-        title: 'Accessibility Statement | BeforeRegret',
-        description: 'How BeforeRegret approaches accessibility, what is in place, known limitations, and how to report a barrier.',
+        title: 'Accessibility Statement | Before Regret',
+        description: 'How Before Regret approaches accessibility, what is in place, known limitations, and how to report a barrier.',
         canonicalUrl: 'https://www.beforeregret.com/accessibility/',
         robotsDirective: 'index, follow',
         jsonLdSchema: [
@@ -693,7 +699,7 @@ export function App() {
       // Must stay in sync with scripts/prerender-walkthrough.tsx by hand, the same discipline
       // prerender-advertise.tsx and prerender-legal-pages.tsx already rely on.
       applyHeadSeo({
-        title: 'The 20-Minute Walkthrough Checklist | BeforeRegret',
+        title: 'The 20-Minute Walkthrough Checklist | Before Regret',
         description: 'A free phone checklist of what to physically look at during a house viewing, by decade built and foundation type. No sign-up and no address needed.',
         canonicalUrl: 'https://www.beforeregret.com/walkthrough/',
         robotsDirective: 'index, follow',
@@ -701,14 +707,14 @@ export function App() {
       });
     } else if (pseoRoute.type === 'vendors') {
       applyHeadSeo({
-        title: 'Report Ads | BeforeRegret',
+        title: 'Report Ads | Before Regret',
         description: 'Vendor marketplace for home inspectors, contractors, and specialists to reach property buyers.',
         canonicalUrl: 'https://www.beforeregret.com/report-ads/',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'vendorsSuccess') {
       applyHeadSeo({
-        title: 'Payment Confirmation | BeforeRegret',
+        title: 'Payment Confirmation | Before Regret',
         description: 'ZIP-targeted vendor ad slot payment confirmation.',
         canonicalUrl: 'https://www.beforeregret.com/report-ads/success/',
         robotsDirective: 'noindex, nofollow'
@@ -721,29 +727,29 @@ export function App() {
       // buried in a guide's ad slot. See scripts/prerender-advertise.tsx for the matching
       // build-time static render -- these values must stay in sync with that file by hand.
       applyHeadSeo({
-        title: 'Advertise With Us | BeforeRegret',
+        title: 'Advertise With Us | Before Regret',
         description: 'Compare Topic Ads and Report Ads to find the right fit for your business.',
         canonicalUrl: 'https://www.beforeregret.com/advertise/',
         robotsDirective: 'index, follow'
       });
     } else if (pseoRoute.type === 'guideAds') {
       applyHeadSeo({
-        title: 'Topic Ads | BeforeRegret',
-        description: 'Self-serve topic-based ad placements on BeforeRegret -- $7.99 per slot, 30 days, open to any business.',
+        title: 'Topic Ads | Before Regret',
+        description: 'Self-serve topic-based ad placements on Before Regret -- $7.99 per slot, 30 days, open to any business.',
         canonicalUrl: 'https://www.beforeregret.com/topic-ads/',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'guideAdsSuccess') {
       applyHeadSeo({
-        title: 'Payment Confirmation | BeforeRegret',
+        title: 'Payment Confirmation | Before Regret',
         description: 'Guide ad slot payment confirmation.',
         canonicalUrl: 'https://www.beforeregret.com/topic-ads/success/',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'myAds') {
       applyHeadSeo({
-        title: 'My Placements | BeforeRegret',
-        description: 'Manage your BeforeRegret ad placements.',
+        title: 'My Placements | Before Regret',
+        description: 'Manage your Before Regret ad placements.',
         canonicalUrl: 'https://www.beforeregret.com/my-ads/',
         robotsDirective: 'noindex, nofollow'
       });
@@ -756,21 +762,21 @@ export function App() {
       });
     } else if (pseoRoute.type === 'admin') {
       applyHeadSeo({
-        title: 'PSEO Operations & Indexing Control Panel | BeforeRegret',
+        title: 'PSEO Operations & Indexing Control Panel | Before Regret',
         description: 'Internal administration interface for pSEO dataset management, indexation monitoring, and Search Console integration.',
         canonicalUrl: 'https://www.beforeregret.com/admin/seo',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'notFound') {
       applyHeadSeo({
-        title: 'Page Not Found | BeforeRegret',
+        title: 'Page Not Found | Before Regret',
         description: 'The page you requested does not exist or may have been moved.',
         canonicalUrl: 'https://www.beforeregret.com/',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'reportUnavailable') {
       applyHeadSeo({
-        title: 'Report Not Available | BeforeRegret',
+        title: 'Report Not Available | Before Regret',
         description: 'This property report link is no longer available.',
         canonicalUrl: 'https://www.beforeregret.com/',
         robotsDirective: 'noindex, nofollow'
