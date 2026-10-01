@@ -4,7 +4,15 @@
 //   APPLY=true npx tsx scripts/restore-county-permit-guides.ts
 //
 // -----------------------------------------------------------------------------------------------
-// STOP. DO NOT RESTORE BATCH 2. The measurement this file promised came back, and it failed.
+// UPDATE 2026-10-02 -- THE STOP BELOW WAS PREMATURE. Re-measured on the GSC page dimension (28 days
+// to 2026-09-28), every restored county guide is now shown: Riverside 127 impressions, Orange 126
+// (8 clicks), Tarrant 106, Queens 63, Dallas 58, at average positions 7-11. They needed about five
+// weeks, not seventeen days. Restores resumed one county at a time with a stop condition each,
+// starting with Hillsborough (scripts/publish-hillsborough-permit-guide.ts). Kings (brooklyn-ny)
+// and King County (seattle-wa) are also in the removed set and are the next two candidates.
+//
+// ORIGINAL NOTE, KEPT FOR THE RECORD: STOP. DO NOT RESTORE BATCH 2. The measurement this file
+// promised came back, and it failed.
 //
 // The rule set below was "five, then measure, then more", with the stop condition written down in
 // advance: if fewer than three of the five index, stop restoring. Measured 2026-09-21 on the GSC

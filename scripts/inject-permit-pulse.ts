@@ -121,6 +121,20 @@ const BLOCKS: Block[] = [
     prose: (c) => `Maricopa County has the steepest decline in single-family permitting of any county in this set: ${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)} homes, a drop of ${n(c.sfPrior - c.sfCurrent)}. Multifamily fell further in percentage terms, ${dir(c.mfChangePct)} to ${n(c.mfCurrent)}, taking the county total ${dir(c.unitsChangePct)}. Maricopa has been one of the largest new-build markets in the country, which is exactly why a fall of this size in house permits is worth noting before you read a permit history here.`,
   },
   {
+    // Added 2026-10-02 with the guide. Its distinctive fact is the split: houses and apartments in
+    // close to equal numbers. The "equal" wording is gated on the data, so a later month where the
+    // two diverge gets the share sentence instead of a claim that is no longer true.
+    slug: 'check-building-permits-hillsborough-county-fl', fips: '12057',
+    heading: 'What Hillsborough County Is Permitting Right Now',
+    prose: (c) => {
+      const even = Math.abs(c.sfCurrent - c.mfCurrent) / c.unitsCurrent < 0.05;
+      const lead = even
+        ? `Hillsborough County is permitting houses and apartments in almost exactly equal numbers this year: ${n(c.sfCurrent)} single-family units against ${n(c.mfCurrent)} multifamily.`
+        : `Single-family homes are ${Math.round((100 * c.sfCurrent) / c.unitsCurrent)}% of everything Hillsborough County has permitted this year: ${n(c.sfCurrent)} units, against ${n(c.mfCurrent)} multifamily.`;
+      return `${lead} Compared with the same months last year, houses are ${dir(c.sfChangePct)} from ${n(c.sfPrior)} and apartments ${dir(c.mfChangePct)} from ${n(c.mfPrior)}, for a county total ${dir(c.unitsChangePct)}, ${n(c.unitsPrior)} to ${n(c.unitsCurrent)} units. Neither side of the market is moving the county figure on its own, so a countywide number here says about as much about one as the other.`;
+    },
+  },
+  {
     slug: 'check-building-permits-riverside-county-ca', fips: '06065',
     heading: 'What Riverside County Is Permitting Right Now',
     prose: (c) => `Riverside County's apartment pipeline has largely emptied out — multifamily permits are ${dir(c.mfChangePct)}, from ${n(c.mfPrior)} units to ${n(c.mfCurrent)}. Single-family has been far more stable, ${dir(c.sfChangePct)} at ${n(c.sfCurrent)} units, and now accounts for about ${Math.round((100 * c.sfCurrent) / c.unitsCurrent)}% of everything permitted in the county. The total is ${dir(c.unitsChangePct)}. Riverside is also the weakest reporting county in this group, so treat the figures as close rather than exact.`,
@@ -168,7 +182,18 @@ async function main() {
     let next: string, action: string;
     if (ANCHOR.test(body)) {
       // Replace the existing block: from its heading to the next H2 (or end of document).
-      next = body.replace(/^## .+ Is Permitting Right Now\s*$[\s\S]*?(?=^## |\s*$)/m, `${block}\n\n`);
+      // From the block's heading to the next H2, or the end of the document. This used to be a
+      // regex whose lookahead also accepted "end of a line" under the m flag, so it matched the
+      // heading line alone: a refresh replaced the heading and left last month's paragraph and
+      // source line underneath it. Caught 2026-10-02 by simulating a refresh on Cook County before
+      // the first monthly re-run; every refresh would have stacked a stale block under the new one.
+      const start = body.search(ANCHOR);
+      const nextH2 = body.indexOf('\n## ', start + 1);
+      const end = nextH2 === -1 ? body.length : nextH2;
+      next = `${body.slice(0, start)}${block}\n${body.slice(end)}`;
+      if ((next.match(/Is Permitting Right Now/g) || []).length !== 1 || (next.match(/^Source: US Census Bureau Building Permits Survey/gm) || []).length !== 1) {
+        throw new Error(`ABORT: ${b.slug} would end up with more than one Permit Pulse block`);
+      }
       action = 'REFRESH';
     } else {
       // Insert before the final "Looking Up Permits Elsewhere" cross-link if present, else append.
@@ -178,6 +203,11 @@ async function main() {
         : `${body.trimEnd()}\n\n${block}\n`;
       action = tail > -1 ? 'INSERT (before cross-link)' : 'APPEND';
     }
+    // A refresh that changes nothing is not an update. Writing it anyway bumped updated_at on every
+    // county guide each run -- a visible "Updated" date and a dateModified the page had not earned.
+    // Compared without whitespace: the replace re-spaces around the block, which is not a change.
+    const norm = (t: string) => t.replace(/\s+/g, ' ').trim();
+    if (norm(next) === norm(body)) action = 'UNCHANGED';
     staged.push({ slug: b.slug, body: next, block, action });
   }
 
@@ -205,7 +235,12 @@ async function main() {
   console.log(`\n  ${staged.length} pages staged, period ${fig.period.yearToDateThrough} vs ${fig.period.comparedWith}`);
   if (!APPLY) { console.log('\n  DRY RUN -- nothing written.\n'); return; }
 
+  // ONLY=<slug> limits the WRITE to one guide; every block is still built and overlap-checked
+  // above, so a single new county is still compared against the whole set.
+  const only = process.env.ONLY;
   for (const s of staged) {
+    if (only && s.slug !== only) continue;
+    if (s.action === 'UNCHANGED') { console.log(`  unchanged ${s.slug}`); continue; }
     await withDb((sql) => sql`UPDATE articles SET body_markdown = ${s.body}, updated_at = now() WHERE slug = ${s.slug}`);
     console.log(`  wrote ${s.slug}`);
   }

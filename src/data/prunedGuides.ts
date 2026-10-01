@@ -103,14 +103,13 @@ export const MERGED_GUIDE_SLUGS: Readonly<Record<string, string>> = {
  *     engine in three months.
  */
 export const REMOVED_GUIDE_SLUGS: readonly string[] = [
-  // --- county permit guides (20 remaining; 5 restored 2026-09-04) ---
+  // --- county permit guides (19 remaining; 5 restored 2026-09-04, Hillsborough restored 2026-10-02) ---
   'check-building-permit-history-before-buying-travis-county-tx',
   'check-building-permits-alameda-county-ca',
   'check-building-permits-bexar-county-tx',
   'check-building-permits-brooklyn-ny',
   'check-building-permits-broward-county-fl',
   'check-building-permits-fulton-county-ga',
-  'check-building-permits-hillsborough-county-fl',
   'check-building-permits-manhattan-ny',
   'check-building-permits-orange-county-fl',
   'check-building-permits-palm-beach-county-fl',

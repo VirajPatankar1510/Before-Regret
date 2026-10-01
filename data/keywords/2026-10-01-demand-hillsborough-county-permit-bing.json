@@ -1,0 +1,57 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-01T20:32:02.897Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "hillsborough county permit",
+    "tampa permit search",
+    "hillsborough permit status"
+  ],
+  "keywords": [
+    {
+      "keyword": "hillsborough county permit",
+      "search_volume": 139,
+      "metric": "market",
+      "broad_impressions": 2201,
+      "kind": "seed"
+    },
+    {
+      "keyword": "hillsborough county permit search",
+      "search_volume": 979,
+      "metric": "market",
+      "broad_impressions": 1269,
+      "kind": "related"
+    },
+    {
+      "keyword": "hillsborough county permit portal",
+      "search_volume": 719,
+      "metric": "market",
+      "broad_impressions": 719,
+      "kind": "related"
+    },
+    {
+      "keyword": "hillsborough county permit search online",
+      "search_volume": 290,
+      "metric": "market",
+      "broad_impressions": 290,
+      "kind": "related"
+    },
+    {
+      "keyword": "tampa permit search",
+      "search_volume": 377,
+      "metric": "market",
+      "broad_impressions": 564,
+      "kind": "seed"
+    },
+    {
+      "keyword": "hillsborough permit status",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

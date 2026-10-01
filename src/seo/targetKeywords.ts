@@ -121,6 +121,15 @@ export const TARGET_KEYWORDS: TargetKeyword[] = [
       'the site. An experiment: by 2026-12-27 it must be shown for a contractor query or cited by a trade site, or it is folded ' +
       'into amateur-workmanship-mean-home-inspection-report.',
   },
+  {
+    keyword: 'hillsborough county permit search',
+    capture: '2026-10-01-demand-hillsborough-county-permit-bing',
+    slug: 'check-building-permits-hillsborough-county-fl',
+    rationale:
+      'Bing records it, with "hillsborough county permit portal" and "tampa permit search" beside it (relative counts, ' +
+      'not volumes), and two real Hillsborough permit questions reached this site through Bing with no page to answer ' +
+      'them. Restored 2026-10-02 as the first of three county tests; stop condition in the publish script.',
+  },
 ];
 
 /** Sources that constitute measurement. Anything else is someone's opinion wearing a number. */
