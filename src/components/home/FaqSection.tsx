@@ -5,6 +5,22 @@ import { ChevronDown, HelpCircle, ShieldAlert, CheckCircle2, FileText } from 'lu
 // exact same Q&A text into static HTML, fully expanded, instead of duplicating it there and
 // risking drift between what a crawler sees and what a real visitor sees post-hydration.
 export const HOMEPAGE_FAQS: { q: string; a: string }[] = [
+  // The first two are the entity definition, added 2026-10-01. Google reads "before regret" as
+  // regret before death -- a US search for the phrase, and even for the domain, returned deathbed
+  // regret articles -- and in September its AI Mode answered "what is this before regret website?"
+  // by describing the relationship product this domain served until 2026-07-31. Nothing on the
+  // homepage answered that question directly. The first answer is the same description as /about/
+  // and the LinkedIn page; the second ties the phrase to buying a house. Every example in it is
+  // something the site checks: sun hours (/sunlight/), permit history, and what an inspection
+  // covers. They lead the list because the FAQ opens its first item by default.
+  {
+    q: 'What is Before Regret?',
+    a: 'Before Regret is free property research for US home buyers. Enter any US address and you get the questions to ask the seller, what to inspect first for that home\'s age and county, and the earthquake risk for that exact address, with anything we haven\'t independently verified labeled as such.'
+  },
+  {
+    q: 'Why is it called Before Regret?',
+    a: 'Because the time to check a house is before you sign, while you can still ask, negotiate or walk away. Many of the things people come to regret about a home, like a bedroom that gets no winter sun, a renovation nobody got a permit for, or a problem the inspection was never asked to look at, can be checked beforehand. Before Regret exists for that window.'
+  },
   {
     q: 'Is Before Regret a substitute for a licensed home inspection?',
     a: 'No. A physical home inspection evaluates the current physical and mechanical condition of a property — testing outlets, inspecting shingles, running plumbing. Before Regret combines live-checked data (like seismic hazard), cited public research on what matters for a home\'s era and region, and a plain-language summary. The two complement each other: Before Regret tells you exactly what to point your inspector at.'
