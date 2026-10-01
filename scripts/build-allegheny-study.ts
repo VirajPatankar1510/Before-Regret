@@ -197,7 +197,7 @@ const html = `<style>
   <div class="figs" style="margin-bottom:0">
     <div class="fig"><b>${pct(A.pctOver3000)}</b><span>of Allegheny mortgaged households report paying $3,000+ a year &mdash; against ${pct(O.pctOver3000)} in Oklahoma County, which recorded <b>fewer</b> severe weather events</span></div>
   </div>
-  <p class="cap" style="margin-top:6px"><a href="data/storm-and-premium-counties.csv">Download the complete ${counties.length}-county dataset (CSV)</a>
+  <p class="cap" style="margin-top:6px"><a href="https://www.beforeregret.com/research/data/storm-and-premium-counties.csv">Download the complete ${counties.length}-county dataset (CSV)</a>
   &middot; <a href="#method">Methodology and sources</a></p>
 
   <div class="figs">
