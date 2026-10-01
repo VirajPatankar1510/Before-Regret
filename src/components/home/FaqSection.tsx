@@ -4,15 +4,20 @@ import { ChevronDown, HelpCircle, ShieldAlert, CheckCircle2, FileText } from 'lu
 // Exported so the build-time homepage prerenderer (scripts/prerender-homepage.tsx) can render the
 // exact same Q&A text into static HTML, fully expanded, instead of duplicating it there and
 // risking drift between what a crawler sees and what a real visitor sees post-hydration.
-export const HOMEPAGE_FAQS: { q: string; a: string }[] = [
-  // The first two are the entity definition, added 2026-10-01. Google reads "before regret" as
-  // regret before death -- a US search for the phrase, and even for the domain, returned deathbed
-  // regret articles -- and in September its AI Mode answered "what is this before regret website?"
-  // by describing the relationship product this domain served until 2026-07-31. Nothing on the
-  // homepage answered that question directly. The first answer is the same description as /about/
-  // and the LinkedIn page; the second ties the phrase to buying a house. Every example in it is
-  // something the site checks: sun hours (/sunlight/), permit history, and what an inspection
-  // covers. They lead the list because the FAQ opens its first item by default.
+// The entity definition, added 2026-10-01. Google reads "before regret" as regret before death -- a
+// US search for the phrase, and even for the domain, returned deathbed-regret articles -- and in
+// September its AI Mode answered "what is this before regret website?" by describing the
+// relationship product this domain served until 2026-07-31. Nothing on the homepage answered that
+// question directly. The first answer is the same description as /about/ and the LinkedIn page; the
+// second ties the phrase to buying a house, and every example in it is something the site checks:
+// sun hours (/sunlight/), permit history, what an inspection covers.
+//
+// ALWAYS VISIBLE, NOT IN THE ACCORDION (moved 2026-10-02). They first went in as the top two
+// accordion items, but the accordion below unmounted every closed answer, so after hydration the
+// "why the name" answer -- the one written for the brand -- existed only in JSON-LD and in the
+// prerender, not in the page Google renders. Rendered by HomepageDefinitions, which both this
+// component and scripts/prerender-homepage.tsx import, so the two cannot drift.
+export const HOMEPAGE_DEFINITIONS: { q: string; a: string }[] = [
   {
     q: 'What is Before Regret?',
     a: 'Before Regret is free property research for US home buyers. Enter any US address and you get the questions to ask the seller, what to inspect first for that home\'s age and county, and the earthquake risk for that exact address, with anything we haven\'t independently verified labeled as such.'
@@ -21,6 +26,21 @@ export const HOMEPAGE_FAQS: { q: string; a: string }[] = [
     q: 'Why is it called Before Regret?',
     a: 'Because the time to check a house is before you sign, while you can still ask, negotiate or walk away. Many of the things people come to regret about a home, like a bedroom that gets no winter sun, a renovation nobody got a permit for, or a problem the inspection was never asked to look at, can be checked beforehand. Before Regret exists for that window.'
   },
+];
+
+/** Hook-free, so the prerender can render the identical markup. */
+export const HomepageDefinitions: React.FC = () => (
+  <div className="grid gap-4 sm:grid-cols-2">
+    {HOMEPAGE_DEFINITIONS.map((d) => (
+      <div key={d.q} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+        <h3 className="font-sans text-lg font-bold text-slate-900">{d.q}</h3>
+        <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">{d.a}</p>
+      </div>
+    ))}
+  </div>
+);
+
+export const HOMEPAGE_FAQS: { q: string; a: string }[] = [
   {
     q: 'Is Before Regret a substitute for a licensed home inspection?',
     a: 'No. A physical home inspection evaluates the current physical and mechanical condition of a property — testing outlets, inspecting shingles, running plumbing. Before Regret combines live-checked data (like seismic hazard), cited public research on what matters for a home\'s era and region, and a plain-language summary. The two complement each other: Before Regret tells you exactly what to point your inspector at.'
@@ -61,6 +81,8 @@ export const FaqSection: React.FC = () => {
           </p>
         </div>
 
+        <HomepageDefinitions />
+
         {/* Accordions */}
         <div className="space-y-4">
           {faqs.map((faq, idx) => {
@@ -81,16 +103,19 @@ export const FaqSection: React.FC = () => {
                   <ChevronDown className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-blue-600' : ''}`} />
                 </button>
 
-                {isOpen && (
-                  <div
-                    id={`faq-panel-${idx}`}
-                    role="region"
-                    aria-labelledby={`faq-trigger-${idx}`}
-                    className="px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 font-sans"
-                  >
-                    {faq.a}
-                  </div>
-                )}
+                {/* Closed answers stay in the DOM, hidden, rather than unmounting. Unmounted, they
+                    vanished from the page Google renders after hydration -- only the open answer
+                    survived -- even though the prerender shows every answer expanded. Text in a
+                    collapsed but present panel is indexed normally. */}
+                <div
+                  id={`faq-panel-${idx}`}
+                  role="region"
+                  aria-labelledby={`faq-trigger-${idx}`}
+                  hidden={!isOpen}
+                  className="px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 font-sans"
+                >
+                  {faq.a}
+                </div>
               </div>
             );
           })}

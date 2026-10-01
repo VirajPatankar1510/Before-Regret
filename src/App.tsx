@@ -18,7 +18,7 @@ import { WALKTHROUGH_JSON_LD } from './data/walkthroughChecks';
 import { routeChunkLoaders } from './routeChunks';
 // Not a new dependency on the homepage's bundle: Hero.tsx (rendered by this file, never lazy)
 // already imports FaqSection, so this module is in the homepage graph regardless.
-import { HOMEPAGE_FAQS } from './components/home/FaqSection';
+import { HOMEPAGE_FAQS, HOMEPAGE_DEFINITIONS } from './components/home/FaqSection';
 
 // --- Route-level code splitting ------------------------------------------------------------
 // Everything below is pulled out of the initial bundle, because none of it can appear on a
@@ -520,7 +520,8 @@ export function App() {
         jsonLdSchema: {
           '@context': 'https://schema.org',
           '@type': 'FAQPage',
-          mainEntity: HOMEPAGE_FAQS.map((faq) => ({
+          // Definitions first: they are visible, outside the accordion, at the top of the section.
+          mainEntity: [...HOMEPAGE_DEFINITIONS, ...HOMEPAGE_FAQS].map((faq) => ({
             '@type': 'Question',
             name: faq.q,
             acceptedAnswer: { '@type': 'Answer', text: faq.a },

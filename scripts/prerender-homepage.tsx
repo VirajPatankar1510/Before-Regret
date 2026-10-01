@@ -7,7 +7,7 @@ import { ListingOmissionsSection } from '../src/components/home/ListingOmissions
 import { HowItWorksSection } from '../src/components/home/HowItWorksSection';
 import { PricingSection } from '../src/components/home/PricingSection';
 import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
-import { HOMEPAGE_FAQS } from '../src/components/home/FaqSection';
+import { HOMEPAGE_FAQS, HOMEPAGE_DEFINITIONS, HomepageDefinitions } from '../src/components/home/FaqSection';
 import { GuideCardsSection } from '../src/components/home/GuideCardsSection';
 import { WalkthroughToolSection } from '../src/components/home/WalkthroughToolSection';
 import { HeroPanel } from '../src/components/home/HeroPanel';
@@ -95,6 +95,7 @@ function HomeStaticBody({ data }: { data: HomeData }) {
               How this differs from a home inspection, and how we stay independent.
             </p>
           </div>
+          <HomepageDefinitions />
           <div className="space-y-4">
             {HOMEPAGE_FAQS.map((faq, idx) => (
               <div key={idx} className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
@@ -130,7 +131,7 @@ function buildFaqJsonLd(): Record<string, any> {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: HOMEPAGE_FAQS.map((faq) => ({
+    mainEntity: [...HOMEPAGE_DEFINITIONS, ...HOMEPAGE_FAQS].map((faq) => ({
       '@type': 'Question',
       name: faq.q,
       acceptedAnswer: { '@type': 'Answer', text: faq.a },
