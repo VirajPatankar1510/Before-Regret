@@ -95,6 +95,15 @@ export async function createApp() {
   const app = express();
 
   app.use(express.json({ limit: '10mb' }));
+
+  // API responses are data, never search results. robots.txt now lets Googlebot fetch
+  // /api/guides and /api/homepage (2026-10-02) so its rendered copy of each page keeps the related-
+  // guide and footer links the app builds from them; this header makes sure the JSON itself is
+  // never indexed. /api/v1/ is the documented public API and keeps its existing behavior.
+  app.use('/api', (req, res, next) => {
+    if (!req.path.startsWith('/v1')) res.setHeader('X-Robots-Tag', 'noindex');
+    next();
+  });
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
   // --- AI crawler visibility logging -------------------------------------------------------

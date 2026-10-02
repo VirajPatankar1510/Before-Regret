@@ -16,5 +16,9 @@ Disallow: /admin
 Disallow: /out/
 Disallow: /api/
 Allow: /api/v1/
+# The app rebuilds each page in the browser from these two read-only lists (related guides,
+# footer guides). Blocked, Google's rendered copy of every guide lost those internal links.
+Allow: /api/guides
+Allow: /api/homepage
 
 Sitemap: https://www.beforeregret.com/sitemap.xml
