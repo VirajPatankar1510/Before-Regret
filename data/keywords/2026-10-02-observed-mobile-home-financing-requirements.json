@@ -1,0 +1,44 @@
+{
+  "source": "observation",
+  "endpoint": "seen by a person on a live results page: Google US results page (gl=us, hl=en), People also ask + People also search for",
+  "captured_at": "2026-10-02T13:41:34.051Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "observed_where": "Google US results page (gl=us, hl=en), People also ask + People also search for",
+  "observed_by": "Claude in the in-app browser; owner present to solve any CAPTCHA (none appeared)",
+  "keywords": [
+    {
+      "keyword": "mobile home financing requirements",
+      "search_volume": null
+    },
+    {
+      "keyword": "fha mobile home loan requirements",
+      "search_volume": null
+    },
+    {
+      "keyword": "loans for mobile homes in parks",
+      "search_volume": null
+    },
+    {
+      "keyword": "chattel loan for mobile home",
+      "search_volume": null
+    },
+    {
+      "keyword": "fha title 1 manufactured home loan",
+      "search_volume": null
+    },
+    {
+      "keyword": "used mobile home financing requirements",
+      "search_volume": null
+    },
+    {
+      "keyword": "what is the minimum credit score to buy a mobile home",
+      "search_volume": null
+    },
+    {
+      "keyword": "what is a normal down payment on a mobile home",
+      "search_volume": null
+    }
+  ]
+}

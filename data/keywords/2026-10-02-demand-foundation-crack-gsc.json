@@ -1,0 +1,47 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-02T10:29:49.112Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "foundation crack",
+    "sagging floor",
+    "structural engineer",
+    "bowing basement wall",
+    "settlement crack"
+  ],
+  "keywords": [
+    {
+      "keyword": "settlement crack",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 23.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/typical-settlement-cracking-mean-inspection-report/": 4
+      }
+    },
+    {
+      "keyword": "what are settlement cracks",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 39,
+      "pages": {
+        "https://www.beforeregret.com/guides/typical-settlement-cracking-mean-inspection-report/": 4
+      }
+    },
+    {
+      "keyword": "foundation crack structural engineer",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 59,
+      "pages": {
+        "https://www.beforeregret.com/guides/when-foundation-crack-need-structural-engineer/": 1
+      }
+    }
+  ]
+}

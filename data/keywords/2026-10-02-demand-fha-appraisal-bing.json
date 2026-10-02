@@ -1,0 +1,51 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-02T10:30:18.640Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "fha appraisal",
+    "fha minimum property",
+    "fha inspection",
+    "fha loan requirements"
+  ],
+  "keywords": [
+    {
+      "keyword": "fha appraisal",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 78,
+      "kind": "seed"
+    },
+    {
+      "keyword": "fha minimum property",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "fha inspection",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "fha loan requirements",
+      "search_volume": 4951,
+      "metric": "market",
+      "broad_impressions": 5371,
+      "kind": "seed"
+    },
+    {
+      "keyword": "fha loan requirements 2026",
+      "search_volume": 420,
+      "metric": "market",
+      "broad_impressions": 420,
+      "kind": "related"
+    }
+  ]
+}

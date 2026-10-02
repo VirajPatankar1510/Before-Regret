@@ -65,6 +65,11 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   // report-vocabulary guides next, so this is checked before the defect topics that its subject
   // matter would otherwise match (settlement cracking is structural, but the intent is the report).
   ['report-language', /\bmeans?\b[^.]*\breports?\b|not[- ]inspected|amateur[- ]workmanship|evidence[- ](of[- ])?prior[- ]repair/],
+  // Manufactured and mobile homes. Added 2026-10-02 with the first guide for them, a research-council
+  // segment test (read 2026-11-13). Checked before electrical and insurance on purpose: a guide about
+  // a mobile home's wiring or insurance is first a guide for that buyer. Verified to reclassify zero
+  // existing guides when it was added.
+  ['manufactured-housing', /mobile[- ]home|manufactured[- ]home|manufactured[- ]housing/],
   ['electrical', /electric|wiring|panel|breaker|gfci|outlet|polarity|open[- ]ground|zinsco|federal[- ]pacific|stab[- ]lok|knob[- ](and[- ])?tube|aluminum|fuse|amp\b|split[- ]bus|romex/],
   ['plumbing', /plumb|\bpipes?\b|sewer|drain|water[- ]heater|\btpr\b|polybutylene|orangeburg|cast[- ]iron|galvanized|sump|septic|\bwell\b|backwater|slab[- ]leak|repipe/],
   ['roofing-exterior', /\broof|stucco|eifs|siding|chimney|flashing|gutter|flat[- ]roof/],

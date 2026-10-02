@@ -130,6 +130,15 @@ export const TARGET_KEYWORDS: TargetKeyword[] = [
       'not volumes), and two real Hillsborough permit questions reached this site through Bing with no page to answer ' +
       'them. Restored 2026-10-02 as the first of three county tests; stop condition in the publish script.',
   },
+  {
+    keyword: 'buying a mobile home',
+    capture: '2026-10-02-observed-buying-a-mobile-home',
+    slug: 'buying-a-mobile-home-what-to-check',
+    rationale:
+      'Seen on a US Google results page with first-time, hidden-cost and financing searches beside it (exists, no count). ' +
+      'Two manufactured-home searches already reached this site with no page for them. A research-council experiment: ' +
+      'shown for a manufactured/mobile-home search by 2026-11-13, or fold into the aluminum-wiring and GFCI guides.',
+  },
 ];
 
 /** Sources that constitute measurement. Anything else is someone's opinion wearing a number. */

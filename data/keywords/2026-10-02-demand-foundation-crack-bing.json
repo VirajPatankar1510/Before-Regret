@@ -1,0 +1,87 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-02T10:29:49.112Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "foundation crack",
+    "sagging floor",
+    "structural engineer",
+    "bowing basement wall",
+    "settlement crack"
+  ],
+  "keywords": [
+    {
+      "keyword": "foundation crack",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 169,
+      "kind": "seed"
+    },
+    {
+      "keyword": "sagging floor",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "structural engineer",
+      "search_volume": 2053,
+      "metric": "market",
+      "broad_impressions": 3594,
+      "kind": "seed"
+    },
+    {
+      "keyword": "structural engineer near me",
+      "search_volume": 993,
+      "metric": "market",
+      "broad_impressions": 1010,
+      "kind": "related"
+    },
+    {
+      "keyword": "structural engineer salary",
+      "search_volume": 208,
+      "metric": "market",
+      "broad_impressions": 208,
+      "kind": "related"
+    },
+    {
+      "keyword": "what does a structural engineer do",
+      "search_volume": 170,
+      "metric": "market",
+      "broad_impressions": 170,
+      "kind": "related"
+    },
+    {
+      "keyword": "what is a structural engineer",
+      "search_volume": 85,
+      "metric": "market",
+      "broad_impressions": 85,
+      "kind": "related"
+    },
+    {
+      "keyword": "residential structural engineer near me",
+      "search_volume": 17,
+      "metric": "market",
+      "broad_impressions": 17,
+      "kind": "related"
+    },
+    {
+      "keyword": "bowing basement wall",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "settlement crack",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

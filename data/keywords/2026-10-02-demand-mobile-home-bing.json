@@ -1,0 +1,455 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-02T10:30:41.133Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "mobile home",
+    "manufactured home"
+  ],
+  "keywords": [
+    {
+      "keyword": "gfi outlet for mobile home xan it oass inspection without it",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 1
+    },
+    {
+      "keyword": "mobile home",
+      "search_volume": 5552,
+      "metric": "market",
+      "broad_impressions": 57336,
+      "kind": "seed"
+    },
+    {
+      "keyword": "mobile home dealers near me",
+      "search_volume": 4124,
+      "metric": "market",
+      "broad_impressions": 4439,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home internet availability",
+      "search_volume": 2874,
+      "metric": "market",
+      "broad_impressions": 4932,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home parks near me",
+      "search_volume": 2080,
+      "metric": "market",
+      "broad_impressions": 2517,
+      "kind": "related"
+    },
+    {
+      "keyword": "t mobile home internet availability",
+      "search_volume": 2038,
+      "metric": "market",
+      "broad_impressions": 2058,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home for sale",
+      "search_volume": 1758,
+      "metric": "market",
+      "broad_impressions": 2574,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home skirting",
+      "search_volume": 1441,
+      "metric": "market",
+      "broad_impressions": 2123,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home insurance",
+      "search_volume": 1348,
+      "metric": "market",
+      "broad_impressions": 2406,
+      "kind": "related"
+    },
+    {
+      "keyword": "blevins mobile home supply",
+      "search_volume": 1304,
+      "metric": "market",
+      "broad_impressions": 1304,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home parts store",
+      "search_volume": 1220,
+      "metric": "market",
+      "broad_impressions": 1331,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home depot",
+      "search_volume": 1146,
+      "metric": "market",
+      "broad_impressions": 1170,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home parts",
+      "search_volume": 1114,
+      "metric": "market",
+      "broad_impressions": 3281,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home internet plans",
+      "search_volume": 900,
+      "metric": "market",
+      "broad_impressions": 1553,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home parks for sale",
+      "search_volume": 770,
+      "metric": "market",
+      "broad_impressions": 868,
+      "kind": "related"
+    },
+    {
+      "keyword": "t mobile home internet",
+      "search_volume": 745,
+      "metric": "market",
+      "broad_impressions": 3779,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home internet",
+      "search_volume": 694,
+      "metric": "market",
+      "broad_impressions": 10395,
+      "kind": "related"
+    },
+    {
+      "keyword": "t mobile home internet plans",
+      "search_volume": 653,
+      "metric": "market",
+      "broad_impressions": 653,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home for sale near me",
+      "search_volume": 650,
+      "metric": "market",
+      "broad_impressions": 650,
+      "kind": "related"
+    },
+    {
+      "keyword": "mint mobile home internet",
+      "search_volume": 613,
+      "metric": "market",
+      "broad_impressions": 613,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home sales near me",
+      "search_volume": 607,
+      "metric": "market",
+      "broad_impressions": 627,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home internet login",
+      "search_volume": 596,
+      "metric": "market",
+      "broad_impressions": 596,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home village website",
+      "search_volume": 583,
+      "metric": "market",
+      "broad_impressions": 583,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home rentals near me",
+      "search_volume": 562,
+      "metric": "market",
+      "broad_impressions": 562,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home skirting panels",
+      "search_volume": 548,
+      "metric": "market",
+      "broad_impressions": 548,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home internet sign in",
+      "search_volume": 543,
+      "metric": "market",
+      "broad_impressions": 543,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home insurance companies",
+      "search_volume": 541,
+      "metric": "market",
+      "broad_impressions": 541,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home doors",
+      "search_volume": 499,
+      "metric": "market",
+      "broad_impressions": 739,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home manufacturers",
+      "search_volume": 486,
+      "metric": "market",
+      "broad_impressions": 792,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home parts near me",
+      "search_volume": 467,
+      "metric": "market",
+      "broad_impressions": 467,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home outfitters",
+      "search_volume": 457,
+      "metric": "market",
+      "broad_impressions": 622,
+      "kind": "related"
+    },
+    {
+      "keyword": "stylecrest mobile home supply",
+      "search_volume": 453,
+      "metric": "market",
+      "broad_impressions": 453,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home for rent",
+      "search_volume": 446,
+      "metric": "market",
+      "broad_impressions": 803,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home park",
+      "search_volume": 441,
+      "metric": "market",
+      "broad_impressions": 2462,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home serial number lookup",
+      "search_volume": 429,
+      "metric": "market",
+      "broad_impressions": 429,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home parks",
+      "search_volume": 421,
+      "metric": "market",
+      "broad_impressions": 4064,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home movers near me",
+      "search_volume": 402,
+      "metric": "market",
+      "broad_impressions": 402,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home village",
+      "search_volume": 385,
+      "metric": "market",
+      "broad_impressions": 989,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home title services",
+      "search_volume": 351,
+      "metric": "market",
+      "broad_impressions": 351,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home sales",
+      "search_volume": 350,
+      "metric": "market",
+      "broad_impressions": 1112,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home loans",
+      "search_volume": 346,
+      "metric": "market",
+      "broad_impressions": 346,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home dealers",
+      "search_volume": 343,
+      "metric": "market",
+      "broad_impressions": 4828,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home financing",
+      "search_volume": 331,
+      "metric": "market",
+      "broad_impressions": 331,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home supplies",
+      "search_volume": 307,
+      "metric": "market",
+      "broad_impressions": 403,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home steps",
+      "search_volume": 294,
+      "metric": "market",
+      "broad_impressions": 294,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home value estimator",
+      "search_volume": 263,
+      "metric": "market",
+      "broad_impressions": 263,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home supply",
+      "search_volume": 229,
+      "metric": "market",
+      "broad_impressions": 2452,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home movers",
+      "search_volume": 136,
+      "metric": "market",
+      "broad_impressions": 538,
+      "kind": "related"
+    },
+    {
+      "keyword": "american mobile home supply",
+      "search_volume": 89,
+      "metric": "market",
+      "broad_impressions": 89,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home furnace",
+      "search_volume": 80,
+      "metric": "market",
+      "broad_impressions": 143,
+      "kind": "related"
+    },
+    {
+      "keyword": "manufactured home",
+      "search_volume": 1597,
+      "metric": "market",
+      "broad_impressions": 7765,
+      "kind": "seed"
+    },
+    {
+      "keyword": "what is a manufactured home",
+      "search_volume": 1145,
+      "metric": "market",
+      "broad_impressions": 1145,
+      "kind": "related"
+    },
+    {
+      "keyword": "texas department of housing manufactured home",
+      "search_volume": 881,
+      "metric": "market",
+      "broad_impressions": 881,
+      "kind": "related"
+    },
+    {
+      "keyword": "manufactured home dealers near me",
+      "search_volume": 774,
+      "metric": "market",
+      "broad_impressions": 774,
+      "kind": "related"
+    },
+    {
+      "keyword": "manufactured home insurance",
+      "search_volume": 748,
+      "metric": "market",
+      "broad_impressions": 880,
+      "kind": "related"
+    },
+    {
+      "keyword": "manufactured home serial number lookup",
+      "search_volume": 402,
+      "metric": "market",
+      "broad_impressions": 402,
+      "kind": "related"
+    },
+    {
+      "keyword": "manufactured home loans",
+      "search_volume": 335,
+      "metric": "market",
+      "broad_impressions": 335,
+      "kind": "related"
+    },
+    {
+      "keyword": "modular home vs manufactured home",
+      "search_volume": 330,
+      "metric": "market",
+      "broad_impressions": 330,
+      "kind": "related"
+    },
+    {
+      "keyword": "kabco manufactured home",
+      "search_volume": 239,
+      "metric": "market",
+      "broad_impressions": 239,
+      "kind": "related"
+    },
+    {
+      "keyword": "manufactured home vs mobile home",
+      "search_volume": 103,
+      "metric": "market",
+      "broad_impressions": 103,
+      "kind": "related"
+    },
+    {
+      "keyword": "manufactured home floor plans",
+      "search_volume": 78,
+      "metric": "market",
+      "broad_impressions": 78,
+      "kind": "related"
+    },
+    {
+      "keyword": "best manufactured home companies",
+      "search_volume": 78,
+      "metric": "market",
+      "broad_impressions": 78,
+      "kind": "related"
+    },
+    {
+      "keyword": "manufactured home dealerships near me",
+      "search_volume": 46,
+      "metric": "market",
+      "broad_impressions": 46,
+      "kind": "related"
+    }
+  ]
+}

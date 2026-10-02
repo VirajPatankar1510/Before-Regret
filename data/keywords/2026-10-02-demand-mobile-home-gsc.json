@@ -1,0 +1,24 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-02T10:30:41.133Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "mobile home",
+    "manufactured home"
+  ],
+  "keywords": [
+    {
+      "keyword": "aluminum wiring insurance manufactured home",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 26,
+      "pages": {
+        "https://www.beforeregret.com/guides/get-home-insurance-aluminum-wiring/": 2
+      }
+    }
+  ]
+}
