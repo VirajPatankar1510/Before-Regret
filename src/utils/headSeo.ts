@@ -8,6 +8,15 @@ export interface HeadSeoOptions {
   jsonLdSchema?: Record<string, any> | Array<Record<string, any>>;
 }
 
+// What an indexable page actually emits. 'index, follow' stays the value callers pass; this is the
+// one place it is widened. max-image-preview:large lets Google show the page's images at full size
+// in Search, Images and Discover (Discover's own guidance asks for it, with images >= 1200px wide;
+// the diagrams are 1600px). Research and /sunlight/ already carried it; this extends it to every
+// other indexable page as a single-variable experiment, changed 2026-10-02, read 2026-11-06
+// (baseline: data/experiments/2026-10-02-image-preview-baseline.json). The prerender scripts import
+// this constant so the static HTML and the hydrated head can never disagree.
+export const INDEXABLE_ROBOTS = 'index, follow, max-image-preview:large';
+
 function setMetaTag(attributeName: 'name' | 'property', attributeValue: string, content: string) {
   let element = document.querySelector(`meta[${attributeName}="${attributeValue}"]`);
   if (!element) {
@@ -34,7 +43,7 @@ export function applyHeadSeo({
 
   // Standard Meta Tags
   setMetaTag('name', 'description', description);
-  setMetaTag('name', 'robots', robotsDirective);
+  setMetaTag('name', 'robots', robotsDirective === 'index, follow' ? INDEXABLE_ROBOTS : robotsDirective);
 
   // Set or create Canonical Link
   let linkCanonical = document.querySelector('link[rel="canonical"]');

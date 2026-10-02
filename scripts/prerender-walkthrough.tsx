@@ -17,6 +17,7 @@ import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { INDEXABLE_ROBOTS } from '../src/utils/headSeo.js';
 import { WalkthroughRadar } from '../src/components/WalkthroughRadar';
 import { WALKTHROUGH_JSON_LD, WALKTHROUGH_URL, WALKTHROUGH_CHECKS } from '../src/data/walkthroughChecks';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
@@ -77,7 +78,7 @@ async function run() {
   let html = template;
   html = html.replace(/<title>[^<]*<\/title>/, `<title>${escapeHtmlAttr(TITLE)}</title>`);
   html = html.replace(/<meta name="description" content="[^"]*"/, `<meta name="description" content="${escapeHtmlAttr(DESCRIPTION)}"`);
-  html = html.replace(/<meta name="robots" content="[^"]*"/, '<meta name="robots" content="index, follow"');
+  html = html.replace(/<meta name="robots" content="[^"]*"/, `<meta name="robots" content="${INDEXABLE_ROBOTS}"`);
   html = html.replace(/<link rel="canonical" href="[^"]*"/, `<link rel="canonical" href="${escapeHtmlAttr(WALKTHROUGH_URL)}"`);
   html = html.replace(/<meta property="og:url" content="[^"]*"/, `<meta property="og:url" content="${escapeHtmlAttr(WALKTHROUGH_URL)}"`);
   html = html.replace(/<meta property="og:title" content="[^"]*"/, `<meta property="og:title" content="${escapeHtmlAttr(TITLE)}"`);

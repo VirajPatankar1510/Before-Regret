@@ -15,6 +15,7 @@ import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticF
 import { BookPromoCard, BookPromoSkyscraper } from '../src/components/BookPromo';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 import { resolveArticleSchemaImage } from '../src/utils/articleImage.js';
+import { INDEXABLE_ROBOTS } from '../src/utils/headSeo.js';
 import type { PrerenderedRouteKey } from '../src/routeChunks.js';
 
 // Static HTML generator for published guide articles, run once after `vite build` as part of
@@ -482,7 +483,7 @@ function applyHeadReplacements(template: string, opts: {
     /<meta name="description" content="[^"]*"/,
     `<meta name="description" content="${escapeHtmlAttr(opts.description)}"`
   );
-  html = html.replace(/<meta name="robots" content="[^"]*"/, `<meta name="robots" content="index, follow"`);
+  html = html.replace(/<meta name="robots" content="[^"]*"/, `<meta name="robots" content="${INDEXABLE_ROBOTS}"`);
   html = html.replace(/<link rel="canonical" href="[^"]*"/, `<link rel="canonical" href="${escapeHtmlAttr(opts.canonicalUrl)}"`);
   html = html.replace(/<meta property="og:url" content="[^"]*"/, `<meta property="og:url" content="${escapeHtmlAttr(opts.canonicalUrl)}"`);
   html = html.replace(/<meta property="og:title" content="[^"]*"/, `<meta property="og:title" content="${escapeHtmlAttr(opts.title)}"`);

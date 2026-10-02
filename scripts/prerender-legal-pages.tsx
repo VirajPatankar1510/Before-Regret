@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { INDEXABLE_ROBOTS } from '../src/utils/headSeo.js';
 import { AboutMethodology } from '../src/components/AboutMethodology';
 import { ContactUs } from '../src/components/ContactUs';
 import { TermsConditions } from '../src/components/TermsConditions';
@@ -304,7 +305,7 @@ function applyHeadReplacements(template: string, page: LegalPageConfig): string 
     /<meta name="description" content="[^"]*"/,
     `<meta name="description" content="${escapeHtmlAttr(page.description)}"`
   );
-  html = html.replace(/<meta name="robots" content="[^"]*"/, `<meta name="robots" content="${page.robots}"`);
+  html = html.replace(/<meta name="robots" content="[^"]*"/, `<meta name="robots" content="${page.robots === 'index, follow' ? INDEXABLE_ROBOTS : page.robots}"`);
   html = html.replace(/<link rel="canonical" href="[^"]*"/, `<link rel="canonical" href="${escapeHtmlAttr(page.canonicalUrl)}"`);
   html = html.replace(/<meta property="og:url" content="[^"]*"/, `<meta property="og:url" content="${escapeHtmlAttr(page.canonicalUrl)}"`);
   html = html.replace(/<meta property="og:title" content="[^"]*"/, `<meta property="og:title" content="${escapeHtmlAttr(page.title)}"`);

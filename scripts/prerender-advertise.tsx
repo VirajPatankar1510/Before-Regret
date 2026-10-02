@@ -26,6 +26,7 @@ import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { INDEXABLE_ROBOTS } from '../src/utils/headSeo.js';
 import { AdvertiseCompare, ADVERTISE_FAQ_ITEMS } from '../src/components/AdvertiseCompare';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { withDb, isDbConfigured } from '../src/server/db.js';
@@ -104,7 +105,7 @@ async function run() {
   let html = template;
   html = html.replace(/<title>[^<]*<\/title>/, `<title>${escapeHtmlAttr(TITLE)}</title>`);
   html = html.replace(/<meta name="description" content="[^"]*"/, `<meta name="description" content="${escapeHtmlAttr(DESCRIPTION)}"`);
-  html = html.replace(/<meta name="robots" content="[^"]*"/, `<meta name="robots" content="index, follow"`);
+  html = html.replace(/<meta name="robots" content="[^"]*"/, `<meta name="robots" content="${INDEXABLE_ROBOTS}"`);
   html = html.replace(/<link rel="canonical" href="[^"]*"/, `<link rel="canonical" href="${escapeHtmlAttr(CANONICAL_URL)}"`);
   html = html.replace(/<meta property="og:url" content="[^"]*"/, `<meta property="og:url" content="${escapeHtmlAttr(CANONICAL_URL)}"`);
   html = html.replace(/<meta property="og:title" content="[^"]*"/, `<meta property="og:title" content="${escapeHtmlAttr(TITLE)}"`);

@@ -1,0 +1,204 @@
+{
+  "experiment": "max-image-preview:large on all indexable pages (guides, homepage, guides index, about, advertise, walkthrough, legal, sample report)",
+  "changed_on": "2026-10-02",
+  "read_on": "2026-11-06",
+  "note": "Research pages (8) and /sunlight/ already carried max-image-preview:large before this change and had 0 Discover impressions -- counter-evidence recorded up front.",
+  "captured_at": "2026-10-02T14:53:12.474Z",
+  "weeks": [
+    {
+      "startDate": "2026-08-05",
+      "endDate": "2026-08-11",
+      "web": {
+        "impressions": 60,
+        "clicks": 4
+      },
+      "image": {
+        "impressions": 0,
+        "clicks": 0
+      },
+      "discover": {
+        "impressions": 0,
+        "clicks": 0
+      },
+      "imagePages": []
+    },
+    {
+      "startDate": "2026-08-12",
+      "endDate": "2026-08-18",
+      "web": {
+        "impressions": 405,
+        "clicks": 7
+      },
+      "image": {
+        "impressions": 1,
+        "clicks": 0
+      },
+      "discover": {
+        "impressions": 0,
+        "clicks": 0
+      },
+      "imagePages": [
+        [
+          "/county/broward-county-fl/",
+          1
+        ]
+      ]
+    },
+    {
+      "startDate": "2026-08-19",
+      "endDate": "2026-08-25",
+      "web": {
+        "impressions": 966,
+        "clicks": 5
+      },
+      "image": {
+        "impressions": 11,
+        "clicks": 0
+      },
+      "discover": {
+        "impressions": 0,
+        "clicks": 0
+      },
+      "imagePages": [
+        [
+          "/county/bronx-county-ny/",
+          2
+        ],
+        [
+          "/guides/what-is-knob-and-tube-wiring",
+          9
+        ]
+      ]
+    },
+    {
+      "startDate": "2026-08-26",
+      "endDate": "2026-09-01",
+      "web": {
+        "impressions": 1597,
+        "clicks": 16
+      },
+      "image": {
+        "impressions": 167,
+        "clicks": 0
+      },
+      "discover": {
+        "impressions": 0,
+        "clicks": 0
+      },
+      "imagePages": [
+        [
+          "/county/broward-county-fl/",
+          1
+        ],
+        [
+          "/guides/us-housing-age-ranking-oldest-vs-newest-counties/",
+          3
+        ],
+        [
+          "/guides/what-is-knob-and-tube-wiring",
+          163
+        ]
+      ]
+    },
+    {
+      "startDate": "2026-09-02",
+      "endDate": "2026-09-08",
+      "web": {
+        "impressions": 2900,
+        "clicks": 17
+      },
+      "image": {
+        "impressions": 114,
+        "clicks": 0
+      },
+      "discover": {
+        "impressions": 0,
+        "clicks": 0
+      },
+      "imagePages": [
+        [
+          "/county/alameda-county-ca/",
+          1
+        ],
+        [
+          "/guides/us-housing-age-ranking-oldest-vs-newest-counties/",
+          1
+        ],
+        [
+          "/guides/what-is-knob-and-tube-wiring",
+          35
+        ],
+        [
+          "/guides/what-is-knob-and-tube-wiring/",
+          77
+        ]
+      ]
+    },
+    {
+      "startDate": "2026-09-09",
+      "endDate": "2026-09-15",
+      "web": {
+        "impressions": 1937,
+        "clicks": 13
+      },
+      "image": {
+        "impressions": 178,
+        "clicks": 0
+      },
+      "discover": {
+        "impressions": 0,
+        "clicks": 0
+      },
+      "imagePages": [
+        [
+          "/guides/standard-home-inspection-check-eifs-stucco-moisture/",
+          178
+        ]
+      ]
+    },
+    {
+      "startDate": "2026-09-16",
+      "endDate": "2026-09-22",
+      "web": {
+        "impressions": 2150,
+        "clicks": 23
+      },
+      "image": {
+        "impressions": 175,
+        "clicks": 0
+      },
+      "discover": {
+        "impressions": 0,
+        "clicks": 0
+      },
+      "imagePages": [
+        [
+          "/guides/standard-home-inspection-check-eifs-stucco-moisture/",
+          175
+        ]
+      ]
+    },
+    {
+      "startDate": "2026-09-23",
+      "endDate": "2026-09-29",
+      "web": {
+        "impressions": 2413,
+        "clicks": 36
+      },
+      "image": {
+        "impressions": 156,
+        "clicks": 0
+      },
+      "discover": {
+        "impressions": 0,
+        "clicks": 0
+      },
+      "imagePages": [
+        [
+          "/guides/standard-home-inspection-check-eifs-stucco-moisture/",
+          156
+        ]
+      ]
+    }
+  ]
+}

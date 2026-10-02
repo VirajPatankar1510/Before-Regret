@@ -137,6 +137,10 @@ function main() {
       .replace(/&#(\d+);/g, (_m, d) => String.fromCharCode(Number(d))).replace(/&quot;/g, '"');
     const title = decode((html.match(/<title>([\s\S]*?)<\/title>/) ?? [, ''])[1]).trim();
     const meta = decode((html.match(/<meta[^>]+name="description"[^>]+content="([^"]*)"/) ?? [, ''])[1]).trim();
+    // Every indexable page must allow large image previews (experiment 2026-10-02, src/utils/headSeo.ts).
+    // A prerenderer that hardcodes its own robots string would silently drop it; this catches that.
+    const robots = (html.match(/<meta[^>]+name="robots"[^>]+content="([^"]*)"/) ?? [, ''])[1];
+    if (!/max-image-preview:large/.test(robots)) bad.push(`${rel}  [robots]  "${robots}" lacks max-image-preview:large`);
     if (!title) bad.push(`${rel}  [title]  missing`);
     else if (title.length > 60) bad.push(`${rel}  [title]  ${title.length} chars, over 60`);
     if (!meta) bad.push(`${rel}  [meta]  missing on an indexable page`);
