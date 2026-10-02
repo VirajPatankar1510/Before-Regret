@@ -1,6 +1,6 @@
 ---
 name: write-guide
-description: The enforced pipeline for creating a new BeforeRegret guide article — gather demand evidence from first-party data only (this site's own Search Console and Bing accounts, plus what a person sees on a live results page), pick a target from a persisted capture instead of inventing one, write and validate an ArticleBrief before drafting, draft against seven content rules, then run the pre-publish gate, publish, rebuild, earn inbound links and verify live. Use this whenever the user wants to write, create, draft, generate or plan a new guide or article for BeforeRegret, asks what to write next, asks which keyword or topic to target, wants content for a search query or cluster, or asks to publish an article to the articles table. Also use when asked to fix or extend an existing guide's cost data, titles or clusters. Do NOT use for FAQs on an existing article (use article-faqs) or for the research studies under /research/.
+description: The enforced pipeline for creating a new BeforeRegret guide article — gather demand evidence from first-party data only (this site's own Search Console and Bing accounts, plus what a person sees on a live results page), pick a target from a persisted capture instead of inventing one, write and validate an ArticleBrief before drafting, draft against seven content rules, then run the pre-publish gate, publish, rebuild, earn inbound links and verify live. When the research-council skill has already decided the topic, take its decision as the input rather than re-choosing. Use this whenever the user wants to write, create, draft, generate or plan a new guide or article for BeforeRegret, asks what to write next, asks which keyword or topic to target, wants content for a search query or cluster, or asks to publish an article to the articles table. Also use when asked to fix or extend an existing guide's cost data, titles or clusters. Do NOT use for FAQs on an existing article (use article-faqs) or for the research studies under /research/.
 ---
 
 # Writing a BeforeRegret guide
@@ -10,6 +10,37 @@ work. **Read `beforeregret_content_standard.md` §1–§7 before drafting** — 
 that file is the rules the flow applies.
 
 All commands run from `/Users/viraj/Desktop/Claud Code/Before-Regret`.
+
+## Floors, not a template
+
+The gates below are **floors**: rules a page must not fall under. They are not a shape for the page to
+fill. Sections, length, structure, voice and which facts lead are judgment, made fresh for each
+article from who is searching and what they need. Two guides built to the same outline is the
+scaled-content signature that got 120 pages pruned. If a gate would force something unnatural into a
+page, that is a reason to question the gate (as happened 2026-10-02: the citation rule only knew
+building codes, so a federal regulation could not count), not to bolt on a filler figure.
+
+## Coming from the research council
+
+When `research-council` has decided the article, its DECISION block is the input to this skill.
+Don't re-pick the topic. The council weighed more evidence than step 1 does. Carry each part through:
+
+| from the council | lands in |
+|---|---|
+| the segment and topic (Moskowitz) | skip step 1's topic choice; step 1 only chooses the **exact phrasing**, the query whose wording best matches the job |
+| the job (Christensen) | the brief's `who` / `want` / `achieve`, and the sections: the page is organised around finishing that job |
+| the scent warning (Pirolli & Card) | `titlePromise`, the title and the first line of `quick_answer`: the words a searcher sees must promise exactly what the page delivers |
+| "good enough to stop searching" (Simon) | `quick_answer` settles the question on its own |
+| the glance test (Kahneman) | read the title, `quick_answer` and any image in isolation; each must be true without the rest of the page |
+| the verification list (Feynman) | a fact-check step **before drafting**: every portal, code section, figure and regulation verified at its primary source, in a browser if needed. Anything that cannot be verified is cut, not softened |
+| the read date and stop condition (Deming) | the brief's `stopCondition`, the publish script header, and a memory entry with the date |
+| who would cite or share it (Berger) | which existing guides to link from in step 6b, and whether a diagram or data point is worth making |
+| a new segment | may need a new `GUIDE_TOPIC_PATTERNS` bucket; see the cluster row in step 3 |
+
+**The handoff works both ways.** If writing shows the council was wrong, stop and report back instead
+of forcing the article through. Examples: a page already covers the topic (cannibalisation), the key
+facts cannot be verified, or a real search shows a different intent from the one assumed. Changing
+the decision is a council call, not a drafting one.
 
 ---
 
@@ -24,6 +55,8 @@ npx tsx scripts/pull-gsc-queries.ts        # every query Google has shown this s
 npx tsx scripts/pull-bing-queries.ts       # the same from Bing
 npx tsx scripts/topic-demand.ts "seed phrase" "another phrasing"   # a subject with no page yet
 ```
+
+**If the research council already pulled evidence this session, reuse its captures.** Only fill the gaps, most often a tier-3 observation of the exact wording people use.
 
 `topic-demand.ts` is the step that used to be a keyword-volume lookup. Give it 2–4 word phrasings
 (one-word seeds drown in unrelated rows) and read which **tier** it reaches:
@@ -49,7 +82,7 @@ the same session showed Indian trending searches. Observe from a US results page
 a recommendation unless it comes from a capture dated before 2026-09-27. Impressions from our own
 accounts are fine, labelled as ours ("this site was shown 146 times"), never as market size.
 
-## 1. Pick the target query
+## 1. Pick, or confirm, the target query
 
 Read the captures. **Bing is the primary query instrument**: it disclosed 100% of its clicks where
 Google's query dimension disclosed 4% (1,859/2 at query level vs 6,138/50 at page level over the
@@ -64,14 +97,15 @@ seo-first-mindset `references/cannibalization.md`).
 drafting — e.g. "indexed within 14 days and 20+ impressions within 45, or fold it into <existing
 page>". With no volume data, measuring after publishing is how demand gets established.
 
-Prefer a topic cluster with fewer than three members; step 5 prints them. Prefer a query with
+When the council decided the topic, this step only picks the phrasing (see the section above). Otherwise:
+prefer a topic cluster with fewer than three members; step 5 prints them. Prefer a query with
 measured impressions and no clicks over one with neither.
 
 ## 2. Write the brief — before any prose
 
 Fill in `ArticleBrief` from `src/seo/articleBrief.ts` and call `validateBrief()`:
 
-`slug` · `targetQuery` · `capture` · `intent` · `who` · `want` · `achieve` · `titlePromise` · `stopCondition` (required when the capture is an observation)
+`slug` · `targetQuery` · `capture` · `intent` · `who` · `want` · `achieve` · `titlePromise` · `stopCondition` (the code requires it when the capture is an observation; write it for **every** article that is an experiment, which includes every council decision)
 
 It rejects boilerplate, answers under 25 characters, three answers that are the same sentence, a
 definition-shaped `titlePromise` on transactional intent, and two briefs sharing a field. `who` must
@@ -88,11 +122,11 @@ makes not thinking visible.
 | title | promises an outcome, not a bare definition echo · ≤60 chars |
 | meta | 70–155 chars |
 | `quick_answer` | **120–450 chars** that actually answers — 450 is a mobile ceiling |
-| reproducibility | at least one real cost figure **or** a standard cited by name AND number |
+| reproducibility | at least one real cost figure, **or** a standard cited by name AND number (NFPA, NEC, IRC, ASTM…), **or** a law cited by number (`24 CFR Part 3280`, `42 U.S.C. § 5401`, `Florida Statutes § 119.071`). Use whichever is the page's real authority; never add a figure just to pass |
 | carriers | **never** a named insurer beside an underwriting verb |
 | no bait | no "read on", "we'll explain below" |
 | no clichés | no `delve`, `furthermore`, `crucial`, `regulatory landscape`, `when it comes to` |
-| cluster | slug + title must match a `GUIDE_TOPIC_PATTERNS` bucket in `src/utils/relatedGuides.ts` |
+| cluster | slug + title must match a `GUIDE_TOPIC_PATTERNS` bucket in `src/utils/relatedGuides.ts`. If the article opens a new segment the buckets don't describe, add one (as `orientation` was) instead of letting it fall into a wrong cluster. Place it so it reclassifies **zero** existing guides, check that, and accept that it starts as a one-member cluster, which is the experiment |
 | links | prose links only where the text ALREADY discusses the target |
 
 **Why the mobile ceiling.** 63.3% of this site's Google clicks come from mobile on 37.3% of

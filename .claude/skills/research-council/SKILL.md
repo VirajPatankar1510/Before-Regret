@@ -101,7 +101,7 @@ Describe each person's idea **accurately and in paraphrase**. Never invent a quo
    - the stop condition, written before acting;
    - what you will do if it fails.
 
-6. **Hand off** to the execution skill. Record the experiment in memory with its read date.
+6. **Hand off** to the execution skill. Record the experiment in memory with its read date. For articles, `write-guide` takes the DECISION block as its input and maps each member's verdict into the brief and the draft (its "Coming from the research council" section). Make the verdicts concrete enough to land there: the job, the scent warning, the list of facts to verify, the read date.
 
 ## Output format
 

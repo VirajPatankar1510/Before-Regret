@@ -167,6 +167,11 @@ const COST = /\$[\d,]{3,}/;
 // verified "ASTM E2356" citation failed this gate. ANSI (Z535), UL (UL 94) and NFPA (NFPA 13)
 // take the same shape. A digit is still mandatory, so a bare "per ASTM" still fails.
 const NUMBERED_STANDARD = /\b(NFPA|NEC|IRC|IBC|ASTM|ASCE|ANSI|UL)\s*[A-Z]?\s?[\d][\d.\-]*/i;
+// Federal and state law cited by number is the same kind of evidence -- checkable, specific, and
+// beyond what a general model reproduces. Added 2026-10-02: HUD's manufactured-home standards
+// (24 CFR Part 3280) and Florida Statutes § 119.071 failed the rule above, which would have forced a
+// cost figure into pages whose real authority is a regulation. Number still mandatory.
+const NUMBERED_LAW = /\b\d+\s*CFR\s*(Part\s*)?\d+|\b\d+\s*U\.?\s?S\.?\s?C\.?\s*§*\s*\d+|\bStatutes\s*§+\s*\d+/i;
 
 /** RULE 3: quick_answer is the TL;DR above the fold. All 57 guides have one; keep it that way.
  *
@@ -228,7 +233,7 @@ async function main() {
   }
   if (!rows) throw new Error('ABORT: database unreachable after 4 attempts');
 
-  const failsRule2 = (r: Row) => !COST.test(r.body_markdown) && !NUMBERED_STANDARD.test(r.body_markdown);
+  const failsRule2 = (r: Row) => !COST.test(r.body_markdown) && !NUMBERED_STANDARD.test(r.body_markdown) && !NUMBERED_LAW.test(r.body_markdown);
   const failsRule5 = (r: Row) => isDefinitionEcho(String(r.title));
 
   if (SEED) {
