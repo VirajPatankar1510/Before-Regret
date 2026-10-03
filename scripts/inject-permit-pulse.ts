@@ -60,7 +60,7 @@ function peers(f: any, pred: (c: any) => boolean, minUnits = 2000) {
   return { matching: big.filter(pred).length, of: big.length };
 }
 
-// Twelve counties, twelve different arguments, each drawn from that county's own row.
+// Fifteen counties, fifteen different arguments, each drawn from that county's own row.
 const BLOCKS: Block[] = [
   {
     slug: 'check-building-permits-miami-dade-county-fl', fips: '12086',
@@ -138,6 +138,43 @@ const BLOCKS: Block[] = [
     slug: 'check-building-permits-riverside-county-ca', fips: '06065',
     heading: 'What Riverside County Is Permitting Right Now',
     prose: (c) => `Riverside County's apartment pipeline has largely emptied out — multifamily permits are ${dir(c.mfChangePct)}, from ${n(c.mfPrior)} units to ${n(c.mfCurrent)}. Single-family has been far more stable, ${dir(c.sfChangePct)} at ${n(c.sfCurrent)} units, and now accounts for about ${Math.round((100 * c.sfCurrent) / c.unitsCurrent)}% of everything permitted in the county. The total is ${dir(c.unitsChangePct)}. Riverside is also the weakest reporting county in this group, so treat the figures as close rather than exact.`,
+  },
+  {
+    // Added 2026-10-03 with batch A. Brooklyn's distinctive figure is the ratio: almost every permitted
+    // unit is in a multifamily building. Gated so a year with zero new houses does not divide by zero.
+    slug: 'check-building-permits-brooklyn-ny', fips: '36047',
+    heading: 'What Brooklyn Is Permitting Right Now',
+    prose: (c) => {
+      const ratio = c.sfCurrent > 0 ? Math.round(c.mfCurrent / c.sfCurrent) : null;
+      const lead = ratio
+        ? `For every new single-family house permitted in Brooklyn so far this year, the borough permitted about ${n(ratio)} units in multifamily buildings: ${n(c.sfCurrent)} houses against ${n(c.mfCurrent)} apartment units.`
+        : `Brooklyn has permitted no new single-family houses so far this year, against ${n(c.mfCurrent)} units in multifamily buildings.`;
+      return `${lead} The multifamily side is ${dir(c.mfChangePct)} on the same months last year, which carries the borough total from ${n(c.unitsPrior)} to ${n(c.unitsCurrent)} units. If you are buying an existing row house or brownstone, the permit history you pull will be a record of alterations to an old building, and the borough's construction boom is happening almost entirely somewhere else.`;
+    },
+  },
+  {
+    // Broward's houses and apartments moved in opposite directions, and opposite to the nation. The
+    // contrast sentence is gated on the signs so a later month cannot leave it untrue.
+    slug: 'check-building-permits-broward-county-fl', fips: '12011',
+    heading: 'What Broward County Is Permitting Right Now',
+    prose: (c, f) => {
+      const nat = f.national;
+      const opposite = c.sfChangePct > 0 && c.mfChangePct < 0 && nat.singleFamily.changePct < 0 && nat.multifamily.changePct > 0;
+      const lead = opposite
+        ? `Broward is moving the other way from the country. Nationally, house permits are ${dir(nat.singleFamily.changePct)} and apartment permits ${dir(nat.multifamily.changePct)}; in Broward, single-family permits are ${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)}, while multifamily is ${dir(c.mfChangePct)} to ${n(c.mfCurrent)} units.`
+        : `In Broward, single-family permits are ${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)}, and multifamily is ${dir(c.mfChangePct)} to ${n(c.mfCurrent)} units.`;
+      return `${lead} The county total is ${dir(c.unitsChangePct)}. About ${Math.round(c.reportedShare)}% of Broward's figure comes from permit offices that reported to the Census Bureau, and the Bureau estimates the rest, so read the smaller numbers as approximate.`;
+    },
+  },
+  {
+    // Santa Clara's story is the change in mix: multifamily's share of all permitted units, now vs a
+    // year ago. Both shares are computed, so the comparison holds whichever way it moves.
+    slug: 'check-building-permits-santa-clara-county-ca', fips: '06085',
+    heading: 'What Santa Clara County Is Permitting Right Now',
+    prose: (c) => {
+      const before = Math.round((100 * c.mfPrior) / c.unitsPrior), now = Math.round((100 * c.mfCurrent) / c.unitsCurrent);
+      return `The mix of what Santa Clara County builds has shifted in a year. Units in multifamily buildings were ${before}% of everything permitted in the same months last year and are ${now}% now: ${n(c.mfCurrent)} units, ${dir(c.mfChangePct)}. Single-family permits barely moved, ${n(c.sfPrior)} to ${n(c.sfCurrent)} (${dir(c.sfChangePct)}), so the county's total, ${dir(c.unitsChangePct)} to ${n(c.unitsCurrent)} units, says almost nothing about the supply of houses.`;
+    },
   },
 ];
 

@@ -1,0 +1,14 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-03T08:34:28.576Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "brooklyn permit search",
+    "brooklyn building permits",
+    "brooklyn dob"
+  ],
+  "keywords": []
+}

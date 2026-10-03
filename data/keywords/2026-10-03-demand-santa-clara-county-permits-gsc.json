@@ -1,0 +1,14 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-03T08:34:47.597Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "santa clara county permits",
+    "san jose permit search",
+    "sjpermits"
+  ],
+  "keywords": []
+}

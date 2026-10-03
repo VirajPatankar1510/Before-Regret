@@ -171,7 +171,7 @@ const NUMBERED_STANDARD = /\b(NFPA|NEC|IRC|IBC|ASTM|ASCE|ANSI|UL)\s*[A-Z]?\s?[\d
 // beyond what a general model reproduces. Added 2026-10-02: HUD's manufactured-home standards
 // (24 CFR Part 3280) and Florida Statutes § 119.071 failed the rule above, which would have forced a
 // cost figure into pages whose real authority is a regulation. Number still mandatory.
-const NUMBERED_LAW = /\b\d+\s*CFR\s*(Part\s*)?\d+|\b\d+\s*U\.?\s?S\.?\s?C\.?\s*§*\s*\d+|\bStatutes\s*§+\s*\d+/i;
+const NUMBERED_LAW = /\b\d+\s*CFR\s*(Part\s*)?\d+|\b\d+\s*U\.?\s?S\.?\s?C\.?\s*§*\s*\d+|\bStatutes\s*§+\s*\d+|\bCode\s*§+\s*\d+/i; // + city/state codes by section, e.g. \"NYC Administrative Code § 25-305\", \"Health and Safety Code § 19850\" (2026-10-03)
 
 /** RULE 3: quick_answer is the TL;DR above the fold. All 57 guides have one; keep it that way.
  *

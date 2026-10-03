@@ -30,11 +30,12 @@ Don't re-pick the topic. The council weighed more evidence than step 1 does. Car
 | the segment and topic (Moskowitz) | skip step 1's topic choice; step 1 only chooses the **exact phrasing**, the query whose wording best matches the job |
 | the job (Christensen) | the brief's `who` / `want` / `achieve`, and the sections: the page is organised around finishing that job |
 | the scent warning (Pirolli & Card) | `titlePromise`, the title and the first line of `quick_answer`: the words a searcher sees must promise exactly what the page delivers |
-| "good enough to stop searching" (Simon) | `quick_answer` settles the question on its own |
-| the glance test (Kahneman) | read the title, `quick_answer` and any image in isolation; each must be true without the rest of the page |
+| "good enough to stop searching" and the glance test (Pirolli & Card) | `quick_answer` settles the question on its own; read the title, `quick_answer` and any image in isolation, and each must be true without the rest of the page |
 | the verification list (Feynman) | a fact-check step **before drafting**: every portal, code section, figure and regulation verified at its primary source, in a browser if needed. Anything that cannot be verified is cut, not softened |
-| the read date and stop condition (Deming) | the brief's `stopCondition`, the publish script header, and a memory entry with the date |
-| who would cite or share it (Berger) | which existing guides to link from in step 6b, and whether a diagram or data point is worth making |
+| the read date and stop condition (Kohavi) | the brief's `stopCondition`, the publish script header, and a memory entry with the date |
+| who would cite or share it (Berger) | whether a diagram or data point is worth making, and who outside the site might link to it |
+| where its authority comes from (Page & Brin) | which strong existing pages link to it in step 6b. Prefer pages that already earn impressions |
+| the engine and batch (Brynjolfsson) | when the council hands over a batch (for example eight county guides), write each page from its own verified facts. A batch never means a template |
 | a new segment | may need a new `GUIDE_TOPIC_PATTERNS` bucket; see the cluster row in step 3 |
 
 **The handoff works both ways.** If writing shows the council was wrong, stop and report back instead

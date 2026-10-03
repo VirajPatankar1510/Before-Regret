@@ -148,6 +148,22 @@ export const TARGET_KEYWORDS: TargetKeyword[] = [
       'with lead pipes" beside it (exists, no count). Research-council experiment: the permit cluster\'s "look up a record by ' +
       'address" job applied to the water utility\'s inventory; shown for a lead-service-line search by 2026-11-07.',
   },
+  {
+    keyword: 'broward county permit search',
+    capture: '2026-10-03-demand-broward-county-permit-search-bing',
+    slug: 'check-building-permits-broward-county-fl',
+    rationale:
+      'Bing records it as the leading phrasing for Broward, with "fort lauderdale permit search" second (relative counts, not ' +
+      'volumes), so both are in the title. Growth plan batch A, restored 2026-10-03; read 2026-11-09 with the batch.',
+  },
+  {
+    keyword: 'sjpermits',
+    capture: '2026-10-03-demand-santa-clara-county-permits-bing',
+    slug: 'check-building-permits-santa-clara-county-ca',
+    rationale:
+      'Bing records the portal name "sjpermits" far more than "santa clara county permits" (relative counts, not volumes): ' +
+      'people search San Jose\'s system by name, so the title carries it. Growth plan batch A, restored 2026-10-03; read 2026-11-09.',
+  },
 ];
 
 /** Sources that constitute measurement. Anything else is someone's opinion wearing a number. */
