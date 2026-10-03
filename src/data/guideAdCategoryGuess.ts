@@ -22,6 +22,9 @@ const KEYWORD_RULES: Array<{ keywords: string[]; category: typeof TRADE_CATEGORI
   { keywords: ['chimney'], category: 'Chimney Sweep' },
   { keywords: ['well pump', 'septic', 'well water'], category: 'Well & Septic Services' },
   { keywords: ['moving', 'relocat'], category: 'Moving Company' },
+  // Plumbing topics get their own trade now that 'Plumber' exists (2026-10-03). Sewer and cast iron
+  // topics still match 'Sewer Scope' above, which runs first.
+  { keywords: ['plumb', 'polybutylene', 'pipe', 'water heater', 'repipe', 'tpr valve', 'sump', 'service line', 'water line'], category: 'Plumber' },
   // Deliberately last and broad: plumbing, water heater, and general inspection topics all land
   // here rather than in a forced, less-accurate specific bucket above. Also catches the old
   // flood/insurance and attorney/title/disclosure topics now that 'Insurance Agent' and 'Real
@@ -50,6 +53,7 @@ const BUSINESS_PHRASE: Record<typeof TRADE_CATEGORIES[number], string> = {
   'Sewer Scope': 'sewer/plumbing inspection',
   'Radon Testing': 'radon testing',
   'Electrician': 'electrical',
+  'Plumber': 'plumbing',
   'Home Inspector': 'home inspection',
   'General Contractor': 'general contracting',
   'Asbestos/Mold Abatement': 'asbestos or mold abatement',

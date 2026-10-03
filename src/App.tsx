@@ -729,7 +729,7 @@ export function App() {
       // build-time static render -- these values must stay in sync with that file by hand.
       applyHeadSeo({
         title: 'Advertise With Us | Before Regret',
-        description: 'Advertise your trade on the articles homeowners and buyers read about permits, plumbing, wiring and roofs. One flat price, no contract.',
+        description: 'Compare Topic Ads and Report Ads to find the right fit for your business.',
         canonicalUrl: 'https://www.beforeregret.com/advertise/',
         robotsDirective: 'index, follow'
       });

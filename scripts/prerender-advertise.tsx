@@ -33,7 +33,7 @@ import { withDb, isDbConfigured } from '../src/server/db.js';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 
 const TITLE = 'Advertise With Us | Before Regret';
-const DESCRIPTION = 'Advertise your trade on the articles homeowners and buyers read about permits, plumbing, wiring and roofs. One flat price, no contract.';
+const DESCRIPTION = 'Compare Topic Ads and Report Ads to find the right fit for your business.';
 const CANONICAL_URL = 'https://www.beforeregret.com/advertise/';
 
 const BREADCRUMB: Record<string, any> = {

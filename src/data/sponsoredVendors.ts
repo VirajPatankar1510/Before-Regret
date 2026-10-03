@@ -26,6 +26,10 @@ export const TRADE_CATEGORIES = [
   'Sewer Scope',
   'Radon Testing',
   'Electrician',
+  // Added 2026-10-03 at the owner's request, before pitching plumbers. Until then a plumber had no
+  // category of their own and would have had to buy as 'Sewer Scope' or 'General Contractor'.
+  // Licence number required at checkout like every trade except Chimney Sweep.
+  'Plumber',
   'Home Inspector',
   'General Contractor',
   'Asbestos/Mold Abatement',
@@ -98,8 +102,12 @@ export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGO
   electrical_aluminum_wiring: 'Electrician',
   electrical_panel_brand: 'Electrician',
   sewer_cast_iron: 'Sewer Scope',
-  galvanized_supply: 'Home Inspector',
-  polybutylene_supply: 'Home Inspector',
+  // Supply-pipe findings point at Plumber (2026-10-03): the remedy for galvanized or polybutylene
+  // supply lines is a repipe, which is plumbing work. They pointed at Home Inspector only because no
+  // plumbing category existed. Without this mapping a plumber's Report Ad would have no finding to
+  // sit beside and would never render. sewer_cast_iron stays Sewer Scope: its advice is to scope it.
+  galvanized_supply: 'Plumber',
+  polybutylene_supply: 'Plumber',
   foundation_pre_posttension: 'General Contractor',
   foundation_posttension: 'General Contractor',
   // foundation_type_general is the region-agnostic sibling of the two rules above (same "hire a
