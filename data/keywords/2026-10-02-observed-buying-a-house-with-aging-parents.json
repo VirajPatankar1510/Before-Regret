@@ -1,0 +1,32 @@
+{
+  "source": "observation",
+  "endpoint": "seen by a person on a live results page: Google US results page (gl=us, hl=en), People also ask + People also search for",
+  "captured_at": "2026-10-02T15:20:13.572Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "observed_where": "Google US results page (gl=us, hl=en), People also ask + People also search for",
+  "observed_by": "Claude in the in-app browser; no CAPTCHA appeared",
+  "keywords": [
+    {
+      "keyword": "buying a house with aging parents",
+      "search_volume": null
+    },
+    {
+      "keyword": "pros and cons of buying a house with aging parents",
+      "search_volume": null
+    },
+    {
+      "keyword": "can i buy a house with my retired parents",
+      "search_volume": null
+    },
+    {
+      "keyword": "fannie mae family opportunity mortgage",
+      "search_volume": null
+    },
+    {
+      "keyword": "buying a house with aging parents taxes",
+      "search_volume": null
+    }
+  ]
+}

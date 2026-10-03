@@ -1,0 +1,36 @@
+{
+  "source": "observation",
+  "endpoint": "seen by a person on a live results page: Google US results page (gl=us, hl=en), People also ask + People also search for",
+  "captured_at": "2026-10-02T15:20:12.777Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "observed_where": "Google US results page (gl=us, hl=en), People also ask + People also search for",
+  "observed_by": "Claude in the in-app browser; no CAPTCHA appeared",
+  "keywords": [
+    {
+      "keyword": "regret buying a house",
+      "search_volume": null
+    },
+    {
+      "keyword": "what to do if you regret buying a house",
+      "search_volume": null
+    },
+    {
+      "keyword": "biggest regrets when buying a house",
+      "search_volume": null
+    },
+    {
+      "keyword": "how long does home buyer's remorse last",
+      "search_volume": null
+    },
+    {
+      "keyword": "is it normal to feel regret after buying a house",
+      "search_volume": null
+    },
+    {
+      "keyword": "first time home buyer regrets reddit",
+      "search_volume": null
+    }
+  ]
+}

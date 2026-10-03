@@ -1,0 +1,25 @@
+{
+  "source": "observation",
+  "endpoint": "seen by a person on a live results page: Google US results page (gl=us, hl=en), People also ask + People also search for",
+  "captured_at": "2026-10-02T15:20:13.315Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "observed_where": "Google US results page (gl=us, hl=en), People also ask + People also search for",
+  "observed_by": "Claude in the in-app browser; no CAPTCHA appeared",
+  "note": "Bing tier-2 also strong: internet availability by address, fcc broadband map",
+  "keywords": [
+    {
+      "keyword": "check internet before buying a house",
+      "search_volume": null
+    },
+    {
+      "keyword": "check internet before buying a house free",
+      "search_volume": null
+    },
+    {
+      "keyword": "when should i buy internet for a new house",
+      "search_volume": null
+    }
+  ]
+}

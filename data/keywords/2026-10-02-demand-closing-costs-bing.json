@@ -1,0 +1,98 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-02T15:17:31.352Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "closing costs",
+    "final walkthrough"
+  ],
+  "keywords": [
+    {
+      "keyword": "closing costs",
+      "search_volume": 566,
+      "metric": "market",
+      "broad_impressions": 4243,
+      "kind": "seed"
+    },
+    {
+      "keyword": "closing costs calculator",
+      "search_volume": 485,
+      "metric": "market",
+      "broad_impressions": 610,
+      "kind": "related"
+    },
+    {
+      "keyword": "who pays closing costs",
+      "search_volume": 450,
+      "metric": "market",
+      "broad_impressions": 907,
+      "kind": "related"
+    },
+    {
+      "keyword": "how much are closing costs on a home",
+      "search_volume": 419,
+      "metric": "market",
+      "broad_impressions": 419,
+      "kind": "related"
+    },
+    {
+      "keyword": "how much are closing costs",
+      "search_volume": 396,
+      "metric": "market",
+      "broad_impressions": 835,
+      "kind": "related"
+    },
+    {
+      "keyword": "what are closing costs",
+      "search_volume": 365,
+      "metric": "market",
+      "broad_impressions": 430,
+      "kind": "related"
+    },
+    {
+      "keyword": "closing costs for buyer",
+      "search_volume": 329,
+      "metric": "market",
+      "broad_impressions": 350,
+      "kind": "related"
+    },
+    {
+      "keyword": "average closing costs for house",
+      "search_volume": 302,
+      "metric": "market",
+      "broad_impressions": 302,
+      "kind": "related"
+    },
+    {
+      "keyword": "who pays closing costs buyer or seller",
+      "search_volume": 269,
+      "metric": "market",
+      "broad_impressions": 269,
+      "kind": "related"
+    },
+    {
+      "keyword": "closing costs for seller",
+      "search_volume": 193,
+      "metric": "market",
+      "broad_impressions": 213,
+      "kind": "related"
+    },
+    {
+      "keyword": "final walkthrough",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "final fantasy 1 walkthrough",
+      "search_volume": 824,
+      "metric": "market",
+      "broad_impressions": 909,
+      "kind": "related"
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-02T15:16:51.347Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "internet availability",
+    "broadband map"
+  ],
+  "keywords": [
+    {
+      "keyword": "internet availability",
+      "search_volume": 341,
+      "metric": "market",
+      "broad_impressions": 24353,
+      "kind": "seed"
+    },
+    {
+      "keyword": "att internet availability",
+      "search_volume": 9986,
+      "metric": "market",
+      "broad_impressions": 10345,
+      "kind": "related"
+    },
+    {
+      "keyword": "mobile home internet availability",
+      "search_volume": 2874,
+      "metric": "market",
+      "broad_impressions": 4932,
+      "kind": "related"
+    },
+    {
+      "keyword": "t mobile home internet availability",
+      "search_volume": 2038,
+      "metric": "market",
+      "broad_impressions": 2058,
+      "kind": "related"
+    },
+    {
+      "keyword": "internet availability at t",
+      "search_volume": 1471,
+      "metric": "market",
+      "broad_impressions": 2068,
+      "kind": "related"
+    },
+    {
+      "keyword": "internet availability by address",
+      "search_volume": 1199,
+      "metric": "market",
+      "broad_impressions": 1392,
+      "kind": "related"
+    },
+    {
+      "keyword": "at t internet availability",
+      "search_volume": 1138,
+      "metric": "market",
+      "broad_impressions": 1252,
+      "kind": "related"
+    },
+    {
+      "keyword": "t mobile internet availability",
+      "search_volume": 959,
+      "metric": "market",
+      "broad_impressions": 959,
+      "kind": "related"
+    },
+    {
+      "keyword": "t-mobile home internet availability",
+      "search_volume": 710,
+      "metric": "market",
+      "broad_impressions": 863,
+      "kind": "related"
+    },
+    {
+      "keyword": "check internet availability at t",
+      "search_volume": 597,
+      "metric": "market",
+      "broad_impressions": 597,
+      "kind": "related"
+    },
+    {
+      "keyword": "verizon home internet availability",
+      "search_volume": 481,
+      "metric": "market",
+      "broad_impressions": 481,
+      "kind": "related"
+    },
+    {
+      "keyword": "att.com internet availability",
+      "search_volume": 434,
+      "metric": "market",
+      "broad_impressions": 434,
+      "kind": "related"
+    },
+    {
+      "keyword": "tmobile home internet availability",
+      "search_volume": 404,
+      "metric": "market",
+      "broad_impressions": 404,
+      "kind": "related"
+    },
+    {
+      "keyword": "att internet availability check address",
+      "search_volume": 359,
+      "metric": "market",
+      "broad_impressions": 359,
+      "kind": "related"
+    },
+    {
+      "keyword": "fiber internet availability map",
+      "search_volume": 175,
+      "metric": "market",
+      "broad_impressions": 175,
+      "kind": "related"
+    },
+    {
+      "keyword": "t-mobile home internet availability map",
+      "search_volume": 153,
+      "metric": "market",
+      "broad_impressions": 153,
+      "kind": "related"
+    },
+    {
+      "keyword": "spectrum internet availability",
+      "search_volume": 86,
+      "metric": "market",
+      "broad_impressions": 107,
+      "kind": "related"
+    },
+    {
+      "keyword": "att fiber internet availability check address",
+      "search_volume": 64,
+      "metric": "market",
+      "broad_impressions": 64,
+      "kind": "related"
+    },
+    {
+      "keyword": "t-mobile 5g home internet availability map",
+      "search_volume": 48,
+      "metric": "market",
+      "broad_impressions": 48,
+      "kind": "related"
+    },
+    {
+      "keyword": "home internet availability t mobile",
+      "search_volume": 47,
+      "metric": "market",
+      "broad_impressions": 47,
+      "kind": "related"
+    },
+    {
+      "keyword": "starlink internet availability map",
+      "search_volume": 22,
+      "metric": "market",
+      "broad_impressions": 22,
+      "kind": "related"
+    },
+    {
+      "keyword": "broadband map",
+      "search_volume": 703,
+      "metric": "market",
+      "broad_impressions": 11232,
+      "kind": "seed"
+    },
+    {
+      "keyword": "fcc broadband map",
+      "search_volume": 8905,
+      "metric": "market",
+      "broad_impressions": 9129,
+      "kind": "related"
+    },
+    {
+      "keyword": "fcc national broadband map",
+      "search_volume": 994,
+      "metric": "market",
+      "broad_impressions": 1022,
+      "kind": "related"
+    },
+    {
+      "keyword": "national broadband map",
+      "search_volume": 332,
+      "metric": "market",
+      "broad_impressions": 1354,
+      "kind": "related"
+    },
+    {
+      "keyword": "fcc broadband map 2026",
+      "search_volume": 224,
+      "metric": "market",
+      "broad_impressions": 224,
+      "kind": "related"
+    },
+    {
+      "keyword": "broadband map fcc",
+      "search_volume": 46,
+      "metric": "market",
+      "broad_impressions": 46,
+      "kind": "related"
+    }
+  ]
+}

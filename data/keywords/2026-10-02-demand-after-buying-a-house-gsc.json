@@ -1,0 +1,24 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-02T15:17:12.216Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "after buying a house",
+    "new homeowner checklist"
+  ],
+  "keywords": [
+    {
+      "keyword": "how long after buying a house can you complain",
+      "search_volume": 6,
+      "impressions": 6,
+      "clicks": 0,
+      "position": 34,
+      "pages": {
+        "https://www.beforeregret.com/guides/buyers-remorse-after-buying-a-house/": 6
+      }
+    }
+  ]
+}

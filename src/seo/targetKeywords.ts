@@ -139,6 +139,15 @@ export const TARGET_KEYWORDS: TargetKeyword[] = [
       'Two manufactured-home searches already reached this site with no page for them. A research-council experiment: ' +
       'shown for a manufactured/mobile-home search by 2026-11-13, or fold into the aluminum-wiring and GFCI guides.',
   },
+  {
+    keyword: 'how to find out if a house has a lead service line',
+    capture: '2026-10-02-observed-how-to-find-out-if-a-house-has-a-lead-se',
+    slug: 'lead-service-line-lookup-by-address',
+    rationale:
+      'Seen on a US Google results page with "how do I know if my house has a lead service line" and "can you sell a house ' +
+      'with lead pipes" beside it (exists, no count). Research-council experiment: the permit cluster\'s "look up a record by ' +
+      'address" job applied to the water utility\'s inventory; shown for a lead-service-line search by 2026-11-07.',
+  },
 ];
 
 /** Sources that constitute measurement. Anything else is someone's opinion wearing a number. */

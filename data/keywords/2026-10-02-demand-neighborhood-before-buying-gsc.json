@@ -1,0 +1,13 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-02T15:17:26.245Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "neighborhood before buying",
+    "neighbors before buying"
+  ],
+  "keywords": []
+}
