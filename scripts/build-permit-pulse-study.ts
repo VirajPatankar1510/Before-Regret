@@ -24,6 +24,8 @@ import path from 'node:path';
 const ROOT = process.cwd();
 const FIG = path.join(ROOT, 'docs', 'data', 'permit-pulse-figures.json');
 const OUT = path.join(ROOT, 'docs', 'permit-pulse.html');
+const OUT_EMBED = path.join(ROOT, 'docs', 'permit-pulse.embed.html');
+const STUDY_URL = 'https://www.beforeregret.com/research/permit-pulse/';
 
 if (!fs.existsSync(FIG)) throw new Error('ABORT: run scripts/build-permit-pulse.ts first');
 const f = JSON.parse(fs.readFileSync(FIG, 'utf8'));
@@ -86,6 +88,48 @@ const lookup = f.counties
     a: c.sfPrior, b: c.sfCurrent, s: c.sfChangePct, t: c.unitsChangePct, r: c.reportedShare,
   }))
   .sort((x: any, y: any) => x.n.localeCompare(y.n));
+
+// ---- the county lookup, emitted ONCE and used by both the page and the embed -----------------------
+// Added 2026-10-03 with the embed. The other studies that slice their widget back out of the page with
+// indexOf() can ship an empty iframe onto someone else's site; this one builds the widget from the
+// same strings for both outputs, so the embed cannot drift from the page (the raise-or-remove pattern).
+const LOOKUP_CSS = `  .lk{border:1px solid #dfe5e2;background:#fbfcfb;padding:1rem 1.1rem;margin:0 0 1.6rem}
+  .lk input{width:100%;padding:.55rem .65rem;font:400 14px ui-sans-serif,system-ui,sans-serif;border:1px solid #c9d4cf;background:#fff;color:#1a1a1a}
+  .lk .out{margin-top:.8rem;font:400 13px/1.55 ui-sans-serif,system-ui,sans-serif}
+  .lk .hit{padding:.5rem 0;border-bottom:1px solid #eaefec}
+  .lk .hit b{font-size:14px}
+  .lk .muted{color:#6b6b6b}`;
+const LOOKUP_MARKUP = (states: number) => `<div class="lk">
+    <input id="pp-q" type="search" placeholder="Type a county name &mdash; Dallas, Cook, King&hellip;" autocomplete="off" aria-label="Search counties">
+    <div class="out" id="pp-out"><span class="muted">${f.findings.eligibleCounties} counties across ${states} states.</span></div>
+  </div>`;
+const DATA_SCRIPT = () => `<script type="application/json" id="pp-data">${JSON.stringify(lookup)}</script>`;
+const LOOKUP_SCRIPT = (states: number) => `<script>
+(function(){
+  var el=document.getElementById('pp-data'); if(!el) return;
+  var rows=JSON.parse(el.textContent||'[]');
+  var q=document.getElementById('pp-q'), out=document.getElementById('pp-out');
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function pc(v){return (v>0?'+':v<0?'\\u2212':'')+Math.abs(v)+'%';}
+  function render(){
+    var t=(q.value||'').trim().toLowerCase();
+    if(t.length<2){out.innerHTML='<span class="muted">${f.findings.eligibleCounties} counties across ${states} states.</span>';return;}
+    var hits=rows.filter(function(r){return r.n.toLowerCase().indexOf(t)>-1;}).slice(0,8);
+    if(!hits.length){out.innerHTML='<span class="muted">No county matching that name carries a usable figure. It may be below the size or reporting thresholds described in the method note.</span>';return;}
+    out.innerHTML=hits.map(function(r){
+      // The county gate is on TOTAL units, so a county can qualify on apartments while permitting
+      // almost no houses -- Harrisonburg VA passes on total and went 55 houses to 8, which renders
+      // as "-85.5%" and means nothing. Below MIN_SF the counts are shown and the percentage is not,
+      // the same rule the county-guide blocks follow. Without this the two disagree.
+      var sf = (r.a >= ${MIN_SF_FOR_PCT} && r.b >= ${MIN_SF_FOR_PCT})
+        ? ' ('+pc(r.s)+')'
+        : ' <span class="muted">(too few houses to express as a percentage)</span>';
+      return '<div class="hit"><b>'+esc(r.n)+'</b><br><span class="muted">houses '+r.a.toLocaleString()+' &rarr; '+r.b.toLocaleString()+sf+' &middot; all units '+pc(r.t)+' &middot; '+r.r+'% directly reported</span></div>';
+    }).join('');
+  }
+  q.addEventListener('input',render);
+})();
+</script>`;
 
 // ---- the size-class chart, as an inline <svg class="chart"> -------------------------------------
 // It was a stack of styled divs, which reads fine on the page and is invisible to
@@ -161,12 +205,12 @@ const html = `<style>
   .sbar.up{background:#2f6f5e;left:50%}
   .szero{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:#9aa8a2}
   .sval{text-align:right;font-variant-numeric:tabular-nums;color:#4a4a4a}
-  .lk{border:1px solid #dfe5e2;background:#fbfcfb;padding:1rem 1.1rem;margin:0 0 1.6rem}
-  .lk input{width:100%;padding:.55rem .65rem;font:400 14px ui-sans-serif,system-ui,sans-serif;border:1px solid #c9d4cf;background:#fff;color:#1a1a1a}
-  .lk .out{margin-top:.8rem;font:400 13px/1.55 ui-sans-serif,system-ui,sans-serif}
-  .lk .hit{padding:.5rem 0;border-bottom:1px solid #eaefec}
-  .lk .hit b{font-size:14px}
-  .lk .muted{color:#6b6b6b}
+${LOOKUP_CSS}
+  .kf{border:1px solid #dfe5e2;background:#fbfcfb;padding:1rem 1.2rem .4rem;margin:0 0 2rem}
+  .kf h2{margin:0 0 .7rem;padding:0;border:0}
+  .kf ul{margin:0 0 .8rem;padding-left:1.1rem}
+  .kf li{margin:0 0 .55rem}
+  .snippet{white-space:pre-wrap;font:400 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:#fff;border:1px solid #dfe5e2;padding:.6rem .7rem;margin:.5rem 0}
   .cite{background:#f2f6f4;border:1px solid #dfe5e2;padding:1.1rem 1.2rem;font:400 13px/1.6 ui-sans-serif,system-ui,sans-serif;margin:2.5rem 0 0}
   .cite b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#2f6f5e;margin-bottom:.5rem}
   .cite code{font:400 12px ui-monospace,SFMono-Regular,Menlo,monospace;background:#fff;padding:.1em .3em;border:1px solid #dfe5e2}
@@ -190,6 +234,18 @@ const html = `<style>
     <div class="fig"><b>${sgn(size[3].changePct)}</b><span>buildings of five units or more</span></div>
     <div class="fig"><b>${f.findings.countiesHousesFell} of ${f.findings.eligibleCounties}</b><span>counties where house permits fell</span></div>
   </div>
+
+  <section class="kf" id="key-findings">
+    <h2>Key findings</h2>
+    <ul>
+      <li>US residential building permits, year to date through ${period} ${year}: ${num(nat.all.current)} units, against ${num(nat.all.prior)} in the same months of ${priorYear}, a change of ${sgn(nat.all.changePct!)}.</li>
+      <li>Single-family houses: ${num(size[0].current)} permitted units, against ${num(size[0].prior)} a year earlier (${sgn(size[0].changePct)}).</li>
+      <li>Buildings of five units or more: ${num(size[3].current)} units (${sgn(size[3].changePct)}), the only one of the four structure-size categories the Census Bureau tracks that rose.</li>
+      <li>Of the ${f.findings.eligibleCounties} US counties large enough to measure reliably, ${f.findings.countiesHousesFell} (${Math.round((100 * f.findings.countiesHousesFell) / f.findings.eligibleCounties)}%) permitted fewer single-family homes than in the same months of ${priorYear}.</li>
+      <li>In ${f.findings.countiesTotalUpHousesFell} of the ${f.findings.countiesTotalUp} counties where total permits rose, single-family permits fell.</li>
+    </ul>
+    <p class="cap" style="margin:0 0 .6rem">Source: US Census Bureau, Building Permits Survey, county files; analysis by Before Regret. Data through ${period} ${year}, rebuilt monthly, so check the date before quoting a figure.</p>
+  </section>
 
   <h2>Houses against apartments</h2>
   <h3>Three of the four categories fell. The fourth cancelled them.</h3>
@@ -233,10 +289,7 @@ ${misleading.map((c: any) => row(c)).join('\n')}
 
   <h2>Your county</h2>
   <h3>Look up any of the ${f.findings.eligibleCounties} counties</h3>
-  <div class="lk">
-    <input id="pp-q" type="search" placeholder="Type a county name &mdash; Dallas, Cook, King&hellip;" autocomplete="off" aria-label="Search counties">
-    <div class="out" id="pp-out"><span class="muted">${f.findings.eligibleCounties} counties across ${states} states.</span></div>
-  </div>
+  ${LOOKUP_MARKUP(states)}
 
   <h2>Where houses fell hardest</h2>
   <div class="scroll">
@@ -303,6 +356,8 @@ ${bestHouses.map((c: any, i: number) => row(c, i)).join('\n')}
     <a href="/research/data/permit-pulse-figures.json">JSON</a>.</p>
     <p style="margin:0 0 .6rem">Credit line: &ldquo;analysis of US Census Bureau Building Permits
     Survey data by Before Regret&rdquo;, linking to this page.</p>
+    <p style="margin:0 0 .6rem">Cite as: Before Regret, &ldquo;Permit Pulse: US residential building
+    permits by county,&rdquo; data through ${period} ${year}, ${STUDY_URL}</p>
     <p style="margin:0 0 .6rem">Free to reuse with attribution under
     <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Every figure on this page
     is computed by Before Regret from the Census Bureau files named below. Nothing is restated from
@@ -313,39 +368,25 @@ ${bestHouses.map((c: any, i: number) => row(c, i)).join('\n')}
     US Census Bureau, Building Permits Survey.</p>
   </div>
 
+  <div class="cite">
+    <b>Embed the county lookup</b>
+    <p style="margin:0">Put the county search on your own page. It updates when this index does,
+    and carries its own credit line.</p>
+    <pre class="snippet">&lt;iframe src="${STUDY_URL}embed/"
+        width="100%" height="380" style="border:1px solid #dfe5e2"
+        title="US building permits by county: houses vs apartments"
+        loading="lazy"&gt;&lt;/iframe&gt;</pre>
+    <p style="margin:0">It posts its own height to the parent page as <code>beforeRegretEmbedHeight</code>.</p>
+  </div>
+
   <footer class="spine">
     <p style="margin:0">Published by <a href="https://www.beforeregret.com/">Before Regret</a>.
     Data through ${period} ${year}; this index is rebuilt monthly.</p>
   </footer>
 </div>
 
-<script type="application/json" id="pp-data">${JSON.stringify(lookup)}</script>
-<script>
-(function(){
-  var el=document.getElementById('pp-data'); if(!el) return;
-  var rows=JSON.parse(el.textContent||'[]');
-  var q=document.getElementById('pp-q'), out=document.getElementById('pp-out');
-  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function pc(v){return (v>0?'+':v<0?'\\u2212':'')+Math.abs(v)+'%';}
-  function render(){
-    var t=(q.value||'').trim().toLowerCase();
-    if(t.length<2){out.innerHTML='<span class="muted">${f.findings.eligibleCounties} counties across ${states} states.</span>';return;}
-    var hits=rows.filter(function(r){return r.n.toLowerCase().indexOf(t)>-1;}).slice(0,8);
-    if(!hits.length){out.innerHTML='<span class="muted">No county matching that name carries a usable figure. It may be below the size or reporting thresholds described in the method note.</span>';return;}
-    out.innerHTML=hits.map(function(r){
-      // The county gate is on TOTAL units, so a county can qualify on apartments while permitting
-      // almost no houses -- Harrisonburg VA passes on total and went 55 houses to 8, which renders
-      // as "-85.5%" and means nothing. Below MIN_SF the counts are shown and the percentage is not,
-      // the same rule the county-guide blocks follow. Without this the two disagree.
-      var sf = (r.a >= ${MIN_SF_FOR_PCT} && r.b >= ${MIN_SF_FOR_PCT})
-        ? ' ('+pc(r.s)+')'
-        : ' <span class="muted">(too few houses to express as a percentage)</span>';
-      return '<div class="hit"><b>'+esc(r.n)+'</b><br><span class="muted">houses '+r.a.toLocaleString()+' &rarr; '+r.b.toLocaleString()+sf+' &middot; all units '+pc(r.t)+' &middot; '+r.r+'% directly reported</span></div>';
-    }).join('');
-  }
-  q.addEventListener('input',render);
-})();
-</script>
+${DATA_SCRIPT()}
+${LOOKUP_SCRIPT(states)}
 `;
 
 // --- assertions: the page must not be able to disagree with its own data ------------------------
@@ -364,6 +405,54 @@ if (/\b(20[0-9]{2})-(0[0-9]|1[0-2])\b/.test(html.replace(/permit-pulse|co[0-9]{4
 if (!html.includes('<div class="cite">')) throw new Error('ABORT: no .cite block for the press kit to attach to');
 if (!html.includes('<div class="wrap">')) throw new Error('ABORT: prerender-research.tsx slices at <div class="wrap">');
 
+const embed = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>US building permits by county: houses vs apartments &mdash; Before Regret</title>
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="${STUDY_URL}">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:16px;background:#fbfcfb;color:#1a1a1a;font:16px/1.6 Charter,Georgia,serif}
+${LOOKUP_CSS}
+  .lk{max-width:680px;margin:0 auto}
+  .lk-note{max-width:680px;margin:8px auto 0;font:400 11px/1.4 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
+  .embed-credit{max-width:680px;margin:6px auto 0;font:400 11px/1.4 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b;text-align:right}
+  .embed-credit a{color:#2f6f5e}
+</style>
+</head>
+<body>
+${LOOKUP_MARKUP(states)}
+<p class="lk-note">Year to date through ${period} ${year} against the same months of ${priorYear}. Source: US Census Bureau, Building Permits Survey.</p>
+<p class="embed-credit"><a href="${STUDY_URL}" target="_blank" rel="noopener">Permit Pulse</a> &mdash; Before Regret</p>
+${DATA_SCRIPT()}
+${LOOKUP_SCRIPT(states)}
+<script>
+(function(){
+  function post(){
+    var h=Math.ceil(document.documentElement.getBoundingClientRect().height);
+    try{parent.postMessage({beforeRegretEmbedHeight:h},'*');}catch(e){}
+  }
+  if(window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  window.addEventListener('load',post);
+  setTimeout(post,60);
+})();
+</script>
+</body>
+</html>
+`;
+for (const v of [num(nat.all.current), num(size[0].current), num(size[3].current), String(f.findings.countiesTotalUp)]) {
+  if (!html.includes(v)) throw new Error(`ABORT: key finding ${v} missing from the page`);
+}
+if (!html.includes('id="key-findings"')) throw new Error('ABORT: key findings block missing');
+for (const required of ['embed-credit', 'pp-data', 'pp-q', 'lk-note']) {
+  if (!embed.includes(required)) throw new Error(`ABORT: embed lost ${required}`);
+}
+if (embed.includes('class="cite"')) throw new Error('ABORT: the press kit leaked into the embed');
+fs.writeFileSync(OUT_EMBED, embed);
+console.log(`wrote ${path.relative(ROOT, OUT_EMBED)}  (${(embed.length / 1024).toFixed(1)} KB)`);
 fs.writeFileSync(OUT, html);
 console.log(`wrote ${path.relative(ROOT, OUT)}  (${(html.length / 1024).toFixed(1)} KB)`);
 console.log(`  period      ${f.period.yearToDateThrough} vs ${f.period.comparedWith}`);

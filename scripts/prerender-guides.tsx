@@ -6,7 +6,7 @@ import { withDb, isDbConfigured } from '../src/server/db.js';
 import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../src/utils/renderArticleMarkdown';
 import { resolveKnownSource } from '../src/data/knownSources';
 import { ArticleClosingNote } from '../src/components/seo/ArticleClosingNote';
-import { pickRelatedGuides, GuideSummary } from '../src/utils/relatedGuides';
+import { pickRelatedGuides, GuideSummary, guideTopic } from '../src/utils/relatedGuides';
 import { buildPageTitle } from '../src/utils/pageTitle';
 import { pickCountiesForGuide, CountyTopicInput, GUIDE_TOPICS, permitGuideCountySlug } from '../src/utils/countyGuideTopics.js';
 import { groupGuidesForHub } from '../src/utils/homeContent.js';
@@ -697,6 +697,18 @@ async function run() {
     taggedSlugs.add(guide.slug);
   }
 
+  // Permit records get their own section (2026-10-03). The AI-crawler log shows ChatGPT's live fetches
+  // concentrate on these pages -- 55 of 103 in 30 days on the by-address hub alone -- yet they sat
+  // scattered through a 70-line general list. Grouped by the same GUIDE_TOPIC_PATTERNS the site uses
+  // for its clusters, hub first, so nothing is categorised by hand.
+  const PERMIT_HUB = 'look-up-building-permits-by-address';
+  const permitGuides = llmsGuides
+    .filter((g) => !taggedSlugs.has(g.slug) && guideTopic(g.slug, g.title) === 'permits')
+    .sort((a, b) => (a.slug === PERMIT_HUB ? -1 : b.slug === PERMIT_HUB ? 1 : a.title.localeCompare(b.title)));
+  permitGuides.forEach((g) => taggedSlugs.add(g.slug));
+  if (!permitGuides.some((g) => g.slug === PERMIT_HUB)) throw new Error('[prerender-guides] llms.txt permit section lost its hub');
+  const permitGuideSection = permitGuides.map((g) => `- [${g.title}](${g.canonicalUrl}): ${g.metaDescription}`).join('\n');
+
   const generalGuides = llmsGuides.filter((g) => !taggedSlugs.has(g.slug));
 
   const countyGuideSection = [...guidesByCounty.entries()]
@@ -765,7 +777,7 @@ async function run() {
         const sg = (v: number) => `${v > 0 ? '+' : v < 0 ? '-' : ''}${Math.abs(v)}%`;
         const through = new Date(`${g.period.yearToDateThrough}-01T00:00:00Z`)
           .toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
-        return `US residential building permits by county from the Census Building Permits Survey, rebuilt monthly. Year to date through ${through} against the same months a year earlier: all permitted units ${sg(g.national.all.changePct)} (${g.national.all.prior.toLocaleString('en-US')} to ${g.national.all.current.toLocaleString('en-US')}), single-family ${sg(sz[0].changePct)}, buildings of 5+ units ${sg(sz[3].changePct)}. Three of the four size classes fell; the composite is flat because the fourth offset them. House permits fell in ${g.findings.countiesHousesFell} of ${g.findings.eligibleCounties} counties passing the volume and reporting thresholds. Counties below 100 units or below 80% directly reported are withheld, not estimated.`;
+        return `US residential building permits by county from the Census Building Permits Survey, rebuilt monthly. Year to date through ${through} against the same months a year earlier: all permitted units ${sg(g.national.all.changePct)} (${g.national.all.prior.toLocaleString('en-US')} to ${g.national.all.current.toLocaleString('en-US')}), single-family ${sg(sz[0].changePct)}, buildings of 5+ units ${sg(sz[3].changePct)}. Three of the four size classes fell; the composite is flat because the fourth offset them. House permits fell in ${g.findings.countiesHousesFell} of ${g.findings.eligibleCounties} counties passing the volume and reporting thresholds. Counties below 100 units or below 80% directly reported are withheld, not estimated. Quotable key findings: https://www.beforeregret.com/research/permit-pulse/#key-findings -- embeddable county lookup: https://www.beforeregret.com/research/permit-pulse/embed/`;
       })(),
       data: ['permit-pulse-by-county.csv', 'permit-pulse-figures.json'] },
   ];
@@ -820,6 +832,12 @@ Original analyses of public federal data, published free under CC BY 4.0 with th
 
 ${researchSection}
 ${countiesBlock}${countyGuidesBlock}
+## Permit records -- by county
+
+How to find who holds a property's building permit records, and how to search them by address, county by county. The first entry is the method for any US county.
+
+${permitGuideSection}
+
 ## Guides -- by material / system era
 
 ${topicGuideSection}

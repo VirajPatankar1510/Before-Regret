@@ -1961,9 +1961,10 @@ ${ANALYTICS_BEACON}
   // And the title and description must not carry a figure: they are the parts that get cached,
   // quoted and indexed, and a number in them goes stale in four weeks while the page moves on.
   //
-  // No embed widget. The county lookup here is inline and self-contained rather than extracted, for
-  // the reason the north-texas note gives -- slicing markup back out of a study with indexOf() can
-  // ship an empty iframe onto someone else's site, and nobody reports that failure to us.
+  // Embed (added 2026-10-03): build-permit-pulse-study.ts now emits the county lookup ONCE and writes
+  // it to both the page and docs/permit-pulse.embed.html, the raise-or-remove pattern, so nothing is
+  // sliced back out of the study with indexOf() -- the failure that can ship an empty iframe onto
+  // someone else's site. This only copies the finished file, and refuses if the credit line is gone.
   const PP_SRC = path.join(process.cwd(), 'docs', 'permit-pulse.html');
   if (fs.existsSync(PP_SRC)) {
     const ppSource = fs.readFileSync(PP_SRC, 'utf8');
@@ -2097,6 +2098,23 @@ ${ANALYTICS_BEACON}
       fs.copyFileSync(src, path.join(ppDataDir, file));
     }
     console.log('[prerender-research] Published permit-pulse county and figures files');
+
+    const PP_EMBED_SRC = path.join(process.cwd(), 'docs', 'permit-pulse.embed.html');
+    if (!fs.existsSync(PP_EMBED_SRC)) {
+      console.error('[prerender-research] permit-pulse embed missing -- run scripts/build-permit-pulse-study.ts.');
+      process.exit(1);
+    }
+    const ppEmbed = fs.readFileSync(PP_EMBED_SRC, 'utf8');
+    for (const required of ['embed-credit', 'pp-data', 'lk-note', 'noindex']) {
+      if (!ppEmbed.includes(required)) {
+        console.error(`[prerender-research] permit-pulse embed is missing ${required}; refusing to build.`);
+        process.exit(1);
+      }
+    }
+    const ppEmbedDir = path.join(ppDir, 'embed');
+    fs.mkdirSync(ppEmbedDir, { recursive: true });
+    fs.writeFileSync(path.join(ppEmbedDir, 'index.html'), ppEmbed, 'utf8');
+    console.log(`[prerender-research] Wrote /research/permit-pulse/embed/ (${Math.round(ppEmbed.length / 1024)} KB)`);
   }
 
 
@@ -2377,7 +2395,9 @@ function verifyAdvertisedResearchUrls(): void {
   const missing: string[] = [];
 
   const check = (url: string, source: string) => {
-    const rel = url.slice(PREFIX.length);
+    // A fragment (#key-findings) names a place on a page, and prose can leave a full stop on the end
+    // of a URL; neither is part of the file that has to exist.
+    const rel = url.replace(/#.*$/, '').replace(/[.,;:]+$/, '').slice(PREFIX.length);
     const file = rel.endsWith('/') ? path.join(dist, rel, 'index.html') : path.join(dist, rel);
     if (!fs.existsSync(file)) missing.push(`${source} -> ${rel}`);
   };
