@@ -24,9 +24,15 @@ import type { NeonQueryFunction } from '@neondatabase/serverless';
 // doesn't happen to name a county.
 export type GuideAdTier = 'standard' | 'geo';
 
+// 2026-10-04, owner: ONE PRICE. County guides now sell at the same $7.99 as national guides. Topic
+// Ads have no location targeting (a county guide's ad shows to every reader, wherever they are), and
+// local reach is what Report Ads are for, so a premium for "local" inventory no longer made sense.
+// The tier column and this two-key shape stay, so the rest of the system (quotes, renewals, the
+// founding-rate lock on stored prices) is untouched -- only the number moved. No guide purchase
+// had ever been made at $29 (guide_ad_purchases was empty on 2026-10-04), so nothing renews at it.
 export const GUIDE_AD_TIER_PRICES_USD: Record<GuideAdTier, number> = {
   standard: 7.99,
-  geo: 29,
+  geo: 7.99,
 };
 
 export const GUIDE_AD_TIER_LABELS: Record<GuideAdTier, string> = {

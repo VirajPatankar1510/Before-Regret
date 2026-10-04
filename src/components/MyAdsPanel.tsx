@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Loader2, Lock, ExternalLink, Pencil, Check, X, RotateCcw, Receipt, MapPin, BookOpen, CreditCard, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { requiresLicenceNumber } from '../data/sponsoredVendors';
+import { checkVendorWebsite, VENDOR_WEBSITE_RULE } from '../data/vendorWebsite';
 
 interface GuidePlacement {
   purchaseId: number;
@@ -311,6 +312,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const saveGuideEdit = async (purchaseId: number) => {
     if (!user) return;
     if (!editPhone.trim()) return setEditError('Phone number is required.');
+    { const siteCheck = checkVendorWebsite(editWebsite); if (!siteCheck.ok) return setEditError(siteCheck.error || VENDOR_WEBSITE_RULE); }
     setSavingEdit(true);
     setEditError(null);
     const token = await getToken();
@@ -335,6 +337,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const saveZipEdit = async (purchaseId: number) => {
     if (!user) return;
     if (!editPhone.trim()) return setEditError('Phone number is required.');
+    { const siteCheck = checkVendorWebsite(editWebsite); if (!siteCheck.ok) return setEditError(siteCheck.error || VENDOR_WEBSITE_RULE); }
     setSavingEdit(true);
     setEditError(null);
     const token = await getToken();
@@ -522,6 +525,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
       </p>
       <input type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="Phone" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs" />
       <input type="url" value={editWebsite} onChange={(e) => setEditWebsite(e.target.value)} placeholder="Website (optional)" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs" />
+      <p className="text-[11px] text-slate-500 leading-snug">{VENDOR_WEBSITE_RULE}</p>
       {/* Same rule as checkout (requiresLicenceNumber), so the two cannot disagree about which
           categories need a number -- and so the one edit a vendor gets is enough to correct a
           licence that was renewed or mistyped, which is what Terms 4.4 assumes they can do. */}

@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from 'express';
+import { checkVendorWebsite } from '../data/vendorWebsite.js';
 import crypto from 'crypto';
 import { withDb, isDbConfigured } from './db.js';
 import { detectAiCrawler } from '../utils/detectAiCrawler.js';
@@ -139,21 +140,16 @@ export function registerAdClickRoutes(app: Express) {
         res.redirect(302, '/');
         return;
       }
-      // Only http(s) is ever emitted. Stored values are advertiser-supplied, and a javascript: or
-      // data: URL reaching a Location header would be a redirect into script execution. Validated
-      // at read time rather than trusting that write-time validation was always present -- rows
-      // predate this check.
-      let parsed: URL;
-      try {
-        parsed = new URL(website);
-      } catch {
+      // Only an official business website is ever forwarded -- the same rule every write path
+      // enforces (src/data/vendorWebsite.ts), re-checked here at read time because stored values are
+      // advertiser-supplied and rows can predate the write-time check. Among other things it allows
+      // only http(s), so a javascript: or data: URL can never reach a Location header.
+      const site = checkVendorWebsite(website);
+      if (!site.ok || !site.url) {
         res.redirect(302, '/');
         return;
       }
-      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-        res.redirect(302, '/');
-        return;
-      }
+      const parsed = new URL(site.url);
       await recordClick(req, adKind, purchaseId, 'website');
       // 302, not 301: a permanent redirect would be cached by the browser, so the next click would
       // never reach this server and would never be counted -- and it would keep forwarding to the

@@ -4,6 +4,7 @@ import { isPayPalConfigured, createPayPalOrder, capturePayPalOrder } from './pay
 import { TRADE_CATEGORIES, requiresLicenceNumber } from '../data/sponsoredVendors.js';
 import { requireVerifiedUser } from './clerkAuth.js';
 import { TERMS_VERSION } from '../data/legalVersions.js';
+import { checkVendorWebsite } from '../data/vendorWebsite.js';
 import {
   GUIDE_AD_TIER_PRICES_USD,
   SLOT_DURATION_DAYS,
@@ -224,6 +225,13 @@ export function registerGuideAdsRoutes(app: Express) {
       }
     }
 
+    // Official business website only -- see src/data/vendorWebsite.ts. Normalised value is what's stored.
+    const site = checkVendorWebsite(website);
+    if (!site.ok) {
+      res.status(400).json({ success: false, error: site.error });
+      return;
+    }
+
     try {
       const alreadyTaken = await findAlreadyTakenArticleIds(uniqueSlots);
       if (alreadyTaken.length > 0) {
@@ -258,7 +266,7 @@ export function registerGuideAdsRoutes(app: Express) {
           paypal_order_id, business_name, trade_category, phone, website, contact_email, slots_json, amount_usd, status, clerk_user_id,
           terms_version, terms_accepted_at, licence_number, slot_prices_json
         ) VALUES (
-          ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${phone}, ${website || null},
+          ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${phone}, ${site.url},
           ${contactEmail}, ${JSON.stringify(uniqueSlots)}, ${amount}, 'pending', ${req.verifiedUserId as string},
           ${TERMS_VERSION}, now(), ${trimmedLicence || null}, ${JSON.stringify(quote.lines)}
         )

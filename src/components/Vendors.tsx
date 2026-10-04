@@ -30,7 +30,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can I edit my listing after I’ve paid?',
-    a: 'Yes -- phone and website can be updated any time from My Placements. Business name and trade category are locked once purchased.',
+    a: 'Yes, once. From My Placements you can change your phone, website and licence number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold.',
   },
   {
     q: `Why only ${MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP and trade?`,

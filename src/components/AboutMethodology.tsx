@@ -84,9 +84,9 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
               <ContentLink href="/advertise/" onNavigate={onNavigate} className="text-blue-600 hover:underline font-semibold">
                 put your business on the guides and reports buyers read
               </ContentLink>{' '}
-              while they research a home. County guides cover permit lookups in the largest US metros, national
-              guides each cover one problem, and Report Ads target three ZIP codes inside property reports.
-              Self-serve, paid once, live within minutes, 30 days, no subscription.
+              while they research a home. Report Ads put a local trade inside the property reports run for three
+              ZIP codes it serves; Topic Ads put a business on a guide article, seen by every reader wherever they
+              are. Self-serve, paid once, live within minutes, 30 days, no subscription.
             </p>
             <p className="text-sm text-slate-600 leading-relaxed">
               The site is owned and operated by <strong>Atmostellar</strong>. The rest of this page explains,

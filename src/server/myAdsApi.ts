@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireVerifiedUser } from './clerkAuth.js';
+import { checkVendorWebsite } from '../data/vendorWebsite.js';
 import { requiresLicenceNumber } from '../data/sponsoredVendors.js';
 import { PRICE_PER_SLOT_USD as GUIDE_PRICE_USD, SLOT_DURATION_DAYS as RENEWAL_DAYS } from './guideAdsApi.js';
 import { PRICE_PER_BUNDLE_USD as ZIP_PRICE_USD, ZIPS_PER_BUNDLE } from './zipAdsApi.js';
@@ -285,6 +286,13 @@ export function registerMyAdsRoutes(app: Express) {
       res.status(400).json({ success: false, error: 'Phone number is required.' });
       return;
     }
+    // Official business website only -- the same rule as checkout (src/data/vendorWebsite.ts), so the
+    // one allowed edit cannot be used to swap a vetted link for a shortener or tracking redirect.
+    const site = checkVendorWebsite(website);
+    if (!site.ok) {
+      res.status(400).json({ success: false, error: site.error });
+      return;
+    }
     try {
       const owned = await withDb((sql) => sql`
         SELECT p.id, p.contact_edited, p.trade_category, p.licence_number
@@ -333,7 +341,7 @@ export function registerMyAdsRoutes(app: Express) {
       const nextLicence = licenceProvided ? (trimmedLicence || null) : ownedRow.licence_number;
 
       const updated = await withDb((sql) => sql`
-        UPDATE guide_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null},
+        UPDATE guide_ad_purchases SET phone = ${phone.trim()}, website = ${site.url},
                            licence_number = ${nextLicence}, contact_edited = true
         WHERE id = ${purchaseId} AND contact_edited = false
         RETURNING id
@@ -361,6 +369,13 @@ export function registerMyAdsRoutes(app: Express) {
     }
     if (!phone || typeof phone !== 'string' || !phone.trim()) {
       res.status(400).json({ success: false, error: 'Phone number is required.' });
+      return;
+    }
+    // Official business website only -- the same rule as checkout (src/data/vendorWebsite.ts), so the
+    // one allowed edit cannot be used to swap a vetted link for a shortener or tracking redirect.
+    const site = checkVendorWebsite(website);
+    if (!site.ok) {
+      res.status(400).json({ success: false, error: site.error });
       return;
     }
     try {
@@ -408,7 +423,7 @@ export function registerMyAdsRoutes(app: Express) {
       const nextLicence = licenceProvided ? (trimmedLicence || null) : ownedRow.licence_number;
 
       const updated = await withDb((sql) => sql`
-        UPDATE zip_ad_purchases SET phone = ${phone.trim()}, website = ${website?.trim() || null},
+        UPDATE zip_ad_purchases SET phone = ${phone.trim()}, website = ${site.url},
                            licence_number = ${nextLicence}, contact_edited = true
         WHERE id = ${purchaseId} AND contact_edited = false
         RETURNING id

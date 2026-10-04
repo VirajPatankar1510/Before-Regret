@@ -6,6 +6,7 @@ import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber } from
 import type { SponsoredVendor } from '../types.js';
 import { requireVerifiedUser } from './clerkAuth.js';
 import { TERMS_VERSION } from '../data/legalVersions.js';
+import { checkVendorWebsite } from '../data/vendorWebsite.js';
 
 // Self-serve, ZIP-targeted vendor ad slots inside reports: one vendor per (zip, trade category)
 // purchase, at most MAX_SLOTS_PER_ZIP_TRADE active at once per pair, $29 for a flat 30-day
@@ -180,6 +181,9 @@ export function registerZipAdsRoutes(app: Express) {
         errors.push('That licence number looks too long -- please enter just the number.');
       }
     }
+    // Official business website only -- see src/data/vendorWebsite.ts.
+    const site = checkVendorWebsite(website);
+    if (!site.ok) errors.push(site.error);
     if (errors.length > 0) {
       res.status(400).json({ success: false, errors });
       return;
@@ -214,7 +218,7 @@ export function registerZipAdsRoutes(app: Express) {
           licence_number
         )
         SELECT ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${zip1}, ${JSON.stringify(uniqueZips)},
-               ${phone}, ${website || null}, ${contactEmail}, ${amount}, 'pending',
+               ${phone}, ${site.ok ? site.url : null}, ${contactEmail}, ${amount}, 'pending',
                ${req.verifiedUserId as string}, now() + (${HOLD_DURATION_MINUTES} * interval '1 minute'),
                ${TERMS_VERSION}, now(), ${trimmedLicence || null}
         WHERE (

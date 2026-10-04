@@ -2,14 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { Phone, Globe, Wrench } from 'lucide-react';
 import { guessBusinessPhraseFromTitle } from '../data/guideAdCategoryGuess';
 import { reportAdClick } from '../utils/adClickBeacon';
-import { GUIDE_AD_SLOT_PLACEHOLDER } from './seo/GuideArticleLayout';
 
 interface GuideAdSlotProps {
   articleId: number;
   guideTitle: string;
 }
 
-interface ActiveVendor {
+/** The slot's resting height before it knows what to show -- measured from the unsold card, 124px
+ *  on phones and 80px from sm: up. Used for the loading state here and for the static stand-in in
+ *  GuideArticleLayout, so neither the static page nor the first live render jumps. */
+export const GUIDE_AD_SLOT_PLACEHOLDER = 'h-[124px] sm:h-20';
+
+export interface ActiveVendor {
   // Identifies which placement a click belongs to. Optional so a cached response from before click
   // tracking existed still renders a working ad -- the links just go untracked, which is the right
   // failure direction.
@@ -41,6 +45,70 @@ interface ActiveVendor {
 // (an earlier draft) -- that addressed the reader, not the vendor who's the actual audience for
 // this state, and a business owner skimming past would read it as reader content and miss the
 // pitch entirely. "Are you in the X business?" keeps the vendor as the addressee throughout.
+/**
+ * The sold state of a Topic Ad -- exactly what a reader sees on a guide. Split out of GuideAdSlot
+ * (2026-10-04) so /advertise/ can show the real card with an example vendor instead of a hand-drawn
+ * copy that could drift from it. Purely presentational: no fetch, no state.
+ */
+export const GuideAdVendorCard: React.FC<{ vendor: ActiveVendor }> = ({ vendor }) => (
+  <div className="relative bg-white border border-home-linen border-l-4 border-l-emerald-500 rounded-r-2xl p-4 sm:p-5">
+    <span className="absolute top-2 right-3 text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+      Ad
+    </span>
+    <div className="flex flex-wrap items-start justify-between gap-3 pr-10">
+      <div className="flex items-start gap-3 min-w-0">
+        <div className="shrink-0 w-9 h-9 rounded-full bg-emerald-50 flex items-center justify-center">
+          <Wrench className="w-4 h-4 text-emerald-700" />
+        </div>
+        <div className="min-w-0">
+          <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">{vendor.tradeCategory}</div>
+          <div className="text-sm font-bold text-slate-900 mt-0.5">{vendor.businessName}</div>
+          {/* Disclosure deliberately outside the licenceNumber conditional -- see the same
+              block in SponsoredVendorCard.tsx for why. Short version: the licence-exempt trade
+              category has no number, and nesting the caveat inside the number meant those
+              placements carried no disclosure at all. */}
+          {vendor.licenceNumber && (
+            <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
+              Licence #{vendor.licenceNumber}
+            </div>
+          )}
+          <div className="text-[10px] text-slate-500 mt-0.5">
+            Paid placement. Details supplied by the advertiser and not verified by us --{' '}
+            <a href="/disclaimer/" className="underline hover:text-slate-700">check any licence yourself</a>.
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">
+        {/* The tel: href is untouched by click tracking -- see src/utils/adClickBeacon.ts.
+            The number must dial whether or not measurement works. */}
+        <a
+          href={`tel:${vendor.phone}`}
+          onClick={() => { if (vendor.purchaseId) reportAdClick('guide', vendor.purchaseId, 'phone'); }}
+          className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 hover:text-blue-700"
+        >
+          <Phone className="w-3.5 h-3.5" />
+          <span>{vendor.phone}</span>
+        </a>
+        {vendor.website && (
+          // Routed through /out/ so the click is counted server-side, with no dependency on
+          // JavaScript. Falls back to the raw URL when the placement id is missing, so the
+          // link always goes somewhere real. rel="sponsored" is kept either way: it describes
+          // the commercial relationship, which the redirect doesn't change.
+          <a
+            href={vendor.purchaseId ? `/out/guide/${vendor.purchaseId}` : vendor.website}
+            target="_blank"
+            rel="sponsored noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"
+          >
+            <Globe className="w-3 h-3" />
+            <span>Visit website</span>
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+);
+
 export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle }) => {
   const [vendor, setVendor] = useState<ActiveVendor | null | undefined>(undefined); // undefined = loading
 
@@ -67,64 +135,7 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle 
   }
 
   if (vendor) {
-    return (
-      <div className="relative bg-white border border-home-linen border-l-4 border-l-emerald-500 rounded-r-2xl p-4 sm:p-5">
-        <span className="absolute top-2 right-3 text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-          Ad
-        </span>
-        <div className="flex flex-wrap items-start justify-between gap-3 pr-10">
-          <div className="flex items-start gap-3 min-w-0">
-            <div className="shrink-0 w-9 h-9 rounded-full bg-emerald-50 flex items-center justify-center">
-              <Wrench className="w-4 h-4 text-emerald-700" />
-            </div>
-            <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">{vendor.tradeCategory}</div>
-              <div className="text-sm font-bold text-slate-900 mt-0.5">{vendor.businessName}</div>
-              {/* Disclosure deliberately outside the licenceNumber conditional -- see the same
-                  block in SponsoredVendorCard.tsx for why. Short version: the licence-exempt trade
-                  category has no number, and nesting the caveat inside the number meant those
-                  placements carried no disclosure at all. */}
-              {vendor.licenceNumber && (
-                <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
-                  Licence #{vendor.licenceNumber}
-                </div>
-              )}
-              <div className="text-[10px] text-slate-500 mt-0.5">
-                Paid placement. Details supplied by the advertiser and not verified by us --{' '}
-                <a href="/disclaimer/" className="underline hover:text-slate-700">check any licence yourself</a>.
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">
-            {/* The tel: href is untouched by click tracking -- see src/utils/adClickBeacon.ts.
-                The number must dial whether or not measurement works. */}
-            <a
-              href={`tel:${vendor.phone}`}
-              onClick={() => { if (vendor.purchaseId) reportAdClick('guide', vendor.purchaseId, 'phone'); }}
-              className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 hover:text-blue-700"
-            >
-              <Phone className="w-3.5 h-3.5" />
-              <span>{vendor.phone}</span>
-            </a>
-            {vendor.website && (
-              // Routed through /out/ so the click is counted server-side, with no dependency on
-              // JavaScript. Falls back to the raw URL when the placement id is missing, so the
-              // link always goes somewhere real. rel="sponsored" is kept either way: it describes
-              // the commercial relationship, which the redirect doesn't change.
-              <a
-                href={vendor.purchaseId ? `/out/guide/${vendor.purchaseId}` : vendor.website}
-                target="_blank"
-                rel="sponsored noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"
-              >
-                <Globe className="w-3 h-3" />
-                <span>Visit website</span>
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-    );
+    return <GuideAdVendorCard vendor={vendor} />;
   }
 
   return (

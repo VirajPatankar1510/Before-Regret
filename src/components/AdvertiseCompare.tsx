@@ -1,78 +1,77 @@
-import React, { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowRight, Wrench, MapPin, Check, Megaphone, Phone, ShieldCheck, CreditCard, XCircle, ListChecks, Zap, ChevronDown } from 'lucide-react';
-import { MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
+import React, { useEffect } from 'react';
+import { ArrowRight, ChevronRight, CreditCard, MapPin, Newspaper, RefreshCw, ShieldCheck, Check, ClipboardList } from 'lucide-react';
+import { MAX_SLOTS_PER_ZIP_TRADE, TRADE_CATEGORIES } from '../data/sponsoredVendors';
 import { ContentLink } from './home/ContentLink';
+import { SponsoredVendorCard } from './SponsoredVendorCard';
+import { GuideAdVendorCard } from './GuideAdSlot';
+import stats from '../data/homeStats.json';
 
 interface AdvertiseCompareProps {
   onNavigate: (path: string) => void;
 }
 
-// The shared funnel entry point for both ad products -- linked from GuideAdSlot.tsx's
-// recruitment CTA and from /advertise generally, so a vendor arriving from either source (or a
-// direct link) sees both options before committing to one. Neither checkout page (GuideAdsCheckout,
-// Vendors) explains the other product; this is deliberately the only place that does, so that
-// explanation lives in one spot instead of drifting out of sync across two pages.
+// /advertise/ -- the one page that explains both ad products, linked from GuideAdSlot's recruitment
+// card and from the footer. Neither checkout page (/topic-ads, /report-ads) explains the other
+// product; this is deliberately the only place that does. Rendered by the live app AND by
+// scripts/prerender-advertise.tsx, the same component both ways, so they cannot drift.
 //
-// Copy here deliberately avoids two things: (1) calling site visitors "BeforeRegret's buyers" or
-// any other possessive/owned-audience phrasing, and any unsupported superlative ("highest-intent
-// ... in the market") -- both read as a specific, checkable claim about audience size or quality
-// that this app has no data to back up, which is the kind of thing that gets a deceptive-advertising
-// complaint. Describe the actual mechanism (someone reading a guide, or a report for one address)
-// instead. (2) The term "guide page" -- it's this codebase's internal name for the underlying
-// content type, not something a vendor buying an ad slot needs to know; the vendor just needs to
-// know their ad reaches someone reading an article vs. someone pulling a report on one address.
+// 2026-10-04 REDESIGN, at the owner's direction, in the homepage's design system. THE PRODUCT
+// MODEL IS THE OWNER'S, corrected on 2026-10-03 and not to be re-derived from older comments in
+// src/server/adPricing.ts: REPORT ADS ARE THE LOCAL PRODUCT (ZIP-targeted, inside the property
+// report for an address in the vendor's ZIPs). TOPIC ADS HAVE NO LOCATION TARGETING -- every reader
+// of the article sees the ad wherever they are, county guides included -- so they are pitched to
+// businesses that serve a wide area, never as the local option. The previous page told local trades
+// to "start with a county guide" in five places; all five are gone.
 //
-// The national-vs-local framing on this page was rewritten when county guides became their own
-// $29 tier (see src/server/adPricing.ts). It previously described Topic Ads as "nationwide reach"
-// at one flat price, which meant a local contractor -- the exact buyer the county guides exist for
-// -- read the cheaper product as irrelevant to them and was steered toward Report Ads instead.
-// That is the wrong recommendation on the facts: Report Ads render inside property reports, and
-// the guide pages are where the readers actually are. Keep both prices visible on the Topic Ads
-// card; a single headline price is what caused the misread.
-//
-// This page is now prerendered (scripts/prerender-advertise.tsx) and indexable -- an Ahrefs crawl
-// found it had neither: no static render meant a crawler saw an empty <div id="root">, the
-// homepage's own <title>, and zero outgoing links, and the client code separately set
-// 'noindex, nofollow'. Both are fixed. That second fact is why the "Return to Home" button and
-// both product CTAs below are ContentLink, not <button onClick>: a button has no href and is
-// invisible to anything reading raw HTML, which is exactly what made "no outgoing links" true even
-// once real content exists. ContentLink renders a genuine <a href> always and only intercepts the
-// click for SPA routing when onNavigate is supplied -- the same component Footer.tsx and the
-// homepage's content sections already use for this identical reason.
-//
-// DO NOT PUT A COUNT OF GUIDES IN THIS PAGE'S COPY. It said "32 county guides" and "119 national
-// guides" for weeks after the 2026-09-02 prune took the real figures to 11 and 38 -- so a page
-// selling ad placements was advertising roughly three times the inventory that existed. Nobody
-// could actually buy a removed page (guideAdsApi.ts filters to status='published'), so the cost was
-// credibility rather than a broken sale, but a vendor who clicked through would have found a third
-// of what was promised.
-//
-// The figures were not wrong when written; they went stale, and a hand-typed number on a sales page
-// has no way of noticing. Three separate places carried the county figure and a fourth phrasing
-// ("there are 32 of them") survived a count-based grep -- it was only caught by reading the
-// rendered page. So the numbers are gone rather than corrected: "county guides" and "national
-// guides" describe the products accurately at any inventory level and cannot drift.
-//
-// If a specific figure ever seems worth the persuasion, derive it at build time from
-// status='published' in scripts/prerender-advertise.tsx. Do not retype one here.
-//
-// Exported so scripts/prerender-advertise.tsx can build this page's FAQPage JSON-LD directly from
-// this array rather than a hand-copied duplicate -- the same drift risk buildCountyMeta in
-// prerender-counties.tsx was written to avoid, here avoided by sharing the source instead.
+// Rules this copy keeps, each learned the hard way:
+// - NO COUNTS OF GUIDES, ZIPS OR READERS. A hand-typed "32 county guides" sat on this page for
+//   weeks after the prune took the real figure to 11. Product names describe the inventory at any
+//   size and cannot go stale.
+// - NO AUDIENCE OR VIEW FIGURES, and no self-deprecating ones either (the owner removed "this site
+//   is new and its traffic is still small" -- it read as a reason to leave). Guide views cannot be
+//   measured: those pages are served from a cache that never reaches this server.
+// - NO CLICK-REPORTING PROMISE. Clicks are recorded (adClicksApi.ts) but My Placements does not
+//   show them to the vendor, so the page cannot offer it.
+// - Report Ads appear only beside a report item that matches the trade, and items apply by house
+//   age; the plumber example states its era ranges, read from the engine via homeStats.json rather
+//   than typed here.
+// - The example ads are the REAL components (SponsoredVendorCard, GuideAdVendorCard) with an
+//   obviously fictional business, made inert, so the preview is what a reader actually sees.
+// - Every link is a ContentLink / <a href>, so the static HTML carries real outgoing links.
+
+const era = (id: string) => stats.eraRules.find((r) => r.id === id);
+const GALV = era('galvanized_supply');
+const PB = era('polybutylene_supply');
+const PLUMBER_ERAS = GALV && PB ? `${GALV.minYear}–${GALV.maxYear} and ${PB.minYear}–${PB.maxYear}` : '';
+
+// Exported so scripts/prerender-advertise.tsx builds this page's FAQPage JSON-LD from the same
+// array the page renders -- one source, no hand-copied twin.
 export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
+  {
+    q: 'Which one is right for a local business?',
+    a: `Report Ads. You choose 3 ZIP codes and your trade, and your listing appears inside the property report someone runs for an address in those ZIP codes. Topic Ads have no location targeting: everyone reading the article sees the ad, wherever they are, which suits a business that serves a wide area rather than a few neighborhoods.`,
+  },
+  {
+    q: 'Where exactly does a Report Ad appear?',
+    a: `Beside the item in the report that matches your trade. A plumber's listing, for example, sits beside the report's water supply pipe checks, and those checks appear on reports for houses built ${PLUMBER_ERAS}, so that is where a plumber is shown. Moving companies are the exception: their listing has a fixed spot right below the address, on reports for addresses in their ZIP codes. Up to ${MAX_SLOTS_PER_ZIP_TRADE} businesses can hold the same ZIP code and trade at once.`,
+  },
   {
     q: 'Do I need to be licensed or verified to advertise?',
     a: "No -- we don't check your credentials before your placement goes live. Every trade category except chimney sweeping requires a licence, registration, or certification number at checkout; it prints on your ad exactly as you type it, but we don't verify it with any licensing board. Every placement tells readers its details are advertiser-supplied and unverified, and that includes chimney listings, which carry that same notice with no number since that category doesn't require one. Your business name, trade category, and contact details work the same way: you enter them, confirm they're accurate with a checkbox at checkout, and that's the only check that happens.",
   },
   {
     q: 'How many people will see my ad?',
-    // Answers what the buyer is actually purchasing -- a fixed, exclusive placement for a fixed
-    // window -- rather than a projected audience. Two things stay stated plainly because both are
-    // true: views genuinely cannot be measured (guide pages are served from a CDN and never reach
-    // this server, so any figure here would be invented in our own favour). 2026-10-03: the owner
-    // removed the line "This site is new and its traffic is still small" -- it read as a reason to
-    // leave. Do not reintroduce self-deprecating copy; never invent an audience figure either.
-    a: "We don't guarantee a number, and we won't invent one. Guide pages are served from a cache that never touches our server, so we genuinely cannot tell you how many times a page was viewed -- any figure we quoted would be made up. What you are buying is specific and checkable instead: a fixed placement on an article you choose, yours exclusively for 30 days, with no one else advertising on that page. The simplest way to judge it is by the calls and website visits it brings, so use a phone number or link you can track.",
+    // Never invent an audience figure, and never reintroduce self-deprecating copy (owner,
+    // 2026-10-03). Both statements below are true and checkable.
+    a: "We don't guarantee a number, and we won't invent one. A Report Ad is seen by whoever runs a report for an address in your ZIP codes, so it depends on how many reports are run there. Guide pages are served from a cache that never touches our server, so we cannot count their views either -- any figure we quoted would be made up. What you are buying is specific instead: a fixed placement for 30 days. The simplest way to judge it is by the calls and website visits it brings.",
+  },
+  {
+    q: 'What website can I list?',
+    a: "Your business's own website, and only that. Link shorteners, link-in-bio pages, redirects and tracking links are not accepted, at checkout or when you edit a listing later. Readers click through trusting the page, so the link has to go straight to you. The website is optional; a phone number alone is fine.",
+  },
+  {
+    q: 'Do I need an account?',
+    a: 'Yes, a free one. Checkout asks you to sign in with an email address you have verified, so that only you can see and manage your placements in My Placements afterwards.',
   },
   {
     q: 'Can I cancel or get a refund?',
@@ -80,321 +79,346 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What happens when my placement expires?',
-    a: "It simply stops showing and the slot reopens for other vendors.",
+    a: 'It simply stops showing and the slot reopens for other businesses. While it is still running you can renew it from My Placements; once it has ended, you can buy it again there if the slot is still free.',
   },
   {
     q: 'Can I edit my listing after I’ve paid?',
-    a: 'Yes -- phone and website can be changed any time from My Placements. Business name and trade category are locked once purchased, since those define what was sold.',
-  },
-  {
-    q: 'Can I buy both Topic Ads and Report Ads?',
-    a: "Yes. They reach people at different moments -- someone reading an article about a problem, versus someone pulling a report on one address -- so some vendors run both. If you only want one and you work a single metro, start with a county guide: it is the placement with readers already researching your area.",
+    a: 'Yes, once. From My Placements you can change your phone, website and licence number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold.',
   },
 ];
 
-export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }) => {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+const COMPARE_ROWS: Array<[string, string, string]> = [
+  ['Best for', 'Local trades that serve specific ZIP codes', 'Businesses that serve a wide area'],
+  ['Where it appears', 'Inside the property report for an address in your ZIP codes', 'On the article you choose, under its quick answer'],
+  ['Targeting', 'ZIP code and trade', 'The article; no location targeting'],
+  ['Price', '$29 for 3 ZIP codes', '$7.99 per article'],
+  ['Spots', `Up to ${MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP code and trade`, 'One advertiser per article'],
+  ['Duration', '30 days, no auto-renewal', '30 days, no auto-renewal'],
+];
 
+const EXAMPLE_REPORT_VENDOR = {
+  id: 'example',
+  zipCode: '00000',
+  businessName: 'Example Plumbing Co.',
+  tradeCategory: 'Plumber',
+  phone: '(512) 555-0100',
+  active: true,
+};
+
+const EXAMPLE_TOPIC_VENDOR = {
+  businessName: 'Example Moving Co.',
+  tradeCategory: 'Moving Company',
+  phone: '(512) 555-0100',
+};
+
+/** A real ad card, made inert: no taps, no tab stops, no dialling, no click beacons from a demo.
+ *  `inert` takes the card's links out of the keyboard order too, which aria-hidden alone does not. */
+const Inert: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
+  <div role="img" aria-label={label} className="pointer-events-none select-none">
+    <div aria-hidden="true" inert>{children}</div>
+  </div>
+);
+
+const Eyebrow: React.FC<{ children: React.ReactNode; tone?: string }> = ({ children, tone = 'text-home-brass' }) => (
+  <p className={`text-xs font-bold uppercase tracking-[0.2em] ${tone}`}>{children}</p>
+);
+
+const Bullet: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <li className="flex items-start gap-2.5">
+    <Check className="w-4 h-4 text-home-moss shrink-0 mt-0.5" aria-hidden="true" />
+    <span>{children}</span>
+  </li>
+);
+
+export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-6">
-          <ContentLink
-            href="/"
-            onNavigate={onNavigate}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition-all border border-slate-200 cursor-pointer shadow-xs"
-          >
-            <ArrowLeft className="w-4 h-4 text-slate-500" />
-            <span>Return to Home</span>
-          </ContentLink>
-          <span className="text-xs font-mono font-bold text-slate-500 bg-slate-200/80 px-3 py-1 rounded-full">
-            Advertise With Us
-          </span>
-        </div>
+    <div className="min-h-screen bg-home-stone font-sans text-home-ink">
+      {/* Breadcrumbs -- the same two steps as the BreadcrumbList schema. */}
+      <div className="border-b border-home-linen bg-white/70">
+        <nav aria-label="Breadcrumb" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+          <ContentLink href="/" onNavigate={onNavigate} className="hover:text-home-ink">Before Regret</ContentLink>
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
+          <span className="text-home-ink font-semibold">Advertise With Us</span>
+        </nav>
+      </div>
 
-        {/* Hero */}
-        <div className="bg-slate-900 text-white border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-32 -left-16 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="space-y-4 max-w-2xl">
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-white tracking-tight leading-tight">
-              Two ways to put your business in front of people researching a property
+      {/* Hero: the vendor's question first -- which of the two fits my business. */}
+      <section className="relative overflow-hidden bg-home-navy text-white">
+        <div aria-hidden="true" className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-10 lg:gap-14 items-center">
+          <div>
+            <Eyebrow tone="text-home-oak">Advertise with Before Regret</Eyebrow>
+            <h1 className="mt-4 font-serif text-[2.3rem] leading-[1.08] sm:text-5xl lg:text-[3.4rem] font-semibold tracking-[-0.01em] [text-wrap:balance]">
+              Put your business where home buyers do their research
             </h1>
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-              Put your number on the article your next customer is already reading -- including
-              county guides covering permit lookups in the largest US metros. Self-serve, paid
-              once, live within minutes, and yours alone for the full 30 days.
+            <p className="mt-5 text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
+              Two self-serve placements. Report Ads put a local trade inside the property reports run
+              for the ZIP codes it serves. Topic Ads put a business on an article about the problem it
+              solves, read by people anywhere. Pay once, live within minutes, 30 days.
             </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3 pt-2">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-              <CreditCard className="w-3.5 h-3.5 text-slate-400" />
-              No subscription
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-              <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
-              Self-serve checkout
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-              <XCircle className="w-3.5 h-3.5 text-slate-400" />
-              No auto-renewal
-            </span>
-          </div>
-        </div>
-
-        {/* How it works -- the page used to cut straight from the hero into the two pricing
-            cards, which read as a spec sheet rather than something that walks a vendor toward a
-            decision. Three steps, no jargon, sets up why the two cards below are worth reading. */}
-        {/* The section had no heading at all -- the step cards were h3 sitting directly under the
-            page h1, which is the heading-order skip an accessibility audit flagged on 2026-09-11.
-            Adding the heading the comment above already implies fixes the skip AND gives the
-            section the label a screen-reader user needs to know what the three cards are. */}
-        <h2 className="font-serif text-xl font-bold text-slate-900 mb-4">How it works</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-          {[
-            { icon: ListChecks, step: '1', title: 'Pick a plan', body: 'Topic Ads put you on an article you choose -- a county permit guide if you work one metro, a national guide if you do not. Report Ads target 3 ZIP codes inside property reports.' },
-            { icon: CreditCard, step: '2', title: 'Add your business', body: 'Business name, phone, and trade category -- pay once through PayPal, no account setup beyond that.' },
-            { icon: Zap, step: '3', title: "You're live", body: 'Your placement goes live within minutes and runs for a flat 30-day window, no auto-renewal.' },
-          ].map(({ icon: Icon, step, title, body }) => (
-            <div key={step} className="flex items-start gap-3 sm:flex-col sm:items-start sm:gap-3">
-              <div className="shrink-0 w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center relative">
-                <Icon className="w-4 h-4" />
-                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center border-2 border-slate-50">{step}</span>
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-sm text-slate-900">{title}</h3>
-                <p className="text-xs text-slate-600 leading-relaxed mt-0.5">{body}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Two products */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Topic Ads */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-5 shadow-xs flex flex-col">
-            <div className="flex items-center justify-between">
-              <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                <Wrench className="w-5 h-5" />
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full">
-                National or county
-              </span>
-            </div>
-            <div className="space-y-1">
-              <h2 className="font-serif text-xl font-bold text-slate-900">Topic Ads</h2>
-              <p className="text-xs text-slate-500">Pick the exact articles your customers are reading</p>
-            </div>
-            {/* Two prices shown, not one. This card described a single flat rate until county
-                guides became their own tier -- a local contractor reading "nationwide reach,
-                $7.99" concluded this product wasn't for them and went to Report Ads, which is
-                the opposite of the right answer now that county guides are their own tier. */}
-            <div className="text-3xl font-black text-slate-900">
-              $7.99 <span className="text-sm font-normal text-slate-500">/ national guide</span>
-            </div>
-            <div className="-mt-3 text-2xl font-black text-emerald-700">
-              $29 <span className="text-sm font-normal text-slate-500">/ county guide, 30 days</span>
-            </div>
-
-            <div className="space-y-1.5">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Example placement</div>
-              <div className="relative bg-white border border-slate-200 border-l-4 border-l-emerald-500 rounded-r-xl p-3">
-                <span className="absolute top-1.5 right-2.5 text-[9px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
-                  Ad
-                </span>
-                <div className="flex items-start gap-2.5 pr-8">
-                  <div className="shrink-0 w-7 h-7 rounded-full bg-emerald-50 flex items-center justify-center">
-                    <Wrench className="w-3.5 h-3.5 text-emerald-700" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[9px] uppercase tracking-wide text-slate-400 font-semibold">Electrician</div>
-                    <div className="text-xs font-bold text-slate-900 mt-0.5">Example Electric Co.</div>
-                    <div className="text-[10px] text-blue-600 font-bold mt-1 flex items-center gap-1">
-                      <Phone className="w-2.5 h-2.5" /> (512) 555-0100
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <ul className="text-xs sm:text-sm text-slate-600 space-y-2.5 flex-1">
-              <li className="flex items-start gap-2">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong className="text-slate-900">County guides</strong> cover permit lookups in the largest US metros -- Cook, Los Angeles, Maricopa, Harris, Miami-Dade and more. Everyone reading one is researching that county.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-                <span>National guides each cover a single problem for readers anywhere -- a good fit if you serve many cities</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-                <span>Any business, any article -- pick as many placements as you want in one checkout</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-                <span>One advertiser per article. When it's yours, nobody else appears on that page.</span>
-              </li>
+            <ul className="mt-7 flex flex-wrap gap-2.5 text-xs font-semibold text-slate-200">
+              {[
+                { icon: CreditCard, t: 'Pay once' },
+                { icon: RefreshCw, t: 'No auto-renewal' },
+                { icon: ShieldCheck, t: 'Self-serve checkout' },
+              ].map(({ icon: Icon, t }) => (
+                <li key={t} className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5">
+                  <Icon className="w-3.5 h-3.5 text-home-oak" aria-hidden="true" />
+                  {t}
+                </li>
+              ))}
             </ul>
-            <ContentLink
-              href="/topic-ads"
-              onNavigate={onNavigate}
-              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all cursor-pointer"
-            >
-              <span>Advertise by Topic</span>
-              <ArrowRight className="w-4 h-4" />
-            </ContentLink>
           </div>
 
-          {/* Report Ads */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-5 shadow-xs flex flex-col">
-            <div className="flex items-center justify-between">
-              <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <MapPin className="w-5 h-5" />
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
-                Hyper-local
-              </span>
-            </div>
-            <div className="space-y-1">
-              <h2 className="font-serif text-xl font-bold text-slate-900">Report Ads</h2>
-              <p className="text-xs text-slate-500">Best for businesses with a specific local service area</p>
-            </div>
-            <div className="text-3xl font-black text-slate-900">
-              $29 <span className="text-sm font-normal text-slate-500">/ 3 ZIP codes, 30 days</span>
-            </div>
-
-            <div className="space-y-1.5">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Example placement</div>
-              <div className="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wide text-slate-400">
-                    <Megaphone className="w-2.5 h-2.5" />
-                    <span>Sponsored · Roof Inspection</span>
-                  </div>
-                  <div className="text-xs font-bold text-slate-900 mt-0.5">Example Roofing LLC</div>
-                </div>
-                <span className="shrink-0 inline-flex items-center gap-1 px-2 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-lg">
-                  <Phone className="w-2.5 h-2.5" />
-                  (512) 555-0100
+          {/* The fork. Same-page anchors, so both choices stay crawlable links to real sections. */}
+          <div className="grid grid-cols-1 gap-4">
+            <a href="#report-ads" className="group rounded-3xl bg-white text-home-ink p-6 sm:p-7 shadow-xl hover:-translate-y-0.5 transition-transform">
+              <div className="flex items-center justify-between gap-3">
+                <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-home-moss">
+                  <MapPin className="w-4 h-4" aria-hidden="true" /> I serve specific ZIP codes
                 </span>
+                <ArrowRight className="w-5 h-5 text-home-oak transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </div>
-            </div>
+              <div className="mt-3 font-serif text-2xl font-semibold">Report Ads</div>
+              <div className="mt-1 text-sm text-slate-600">$29 for 3 ZIP codes, 30 days</div>
+            </a>
+            <a href="#topic-ads" className="group rounded-3xl bg-white/10 border border-white/15 text-white p-6 sm:p-7 hover:bg-white/15 transition-colors">
+              <div className="flex items-center justify-between gap-3">
+                <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-home-oak">
+                  <Newspaper className="w-4 h-4" aria-hidden="true" /> I serve a wide area
+                </span>
+                <ArrowRight className="w-5 h-5 text-home-oak transition-transform group-hover:translate-x-1" aria-hidden="true" />
+              </div>
+              <div className="mt-3 font-serif text-2xl font-semibold">Topic Ads</div>
+              <div className="mt-1 text-sm text-slate-300">$7.99 per article, 30 days</div>
+            </a>
+          </div>
+        </div>
+      </section>
 
-            <ul className="text-xs sm:text-sm text-slate-600 space-y-2.5 flex-1">
-              <li className="flex items-start gap-2">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Shown inside the actual property report for each of your 3 chosen ZIP codes -- whoever is researching an address there sees you</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Three ZIP codes, one trade category per bundle -- at most {MAX_SLOTS_PER_ZIP_TRADE} businesses shown per ZIP and trade pair</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Higher intent, tighter targeting -- a good fit if you only work within a specific set of ZIP codes or a metro area</span>
-              </li>
+      {/* Report Ads -- the local product. */}
+      <section id="report-ads" className="scroll-mt-24 py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div>
+            <Eyebrow tone="text-home-moss">For local trades</Eyebrow>
+            <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold tracking-tight">Report Ads</h2>
+            <p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed">
+              When someone runs a property report for an address in one of your ZIP codes, your
+              listing appears inside it, beside the item that matches your trade.
+            </p>
+            <div className="mt-6 font-serif text-4xl font-semibold text-home-navy">
+              $29 <span className="font-sans text-base font-medium text-slate-500">for 3 ZIP codes, 30 days</span>
+            </div>
+            <ul className="mt-6 space-y-3 text-[15px] text-slate-700 leading-relaxed">
+              <Bullet>Choose any 3 US ZIP codes and one trade per bundle.</Bullet>
+              <Bullet>Up to {MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP code and trade, first come, first served.</Bullet>
+              <Bullet>Shown beside the report item for your trade, so placement depends on what the report covers for that house.</Bullet>
+              <Bullet>Your licence number prints on the listing, with a line telling readers it is advertiser-supplied.</Bullet>
             </ul>
             <ContentLink
               href="/report-ads"
               onNavigate={onNavigate}
-              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-all cursor-pointer"
+              className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 bg-home-navy hover:bg-home-ink text-white text-sm font-bold rounded-xl shadow-lg transition-colors"
             >
-              <span>Advertise by ZIP Code</span>
-              <ArrowRight className="w-4 h-4" />
+              Choose your ZIP codes <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </ContentLink>
+          </div>
+
+          {/* A slice of a report, with the real Report Ad card in it. */}
+          <figure className="rounded-3xl bg-white border border-home-linen shadow-sm p-5 sm:p-7">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Inside a property report</div>
+            <div className="mt-3 rounded-2xl border border-home-linen bg-home-stone/60 p-4 sm:p-5">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-home-brass">
+                <ClipboardList className="w-3.5 h-3.5" aria-hidden="true" /> Inspection priority
+              </div>
+              <div className="mt-1.5 text-base font-bold text-home-ink">{GALV?.title}</div>
+              <div aria-hidden="true" className="mt-3 space-y-2">
+                <div className="h-2 rounded-full bg-home-linen w-full" />
+                <div className="h-2 rounded-full bg-home-linen w-4/5" />
+              </div>
+              <div className="mt-4">
+                <Inert label="Example Report Ad: a plumber's listing with a phone number, beside the supply pipe check">
+                  <SponsoredVendorCard vendor={EXAMPLE_REPORT_VENDOR} />
+                </Inert>
+              </div>
+            </div>
+            <figcaption className="mt-3 text-xs text-slate-500 leading-relaxed">
+              Example business. This is the same card readers see in a report.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      {/* Topic Ads -- the wide-area product. */}
+      <section id="topic-ads" className="scroll-mt-24 bg-white border-y border-home-linen py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <figure className="order-2 lg:order-1 rounded-3xl bg-home-stone border border-home-linen p-5 sm:p-7">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">On a guide article</div>
+            <div className="mt-3 rounded-2xl bg-white border border-home-linen p-4 sm:p-5">
+              <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-home-brass">Guide</div>
+              <div className="mt-1.5 font-serif text-xl font-semibold text-home-ink leading-snug">How to Spot Polybutylene Pipes Before Buying a House</div>
+              <div aria-hidden="true" className="mt-3 rounded-xl border border-home-linen p-3 space-y-2">
+                <div className="h-2 rounded-full bg-home-sage w-24" />
+                <div className="h-2 rounded-full bg-home-linen w-full" />
+                <div className="h-2 rounded-full bg-home-linen w-11/12" />
+              </div>
+              <div className="mt-4">
+                <Inert label="Example Topic Ad: a moving company's listing with a phone number, under the article's quick answer">
+                  <GuideAdVendorCard vendor={EXAMPLE_TOPIC_VENDOR} />
+                </Inert>
+              </div>
+            </div>
+            <figcaption className="mt-3 text-xs text-slate-500 leading-relaxed">
+              Example business. This is the same card readers see under the article's quick answer.
+            </figcaption>
+          </figure>
+
+          <div className="order-1 lg:order-2">
+            <Eyebrow>For businesses that serve a wide area</Eyebrow>
+            <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold tracking-tight">Topic Ads</h2>
+            <p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed">
+              Your listing on an article about the problem your business solves, directly under the
+              article's quick answer. Everyone who reads that article sees it, wherever they are.
+            </p>
+            <div className="mt-6 font-serif text-4xl font-semibold text-home-navy">
+              $7.99 <span className="font-sans text-base font-medium text-slate-500">per article, 30 days</span>
+            </div>
+            <ul className="mt-6 space-y-3 text-[15px] text-slate-700 leading-relaxed">
+              <Bullet>One advertiser per article. While it is yours, nobody else appears on that page.</Bullet>
+              <Bullet>No location targeting: the ad shows to every reader of the article, county guides included.</Bullet>
+              <Bullet>Pick as many articles as you like in one checkout, each for 30 days.</Bullet>
+            </ul>
+            <ContentLink
+              href="/topic-ads"
+              onNavigate={onNavigate}
+              className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 bg-white border border-home-navy text-home-navy hover:bg-home-stone text-sm font-bold rounded-xl transition-colors"
+            >
+              Choose your articles <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </ContentLink>
           </div>
         </div>
+      </section>
 
-        {/* Quick-scan comparison table */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xs">
-          <h2 className="font-serif text-xl font-bold text-slate-900">Comparison</h2>
-          <div className="overflow-x-auto -mx-2">
-            <table className="w-full text-xs sm:text-sm min-w-[480px]">
+      {/* How buying works -- a real sequence, so the numbers mean something. */}
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <Eyebrow>How it works</Eyebrow>
+          <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Live within minutes, no sales call</h2>
+          <ol className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { t: 'Choose', b: 'Pick 3 ZIP codes and your trade for a Report Ad, or the articles you want for Topic Ads.' },
+              { t: 'Sign in', b: 'With an email address you have verified, so only you can manage the placement.' },
+              { t: 'Add your business', b: 'Name, phone, trade and your licence number. A website is optional.' },
+              { t: 'Pay once', b: 'Through PayPal. Your placement goes live within minutes and runs 30 days, with no auto-renewal.' },
+            ].map((s, i) => (
+              <li key={s.t} className="rounded-3xl bg-white border border-home-linen p-6 shadow-sm">
+                <div className="w-9 h-9 rounded-full bg-home-navy text-white font-bold text-sm flex items-center justify-center">{i + 1}</div>
+                <div className="mt-4 text-base font-bold text-home-ink">{s.t}</div>
+                <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{s.b}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* Side by side. */}
+      <section className="pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto rounded-3xl bg-white border border-home-linen shadow-sm p-6 sm:p-10">
+          <h2 className="font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Side by side</h2>
+          {/* A real table from sm: up; on a phone each row stacks, so the Topic Ads column is never
+              hidden off the side of a scroll box. Both built from COMPARE_ROWS. */}
+          <div className="mt-6 hidden sm:block">
+            <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-slate-400 uppercase text-[10px] tracking-wider">
-                  <th className="py-2 px-2 font-semibold"> </th>
-                  <th className="py-2 px-2 font-semibold text-blue-700">Topic Ads</th>
-                  <th className="py-2 px-2 font-semibold text-emerald-700">Report Ads</th>
+                <tr className="text-left text-[11px] uppercase tracking-wider">
+                  <th className="py-3 px-2 font-semibold text-slate-400"><span className="sr-only">Detail</span></th>
+                  <th className="py-3 px-2 font-bold text-home-moss">Report Ads</th>
+                  <th className="py-3 px-2 font-bold text-home-brass">Topic Ads</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
-                <tr>
-                  <td className="py-2.5 px-2 text-slate-500 font-medium">Price</td>
-                  <td className="py-2.5 px-2 font-bold text-slate-900">$7.99 national<br /><span className="text-emerald-700">$29 county</span></td>
-                  <td className="py-2.5 px-2 font-bold text-slate-900">$29 / 3 ZIPs</td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 px-2 text-slate-500 font-medium">Duration</td>
-                  <td className="py-2.5 px-2 text-slate-700">30 days, no auto-renewal</td>
-                  <td className="py-2.5 px-2 text-slate-700">30 days, no auto-renewal</td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 px-2 text-slate-500 font-medium">Where it appears</td>
-                  <td className="py-2.5 px-2 text-slate-700">On the guide article you pick</td>
-                  <td className="py-2.5 px-2 text-slate-700">Inside the report, for each of 3 ZIP codes</td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 px-2 text-slate-500 font-medium">Targeting</td>
-                  <td className="py-2.5 px-2 text-slate-700">By article — county-specific or national</td>
-                  <td className="py-2.5 px-2 text-slate-700">By ZIP code + trade category</td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 px-2 text-slate-500 font-medium">Best for</td>
-                  <td className="py-2.5 px-2 text-slate-700">Any service area — pick county guides if local</td>
-                  <td className="py-2.5 px-2 text-slate-700">Up to 3 specific ZIP codes or a metro area</td>
-                </tr>
+              <tbody className="divide-y divide-home-linen">
+                {COMPARE_ROWS.map(([k, r, t]) => (
+                  <tr key={k}>
+                    <th scope="row" className="py-3.5 px-2 text-left font-semibold text-slate-500 align-top">{k}</th>
+                    <td className="py-3.5 px-2 text-home-ink align-top">{r}</td>
+                    <td className="py-3.5 px-2 text-home-ink align-top">{t}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 text-xs sm:text-sm text-slate-600">
-          {/* This used to send anyone with a local service area to Report Ads. That was written
-              before county guides existed and is no longer the honest recommendation: Report Ads
-              appear inside property reports, and the county guides are the placement with readers
-              already researching a specific metro. Recommending by where the readers actually are
-              matters more here than product symmetry. */}
-          <span className="font-bold text-slate-900">Not sure which one? </span>
-          If you work one metro, start with a <span className="font-semibold text-emerald-700">county guide</span> --
-          it's the placement where every reader is researching that county, and they cover the
-          largest US metros. If you'd take a customer from anywhere, a national guide reaches
-          readers on one specific problem for $7.99. Report Ads are worth adding once you want to reach
-          people pulling a full report on an exact address, rather than reading about a problem. Nothing
-          stops you from buying more than one.
-        </div>
-
-        {/* FAQ -- closes the page on the honest answers a vendor would actually want before
-            paying (no verification gate, no view guarantee, no refunds) rather than ending
-            abruptly on the comparison table. */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-1">
-          <h2 className="font-serif text-xl font-bold text-slate-900 mb-4">Questions before you buy</h2>
-          {ADVERTISE_FAQ_ITEMS.map((item, idx) => {
-            const isOpen = openFaq === idx;
-            return (
-              <div key={item.q} className="border-t border-slate-100 first:border-t-0 py-3">
-                <button
-                  type="button"
-                  onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  aria-expanded={isOpen}
-                  className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
-                >
-                  <span className="text-sm font-bold text-slate-900">{item.q}</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isOpen && (
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-2">{item.a}</p>
-                )}
+          <dl className="mt-6 sm:hidden divide-y divide-home-linen">
+            {COMPARE_ROWS.map(([k, r, t]) => (
+              <div key={k} className="py-4 first:pt-0">
+                <dt className="text-xs font-bold uppercase tracking-wider text-slate-400">{k}</dt>
+                <dd className="mt-2 grid grid-cols-[6.5rem_1fr] gap-x-3 gap-y-1.5 text-sm">
+                  <span className="font-bold text-home-moss">Report Ads</span><span className="text-home-ink">{r}</span>
+                  <span className="font-bold text-home-brass">Topic Ads</span><span className="text-home-ink">{t}</span>
+                </dd>
               </div>
-            );
-          })}
+            ))}
+          </dl>
         </div>
-      </div>
+      </section>
+
+      {/* Trades. Both checkouts sell to these categories only. */}
+      <section className="pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <Eyebrow>Who can advertise</Eyebrow>
+          <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Trades we list</h2>
+          <p className="mt-4 max-w-2xl text-base text-slate-700 leading-relaxed">
+            Both ad types are open to businesses in these trades. Every trade except chimney sweeping
+            asks for a licence, registration or certification number at checkout.
+          </p>
+          <ul className="mt-8 flex flex-wrap gap-2.5">
+            {TRADE_CATEGORIES.map((c) => (
+              <li key={c} className="rounded-full bg-white border border-home-linen px-4 py-2 text-sm font-semibold text-home-ink">{c}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* FAQ, open: the honest answers a business wants before paying. */}
+      <section className="pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto rounded-3xl bg-white border border-home-linen shadow-sm p-6 sm:p-10">
+          <h2 className="font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Questions before you buy</h2>
+          <div className="mt-6 divide-y divide-home-linen">
+            {ADVERTISE_FAQ_ITEMS.map((item) => (
+              <div key={item.q} className="py-5 first:pt-0 last:pb-0">
+                <h3 className="text-base font-bold text-home-ink">{item.q}</h3>
+                <p className="mt-2 text-[15px] text-slate-700 leading-relaxed">{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Closing: both doors again, and the real mailbox. */}
+      <section className="pb-20 sm:pb-28 px-4 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden max-w-6xl mx-auto rounded-[2rem] bg-home-navy text-white p-8 sm:p-14 shadow-2xl">
+          <div aria-hidden="true" className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+          <div className="relative grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-8 items-center">
+            <div>
+              <h2 className="font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Ready when you are</h2>
+              <p className="mt-3 text-slate-300 leading-relaxed">
+                Questions first? Email <a href="mailto:hello@beforeregret.com" className="text-home-oak underline underline-offset-2 hover:text-white">hello@beforeregret.com</a>.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row md:flex-col gap-3">
+              <ContentLink href="/report-ads" onNavigate={onNavigate} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-home-navy font-bold text-sm rounded-xl hover:bg-home-stone transition-colors">
+                Report Ads: choose ZIP codes <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </ContentLink>
+              <ContentLink href="/topic-ads" onNavigate={onNavigate} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-white/30 text-white font-bold text-sm rounded-xl hover:bg-white/10 transition-colors">
+                Topic Ads: choose articles <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </ContentLink>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

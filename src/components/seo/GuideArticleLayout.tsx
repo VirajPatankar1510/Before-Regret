@@ -6,6 +6,7 @@ import { classifyGuideTopic, GUIDE_CLUSTER_META } from '../../utils/homeContent'
 import { ArticleClosingNote } from './ArticleClosingNote';
 import { BookPromoCard, BookPromoSkyscraper } from '../BookPromo';
 import { ContentLink } from '../home/ContentLink';
+import { GUIDE_AD_SLOT_PLACEHOLDER } from '../GuideAdSlot';
 import type { GuideSummary } from '../../utils/relatedGuides';
 
 /**
@@ -65,11 +66,6 @@ interface GuideArticleLayoutProps {
   permitCounty?: CountyLink;
   relevantCounties?: CountyLink[];
 }
-
-/** The ad slot's resting height before it knows what to show -- measured from the unsold card,
- *  124px on phones and 80px from sm: up. Shared with GuideAdSlot's own loading state so neither
- *  the static page nor the first live render jumps when the slot fills in. */
-export const GUIDE_AD_SLOT_PLACEHOLDER = 'h-[124px] sm:h-20';
 
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });

@@ -4,6 +4,7 @@ import {
   ListChecks, CircleDollarSign, Phone, ExternalLink, ChevronDown, CreditCard, ShieldCheck, XCircle,
 } from 'lucide-react';
 import { TRADE_CATEGORIES, requiresLicenceNumber } from '../data/sponsoredVendors';
+import { checkVendorWebsite, VENDOR_WEBSITE_RULE } from '../data/vendorWebsite';
 import { guessTradeCategoryFromTitle } from '../data/guideAdCategoryGuess';
 import { useAuth } from '../context/AuthContext';
 
@@ -42,7 +43,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can I edit my phone or website after I’ve paid?',
-    a: 'Yes, any time from My Placements. Business name and trade category are locked once purchased.',
+    a: 'Yes, once. From My Placements you can change your phone, website and licence number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold.',
   },
   {
     q: 'Is this a subscription?',
@@ -72,10 +73,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [guides, setGuides] = useState<GuideRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pricePerSlot, setPricePerSlot] = useState(7.99);
-  // The county-tier price, read from the same /slots response as the per-guide prices so the copy
-  // above the list can never disagree with the numbers in it. Seeded with the current tier price
-  // only so the page has something to render before the fetch lands.
-  const [geoPrice, setGeoPrice] = useState(29);
   const [slotDurationDays, setSlotDurationDays] = useState(30);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState('');
@@ -160,7 +157,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           setGuides(data.guides);
           if (typeof data.pricePerSlotUsd === 'number') setPricePerSlot(data.pricePerSlotUsd);
           if (typeof data.tierPricesUsd?.standard === 'number') setPricePerSlot(data.tierPricesUsd.standard);
-          if (typeof data.tierPricesUsd?.geo === 'number') setGeoPrice(data.tierPricesUsd.geo);
           if (typeof data.slotDurationDays === 'number') setSlotDurationDays(data.slotDurationDays);
         } else {
           setLoadError(data?.error || 'Could not load available placements.');
@@ -212,9 +208,9 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   }, [guides, search, tradeCategory]);
 
   const selectedCount = selected.size;
-  // Summed per guide rather than multiplied by one rate: county guides cost more than standard
-  // ones (see src/server/adPricing.ts), so a flat multiply would quote the wrong number for any
-  // cart mixing the two. This is display only -- the amount actually charged is recomputed
+  // Summed per guide rather than multiplied by one rate: each guide carries its own price from its
+  // tier (src/server/adPricing.ts). Both tiers are $7.99 since 2026-10-04, but summing stays correct
+  // if they ever differ again. This is display only -- the amount actually charged is recomputed
   // server-side from each guide's stored tier at checkout, and never taken from the client.
   const priceOf = (g: GuideRow) => (typeof g.priceUsd === 'number' ? g.priceUsd : pricePerSlot);
   const total = useMemo(() => {
@@ -233,6 +229,9 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     if (requiresLicenceNumber(tradeCategory) && licenceNumber.trim().length < 3) {
       return setSubmitError(`A licence, registration, or certification number is required for ${tradeCategory}.`);
     }
+    // Same rule the server enforces (src/data/vendorWebsite.ts) -- caught here so the vendor hears it now.
+    const siteCheck = checkVendorWebsite(website);
+    if (!siteCheck.ok) return setSubmitError(siteCheck.error || VENDOR_WEBSITE_RULE);
     if (!attestedAccurate) return setSubmitError('Tick the confirmation box to accept the Terms of Service before continuing.');
     if (!user) return setSubmitError('Sign in to complete your purchase.');
 
@@ -297,15 +296,6 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       >
         <span className="text-sm text-slate-800 min-w-0 flex-1">
           {g.title}
-          {/* The county badge is the whole reason this tier exists, so it is named on the row
-              rather than left for the vendor to infer from a higher price: a guide about one
-              county reaches readers researching that county, which is the only audience a local
-              trade can actually serve. */}
-          {g.tier === 'geo' && (
-            <span className="ml-2 inline-block align-middle text-[10px] font-bold uppercase tracking-wide text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
-              County
-            </span>
-          )}
         </span>
         <span className="text-xs font-bold text-slate-500 shrink-0 tabular-nums">${priceOf(g).toFixed(2)}</span>
         <span
@@ -356,10 +346,9 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
               Get your phone number in front of people researching this exact problem
             </h1>
             <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-              From ${pricePerSlot.toFixed(2)} per guide for {slotDurationDays} days -- pick as many guides as you
-              want, pay once, and your business shows up there until it expires. Guides about a specific county
-              cost ${geoPrice.toFixed(2)}, because they reach readers in one place rather than the whole country.
-              Any business can advertise on any guide.
+              ${pricePerSlot.toFixed(2)} per guide for {slotDurationDays} days -- pick as many guides as you
+              want, pay once, and your business shows up there until it expires. Every reader of the guide
+              sees it, wherever they are.
             </p>
           </div>
 
@@ -404,10 +393,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
               <CircleDollarSign className="w-5 h-5" />
             </div>
-            <h3 className="font-extrabold text-base text-slate-900">Priced By Reach</h3>
+            <h3 className="font-extrabold text-base text-slate-900">One Flat Price</h3>
             <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              ${pricePerSlot.toFixed(2)} for a nationwide guide -- a good fit if you serve customers across many
-              cities. ${geoPrice.toFixed(2)} for a county guide, where everyone reading is in your service area.
+              ${pricePerSlot.toFixed(2)} per guide, county guides included -- a good fit if you serve customers
+              across a wide area. Serving specific ZIP codes? Report Ads are built for that.
             </p>
           </div>
         </div>
@@ -488,6 +477,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                 onChange={(e) => setWebsite(e.target.value)}
                 className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm sm:col-span-2"
               />
+              <p className="text-[11px] text-slate-500 leading-snug sm:col-span-2 -mt-1">{VENDOR_WEBSITE_RULE}</p>
               {/* Same field and same rules as the ZIP-ad form -- see the comment on the licence
                   input in VendorSignupForm.tsx, including why the helper text below deliberately
                   omits "we don't verify this": that fact belongs on the public-facing card, not
