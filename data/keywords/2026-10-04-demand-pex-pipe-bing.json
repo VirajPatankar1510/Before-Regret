@@ -1,0 +1,81 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-04T18:28:35.126Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "pex pipe",
+    "copper pipes",
+    "galvanized pipes",
+    "cpvc pipe",
+    "identify pipes",
+    "what kind of pipes"
+  ],
+  "keywords": [
+    {
+      "keyword": "pex pipe",
+      "search_volume": 2850,
+      "metric": "market",
+      "broad_impressions": 3397,
+      "kind": "seed"
+    },
+    {
+      "keyword": "pex pipe fittings",
+      "search_volume": 255,
+      "metric": "market",
+      "broad_impressions": 255,
+      "kind": "related"
+    },
+    {
+      "keyword": "what is pex pipe",
+      "search_volume": 189,
+      "metric": "market",
+      "broad_impressions": 189,
+      "kind": "related"
+    },
+    {
+      "keyword": "copper pipes",
+      "search_volume": 169,
+      "metric": "market",
+      "broad_impressions": 169,
+      "kind": "seed"
+    },
+    {
+      "keyword": "galvanized pipes",
+      "search_volume": 64,
+      "metric": "market",
+      "broad_impressions": 64,
+      "kind": "seed"
+    },
+    {
+      "keyword": "cpvc pipe",
+      "search_volume": 1026,
+      "metric": "market",
+      "broad_impressions": 1117,
+      "kind": "seed"
+    },
+    {
+      "keyword": "cpvc pipe has a maximum service temperature higher than that of pvc pipe.",
+      "search_volume": 29,
+      "metric": "market",
+      "broad_impressions": 29,
+      "kind": "related"
+    },
+    {
+      "keyword": "identify pipes",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "what kind of pipes",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}
