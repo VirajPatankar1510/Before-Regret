@@ -1,0 +1,2057 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-04T15:33:12.281Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "accela",
+    "etrakit",
+    "energov",
+    "citizen access",
+    "self service portal",
+    "permit portal",
+    "permit search by address",
+    "open permits"
+  ],
+  "keywords": [
+    {
+      "keyword": "accela",
+      "search_volume": 7952,
+      "metric": "market",
+      "broad_impressions": 61774,
+      "kind": "seed"
+    },
+    {
+      "keyword": "accela citizen access",
+      "search_volume": 4708,
+      "metric": "market",
+      "broad_impressions": 6541,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela login",
+      "search_volume": 3669,
+      "metric": "market",
+      "broad_impressions": 10087,
+      "kind": "related"
+    },
+    {
+      "keyword": "pasco county accela",
+      "search_volume": 1695,
+      "metric": "market",
+      "broad_impressions": 2365,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of tampa accela",
+      "search_volume": 1605,
+      "metric": "market",
+      "broad_impressions": 3302,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela tampa",
+      "search_volume": 1544,
+      "metric": "market",
+      "broad_impressions": 1669,
+      "kind": "related"
+    },
+    {
+      "keyword": "pasco accela",
+      "search_volume": 1473,
+      "metric": "market",
+      "broad_impressions": 1762,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela atlanta",
+      "search_volume": 1364,
+      "metric": "market",
+      "broad_impressions": 1471,
+      "kind": "related"
+    },
+    {
+      "keyword": "hillsborough county accela",
+      "search_volume": 1350,
+      "metric": "market",
+      "broad_impressions": 2301,
+      "kind": "related"
+    },
+    {
+      "keyword": "manatee county accela",
+      "search_volume": 1131,
+      "metric": "market",
+      "broad_impressions": 1710,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela fort worth",
+      "search_volume": 1036,
+      "metric": "market",
+      "broad_impressions": 1451,
+      "kind": "related"
+    },
+    {
+      "keyword": "hillsborough accela",
+      "search_volume": 1001,
+      "metric": "market",
+      "broad_impressions": 1073,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of tampa accela login",
+      "search_volume": 970,
+      "metric": "market",
+      "broad_impressions": 970,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela mecklenburg county",
+      "search_volume": 892,
+      "metric": "market",
+      "broad_impressions": 1409,
+      "kind": "related"
+    },
+    {
+      "keyword": "pinellas county accela",
+      "search_volume": 777,
+      "metric": "market",
+      "broad_impressions": 1119,
+      "kind": "related"
+    },
+    {
+      "keyword": "fdny accela",
+      "search_volume": 775,
+      "metric": "market",
+      "broad_impressions": 918,
+      "kind": "related"
+    },
+    {
+      "keyword": "tampa accela",
+      "search_volume": 733,
+      "metric": "market",
+      "broad_impressions": 4178,
+      "kind": "related"
+    },
+    {
+      "keyword": "polk county accela",
+      "search_volume": 712,
+      "metric": "market",
+      "broad_impressions": 990,
+      "kind": "related"
+    },
+    {
+      "keyword": "charlotte accela",
+      "search_volume": 655,
+      "metric": "market",
+      "broad_impressions": 1005,
+      "kind": "related"
+    },
+    {
+      "keyword": "pasco county accela login",
+      "search_volume": 649,
+      "metric": "market",
+      "broad_impressions": 649,
+      "kind": "related"
+    },
+    {
+      "keyword": "sarasota county accela",
+      "search_volume": 632,
+      "metric": "market",
+      "broad_impressions": 981,
+      "kind": "related"
+    },
+    {
+      "keyword": "atlanta accela",
+      "search_volume": 584,
+      "metric": "market",
+      "broad_impressions": 1547,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela charlotte",
+      "search_volume": 582,
+      "metric": "market",
+      "broad_impressions": 712,
+      "kind": "related"
+    },
+    {
+      "keyword": "mecklenburg county accela",
+      "search_volume": 570,
+      "metric": "market",
+      "broad_impressions": 893,
+      "kind": "related"
+    },
+    {
+      "keyword": "pinellas accela",
+      "search_volume": 542,
+      "metric": "market",
+      "broad_impressions": 662,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela mecklenburg",
+      "search_volume": 517,
+      "metric": "market",
+      "broad_impressions": 1926,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela mecklenburg county login",
+      "search_volume": 517,
+      "metric": "market",
+      "broad_impressions": 517,
+      "kind": "related"
+    },
+    {
+      "keyword": "manatee county accela login",
+      "search_volume": 513,
+      "metric": "market",
+      "broad_impressions": 513,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of atlanta accela login",
+      "search_volume": 511,
+      "metric": "market",
+      "broad_impressions": 511,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of san diego accela",
+      "search_volume": 508,
+      "metric": "market",
+      "broad_impressions": 508,
+      "kind": "related"
+    },
+    {
+      "keyword": "hillsborough county accela portal",
+      "search_volume": 505,
+      "metric": "market",
+      "broad_impressions": 505,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela san diego",
+      "search_volume": 504,
+      "metric": "market",
+      "broad_impressions": 853,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of tampa accela log in",
+      "search_volume": 479,
+      "metric": "market",
+      "broad_impressions": 479,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela dallas",
+      "search_volume": 470,
+      "metric": "market",
+      "broad_impressions": 513,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela pasco county",
+      "search_volume": 454,
+      "metric": "market",
+      "broad_impressions": 577,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela citizen access portal",
+      "search_volume": 449,
+      "metric": "market",
+      "broad_impressions": 449,
+      "kind": "related"
+    },
+    {
+      "keyword": "hillsborough county accela login",
+      "search_volume": 446,
+      "metric": "market",
+      "broad_impressions": 446,
+      "kind": "related"
+    },
+    {
+      "keyword": "lauderbuild accela login",
+      "search_volume": 444,
+      "metric": "market",
+      "broad_impressions": 444,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of bradenton accela",
+      "search_volume": 435,
+      "metric": "market",
+      "broad_impressions": 435,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela pasco",
+      "search_volume": 433,
+      "metric": "market",
+      "broad_impressions": 1010,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela fort worth login",
+      "search_volume": 415,
+      "metric": "market",
+      "broad_impressions": 415,
+      "kind": "related"
+    },
+    {
+      "keyword": "pasco county permit search accela",
+      "search_volume": 399,
+      "metric": "market",
+      "broad_impressions": 399,
+      "kind": "related"
+    },
+    {
+      "keyword": "lee county accela",
+      "search_volume": 388,
+      "metric": "market",
+      "broad_impressions": 429,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of atlanta accela",
+      "search_volume": 384,
+      "metric": "market",
+      "broad_impressions": 895,
+      "kind": "related"
+    },
+    {
+      "keyword": "charlotte county accela",
+      "search_volume": 368,
+      "metric": "market",
+      "broad_impressions": 368,
+      "kind": "related"
+    },
+    {
+      "keyword": "aca-prod.accela.com",
+      "search_volume": 351,
+      "metric": "market",
+      "broad_impressions": 351,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela san diego login",
+      "search_volume": 349,
+      "metric": "market",
+      "broad_impressions": 349,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of clearwater accela",
+      "search_volume": 346,
+      "metric": "market",
+      "broad_impressions": 346,
+      "kind": "related"
+    },
+    {
+      "keyword": "pinellas county accela login",
+      "search_volume": 342,
+      "metric": "market",
+      "broad_impressions": 342,
+      "kind": "related"
+    },
+    {
+      "keyword": "sarasota county accela login",
+      "search_volume": 327,
+      "metric": "market",
+      "broad_impressions": 327,
+      "kind": "related"
+    },
+    {
+      "keyword": "mecklenburg county accela login",
+      "search_volume": 323,
+      "metric": "market",
+      "broad_impressions": 323,
+      "kind": "related"
+    },
+    {
+      "keyword": "mecklenburg accela",
+      "search_volume": 321,
+      "metric": "market",
+      "broad_impressions": 321,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela fdny",
+      "search_volume": 298,
+      "metric": "market",
+      "broad_impressions": 298,
+      "kind": "related"
+    },
+    {
+      "keyword": "pasco accela login",
+      "search_volume": 289,
+      "metric": "market",
+      "broad_impressions": 289,
+      "kind": "related"
+    },
+    {
+      "keyword": "polk accela",
+      "search_volume": 282,
+      "metric": "market",
+      "broad_impressions": 427,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela city of tampa",
+      "search_volume": 266,
+      "metric": "market",
+      "broad_impressions": 266,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela clark county",
+      "search_volume": 255,
+      "metric": "market",
+      "broad_impressions": 255,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of santa barbara accela",
+      "search_volume": 255,
+      "metric": "market",
+      "broad_impressions": 255,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of charlotte accela",
+      "search_volume": 254,
+      "metric": "market",
+      "broad_impressions": 350,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela polk county",
+      "search_volume": 251,
+      "metric": "market",
+      "broad_impressions": 292,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of tampa accela portal",
+      "search_volume": 248,
+      "metric": "market",
+      "broad_impressions": 248,
+      "kind": "related"
+    },
+    {
+      "keyword": "sarasota accela",
+      "search_volume": 245,
+      "metric": "market",
+      "broad_impressions": 245,
+      "kind": "related"
+    },
+    {
+      "keyword": "clark county accela",
+      "search_volume": 239,
+      "metric": "market",
+      "broad_impressions": 418,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela san antonio",
+      "search_volume": 234,
+      "metric": "market",
+      "broad_impressions": 310,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela manatee county",
+      "search_volume": 212,
+      "metric": "market",
+      "broad_impressions": 212,
+      "kind": "related"
+    },
+    {
+      "keyword": "meck accela",
+      "search_volume": 212,
+      "metric": "market",
+      "broad_impressions": 233,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela indianapolis",
+      "search_volume": 209,
+      "metric": "market",
+      "broad_impressions": 209,
+      "kind": "related"
+    },
+    {
+      "keyword": "dallas accela login",
+      "search_volume": 203,
+      "metric": "market",
+      "broad_impressions": 203,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela lee county",
+      "search_volume": 196,
+      "metric": "market",
+      "broad_impressions": 196,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela portal",
+      "search_volume": 158,
+      "metric": "market",
+      "broad_impressions": 1220,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela colorado springs",
+      "search_volume": 157,
+      "metric": "market",
+      "broad_impressions": 157,
+      "kind": "related"
+    },
+    {
+      "keyword": "clark county accela login",
+      "search_volume": 153,
+      "metric": "market",
+      "broad_impressions": 153,
+      "kind": "related"
+    },
+    {
+      "keyword": "cabarrus county accela",
+      "search_volume": 152,
+      "metric": "market",
+      "broad_impressions": 193,
+      "kind": "related"
+    },
+    {
+      "keyword": "osceola county accela",
+      "search_volume": 147,
+      "metric": "market",
+      "broad_impressions": 147,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela citizen access login",
+      "search_volume": 138,
+      "metric": "market",
+      "broad_impressions": 138,
+      "kind": "related"
+    },
+    {
+      "keyword": "north port accela",
+      "search_volume": 133,
+      "metric": "market",
+      "broad_impressions": 364,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela charlotte county",
+      "search_volume": 130,
+      "metric": "market",
+      "broad_impressions": 130,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela tampa log in",
+      "search_volume": 125,
+      "metric": "market",
+      "broad_impressions": 125,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela atlanta login",
+      "search_volume": 107,
+      "metric": "market",
+      "broad_impressions": 107,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela fort lauderdale",
+      "search_volume": 99,
+      "metric": "market",
+      "broad_impressions": 99,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela hillsborough",
+      "search_volume": 98,
+      "metric": "market",
+      "broad_impressions": 539,
+      "kind": "related"
+    },
+    {
+      "keyword": "clearwater accela",
+      "search_volume": 76,
+      "metric": "market",
+      "broad_impressions": 422,
+      "kind": "related"
+    },
+    {
+      "keyword": "gwinnett accela",
+      "search_volume": 69,
+      "metric": "market",
+      "broad_impressions": 69,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of goodyear accela",
+      "search_volume": 68,
+      "metric": "market",
+      "broad_impressions": 68,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela citrus county",
+      "search_volume": 61,
+      "metric": "market",
+      "broad_impressions": 61,
+      "kind": "related"
+    },
+    {
+      "keyword": "cabarrus county accela login",
+      "search_volume": 41,
+      "metric": "market",
+      "broad_impressions": 41,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela monterey county",
+      "search_volume": 26,
+      "metric": "market",
+      "broad_impressions": 26,
+      "kind": "related"
+    },
+    {
+      "keyword": "rancho cucamonga accela",
+      "search_volume": 23,
+      "metric": "market",
+      "broad_impressions": 23,
+      "kind": "related"
+    },
+    {
+      "keyword": "cftod accela login",
+      "search_volume": 23,
+      "metric": "market",
+      "broad_impressions": 23,
+      "kind": "related"
+    },
+    {
+      "keyword": "denvergov.org accela citizen access",
+      "search_volume": 21,
+      "metric": "market",
+      "broad_impressions": 21,
+      "kind": "related"
+    },
+    {
+      "keyword": "winter haven accela",
+      "search_volume": 20,
+      "metric": "market",
+      "broad_impressions": 20,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela community",
+      "search_volume": 19,
+      "metric": "market",
+      "broad_impressions": 19,
+      "kind": "related"
+    },
+    {
+      "keyword": "etrakit",
+      "search_volume": 3595,
+      "metric": "market",
+      "broad_impressions": 7904,
+      "kind": "seed"
+    },
+    {
+      "keyword": "etrakit login",
+      "search_volume": 570,
+      "metric": "market",
+      "broad_impressions": 812,
+      "kind": "related"
+    },
+    {
+      "keyword": "etrakit plano",
+      "search_volume": 516,
+      "metric": "market",
+      "broad_impressions": 516,
+      "kind": "related"
+    },
+    {
+      "keyword": "etrakit greenville county",
+      "search_volume": 285,
+      "metric": "market",
+      "broad_impressions": 285,
+      "kind": "related"
+    },
+    {
+      "keyword": "etrakit frisco",
+      "search_volume": 219,
+      "metric": "market",
+      "broad_impressions": 219,
+      "kind": "related"
+    },
+    {
+      "keyword": "etrakit coral springs",
+      "search_volume": 213,
+      "metric": "market",
+      "broad_impressions": 213,
+      "kind": "related"
+    },
+    {
+      "keyword": "plano etrakit",
+      "search_volume": 185,
+      "metric": "market",
+      "broad_impressions": 185,
+      "kind": "related"
+    },
+    {
+      "keyword": "arvada etrakit login",
+      "search_volume": 144,
+      "metric": "market",
+      "broad_impressions": 144,
+      "kind": "related"
+    },
+    {
+      "keyword": "etrakit arvada",
+      "search_volume": 136,
+      "metric": "market",
+      "broad_impressions": 136,
+      "kind": "related"
+    },
+    {
+      "keyword": "etrakit flower mound",
+      "search_volume": 131,
+      "metric": "market",
+      "broad_impressions": 131,
+      "kind": "related"
+    },
+    {
+      "keyword": "etrakit vacaville",
+      "search_volume": 125,
+      "metric": "market",
+      "broad_impressions": 125,
+      "kind": "related"
+    },
+    {
+      "keyword": "arvada etrakit",
+      "search_volume": 124,
+      "metric": "market",
+      "broad_impressions": 292,
+      "kind": "related"
+    },
+    {
+      "keyword": "castle rock etrakit",
+      "search_volume": 48,
+      "metric": "market",
+      "broad_impressions": 48,
+      "kind": "related"
+    },
+    {
+      "keyword": "elk grove etrakit",
+      "search_volume": 24,
+      "metric": "market",
+      "broad_impressions": 24,
+      "kind": "related"
+    },
+    {
+      "keyword": "greeley etrakit",
+      "search_volume": 23,
+      "metric": "market",
+      "broad_impressions": 23,
+      "kind": "related"
+    },
+    {
+      "keyword": "energov",
+      "search_volume": 1116,
+      "metric": "market",
+      "broad_impressions": 1725,
+      "kind": "seed"
+    },
+    {
+      "keyword": "energov login",
+      "search_volume": 296,
+      "metric": "market",
+      "broad_impressions": 296,
+      "kind": "related"
+    },
+    {
+      "keyword": "melbourne energov log in",
+      "search_volume": 20,
+      "metric": "market",
+      "broad_impressions": 20,
+      "kind": "related"
+    },
+    {
+      "keyword": "citizen access",
+      "search_volume": 662,
+      "metric": "market",
+      "broad_impressions": 10646,
+      "kind": "seed"
+    },
+    {
+      "keyword": "citizen access portal",
+      "search_volume": 767,
+      "metric": "market",
+      "broad_impressions": 2120,
+      "kind": "related"
+    },
+    {
+      "keyword": "dallasnow/accela citizen access",
+      "search_volume": 688,
+      "metric": "market",
+      "broad_impressions": 688,
+      "kind": "related"
+    },
+    {
+      "keyword": "jefferson county citizen access portal",
+      "search_volume": 526,
+      "metric": "market",
+      "broad_impressions": 526,
+      "kind": "related"
+    },
+    {
+      "keyword": "elicensing21.mass.gov citizen access",
+      "search_volume": 513,
+      "metric": "market",
+      "broad_impressions": 513,
+      "kind": "related"
+    },
+    {
+      "keyword": "citizen access login",
+      "search_volume": 351,
+      "metric": "market",
+      "broad_impressions": 489,
+      "kind": "related"
+    },
+    {
+      "keyword": "clark county citizen access portal",
+      "search_volume": 253,
+      "metric": "market",
+      "broad_impressions": 253,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela citizen access fort worth",
+      "search_volume": 183,
+      "metric": "market",
+      "broad_impressions": 183,
+      "kind": "related"
+    },
+    {
+      "keyword": "accela citizen access mecklenburg county",
+      "search_volume": 95,
+      "metric": "market",
+      "broad_impressions": 95,
+      "kind": "related"
+    },
+    {
+      "keyword": "citizen access portal montgomery al",
+      "search_volume": 57,
+      "metric": "market",
+      "broad_impressions": 57,
+      "kind": "related"
+    },
+    {
+      "keyword": "self service portal",
+      "search_volume": 39859,
+      "metric": "market",
+      "broad_impressions": 92895,
+      "kind": "seed"
+    },
+    {
+      "keyword": "nycha self service portal",
+      "search_volume": 22201,
+      "metric": "market",
+      "broad_impressions": 23739,
+      "kind": "related"
+    },
+    {
+      "keyword": "ohio benefits self-service portal",
+      "search_volume": 7678,
+      "metric": "market",
+      "broad_impressions": 7678,
+      "kind": "related"
+    },
+    {
+      "keyword": "uihc self service portal",
+      "search_volume": 2996,
+      "metric": "market",
+      "broad_impressions": 2996,
+      "kind": "related"
+    },
+    {
+      "keyword": "goodyear self service portal",
+      "search_volume": 2825,
+      "metric": "market",
+      "broad_impressions": 3135,
+      "kind": "related"
+    },
+    {
+      "keyword": "dcf self service portal",
+      "search_volume": 1503,
+      "metric": "market",
+      "broad_impressions": 1503,
+      "kind": "related"
+    },
+    {
+      "keyword": "uihc employee self service portal",
+      "search_volume": 1408,
+      "metric": "market",
+      "broad_impressions": 1432,
+      "kind": "related"
+    },
+    {
+      "keyword": "nycha self service portal login",
+      "search_volume": 1304,
+      "metric": "market",
+      "broad_impressions": 1304,
+      "kind": "related"
+    },
+    {
+      "keyword": "galen self service portal",
+      "search_volume": 1184,
+      "metric": "market",
+      "broad_impressions": 1204,
+      "kind": "related"
+    },
+    {
+      "keyword": "ohio benefits self service portal",
+      "search_volume": 1044,
+      "metric": "market",
+      "broad_impressions": 1293,
+      "kind": "related"
+    },
+    {
+      "keyword": "adp self service portal",
+      "search_volume": 946,
+      "metric": "market",
+      "broad_impressions": 962,
+      "kind": "related"
+    },
+    {
+      "keyword": "employee self service portal",
+      "search_volume": 818,
+      "metric": "market",
+      "broad_impressions": 3147,
+      "kind": "related"
+    },
+    {
+      "keyword": "gsam self service portal",
+      "search_volume": 711,
+      "metric": "market",
+      "broad_impressions": 711,
+      "kind": "related"
+    },
+    {
+      "keyword": "self service portal sign in",
+      "search_volume": 624,
+      "metric": "market",
+      "broad_impressions": 647,
+      "kind": "related"
+    },
+    {
+      "keyword": "ohio self service portal",
+      "search_volume": 568,
+      "metric": "market",
+      "broad_impressions": 742,
+      "kind": "related"
+    },
+    {
+      "keyword": "it self service portal",
+      "search_volume": 532,
+      "metric": "market",
+      "broad_impressions": 532,
+      "kind": "related"
+    },
+    {
+      "keyword": "galen college of nursing self service portal",
+      "search_volume": 501,
+      "metric": "market",
+      "broad_impressions": 501,
+      "kind": "related"
+    },
+    {
+      "keyword": "mynycha self service portal",
+      "search_volume": 460,
+      "metric": "market",
+      "broad_impressions": 460,
+      "kind": "related"
+    },
+    {
+      "keyword": "odjfs self service portal",
+      "search_volume": 459,
+      "metric": "market",
+      "broad_impressions": 459,
+      "kind": "related"
+    },
+    {
+      "keyword": "jfs self service portal",
+      "search_volume": 453,
+      "metric": "market",
+      "broad_impressions": 453,
+      "kind": "related"
+    },
+    {
+      "keyword": "self service portal fdu",
+      "search_volume": 409,
+      "metric": "market",
+      "broad_impressions": 409,
+      "kind": "related"
+    },
+    {
+      "keyword": "self service portal login",
+      "search_volume": 400,
+      "metric": "market",
+      "broad_impressions": 2723,
+      "kind": "related"
+    },
+    {
+      "keyword": "umsv self service portal",
+      "search_volume": 398,
+      "metric": "market",
+      "broad_impressions": 398,
+      "kind": "related"
+    },
+    {
+      "keyword": "self-service portal",
+      "search_volume": 372,
+      "metric": "market",
+      "broad_impressions": 8184,
+      "kind": "related"
+    },
+    {
+      "keyword": "mn self service portal",
+      "search_volume": 335,
+      "metric": "market",
+      "broad_impressions": 412,
+      "kind": "related"
+    },
+    {
+      "keyword": "ftcc self service portal",
+      "search_volume": 303,
+      "metric": "market",
+      "broad_impressions": 303,
+      "kind": "related"
+    },
+    {
+      "keyword": "workday employee self service portal",
+      "search_volume": 300,
+      "metric": "market",
+      "broad_impressions": 300,
+      "kind": "related"
+    },
+    {
+      "keyword": "goodyear self service portal login",
+      "search_volume": 289,
+      "metric": "market",
+      "broad_impressions": 289,
+      "kind": "related"
+    },
+    {
+      "keyword": "ohio benefits self service portal login",
+      "search_volume": 249,
+      "metric": "market",
+      "broad_impressions": 249,
+      "kind": "related"
+    },
+    {
+      "keyword": "self service portal wells fargo",
+      "search_volume": 247,
+      "metric": "market",
+      "broad_impressions": 247,
+      "kind": "related"
+    },
+    {
+      "keyword": "self service portal nycha",
+      "search_volume": 231,
+      "metric": "market",
+      "broad_impressions": 231,
+      "kind": "related"
+    },
+    {
+      "keyword": "cssp.kees.ks.gov self service portal",
+      "search_volume": 229,
+      "metric": "market",
+      "broad_impressions": 229,
+      "kind": "related"
+    },
+    {
+      "keyword": "ey self service portal",
+      "search_volume": 224,
+      "metric": "market",
+      "broad_impressions": 224,
+      "kind": "related"
+    },
+    {
+      "keyword": "section 8 self service portal",
+      "search_volume": 222,
+      "metric": "market",
+      "broad_impressions": 222,
+      "kind": "related"
+    },
+    {
+      "keyword": "fdu self service portal",
+      "search_volume": 217,
+      "metric": "market",
+      "broad_impressions": 217,
+      "kind": "related"
+    },
+    {
+      "keyword": "self service portal ohio benefits",
+      "search_volume": 213,
+      "metric": "market",
+      "broad_impressions": 213,
+      "kind": "related"
+    },
+    {
+      "keyword": "citizen self service portal",
+      "search_volume": 198,
+      "metric": "market",
+      "broad_impressions": 322,
+      "kind": "related"
+    },
+    {
+      "keyword": "stevenson self service portal",
+      "search_volume": 190,
+      "metric": "market",
+      "broad_impressions": 190,
+      "kind": "related"
+    },
+    {
+      "keyword": "ohio self service portal login",
+      "search_volume": 174,
+      "metric": "market",
+      "broad_impressions": 174,
+      "kind": "related"
+    },
+    {
+      "keyword": "psers member self service portal",
+      "search_volume": 170,
+      "metric": "market",
+      "broad_impressions": 170,
+      "kind": "related"
+    },
+    {
+      "keyword": "state of minnesota self service portal",
+      "search_volume": 169,
+      "metric": "market",
+      "broad_impressions": 169,
+      "kind": "related"
+    },
+    {
+      "keyword": "my nycha self service portal",
+      "search_volume": 163,
+      "metric": "market",
+      "broad_impressions": 163,
+      "kind": "related"
+    },
+    {
+      "keyword": "la e e - self service portal",
+      "search_volume": 160,
+      "metric": "market",
+      "broad_impressions": 160,
+      "kind": "related"
+    },
+    {
+      "keyword": "nimc self service portal",
+      "search_volume": 142,
+      "metric": "market",
+      "broad_impressions": 143,
+      "kind": "related"
+    },
+    {
+      "keyword": "duo self service portal",
+      "search_volume": 136,
+      "metric": "market",
+      "broad_impressions": 136,
+      "kind": "related"
+    },
+    {
+      "keyword": "hud fha self service portal",
+      "search_volume": 133,
+      "metric": "market",
+      "broad_impressions": 133,
+      "kind": "related"
+    },
+    {
+      "keyword": "wells fargo self service portal",
+      "search_volume": 123,
+      "metric": "market",
+      "broad_impressions": 123,
+      "kind": "related"
+    },
+    {
+      "keyword": "rsa self service portal",
+      "search_volume": 119,
+      "metric": "market",
+      "broad_impressions": 119,
+      "kind": "related"
+    },
+    {
+      "keyword": "myaccount.cbre.com self service portal",
+      "search_volume": 111,
+      "metric": "market",
+      "broad_impressions": 111,
+      "kind": "related"
+    },
+    {
+      "keyword": "fsc payroll self service portal",
+      "search_volume": 105,
+      "metric": "market",
+      "broad_impressions": 105,
+      "kind": "related"
+    },
+    {
+      "keyword": "student self service portal",
+      "search_volume": 105,
+      "metric": "market",
+      "broad_impressions": 203,
+      "kind": "related"
+    },
+    {
+      "keyword": "vec employer self service portal",
+      "search_volume": 71,
+      "metric": "market",
+      "broad_impressions": 71,
+      "kind": "related"
+    },
+    {
+      "keyword": "paylocity self service portal",
+      "search_volume": 70,
+      "metric": "market",
+      "broad_impressions": 70,
+      "kind": "related"
+    },
+    {
+      "keyword": "manageengine self service portal",
+      "search_volume": 63,
+      "metric": "market",
+      "broad_impressions": 63,
+      "kind": "related"
+    },
+    {
+      "keyword": "my self service portal",
+      "search_volume": 59,
+      "metric": "market",
+      "broad_impressions": 59,
+      "kind": "related"
+    },
+    {
+      "keyword": "vendor self service portal",
+      "search_volume": 55,
+      "metric": "market",
+      "broad_impressions": 55,
+      "kind": "related"
+    },
+    {
+      "keyword": "ad self service portal",
+      "search_volume": 51,
+      "metric": "market",
+      "broad_impressions": 51,
+      "kind": "related"
+    },
+    {
+      "keyword": "collin county self service portal",
+      "search_volume": 48,
+      "metric": "market",
+      "broad_impressions": 48,
+      "kind": "related"
+    },
+    {
+      "keyword": "louisiana medicaid self service portal",
+      "search_volume": 45,
+      "metric": "market",
+      "broad_impressions": 45,
+      "kind": "related"
+    },
+    {
+      "keyword": "vec self service portal login",
+      "search_volume": 44,
+      "metric": "market",
+      "broad_impressions": 44,
+      "kind": "related"
+    },
+    {
+      "keyword": "mcny self service portal",
+      "search_volume": 43,
+      "metric": "market",
+      "broad_impressions": 68,
+      "kind": "related"
+    },
+    {
+      "keyword": "tarms self service portal",
+      "search_volume": 43,
+      "metric": "market",
+      "broad_impressions": 55,
+      "kind": "related"
+    },
+    {
+      "keyword": "mcny self service portal login",
+      "search_volume": 25,
+      "metric": "market",
+      "broad_impressions": 25,
+      "kind": "related"
+    },
+    {
+      "keyword": "mn self service portal sign in",
+      "search_volume": 23,
+      "metric": "market",
+      "broad_impressions": 23,
+      "kind": "related"
+    },
+    {
+      "keyword": "iam self service portal",
+      "search_volume": 23,
+      "metric": "market",
+      "broad_impressions": 23,
+      "kind": "related"
+    },
+    {
+      "keyword": "bu self service portal",
+      "search_volume": 22,
+      "metric": "market",
+      "broad_impressions": 22,
+      "kind": "related"
+    },
+    {
+      "keyword": "galen self service portal login",
+      "search_volume": 20,
+      "metric": "market",
+      "broad_impressions": 20,
+      "kind": "related"
+    },
+    {
+      "keyword": "microsoft self service portal",
+      "search_volume": 11,
+      "metric": "market",
+      "broad_impressions": 11,
+      "kind": "related"
+    },
+    {
+      "keyword": "icai self service portal",
+      "search_volume": 9,
+      "metric": "market",
+      "broad_impressions": 9,
+      "kind": "related"
+    },
+    {
+      "keyword": "permit portal",
+      "search_volume": 474,
+      "metric": "market",
+      "broad_impressions": 55826,
+      "kind": "seed"
+    },
+    {
+      "keyword": "wake county permit portal",
+      "search_volume": 1434,
+      "metric": "market",
+      "broad_impressions": 2013,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of raleigh permit portal",
+      "search_volume": 1250,
+      "metric": "market",
+      "broad_impressions": 1669,
+      "kind": "related"
+    },
+    {
+      "keyword": "sdci permit portal",
+      "search_volume": 928,
+      "metric": "market",
+      "broad_impressions": 928,
+      "kind": "related"
+    },
+    {
+      "keyword": "brunswick county permit portal",
+      "search_volume": 896,
+      "metric": "market",
+      "broad_impressions": 1621,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of atlanta permit portal",
+      "search_volume": 784,
+      "metric": "market",
+      "broad_impressions": 784,
+      "kind": "related"
+    },
+    {
+      "keyword": "snohomish county permit portal",
+      "search_volume": 772,
+      "metric": "market",
+      "broad_impressions": 800,
+      "kind": "related"
+    },
+    {
+      "keyword": "collier county permit portal",
+      "search_volume": 767,
+      "metric": "market",
+      "broad_impressions": 1228,
+      "kind": "related"
+    },
+    {
+      "keyword": "seattle permit portal",
+      "search_volume": 760,
+      "metric": "market",
+      "broad_impressions": 1564,
+      "kind": "related"
+    },
+    {
+      "keyword": "raleigh permit portal",
+      "search_volume": 715,
+      "metric": "market",
+      "broad_impressions": 2738,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of dallas permit portal",
+      "search_volume": 655,
+      "metric": "market",
+      "broad_impressions": 655,
+      "kind": "related"
+    },
+    {
+      "keyword": "hillsborough county permit portal",
+      "search_volume": 641,
+      "metric": "market",
+      "broad_impressions": 641,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of tallahassee permit portal",
+      "search_volume": 598,
+      "metric": "market",
+      "broad_impressions": 598,
+      "kind": "related"
+    },
+    {
+      "keyword": "wake county permit portal login",
+      "search_volume": 579,
+      "metric": "market",
+      "broad_impressions": 579,
+      "kind": "related"
+    },
+    {
+      "keyword": "fairfax county permit portal",
+      "search_volume": 561,
+      "metric": "market",
+      "broad_impressions": 561,
+      "kind": "related"
+    },
+    {
+      "keyword": "orange county permit portal",
+      "search_volume": 528,
+      "metric": "market",
+      "broad_impressions": 528,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of seattle permit portal",
+      "search_volume": 481,
+      "metric": "market",
+      "broad_impressions": 481,
+      "kind": "related"
+    },
+    {
+      "keyword": "baltimore county permit portal",
+      "search_volume": 472,
+      "metric": "market",
+      "broad_impressions": 472,
+      "kind": "related"
+    },
+    {
+      "keyword": "collier county permit portal login",
+      "search_volume": 461,
+      "metric": "market",
+      "broad_impressions": 461,
+      "kind": "related"
+    },
+    {
+      "keyword": "kitsap county permit portal",
+      "search_volume": 452,
+      "metric": "market",
+      "broad_impressions": 473,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of richmond permit portal",
+      "search_volume": 450,
+      "metric": "market",
+      "broad_impressions": 450,
+      "kind": "related"
+    },
+    {
+      "keyword": "pierce county permit portal",
+      "search_volume": 450,
+      "metric": "market",
+      "broad_impressions": 450,
+      "kind": "related"
+    },
+    {
+      "keyword": "pasco county permit portal",
+      "search_volume": 441,
+      "metric": "market",
+      "broad_impressions": 441,
+      "kind": "related"
+    },
+    {
+      "keyword": "denver permit portal",
+      "search_volume": 438,
+      "metric": "market",
+      "broad_impressions": 674,
+      "kind": "related"
+    },
+    {
+      "keyword": "sarasota county permit portal",
+      "search_volume": 419,
+      "metric": "market",
+      "broad_impressions": 419,
+      "kind": "related"
+    },
+    {
+      "keyword": "charlotte county permit portal",
+      "search_volume": 419,
+      "metric": "market",
+      "broad_impressions": 419,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of raleigh permit portal login",
+      "search_volume": 419,
+      "metric": "market",
+      "broad_impressions": 419,
+      "kind": "related"
+    },
+    {
+      "keyword": "st louis county permit portal",
+      "search_volume": 412,
+      "metric": "market",
+      "broad_impressions": 510,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of oakland permit portal",
+      "search_volume": 406,
+      "metric": "market",
+      "broad_impressions": 406,
+      "kind": "related"
+    },
+    {
+      "keyword": "buncombe county permit portal",
+      "search_volume": 398,
+      "metric": "market",
+      "broad_impressions": 398,
+      "kind": "related"
+    },
+    {
+      "keyword": "loudoun county permit portal",
+      "search_volume": 395,
+      "metric": "market",
+      "broad_impressions": 395,
+      "kind": "related"
+    },
+    {
+      "keyword": "pinellas county permit portal",
+      "search_volume": 385,
+      "metric": "market",
+      "broad_impressions": 385,
+      "kind": "related"
+    },
+    {
+      "keyword": "richmond permit portal",
+      "search_volume": 375,
+      "metric": "market",
+      "broad_impressions": 851,
+      "kind": "related"
+    },
+    {
+      "keyword": "maricopa county permit portal",
+      "search_volume": 371,
+      "metric": "market",
+      "broad_impressions": 371,
+      "kind": "related"
+    },
+    {
+      "keyword": "pima county permit portal",
+      "search_volume": 370,
+      "metric": "market",
+      "broad_impressions": 370,
+      "kind": "related"
+    },
+    {
+      "keyword": "manatee county permit portal",
+      "search_volume": 364,
+      "metric": "market",
+      "broad_impressions": 364,
+      "kind": "related"
+    },
+    {
+      "keyword": "dekalb county permit portal",
+      "search_volume": 360,
+      "metric": "market",
+      "broad_impressions": 360,
+      "kind": "related"
+    },
+    {
+      "keyword": "spokane county permit portal",
+      "search_volume": 354,
+      "metric": "market",
+      "broad_impressions": 354,
+      "kind": "related"
+    },
+    {
+      "keyword": "raleigh permit portal log in",
+      "search_volume": 354,
+      "metric": "market",
+      "broad_impressions": 354,
+      "kind": "related"
+    },
+    {
+      "keyword": "oakland permit portal",
+      "search_volume": 349,
+      "metric": "market",
+      "broad_impressions": 755,
+      "kind": "related"
+    },
+    {
+      "keyword": "prince william county permit portal",
+      "search_volume": 334,
+      "metric": "market",
+      "broad_impressions": 334,
+      "kind": "related"
+    },
+    {
+      "keyword": "skagit county permit portal",
+      "search_volume": 332,
+      "metric": "market",
+      "broad_impressions": 332,
+      "kind": "related"
+    },
+    {
+      "keyword": "seattle permit portal login",
+      "search_volume": 323,
+      "metric": "market",
+      "broad_impressions": 323,
+      "kind": "related"
+    },
+    {
+      "keyword": "charleston county permit portal",
+      "search_volume": 322,
+      "metric": "market",
+      "broad_impressions": 516,
+      "kind": "related"
+    },
+    {
+      "keyword": "pinal county permit portal",
+      "search_volume": 320,
+      "metric": "market",
+      "broad_impressions": 320,
+      "kind": "related"
+    },
+    {
+      "keyword": "miami dade permit portal",
+      "search_volume": 318,
+      "metric": "market",
+      "broad_impressions": 404,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of puyallup permit portal",
+      "search_volume": 311,
+      "metric": "market",
+      "broad_impressions": 311,
+      "kind": "related"
+    },
+    {
+      "keyword": "marion county permit portal",
+      "search_volume": 311,
+      "metric": "market",
+      "broad_impressions": 311,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of kent permit portal",
+      "search_volume": 304,
+      "metric": "market",
+      "broad_impressions": 304,
+      "kind": "related"
+    },
+    {
+      "keyword": "cdot permit portal",
+      "search_volume": 296,
+      "metric": "market",
+      "broad_impressions": 296,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of everett permit portal",
+      "search_volume": 290,
+      "metric": "market",
+      "broad_impressions": 290,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of tulsa permit portal",
+      "search_volume": 289,
+      "metric": "market",
+      "broad_impressions": 311,
+      "kind": "related"
+    },
+    {
+      "keyword": "polk county permit portal",
+      "search_volume": 282,
+      "metric": "market",
+      "broad_impressions": 282,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of durham permit portal",
+      "search_volume": 276,
+      "metric": "market",
+      "broad_impressions": 276,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of hialeah permit portal",
+      "search_volume": 273,
+      "metric": "market",
+      "broad_impressions": 273,
+      "kind": "related"
+    },
+    {
+      "keyword": "ri permit portal",
+      "search_volume": 272,
+      "metric": "market",
+      "broad_impressions": 272,
+      "kind": "related"
+    },
+    {
+      "keyword": "durham permit portal",
+      "search_volume": 264,
+      "metric": "market",
+      "broad_impressions": 766,
+      "kind": "related"
+    },
+    {
+      "keyword": "lake county permit portal",
+      "search_volume": 264,
+      "metric": "market",
+      "broad_impressions": 264,
+      "kind": "related"
+    },
+    {
+      "keyword": "gwinnett county permit portal",
+      "search_volume": 257,
+      "metric": "market",
+      "broad_impressions": 257,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of cleveland permit portal",
+      "search_volume": 253,
+      "metric": "market",
+      "broad_impressions": 253,
+      "kind": "related"
+    },
+    {
+      "keyword": "howard county permit portal",
+      "search_volume": 247,
+      "metric": "market",
+      "broad_impressions": 247,
+      "kind": "related"
+    },
+    {
+      "keyword": "baldwin county permit portal",
+      "search_volume": 247,
+      "metric": "market",
+      "broad_impressions": 247,
+      "kind": "related"
+    },
+    {
+      "keyword": "pasco permit portal",
+      "search_volume": 245,
+      "metric": "market",
+      "broad_impressions": 245,
+      "kind": "related"
+    },
+    {
+      "keyword": "san jose permit portal",
+      "search_volume": 242,
+      "metric": "market",
+      "broad_impressions": 473,
+      "kind": "related"
+    },
+    {
+      "keyword": "gaston county permit portal",
+      "search_volume": 240,
+      "metric": "market",
+      "broad_impressions": 240,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of san jose permit portal",
+      "search_volume": 231,
+      "metric": "market",
+      "broad_impressions": 231,
+      "kind": "related"
+    },
+    {
+      "keyword": "brunswick county building permit portal",
+      "search_volume": 230,
+      "metric": "market",
+      "broad_impressions": 230,
+      "kind": "related"
+    },
+    {
+      "keyword": "city of chicago permit portal",
+      "search_volume": 228,
+      "metric": "market",
+      "broad_impressions": 228,
+      "kind": "related"
+    },
+    {
+      "keyword": "durham permit portal login",
+      "search_volume": 226,
+      "metric": "market",
+      "broad_impressions": 226,
+      "kind": "related"
+    },
+    {
+      "keyword": "forsyth county permit portal",
+      "search_volume": 224,
+      "metric": "market",
+      "broad_impressions": 224,
+      "kind": "related"
+    },
+    {
+      "keyword": "mecklenburg county permit portal",
+      "search_volume": 220,
+      "metric": "market",
+      "broad_impressions": 220,
+      "kind": "related"
+    },
+    {
+      "keyword": "franklin county permit portal",
+      "search_volume": 218,
+      "metric": "market",
+      "broad_impressions": 218,
+      "kind": "related"
+    },
+    {
+      "keyword": "leon county permit portal",
+      "search_volume": 206,
+      "metric": "market",
+      "broad_impressions": 206,
+      "kind": "related"
+    },
+    {
+      "keyword": "mason county permit portal",
+      "search_volume": 200,
+      "metric": "market",
+      "broad_impressions": 200,
+      "kind": "related"
+    },
+    {
+      "keyword": "greenville county permit portal",
+      "search_volume": 184,
+      "metric": "market",
+      "broad_impressions": 184,
+      "kind": "related"
+    },
+    {
+      "keyword": "island county permit portal",
+      "search_volume": 179,
+      "metric": "market",
+      "broad_impressions": 179,
+      "kind": "related"
+    },
+    {
+      "keyword": "clay county permit portal",
+      "search_volume": 139,
+      "metric": "market",
+      "broad_impressions": 139,
+      "kind": "related"
+    },
+    {
+      "keyword": "whatcom county permit portal",
+      "search_volume": 126,
+      "metric": "market",
+      "broad_impressions": 126,
+      "kind": "related"
+    },
+    {
+      "keyword": "tacoma permit portal",
+      "search_volume": 119,
+      "metric": "market",
+      "broad_impressions": 489,
+      "kind": "related"
+    },
+    {
+      "keyword": "boston permit portal",
+      "search_volume": 108,
+      "metric": "market",
+      "broad_impressions": 108,
+      "kind": "related"
+    },
+    {
+      "keyword": "guilford county permit portal",
+      "search_volume": 101,
+      "metric": "market",
+      "broad_impressions": 101,
+      "kind": "related"
+    },
+    {
+      "keyword": "durham county permit portal",
+      "search_volume": 52,
+      "metric": "market",
+      "broad_impressions": 52,
+      "kind": "related"
+    },
+    {
+      "keyword": "permit portal login",
+      "search_volume": 50,
+      "metric": "market",
+      "broad_impressions": 3826,
+      "kind": "related"
+    },
+    {
+      "keyword": "denton permit portal",
+      "search_volume": 47,
+      "metric": "market",
+      "broad_impressions": 47,
+      "kind": "related"
+    },
+    {
+      "keyword": "sacramento county permit portal",
+      "search_volume": 46,
+      "metric": "market",
+      "broad_impressions": 46,
+      "kind": "related"
+    },
+    {
+      "keyword": "berkeley permit portal",
+      "search_volume": 46,
+      "metric": "market",
+      "broad_impressions": 46,
+      "kind": "related"
+    },
+    {
+      "keyword": "auburn permit portal",
+      "search_volume": 46,
+      "metric": "market",
+      "broad_impressions": 46,
+      "kind": "related"
+    },
+    {
+      "keyword": "houston permit portal",
+      "search_volume": 46,
+      "metric": "market",
+      "broad_impressions": 226,
+      "kind": "related"
+    },
+    {
+      "keyword": "onslow county permit portal",
+      "search_volume": 44,
+      "metric": "market",
+      "broad_impressions": 44,
+      "kind": "related"
+    },
+    {
+      "keyword": "arvada permit portal",
+      "search_volume": 38,
+      "metric": "market",
+      "broad_impressions": 60,
+      "kind": "related"
+    },
+    {
+      "keyword": "coral springs permit portal",
+      "search_volume": 38,
+      "metric": "market",
+      "broad_impressions": 38,
+      "kind": "related"
+    },
+    {
+      "keyword": "clallam county permit portal",
+      "search_volume": 29,
+      "metric": "market",
+      "broad_impressions": 29,
+      "kind": "related"
+    },
+    {
+      "keyword": "okc self permit portal",
+      "search_volume": 27,
+      "metric": "market",
+      "broad_impressions": 27,
+      "kind": "related"
+    },
+    {
+      "keyword": "richmond permit portal login",
+      "search_volume": 26,
+      "metric": "market",
+      "broad_impressions": 26,
+      "kind": "related"
+    },
+    {
+      "keyword": "palm bay permit portal",
+      "search_volume": 24,
+      "metric": "market",
+      "broad_impressions": 24,
+      "kind": "related"
+    },
+    {
+      "keyword": "jersey city permit portal",
+      "search_volume": 24,
+      "metric": "market",
+      "broad_impressions": 24,
+      "kind": "related"
+    },
+    {
+      "keyword": "addison permit portal",
+      "search_volume": 20,
+      "metric": "market",
+      "broad_impressions": 20,
+      "kind": "related"
+    },
+    {
+      "keyword": "permit search by address",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 550,
+      "kind": "seed"
+    },
+    {
+      "keyword": "duval county permit search by address",
+      "search_volume": 229,
+      "metric": "market",
+      "broad_impressions": 229,
+      "kind": "related"
+    },
+    {
+      "keyword": "clay county permit search by address",
+      "search_volume": 122,
+      "metric": "market",
+      "broad_impressions": 122,
+      "kind": "related"
+    },
+    {
+      "keyword": "brevard county permit search by address",
+      "search_volume": 107,
+      "metric": "market",
+      "broad_impressions": 107,
+      "kind": "related"
+    },
+    {
+      "keyword": "open permits",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

@@ -1,0 +1,263 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-04T15:33:12.281Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "accela",
+    "etrakit",
+    "energov",
+    "citizen access",
+    "self service portal",
+    "permit portal",
+    "permit search by address",
+    "open permits"
+  ],
+  "keywords": [
+    {
+      "keyword": "how to check for open permits on a home in coral gables",
+      "search_volume": 18,
+      "impressions": 18,
+      "clicks": 0,
+      "position": 45,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-miami-dade-county-fl/": 18
+      }
+    },
+    {
+      "keyword": "philadelphia l&i permit search by address",
+      "search_volume": 9,
+      "impressions": 9,
+      "clicks": 0,
+      "position": 10.1,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-philadelphia-county-pa/": 9
+      }
+    },
+    {
+      "keyword": "cook county permit portal",
+      "search_volume": 6,
+      "impressions": 6,
+      "clicks": 0,
+      "position": 9.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-cook-county-il/": 6
+      }
+    },
+    {
+      "keyword": "city of las vegas citizen access portal",
+      "search_volume": 5,
+      "impressions": 5,
+      "clicks": 0,
+      "position": 9.8,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-clark-county-nv/": 5
+      }
+    },
+    {
+      "keyword": "clark county citizen access portal",
+      "search_volume": 5,
+      "impressions": 5,
+      "clicks": 0,
+      "position": 17,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-clark-county-nv/": 5
+      }
+    },
+    {
+      "keyword": "permit search by address",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 21.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-philadelphia-county-pa/": 2,
+        "https://www.beforeregret.com/guides/check-building-permits-tarrant-county-tx/": 1,
+        "https://www.beforeregret.com/guides/look-up-building-permits-by-address": 1
+      }
+    },
+    {
+      "keyword": "miami dade county permit search by address",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 38,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-miami-dade-county-fl/": 3
+      }
+    },
+    {
+      "keyword": "orange county building permit search by address",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 7.7,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-orange-county-ca/": 3
+      }
+    },
+    {
+      "keyword": "energov miami dade county",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 7.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-miami-dade-county-fl/": 2
+      }
+    },
+    {
+      "keyword": "clark county citizen access",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 11.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-clark-county-nv/": 2
+      }
+    },
+    {
+      "keyword": "miami-dade county permit portal",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 34,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-miami-dade-county-fl/": 2
+      }
+    },
+    {
+      "keyword": "building permit search by address",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 36.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/look-up-building-permits-by-address": 1,
+        "https://www.beforeregret.com/guides/look-up-building-permits-by-address/": 1
+      }
+    },
+    {
+      "keyword": "accela city of san diego",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 19,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-san-diego-county-ca/": 1
+      }
+    },
+    {
+      "keyword": "citizen access clark county",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 16,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-clark-county-nv/": 1
+      }
+    },
+    {
+      "keyword": "citizen access portal clark county",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 18,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-clark-county-nv/": 1
+      }
+    },
+    {
+      "keyword": "citizen self service portal",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 6,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-tarrant-county-tx/": 1
+      }
+    },
+    {
+      "keyword": "city of san bernardino permit portal",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 8,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-san-bernardino-county-ca/": 1
+      }
+    },
+    {
+      "keyword": "clark county permit portal",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 24,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-clark-county-nv/": 1
+      }
+    },
+    {
+      "keyword": "san bernardino permit portal",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 11,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-san-bernardino-county-ca/": 1
+      }
+    },
+    {
+      "keyword": "fort worth permit search by address",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 11,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-tarrant-county-tx/": 1
+      }
+    },
+    {
+      "keyword": "la county permit search by address",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 17,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-los-angeles-county-ca/": 1
+      }
+    },
+    {
+      "keyword": "ladbs permit search by address",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 23,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-los-angeles-county-ca/": 1
+      }
+    },
+    {
+      "keyword": "miami dade permit search by address",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 36,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-miami-dade-county-fl/": 1
+      }
+    },
+    {
+      "keyword": "how to find open permits on a house",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 11,
+      "pages": {
+        "https://www.beforeregret.com/guides/look-up-building-permits-by-address": 1
+      }
+    }
+  ]
+}
