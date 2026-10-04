@@ -137,7 +137,7 @@ export function parseInline(text: string): React.ReactNode[] {
           key={i}
           href={url}
           {...(isInternal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
-          className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+          className="text-blue-700 hover:text-blue-900 underline decoration-blue-300 underline-offset-2 hover:decoration-blue-700 font-medium"
         >
           {linkText}
         </a>
@@ -154,7 +154,7 @@ export function parseInline(text: string): React.ReactNode[] {
             target="_blank"
             rel="noopener noreferrer"
             title={source.name}
-            className="text-blue-600 hover:text-blue-800 hover:underline font-medium text-[0.85em] align-super"
+            className="text-home-brass hover:text-home-ink font-semibold no-underline text-[0.7em] align-super ml-0.5"
           >
             [{citationMatch[1]}]
           </a>
@@ -165,9 +165,58 @@ export function parseInline(text: string): React.ReactNode[] {
   });
 }
 
+/** Plain text of a heading line: link text kept, link targets, emphasis and [CODE] markers dropped. */
+function headingPlainText(raw: string): string {
+  return raw
+    .replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/\s*\[[A-Z]+\]/g, '')
+    .trim();
+}
+
+/** Stable, unique-per-article anchor ids for ## headings, in document order. */
+function sectionIdGenerator() {
+  const seen = new Map<string, number>();
+  return {
+    next(raw: string): string {
+      const base = headingPlainText(raw)
+        .toLowerCase()
+        .replace(/['’]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 60)
+        .replace(/-+$/, '') || 'section';
+      const n = (seen.get(base) ?? 0) + 1;
+      seen.set(base, n);
+      return n === 1 ? base : `${base}-${n}`;
+    },
+  };
+}
+
+/**
+ * The article's ## sections as {id, label}, for the "On this page" list. Reads the same lines the
+ * renderer turns into <h2 id>, with the same id generator, so every entry lands on its heading.
+ * Lines inside a ``` fence are skipped, exactly as the renderer skips them.
+ */
+export function articleSections(markdown: string): Array<{ id: string; label: string }> {
+  const ids = sectionIdGenerator();
+  const out: Array<{ id: string; label: string }> = [];
+  let inFence = false;
+  for (const line of markdown.split('\n')) {
+    const t = line.trim();
+    if (t.startsWith('```')) { inFence = !inFence; continue; }
+    if (inFence) continue;
+    const m = t.match(/^##\s+(.+)$/);
+    if (m) out.push({ id: ids.next(m[1]), label: headingPlainText(m[1]) });
+  }
+  return out;
+}
+
 export function renderArticleMarkdown(markdown: string, options: RenderArticleOptions = {}): React.ReactNode[] {
   const lines = markdown.split('\n');
   const blocks: React.ReactNode[] = [];
+  const sectionIds = sectionIdGenerator();
   let paragraphBuffer: string[] = [];
   let i = 0;
 
@@ -176,7 +225,7 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
       const text = paragraphBuffer.join(' ').trim();
       if (text) {
         blocks.push(
-          <p key={blocks.length} className="text-slate-700 leading-relaxed mb-4">
+          <p key={blocks.length} className="text-slate-700 leading-[1.75] mb-5">
             {parseInline(text)}
           </p>
         );
@@ -230,16 +279,16 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
       const [, alt, src, caption] = imageMatch;
       if (alt.trim()) {
         blocks.push(
-          <figure key={blocks.length} className="my-6">
+          <figure key={blocks.length} className="my-8">
             <img
               src={src}
               alt={alt}
               loading="lazy"
               decoding="async"
-              className="w-full h-auto rounded-2xl border border-slate-200 bg-slate-50"
+              className="w-full h-auto rounded-2xl border border-home-linen bg-home-stone"
             />
             {caption && (
-              <figcaption className="mt-2 text-xs text-slate-500 leading-relaxed text-center">
+              <figcaption className="mt-2.5 text-sm text-slate-500 leading-relaxed text-center">
                 {parseInline(caption)}
               </figcaption>
             )}
@@ -261,14 +310,20 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
       const level = headingMatch[1].length;
       const text = parseInline(headingMatch[2]);
       if (level === 2) {
+        // The id is what the "On this page" list links to -- see articleSections below, which
+        // derives the same ids from the same lines, so a jump link can never miss its heading.
         blocks.push(
-          <h2 key={blocks.length} className="text-lg sm:text-xl font-extrabold text-slate-900 mt-8 mb-3 pb-2 border-b border-slate-100">
+          <h2
+            key={blocks.length}
+            id={sectionIds.next(headingMatch[2])}
+            className="scroll-mt-24 font-serif text-[1.65rem] sm:text-3xl font-semibold text-home-ink tracking-tight leading-tight mt-12 mb-4 first:mt-0"
+          >
             {text}
           </h2>
         );
       } else if (level === 3) {
         blocks.push(
-          <h3 key={blocks.length} className="text-base font-bold text-slate-900 mt-6 mb-2">
+          <h3 key={blocks.length} className="text-lg font-bold text-home-ink mt-8 mb-2 leading-snug">
             {text}
           </h3>
         );
@@ -278,7 +333,7 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
         // the prompt has never asked for deliberate 5-6 level nesting; this exists so a stray
         // deeper heading still renders as a heading instead of falling through to plain text.
         blocks.push(
-          <h4 key={blocks.length} className="text-sm font-bold text-slate-800 mt-4 mb-1.5">
+          <h4 key={blocks.length} className="text-base font-bold text-home-ink mt-6 mb-1.5">
             {text}
           </h4>
         );
@@ -289,7 +344,7 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
 
     if (/^-{3,}$/.test(trimmed)) {
       flushParagraph();
-      blocks.push(<hr key={blocks.length} className="my-6 border-slate-200" />);
+      blocks.push(<hr key={blocks.length} className="my-8 border-home-linen" />);
       i++;
       continue;
     }
@@ -316,7 +371,7 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
       blocks.push(
         <blockquote
           key={blocks.length}
-          className="border-l-4 border-blue-300 bg-slate-50 rounded-r-lg px-5 py-4 mb-4 text-slate-700 leading-relaxed"
+          className="border-l-4 border-home-oak bg-home-stone rounded-r-xl px-5 py-4 mb-5 text-slate-800 leading-[1.75]"
         >
           {parseInline(quoted.join(' '))}
         </blockquote>
@@ -374,19 +429,19 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
         i++;
       }
       blocks.push(
-        <div key={blocks.length} className="mb-4">
+        <div key={blocks.length} className="mb-6">
           {/* Real table from sm: (640px) up. A 3+ column table with sentence-length cells
               genuinely cannot fit an actual mobile viewport at readable font size -- shrinking
               text or scrolling inside the table are both worse than not needing to scroll at
               all, so mobile gets a different layout below, not a squeezed version of this one. */}
-          <div className="hidden sm:block overflow-x-auto rounded-xl border border-slate-200">
-            <table className="w-full text-sm text-left border-collapse">
-              <thead className="bg-slate-50">
+          <div className="hidden sm:block overflow-x-auto rounded-xl border border-home-linen">
+            <table className="w-full text-[15px] text-left border-collapse">
+              <thead className="bg-home-stone">
                 <tr>
                   {headerCells.map((cell, idx) => (
                     <th
                       key={idx}
-                      className={`px-3 py-2 font-bold text-slate-900 border-b border-slate-200 ${alignments[idx] || 'text-left'}`}
+                      className={`px-4 py-2.5 font-bold text-home-ink border-b border-home-linen ${alignments[idx] || 'text-left'}`}
                     >
                       {parseInline(cell)}
                     </th>
@@ -395,9 +450,9 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
               </thead>
               <tbody>
                 {bodyRows.map((row, rowIdx) => (
-                  <tr key={rowIdx} className="border-b border-slate-100 last:border-0">
+                  <tr key={rowIdx} className="border-b border-home-linen/70 last:border-0">
                     {row.map((cell, cellIdx) => (
-                      <td key={cellIdx} className={`px-3 py-2 align-top text-slate-700 ${alignments[cellIdx] || 'text-left'}`}>
+                      <td key={cellIdx} className={`px-4 py-2.5 align-top text-slate-700 leading-relaxed ${alignments[cellIdx] || 'text-left'}`}>
                         {parseInline(cell)}
                       </td>
                     ))}
@@ -410,15 +465,15 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
           {/* Below sm: each row becomes a stacked label/value card instead, using the header
               row as the label for every cell -- no horizontal scroll, nothing to shrink. Built
               from the same headerCells/bodyRows the table above uses, not a separate parse. */}
-          <div className="sm:hidden rounded-xl border border-slate-200 divide-y divide-slate-100">
+          <div className="sm:hidden rounded-xl border border-home-linen divide-y divide-home-linen/70">
             {bodyRows.map((row, rowIdx) => (
               <div key={rowIdx} className="p-3 space-y-2">
                 {row.map((cell, cellIdx) => (
                   <div key={cellIdx}>
-                    <div className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                    <div className="text-[11px] font-bold uppercase tracking-wide text-home-brass">
                       {parseInline(headerCells[cellIdx] || '')}
                     </div>
-                    <div className="text-sm text-slate-700">{parseInline(cell)}</div>
+                    <div className="text-[15px] text-slate-700 leading-relaxed">{parseInline(cell)}</div>
                   </div>
                 ))}
               </div>
@@ -437,7 +492,7 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
         i++;
       }
       blocks.push(
-        <ul key={blocks.length} className="list-disc list-outside pl-5 space-y-1.5 mb-4 text-slate-700">
+        <ul key={blocks.length} className="list-disc list-outside pl-6 space-y-2 mb-5 text-slate-700 leading-[1.7] marker:text-home-oak">
           {items.map((item, idx) => (
             <li key={idx}>{parseInline(item)}</li>
           ))}
@@ -454,7 +509,7 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
         i++;
       }
       blocks.push(
-        <ol key={blocks.length} className="list-decimal list-outside pl-5 space-y-1.5 mb-4 text-slate-700">
+        <ol key={blocks.length} className="list-decimal list-outside pl-6 space-y-2 mb-5 text-slate-700 leading-[1.7] marker:text-home-brass marker:font-semibold">
           {items.map((item, idx) => (
             <li key={idx}>{parseInline(item)}</li>
           ))}

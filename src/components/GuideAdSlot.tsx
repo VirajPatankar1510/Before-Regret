@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Phone, Globe, Wrench } from 'lucide-react';
 import { guessBusinessPhraseFromTitle } from '../data/guideAdCategoryGuess';
 import { reportAdClick } from '../utils/adClickBeacon';
+import { GUIDE_AD_SLOT_PLACEHOLDER } from './seo/GuideArticleLayout';
 
 interface GuideAdSlotProps {
   articleId: number;
@@ -62,12 +63,12 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle 
   // Loading: reserve the space silently rather than flashing "want to advertise here?" for a
   // moment before a real vendor's card swaps in a beat later.
   if (vendor === undefined) {
-    return <div className="h-24" aria-hidden="true" />;
+    return <div className={GUIDE_AD_SLOT_PLACEHOLDER} aria-hidden="true" />;
   }
 
   if (vendor) {
     return (
-      <div className="relative bg-white border border-slate-200 border-l-4 border-l-emerald-500 rounded-r-2xl p-4 sm:p-5">
+      <div className="relative bg-white border border-home-linen border-l-4 border-l-emerald-500 rounded-r-2xl p-4 sm:p-5">
         <span className="absolute top-2 right-3 text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
           Ad
         </span>
@@ -127,7 +128,7 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle 
   }
 
   return (
-    <div className="relative bg-blue-50/60 border border-slate-200 border-l-4 border-l-blue-500 rounded-r-2xl p-4 sm:p-5">
+    <div className="relative bg-white border border-home-linen border-l-4 border-l-blue-500 rounded-r-2xl p-4 sm:p-5">
       <span className="absolute top-2 right-3 text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-white px-2 py-0.5 rounded">
         Ad
       </span>

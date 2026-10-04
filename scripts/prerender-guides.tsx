@@ -3,16 +3,15 @@ import fs from 'fs';
 import path from 'path';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { withDb, isDbConfigured } from '../src/server/db.js';
-import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../src/utils/renderArticleMarkdown';
-import { resolveKnownSource } from '../src/data/knownSources';
-import { ArticleClosingNote } from '../src/components/seo/ArticleClosingNote';
+import { stripCitationMarkers } from '../src/utils/renderArticleMarkdown';
+import { GuideArticleLayout } from '../src/components/seo/GuideArticleLayout';
 import { pickRelatedGuides, GuideSummary, guideTopic } from '../src/utils/relatedGuides';
 import { buildPageTitle } from '../src/utils/pageTitle';
 import { pickCountiesForGuide, CountyTopicInput, GUIDE_TOPICS, permitGuideCountySlug } from '../src/utils/countyGuideTopics.js';
-import { groupGuidesForHub } from '../src/utils/homeContent.js';
+import { classifyGuideTopic } from '../src/utils/homeContent.js';
+import { GuidesHubLayout, HubGuide } from '../src/components/seo/GuidesHubLayout';
 import { pickFooterGuides } from '../src/data/footerGuides.js';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
-import { BookPromoCard, BookPromoSkyscraper } from '../src/components/BookPromo';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 import { resolveArticleSchemaImage } from '../src/utils/articleImage.js';
 import { INDEXABLE_ROBOTS } from '../src/utils/headSeo.js';
@@ -104,18 +103,6 @@ function toArticle(row: ArticleRow): Article {
   };
 }
 
-// AI answer engines (and Google, less strictly) weight how recently a page was verified/updated
-// when deciding whether to trust and cite it -- an undated or stale-looking page loses out to one
-// that visibly shows its own freshness. Only worth surfacing as "Updated" when it's a genuinely
-// different calendar day from publishedAt; otherwise every guide would show two identical dates,
-// which reads as noise, not a freshness signal.
-function hasVisibleUpdate(article: Pick<Article, 'publishedAt' | 'updatedAt'>): boolean {
-  if (!article.updatedAt || !article.publishedAt) return false;
-  const published = new Date(article.publishedAt).toDateString();
-  const updated = new Date(article.updatedAt).toDateString();
-  return published !== updated;
-}
-
 function escapeHtmlAttr(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -202,11 +189,10 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
   return schemas;
 }
 
-// Mirrors GuidePageView.tsx's visible markup (header card, quick answer, article body, closing
-// CTA, sources) minus AdSlot (irrelevant to crawlers, and reads import.meta.env / window in ways
-// that only work inside Vite's own transform, not this standalone script) and minus the
-// onNavigate-driven breadcrumb buttons, swapped here for real <a href> links so the static page
-// is still navigable without JS.
+// The guide page itself is src/components/seo/GuideArticleLayout.tsx -- the SAME component the live
+// GuidePageView.tsx renders, so the HTML a crawler reads and the page a visitor sees cannot drift
+// (2026-10-04; they had, in several places). This wrapper only adds the static footer, which the
+// live app renders separately as Footer.tsx.
 function GuideStaticBody({
   article,
   relatedGuides,
@@ -223,249 +209,32 @@ function GuideStaticBody({
   permitCounty?: { slug: string; countyName: string; stateAbbrev: string };
   footerGuides: FooterGuideSummary[];
 }) {
-  const wordCount = article.bodyMarkdown.trim().split(/\s+/).filter(Boolean).length;
-  const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 220));
-  const noNav = () => {};
-
   return (
-    <div className="bg-slate-50 min-h-screen pb-16">
-      <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
-        <div className="max-w-4xl lg:max-w-6xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
-          <a href="/" className="hover:text-blue-600">Before Regret</a>
-          <span>/</span>
-          <a href="/guides/" className="hover:text-blue-600">Editorial Guides</a>
-          <span>/</span>
-          <span className="text-slate-900 font-bold truncate">{article.title}</span>
-        </div>
-      </div>
-
-      <div className="max-w-4xl lg:max-w-6xl mx-auto px-4 sm:px-6 py-8 lg:flex lg:gap-8 lg:items-start">
-        <div className="space-y-8 lg:flex-1 lg:min-w-0">
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
-          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-            <span className={`px-2.5 py-1 font-bold text-[11px] rounded-lg ${article.articleType === 'news' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}`}>
-              {article.articleType === 'news' ? 'COUNTY UPDATE' : 'GUIDE'}
-            </span>
-            <span>{readTimeMinutes} min read</span>
-            {article.publishedAt && (
-              <span>
-                Published {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </span>
-            )}
-            {hasVisibleUpdate(article) && (
-              <span className="text-emerald-700 font-semibold">
-                Updated {new Date(article.updatedAt!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </span>
-            )}
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">{article.title}</h1>
-
-          {article.metaDescription && (
-            <p className="text-sm text-slate-600 leading-relaxed font-medium bg-slate-50 p-4 rounded-2xl border border-slate-200">
-              {article.metaDescription}
-            </p>
-          )}
-        </div>
-
-        {article.quickAnswer && (
-          <div className="bg-blue-50 border border-blue-200 rounded-3xl p-6 sm:p-8 space-y-2">
-            <div className="text-[11px] font-bold uppercase tracking-wide text-blue-700">Quick answer</div>
-            <p className="text-sm sm:text-base text-blue-950 leading-relaxed font-medium">
-              {parseInline(article.quickAnswer)}
-            </p>
-          </div>
-        )}
-
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm text-sm">
-          <div className="max-w-none">{renderArticleMarkdown(article.bodyMarkdown, { pageUrl: `https://www.beforeregret.com/guides/${article.slug}/` })}</div>
-        </div>
-
-        {/* Same unit and same position as GuidePageView.tsx -- not a static twin, the actual
-            component. Directly after the article body and above the closing note; desktop hides
-            it in favour of the right rail. */}
-        <BookPromoCard className="lg:hidden" />
-
-        <ArticleClosingNote onNavigate={noNav} />
-
-        {/* Real-identity match, not a relevance guess -- this guide is ABOUT permitCounty, so it
-            renders above the fuzzy "Related Guides"/"Where This Comes Up" lists below, not mixed
-            into either. See permitGuideCountySlug in countyGuideTopics.ts for why this needed its
-            own mechanism: the era/topic system that powers those two sections never matches a
-            process guide like this one. */}
-        {permitCounty && (
-          <a
-            href={`/county/${permitCounty.slug}/`}
-            className="flex items-center justify-between gap-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-3xl p-6 sm:p-8 transition-colors"
-          >
-            <span>
-              <span className="block text-[11px] font-bold uppercase tracking-wide text-blue-700 mb-1">
-                County data for this guide
-              </span>
-              <span className="block text-sm font-bold text-blue-950">
-                See {permitCounty.countyName} County, {permitCounty.stateAbbrev} property research →
-              </span>
-            </span>
-          </a>
-        )}
-
-        {relatedGuides.length > 0 && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
-            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Related Guides</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {relatedGuides.map((g) => (
-                <a
-                  key={g.slug}
-                  href={`/guides/${g.slug}/`}
-                  className="flex items-center justify-between gap-2 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-800"
-                >
-                  <span>{g.title}</span>
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {relevantCounties.length > 0 && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
-            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Where This Comes Up</h2>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Real county data where this is a common issue based on housing age, not a guess:
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {relevantCounties.map((c) => (
-                <a
-                  key={c.slug}
-                  href={`/county/${c.slug}/`}
-                  className="flex items-center justify-between gap-2 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-800"
-                >
-                  <span>{c.countyName} County, {c.stateAbbrev}</span>
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Static twin of GuidePageView.tsx's FAQ accordion -- rendered fully expanded here since
-            this HTML has no JS-driven toggle state; the live client swaps in the interactive
-            collapsed version on mount. Both feed the same merged FAQPage schema above. */}
-        {article.faqItems.length > 0 && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3 shadow-sm">
-            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Frequently Asked Questions</h2>
-            <div className="divide-y divide-slate-100">
-              {article.faqItems.map((item, idx) => (
-                <div key={idx} className="py-3 first:pt-0 last:pb-0">
-                  <div className="text-sm font-bold text-slate-900">{item.question}</div>
-                  <p className="text-sm text-slate-600 leading-relaxed mt-2">{parseInline(item.answer)}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {article.sources.length > 0 && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Sources</h2>
-            <ul className="space-y-2">
-              {article.sources.map((code) => {
-                const source = resolveKnownSource(code);
-                if (!source) return null;
-                return (
-                  <li key={code}>
-                    <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
-                      {source.name}
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
-
-        {/* Static twin of the same link in GuidePageView.tsx -- real <a href>, not onNavigate,
-            since this markup has no JS router until the client bundle takes over. */}
-        <p className="text-xs text-slate-500 text-center">
-          <a href="/about/" className="text-blue-600 hover:underline font-medium">
-            How we research and write these guides
-          </a>
-        </p>
-        </div>
-
-        {/* Same unit and same breakpoint as GuidePageView.tsx. */}
-        {/* Plain div, not <aside>: BookPromoSkyscraper renders its own <aside> with the
-            accessible name, and nesting one inside another would announce two landmarks for one
-            unit. This wrapper only carries the column width and the breakpoint. */}
-        <div className="hidden lg:block lg:w-[300px] lg:shrink-0">
-          <div className="sticky top-8">
-            <BookPromoSkyscraper />
-          </div>
-        </div>
-      </div>
-
+    <>
+      <GuideArticleLayout
+        article={article}
+        relatedGuides={relatedGuides}
+        permitCounty={permitCounty}
+        relevantCounties={relevantCounties}
+      />
       <StaticFooterLinks guides={footerGuides} />
-    </div>
+    </>
   );
 }
 
-// Mirrors GuidesIndexView.tsx -- the hub every guide should be reachable from with one click,
-// baked to real HTML at dist/guides/index.html so a crawler that doesn't run JS sees the same
-// list and the same real <a href> links to all 27 (now more) guides that a browser would.
-function GuidesIndexStaticBody({ guides, footerGuides }: { guides: GuideSummary[]; footerGuides: FooterGuideSummary[] }) {
+// The /guides/ hub -- src/components/seo/GuidesHubLayout.tsx, the same component GuidesIndexView.tsx
+// renders live. Every published guide appears once, unfiltered, as a real <a href>.
+function GuidesIndexStaticBody({ guides, footerGuides }: { guides: HubGuide[]; footerGuides: FooterGuideSummary[] }) {
+  const topicCounts = new Map<string, number>();
+  for (const g of guides) {
+    const id = classifyGuideTopic(g);
+    if (id) topicCounts.set(id, (topicCounts.get(id) ?? 0) + 1);
+  }
   return (
-    <div className="bg-slate-50 min-h-screen pb-16">
-      <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium">
-          <a href="/" className="hover:text-blue-600">Before Regret</a>
-          <span>/</span>
-          <span className="text-slate-900 font-bold">Editorial Guides</span>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-        <div className="space-y-2">
-          <div className="text-xs font-bold uppercase tracking-wide text-blue-700 bg-blue-50 inline-block px-2.5 py-1 rounded-full">
-            Editorial Guides
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
-            What to check before you sign
-          </h1>
-          <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
-            Every research guide we've published, in one place -- what a specific era, system, or record actually means for a home you're buying, cited back to the government or industry source behind it.
-          </p>
-          {/* Twin of the removal in GuidesIndexView.tsx -- see the comment there. This linked to
-              /counties/, which has answered 410 since the county retirement. */}
-        </div>
-
-        {/* Sectioned, not one flat grid. The heading levels change with it: the section is the h2
-            and a guide title is an h3 under it, which is what makes the section heading mean
-            anything. Before this, the page was 68 sibling h2s with nothing stating what any run of
-            them covered. Every guide still appears exactly once -- groupGuidesForHub sweeps short
-            clusters into a catch-all rather than dropping them, and the caller below asserts the
-            count survives, because a guide missing from the hub is a deleted internal link. */}
-        <div className="space-y-8">
-          {groupGuidesForHub(guides).map((section) => (
-            <section key={section.id}>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                {section.title}
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {section.guides.map((g) => (
-                  <a
-                    key={g.slug}
-                    href={`/guides/${g.slug}/`}
-                    className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 block"
-                  >
-                    <h3 className="text-sm font-bold text-slate-900 leading-snug">{g.title}</h3>
-                  </a>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      </div>
-
+    <>
+      <GuidesHubLayout guides={guides} topicCounts={topicCounts} />
       <StaticFooterLinks guides={footerGuides} />
-    </div>
+    </>
   );
 }
 
@@ -588,7 +357,13 @@ async function run() {
     // re-fetching over the network on first paint -- see the matching read in GuidePageView.tsx
     // for why. Client-side navigation to a DIFFERENT guide (e.g. via Related Guides) still fetches
     // fresh, since this script tag holds only THIS page's article.
-    const preloadScript = `<script type="application/json" id="__PRELOADED_GUIDE__">${escapeJsonForScriptTag(article)}</script>`;
+    // relatedGuides rides along so the live page's first render shows the same module the static
+    // page does, rather than an empty space until /api/guides answers. Only slug + title: that is
+    // all the module renders.
+    const preloadScript = `<script type="application/json" id="__PRELOADED_GUIDE__">${escapeJsonForScriptTag({
+      ...article,
+      relatedGuides: relatedGuides.map((g) => ({ slug: g.slug, title: g.title })),
+    })}</script>`;
 
     const html = applyHeadReplacements(template, {
       routeKey: 'guide',
@@ -612,7 +387,18 @@ async function run() {
 
   // The hub page (dist/guides/index.html) -- see GuidesIndexView.tsx for the client-rendered twin.
   const indexCanonicalUrl = 'https://www.beforeregret.com/guides/';
-  const indexBodyHtml = renderToStaticMarkup(<GuidesIndexStaticBody guides={allGuideSummaries} footerGuides={footerGuides} />);
+  const hubGuides: HubGuide[] = rows.map((r) => ({
+    slug: r.slug, title: r.title, metaDescription: r.meta_description, publishedAt: r.published_at,
+  }));
+  const indexBodyHtml = renderToStaticMarkup(<GuidesIndexStaticBody guides={hubGuides} footerGuides={footerGuides} />);
+  // The hub is the one page that links every guide; a guide missing from it is a deleted internal
+  // link. Fail the build rather than ship that.
+  const hubLinked = new Set([...indexBodyHtml.matchAll(/href="\/guides\/([^"/]+)\/"/g)].map((m) => m[1]));
+  const missingFromHub = rows.filter((r) => !hubLinked.has(r.slug)).map((r) => r.slug);
+  if (missingFromHub.length) throw new Error(`[prerender-guides] /guides/ hub is missing ${missingFromHub.length} guide(s): ${missingFromHub.join(', ')}`);
+  // The same list, embedded for GuidesIndexView.tsx's first render, so the live hub mounts showing
+  // exactly what the static one shows instead of a spinner while /api/guides answers.
+  const hubPreload = `<script type="application/json" id="__PRELOADED_GUIDES_HUB__">${escapeJsonForScriptTag(hubGuides)}</script>`;
   const indexJsonLd: Record<string, any>[] = [
     {
       '@context': 'https://schema.org',
@@ -639,7 +425,9 @@ async function run() {
     description: "Every Before Regret research guide in one place -- what to check for a home's age, permit history, and inspection blind spots before you sign.",
     canonicalUrl: indexCanonicalUrl,
     jsonLd: indexJsonLd,
-  }).replace('<div id="root"></div>', `<div id="root">${indexBodyHtml}</div>`);
+  })
+    .replace('</head>', `${hubPreload}\n  </head>`)
+    .replace('<div id="root"></div>', `<div id="root">${indexBodyHtml}</div>`);
   const indexOutDir = path.join(distPath, 'guides');
   fs.mkdirSync(indexOutDir, { recursive: true });
   fs.writeFileSync(path.join(indexOutDir, 'index.html'), indexHtml, 'utf8');

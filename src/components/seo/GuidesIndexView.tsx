@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
-import { ChevronRight, Loader2, BookOpen, Calendar, Search, X } from 'lucide-react';
-import { ContentLink } from '../home/ContentLink';
-import { classifyGuideTopic, GUIDE_CLUSTER_META, groupGuidesForHub } from '../../utils/homeContent';
+import { Loader2 } from 'lucide-react';
+import { classifyGuideTopic } from '../../utils/homeContent';
+import { GuidesHubLayout } from './GuidesHubLayout';
 
 interface GuidesIndexViewProps {
   onNavigate: (path: string) => void;
@@ -20,8 +20,22 @@ interface GuideRow {
 // which meant a reader landing on the homepage had no path to "see everything you've written."
 // Also gives search engines one canonical hub to attach authority to instead of 27 disconnected
 // leaf pages. See scripts/prerender-guides.tsx for the crawler-facing static twin of this page.
+function readPreloadedHub(): GuideRow[] | null {
+  if (typeof document === 'undefined') return null;
+  const el = document.getElementById('__PRELOADED_GUIDES_HUB__');
+  if (!el?.textContent) return null;
+  try {
+    const parsed = JSON.parse(el.textContent);
+    return Array.isArray(parsed) ? (parsed as GuideRow[]) : null;
+  } catch {
+    return null;
+  }
+}
+
 export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) => {
-  const [guides, setGuides] = useState<GuideRow[] | null>(null);
+  // Seeded from the list scripts/prerender-guides.tsx embeds in the static hub, so the first render
+  // matches the static page rather than swapping it for a spinner.
+  const [guides, setGuides] = useState<GuideRow[] | null>(readPreloadedHub);
   const [loadError, setLoadError] = useState<string | null>(null);
   // Filtering is CLIENT-SIDE ONLY, and that is a hard constraint rather than an implementation
   // shortcut. scripts/prerender-guides.tsx renders this page's crawler-facing static twin, and its
@@ -79,33 +93,6 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
     });
   }, [guides, query, topic]);
 
-  const isFiltering = Boolean(query.trim() || topic);
-
-  // One card definition, used by both the grouped and the filtered branch below. Extracted rather
-  // than duplicated: the two branches differ only in what wraps them, and a card that drifts
-  // between them is a difference nobody sees until a filter is applied.
-  const renderGuideCard = (g: GuideRow) => (
-    <ContentLink
-      key={g.slug}
-      href={`/guides/${g.slug}/`}
-      onNavigate={onNavigate}
-      className="block bg-white border border-slate-200 rounded-2xl p-5 space-y-2 text-left hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer group"
-    >
-      <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-700 leading-snug">
-        {g.title}
-      </h3>
-      {g.metaDescription && (
-        <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{g.metaDescription}</p>
-      )}
-      {g.publishedAt && (
-        <div className="flex items-center gap-1.5 text-[11px] text-slate-400 pt-1">
-          <Calendar className="w-3 h-3" />
-          <span>{new Date(g.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-        </div>
-      )}
-    </ContentLink>
-  );
-
   useEffect(() => {
     if (!guides) return;
     applyHeadSeo({
@@ -136,163 +123,28 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
     });
   }, [guides, canonicalUrl]);
 
+  // Same layout the static hub ships (see GuidesHubLayout.tsx). Before the list loads it renders
+  // with no guides plus a status line; once loaded, the resting view is identical to the static
+  // page and only the filters change what is shown.
   return (
-    <div className="bg-slate-50 min-h-screen pb-16">
-      <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium">
-          <ContentLink href="/" onNavigate={onNavigate} className="hover:text-blue-600">Before Regret</ContentLink>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-slate-900 font-bold">Editorial Guides</span>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full">
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Editorial Guides</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
-            What to check before you sign
-          </h1>
-          <p className="text-sm text-slate-600 leading-relaxed max-w-2xl">
-            Every research guide we've published, in one place -- what a specific era, system, or record actually means for a home you're buying, cited back to the government or industry source behind it.
-          </p>
-          {/* The "browse all covered counties" link that used to sit here pointed at /counties/,
-              which has answered 410 since the county pages were retired on 2026-08-23. Missed in
-              that cleanup -- Navbar, Footer and StaticFooterLinks were all updated, this one was
-              not, and an Ahrefs crawl found it as the site's only broken internal link. Removed
-              rather than repointed: there is no county content left to send anyone to. The twin
-              copy in scripts/prerender-guides.tsx is removed alongside it, since the static and
-              client renders of this page must not disagree. */}
-        </div>
-
-        {loadError && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 text-center text-sm text-slate-500">
-            {loadError}
-          </div>
-        )}
-
-        {!guides && !loadError && (
-          <div className="flex justify-center py-16">
-            <Loader2 className="w-6 h-6 text-slate-400 animate-spin" />
-          </div>
-        )}
-
-        {guides && guides.length === 0 && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 text-center text-sm text-slate-500">
-            No guides published yet -- check back soon.
-          </div>
-        )}
-
-        {guides && guides.length > 0 && (
-          <div className="space-y-3">
-            <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={`Search ${guides.length} guides...`}
-                aria-label="Search guides by title or description"
-                className="w-full pl-10 pr-10 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-slate-400"
-              />
-              {query && (
-                <button
-                  onClick={() => setQuery('')}
-                  aria-label="Clear search"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setTopic(null)}
-                aria-pressed={topic === null}
-                className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-colors cursor-pointer ${
-                  topic === null
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-700'
-                }`}
-              >
-                All {guides.length}
-              </button>
-              {GUIDE_CLUSTER_META.filter((c) => (topicCounts.get(c.id) ?? 0) > 0).map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setTopic(topic === c.id ? null : c.id)}
-                  aria-pressed={topic === c.id}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-colors cursor-pointer ${
-                    topic === c.id
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-700'
-                  }`}
-                >
-                  {c.title} {topicCounts.get(c.id)}
-                </button>
-              ))}
-            </div>
-
-            {isFiltering && (
-              <p className="text-xs text-slate-500" role="status" aria-live="polite">
-                Showing {visibleGuides.length} of {guides.length} guides.{' '}
-                <button
-                  onClick={() => { setQuery(''); setTopic(null); }}
-                  className="font-bold text-blue-700 hover:text-blue-800 cursor-pointer"
-                >
-                  Clear filters
-                </button>
-              </p>
-            )}
-          </div>
-        )}
-
-        {guides && guides.length > 0 && visibleGuides.length === 0 && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 text-center space-y-2">
-            <p className="text-sm text-slate-600">No guides match that search.</p>
-            <button
-              onClick={() => { setQuery(''); setTopic(null); }}
-              className="text-xs font-bold text-blue-700 hover:text-blue-800 cursor-pointer"
-            >
-              Clear filters and show all {guides.length}
-            </button>
-          </div>
-        )}
-
-        {/* GROUPED WHEN BROWSING, FLAT WHEN FILTERING, and the first half of that has to match
-            scripts/prerender-guides.tsx exactly. The static hub now ships sections, so if this
-            mounted a flat grid over them the page would visibly reflow on hydration -- the same
-            LCP/CLS failure the hero comment in HeroPanel.tsx describes, on the page that links to
-            every guide. Filtered results stay flat on purpose: the user has already narrowed to one
-            topic, so re-sectioning a result set they chose adds a heading over their own filter.
-            Heading levels follow the structure -- section h2, guide title h3. */}
-        {guides && guides.length > 0 && visibleGuides.length > 0 && (
-          isFiltering ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {visibleGuides.map((g) => renderGuideCard(g))}
-            </div>
-          ) : (
-            <div className="space-y-8">
-              {/* Type argument is explicit because visibleGuides' memo returns [] on the null
-                  branch, which leaves T to collapse to the constraint and hands the card a
-                  {slug,title} with no metaDescription or publishedAt. */}
-              {groupGuidesForHub<GuideRow>(visibleGuides).map((section) => (
-                <section key={section.id}>
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                    {section.title}
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {section.guides.map((g) => renderGuideCard(g))}
-                  </div>
-                </section>
-              ))}
-            </div>
-          )
-        )}
-      </div>
-    </div>
+    <GuidesHubLayout<GuideRow>
+      guides={guides ?? []}
+      visibleGuides={visibleGuides}
+      onNavigate={onNavigate}
+      query={query}
+      topic={topic}
+      topicCounts={topicCounts}
+      onQueryChange={setQuery}
+      onTopicChange={setTopic}
+      status={
+        loadError ? (
+          <div className="mt-6 rounded-3xl bg-white border border-home-linen p-8 text-center text-sm text-slate-500">{loadError}</div>
+        ) : !guides ? (
+          <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 text-slate-400 animate-spin" /></div>
+        ) : guides.length === 0 ? (
+          <div className="mt-6 rounded-3xl bg-white border border-home-linen p-8 text-center text-sm text-slate-500">No guides published yet -- check back soon.</div>
+        ) : null
+      }
+    />
   );
 };

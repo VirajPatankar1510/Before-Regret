@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { applyHeadSeo } from '../../utils/headSeo';
-import { ChevronRight, ChevronDown, Clock, Calendar, Loader2, MessageCircleQuestion, ExternalLink } from 'lucide-react';
-import { renderArticleMarkdown, parseInline, stripCitationMarkers } from '../../utils/renderArticleMarkdown';
-import { resolveKnownSource } from '../../data/knownSources';
-import { ArticleClosingNote } from './ArticleClosingNote';
+import { Loader2 } from 'lucide-react';
+import { stripCitationMarkers } from '../../utils/renderArticleMarkdown';
 import { GuideAdSlot } from '../GuideAdSlot';
-import { BookPromoCard, BookPromoSkyscraper } from '../BookPromo';
 import { ContentLink } from '../home/ContentLink';
+import { GuideArticleLayout } from './GuideArticleLayout';
 import { pickRelatedGuides, GuideSummary } from '../../utils/relatedGuides';
 import { buildPageTitle } from '../../utils/pageTitle';
 import { ErrorReportingModal } from '../ErrorReportingModal';
 import { resolveArticleSchemaImage } from '../../utils/articleImage';
-import { Flag } from 'lucide-react';
 
 interface GuidePageViewProps {
   guideSlug: string;
@@ -36,16 +33,8 @@ interface Article {
   articleType: string;
   publishedAt: string | null;
   updatedAt: string | null;
-}
-
-// AI answer engines (and Google, less strictly) weight how recently a page was verified/updated
-// when deciding whether to trust and cite it. Only worth showing as a distinct "Updated" date when
-// it's a genuinely different calendar day from publishedAt -- otherwise every guide would show two
-// identical dates, which reads as noise, not a freshness signal. Mirrors
-// scripts/prerender-guides.tsx's identical check.
-function hasVisibleUpdate(article: Pick<Article, 'publishedAt' | 'updatedAt'>): boolean {
-  if (!article.updatedAt || !article.publishedAt) return false;
-  return new Date(article.publishedAt).toDateString() !== new Date(article.updatedAt).toDateString();
+  /** Present only in the prerendered preload -- see prerender-guides.tsx. */
+  relatedGuides?: GuideSummary[];
 }
 
 // Reads from the real articles table (see src/server/articlesApi.ts) rather than the old static
@@ -72,16 +61,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [allGuides, setAllGuides] = useState<GuideSummary[]>([]);
-  const [openFaqIndices, setOpenFaqIndices] = useState<Set<number>>(new Set());
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-
-  const toggleFaq = (idx: number) => {
-    setOpenFaqIndices((prev) => {
-      const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx); else next.add(idx);
-      return next;
-    });
-  };
 
   useEffect(() => {
     let cancelled = false;
@@ -236,227 +216,28 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
     );
   }
 
-  const wordCount = article.bodyMarkdown.trim().split(/\s+/).filter(Boolean).length;
-  const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 220));
+  // Related Guides come baked into the preload by scripts/prerender-guides.tsx, so the first
+  // paint matches the static page instead of the module popping in after /api/guides answers.
+  // A client-side navigation to another guide has no preload and falls back to ranking here.
+  const related = article.relatedGuides ?? relatedGuides;
 
   return (
-    <div className="bg-slate-50 min-h-screen pb-16">
-
-      {/* Breadcrumbs */}
-      <div className="bg-white border-b border-slate-200 py-3 px-4 sm:px-6">
-        <div className="max-w-4xl lg:max-w-6xl mx-auto flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto">
-          <ContentLink href="/" onNavigate={onNavigate} className="hover:text-blue-600">Before Regret</ContentLink>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <ContentLink href="/guides/" onNavigate={onNavigate} className="hover:text-blue-600">Editorial Guides</ContentLink>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-slate-900 font-bold truncate">{article.title}</span>
-        </div>
-      </div>
-
-      <div className="max-w-4xl lg:max-w-6xl mx-auto px-4 sm:px-6 py-8 lg:flex lg:gap-8 lg:items-start">
-        <div className="space-y-8 lg:flex-1 lg:min-w-0">
-
-        {/* Guide Header */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
-          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-            <span className={`px-2.5 py-1 font-bold text-[11px] rounded-lg ${article.articleType === 'news' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}`}>
-              {article.articleType === 'news' ? 'COUNTY UPDATE' : 'GUIDE'}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-slate-400" />
-              <span>{readTimeMinutes} min read</span>
-            </span>
-            {article.publishedAt && (
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                <span>Published {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-              </span>
-            )}
-            {hasVisibleUpdate(article) && (
-              <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-                <Calendar className="w-3.5 h-3.5 text-emerald-500" />
-                <span>Updated {new Date(article.updatedAt!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-              </span>
-            )}
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
-            {article.title}
-          </h1>
-
-          {article.metaDescription && (
-            <p className="text-sm text-slate-600 leading-relaxed font-medium bg-slate-50 p-4 rounded-2xl border border-slate-200">
-              {article.metaDescription}
-            </p>
-          )}
-        </div>
-
-        {/* Quick Answer -- a short, self-contained answer up top for skimmers and search
-            snippets, separate from the meta description above (that's written for the Google
-            results page; this is written to be read on the page itself). */}
-        {article.quickAnswer && (
-          <div className="bg-blue-50 border border-blue-200 rounded-3xl p-6 sm:p-8 space-y-2">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-blue-700">
-              <MessageCircleQuestion className="w-3.5 h-3.5" />
-              <span>Quick answer</span>
-            </div>
-            <p className="text-sm sm:text-base text-blue-950 leading-relaxed font-medium">
-              {parseInline(article.quickAnswer)}
-            </p>
-          </div>
-        )}
-
-        {/* Vendor ad slot: below Quick Answer, above the article body -- reader already has the
-            direct answer, hasn't started the deep-dive yet. One slot per guide, not two -- see
-            GuideAdSlot.tsx for why the old top+bottom split was retired. Always renders
-            something: the paying vendor currently occupying this slot, or a recruitment CTA if
-            it's unsold. See src/server/guideAdsApi.ts and GuideAdSlot.tsx. */}
-        <GuideAdSlot articleId={article.id} guideTitle={article.title} />
-
-        {/* Article Body */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm text-sm">
-          <div className="max-w-none">
-            {renderArticleMarkdown(article.bodyMarkdown, { pageUrl: canonicalUrl })}
-          </div>
-        </div>
-
-        {/* The site's own book, mobile and tablet only -- desktop carries it in the right rail
-            instead (see the aside at the foot of this file), so the two are never both visible.
-            Placed directly after the article body: the reader has just finished the thing they
-            came for, which is the moment a longer treatment of the same subject lands best. It
-            used to sit after Related Guides, where on a phone it arrived below a long article AND
-            a link grid, deep enough that it read as page furniture rather than an offer.
-            Still BELOW the vendor ad slot above the article body, which is sold inventory, and
-            immediately ABOVE the closing note rather than displacing it -- the free-report CTA is
-            this page's primary conversion and stays the last thing before Related Guides. */}
-        <BookPromoCard className="lg:hidden" />
-
-        <ArticleClosingNote onNavigate={onNavigate} />
-
-        {/* Related Guides: placed after our own conversion CTA, not before it -- the closing note
-            above is the one thing on this page we most want the reader to act on, and putting
-            more reading material ahead of it would compete with that. Still well above Sources,
-            since exploring more guides is a more likely next click than following a citation.
-            Fixes every guide's biggest internal-linking gap -- see src/utils/relatedGuides.ts. */}
-        {relatedGuides.length > 0 && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
-            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Related Guides</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {relatedGuides.map((g) => (
-                <ContentLink
-                  key={g.slug}
-                  href={`/guides/${g.slug}/`}
-                  onNavigate={onNavigate}
-                  className="flex items-center justify-between gap-2 p-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-left transition-colors cursor-pointer group"
-                >
-                  <span className="text-sm font-semibold text-slate-800 group-hover:text-blue-700">{g.title}</span>
-                  <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 group-hover:text-blue-600" />
-                </ContentLink>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* FAQ accordion -- admin-entered, per-article. Placed after Related Guides and before
-            Sources: it's genuine reader content (unlike Sources, which is closer to citation
-            housekeeping), but the article body and our own closing CTA still come first. Also
-            feeds the merged FAQPage schema above -- see the jsonLdSchema block. */}
-        {article.faqItems.length > 0 && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3 shadow-sm">
-            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Frequently Asked Questions</h2>
-            <div className="divide-y divide-slate-100">
-              {article.faqItems.map((item, idx) => {
-                const isOpen = openFaqIndices.has(idx);
-                return (
-                  <div key={idx} data-print-block className="py-3 first:pt-0 last:pb-0">
-                    <button
-                      onClick={() => toggleFaq(idx)}
-                      aria-expanded={isOpen}
-                      className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
-                    >
-                      <span className="text-sm font-bold text-slate-900">{item.question}</span>
-                      <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    {/* print:block -- an FAQ collapsed on screen shouldn't also vanish from the
-                        exported PDF, same reasoning as the walkthrough checklist's print-keep. */}
-                    {isOpen && (
-                      <p className="text-sm text-slate-600 leading-relaxed mt-2">{parseInline(item.answer)}</p>
-                    )}
-                    {!isOpen && (
-                      <p className="hidden print:block text-sm text-slate-600 leading-relaxed mt-2">{parseInline(item.answer)}</p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Sources -- resolved from a hand-verified lookup (src/data/knownSources.ts), never
-            from a URL the model wrote itself. See src/server/articleGenerator.ts for why. */}
-        {article.sources.length > 0 && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">Sources</h2>
-            <ul className="space-y-2">
-              {article.sources.map((code) => {
-                const source = resolveKnownSource(code);
-                if (!source) return null;
-                return (
-                  <li key={code}>
-                    <a
-                      href={source.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                    >
-                      <span>{source.name}</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
-
-        {/* Correction path. A BUTTON, never a link: no href means nothing for a crawler to follow,
-            no new URL to index, and no internal link equity redirected away from real content --
-            which is what a "/report-an-error" page linked from every guide would have done.
-            Client-only by design too, so the prerendered HTML a crawler reads is unchanged. */}
-        <div className="flex justify-center pt-2">
-          <button
-            onClick={() => setIsErrorModalOpen(true)}
-            className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-          >
-            <Flag className="w-3.5 h-3.5" />
-            <span>Something wrong on this page? Tell us.</span>
-          </button>
-        </div>
-
-        {isErrorModalOpen && (
-          <ErrorReportingModal
-            sourceType="guide"
-            sourceRef={article.slug}
-            sourceLabel={article.title}
-            onClose={() => setIsErrorModalOpen(false)}
-          />
-        )}
-
-        </div>
-
-        {/* Right-rail skyscraper, desktop only. Hidden below lg, where the in-flow card above
-            carries the book instead -- the two are never both visible. Sticky so it stays beside
-            a long guide rather than scrolling away in the first screenful. */}
-        {/* Plain div, not <aside>: BookPromoSkyscraper renders its own <aside> with the
-            accessible name, and nesting one inside another would announce two landmarks for one
-            unit. This wrapper only carries the column width and the breakpoint. */}
-        <div className="hidden lg:block lg:w-[300px] lg:shrink-0">
-          <div className="sticky top-8">
-            <BookPromoSkyscraper />
-          </div>
-        </div>
-
-      </div>
-    </div>
+    <>
+      <GuideArticleLayout
+        article={article}
+        relatedGuides={related}
+        onNavigate={onNavigate}
+        adSlot={<GuideAdSlot articleId={article.id} guideTitle={article.title} />}
+        onReportError={() => setIsErrorModalOpen(true)}
+      />
+      {isErrorModalOpen && (
+        <ErrorReportingModal
+          sourceType="guide"
+          sourceRef={article.slug}
+          sourceLabel={article.title}
+          onClose={() => setIsErrorModalOpen(false)}
+        />
+      )}
+    </>
   );
 };
