@@ -1,0 +1,32 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-04T12:27:49.498Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "roof age",
+    "how old is my roof",
+    "what pipes",
+    "type of pipes",
+    "wiring in my house",
+    "electrical panel brand",
+    "lead service line",
+    "sewer line",
+    "foundation crack",
+    "deck permit"
+  ],
+  "keywords": [
+    {
+      "keyword": "foundation crack structural engineer",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 59,
+      "pages": {
+        "https://www.beforeregret.com/guides/when-foundation-crack-need-structural-engineer/": 1
+      }
+    }
+  ]
+}

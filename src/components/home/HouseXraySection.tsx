@@ -16,7 +16,7 @@ import { ContentLink } from './ContentLink';
 interface Spot { n: number; x: number; y: number; q: string; a: string; href: string }
 
 const SPOTS: Spot[] = [
-  { n: 1, x: 50, y: 20, q: 'How old is the roof?', a: 'Roof age matters for insurance, and a re-roofing permit is the clearest record of it.', href: '/guides/prove-roof-age-for-insurance/' },
+  { n: 1, x: 50, y: 20, q: 'How old is the roof?', a: 'Read the clues on a showing, then confirm the date with the permit or the invoice.', href: '/guides/how-to-tell-how-old-a-roof-is/' },
   { n: 2, x: 30, y: 41, q: 'Which rooms get the sun?', a: 'See how much direct sun each room gets through the year, for the way the house faces.', href: '/sunlight/' },
   { n: 3, x: 40, y: 58, q: 'What is inside the walls?', a: 'Houses built before 1956 can still have knob-and-tube wiring behind the plaster.', href: '/guides/what-is-knob-and-tube-wiring/' },
   { n: 4, x: 67, y: 61, q: 'What are the water pipes made of?', a: 'Houses built 1978–1996 may have polybutylene supply lines. Here is how to tell.', href: '/guides/spot-polybutylene-pipes-before-buying-house/' },

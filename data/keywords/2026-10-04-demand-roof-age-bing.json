@@ -1,0 +1,127 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-04T12:27:49.498Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "roof age",
+    "how old is my roof",
+    "what pipes",
+    "type of pipes",
+    "wiring in my house",
+    "electrical panel brand",
+    "lead service line",
+    "sewer line",
+    "foundation crack",
+    "deck permit"
+  ],
+  "keywords": [
+    {
+      "keyword": "insurance prorate roof age",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 3
+    },
+    {
+      "keyword": "roof maintenance records prove roof age condition insurance adjuster dispute",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "how to prove roof age to insurance adjuster allstate documentation",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "how do i get proof of my roof age",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "oklahoma roof age dispute insurance adjuster proof building permit contractor invoice",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 6
+    },
+    {
+      "keyword": "roof age",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "how old is my roof",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "what pipes",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "type of pipes",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "wiring in my house",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "electrical panel brand",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "lead service line",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "sewer line",
+      "search_volume": 598,
+      "metric": "market",
+      "broad_impressions": 841,
+      "kind": "seed"
+    },
+    {
+      "keyword": "foundation crack",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 154,
+      "kind": "seed"
+    },
+    {
+      "keyword": "deck permit",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 31,
+      "kind": "seed"
+    }
+  ]
+}
