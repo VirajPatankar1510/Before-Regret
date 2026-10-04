@@ -56,11 +56,11 @@ export const GuideCardsSection: React.FC<GuideCardsSectionProps> = ({
   if (cards.length === 0) return null;
 
   return (
-    <section className="bg-slate-50 border-y border-slate-200/80 py-14 sm:py-20 px-4 sm:px-6 lg:px-8">
+    <section className="bg-white py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-10">
 
         <div className="text-center max-w-2xl mx-auto">
-          <h2 className="font-sans text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">
             Explore the guide library
           </h2>
         </div>
@@ -71,7 +71,7 @@ export const GuideCardsSection: React.FC<GuideCardsSectionProps> = ({
               key={card.slug}
               href={`/guides/${card.slug}/`}
               onNavigate={onNavigate}
-              className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-2.5 hover:border-blue-300 hover:shadow-lg transition-all group"
+              className="bg-home-stone/60 border border-home-linen rounded-3xl p-6 flex flex-col gap-2.5 hover:bg-white hover:border-home-oak hover:shadow-md hover:-translate-y-0.5 transition-all group"
             >
               <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700">
                 {card.tag}

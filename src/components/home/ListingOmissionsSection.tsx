@@ -50,43 +50,52 @@ export const ListingOmissionsSection: React.FC = () => {
     }
   ];
 
+  // 2026-10-04 redesign: the heading "What a Listing Won't Tell You" moved to HouseXraySection (the
+  // cutaway house), so this section now names what it is -- the report's contents. The five card
+  // descriptions are unchanged.
   return (
-    <section className="bg-white border-b border-slate-200/80 py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-12">
-
-        {/* Section Header */}
-        <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
-            What a Listing Won't Tell You
-          </h2>
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-            Listings are written to sell the home. This report is written to tell you what to check, what to ask, and what nobody has verified yet.
+    <section className="bg-white py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto home-reveal grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-14 items-start">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-home-brass">Your report</p>
+          <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">What&rsquo;s in your report</h2>
+          <p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed">
+            One address, one clear page: what to ask, what to inspect, what to look at on the day, and what still has to be checked at the source.
           </p>
+          <a href="/sample-report/" className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 hover:gap-2.5 transition-all">
+            See a sample report <span aria-hidden="true">&rarr;</span>
+          </a>
+          {/* 2026-10-04: the owner's kitchen photo -- the home the report is about. Lazy-loaded. */}
+          <img
+            src="/images/home/kitchen-1200.webp"
+            srcSet="/images/home/kitchen-700.webp 700w, /images/home/kitchen-1200.webp 1200w"
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            width={1200}
+            height={900}
+            loading="lazy"
+            decoding="async"
+            alt="A lived-in kitchen with white cabinets, a butcher-block counter and a window over the sink in warm morning light"
+            className="mt-8 w-full rounded-3xl object-cover aspect-[4/3] shadow-sm border border-home-linen"
+          />
         </div>
 
-        {/* 5 Grid Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {categories.map((cat, idx) => {
             const Icon = cat.icon;
             return (
               <div
                 key={idx}
-                className="bg-white rounded-2xl p-6 sm:p-7 shadow-sm hover:shadow-lg transition-all space-y-3"
+                className={`rounded-3xl p-6 border transition-all ${idx === categories.length - 1 ? 'bg-home-stone border-home-linen sm:col-span-2' : 'bg-white border-home-linen shadow-sm hover:shadow-md'}`}
               >
-                <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center shrink-0">
-                  <Icon className="w-5 h-5 text-slate-800" />
+                <div className="w-11 h-11 rounded-2xl bg-home-sage text-home-moss flex items-center justify-center">
+                  <Icon className="w-5 h-5" />
                 </div>
-                <h3 className="font-sans text-lg font-bold text-slate-900 leading-snug">
-                  {cat.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  {cat.publicFinding}
-                </p>
+                <h3 className="mt-4 font-serif text-xl font-semibold text-home-ink leading-snug">{cat.title}</h3>
+                <p className="mt-2 text-sm text-slate-600 leading-relaxed">{cat.publicFinding}</p>
               </div>
             );
           })}
         </div>
-
       </div>
     </section>
   );

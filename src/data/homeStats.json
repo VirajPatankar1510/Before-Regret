@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2026-10-04T06:55:38.212Z",
+  "eraRules": [
+    {
+      "id": "knob_and_tube",
+      "title": "Check for active knob-and-tube wiring",
+      "minYear": 1800,
+      "maxYear": 1955
+    },
+    {
+      "id": "galvanized_supply",
+      "title": "Check the water supply pipe material",
+      "minYear": 1800,
+      "maxYear": 1969
+    },
+    {
+      "id": "sewer_cast_iron",
+      "title": "Scope the sewer line",
+      "minYear": 1800,
+      "maxYear": 1973
+    },
+    {
+      "id": "lead_paint_disclosure",
+      "title": "Confirm you received the federal lead-paint disclosure",
+      "minYear": 1800,
+      "maxYear": 1977
+    },
+    {
+      "id": "asbestos_materials",
+      "title": "Test for asbestos only if you plan to renovate",
+      "minYear": 1800,
+      "maxYear": 1985
+    },
+    {
+      "id": "electrical_panel_brand",
+      "title": "Record the electrical panel brand",
+      "minYear": 1950,
+      "maxYear": 1989
+    },
+    {
+      "id": "electrical_aluminum_wiring",
+      "title": "Identify the branch circuit wiring material",
+      "minYear": 1965,
+      "maxYear": 1973
+    },
+    {
+      "id": "polybutylene_supply",
+      "title": "Check whether the supply lines are polybutylene",
+      "minYear": 1978,
+      "maxYear": 1996
+    },
+    {
+      "id": "eifs_stucco",
+      "title": "If the exterior is stucco, find out which kind",
+      "minYear": 1990,
+      "maxYear": 2005
+    }
+  ],
+  "outsideZone": {
+    "sharePct": 26.6,
+    "claims": 2578413,
+    "paidOutsideBillions": 20.6,
+    "href": "/research/outside-the-zone/",
+    "source": "FEMA NFIP claims"
+  },
+  "dams": {
+    "high": 17049,
+    "pctPoor": 16.4,
+    "href": "/research/high-hazard-dams/",
+    "source": "US Army Corps of Engineers, National Inventory of Dams"
+  },
+  "permits": {
+    "singleFamilyPct": -3.2,
+    "countiesFell": 285,
+    "counties": 567,
+    "through": "July 2026",
+    "href": "/research/permit-pulse/",
+    "source": "US Census Bureau, Building Permits Survey"
+  }
+}

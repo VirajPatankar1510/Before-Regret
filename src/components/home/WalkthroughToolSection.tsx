@@ -47,13 +47,13 @@ const CTA =
   'mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 hover:text-blue-900 transition-colors';
 
 export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ onNavigate }) => (
-  <section className="py-10 sm:py-12 px-4 sm:px-6 lg:px-8 bg-blue-50/70 border-y border-blue-200">
+  <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
     <div className="max-w-4xl mx-auto">
 
-      <div className="inline-flex items-center gap-2 rounded-full bg-blue-600 text-white px-3 py-1 mb-4">
+      <div className="inline-flex items-center gap-2 rounded-full bg-home-sage text-home-moss px-3 py-1 mb-4">
         <span className="text-[11px] font-bold uppercase tracking-wider">Free tools · No sign-up</span>
       </div>
-      <h2 className="font-sans text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-5">
+      <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-home-ink tracking-tight mb-6">
         Two things you can use before you buy
       </h2>
 
@@ -62,7 +62,7 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
         <div className={CARD}>
           <div className="flex items-center gap-2 mb-2">
             <ClipboardCheck className="w-4 h-4 text-blue-600 shrink-0" aria-hidden="true" />
-            <h3 className="font-sans text-lg font-extrabold text-slate-900">Viewing checklist</h3>
+            <h3 className="font-serif text-xl font-semibold text-home-ink">Viewing checklist</h3>
           </div>
           <p className="text-sm text-slate-700 leading-relaxed flex-1">
             Tell us roughly when the house was built and what it sits on, and get a short list of
@@ -77,7 +77,7 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
         <div className={CARD}>
           <div className="flex items-center gap-2 mb-2">
             <Sunrise className="w-4 h-4 text-blue-600 shrink-0" aria-hidden="true" />
-            <h3 className="font-sans text-lg font-extrabold text-slate-900">Sunlight by room</h3>
+            <h3 className="font-serif text-xl font-semibold text-home-ink">Sunlight by room</h3>
           </div>
           <p className="text-sm text-slate-700 leading-relaxed flex-1">
             Pick a county and the way a window faces, and see when direct sun actually reaches that

@@ -11,6 +11,11 @@ import { HOMEPAGE_FAQS, HOMEPAGE_DEFINITIONS, HomepageDefinitions } from '../src
 import { GuideCardsSection } from '../src/components/home/GuideCardsSection';
 import { WalkthroughToolSection } from '../src/components/home/WalkthroughToolSection';
 import { HeroPanel } from '../src/components/home/HeroPanel';
+import { TrustStrip } from '../src/components/home/TrustStrip';
+import { HouseXraySection } from '../src/components/home/HouseXraySection';
+import { HomeAgeTimeline } from '../src/components/home/HomeAgeTimeline';
+import { CountyMapSection } from '../src/components/home/CountyMapSection';
+import { ResearchStatsSection } from '../src/components/home/ResearchStatsSection';
 import { BookPromoCard } from '../src/components/BookPromo';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { isDbConfigured } from '../src/server/db.js';
@@ -55,11 +60,15 @@ function HomeStaticBody({ data }: { data: HomeData }) {
           substitutes a non-interactive replica of identical height. */}
       <HeroPanel />
 
-      {/* Mirrors src/components/Hero.tsx's position exactly -- see that file's comment. */}
-      <WalkthroughToolSection />
-
-      <ListingOmissionsSection />
+      {/* 2026-10-04 redesign order -- identical to src/components/Hero.tsx. */}
+      <TrustStrip />
+      <HouseXraySection />
       <HowItWorksSection />
+      <ListingOmissionsSection />
+      <HomeAgeTimeline />
+      <WalkthroughToolSection />
+      <CountyMapSection articles={data.articles} />
+      <ResearchStatsSection />
       <PricingSection onScrollToSearch={noop} />
 
       {/* Same order and position as src/components/Hero.tsx. No onNavigate is passed, so
@@ -85,10 +94,10 @@ function HomeStaticBody({ data }: { data: HomeData }) {
         </div>
       </section>
 
-      <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 border-t border-slate-200/80">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-home-stone border-t border-home-linen">
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
@@ -98,7 +107,7 @@ function HomeStaticBody({ data }: { data: HomeData }) {
           <HomepageDefinitions />
           <div className="space-y-4">
             {HOMEPAGE_FAQS.map((faq, idx) => (
-              <div key={idx} className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+              <div key={idx} className="bg-white border border-home-linen rounded-2xl overflow-hidden shadow-sm">
                 <div className="w-full p-6 text-left font-sans text-lg font-bold text-slate-900">{faq.q}</div>
                 <div className="px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 font-sans">
                   {faq.a}

@@ -1,125 +1,134 @@
 import React from 'react';
 
 /**
- * The homepage hero, shared by src/components/Hero.tsx and scripts/prerender-homepage.tsx.
+ * The homepage hero, shared by src/components/Hero.tsx and scripts/prerender-homepage.tsx, so the
+ * static and the mounted hero can never disagree about height (a hero that changes height on mount
+ * resets LCP).
  *
- * -----------------------------------------------------------------------------------------------
- * WHY THIS IS ONE COMPONENT NOW.
+ * 2026-10-04 REDESIGN, at the owner's direction: the homepage felt "pale and bland ... like an
+ * under-construction website" and must read as a property website. The photograph comes back,
+ * this time the owner's own generated image (no stock), as a full-bleed home at golden hour with
+ * the copy resting on a navy wash over its calm left third.
  *
- * The two files each carried their own copy of this markup, kept equal by hand, with a long comment
- * in the prerender explaining that the geometry had to match exactly or LCP would re-fire when
- * React mounted a taller hero over the static one. That is a real constraint held together by
- * discipline. Extracting it makes the constraint structural: there is one definition, so the two
- * renders cannot disagree about height.
+ * The earlier history still applies and is why this is careful about weight: a hero photo was the
+ * site's largest LCP element twice (1.4 MB PNG, then 233 KB JPEG). So the photo is a WebP <img>
+ * with fetchpriority=high and an explicit size. On phones it is a 240px band above the copy, and
+ * `sizes` caps it at the 720/1100 files (29-64 KB) even on 3x screens. Until HERO_PHOTO is set, a painted dusk scene in
+ * pure CSS/SVG holds the same geometry, costing no request.
  *
- * -----------------------------------------------------------------------------------------------
- * WHY THE PHOTOGRAPH IS GONE.
+ * THE WORDS DO NOT CHANGE. The h1 keeps the brand line inside it (added 2026-09-24 so the page's
+ * primary heading names the site), and the definitional sentence stays word for word: it is the
+ * prose an AI answer quotes for "what is Before Regret" (see the 2026-09-20 note in git history).
  *
- * The hero was a stock-looking suburban street at dusk under a navy gradient, with a pair of
- * blurred colour blobs behind it, three checkmark bullets and a photograph doing no work. Those
- * are gone.
- *
- * The CENTRED composition is back by the owner's decision, and it is worth writing down that it is
- * a decision rather than a default: an interim version was left-aligned specifically because
- * everything-centred is a template signature. Centred is a legitimate choice for a hero this
- * short -- one headline, one sentence, one field -- and the things that actually made the old
- * version look generic were the stock photograph, the gradient blobs and the bullet list, not the
- * alignment.
- *
- * It also cost real money: the image had twice been the site's single largest LCP element (a 1.4MB
- * PNG, then a 233KB JPEG, finally a 52KB WebP plus a 23KB mobile crop, a preload hint, and a media
- * query pair that had to stay character-identical to the stylesheet). Removing it deletes all of
- * that machinery, and the LCP element becomes the headline -- text, in the static HTML, painting
- * as soon as the inlined stylesheet lands.
- *
- * WHAT REPLACES IT is nothing, deliberately. An interim version carried a card of live
- * getInspectionPriorities output for an example address, which was good evidence and still one more
- * thing to read before reaching the search box. The hero's job is a headline, a sentence and an
- * address field; the proof belongs in the sections below it, where a visitor who wants it has
- * already decided to keep scrolling.
- *
- * The ground is a flat ink with a hairline grid, which is a plat map and a ledger rather than a
- * gradient, and costs one CSS rule instead of a network request.
- *
- * The worked example that used to sit under the box as its own line is now the search field's
- * placeholder, so it does the same job without spending a line.
+ * Alignment: the owner chose a centred hero once. This version is left-aligned on desktop because
+ * the copy sits over the photo's empty third; HERO_ALIGN flips it back to centred in one edit.
  */
+
+/** Set to the WebP path once the owner's photo is placed, e.g. '/images/home/hero-home.webp'. */
+const HERO_PHOTO: string | null = '/images/home/hero-home.webp';
+/** Width-matched copies so phones fetch ~29 KB and only large screens the full 1851px file. */
+const HERO_SRCSET = '/images/home/hero-home-720.webp 720w, /images/home/hero-home-1100.webp 1100w, /images/home/hero-home.webp 1851w';
+const HERO_ALIGN = 'left' as 'left' | 'center';
 
 interface HeroPanelProps {
   /**
    * The live AddressSearchBox. The prerender passes nothing and gets a non-interactive replica of
-   * the same height instead -- the box needs client state the static render has no way to provide,
-   * and a hero that changes height on mount is what resets LCP.
+   * the same height instead -- the box needs client state the static render has no way to provide.
    */
   searchBox?: React.ReactNode;
   searchBoxRef?: React.RefObject<HTMLDivElement>;
 }
 
-export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef }) => (
-  <section className="relative isolate overflow-hidden bg-white text-slate-900 border-b border-slate-200">
-    {/* Hairline grid. A records product, not a gradient. Pure CSS, no request, and it fades out
-        before it reaches the copy so it never competes with the headline. */}
+/** Painted stand-in until the photo arrives: dusk sky, warm sun, a simple house on a lawn. */
+const PaintedScene: React.FC = () => (
+  <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
     <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-0 opacity-60"
-      style={{
-        backgroundImage:
-          'linear-gradient(to right, rgba(100,116,139,0.09) 1px, transparent 1px), linear-gradient(to bottom, rgba(100,116,139,0.09) 1px, transparent 1px)',
-        backgroundSize: '64px 64px',
-        maskImage: 'radial-gradient(ellipse 90% 70% at 50% 0%, #000 40%, transparent 100%)',
-        WebkitMaskImage: 'radial-gradient(ellipse 90% 70% at 50% 0%, #000 40%, transparent 100%)',
-      }}
+      className="absolute inset-0"
+      style={{ background: 'linear-gradient(180deg, #2a3b55 0%, #5b5f74 38%, #c99a72 72%, #e7c39a 100%)' }}
     />
-    {/* One cool wash from the top edge, sized to the section rather than floated as a blurred blob. */}
     <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 h-[420px]"
-      style={{ background: 'radial-gradient(ellipse 60% 100% at 50% 0%, rgba(37,99,235,0.06), transparent 70%)' }}
+      className="absolute rounded-full"
+      style={{ width: 420, height: 420, right: '18%', bottom: '8%', background: 'radial-gradient(circle, rgba(255,214,160,0.75) 0%, rgba(255,214,160,0) 65%)' }}
     />
+    <svg className="absolute right-0 bottom-0 h-[78%] w-auto max-w-none" viewBox="0 0 900 520" preserveAspectRatio="xMaxYMax meet">
+      <path d="M0 470 C 220 440, 520 452, 900 430 L 900 520 L 0 520 Z" fill="#3f5a45" />
+      <path d="M0 492 C 260 470, 600 482, 900 466 L 900 520 L 0 520 Z" fill="#2f4535" />
+      <g transform="translate(330 150)">
+        <rect x="40" y="150" width="380" height="190" fill="#e9dfcf" />
+        <polygon points="20,160 230,30 440,160" fill="#4a3b33" />
+        <rect x="250" y="56" width="26" height="60" fill="#5a4a40" />
+        <rect x="70" y="190" width="70" height="80" fill="#f4c983" stroke="#6b5646" strokeWidth="6" />
+        <rect x="320" y="190" width="70" height="80" fill="#f4c983" stroke="#6b5646" strokeWidth="6" />
+        <rect x="200" y="240" width="56" height="100" fill="#2f3b4f" />
+        <rect x="20" y="230" width="420" height="10" fill="#cfc2ad" />
+        <rect x="40" y="240" width="8" height="100" fill="#cfc2ad" />
+        <rect x="412" y="240" width="8" height="100" fill="#cfc2ad" />
+      </g>
+      <g fill="#24362a">
+        <circle cx="200" cy="330" r="92" />
+        <rect x="192" y="330" width="16" height="150" />
+        <circle cx="830" cy="360" r="70" />
+      </g>
+    </svg>
+  </div>
+);
 
-    <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-14 pb-16 sm:pt-20 sm:pb-20">
-      <div className="max-w-2xl mx-auto text-center">
-          {/* Mixed faces on purpose. Crimson Pro is already loaded for the site and goes unused
-              above the fold; setting the one emotional word in it -- the word the brand is named
-              for -- gives the headline a voice that Inter alone does not have, without turning
-              into a decorative serif hero. */}
-          {/* THE BRAND IS INSIDE THE H1, on purpose. Until 2026-09-24 the heading was only the
-              question, so the page's primary heading never named the site -- the brand lived in the
-              <title> and nowhere else prominent, while a brand search returned /accessibility/ above
-              this page. The question stays the headline a reader sees; the name sits above it as
-              a small line in the same element, so the heading states what the page IS and still
-              leads with the hook. The sr-only colon keeps it reading as two phrases to a screen
-              reader rather than "Before Regret Could you regret". Same component in the live hero
-              and the prerender, so both gain the same height and LCP is unaffected. */}
-          <h1 className="mt-4 font-sans text-[2.1rem] leading-[1.08] sm:text-5xl lg:text-[3.4rem] font-extrabold tracking-[-0.02em] text-slate-900">
-            <span className="block mb-3 text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-blue-700 leading-none">
+export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef }) => {
+  const centred = HERO_ALIGN === 'center';
+  return (
+    <section className="relative isolate overflow-hidden bg-home-navy text-white">
+      {HERO_PHOTO ? (
+        <img
+          src={HERO_PHOTO}
+          srcSet={HERO_SRCSET}
+          sizes="(min-width: 640px) 100vw, 360px"
+          alt=""
+          width={1851}
+          height={850}
+          fetchPriority="high"
+          decoding="async"
+          className="block h-60 w-full object-cover object-[85%_center] sm:absolute sm:inset-0 sm:h-full sm:object-[70%_center]"
+        />
+      ) : (
+        <PaintedScene />
+      )}
+      {/* Phones (2026-10-04, owner: the hero "doesn't feel interesting" on mobile): the photo used to
+          sit behind a 75% wash, cropped to a sliver of porch. Now it is a clear band at the top --
+          house, porch lights and sunset sky -- that fades into the navy the copy sits on. */}
+      {HERO_PHOTO && (
+        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-60 sm:hidden bg-gradient-to-b from-transparent from-55% to-home-navy" />
+      )}
+      {/* Tablet and up: a left-to-right fade so the house stays visible on the right, or an even
+          wash when centred. */}
+      {centred && (
+        <div aria-hidden="true" className="absolute inset-0 hidden sm:block" style={{ background: 'rgba(27,42,64,0.62)' }} />
+      )}
+      {!centred && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 hidden sm:block"
+          style={{ background: 'linear-gradient(90deg, rgba(27,42,64,0.86) 0%, rgba(27,42,64,0.72) 34%, rgba(27,42,64,0.22) 60%, rgba(27,42,64,0) 82%)' }}
+        />
+      )}
+
+      <div className={`relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-16 sm:pt-24 sm:pb-28 ${HERO_PHOTO ? '-mt-6 pt-0 sm:mt-0' : 'pt-16'}`}>
+        <div className={centred ? 'max-w-2xl mx-auto text-center' : 'max-w-xl text-center sm:text-left'}>
+          <h1 className="font-serif text-[2.4rem] leading-[1.05] sm:text-6xl lg:text-[4.1rem] font-semibold tracking-[-0.01em] text-white">
+            <span className="block mb-4 font-sans text-xs sm:text-sm font-bold uppercase tracking-[0.24em] text-home-oak leading-none">
               Before Regret<span className="sr-only">:</span>
             </span>
-            Could you{' '}
-            <span className="font-serif font-semibold italic tracking-normal text-blue-600">regret</span>{' '}
-            moving here?
+            Could you <span className="italic text-[#f2c98f]">regret</span> moving here?
           </h1>
 
-          {/* The opening clause is deliberately a plain "X is Y" definition, and it is here in
-              prose rather than only in the Organization JSON-LD below. Searching the brand name on
-              2026-09-20 returned an AI Overview calling the site "an online platform that provides
-              accessibility statements and web services", sourced from /accessibility/ -- which was
-              the ONLY page on the site whose text stated brand, domain and operator in a
-              definitional sentence. The h1 above is a question and never names the brand, so a
-              generative answer had nothing else to quote. Schema did not help: the homepage already
-              carried correct Organization markup with a good description and it was ignored, because
-              that layer reads prose. Keep a sentence of this shape on the page. */}
-          <p className="mt-5 mx-auto max-w-xl text-base sm:text-lg text-slate-600 leading-relaxed">
+          <p className="mt-6 max-w-xl text-base sm:text-lg text-slate-200 leading-relaxed">
             Before Regret is a free property research tool for US home buyers. Search any US
             residential address and get the checks that actually matter for a home of its age and
             county, the exact questions to ask the seller, and a clear list of what to verify before
             you sign.
           </p>
 
-          <div ref={searchBoxRef} id="address-search-box" className="mt-8 min-h-[76px] text-left">
+          <div ref={searchBoxRef} id="address-search-box" className="mt-8 min-h-[76px] text-left text-slate-900">
             {searchBox ?? (
-              /* Non-interactive replica, present only so the static hero is the same height as the
-                 mounted one. aria-hidden and inert: it must never take focus or be read out. */
               <div aria-hidden="true" className="rounded-2xl bg-white border border-slate-200 shadow-lg p-3 flex gap-2">
                 <div className="flex-1 rounded-xl bg-slate-50 border border-slate-300 px-4 py-3 text-slate-400 text-sm">
                   e.g. 301 Congress Ave, Austin, TX
@@ -129,17 +138,19 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
             )}
           </div>
 
-          <p className="mt-4 text-sm font-semibold text-slate-900">Your first report is free.</p>
-          <p className="mt-1 text-sm text-slate-500">No credit card required.</p>
-
-          <a
-            href="/sample-report/"
-            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800 underline underline-offset-4 decoration-blue-300"
-          >
-            See a sample report
-            <span aria-hidden="true">&rarr;</span>
-        </a>
+          <div className={`mt-5 flex flex-col gap-1 ${centred ? 'items-center' : 'items-center sm:items-start'}`}>
+            <p className="text-sm font-semibold text-white">Your first report is free.</p>
+            <p className="text-sm text-slate-300">No credit card required.</p>
+            <a
+              href="/sample-report/"
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-[#f2c98f] hover:text-white underline underline-offset-4 decoration-[#f2c98f]/50"
+            >
+              See a sample report
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};

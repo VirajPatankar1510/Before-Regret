@@ -10,6 +10,11 @@ import { ClosingCtaSection } from './home/ClosingCtaSection';
 import { GuideCardsSection } from './home/GuideCardsSection';
 import { WalkthroughToolSection } from './home/WalkthroughToolSection';
 import { HeroPanel } from './home/HeroPanel';
+import { TrustStrip } from './home/TrustStrip';
+import { HouseXraySection } from './home/HouseXraySection';
+import { HomeAgeTimeline } from './home/HomeAgeTimeline';
+import { CountyMapSection } from './home/CountyMapSection';
+import { ResearchStatsSection } from './home/ResearchStatsSection';
 import { BookPromoCard } from './BookPromo';
 import { HomeData, buildGuideClusters, pickResearchPages } from '../utils/homeContent';
 
@@ -84,18 +89,18 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
         searchBox={<AddressSearchBox onSelectProperty={onSelectProperty} />}
       />
 
-      {/* 2. FREE WALKTHROUGH TOOL. Directly under the hero, and moved here from below the pricing
-          block on purpose: the earlier position protected the commercial ask from a competing
-          free one, which is a real concern and the wrong trade for a tool nobody had found. A
-          visitor who is not ready to type an address now meets something they can use in one tap
-          rather than five sections of scrolling. Same position in scripts/prerender-homepage.tsx. */}
-      <WalkthroughToolSection onNavigate={onNavigate} />
-
-      {/* 2. WHAT A LISTING WON'T TELL YOU */}
-      <ListingOmissionsSection />
-
-      {/* 3. HOW IT WORKS & DATA SYNTHESIS WORKFLOW */}
+      {/* 2026-10-04 REDESIGN ORDER -- identical in scripts/prerender-homepage.tsx, so the static and
+          mounted pages always match. Sources strip, the cutaway house (what a listing won't tell
+          you), how it works, what's in the report, the home-age timeline, the free tools, the county
+          map, research numbers, then pricing and the library as before. */}
+      <TrustStrip />
+      <HouseXraySection onNavigate={onNavigate} />
       <HowItWorksSection />
+      <ListingOmissionsSection />
+      <HomeAgeTimeline onNavigate={onNavigate} />
+      <WalkthroughToolSection onNavigate={onNavigate} />
+      <CountyMapSection articles={homeData.articles} onNavigate={onNavigate} />
+      <ResearchStatsSection onNavigate={onNavigate} />
 
       {/* 4. PLAIN, TRANSPARENT PRICING -- directly after the product explanation, before the
           content library. A landing page makes its offer early; the library below is there for

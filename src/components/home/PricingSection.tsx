@@ -20,11 +20,11 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
   };
 
   return (
-    <section id="what-we-found" className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-12">
+    <section id="what-we-found" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-12 home-reveal">
       
       {/* Header */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
-        <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+        <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">
           Simple, Transparent Pricing
         </h2>
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
@@ -40,7 +40,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
             and "Pay-As-You-Go" broke across three lines with "/ report" orphaned from $14.99 -- on
             the paid card, on the device most visitors use. flex-wrap drops the price below the
             title when the row is too narrow; nowrap keeps each from splitting mid-word. */}
-        <div className="bg-white border-2 border-blue-600 rounded-3xl p-8 shadow-lg relative flex flex-col justify-between space-y-6">
+        <div className="bg-white border border-home-linen rounded-3xl p-8 shadow-sm relative flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-b border-slate-200 pb-4">
               <div>
@@ -83,7 +83,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
         </div>
 
         {/* Card 2: Additional Reports $14.99 */}
-        <div className="bg-white text-slate-900 border-2 border-blue-600 rounded-3xl p-8 shadow-lg relative flex flex-col justify-between space-y-6">
+        <div className="bg-home-navy text-white border border-home-navy rounded-3xl p-8 shadow-lg relative flex flex-col justify-between space-y-6 [&_h3]:text-white [&_p]:text-slate-300 [&_li]:text-slate-200 [&_.text-slate-900]:text-white">
           <div className="space-y-4">
             <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-b border-slate-200 pb-4">
               <div>
