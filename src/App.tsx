@@ -297,20 +297,28 @@ export function App() {
   };
 
   const handleNavigate = (targetPath: string) => {
+    // Some real pages are NOT app routes: /sunlight/, every /research/ study and /sample-report/ are
+    // standalone static HTML built by their own prerender scripts. A client-side navigation to one
+    // used to fall through to the 'notFound' state below, so a click from the homepage showed
+    // "404 -- Page Not Found" and only a refresh (a real request) showed the page (owner report,
+    // 2026-10-05). Anything the app cannot render itself now gets a full page load, so the SERVER
+    // answers -- with the static page, or with a genuine 404 for a dead link. Checked before
+    // pushState, so the history entry belongs to the real navigation, not a phantom SPA one.
+    const isAppPath = targetPath === '/' || targetPath.startsWith('/insights/') || targetPath.startsWith('/report/');
+    if (!isAppPath && !resolveRouteFromPath(targetPath)) {
+      window.location.assign(targetPath);
+      return;
+    }
+
     try {
       window.history.pushState({}, '', targetPath);
     } catch (e) {
       console.warn('pushState unavailable:', e);
     }
 
-    if (!resolveRouteFromPath(targetPath)) {
-      if (targetPath === '/') {
-        setCurrentStep('HOME');
-        setPseoRoute({ type: 'none' });
-      } else if (!targetPath.startsWith('/insights/') && !targetPath.startsWith('/report/')) {
-        setPseoRoute({ type: 'notFound' });
-        setCurrentStep('PSEO');
-      }
+    if (targetPath === '/') {
+      setCurrentStep('HOME');
+      setPseoRoute({ type: 'none' });
     }
     // Instant, not smooth -- a route change can swap in a page of very different height (e.g. a
     // long guide article collapsing to the much shorter homepage). A smooth scroll animates
