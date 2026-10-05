@@ -112,7 +112,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                 <span>3. Payment Card Handling & Processor Security</span>
               </h2>
               <p className="text-xs text-emerald-900 leading-relaxed">
-                Both consumer report purchases and vendor placement fees are processed entirely through <strong>PayPal</strong>, a PCI-DSS Level 1 compliant third-party payment processor. Payment happens on PayPal's own checkout, not on this site, and is subject to PayPal's privacy policy in addition to this one.
+                Property reports are free, so the only payments on this site are vendor placement fees. They are processed entirely through <strong>PayPal</strong>, a PCI-DSS Level 1 compliant third-party payment processor. Payment happens on PayPal's own checkout, not on this site, and is subject to PayPal's privacy policy in addition to this one.
               </p>
               <p className="text-xs font-bold text-emerald-950 bg-white p-3 rounded-xl border border-emerald-200">
                 Atmostellar NEVER stores, transmits, or sees full payment card numbers, credit card CVVs, or bank credentials on our servers — we never handle them at all. We receive from PayPal only the transaction identifier and a confirmation that the payment succeeded, which we store against your order.
@@ -158,8 +158,10 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                   monetized, or shared" bullet above is scoped to advertisers, brokers, and
                   commercial vendors, and is true as written -- but a reader lands on it and
                   reasonably concludes the address they typed goes nowhere. It does go somewhere.
-                  Generating a report sends it to Google's Gemini API and to the US Census Bureau
-                  geocoder. Neither is a sale and neither is advertising, so nothing above was
+                  Generating a report sends it to the US Census Bureau geocoder (and, as coordinates,
+                  to the USGS); typing in the search box sends it to LocationIQ. 2026-10-05: the
+                  Gemini entry was removed when reports stopped using AI, and the USGS and LocationIQ
+                  entries, which had been missing, were added. Neither is a sale and neither is advertising, so nothing above was
                   false; it was just incomplete in the exact direction a reader would care about,
                   which is the harder problem to spot and the easier one to be judged for. Naming
                   the processors, and saying plainly which of them receives the address, is what
@@ -171,22 +173,27 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               </p>
               <ul className="list-disc pl-5 space-y-1.5 text-xs text-slate-600">
                 <li>
-                  <strong>Google (Gemini API)</strong> — generates the written analysis in a property
-                  report. <strong>The address you searched is sent to Google</strong>, along with its
-                  city, state, ZIP and county, so the report can be written about that property. Your
-                  name, email, account identifier and IP address are not sent.
+                  <strong>LocationIQ</strong> — suggests matching addresses as you type in the search
+                  box. <strong>What you type is sent to LocationIQ</strong>; your name, email, account
+                  identifier and IP address are not.
                 </li>
                 <li>
-                  <strong>US Census Bureau geocoder</strong> — confirms the address you entered is a
-                  real, locatable US address before any report is produced. <strong>The address is
-                  sent to this US government service</strong>; nothing identifying you is.
+                  <strong>US Census Bureau</strong> — confirms the address you entered is a real,
+                  locatable US address before any report is produced, and looks up the neighborhood
+                  figures for its census tract. <strong>The address is sent to this US government
+                  service</strong>; nothing identifying you is.
+                </li>
+                <li>
+                  <strong>US Geological Survey</strong> — returns the earthquake design values for the
+                  property. <strong>The property's map coordinates are sent</strong>; nothing
+                  identifying you is.
                 </li>
                 <li>
                   <strong>Clerk</strong> — provides sign-in. Holds your email address, name and any
                   profile photo from the sign-in method you chose, under its own privacy policy.
                 </li>
                 <li>
-                  <strong>PayPal</strong> — processes payments, as described in section 3.
+                  <strong>PayPal</strong> — processes vendor placement payments, as described in section 3.
                 </li>
                 <li>
                   <strong>Neon</strong> (database hosting) and <strong>Vercel</strong> (application

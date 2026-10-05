@@ -119,7 +119,7 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
             </h2>
             <p className="text-sm text-slate-600 leading-relaxed">
               The guides in our <button onClick={() => goTo('/guides/')} className="text-blue-600 hover:underline font-semibold cursor-pointer">Editorial Guides</button> section
-              are drafted with AI assistance (Google's Gemini) and reviewed before publishing. We're not hiding that,
+              are drafted with AI assistance and reviewed before publishing. We're not hiding that,
               and we don't think AI-assisted drafting is itself the problem -- vague, uncited, unreviewed AI output
               is. So the drafting model works under a specific, non-negotiable set of rules for every article:
             </p>
