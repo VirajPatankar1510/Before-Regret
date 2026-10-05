@@ -109,6 +109,34 @@ const VALID_US_STATE_CODES: ReadonlySet<string> = new Set([
   'WV', 'WI', 'WY', 'PR', 'GU', 'VI', 'AS', 'MP',
 ]);
 
+// Full state/territory names, for the fallback below. Added 2026-10-06: the search box sends
+// LocationIQ's `state`, which is the full name ("Washington") -- LocationIQ returns no state_code
+// in its address breakdown -- so the fallback's code-only check rejected EVERY address the Census
+// matcher had no record for, whenever it came from the site's own search box. Owner report: a
+// house on 107th Place SE, Kent, WA. Mapping the name to its code keeps the "must be a real US
+// state" guard exactly as strict while accepting the form the search box actually sends.
+const US_STATE_NAME_TO_CODE: Readonly<Record<string, string>> = {
+  ALABAMA: 'AL', ALASKA: 'AK', ARIZONA: 'AZ', ARKANSAS: 'AR', CALIFORNIA: 'CA', COLORADO: 'CO',
+  CONNECTICUT: 'CT', DELAWARE: 'DE', 'DISTRICT OF COLUMBIA': 'DC', FLORIDA: 'FL', GEORGIA: 'GA',
+  HAWAII: 'HI', IDAHO: 'ID', ILLINOIS: 'IL', INDIANA: 'IN', IOWA: 'IA', KANSAS: 'KS',
+  KENTUCKY: 'KY', LOUISIANA: 'LA', MAINE: 'ME', MARYLAND: 'MD', MASSACHUSETTS: 'MA',
+  MICHIGAN: 'MI', MINNESOTA: 'MN', MISSISSIPPI: 'MS', MISSOURI: 'MO', MONTANA: 'MT',
+  NEBRASKA: 'NE', NEVADA: 'NV', 'NEW HAMPSHIRE': 'NH', 'NEW JERSEY': 'NJ', 'NEW MEXICO': 'NM',
+  'NEW YORK': 'NY', 'NORTH CAROLINA': 'NC', 'NORTH DAKOTA': 'ND', OHIO: 'OH', OKLAHOMA: 'OK',
+  OREGON: 'OR', PENNSYLVANIA: 'PA', 'RHODE ISLAND': 'RI', 'SOUTH CAROLINA': 'SC',
+  'SOUTH DAKOTA': 'SD', TENNESSEE: 'TN', TEXAS: 'TX', UTAH: 'UT', VERMONT: 'VT', VIRGINIA: 'VA',
+  WASHINGTON: 'WA', 'WEST VIRGINIA': 'WV', WISCONSIN: 'WI', WYOMING: 'WY', 'PUERTO RICO': 'PR',
+  GUAM: 'GU', 'UNITED STATES VIRGIN ISLANDS': 'VI', 'U.S. VIRGIN ISLANDS': 'VI',
+  'AMERICAN SAMOA': 'AS', 'NORTHERN MARIANA ISLANDS': 'MP',
+};
+
+/** "WA", "wa" or "Washington" -> "WA"; anything else -> "" (not a real US state). */
+export function toUsStateCode(raw: string): string {
+  const v = (raw || '').trim().toUpperCase();
+  if (VALID_US_STATE_CODES.has(v)) return v;
+  return US_STATE_NAME_TO_CODE[v] || '';
+}
+
 export async function validateLayer1(rawAddress: string, fallback?: Layer1Fallback): Promise<Layer1Result> {
   const trimmed = (rawAddress || '').trim();
 
@@ -191,8 +219,8 @@ export async function validateLayer1(rawAddress: string, fallback?: Layer1Fallba
     // disagreement between two geocoders -- see this function's own doc comment. Gated on the
     // state actually being a real US state/territory code (see VALID_US_STATE_CODES) so a direct
     // API call can't pass this branch with a fabricated location.
-    const fallbackState = (fallback?.state || '').trim().toUpperCase();
-    if (fallback?.city && VALID_US_STATE_CODES.has(fallbackState)) {
+    const fallbackState = toUsStateCode(fallback?.state || '');
+    if (fallback?.city && fallbackState) {
       return {
         passed: true,
         code: 'L1_RESOLVED_VIA_SEARCH_GEOCODER',

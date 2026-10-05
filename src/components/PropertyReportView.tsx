@@ -367,6 +367,9 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         <SponsoredVendorCards vendors={report.movingCompanyVendors} />
 
         {/* SECTION: DETAILED FINDINGS */}
+        {/* Hidden when nothing was checked live (2026-10-06): a lookup can fail, and a "Checked
+            live for this address" heading over an empty space reads as a broken report. */}
+        {resolvedFindings.length > 0 && (
         <section id="section-findings" className="space-y-6">
           {/* Heading glued to the first finding card in one data-print-block, same fix as
               InspectionPriorities.tsx / SellerQuestions.tsx -- break-after: avoid on the heading
@@ -415,6 +418,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             </button>.
           </p>
         </section>
+        )}
 
         {/* SECTION: INSPECTION BUDGET PRIORITIES -- renders nothing when no rule set covers
             this (year built, county) pair, same as the free summary version. Owns its own full

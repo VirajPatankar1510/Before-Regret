@@ -4,7 +4,7 @@ import fs from "fs";
 import dotenv from "dotenv";
 import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } from "./src/utils/sitemapGenerator.js";
 import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService.js";
-import { runAddressGate } from "./src/engine/geoValidationGate.js";
+import { runAddressGate, toUsStateCode } from "./src/engine/geoValidationGate.js";
 import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
 import { fetchNeighborhoodContextFinding } from "./src/engine/neighborhoodContext.js";
 import { getInspectionPriorities } from "./src/engine/inspectionPriorities.js";
@@ -788,11 +788,22 @@ export async function createApp() {
     // threaded through to the attachSponsoredVendorsTo*Findings pair and buildInspectionPrioritiesForReport below
     // -- avoids querying per finding / per inspection-priority item (up to ~14 round trips
     // otherwise). See fetchActiveZipVendors in src/server/zipAdsApi.ts.
+    // When Census has no record of the house (Layer 1 resolved via the search geocoder), the gate
+    // has no coordinate, and both live checks used to be skipped silently -- the report kept its
+    // "Checked live for this address" heading with nothing under it. Look the street up here,
+    // server-side, rather than trust a coordinate the browser sends (see the comment above).
+    let liveLat = gateResult.layer1.lat as number | undefined;
+    let liveLon = gateResult.layer1.lon as number | undefined;
+    if ((liveLat == null || liveLon == null) && gateResult.layer1.resolvedVia === 'search-geocoder') {
+      const located = await locateStreetServerSide(fullAddr, gateResult.resolvedState || '');
+      if (located) { liveLat = located.lat; liveLon = located.lon; }
+    }
+
     const [liveSeismicFinding, liveNeighborhoodFinding, zipVendorMap, requesterClerkUserId] = await Promise.all([
-      fetchSeismicHazardFinding(gateResult.layer1.lat as number, gateResult.layer1.lon as number),
+      fetchSeismicHazardFinding(liveLat as number, liveLon as number),
       fetchNeighborhoodContextFinding(
-        gateResult.layer1.lat as number,
-        gateResult.layer1.lon as number,
+        liveLat as number,
+        liveLon as number,
         typeof yearBuilt === 'number' ? yearBuilt : parseInt(String(yearBuilt ?? ''), 10) || null
       ),
       fetchActiveZipVendors(resolvedMeta.zipCode),
@@ -875,8 +886,8 @@ export async function createApp() {
       resolvedMeta.propertyType,
       usefulSourcesCount || 21,
       0, // reports are free (2026-10-05)
-      gateResult.layer1.lat ?? null,
-      gateResult.layer1.lon ?? null
+      liveLat ?? null,
+      liveLon ?? null
     );
 
     // No AI step (2026-10-05, owner): every report is built entirely from this site's own engine and
@@ -2138,6 +2149,29 @@ function resolvePropertyMetadata(
     isNonResidential,
     estimatedSqFt: isNonResidential ? 0 : (isMultiFamilyOrApartment ? 1250 : 2450)
   };
+}
+
+// A coordinate for an address the Census matcher has no record of (2026-10-06). LocationIQ is
+// asked server-side with the same key the search proxy uses, and its answer is accepted only when
+// it lands in the state the gate already resolved -- a street-level point on the right street is
+// what both live checks need (seismic values and the census tract change over miles, not doors).
+// Returns null on any failure, so a report is never blocked by this.
+async function locateStreetServerSide(address: string, stateCode: string): Promise<{ lat: number; lon: number } | null> {
+  const apiKey = process.env.LOCATIONIQ_API_KEY;
+  if (!apiKey || !address || !stateCode) return null;
+  try {
+    const params = new URLSearchParams({ key: apiKey, q: address, format: 'json', addressdetails: '1', limit: '5', countrycodes: 'us' });
+    const res = await fetch(`https://us1.locationiq.com/v1/search?${params.toString()}`, { signal: AbortSignal.timeout(6000) });
+    if (!res.ok) return null;
+    const results = await res.json();
+    if (!Array.isArray(results)) return null;
+    const hit = results.find((r: any) => r?.address?.road && toUsStateCode(r?.address?.state || '') === stateCode.toUpperCase());
+    const lat = hit ? parseFloat(hit.lat) : NaN;
+    const lon = hit ? parseFloat(hit.lon) : NaN;
+    return Number.isFinite(lat) && Number.isFinite(lon) ? { lat, lon } : null;
+  } catch {
+    return null;
+  }
 }
 
 function generateStructuredPropertyReport(

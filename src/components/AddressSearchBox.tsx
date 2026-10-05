@@ -626,6 +626,22 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       // Three genuinely different failures, three different messages -- see isStreetLevel above
       // for why collapsing them into one was wrong rather than merely vague.
       const street = results.find(isStreetLevel);
+
+      // Street found, house number not in LocationIQ's data (2026-10-05, owner report: "107th Place
+      // Southeast, Kent, Washington ... no records for that exact house number"). LocationIQ is
+      // built on OpenStreetMap, which simply lacks many US house numbers. A report never needed
+      // that entry: it is built from the county, the census tract and seismic values at the
+      // coordinates, plus the year and type the reader enters -- a point on their own street gives
+      // the same county and, almost always, the same tract. So when the reader typed a house
+      // number and the geocoder found that street, use their number with the street's location.
+      // The server's address gate still runs on the result (Census check, non-residential checks).
+      const typedNumber = mapSearchQuery.trim().match(/^(\d+[a-z]?)[\s,]/i)?.[1];
+      if (street && typedNumber) {
+        const withNumber = { ...street, address: { ...street.address, house_number: typedNumber } };
+        selectLocation(parseFloat(street.lat), parseFloat(street.lon), street.display_name, withNumber);
+        return;
+      }
+
       if (street) {
         const where = describeMatch(street);
         setMapSearchError(
