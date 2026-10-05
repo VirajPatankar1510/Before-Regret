@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { PropertySearchResult } from '../types';
 import { isPlausibleYearBuilt } from '../engine/inspectionPriorities';
+import { ReportAssentNotice } from './ReportAssentNotice';
 
 interface AddressSearchBoxProps {
   onSelectProperty: (property: PropertySearchResult) => void;
@@ -243,6 +244,27 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   // declaration/unit number/year built vs. is genuinely blocked pending or failing the backend
   // gate check.
   const canAnalyze = !!declaredPropertyType && yearBuiltValid && !gateState?.promptForUnit && gateState?.status === 'passed';
+
+  // Starts the report. Since 2026-10-06 (owner: "there are too many steps to generate report") this
+  // is the LAST click: the property-type step's button calls it directly, and App goes straight to
+  // generating -- the old Analyze -> progress animation -> summary page -> confirm modal sequence
+  // existed for sign-in and payment, both gone. The server re-runs the address gate regardless.
+  const submitReport = () => {
+    if (!selectedPinResult || !canSubmit || !declaredPropertyType) return;
+    setShowPropertyTypeModal(false);
+    onSelectProperty({
+      ...selectedPinResult,
+      declaredPropertyType,
+      unitNumber,
+      yearBuilt: parseInt(yearBuilt, 10),
+    });
+  };
+  const formComplete = !!declaredPropertyType && yearBuiltValid && !(declaredPropertyType === 'condo_or_multifamily' && !unitNumber.trim());
+  // Does NOT wait for the background address check to finish -- on the Census path it can take
+  // 5-10s (measured 2026-10-06), and the generate route re-runs the same gate before building
+  // anything, returning a "not supported" report for a blocked address. Only a verdict that has
+  // already come back blocked (or asked for a unit) holds the button.
+  const canSubmit = formComplete && gateState?.status !== 'blocked' && !gateState?.promptForUnit;
   const analyzeDisabled = !!declaredPropertyType && yearBuiltValid && !gateState?.promptForUnit && gateState?.status !== 'passed';
 
   // Synchronize draft selection with sessionStorage
@@ -821,9 +843,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             </div>
 
             {selectedPinResult && commercialHint && !commercialHintDismissed && (
-              <div className="bg-amber-950/60 border border-amber-600/40 rounded-xl p-2.5 text-[11px] text-amber-200 flex items-start justify-between gap-2">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] text-amber-900 flex items-start justify-between gap-2">
                 <span>This address looks like it might be a business, not a home. Double-check before continuing.</span>
-                <button type="button" onClick={() => setCommercialHintDismissed(true)} className="text-amber-600 hover:text-amber-700 font-bold shrink-0 cursor-pointer">Dismiss</button>
+                <button type="button" onClick={() => setCommercialHintDismissed(true)} className="text-amber-700 hover:text-amber-900 font-bold shrink-0 cursor-pointer">Dismiss</button>
               </div>
             )}
 
@@ -868,12 +890,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                     return;
                   }
                   if (gateState?.status !== 'passed') return;
-                  onSelectProperty({
-                    ...selectedPinResult,
-                    declaredPropertyType,
-                    unitNumber,
-                    yearBuilt: parseInt(yearBuilt, 10),
-                  });
+                  submitReport();
                 }}
                 className={`w-full px-4 sm:px-5 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 shrink-0 tracking-tight ${
                   canAnalyze
@@ -897,7 +914,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                         ? 'Enter Unit Number'
                         : gateState?.status === 'blocked'
                           ? 'Not Supported Yet'
-                          : 'Analyze Property'}
+                          : 'Get My Free Report'}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
               </button>
@@ -939,9 +956,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             </div>
 
             {commercialHint && !commercialHintDismissed && (
-              <div className="bg-amber-950/60 border border-amber-600/40 rounded-xl p-2.5 text-[11px] text-amber-200 flex items-start justify-between gap-2">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] text-amber-900 flex items-start justify-between gap-2">
                 <span>This address looks like it might be a business, not a home. Double-check before continuing.</span>
-                <button type="button" onClick={() => setCommercialHintDismissed(true)} className="text-amber-600 hover:text-amber-700 font-bold shrink-0 cursor-pointer">Dismiss</button>
+                <button type="button" onClick={() => setCommercialHintDismissed(true)} className="text-amber-700 hover:text-amber-900 font-bold shrink-0 cursor-pointer">Dismiss</button>
               </div>
             )}
 
@@ -995,19 +1012,36 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               </p>
             </div>
 
+            {/* The gate's verdict, shown here because this is now the step the reader is on when
+                it lands (the confirmation card behind this modal still shows it too). */}
+            {formComplete && gateState?.status === 'blocked' && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-xs text-amber-900 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <span>{gateState.message}</span>
+              </div>
+            )}
+
             <button
               type="button"
-              disabled={!declaredPropertyType || !yearBuiltValid || (declaredPropertyType === 'condo_or_multifamily' && !unitNumber.trim())}
-              onClick={() => setShowPropertyTypeModal(false)}
+              disabled={!canSubmit}
+              onClick={submitReport}
               className={`w-full px-4 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 tracking-tight ${
-                !declaredPropertyType || !yearBuiltValid || (declaredPropertyType === 'condo_or_multifamily' && !unitNumber.trim())
+                !canSubmit
                   ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
-                  : 'bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white cursor-pointer hover:shadow-blue-500/25'
+                  : 'bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer'
               }`}
             >
-              <span>Continue</span>
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span>
+                {formComplete && gateState?.promptForUnit
+                  ? 'Enter the unit number'
+                  : formComplete && gateState?.status === 'blocked'
+                    ? 'Not available for this address'
+                    : 'Get My Free Report'}
+              </span>
+              {canSubmit && <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />}
             </button>
+
+            <ReportAssentNotice />
           </div>
         </div>
       )}

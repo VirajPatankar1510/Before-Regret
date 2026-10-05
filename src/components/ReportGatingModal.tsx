@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertCircle, MapPin, Sparkles } from 'lucide-react';
+import { ReportAssentNotice } from './ReportAssentNotice';
 
 interface ReportGatingModalProps {
   isOpen: boolean;
@@ -84,17 +85,7 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
           )}
 
           {/* Assent notice, kept directly under the action -- see the comment at the top. */}
-          {!notice && <p className="text-[11px] text-slate-500 text-center font-normal leading-relaxed">
-            By getting this report you agree to our{' '}
-            <a href="/terms/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>{' '}
-            and{' '}
-            <a href="/disclaimer/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Disclaimer</a>,
-            and confirm the property type, year built, and unit number you entered are accurate --
-            we use them exactly as given and cannot verify them independently (Terms 3.5-3.6).
-            Reports are research material, not a home inspection or professional advice. The Terms
-            include a binding arbitration agreement and class action waiver you may opt out of
-            within 30 days.
-          </p>}
+          {!notice && <ReportAssentNotice />}
         </form>
       </div>
     </div>

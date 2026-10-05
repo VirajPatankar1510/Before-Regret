@@ -796,53 +796,20 @@ export function App() {
     }
   }, [currentStep, pseoRoute.type, report?.id, report?.propertyInfo?.address]);
 
-  // Step 1 -> Step 2: User selects property address
-  const handleSelectProperty = async (property: PropertySearchResult) => {
+  // The reader picked an address and finished the property-type step: build the report now.
+  //
+  // 2026-10-06, owner: "there are too many steps to generate report." This used to go Analyze ->
+  // a research progress animation (/api/property/research) -> a summary page -> a confirm modal ->
+  // generate. Those three screens existed for sign-in and the $14.99 payment, both removed on
+  // 2026-10-05; the assent notice now sits under the property-type step's button instead. The
+  // generate route re-runs the address gate and returns a rejection report for a blocked address,
+  // which PropertyReportView already renders, so the research call has nothing left to add.
+  // The summary/progress branches below stay only so a session restored from before this change
+  // still renders.
+  const handleSelectProperty = (property: PropertySearchResult) => {
     setSelectedProperty(property);
-    setCurrentStep('RESEARCHING');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Pre-populate summary data with high-quality fallback immediately
-    const fallbackSummary = createFallbackSummary(property);
-    setSummaryData(fallbackSummary);
-
-    // Fetch research summary data in background while animation plays
-    try {
-      const res = await fetch('/api/property/research', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(property)
-      });
-
-      const contentType = res.headers.get('content-type') || '';
-      if (res.ok && contentType.includes('application/json')) {
-        const json = await res.json();
-        if (json && json.blocked) {
-          // The address validation gate rejected this address -- skip straight to the report
-          // screen's rejection message instead of running the research/summary steps for an
-          // address that will never be able to generate a report.
-          setReport({
-            id: `rep_blocked_${Date.now()}`,
-            isNonResidential: true,
-            rejectionReason: json.rejectionReason,
-            blockedAtLayer: json.blockedAtLayer,
-            headerInfo: { address: property.formattedAddress || property.displayName },
-            propertyInfo: { address: property.formattedAddress || property.displayName, city: property.city, state: property.state, zipCode: property.zipCode, county: property.county || '', propertyType: 'Not Verified', estimatedSqFt: 0 },
-            leadWidgets: []
-          } as unknown as PropertyReport);
-          setCurrentStep('REPORT');
-          return;
-        }
-        if (json && json.data) {
-          setSummaryData(json.data);
-          return;
-        }
-      }
-      console.warn(`Research API returned non-JSON or status ${res.status}. Keeping client fallback summary.`);
-    } catch (err) {
-      console.warn('Failed to fetch research summary from server, using client fallback:', err);
-      setSummaryData(fallbackSummary);
-    }
+    setSummaryData(createFallbackSummary(property));
+    void handleConfirmAndGenerateReport('', false, property);
   };
 
   // Step 2 completes -> Step 3: Show Research Summary
@@ -860,10 +827,10 @@ export function App() {
     setIsGatingModalOpen(true);
   };
 
-  const handleConfirmAndGenerateReport = async (userEmail: string, isPaid: boolean) => {
+  const handleConfirmAndGenerateReport = async (userEmail: string, isPaid: boolean, propertyOverride?: PropertySearchResult) => {
     setIsGatingModalOpen(false);
 
-    if (!selectedProperty && !summaryData?.address) {
+    if (!propertyOverride && !selectedProperty && !summaryData?.address) {
       const defaultProp: PropertySearchResult = {
         placeId: 'default_prop',
         formattedAddress: '1204 Oakridge Dr, Austin, TX 78701',
@@ -880,7 +847,7 @@ export function App() {
       setSelectedProperty(defaultProp);
     }
 
-    const activeProperty = selectedProperty || summaryData?.address || {
+    const activeProperty = propertyOverride || selectedProperty || summaryData?.address || {
       placeId: 'default_prop',
       formattedAddress: '1204 Oakridge Dr, Austin, TX 78701',
       city: 'Austin',
