@@ -13,11 +13,12 @@ import { ContentLink } from './ContentLink';
  * links and descriptions; the numbered spots only change which one is highlighted.
  */
 
-interface Spot { n: number; x: number; y: number; q: string; a: string; href: string }
+interface Spot { n: number; x: number; y: number; q: string; a: string; href: string; tag?: string }
 
 const SPOTS: Spot[] = [
   { n: 1, x: 50, y: 20, q: 'How old is the roof?', a: 'Read the clues on a showing, then confirm the date with the permit or the invoice.', href: '/guides/how-to-tell-how-old-a-roof-is/' },
-  { n: 2, x: 30, y: 41, q: 'Which rooms get the sun?', a: 'See how much direct sun each room gets through the year, for the way the house faces.', href: '/sunlight/' },
+  // 2026-10-05, owner: worded as the search people make, matching the /sunlight/ page's own title.
+  { n: 2, x: 30, y: 41, q: 'Which direction should a house face?', a: 'See how much direct sun each room gets through the year, for the way the house faces.', href: '/sunlight/', tag: 'Free tool · No sign-up' },
   { n: 3, x: 40, y: 58, q: 'What is inside the walls?', a: 'Houses built before 1956 can still have knob-and-tube wiring behind the plaster.', href: '/guides/what-is-knob-and-tube-wiring/' },
   { n: 4, x: 67, y: 61, q: 'What are the water pipes made of?', a: 'Copper, PEX, galvanized or polybutylene: a magnet and a coin tell most of them apart.', href: '/guides/identify-water-pipes-pex-copper-galvanized/' },
   { n: 5, x: 27, y: 77, q: 'Which electrical panel is it?', a: 'A few panel brands from 1950–1989 are ones inspectors look at closely.', href: '/guides/federal-pacific-stab-lok-panel-inspectors-flag/' },
@@ -128,6 +129,9 @@ export const HouseXraySection: React.FC<{ onNavigate?: (path: string) => void }>
                     <span className={`shrink-0 w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center ${on ? 'bg-home-navy text-white' : 'bg-home-linen text-home-navy'}`}>{s.n}</span>
                     <span className="min-w-0">
                       <span className="block text-sm sm:text-base font-bold text-home-ink">{s.q}</span>
+                      {s.tag && (
+                        <span className="mt-1 inline-block rounded-full bg-home-sage px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-home-moss">{s.tag}</span>
+                      )}
                       <span className="block text-sm text-slate-600 leading-relaxed">{s.a}</span>
                       <span className={`mt-1 inline-flex items-center gap-1 text-xs font-semibold text-blue-700 ${on ? '' : 'sr-only group-hover:not-sr-only'}`}>
                         Read more <ArrowRight className="w-3.5 h-3.5" />
