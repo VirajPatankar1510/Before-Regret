@@ -1,0 +1,38 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-05T12:59:33.937Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "federal pacific panel",
+    "zinsco panel",
+    "pushmatic panel",
+    "challenger panel",
+    "split bus panel",
+    "electrical panel brands"
+  ],
+  "keywords": [
+    {
+      "keyword": "zinsco panel",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 5.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/will-zinsco-panel-fail-4-point-inspection/": 4
+      }
+    },
+    {
+      "keyword": "why are zinsco panels dangerous",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 3,
+      "pages": {
+        "https://www.beforeregret.com/guides/will-zinsco-panel-fail-4-point-inspection/": 1
+      }
+    }
+  ]
+}

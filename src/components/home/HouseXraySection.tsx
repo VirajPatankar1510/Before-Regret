@@ -21,7 +21,7 @@ const SPOTS: Spot[] = [
   { n: 2, x: 30, y: 41, q: 'Which direction should a house face?', a: 'See how much direct sun each room gets through the year, for the way the house faces.', href: '/sunlight/', tag: 'Free tool · No sign-up' },
   { n: 3, x: 40, y: 58, q: 'What is inside the walls?', a: 'Houses built before 1956 can still have knob-and-tube wiring behind the plaster.', href: '/guides/what-is-knob-and-tube-wiring/' },
   { n: 4, x: 67, y: 61, q: 'What are the water pipes made of?', a: 'Copper, PEX, galvanized or polybutylene: a magnet and a coin tell most of them apart.', href: '/guides/identify-water-pipes-pex-copper-galvanized/' },
-  { n: 5, x: 27, y: 77, q: 'Which electrical panel is it?', a: 'A few panel brands from 1950–1989 are ones inspectors look at closely.', href: '/guides/federal-pacific-stab-lok-panel-inspectors-flag/' },
+  { n: 5, x: 27, y: 77, q: 'Which electrical panel is it?', a: 'The brand is on the label inside the door. A few from 1950–1989 get a closer look.', href: '/guides/identify-electrical-panel-brand/' },
   { n: 6, x: 9, y: 84, q: 'Is the pipe from the street lead?', a: 'Your water utility keeps a public record of the service line, by address.', href: '/guides/lead-service-line-lookup-by-address/' },
   { n: 7, x: 74, y: 94, q: 'Is the sewer line cast iron?', a: 'Houses built before 1974 may have cast iron sewer lines. A camera scope shows their condition.', href: '/guides/why-cast-iron-pipes-corrode/' },
   { n: 8, x: 47, y: 89, q: 'Is that crack a problem?', a: 'When a foundation crack calls for a structural engineer, and when it does not.', href: '/guides/when-foundation-crack-need-structural-engineer/' },
