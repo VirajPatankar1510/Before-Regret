@@ -57,6 +57,9 @@ export const LEGACY_GONE_PATHS: readonly string[] = [
   // nothing while nobody requests them.
   '/guides/emotional-cheating-vs-close-friendship-boundaries',
   '/counties',
+  // A SIXTH relationship guide, found 2026-10-05 by sweeping every URL Search Console has reported in
+  // 16 months: it was answering 404 (after the trailing-slash redirect), not 410.
+  '/guides/long-distance-deadlock-closing-the-gap',
 ];
 
 /**
@@ -71,8 +74,13 @@ export const LEGACY_GONE_PATHS: readonly string[] = [
  *                answering 404 for months, while /city/delhi is unknown to Google. A 404 says
  *                "not found, might come back" and invites Google to keep re-checking; 410 says the
  *                URL is gone and should be dropped, which is what is actually true here.
+ *   /stories/ -- the old platform's user stories. Added 2026-10-05 after the owner found
+ *                /stories/powai-mistake still in Google results: URL Inspection showed it "Submitted and
+ *                indexed", last crawled 2026-07-24 (before the rebrand), while the URL answered 404. It
+ *                never earned an impression, so the Search Console sweeps could not have surfaced it --
+ *                the limitation noted above. Prefix, because one story implies more.
  */
-export const LEGACY_GONE_PREFIXES: readonly string[] = ['/expert/', '/city/'];
+export const LEGACY_GONE_PREFIXES: readonly string[] = ['/expert/', '/city/', '/stories/'];
 
 const legacySet = new Set(LEGACY_GONE_PATHS);
 
@@ -95,4 +103,5 @@ export const LEGACY_URLS_TO_VERIFY: readonly string[] = [
   '/expert/exp_amit',
   '/expert/exp_amit/ask',
   '/expert/exp_sneha',
+  '/stories/powai-mistake',
 ];
