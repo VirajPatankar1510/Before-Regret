@@ -103,7 +103,7 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
           <div className="flex items-start justify-between gap-3">
             <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
               <MessageCircleQuestion className="w-3.5 h-3.5" />
-              <span>Questions for seller</span>
+              <span>Questions for the seller</span>
             </div>
             <button
               type="button"
@@ -118,8 +118,8 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
             Questions to ask the seller or listing agent
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            Based on the year built you entered (<strong className="text-slate-900">{result.yearBuilt}</strong>) and this
-            property's era and area.
+            Based on the year built you entered (<strong className="text-slate-900">{result.yearBuilt}</strong>) and what is
+            common for homes of that era in this area, not on records for this house.
           </p>
         </div>
         {firstQuestion && renderQuestionItem(firstQuestion)}
@@ -138,7 +138,7 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
         <p>
           These are questions to ask, not verified answers. A seller's or agent's answer is not checked by Before
           Regret. Get anything important in writing and confirm it with a licensed professional
-          before your option period ends.
+          before your inspection deadline.
         </p>
       </div>
     </div>

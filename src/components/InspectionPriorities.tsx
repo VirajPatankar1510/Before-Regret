@@ -98,14 +98,15 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
         <div className="space-y-2">
           <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
             <ClipboardCheck className="w-3.5 h-3.5" />
-            <span>Inspection budget priorities</span>
+            <span>Guidance for a home of this age</span>
           </div>
           <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
             Where your inspection budget goes furthest
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            Based on the year built you entered (<strong className="text-slate-900">{result.yearBuilt}</strong>). These are
-            the checks that tend to matter most for homes of this era and area — not findings about this specific house.
+            Based on the year built you entered (<strong className="text-slate-900">{result.yearBuilt}</strong>), not on records
+            for this house. These are the checks that tend to matter most for homes of this era and area — not findings
+            about this specific house. If the listing shows a different year, run the report again with that year.
           </p>
         </div>
         {firstPriority && renderPriorityItem(firstPriority)}

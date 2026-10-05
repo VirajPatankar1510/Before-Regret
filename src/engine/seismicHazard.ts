@@ -30,13 +30,13 @@ function describeSeismicDesignCategory(sdc: string): { headline: string; nextSte
   switch (sdc) {
     case 'A':
       return {
-        headline: 'minimal seismic design requirements -- this area has very low earthquake risk',
-        nextStep: 'This is a standard, low seismic-risk area. No special earthquake-related questions are needed beyond what this report already covers.',
+        headline: 'minimal seismic design requirements',
+        nextStep: 'Earthquake design requirements here are minimal, so this is a low priority for this home.',
       };
     case 'B':
       return {
-        headline: 'low seismic design requirements -- earthquake risk here is low',
-        nextStep: 'This is a low seismic-risk area. No special earthquake-related questions are typically needed.',
+        headline: 'low seismic design requirements',
+        nextStep: 'Earthquake design requirements here are low, so this is usually a low priority for this home.',
       };
     case 'C':
       return {
@@ -46,7 +46,7 @@ function describeSeismicDesignCategory(sdc: string): { headline: string; nextSte
     default:
       // D, E, F -- high through very high.
       return {
-        headline: 'high seismic design requirements, indicating meaningfully elevated regional earthquake risk',
+        headline: 'high seismic design requirements',
         nextStep: 'Ask the seller about any seismic retrofitting, foundation bolting, or soft-story reinforcement, and consider getting an earthquake insurance quote.',
       };
   }
@@ -83,8 +83,8 @@ export async function fetchSeismicHazardFinding(lat: number, lon: number): Promi
       category: 'Environment',
       status: 'CONFIRMED RECORD',
       summaryText: `USGS places this location in Seismic Design Category ${seismic.sdc} -- ${headline}.`,
-      whatWeFound: `USGS's ASCE 7-22 seismic design tool places this location in Seismic Design Category ${seismic.sdc}, based on a mapped short-period spectral acceleration (Ss) of ${seismic.ss}g and a 1-second spectral acceleration (S1) of ${seismic.s1}g, for standard Site Class D soil conditions and Risk Category II construction.`,
-      whyItMatters: 'Seismic Design Category determines how much earthquake-resistant construction a building at this site is required to meet under current building code -- higher categories (D, E, F) indicate meaningfully higher regional earthquake risk and stricter, often costlier, structural requirements for new construction and major renovations.',
+      whatWeFound: `The USGS seismic design service, using ASCE/SEI 7-22 values, places this location in Seismic Design Category ${seismic.sdc}, based on a mapped short-period spectral acceleration (Ss) of ${seismic.ss}g and a 1-second spectral acceleration (S1) of ${seismic.s1}g, for standard Site Class D soil conditions and Risk Category II construction.`,
+      whyItMatters: 'Seismic Design Category is a building-code classification, not a risk score on its own: it combines the mapped ground shaking at this location with the soil and building type assumed above. Categories D, E and F carry the strictest earthquake-design requirements for new construction and major renovations.',
       suggestedNextStep: nextStep,
       sourceAgency: 'U.S. Geological Survey (USGS)',
       lastUpdated: 'ASCE 7-22 seismic design values (live query)',

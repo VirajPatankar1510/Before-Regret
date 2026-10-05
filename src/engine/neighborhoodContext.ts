@@ -155,7 +155,7 @@ function describeHeating(tract: HousingProfile): { metricValue: string; nextStep
   if (oilShare >= 10) {
     return {
       metricValue: `${oilShare}% fuel oil`,
-      nextStep: 'Ask the seller directly whether the property has, or ever had, an oil storage tank -- above ground or buried. Buried tanks are a common and expensive remediation surprise, and a standard home inspection generally does not look for them.',
+      nextStep: 'Many homes in this neighborhood heat with fuel oil. Ask the seller whether this home uses or ever used heating oil, and whether an oil tank, above ground or buried, was ever installed or removed. A general home inspection may not find a buried or abandoned tank, so ask about a tank search if the answer is unclear.',
     };
   }
   if (electricShare >= 60) {
@@ -254,7 +254,7 @@ export async function fetchNeighborhoodContextFinding(
           });
           headline = `Using the year you entered (${subjectYearBuilt}), this home is about ${subjectDelta} years older than the typical home in its neighborhood (census tract).`;
           nextSteps.push(
-            'Because this home is materially older than its neighbors, comparable sales nearby may be newer properties. Ask your agent whether the comps used were age-adjusted, and expect original-era systems here even where surrounding homes have been rebuilt.'
+            'If the year you entered is right, this home is materially older than its neighbors, so comparable sales nearby may be newer properties. Ask your agent whether the comps used were age-adjusted, and ask which of the home\'s systems have been updated rather than assuming they match its newer neighbors.'
           );
         } else if (subjectDelta <= -15) {
           metrics.push({
@@ -278,7 +278,7 @@ export async function fetchNeighborhoodContextFinding(
       metrics.push({
         // Same fix as the age tile above: show the county's real number, not just a delta with
         // no reference point visible anywhere on the tile itself.
-        label: 'Median monthly cost to own',
+        label: 'Neighborhood median owner costs',
         value: `${money(tract.medianOwnerCostWithMortgage)}/mo`,
         comparison: `County median: ${money(county.medianOwnerCostWithMortgage)}/mo`,
       });
@@ -286,13 +286,13 @@ export async function fetchNeighborhoodContextFinding(
         headline = `Median monthly ownership cost in this neighborhood is ${money(tract.medianOwnerCostWithMortgage)} -- ${money(Math.abs(delta))} ${delta > 0 ? 'above' : 'below'} the county median.`;
       }
       nextSteps.push(
-        `Budget against the ${money(tract.medianOwnerCostWithMortgage)} all-in figure rather than a mortgage quote on its own -- it includes taxes, insurance and utilities, not just the loan payment. Ask the seller for twelve months of actual tax and insurance bills for this specific property.`
+        `Homeowners with a mortgage in this neighborhood pay a median of ${money(tract.medianOwnerCostWithMortgage)} a month all-in -- the Census counts the mortgage, property taxes, insurance, utilities and fuel, not just the loan payment. It is a neighborhood figure, not this home's cost, but it is a useful check against a mortgage quote. Ask the seller for twelve months of actual tax and insurance bills for this specific property.`
       );
     }
 
     if (tract.medianHomeValue && county.medianHomeValue) {
       metrics.push({
-        label: 'Median home value',
+        label: 'Neighborhood median home value',
         value: money(tract.medianHomeValue),
         comparison: `County median: ${money(county.medianHomeValue)}`,
       });
@@ -335,7 +335,7 @@ export async function fetchNeighborhoodContextFinding(
       whatWeFound: headline,
       metrics,
       whyItMatters:
-        'These figures cover the census tract this address sits in -- roughly a neighborhood, not the whole county -- so they track the immediate area much more closely than county-wide numbers. Housing age drives which defects are plausible here, and the monthly ownership cost is the figure buyers most often underestimate when budgeting from a mortgage quote alone.',
+        'These are Census Bureau survey figures for the census tract this address sits in -- roughly a neighborhood -- not facts about this house. The median home value is not an estimate or appraisal of this home. Housing age in the neighborhood shapes which issues are common here, and the all-in monthly owner cost is the figure buyers most often underestimate when budgeting from a mortgage quote alone.',
       suggestedNextStep:
         nextSteps.length > 0
           ? nextSteps.join(' ')

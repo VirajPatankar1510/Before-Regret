@@ -142,6 +142,29 @@ export const TERMITE_PROBABILITY_STATES: Record<string, { label: string }> = {
   VA: { label: 'Virginia' }, WV: { label: 'West Virginia' },
 };
 
+/**
+ * "Option period" is a Texas contract term (the TREC contract's paid inspection window). The rules
+ * in this file and sellerQuestions.ts were first written for Texas counties and said it
+ * everywhere; an outside review of a Pennsylvania report flagged it on 2026-10-06. Texas keeps the
+ * term; every other state gets the neutral "inspection deadline".
+ */
+export function localizeContractDeadline<T>(value: T, state: string | null | undefined): T {
+  const s = (state || '').trim().toUpperCase();
+  if (s === 'TX' || s === 'TEXAS') return value;
+  if (typeof value === 'string') {
+    return value
+      .replace(/before your option period (ends|closes)/g, 'before your inspection deadline')
+      .replace(/option period/g, 'inspection deadline') as unknown as T;
+  }
+  if (Array.isArray(value)) return value.map((v) => localizeContractDeadline(v, state)) as unknown as T;
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = localizeContractDeadline(v, state);
+    return out as T;
+  }
+  return value;
+}
+
 /** Title-cases a raw county string ("king county" -> "King County") for the fallback label. */
 export function titleCaseCounty(county: string): string {
   return county
@@ -176,8 +199,8 @@ export const PRIORITY_RULES: PriorityRule[] = [
     title: 'Confirm you received the federal lead-paint disclosure',
     priority: 'high',
     eraBasis:
-      'Lead-based paint was not banned in US residential use until 1978. Federal law requires sellers of homes built before 1978 to give buyers a lead-based paint disclosure, an EPA-approved pamphlet, and the opportunity to conduct a lead assessment.',
-    costToCheck: 'Free — it is legally required',
+      'Lead-based paint was not banned in US residential use until 1978. The federal Lead-Based Paint Disclosure Rule covers most homes built before 1978: the seller must give buyers a lead-based paint disclosure, an EPA-approved pamphlet, and the opportunity to conduct a lead assessment. EPA lists a few exemptions, such as foreclosure sales and homes certified lead-free.',
+    costToCheck: 'Free — required for most pre-1978 homes',
     typicalRepairCost: null,
     howToCheck:
       'Ask your agent to confirm the federal lead-based paint disclosure is in your paperwork. If it is missing, request it before your option period ends.',
@@ -234,7 +257,7 @@ export const PRIORITY_RULES: PriorityRule[] = [
     title: 'Scope the sewer line',
     priority: 'high',
     eraBasis:
-      'Homes built before the early 1970s commonly used cast iron for drain, waste, and vent piping. Typical service life for cast iron drain lines is roughly 50 to 75 years, which puts homes of this era at or past that window.',
+      'Homes built before the early 1970s commonly used cast iron for drain, waste, and vent piping. Cast iron corrodes from the inside over decades, and how long a line lasts varies widely with soil, water and installation, so a home of this era may still have its original line.',
     costToCheck: '$300 – $500 for a camera scope',
     typicalRepairCost: 'Spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+',
     howToCheck:
@@ -369,8 +392,8 @@ export const PRIORITY_RULES: PriorityRule[] = [
   // permanently 'NOT YET VERIFIED' since this site has no live permit-record integration, which
   // renders at the very bottom of the report, in "Records You Still Need to Pull," not here in the
   // mid-report Inspection Priorities section. Both rules below carry exactly the figures already
-  // published in the combined rule; nothing new is asserted. Water heater age (8 to 12 years, no
-  // matching trade category on this site) now rides along inside the HVAC rule rather than
+  // published in the combined rule; nothing new is asserted. Water heater age (no
+  // matching trade category on this site; lifespan wording sourced to DOE since 2026-10-06) now rides along inside the HVAC rule rather than
   // standing alone. ---
   {
     id: 'roof_age',
@@ -379,7 +402,7 @@ export const PRIORITY_RULES: PriorityRule[] = [
     title: 'Get the age and remaining life of the roof in writing',
     priority: 'medium',
     eraBasis:
-      'Roofing materials have a finite service life — roughly 15 to 25 years depending on material — and a home of this age is old enough that the roof is commonly at or past its first replacement cycle.',
+      'Roof life depends heavily on the material, and a home of this age is old enough that the roof has often been replaced at least once, or is due. The age and material of the roof on this house are what matter.',
     costToCheck: 'Included in a general inspection — ask your inspector to estimate remaining roof life and note the material and condition',
     typicalRepairCost: 'Full replacement $8,000 – $25,000+',
     howToCheck:
@@ -392,7 +415,7 @@ export const PRIORITY_RULES: PriorityRule[] = [
     title: 'Get the age of the HVAC system and water heater in writing',
     priority: 'medium',
     eraBasis:
-      'HVAC equipment has a finite service life — roughly 15 to 20 years — and a conventional tank water heater typically lasts 8 to 12 years. A home of this age commonly has at least one of these at or past its first replacement cycle.',
+      'Service life depends on the type of equipment. ENERGY STAR suggests considering replacement once an air conditioner or heat pump is more than 10 years old, or a furnace or boiler more than 15. The Department of Energy estimates the average life of a tank water heater at about 15 years, and individual units vary widely. A home of this age has often had at least one of these replaced, so ask for the actual ages.',
     costToCheck: 'Included in a general inspection — ask for the manufacture date on the furnace, condenser, and water heater data plates',
     typicalRepairCost: 'HVAC replacement $6,000 – $15,000; water heater replacement $1,200 – $3,000',
     howToCheck:
@@ -408,7 +431,7 @@ export const PRIORITY_RULES: PriorityRule[] = [
     title: 'If the home has a fireplace or wood-burning stove, get a Level 2 chimney inspection',
     priority: 'medium',
     eraBasis:
-      'NFPA 211, the national standard for chimneys, fireplaces, and solid-fuel-burning appliances, calls for a Level 2 inspection whenever a property changes ownership, regardless of the home\'s age. A Level 2 adds video scanning of the flue interior and examination of accessible attic, crawlspace, and basement chimney runs -- none of which a standard home inspection includes. Older masonry chimneys are more likely to have a deteriorated or unlined flue, but the transfer trigger applies to any chimney.',
+      'NFPA 211, the national standard for chimneys, fireplaces, and solid-fuel-burning appliances, calls for a Level 2 inspection when a property is sold or transferred, regardless of the home\'s age. It is an industry standard, not usually a legal requirement for closing. A Level 2 adds video scanning of the flue interior and examination of accessible attic, crawlspace, and basement chimney runs -- none of which a standard home inspection includes. Older masonry chimneys are more likely to have a deteriorated or unlined flue, but the transfer trigger applies to any chimney.',
     costToCheck: '$250 – $600 for a Level 2 inspection with a video flue scan',
     typicalRepairCost: 'Flue liner replacement $1,500 – $5,000; partial rebuild $1,500 – $8,000; full rebuild $10,000 – $30,000+',
     howToCheck:
@@ -434,7 +457,8 @@ export const PRIORITY_RULES: PriorityRule[] = [
   // a harder gap than Roof/HVAC/Electrician ever had, since none of them had a hard geographic wall;
   // they always had at least the fallback finding at the bottom. Deliberately does NOT claim
   // elevated regional risk (the honest opposite of termite_wdi_inspection's eraBasis) -- it states
-  // plainly that this area isn't one of the identified elevated-risk regions, and offers the
+  // no regional claim at all since 2026-10-06 (the state list above is too coarse to say an area is
+  // OUTSIDE the map's elevated zones -- an outside review caught it for Pike County, PA), and offers the
   // inspection as ordinary due diligence rather than manufacturing urgency the map doesn't support.
   // Excluded inside the termite-probability states themselves (see the states filter in
   // getInspectionPriorities below) so a report never shows this alongside the more specific,
@@ -446,7 +470,7 @@ export const PRIORITY_RULES: PriorityRule[] = [
     title: 'Consider a general pest and wood-destroying-insect inspection',
     priority: 'lower',
     eraBasis:
-      'Termite and wood-destroying-insect pressure varies significantly by region, and this area does not fall within the USDA/IRC termite infestation probability map\'s identified elevated-risk zone. A general pest inspection is still routine, low-cost due diligence in any region, and some lenders require a WDI report for certain loan types regardless of location.',
+      'Termite and wood-destroying-insect pressure varies by region and locally, and the regional map in the building code is approximate, not a substitute for an inspection. A wood-destroying-insect inspection is routine, low-cost due diligence for any home, and some lenders require a WDI report for certain loan types regardless of location.',
     costToCheck: '$75 – $150 for a standalone pest/WDI inspection',
     typicalRepairCost: 'Treatment $1,200 – $5,000 depending on method; structural repair if damage is present $1,000 – $9,000+',
     howToCheck:
@@ -550,7 +574,7 @@ export function getInspectionPriorities(
   // Stable sort by priority band, preserving the declaration order above within each band.
   const priorities = [...matched]
     .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority])
-    .map(({ minYear, maxYear, counties, states: _states, insuranceRedFlag: _insuranceRedFlag, ...priority }) => priority);
+    .map(({ minYear, maxYear, counties, states: _states, insuranceRedFlag: _insuranceRedFlag, ...priority }) => localizeContractDeadline(priority, state));
 
   return {
     yearBuilt,

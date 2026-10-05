@@ -503,8 +503,8 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                   Records You Still Need to Pull
                 </h2>
                 <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">
-                  These {pendingFindings.length} records were not checked for this address. Each one links
-                  straight to the office that holds it, so you can look it up before you sign.
+                  These {pendingFindings.length} records were not checked for this address. Each one links to
+                  the official source we know for this area, so you can look it up before you sign.
                 </p>
               </div>
 
@@ -522,7 +522,9 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                           rel="noopener noreferrer"
                           className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold hover:underline"
                         >
-                          <span>{finding.sourceAgency || 'Check record'}</span>
+                          {/* Where this county has no known portal the link is the USA.gov local-office
+                              directory, so it must not be labelled as if it were the record office. */}
+                          <span>{/usa\.gov\/local-governments/.test(finding.sourceUrl) ? 'Find your local office' : (finding.sourceAgency || 'Check record')}</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       )}

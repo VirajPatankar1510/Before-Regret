@@ -1008,7 +1008,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 className="w-full text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 bg-slate-50 border border-slate-300 focus:border-blue-500 rounded-lg px-3 py-2 focus:outline-none"
               />
               <p className="text-[10px] text-slate-500 leading-relaxed">
-                Lets us show which checks matter most for homes of that era. We can't verify it — it's used exactly as you enter it. Don't know it exactly? A close estimate is fine.
+                Don't know it exactly? A close estimate is fine.
               </p>
             </div>
 

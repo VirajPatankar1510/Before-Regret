@@ -2192,7 +2192,9 @@ function generateStructuredPropertyReport(
   lon: number | null = null
 ) {
   const meta = resolvePropertyMetadata(fullAddr, rawCity, rawState, rawZipCode, rawCounty, rawPropertyType);
-  const reportDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  // US Eastern, not the server's UTC: a report made on a US evening used to carry the next day's
+  // date (outside review, 2026-10-06, of a report dated October 5 but printed October 6).
+  const reportDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
 
   // REJECT NON-RESIDENTIAL PARCELS GRACEFULLY
   if (meta.isNonResidential) {

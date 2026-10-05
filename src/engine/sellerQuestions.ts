@@ -18,6 +18,7 @@ import {
   buildFallbackRegionLabel,
   getEraLabel,
   isPlausibleYearBuilt,
+  localizeContractDeadline,
 } from './inspectionPriorities.js';
 import { normalizeCountyKey } from '../utils/normalizeCounty.js';
 
@@ -84,11 +85,11 @@ const QUESTION_RULES: QuestionRule[] = [
     maxYear: CURRENT_YEAR,
     priority: 'lower',
     question:
-      "If the home is on a septic system, when was it last pumped or inspected, and is there a diagram of the drain field?",
+      "Is the home on a private well or septic system? If so, when was the well water last tested and the septic last pumped or inspected, and is there a diagram of the drain field?",
     whyAsking:
-      'Septic issues are expensive to diagnose after the fact and are not part of a standard home inspection. This only matters if the home is not on municipal sewer.',
+      'Private wells and septic systems are usually outside a standard home inspection, and problems with either are expensive to discover after closing. This only matters if the home is not on public water and sewer.',
     whatToListenFor:
-      "Recent service records and a drain field diagram are reassuring. If the seller isn't sure whether the home is on septic at all, confirm with your agent -- it changes what you need to check.",
+      "A recent water test, septic service records and a drain field diagram are reassuring. If the seller isn't sure whether the home is on a well or septic at all, confirm with your agent -- it changes what you need to check.",
   },
 
   // --- Era-gated: mirrors the year windows in inspectionPriorities.ts ---
@@ -132,7 +133,7 @@ const QUESTION_RULES: QuestionRule[] = [
     priority: 'medium',
     question: 'Has the sewer line ever been scoped with a camera? If so, when, and what did it show?',
     whyAsking:
-      'Homes of this era commonly used cast iron drain lines, which have a typical service life of roughly 50 to 75 years -- putting a home this old at or past that window.',
+      'Homes of this era commonly used cast iron drain lines, which corrode from the inside over decades. How long a line lasts varies widely, so a home this old may still have its original one.',
     whatToListenFor:
       'A recent scope with no major findings is reassuring. No scope on record just means it hasn\'t been checked -- a camera scope by a licensed plumber is the only way to actually know.',
   },
@@ -143,7 +144,7 @@ const QUESTION_RULES: QuestionRule[] = [
     priority: 'medium',
     question: 'What year were the roof, HVAC system, and water heater last replaced? Do you have receipts or permits?',
     whyAsking:
-      'Major systems have finite service lives -- roughly 15 to 25 years for a roof, 15 to 20 for HVAC, 8 to 12 for a water heater -- and a home of this age is old enough that at least one is typically due.',
+      'Roofs, heating and cooling equipment and water heaters all wear out on their own schedules, and a home of this age has often had at least one replaced. Knowing the actual years tells you what is close to the end of its life.',
     whatToListenFor:
       "Specific years with receipts are reassuring. A vague answer means your inspector should estimate remaining life directly from the equipment's data plates.",
   },
@@ -214,7 +215,7 @@ export function getSellerQuestions(
 
   const questions = [...matched]
     .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority])
-    .map(({ minYear, maxYear, counties, propertyTypes, ...question }) => question);
+    .map(({ minYear, maxYear, counties, propertyTypes, ...question }) => localizeContractDeadline(question, state));
 
   return {
     yearBuilt,

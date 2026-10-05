@@ -6,7 +6,7 @@ import { ShieldCheck, Search, ScanLine, FileCheck2 } from 'lucide-react';
 const STEPS = [
     { title: 'Enter any US residential address', body: "Any single-family home, condo, townhouse, or multi-family parcel, across all 50 states." },
     { title: 'We validate and check what we can', body: "Your address is validated against the US Census geocoder, and we run a live USGS seismic query for its coordinates. Everything else is era- and county-specific research, flagged for you to confirm at the source." },
-    { title: 'Get Report', body: "Exactly what to verify in person and what to ask the seller — ready before your option period closes." }
+    { title: 'Get Report', body: "Exactly what to verify in person and what to ask the seller — ready before your inspection deadline." }
 ];
 const ICONS = [Search, ScanLine, FileCheck2];
 
