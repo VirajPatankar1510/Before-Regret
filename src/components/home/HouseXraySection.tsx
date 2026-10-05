@@ -130,7 +130,7 @@ export const HouseXraySection: React.FC<{ onNavigate?: (path: string) => void }>
                     <span className="min-w-0">
                       <span className="block text-sm sm:text-base font-bold text-home-ink">{s.q}</span>
                       {s.tag && (
-                        <span className="mt-1 inline-block rounded-full bg-home-sage px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-home-moss">{s.tag}</span>
+                        <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[#f2c98f] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-home-navy shadow-sm ring-1 ring-home-oak/50"><span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-home-brick" />{s.tag}</span>
                       )}
                       <span className="block text-sm text-slate-600 leading-relaxed">{s.a}</span>
                       <span className={`mt-1 inline-flex items-center gap-1 text-xs font-semibold text-blue-700 ${on ? '' : 'sr-only group-hover:not-sr-only'}`}>
