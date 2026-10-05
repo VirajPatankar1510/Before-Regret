@@ -596,7 +596,7 @@ async function run() {
 
   const llmsTxt = `# Before Regret
 
-> Free, address-based public property research for U.S. homebuyers and renters. Runs a live USGS seismic hazard check and validates the address against U.S. Census records automatically; everything else is a curated checklist linking to the real government source for each check (FEMA, EPA, USDA, U.S. DOT, FCC, local municipal records) -- clearly labeled as not yet independently verified until you follow the link and check it yourself. The first report is free; additional reports are a one-time $14.99 flat fee, no subscription.
+> Free, address-based public property research for U.S. homebuyers and renters. Runs a live USGS seismic hazard check and validates the address against U.S. Census records automatically; everything else is a curated checklist linking to the real government source for each check (FEMA, EPA, USDA, U.S. DOT, FCC, local municipal records) -- clearly labeled as not yet independently verified until you follow the link and check it yourself. Reports are free, with no account and no payment; the site is funded by labeled local-business ads.
 
 Before Regret does not fabricate data. If a claim in these guides isn't backed by a live check or a cited government source, it says so explicitly rather than guessing.
 
@@ -612,7 +612,7 @@ Values are sourced from the named federal agency and are not model-generated or 
 
 ## Report
 
-Address-based due-diligence report for a specific US residential address: a live USGS/ASCE 7-22 seismic design category lookup, US Census address validation, inspection-budget priorities for a home of that decade and county, exact seller questions with what a reassuring answer sounds like, a phone-tickable walkthrough checklist, and a plainly labeled "what's not yet verified" section linking to the real government source. First report free, no card required; each additional report is a flat $14.99, no subscription. https://www.beforeregret.com/
+Address-based due-diligence report for a specific US residential address: a live USGS/ASCE 7-22 seismic design category lookup, US Census address validation, inspection-budget priorities for a home of that decade and county, exact seller questions with what a reassuring answer sounds like, a phone-tickable walkthrough checklist, and a plainly labeled "what's not yet verified" section linking to the real government source. Free, with no account and no card required. https://www.beforeregret.com/
 
 ## Research
 

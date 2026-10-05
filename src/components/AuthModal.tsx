@@ -163,7 +163,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 Welcome to Before Regret
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto">
-                Sign in to generate and save your property reports.
+                Sign in to manage your ads. Property reports don't need an account.
               </p>
             </div>
 

@@ -36,7 +36,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               on this site, and §7 gained a stated 30-day retention period for the IP rate-limit
               records. No PRIVACY_VERSION constant to match: unlike the Terms, nothing records a
               per-user acceptance of this document, so the date is the whole of the provenance. */}
-          <span className="text-xs font-mono text-slate-500">Effective Date: August 21, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Effective Date: October 5, 2026</span>
         </div>
 
         {/* Content Pane */}
@@ -84,12 +84,9 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                   </h3>
                   <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
                     <li>Property address and zip code search query inputs.</li>
-                    <li>Account email address (required to claim your free report and track per-account usage).</li>
+                    <li>Account email address, only if you choose to sign in. Reports do not require an account.</li>
                     <li>Technical session metadata (IP address, browser type, device OS) for rate limiting, security, and to record your acceptance of our Terms of Service.</li>
                     <li>Inquiries sent to customer support via email.</li>
-                    <li className="font-semibold text-slate-900">
-                      For any report beyond your first free report, payment is taken through <strong>PayPal</strong>, a PCI-DSS compliant third-party payment processor. You are redirected to PayPal's own checkout to pay, PayPal handles your payment details under its own privacy policy, and Atmostellar receives only a confirmation that payment succeeded — never your card number.
-                    </li>
                   </ul>
                 </div>
 

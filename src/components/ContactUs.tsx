@@ -33,7 +33,7 @@ export const ContactUs: React.FC<ContactUsProps> = ({ onBackToHome, onNavigate }
       const emailSubject = `[Before Regret ${activeTab.toUpperCase()}] ${subject || 'Inquiry'}`;
       const emailBody = `Sender Name: ${name}
 Sender Email: ${email}
-Category: ${activeTab === 'consumer' ? 'Free Consumer Report Question' : activeTab === 'vendor' ? 'Vendor Subscription & Billing' : 'Report Data Discrepancy Flag'}
+Category: ${activeTab === 'consumer' ? 'Free Consumer Report Question' : activeTab === 'vendor' ? 'Vendor Ads & Billing' : 'Report Data Discrepancy Flag'}
 ${addressOrZip ? `Property Address / Zip Code: ${addressOrZip}\n` : ''}
 Message:
 ${message}`;
@@ -146,7 +146,7 @@ ${message}`;
             <div className="p-3.5 bg-blue-50/60 border border-blue-100 rounded-2xl text-xs text-blue-900 leading-relaxed">
               {activeTab === 'consumer' && (
                 <p>
-                  <strong>Consumer Report Support:</strong> For property buyers or renters with questions regarding your free or purchased property reports, data coverage, or understanding public dataset indicators.
+                  <strong>Consumer Report Support:</strong> For property buyers or renters with questions about your property report, data coverage, or understanding public dataset indicators.
                 </p>
               )}
               {activeTab === 'vendor' && (
@@ -156,7 +156,7 @@ ${message}`;
               )}
               {activeTab === 'error_flag' && (
                 <p>
-                  <strong>Data Discrepancy Flag:</strong> Found a discrepancy between a Before Regret report and an official government record? Report it here for rapid audit and correction by our data team.
+                  <strong>Data Discrepancy Flag:</strong> Found a discrepancy between a Before Regret report and an official government record? Report it here so it can be checked and corrected.
                 </p>
               )}
             </div>

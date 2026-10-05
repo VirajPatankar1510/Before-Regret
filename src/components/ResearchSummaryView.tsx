@@ -11,32 +11,23 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
   summaryData,
   onGenerateReport
 }) => {
-  const { address, priceRationale, includedCategories, publicSourcesList, totalSourcesSearched } = summaryData;
+  const { address } = summaryData;
 
-  // What this page promises is now derived from the sources actually assembled for THIS address,
-  // not from a fixed list written once and never revisited.
-  //
-  // It used to render eleven hardcoded strings -- "Flood & environmental risks", "Property
-  // records", "Planning & development" and so on -- regardless of address, and regardless of what
-  // the report would actually contain. That overstated things in two directions at once: the list
-  // read as data the product supplies, while the paragraph directly beneath it said there was no
-  // live data connection and the report was a checklist of links. Two blocks on one screen
-  // disagreeing about what the product does.
-  //
-  // includedCategories and publicSourcesList have been on this payload the whole time (see the
-  // /api/property/research-summary handler) -- the component simply ignored them. Nothing new is
-  // fetched here; the honest answer was already in the props.
-  //
-  // The fallback list is kept deliberately short and generic: if the server ever sends no
-  // categories, showing three vague-but-true lines is better than showing eleven specific claims
-  // that may not hold.
-  const categories = includedCategories?.length
-    ? includedCategories
-    : ['Public records', 'Hazard and environmental data', 'What to verify before you sign'];
-
-  // Counted from the list itself rather than trusting a separate number, so the heading and the
-  // rows can never disagree.
-  const sourceCount = publicSourcesList?.length ?? totalSourcesSearched ?? 0;
+  // What this page promises. 2026-10-05: this used to list the categories of the ~27 reference
+  // sources the research endpoint assembles (Transit & Noise, Infrastructure, Utilities, Zoning...)
+  // and say "the rest are direct links to the government record". The report contains none of
+  // those: it is two live checks, era/county inspection priorities, seller questions, a
+  // walkthrough list and five records to pull. Promising seven categories and 27 links on the way
+  // in, then delivering something else, is the same overstatement the old hardcoded list made. So
+  // the list is now exactly the report's sections, in the order they appear.
+  const categories = [
+    'Earthquake risk for this address',
+    'Neighborhood profile from the U.S. Census',
+    'What to inspect first for a home of its age',
+    'Questions to ask the seller',
+    'A walkthrough checklist',
+    'Permit, flood and code records to look up',
+  ];
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12 space-y-8">
@@ -46,7 +37,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full">
             <MapPin className="w-3.5 h-3.5" />
-            <span>Target Property</span>
+            <span>Your property</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             {address.displayName || address.formattedAddress}
@@ -58,7 +49,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
 
         <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-800 shrink-0">
           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          <span>Research Checked</span>
+          <span>Address found</span>
         </div>
       </div>
 
@@ -91,32 +82,29 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
             ))}
           </div>
 
-          {sourceCount > 0 && (
-            <p className="text-xs text-slate-400 pt-1">
-              Assembled from {sourceCount} official public sources for {address.city ? `${address.city}, ` : ''}{address.state}.
-              Two are checked live for this address; the rest are direct links to the government
-              record so you can look them up yourself.
-            </p>
-          )}
+          <p className="text-xs text-slate-400 pt-1">
+            Earthquake risk and the Census neighborhood profile are checked live for this address. The
+            rest is guidance for a home of its age and area, with links to the records worth pulling
+            yourself.
+          </p>
         </div>
 
       </div>
 
-      {/* Automatic Price Box */}
+      {/* Report box (every report is free since 2026-10-05) */}
       <div className="bg-white border-2 border-slate-300 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
-        
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-slate-200 pb-6">
           <div className="space-y-1">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Report Pricing
+              Your Report
             </div>
             <div className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight flex items-baseline gap-2 flex-wrap">
-              <span>First report free</span>
-              <span className="text-sm font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">then $14.99 / report</span>
+              <span>Free</span>
+              <span className="text-sm font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">No sign-up · No card</span>
             </div>
-            <p className="text-xs text-slate-600 font-medium max-w-lg mt-1">
-              {priceRationale || 'Your first property report is free. Each additional report is a one-time purchase of $14.99 -- no subscription, no recurring charges.'}
-            </p>
+            {/* The explanatory line that sat here (priceRationale) repeated the "assembled from N
+                official public sources" note directly above it, so it was dropped 2026-10-05. */}
           </div>
 
           <button

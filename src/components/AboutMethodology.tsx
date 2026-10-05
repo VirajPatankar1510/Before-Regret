@@ -60,7 +60,7 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
             <p className="text-sm text-slate-600 leading-relaxed">
               Enter any US address and you get the questions to ask the seller, what to inspect first for that
               home's age and county, and the earthquake risk for that exact address. Anything we have not
-              independently verified is labeled that way, not guessed. Start free; a full property report is $14.99.
+              independently verified is labeled that way, not guessed. Every report is free, with no sign-up.
             </p>
             <p className="text-sm text-slate-600 leading-relaxed">
               Alongside it: a{' '}
@@ -105,9 +105,10 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
               query and a U.S. Census Bureau address/neighborhood validation. Those are shown under <strong>Checked live for this
               address</strong> because a real API call ran for that specific address. Everything else in a report -- FEMA flood data, EPA
               records, local permit and code-enforcement portals -- is a curated link straight to the actual
-              government or municipal source, clearly labeled as <strong>not yet independently verified</strong> until
-              you open it and check yourself. We don't blur that distinction: a report never presents a link as
-              though it were a live result.
+              government or municipal source, listed under <strong>Records You Still Need to Pull</strong> so you
+              can open it and check yourself. We don't blur that distinction: a report never presents a link as
+              though it were a live result. No AI writes any part of a report: everything in it comes from those
+              lookups and fixed rules for a home's age, county and property type.
             </p>
           </section>
 

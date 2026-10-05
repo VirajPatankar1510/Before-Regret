@@ -41,7 +41,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
             <ArrowLeft className="w-4 h-4 text-slate-500" />
             <span>Return to Home</span>
           </button>
-          <span className="text-xs font-mono text-slate-500">Last Revised: August 18, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Last Revised: October 5, 2026</span>
         </div>
 
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs space-y-8">
@@ -139,12 +139,13 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
                 <span>3. AI-Generated and AI-Assisted Content</span>
               </h2>
               <p>
-                Property research reports and many guide articles on this site are generated or
-                drafted with the assistance of large language models, working from the public data
-                and editorial rules described above. We apply automated grounding checks and human
-                review to reduce errors, but <strong>AI-generated text can still be wrong,
-                incomplete, outdated, or confidently mistaken</strong> in ways that are not
-                immediately obvious to a reader.
+                Many guide articles on this site are drafted with the assistance of large language
+                models, working from the public data and editorial rules described above. We apply
+                automated grounding checks and human review to reduce errors, but <strong>AI-generated
+                text can still be wrong, incomplete, outdated, or confidently mistaken</strong> in ways
+                that are not immediately obvious to a reader. Property reports are not written by AI:
+                they are built from live public-data lookups and fixed rules, and can still contain
+                errors or outdated source data.
               </p>
               <p>
                 Treat every specific figure, date, code reference, threshold, and cost estimate on

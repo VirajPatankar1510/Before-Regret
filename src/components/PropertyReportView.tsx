@@ -406,7 +406,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
               already hidden in print, which left the sentence dangling as "...reference-only? ."
               in the exported PDF. A modal-opening CTA has no meaning on paper anyway. */}
           <p className="print:hidden text-xs text-slate-500 leading-relaxed">
-            Want to see every public source Before Regret checks, and which ones are live vs. reference-only?{' '}
+            Want to see every public source behind this report, and which ones were checked live?{' '}
             <button
               onClick={() => setIsSourceModalOpen(true)}
               className="text-blue-600 hover:text-blue-800 font-semibold hover:underline cursor-pointer"
@@ -477,8 +477,8 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
 
         {/* SECTION: STILL NEEDS VERIFICATION -- deliberately last of the content sections.
             This used to sit on page 1, directly under the two confirmed findings, which meant a
-            paying reader hit five "go look this up yourself" items before reaching the inspection
-            priorities and seller questions -- the material that actually justifies the price. The
+            reader hit five "go look this up yourself" items before reaching the inspection
+            priorities and seller questions -- the material a buyer most needs. The
             list is still here in full and still honestly labeled; it just no longer leads. */}
         {pendingFindings.length > 0 && (
           <section id="section-needs-verification" className="space-y-4">
@@ -493,14 +493,14 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
               <div className="space-y-1">
                 <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <FileCheck className="w-3.5 h-3.5" />
-                  <span>Not yet connected</span>
+                  <span>Check these yourself</span>
                 </div>
                 <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
                   Records You Still Need to Pull
                 </h2>
                 <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">
-                  Before Regret has no live feed for these {pendingFindings.length} sources yet, so we haven't checked them for
-                  this address. Each one links straight to the office that holds the record.
+                  These {pendingFindings.length} records were not checked for this address. Each one links
+                  straight to the office that holds it, so you can look it up before you sign.
                 </p>
               </div>
 
@@ -540,7 +540,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             has to stay somewhere on every report. */}
         <div data-print-block className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-[11px] text-slate-500 leading-relaxed">
           <span className="font-bold text-slate-700 block uppercase font-mono tracking-wider mb-1">Disclaimer</span>
-          Before Regret links you to official public sources -- it does not perform physical engineering inspections, legal title searches, or property valuations. Findings marked <strong>Not Yet Verified</strong> are research leads, not established facts: confirm each one directly with the source agency before relying on it. Findings under <strong>Checked live for this address</strong> come from a query run against a government API for this address at the time this report was generated. That means the value was returned by the agency, not that the condition of your property has been verified -- and agencies update their data, so it can change. Physical building conditions should always be confirmed with a licensed home inspector before closing.
+          Before Regret links you to official public sources -- it does not perform physical engineering inspections, legal title searches, or property valuations. Records listed under <strong>Records You Still Need to Pull</strong> were not checked for this address: look each one up with the office that holds it before relying on it. Findings under <strong>Checked live for this address</strong> come from a query run against a government API for this address at the time this report was generated. That means the value was returned by the agency, not that the condition of your property has been verified -- and agencies update their data, so it can change. Physical building conditions should always be confirmed with a licensed home inspector before closing.
         </div>
 
       </main>

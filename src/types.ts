@@ -406,8 +406,9 @@ export interface PropertyReport {
   // nothing, never a placeholder.
   movingCompanyVendors?: SponsoredVendor[];
 
-  // Bottom Line Synthesis
-  bottomLine: {
+  // Bottom Line Synthesis. Optional since 2026-10-05: no report generator writes it any more (see the
+  // REMOVED note in server.ts's generateStructuredPropertyReport); older stored reports may have it.
+  bottomLine?: {
     worthVerifyingSummary: string[];
     likelyRoutineSummary: string[];
     biggerPicture: string;

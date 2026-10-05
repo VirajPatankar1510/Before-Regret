@@ -223,12 +223,8 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       // dist/ is deployed and docs/ does not exist, so both locations are tried and the first
       // publication date is the fallback. A sitemap is not worth throwing a request over.
       { loc: `${BASE_URL}/research/permit-pulse/`, lastmod: permitPulseLastmod(), changefreq: 'monthly', priority: '0.8' },
-      // The worked example of the actual product (public/sample-report/index.html -- a static file
-      // Vite copies into dist/, so Vercel's filesystem priority serves it ahead of the SPA
-      // catch-all rewrite, the same mechanism the prerender scripts rely on). Fixed lastmod for
-      // the same reason as the two studies above: it reproduces one report generated on one date,
-      // and re-stamping it every build would claim a freshness the content does not have.
-      { loc: `${BASE_URL}/sample-report/`, lastmod: '2026-08-31', changefreq: 'yearly', priority: '0.7' },
+      // /sample-report/ was removed 2026-10-05 (owner: reports are free, so a sample is no longer
+      // needed). It 301s to the homepage in vercel.json and is no longer listed here.
     ];
   } else if (cleanName === 'sitemap-guides' && isDbConfigured()) {
     try {

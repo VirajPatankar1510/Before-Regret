@@ -220,11 +220,12 @@ export async function fetchNeighborhoodContextFinding(
         // the reader compare them directly with no arithmetic or reverse-engineering required.
         label: 'Typical Nearby Home',
         value: `Built around ${tract.medianYearBuilt}`,
-        comparison: `County average: built around ${county.medianYearBuilt}`,
+        comparison: `County median: built around ${county.medianYearBuilt}`,
       });
 
       // The most decision-relevant comparison available here: how this specific home sits against
-      // its own block, which reframes every age-driven inspection priority in the rest of the report.
+      // its census tract (2026-10-05: the copy said "block", which is a smaller Census unit than the
+      // tract these figures actually cover; medians are now labelled "County median", not "average"), which reframes every age-driven inspection priority in the rest of the report.
       //
       // ALWAYS shown when a year is given, not just past a threshold. This used to only render a
       // tile when |subjectDelta| >= 15 -- below that it rendered nothing at all, which reads as a
@@ -247,24 +248,24 @@ export async function fetchNeighborhoodContextFinding(
         const subjectDelta = tract.medianYearBuilt - subjectYearBuilt;
         if (subjectDelta >= 15) {
           metrics.push({
-            label: 'As you entered, vs. its block',
+            label: 'As you entered, vs. nearby homes',
             value: `You entered ${subjectYearBuilt}`,
             comparison: `${subjectDelta} yrs older than typical here`,
           });
-          headline = `Using the year you entered (${subjectYearBuilt}), this home is about ${subjectDelta} years older than the typical home on its own block.`;
+          headline = `Using the year you entered (${subjectYearBuilt}), this home is about ${subjectDelta} years older than the typical home in its neighborhood (census tract).`;
           nextSteps.push(
             'Because this home is materially older than its neighbors, comparable sales nearby may be newer properties. Ask your agent whether the comps used were age-adjusted, and expect original-era systems here even where surrounding homes have been rebuilt.'
           );
         } else if (subjectDelta <= -15) {
           metrics.push({
-            label: 'As you entered, vs. its block',
+            label: 'As you entered, vs. nearby homes',
             value: `You entered ${subjectYearBuilt}`,
             comparison: `${Math.abs(subjectDelta)} yrs newer than typical here`,
           });
-          headline = `Using the year you entered (${subjectYearBuilt}), this home is about ${Math.abs(subjectDelta)} years newer than the typical home on its own block.`;
+          headline = `Using the year you entered (${subjectYearBuilt}), this home is about ${Math.abs(subjectDelta)} years newer than the typical home in its neighborhood (census tract).`;
         } else {
           metrics.push({
-            label: 'As you entered, vs. its block',
+            label: 'As you entered, vs. nearby homes',
             value: `You entered ${subjectYearBuilt}`,
             comparison: 'In line with typical homes here',
           });
@@ -279,7 +280,7 @@ export async function fetchNeighborhoodContextFinding(
         // no reference point visible anywhere on the tile itself.
         label: 'Median monthly cost to own',
         value: `${money(tract.medianOwnerCostWithMortgage)}/mo`,
-        comparison: `County average: ${money(county.medianOwnerCostWithMortgage)}/mo`,
+        comparison: `County median: ${money(county.medianOwnerCostWithMortgage)}/mo`,
       });
       if (!headline) {
         headline = `Median monthly ownership cost in this neighborhood is ${money(tract.medianOwnerCostWithMortgage)} -- ${money(Math.abs(delta))} ${delta > 0 ? 'above' : 'below'} the county median.`;
@@ -293,7 +294,7 @@ export async function fetchNeighborhoodContextFinding(
       metrics.push({
         label: 'Median home value',
         value: money(tract.medianHomeValue),
-        comparison: `County average: ${money(county.medianHomeValue)}`,
+        comparison: `County median: ${money(county.medianHomeValue)}`,
       });
     }
 

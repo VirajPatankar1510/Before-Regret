@@ -21,7 +21,7 @@ export function createFallbackSummary(property: PropertySearchResult | null): Re
     usefulSourcesFound: 0,
     estimatedPages: 'Property Research Checklist',
     price: 0,
-    priceRationale: 'Before Regret does not yet have a live, verified data connection for this address. This checklist links you directly to the official public sources so you can look up the records yourself.',
+    priceRationale: 'Your report covers what to check for a home like this one, with links to the official public sources where you can look up each record yourself.',
     includedCategories: [
       'Property Records',
       'Environment',
@@ -99,11 +99,11 @@ export function createFallbackReport(
       summaryText: 'Before Regret does not yet have a live, verified connection to municipal electrical permit records for this address.',
       whatWeFound: 'Not yet independently verified for this address.',
       whyItMatters: 'A permitted electrical service panel meets modern safety standards for contemporary household appliances.',
-      suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough, and check the municipal permit portal directly.',
+      suggestedNextStep: 'Look at the main panel during your walkthrough, and search the municipal permit portal for electrical permits on this address.',
       actionItem: {
         type: 'walkthroughItem',
         title: 'Main Electrical Panel Walkthrough',
-        description: 'Locate the main service panel in garage or utility area and confirm municipal inspection sticker.',
+        description: 'Find the main electrical panel (often in the garage, basement or a utility area) and note its brand and whether the breakers are labeled.',
         why: 'Before Regret has not yet independently verified permit records for this address.'
       },
       lastUpdated: 'Not yet integrated',
@@ -205,16 +205,6 @@ export function createFallbackReport(
     },
 
     // Single Source of Truth
-    canonicalFindings,
-
-    // Bottom Line Synthesis
-    bottomLine: {
-      worthVerifyingSummary: [
-        'Roof Replacement Permit: Not yet independently verified. Ask the seller for contractor invoices and check the municipal permit portal directly.',
-        'HVAC Mechanical System: Not yet independently verified. Have your inspector check the unit\'s manufacturing date during the walkthrough.'
-      ],
-      likelyRoutineSummary: [],
-      biggerPicture: 'Before Regret does not yet have a live, verified data connection to government records for this address. This checklist links you directly to the official public sources below so you can verify each item yourself before closing.'
-    }
+    canonicalFindings
   };
 }

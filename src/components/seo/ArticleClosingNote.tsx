@@ -31,7 +31,7 @@ export const ArticleClosingNote: React.FC<ArticleClosingNoteProps> = ({ onNaviga
       </ContentLink>
 
       <p className="relative text-xs sm:text-sm text-slate-400">
-        No credit card required. Additional reports are $14.99 each.
+        Free, with no sign-up and no credit card.
       </p>
     </div>
   );

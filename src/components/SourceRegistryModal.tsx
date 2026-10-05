@@ -94,7 +94,7 @@ export const SourceRegistryModal: React.FC<SourceRegistryModalProps> = ({ isOpen
               <span>How to read this list</span>
             </div>
             <p className="leading-relaxed">
-              <span className="font-semibold text-emerald-700">Live</span> means Before Regret actually calls that source's API for every report. Everything else is a direct link to the official government portal -- Before Regret has not independently queried it, and nothing about it should be treated as confirmed until you check it yourself.
+              <span className="font-semibold text-emerald-700">Live</span> means the source is checked for your address every time a report is made. Everything else is a direct link to the official government portal: it was not checked for your address, so treat nothing about it as confirmed until you look it up yourself.
             </p>
           </div>
 

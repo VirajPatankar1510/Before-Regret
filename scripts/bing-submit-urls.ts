@@ -49,8 +49,8 @@ async function retry<T>(fn: () => Promise<T>, n = 6): Promise<T> {
 // already made every one of these decisions and had them corrected in place: it excludes the four
 // 'noindex' legal pages (submitting a URL for indexing while the page says noindex is a
 // contradiction Search Console reports back as an error), it includes /accessibility/, which is
-// the one legal page deliberately indexable, and it carries the four research studies and
-// /sample-report/. Duplicating those URLs here would let the two lists disagree -- the same
+// the one legal page deliberately indexable, and it carries the research studies.
+// Duplicating those URLs here would let the two lists disagree -- the same
 // failure legacyUrls.ts exists to prevent, where an audit could only re-type a list and hope it
 // matched.
 //

@@ -50,4 +50,7 @@
 // Every change here either binds Atmostellar (7.5, 7.6) or widens a user's options (7.8), so
 // nobody is disadvantaged by the new version -- but they are substantive promises and must be
 // attributable to a revision, hence a distinct string rather than editing 2026-08-18 in place.
-export const TERMS_VERSION = '2026-08-18.2';
+// 2026-10-05: consumer reports made free (owner decision). Rewrote 2 (services), 3.1 (reports are
+// free, daily generation limits) and 3.4 (no report purchases; earlier purchases stay under the
+// version in effect then). A substantive change to what a consumer is agreeing to, hence a new string.
+export const TERMS_VERSION = '2026-10-05.1';

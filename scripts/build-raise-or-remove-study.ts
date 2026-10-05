@@ -196,7 +196,7 @@ ${LOOKUP_CSS}
     and build inspection priorities and seller questions specific to that county and that era of
     construction. Anything not independently verified is labelled as such rather than guessed at.</p>
     <p><a class="btn" href="/">Run a free property report</a></p>
-    <p class="small">First report free, no card. Additional reports $14.99. It does not pull permit
+    <p class="small">Free, with no sign-up and no card. It does not pull permit
     records, flood-zone determinations or dam inundation mapping &mdash; no per-address source for
     those exists behind this site, and the guides explain how to obtain them yourself.</p>
   </div>

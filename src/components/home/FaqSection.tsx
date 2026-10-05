@@ -55,11 +55,11 @@ export const HOMEPAGE_FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'How quickly is the report generated?',
-    a: 'Reports are generated instantly in your browser (typically under 60 seconds) once you enter a property address. You get immediate access to the interactive web report at a permanent link you can revisit, share, or export as a PDF anytime.'
+    a: 'Usually within a minute of confirming the address. Your report opens at its own link, so you can come back to it, share it, or save it as a PDF.'
   },
   {
-    q: 'Are there any recurring subscription fees or hidden costs?',
-    a: 'None. Your first report is 100% free with no credit card required. Additional reports are $14.99 each. No subscription, no auto-renewal, and no hidden charges ever.'
+    q: 'Does a report cost anything?',
+    a: 'No. Every report is free. You don\'t need an account or a credit card, and there is nothing to subscribe to.'
   }
 ];
 

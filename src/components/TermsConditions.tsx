@@ -28,7 +28,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
             <span>Return to Home</span>
           </button>
 
-          <span className="text-xs font-mono text-slate-500">Last Revised: August 18, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Last Revised: October 5, 2026</span>
         </div>
 
         {/* Content Pane */}
@@ -104,7 +104,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               </p>
               <ul className="list-disc pl-5 space-y-1.5">
                 <li>
-                  <strong>Consumer Property Insight Reports:</strong> Property research and due diligence guides helping home buyers and renters uncover publicly available information about a property before making an offer or signing a lease. Every consumer account is entitled to <strong>one free report</strong>; each additional report is a one-time purchase of <strong>$14.99 USD</strong>.
+                  <strong>Consumer Property Insight Reports:</strong> Property research and due diligence guides helping home buyers and renters uncover publicly available information about a property before making an offer or signing a lease. Reports are <strong>free</strong>: no account, no payment information and no purchase is required to generate one.
                 </li>
                 <li>
                   <strong>Paid Business Vendor Placements:</strong> Two self-serve, one-time-payment advertising products for local business vendors (contractors, home inspectors, pest control specialists, environmental specialists) -- self-reported at checkout, not independently verified by Atmostellar: a <strong>Topic Ad</strong> shown on educational guide articles across the site, and a <strong>Report Ad</strong> shown as a sponsored placement ("Need help verifying this?" section, clearly labeled "Sponsored") within a designated zip code and trade category on consumer reports. Both are flat, one-time charges for a fixed 30-day placement window -- neither is a subscription, and neither renews automatically.
@@ -119,7 +119,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
               </h2>
               <div className="space-y-2 text-xs text-slate-600">
                 <p>
-                  <strong>3.1 Report Pricing & Payment:</strong> Your first property insight report is free, with no payment information required. Each additional report is a one-time purchase of $14.99 USD — a single, non-recurring charge, not a subscription. Payment is taken through <strong>PayPal</strong>, a PCI-DSS compliant third-party payment processor: you complete the payment on PayPal's own checkout, and Atmostellar never receives or stores your card number. Using or viewing a report does not establish a contractual or fiduciary advisory relationship between you and Atmostellar.
+                  <strong>3.1 Reports Are Free:</strong> Property insight reports are provided free of charge. You do not need an account, payment information or a purchase to generate one, and Atmostellar does not sell reports. To keep the service available to everyone, Atmostellar limits how many reports can be generated from one connection, and in total, each day. Using or viewing a report does not establish a contractual or fiduciary advisory relationship between you and Atmostellar.
                 </p>
                 <p>
                   <strong>3.2 As-Is Provision & Non-Diagnostic Stance:</strong> Property research reports assemble raw or aggregated public data provided by third-party government and municipal agencies. All reports are provided strictly on an <strong>"AS-IS"</strong> and <strong>"AS-AVAILABLE"</strong> basis without warranty of any kind. Atmostellar makes no guarantees regarding the completeness, accuracy, timeliness, or real-time status of public records.
@@ -128,8 +128,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
                   <strong>3.3 Duty to Independently Confirm:</strong> Before Regret reports are preliminary discovery tools only. They are not a substitute for physical site visits, structural inspections, environmental testing, or legal title searches. Consumers expressly agree that they remain solely responsible for independently confirming all hazard classifications, building permit histories, and property characteristics with qualified, licensed professionals prior to making any financial, leasing, or purchasing commitment.
                 </p>
                 <p>
-                  <strong>3.4 No Refunds on Report Purchases:</strong> Report purchases are only charged after a property address has been confirmed eligible and the report is generated and delivered immediately upon payment. <strong>All report purchases are final and non-refundable.</strong> This does not limit any refund, cancellation, or withdrawal right you hold under a mandatory provision of consumer protection law that cannot be derogated from by agreement (see 8.1(b)), nor your right to dispute a charge with your card issuer. See our Cancellation &amp; Refund Policy for full detail.
-                </p>
+                  <strong>3.4 No Report Purchases:</strong> Because reports are free, there is no report purchase to charge, cancel or refund. Any report purchased before October 5, 2026 remains governed by the version of these Terms in effect when it was purchased, and nothing here limits any right you hold under a mandatory provision of consumer protection law (see 8.1(b)) or your right to dispute a past charge with your card issuer. See our Cancellation &amp; Refund Policy for vendor placements.</p>
                 <p>
                   <strong>3.5 Accuracy of Information You Provide:</strong> Certain fields used to generate your report -- including declared property type, year built, and unit number -- are supplied directly by you at the time of request. Atmostellar has no live integration with any county assessor or permitting authority and does not independently verify these self-declared fields before a report is generated. You represent and warrant that everything you submit is true, accurate, and describes the property you actually intend to research. A report built from an inaccurate or false input reflects that input, not an error by Atmostellar, and Atmostellar is not responsible for report content driven by information you supplied incorrectly, whether by mistake or on purpose.
                 </p>

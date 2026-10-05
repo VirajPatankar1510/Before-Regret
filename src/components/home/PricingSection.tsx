@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, ShieldCheck, Download, Sparkles, FileCheck2, Database, Gift, MapPin, ArrowUp } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 interface PricingSectionProps {
   onScrollToSearch?: () => void;
@@ -22,37 +22,27 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
   return (
     <section id="what-we-found" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-12 home-reveal">
       
-      {/* Header */}
+      {/* Header. 2026-10-05, owner: reports are 100% free for home buyers. A second card that
+          explained how the site is paid for was removed the same day at the owner's direction. */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
         <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">
-          Simple, Transparent Pricing
+          Free for Home Buyers
         </h2>
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-          No subscriptions, no hidden fees, and no recurring charges. Pay only when you need a report.
+          No sign-up, no card, no subscription. Check every house you&rsquo;re considering.
         </p>
       </div>
 
-      {/* Pricing Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-        
-        {/* Card 1: First Report Free.
-            Both card headers wrap instead of squeezing: at 375px the title and price shared one row
-            and "Pay-As-You-Go" broke across three lines with "/ report" orphaned from $14.99 -- on
-            the paid card, on the device most visitors use. flex-wrap drops the price below the
-            title when the row is too narrow; nowrap keeps each from splitting mid-word. */}
+      <div className="max-w-md mx-auto">
         <div className="bg-white border border-home-linen rounded-3xl p-8 shadow-sm relative flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-b border-slate-200 pb-4">
               <div>
-                <span className="text-xs font-bold text-blue-600 uppercase tracking-wider block">First Report</span>
-                <h3 className="font-sans text-xl font-bold text-slate-900">Free, no card needed</h3>
+                <span className="text-xs font-bold text-blue-600 uppercase tracking-wider block">Every Report</span>
+                <h3 className="font-sans text-xl font-bold text-slate-900">Free, no sign-up</h3>
               </div>
               <div className="text-3xl font-black text-blue-600">$0</div>
             </div>
-
-            <p className="text-xs text-slate-600 leading-relaxed">
-              1 free report per verified email address.
-            </p>
 
             <ul className="space-y-2.5 text-xs text-slate-700">
               <li className="flex items-center gap-2">
@@ -65,11 +55,11 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-600 shrink-0" />
-                <span>Opens as a link you can come back to</span>
+                <span>Earthquake risk for the exact address</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-600 shrink-0" />
-                <span>Earthquake risk for the exact address</span>
+                <span>Opens as a link you can come back to</span>
               </li>
             </ul>
           </div>
@@ -81,46 +71,6 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
             Check an address
           </button>
         </div>
-
-        {/* Card 2: Additional Reports $14.99 */}
-        <div className="bg-home-navy text-white border border-home-navy rounded-3xl p-8 shadow-lg relative flex flex-col justify-between space-y-6 [&_h3]:text-white [&_p]:text-slate-300 [&_li]:text-slate-200 [&_.text-slate-900]:text-white">
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-b border-slate-200 pb-4">
-              <div>
-                <span className="text-xs font-bold text-blue-400 uppercase tracking-wider block">Additional Reports</span>
-                <h3 className="font-sans text-xl font-bold text-slate-900 whitespace-nowrap">Pay-As-You-Go</h3>
-              </div>
-              <div className="text-3xl font-black text-slate-900 whitespace-nowrap">$14.99 <span className="text-xs font-normal text-slate-500">/ report</span></div>
-            </div>
-
-            <p className="text-xs text-slate-600 leading-relaxed">
-              For subsequent address lookups. Pay only when you research a new home.
-            </p>
-
-            <ul className="space-y-2.5 text-xs text-slate-600">
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>Everything in the free report</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>No subscription. No auto-renewal.</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>Instant Access.</span>
-              </li>
-            </ul>
-          </div>
-
-          <button
-            onClick={handleGoToMap}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-sm text-center"
-          >
-            Check an address
-          </button>
-        </div>
-
       </div>
 
     </section>

@@ -132,6 +132,9 @@ export function App() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGatingModalOpen, setIsGatingModalOpen] = useState(false);
+  // The server's daily-limit message, shown in the report modal instead of its button (see
+  // reportGenerationLimiter.ts). Cleared whenever the modal is opened fresh.
+  const [reportLimitNotice, setReportLimitNotice] = useState<string | null>(null);
 
   // Synchronize active session state with sessionStorage
   useEffect(() => {
@@ -297,7 +300,7 @@ export function App() {
   };
 
   const handleNavigate = (targetPath: string) => {
-    // Some real pages are NOT app routes: /sunlight/, every /research/ study and /sample-report/ are
+    // Some real pages are NOT app routes: /sunlight/, and every /research/ study are
     // standalone static HTML built by their own prerender scripts. A client-side navigation to one
     // used to fall through to the 'notFound' state below, so a click from the homepage showed
     // "404 -- Page Not Found" and only a refresh (a real request) showed the page (owner report,
@@ -594,7 +597,7 @@ export function App() {
                 'name': 'Are reports one-time flat fee or subscription based?',
                 'acceptedAnswer': {
                   '@type': 'Answer',
-                  'text': 'Your first Before Regret property report is free. Additional reports are a one-time flat fee of $14.99 each -- there is no subscription or recurring charge for consumer reports.'
+                  'text': 'Neither. Property reports are free. You do not need an account, and there is nothing to pay or subscribe to.'
                 }
               }
             ]
@@ -853,6 +856,7 @@ export function App() {
 
   // Step 3 -> Step 4: Open Gating Modal or Trigger Full Report Generation
   const handleOpenGatingModal = () => {
+    setReportLimitNotice(null);
     setIsGatingModalOpen(true);
   };
 
@@ -893,10 +897,9 @@ export function App() {
     setIsLoading(true);
 
     try {
-      // Best-effort only -- see optionalVerifiedUserId in server.ts. ReportGatingModal already
-      // requires Clerk sign-in before this function can ever be reached, so a token is normally
-      // available; a null here just means the audit row this call feeds (generated_reports, see
-      // db.ts) is saved without an attributable user rather than the request being blocked.
+      // Best-effort only -- see optionalVerifiedUserId in server.ts. Reports need no account since
+      // 2026-10-05, so a token is usually absent; when someone happens to be signed in, it just
+      // attributes the generated_reports audit row to them.
       const authToken = await getToken().catch(() => null);
       const res = await fetch('/api/property/generate-report', {
         method: 'POST',
@@ -915,18 +918,26 @@ export function App() {
           unitNumber: activeProperty.unitNumber,
           yearBuilt: activeProperty.yearBuilt,
           usefulSourcesCount: summaryData?.usefulSourcesFound || 18,
-          price: isPaid ? 14.99 : 0,
-          // ReportGatingModal requires assent before onConfirmAndGenerate is ever called -- the
-          // real "I agree" checkbox on the paid path, the click-to-generate passive notice on the
-          // free path (see that file's own comment on why the free path deliberately has no
-          // checkbox). By the time this fetch fires, that assent has already happened.
+          // Every report is free (2026-10-05); the server ignores any other value anyway.
+          price: 0,
+          // ReportGatingModal shows the assent notice directly under its generate button, so by
+          // the time this fetch fires the click-to-generate assent has already happened.
           attestedAccurate: true,
           userEmail: userEmail,
-          isPaid: isPaid
+          isPaid: false
         })
       });
 
       const contentType = res.headers.get('content-type') || '';
+      // Daily limit reached (server-side abuse cap). Say so plainly in the modal rather than
+      // falling through to the client-side fallback report below, which would quietly hand over a
+      // thinner report as though nothing had happened.
+      if (res.status === 429) {
+        const body = contentType.includes('application/json') ? await res.json().catch(() => null) : null;
+        setReportLimitNotice(body?.error || "You've reached today's report limit. You can get more reports tomorrow.");
+        setIsGatingModalOpen(true);
+        return;
+      }
       if (res.ok && contentType.includes('application/json')) {
         const json = await res.json();
         if (json && json.report) {
@@ -999,10 +1010,10 @@ export function App() {
               <Loader2 className="w-7 h-7 animate-spin" />
             </div>
             <h3 className="text-xl font-bold tracking-tight text-white">
-              Synthesizing Executive Report
+              Building your report
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Checking live seismic hazard data and validating this address against U.S. Census records...
+              Checking earthquake data and U.S. Census records for this address…
             </p>
           </div>
         </div>
@@ -1170,6 +1181,7 @@ export function App() {
             onClose={() => setIsGatingModalOpen(false)}
             targetAddress={selectedProperty?.formattedAddress || selectedProperty?.displayName || 'Selected Address'}
             onConfirmAndGenerate={handleConfirmAndGenerateReport}
+            notice={reportLimitNotice}
           />
         </Suspense>
       )}

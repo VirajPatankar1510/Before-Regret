@@ -139,15 +139,8 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
           </div>
 
           <div className={`mt-5 flex flex-col gap-1 ${centred ? 'items-center' : 'items-center sm:items-start'}`}>
-            <p className="text-sm font-semibold text-white">Your first report is free.</p>
-            <p className="text-sm text-slate-300">No credit card required.</p>
-            <a
-              href="/sample-report/"
-              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-[#f2c98f] hover:text-white underline underline-offset-4 decoration-[#f2c98f]/50"
-            >
-              See a sample report
-              <span aria-hidden="true">&rarr;</span>
-            </a>
+            <p className="text-sm font-semibold text-white">Every report is free.</p>
+            <p className="text-sm text-slate-300">No sign-up. No credit card.</p>
           </div>
         </div>
       </div>

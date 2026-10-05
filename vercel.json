@@ -1,6 +1,16 @@
 {
   "redirects": [
     {
+      "source": "/sample-report",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/sample-report/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
       "source": "/research/no-plan-downstream",
       "destination": "/research/high-hazard-dams/",
       "permanent": true

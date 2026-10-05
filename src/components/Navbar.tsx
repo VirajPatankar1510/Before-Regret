@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, User, LogIn, Sparkles, ChevronDown, CheckCircle2, ShieldCheck, Menu, X } from 'lucide-react';
+import { Search, User, Sparkles, ChevronDown, CheckCircle2, ShieldCheck, Menu, X } from 'lucide-react';
 import { Logo } from './Logo';
 import { useAuth } from '../context/AuthContext';
 import { AuthModal } from './AuthModal';
@@ -28,7 +28,18 @@ export const Navbar: React.FC<NavbarProps> = ({
   selectedAddress,
   onNavigate
 }) => {
-  const { user, requestClerkLoad } = useAuth();
+  const { user } = useAuth();
+
+  // Back to the homepage (onNewSearch resets any report or guide and scrolls to the top), then
+  // put the cursor in the address box once the hero has rendered.
+  const goToAddressSearch = () => {
+    onNewSearch();
+    window.setTimeout(() => {
+      const box = document.getElementById('address-search-box');
+      box?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      box?.querySelector('input')?.focus({ preventScroll: true });
+    }, 60);
+  };
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   // Mobile-only menu. Below the sm breakpoint the header previously showed the logo and the auth
   // button and nothing else -- the "Guides" button is `hidden sm:inline` and there was no
@@ -138,19 +149,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
             ) : (
-              // onMouseEnter/onFocus start the Clerk chunk downloading before the click even
-              // happens, on desktop -- by the time a mouse click lands, the hover almost always
-              // preceded it by enough time to have a head start. onClick is the guaranteed
-              // trigger for touch (no hover event exists) and keyboard activation without a
-              // preceding focus... though focus does normally precede Enter-key activation too;
-              // onClick just costs nothing extra since requestClerkLoad is idempotent.
+              // "Free Report" takes the visitor to the address search. It used to open the sign-in
+              // modal, which was the right door while a report needed an account; since 2026-10-05
+              // reports need none, and a "Free Report" button that asks you to sign in contradicts
+              // the "No sign-up" promise directly under it on the homepage. Vendors sign in from
+              // /my-ads (linked in the footer as "Manage My Ads"), which loads Clerk itself.
               <button
-                onClick={() => { requestClerkLoad(); setIsAuthModalOpen(true); }}
-                onMouseEnter={requestClerkLoad}
-                onFocus={requestClerkLoad}
+                onClick={goToAddressSearch}
                 className="px-3.5 py-1.5 sm:py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
               >
-                <LogIn className="w-3.5 h-3.5" />
+                <Search className="w-3.5 h-3.5" />
                 <span>Free Report</span>
               </button>
             )}

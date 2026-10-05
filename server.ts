@@ -37,8 +37,6 @@ import { registerTermsRoutes } from "./src/server/termsApi.js";
 import { registerPublicApiV1Routes } from "./src/server/publicApiV1.js";
 import { registerFunnelRoutes } from "./src/server/funnelApi.js";
 import { normalizeCountyKey } from "./src/utils/normalizeCounty.js";
-import { REPORT_GENERATION_MODELS, generateContentWithFallback } from "./src/server/geminiModel.js";
-import { logGeminiUsage } from "./src/server/geminiUsageTracker.js";
 import { checkAndReserveReportGenerationCapacity } from "./src/server/reportGenerationLimiter.js";
 import {
   isPayPalConfigured,
@@ -683,7 +681,7 @@ export async function createApp() {
     const totalSourcesSearched = sourcesList.length;
 
     const price = 0;
-    const priceRationale = `Before Regret does not yet have a live, verified data connection for this address. This is a free reference checklist linking to the ${totalSourcesSearched} official public sources so you can look up records yourself.`;
+    const priceRationale = `Your report covers what to check for a home like this one, with links to the ${totalSourcesSearched} official public sources where you can look up each record yourself.`;
 
     const categoriesSet = Array.from(new Set(sourcesList.map(s => s.category)));
 
@@ -722,11 +720,29 @@ export async function createApp() {
     });
   });
 
-  // 2. Full AI Property Report Generation Endpoint (Gemini 3.6 Flash)
+  // 2. Property Report Generation Endpoint -- no AI since 2026-10-05; built from the engine + live public data
   app.post(["/api/property/generate-report", "/api/generate-report"], async (req, res) => {
     const { address, city, state, zipCode, county, propertyType, usefulSourcesCount, price, declaredPropertyType, unitNumber, yearBuilt, attestedAccurate, isPaid } = req.body;
 
     const fullAddr = formattedAddress(address, city, state, zipCode);
+
+    // Abuse limit, checked FIRST (2026-10-05). Reports are now free and need no account, and no
+    // longer call any AI model, so this is no longer a spending cap: it keeps a bot from hammering
+    // the free government lookups this route makes (Census geocoder, USGS, Census ACS) and filling
+    // generated_reports. Per-IP and site-wide daily caps -- see reportGenerationLimiter.ts. Checked
+    // before the address gate so a blocked caller costs nothing downstream. A database outage
+    // (db_unavailable) does not block a real visitor; it only skips the count.
+    const capacityCheck = await checkAndReserveReportGenerationCapacity(requestIp(req));
+    if (!capacityCheck.allowed && capacityCheck.reason !== 'db_unavailable') {
+      res.status(429).json({
+        success: false,
+        limitReached: true,
+        error: capacityCheck.reason === 'ip_cap'
+          ? "You've reached today's report limit. You can get more reports tomorrow."
+          : "Reports are unavailable for the rest of today. Please try again tomorrow.",
+      });
+      return;
+    }
 
     // Authoritative, synchronous gate. This is the check that actually matters: it re-runs
     // Layers 1-3 independently of whatever the map UI decided, so no client-side bypass, stale
@@ -817,12 +833,9 @@ export async function createApp() {
         declaredYearBuilt: typeof yearBuilt === 'number' ? yearBuilt : parseInt(String(yearBuilt ?? ''), 10) || null,
         declaredUnitNumber: unitNumber || null,
         attestedAccurate: attestedAccurate === true,
-        // isPaid is what the client reports, but price is the corroborating figure -- a paid report
-        // is only ever sent with price 14.99 (see ReportGatingModal's PAYMENT_INTERCEPT path), so
-        // treating a nonzero price as paid too means a client that sends one field and not the
-        // other still lands in the right bucket rather than silently undercounting revenue.
-        isPaid: isPaid === true || Number(price) > 0,
-        priceUsd: Number.isFinite(Number(price)) ? Number(price) : null,
+        // Every report is free since 2026-10-05; nothing a client sends can mark one paid.
+        isPaid: false,
+        priceUsd: 0,
         ipAddress: requestIp(req),
         userAgent: (req.headers['user-agent'] as string) || null,
       })
@@ -861,373 +874,17 @@ export async function createApp() {
       resolvedMeta.county,
       resolvedMeta.propertyType,
       usefulSourcesCount || 21,
-      price || 29,
+      0, // reports are free (2026-10-05)
       gateResult.layer1.lat ?? null,
       gateResult.layer1.lon ?? null
     );
 
-    const apiKey = process.env.GEMINI_API_KEY;
-
-    // Hard cost ceiling, not just a UX gate: the "one free report" limit below this is enforced
-    // only in the browser (see ReportGatingModal.tsx's localStorage-based count), which a direct
-    // POST to this endpoint -- from any client, any number of times, any number of IPs -- bypasses
-    // entirely. Before this check existed there was no server-side limit on this route at all, so
-    // nothing bounded how many real-money Gemini calls it could ever make. See
-    // reportGenerationLimiter.ts for the actual caps and why they're sized the way they are. A
-    // capped/unavailable result here doesn't fail the request -- it just skips straight to the
-    // `fallbackReport` path below, the exact same graceful degrade this route already uses for a
-    // genuine Gemini error (see the catch block further down), so a visitor always gets a full,
-    // real report either way.
-    const capacityCheck = await checkAndReserveReportGenerationCapacity(requestIp(req));
-    if (!capacityCheck.allowed) {
-      console.warn(`[report-generation] Gemini call skipped (${capacityCheck.reason}) for ${fullAddr}`);
-    }
-
-    if (apiKey && capacityCheck.allowed) {
-      try {
-        const { GoogleGenAI, Type } = await import("@google/genai");
-        const ai = new GoogleGenAI({
-          apiKey,
-          httpOptions: {
-            headers: {
-              'User-Agent': 'aistudio-build',
-            }
-          }
-        });
-
-        const prompt = `
-Act as an expert full-stack developer and senior real estate technology architect building BeforeRegret (beforeregret.com).
-Your primary directive is 100% FACTUAL ACCURACY based strictly on verified public property records.
-You MUST NEVER state, assume, or derive any finding from a property's construction year or age. No report may state, assume, or derive any finding from a property's construction year or age, under any framing, anywhere in the document. Every finding must stand entirely on its own permit/record basis, independent of when the structure was built.
-
-Target Property Details:
-- Address: ${resolvedMeta.formattedAddress}
-- City: ${resolvedMeta.city}, State: ${resolvedMeta.state}, Zip: ${resolvedMeta.zipCode}
-- County: ${resolvedMeta.county}
-- Verified Property Classification: ${resolvedMeta.propertyType}
-- Is Multi-Family / Apartment / Condo Complex: ${resolvedMeta.isMultiFamilyOrApartment}
-- Public Sources Scanned: ${usefulSourcesCount || 21}
-
-===================================================================================
-1. MANDATORY METADATA VALIDATION PROTOCOL & GUARDRAILS
-===================================================================================
-A. PROPERTY CLASSIFICATION DETECTOR:
-   - Target property classification: "${resolvedMeta.propertyType}".
-   - IF MULTI-FAMILY, APARTMENT COMPLEX, OR CONDO (${resolvedMeta.isMultiFamilyOrApartment ? "ACTIVE FOR THIS REPORT" : "INACTIVE"}):
-     * NEVER advise on individual roof replacements, structural foundation sweeps, or private sewer laterals.
-     * RE-ROUTE ALL RECOMMENDATIONS to: HOA Reserve Studies, Master Insurance Policies, Certificate of Occupancy (CO) verification, Sound Attenuation between shared walls, Tenant Utility Sub-metering, and Community Management Fees.
-
-B. ZERO PROPERTY AGE / CONSTRUCTION YEAR RULE:
-   - Do NOT output a yearBuilt field anywhere in the JSON response.
-   - Do NOT mention, infer, or reference construction year, build era, or property age.
-
-C. NO PER-ADDRESS PERMIT ARCHIVE EXISTS -- DO NOT DESCRIBE ONE:
-   - BeforeRegret has no live connection to any municipal permit, inspection, or code-enforcement
-     database for any jurisdiction. For roof, HVAC, electrical, water heater, sewer, and any other
-     building system: do NOT state or imply that a permit record was checked, found, or not found
-     for this specific address. Never invent a date, filing, or "on file" / "digitized archive"
-     claim -- there is no archive to check. This applies even if it would sound more specific,
-     helpful, or authoritative; specific and false is worse than general and honest.
-   - What you MAY write for these systems: general, non-address-specific guidance appropriate to
-     the property's declared type and the area's building stock -- what a buyer should ask the
-     seller, what an inspector should check, and why it matters. This is area-level and educational
-     content, not a claim about this address's own records.
-   - A downstream check independently enforces this regardless of what you output here: any finding
-     that asserts a verified or no-record status without coming from an actual live data fetch
-     (only the neighborhood-census and seismic-hazard findings qualify) is automatically downgraded
-     and its address-specific text replaced before publication. Writing within this rule the first
-     time means your own wording is what a reader sees, instead of a generic replacement.
-
-D. TWO-TIER STATUS BADGES:
-   - Use ONLY two confidence levels, and only where you are describing something this report
-     actually did (e.g. the Census neighborhood profile, the USGS seismic lookup) -- never for the
-     building-system items covered by rule C above, which must always read as unverified:
-     1. "Verified Record" (a specific, real data source was actually consulted for this report)
-     2. "No Record Found" (that same real source was actually consulted and had nothing)
-
-===================================================================================
-2. OUTPUT FORMAT & DEFENSE STANDARDS
-===================================================================================
-Output ONLY a clean, valid JSON payload adhering to the schema.
-Do NOT include Markdown code blocks, section tags like "SECTION 5A", UI button text like "Copy All Questions", or hardcoded web strings like "0 of 2 Checked".
-
-Maintain a non-diagnostic stance:
-- Never tell the user whether to buy or rent.
-- Never output hard dollar cost estimates for repairs.
-- Never predict property value changes.
-- Ensure every finding follows the 3-part structure: "whatWeFound" (fact), "whyItMatters" (context), and "suggestedNextStep" (neutral verification step).
-- Assign every finding a confidence badge: "Verified Record" or "No Record Found".
-`;
-
-        // Cascades through REPORT_GENERATION_MODELS (this route's own model first, then the two
-        // content-generation models as fallback) on quota exhaustion -- see geminiModel.ts. Only
-        // falls through to the fallbackReport below if every model in that chain is exhausted (or
-        // some other error occurs).
-        //
-        // httpOptions.timeout below is the fix for a confirmed-live 504: this call previously had
-        // NO timeout at all, so a slow or stalled model response rode all the way to Vercel's hard
-        // 60s function kill (vercel.json's maxDuration) -- a raw 504 with no JSON body, never
-        // reaching the catch block below or the fallbackReport it serves. By the time this call
-        // starts, the route has already spent up to ~16s on the address gate (layer1 geocode +
-        // layer2 facility check, each 8s-timeout, sequential -- see geoValidationGate.ts) and up to
-        // ~15s more on the parallel seismic/neighborhood/vendor fetches above, so 20s here is
-        // chosen to leave real margin against the 60s ceiling even in that near-worst case, not
-        // just in the common case. A client-side timeout throws APIConnectionTimeoutError, which
-        // isTransientModelError (geminiModel.ts) does NOT classify as transient -- so it does not
-        // cascade through the other two models in REPORT_GENERATION_MODELS and re-spend the
-        // timeout three times over; it's rethrown immediately, caught below, and served as the
-        // fast, always-available fallbackReport instead. That's deliberate: on a genuinely slow
-        // Gemini response, a bounded miss beats a second and third bounded miss that still burns
-        // the remaining budget and ends in the same 504.
-        const { result: response, model: usedModel } = await generateContentWithFallback(ai, {
-          contents: prompt,
-          config: {
-            httpOptions: { timeout: 20000 },
-            systemInstruction: `You are the executive property research engine at BeforeRegret (beforeregret.com).
-Your output is 100% factually accurate, structured, professional, non-diagnostic, and strictly based on verified public property records.
-You MUST NEVER state, assume, or derive any finding from a property's construction year or age.
-Confidence badges must strictly be "Verified Record" or "No Record Found".
-Never output dollar cost estimates, price ranges, or buy/rent/investment recommendations.`,
-            temperature: 0.2,
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: Type.OBJECT,
-              properties: {
-                reportVersion: { type: Type.STRING },
-                headerInfo: {
-                  type: Type.OBJECT,
-                  properties: {
-                    address: { type: Type.STRING },
-                    reportDate: { type: Type.STRING },
-                    reportVersion: { type: Type.STRING }
-                  },
-                  required: ["address", "reportDate", "reportVersion"]
-                },
-                propertyInfo: {
-                  type: Type.OBJECT,
-                  properties: {
-                    address: { type: Type.STRING },
-                    city: { type: Type.STRING },
-                    state: { type: Type.STRING },
-                    zipCode: { type: Type.STRING },
-                    county: { type: Type.STRING },
-                    lat: { type: Type.NUMBER },
-                    lon: { type: Type.NUMBER },
-                    propertyType: { type: Type.STRING },
-                    estimatedSqFt: { type: Type.NUMBER }
-                  },
-                  required: ["address", "city", "state", "zipCode"]
-                },
-                atAGlance: {
-                  type: Type.OBJECT,
-                  properties: {
-                    cards: {
-                      type: Type.ARRAY,
-                      items: {
-                        type: Type.OBJECT,
-                        properties: {
-                          id: { type: Type.STRING },
-                          status: { type: Type.STRING },
-                          title: { type: Type.STRING },
-                          confidence: { type: Type.STRING }
-                        },
-                        required: ["id", "title", "confidence"]
-                      }
-                    },
-                    mostImportantToVerify: {
-                      type: Type.OBJECT,
-                      properties: {
-                        title: { type: Type.STRING },
-                        description: { type: Type.STRING }
-                      },
-                      required: ["title", "description"]
-                    }
-                  },
-                  required: ["cards", "mostImportantToVerify"]
-                },
-                whatWeFound: {
-                  type: Type.OBJECT,
-                  properties: {
-                    verified: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    needsVerification: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    worthAskingAbout: { type: Type.ARRAY, items: { type: Type.STRING } }
-                  },
-                  required: ["verified", "needsVerification", "worthAskingAbout"]
-                },
-                topPriorities: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      id: { type: Type.STRING },
-                      title: { type: Type.STRING },
-                      confidence: { type: Type.STRING },
-                      whatWeFound: { type: Type.STRING },
-                      whyItMatters: { type: Type.STRING },
-                      suggestedNextStep: { type: Type.STRING }
-                    },
-                    required: ["title", "confidence", "whatWeFound", "whyItMatters", "suggestedNextStep"]
-                  }
-                },
-                environmentalTopics: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      id: { type: Type.STRING },
-                      title: { type: Type.STRING },
-                      confidence: { type: Type.STRING },
-                      whatWeFound: { type: Type.STRING },
-                      whyItMatters: { type: Type.STRING },
-                      suggestedNextStep: { type: Type.STRING }
-                    },
-                    required: ["title", "confidence", "whatWeFound", "whyItMatters", "suggestedNextStep"]
-                  }
-                },
-                sellerQuestions: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      id: { type: Type.STRING },
-                      ask: { type: Type.STRING },
-                      why: { type: Type.STRING },
-                      confidence: { type: Type.STRING }
-                    },
-                    required: ["ask", "why", "confidence"]
-                  }
-                },
-                visitChecklist: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      id: { type: Type.STRING },
-                      task: { type: Type.STRING },
-                      detail: { type: Type.STRING },
-                      category: { type: Type.STRING }
-                    },
-                    required: ["task"]
-                  }
-                },
-                sourceReferences: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      id: { type: Type.STRING },
-                      name: { type: Type.STRING },
-                      agency: { type: Type.STRING },
-                      category: { type: Type.STRING },
-                      status: { type: Type.STRING },
-                      url: { type: Type.STRING },
-                      description: { type: Type.STRING }
-                    },
-                    required: ["name", "agency", "category", "status", "url", "description"]
-                  }
-                }
-              },
-              required: [
-                "headerInfo",
-                "propertyInfo",
-                "atAGlance",
-                "whatWeFound",
-                "topPriorities",
-                "environmentalTopics",
-                "sellerQuestions",
-                "visitChecklist",
-                "sourceReferences"
-              ]
-            }
-          }
-        }, REPORT_GENERATION_MODELS);
-
-        // Fire-and-forget -- never let usage logging affect the report response the customer
-        // is actually waiting on. See src/server/geminiUsageTracker.ts.
-        logGeminiUsage('report_generation', usedModel, response.usageMetadata);
-        const rawText = response.text || "{}";
-        const parsedReport = JSON.parse(rawText);
-
-        const mergedReport = {
-          ...fallbackReport,
-          ...parsedReport,
-          headerInfo: {
-            ...fallbackReport.headerInfo,
-            ...(parsedReport.headerInfo || {}),
-            // The model does NOT get to supply these two, and the order matters: they are
-            // re-applied AFTER the spread so the model's values are overwritten, not merged.
-            //
-            // reportDate is a required field on the response schema, so Gemini dutifully invents
-            // one. A real report generated 2026-08-29 rendered "2024-05-18" in its header -- a
-            // plausible-looking date with no relationship to anything. On a product whose stated
-            // rule is that nothing is asserted unless it is backed by something real, a
-            // hallucinated date sitting above the address is precisely the wrong failure. The
-            // server knows this value for certain; there was never a reason to ask for it.
-            //
-            // address is pinned for the same reason: fallbackReport carries the geocoder's
-            // resolved address, and a model paraphrase would silently disagree with the address
-            // every other section of the report was built from.
-            reportDate: fallbackReport.headerInfo.reportDate,
-            address: fallbackReport.headerInfo.address,
-          },
-          pricing: {
-            ...fallbackReport.pricing,
-            ...(parsedReport.pricing || {})
-          },
-          propertyInfo: {
-            ...fallbackReport.propertyInfo,
-            ...(parsedReport.propertyInfo || {})
-          },
-          atAGlance: {
-            ...fallbackReport.atAGlance,
-            ...(parsedReport.atAGlance || {}),
-            cards: Array.isArray(parsedReport.atAGlance?.cards) && parsedReport.atAGlance.cards.length > 0 ? parsedReport.atAGlance.cards : fallbackReport.atAGlance.cards
-          },
-          whatWeFound: {
-            ...fallbackReport.whatWeFound,
-            ...(parsedReport.whatWeFound || {})
-          },
-          sellerQuestions: Array.isArray(parsedReport.sellerQuestions) && parsedReport.sellerQuestions.length > 0 ? parsedReport.sellerQuestions : fallbackReport.sellerQuestions,
-          visitChecklist: Array.isArray(parsedReport.visitChecklist) && parsedReport.visitChecklist.length > 0 ? parsedReport.visitChecklist : fallbackReport.visitChecklist,
-          disclosureLevers: Array.isArray(parsedReport.disclosureLevers) && parsedReport.disclosureLevers.length > 0 ? parsedReport.disclosureLevers : fallbackReport.disclosureLevers
-        };
-
-        let cleanedReport = validateAndFixReportContradictions(mergedReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
-        cleanedReport = stripInternalMetadata(cleanedReport);
-        // One Set shared across all four calls below so a trade category is attached at most once
-        // across the whole report, regardless of which section matches it first. Order matters,
-        // not just the shared Set -- see attachSponsoredVendorsToPendingFindings's comment for why
-        // the pending-findings pass specifically has to run last, after every more-prominent
-        // section has had first refusal on a category.
-        const seenVendorCategories = new Set<string>();
-        attachSponsoredVendorsToResolvedFindings(cleanedReport, zipVendorMap, seenVendorCategories);
-        attachFindingSourceUrls(cleanedReport, resolvedMeta.county, resolvedMeta.city);
-        cleanedReport.inspectionPriorities = buildInspectionPrioritiesForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, zipVendorMap, seenVendorCategories);
-        cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType, zipVendorMap, seenVendorCategories);
-        attachSponsoredVendorsToPendingFindings(cleanedReport, zipVendorMap, seenVendorCategories);
-        // Moving Company is a fixed, always-checked slot, not routed through the per-item matching
-        // above -- see the comment on PropertyReport.movingCompanyVendors in types.ts.
-        cleanedReport.movingCompanyVendors = zipVendorMap.get('Moving Company') ?? [];
-
-        if (!cleanedReport.id) {
-          cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-        }
-        // Projected before it is stored, not just before it is sent, so the copy GET
-        // /api/report/:reportId serves later is the same clean object -- see CLIENT_REPORT_FIELDS.
-        const clientReport = projectReportForClient(cleanedReport);
-        reportsStore.set(cleanedReport.id, clientReport);
-        persistDeclaredInputs(cleanedReport.id, clientReport);
-
-        res.json({
-          success: true,
-          report: clientReport
-        });
-        return;
-      } catch (err: any) {
-        console.error("[Gemini Report Generation Error]:", err);
-      }
-    }
-
+    // No AI step (2026-10-05, owner): every report is built entirely from this site's own engine and
+    // live public data -- the address gate, USGS seismic, Census ACS, PRIORITY_RULES, the seller
+    // questions script and the ZIP vendor map. Gemini used to rewrite only the generic sections
+    // (at-a-glance cards, finding wording, a generic question list, visit checklist, disclosure
+    // levers) and was never allowed to assert anything about the address itself; the fallback
+    // report below already carried every one of those sections, and is now the only path.
     let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
     const seenVendorCategories = new Set<string>();
@@ -1261,6 +918,13 @@ Never output dollar cost estimates, price ranges, or buy/rent/investment recomme
 
   // --- PayPal Payment Processing ---------------------------------------------------------------
   app.post("/api/paypal/orders", async (req, res) => {
+    // Consumer reports are free since 2026-10-05, so there is nothing to sell through this route:
+    // it existed only for the $14.99 report (ReportGatingModal's old payment step). Vendor ads have
+    // their own checkout routes (guideAdsApi.ts, zipAdsApi.ts) and never came through here.
+    if (req.body?.type === 'report') {
+      res.status(410).json({ success: false, error: 'Property reports are free and no longer sold.' });
+      return;
+    }
     if (!isPayPalConfigured()) {
       res.status(503).json({
         success: false,
@@ -1787,11 +1451,11 @@ function validateAndFixReportContradictions(report: any, liveFindings: any[] = [
         summaryText: 'BeforeRegret does not yet have a live, verified connection to municipal electrical permit records for this address.',
         whatWeFound: 'Not yet independently verified for this address.',
         whyItMatters: 'A permitted electrical service panel meets modern safety standards for contemporary household appliances.',
-        suggestedNextStep: 'Verify main panel labelling and breaker alignment during physical walkthrough, and check the municipal permit portal directly.',
+        suggestedNextStep: 'Look at the main panel during your walkthrough, and search the municipal permit portal for electrical permits on this address.',
         actionItem: {
           type: 'walkthroughItem',
           title: 'Main Electrical Panel Walkthrough',
-          description: 'Locate the main service panel in garage or utility area and confirm municipal inspection sticker.',
+          description: 'Find the main electrical panel (often in the garage, basement or a utility area) and note its brand and whether the breakers are labeled.',
           why: 'BeforeRegret has not yet independently verified permit records for this address.'
         }
       },
@@ -2484,7 +2148,7 @@ function generateStructuredPropertyReport(
   rawCounty: string = 'Travis County',
   rawPropertyType: string = 'Single Family Home',
   usefulSourcesCount: number = 21,
-  price: number = 29,
+  price: number = 0,
   // Threaded in from the caller's address-gate result rather than defaulted to a literal: these
   // previously hardcoded 38.8951/-77.0364 (Washington DC) into propertyInfo for every report
   // regardless of where the property actually was. Optional because the parameter list above is
@@ -2524,162 +2188,20 @@ function generateStructuredPropertyReport(
     };
   }
 
-  // Select cards based on isMultiFamilyOrApartment
-  let cards = [];
-  if (meta.isMultiFamilyOrApartment) {
-    cards = [
-      { id: 'a1', status: 'green', title: 'Building Certificate of Occupancy Verified', confidence: 'Verified Record' as const },
-      { id: 'a2', status: 'yellow', title: 'HOA Reserve Study & Master Policy Status', confidence: 'No Record Found' as const },
-      { id: 'a3', status: 'green', title: 'Zero Open Code Violations on File', confidence: 'Verified Record' as const },
-      { id: 'a4', status: 'yellow', title: 'Shared Wall Acoustic Insulation Record', confidence: 'No Record Found' as const },
-      { id: 'a5', status: 'yellow', title: 'Utility Sub-metering & Maintenance Dues', confidence: 'No Record Found' as const },
-      { id: 'a6', status: 'green', title: 'Public Water & Sewer Utility Connection', confidence: 'Verified Record' as const }
-    ];
-  } else {
-    cards = [
-      { id: 'a1', status: 'green', title: 'Low Flood Hazard Designation (Zone X)', confidence: 'Verified Record' as const },
-      { id: 'a2', status: 'yellow', title: 'Roof Installation & Replacement Permit', confidence: 'No Record Found' as const },
-      { id: 'a3', status: 'green', title: 'Zero Active Code Violations', confidence: 'Verified Record' as const },
-      { id: 'a4', status: 'yellow', title: 'Electrical & Plumbing Permit Archive', confidence: 'No Record Found' as const },
-      { id: 'a5', status: 'yellow', title: 'Central AC Compressor Permit Filing', confidence: 'No Record Found' as const },
-      { id: 'a6', status: 'green', title: 'Municipal Utility Connection Verified', confidence: 'Verified Record' as const }
-    ];
-  }
-
-  let mostImportantToVerify = { title: '', description: '' };
-  if (meta.isMultiFamilyOrApartment) {
-    mostImportantToVerify = {
-      title: 'HOA Reserve Study & Master Insurance Policy',
-      description: 'Request the latest HOA Reserve Study and Master Insurance Policy declaration to verify community financial health and building exterior maintenance coverage.'
-    };
-  } else {
-    mostImportantToVerify = {
-      title: 'Roof Installation & Mechanical Permit Archives',
-      description: 'Municipal permit databases contain no matching roof replacement permit record in digitized logs. Verify physical installation date and remaining functional lifespan with your licensed home inspector.'
-    };
-  }
-
-  // REMOVED: propertyRecordsSplit (verified/unknown) and permitLifespanMatrix.
+  // REMOVED 2026-10-05, when the AI step went and this function became the whole report:
+  // executiveSnapshot, atAGlance, bottomLine, the three-column whatWeFound, nearbyEssentials,
+  // insuranceConsiderations, the legacy sellerQuestions and disclosureLevers lists, visitChecklist
+  // and directSourceLinks.
   //
-  // These were hardcoded arrays asserting, for EVERY address this app has ever produced a
-  // fallback report for, that the property had a 'Verified Record' confirming an active parcel
-  // filing, a final Certificate of Occupancy, an on-file electrical panel record, active public
-  // water and sewer, and -- worst of the set -- 'Zero Active Violations / Clean municipal code
-  // compliance history'. Not one of those claims was backed by a data source: this app has no
-  // assessor, permit, code-enforcement, or utility integration of any kind (see the note on
-  // validateAndFixReportContradictions). They were literal constants dressed as findings.
-  //
-  // Why deleting rather than relabelling: nothing renders either field (grepped across
-  // src/components -- no consumer existed), so they were pure payload, reaching the client in the
-  // generate-report response and GET /api/report/:reportId while being invisible in the UI. That
-  // made them a latent trap rather than a visible bug -- the first person to build a records
-  // section against the existing PropertyReport type would have shipped 'Zero Active Violations'
-  // to real buyers about real houses without writing a single false statement themselves. An
-  // unverifiable claim that no longer exists cannot be rendered by accident later.
-  //
-  // 'Zero Active Violations' specifically is the claim that made this urgent: open code violations
-  // run with the property, can carry liens or forced remediation, and can block a closing. Telling
-  // a buyer there are none -- as a 'Verified Record', about a named address, from no source -- is an
-  // affirmative misrepresentation that the site-wide 'as is' disclaimers would struggle to cover,
-  // and it is simultaneously damaging to the seller in the inverse case. The corresponding request
-  // for these fields has also been dropped from the Gemini response schema and its required list.
-
-  let sellerQuestions = [];
-  let disclosureLevers = [];
-
-  if (meta.isMultiFamilyOrApartment) {
-    sellerQuestions = [
-      {
-        id: 'q1',
-        ask: 'Can you provide the breakdown for utility billing (e.g. sub-metered vs RUBS) and list all mandatory monthly amenity or parking fees?',
-        why: 'Utility allocations and community service fees vary across multi-family properties.',
-        confidence: 'No Record Found' as const
-      },
-      {
-        id: 'q2',
-        ask: 'Has property management completed all major common element inspections, and what warranty coverages apply?',
-        why: 'To confirm status of shared structural components and building disclosures.',
-        confidence: 'No Record Found' as const
-      },
-      {
-        id: 'q3',
-        ask: 'What acoustic soundproofing standards were implemented between shared wall partitions?',
-        why: 'To ensure comfortable interior acoustic isolation from neighboring units.',
-        confidence: 'No Record Found' as const
-      },
-      {
-        id: 'q4',
-        ask: 'What are the rules regarding guest parking, visitor access, package lockers, and quiet hours in the building?',
-        why: 'Building rules establish everyday convenience and residential privacy.',
-        confidence: 'No Record Found' as const
-      }
-    ];
-
-    disclosureLevers = [
-      {
-        id: 'dl1',
-        findingTitle: 'Utility Sub-metering & Amenity Fee Breakdown',
-        publicFact: 'Public municipal records confirm central utility infrastructure serving the parcel.',
-        requestedDocument: 'Utility sub-metering disclosure and itemized monthly fee schedule.',
-        recommendedDisclosureLine: "Could you provide a detailed breakdown of how utilities (water, sewer, trash) are billed to individual units and confirm all monthly amenity fees?"
-      },
-      {
-        id: 'dl2',
-        findingTitle: 'Building Certificate of Occupancy & Governance Review',
-        publicFact: 'Municipal building archives confirm a Certificate of Occupancy on file.',
-        requestedDocument: 'Certificate of Occupancy copy, HOA master policy, and reserve study documents.',
-        recommendedDisclosureLine: "Could you share the Certificate of Occupancy verification and latest HOA reserve study for the building?"
-      }
-    ];
-  } else {
-    sellerQuestions = [
-      {
-        id: 'q1',
-        ask: 'Has the roof ever been replaced or repaired, and do you have contractor invoices or warranty documentation?',
-        why: 'Public building permit archives do not list a matching roof permit record in digitized logs.',
-        confidence: 'No Record Found' as const
-      },
-      {
-        id: 'q2',
-        ask: 'How old is the central air conditioning system, and when was it last professionally serviced?',
-        why: 'Municipal permit records do not list a recent mechanical HVAC replacement permit.',
-        confidence: 'No Record Found' as const
-      },
-      {
-        id: 'q3',
-        ask: 'Has the property ever undergone an indoor radon test or water intrusion evaluation?',
-        why: 'Located in an area classified under EPA Radon Zone 2 moderate potential.',
-        confidence: 'No Record Found' as const
-      },
-      {
-        id: 'q4',
-        ask: 'Have there been any foundation leveling repairs or soil drainage modifications performed around the perimeter?',
-        why: 'To confirm long-term foundation health and storm drainage behavior.',
-        confidence: 'No Record Found' as const
-      }
-    ];
-
-    disclosureLevers = [
-      {
-        id: 'dl1',
-        findingTitle: 'Roof Permit & Installation Record Gap',
-        publicFact: 'Municipal building permit archives show no recorded roof replacement permit filed in digitized records.',
-        requestedDocument: 'Seller roof invoices, contractor receipts, and any transferable warranty documentation.',
-        recommendedDisclosureLine: "Our records review didn't show a roof permit filed in digitized archives — could you share any contractor invoices, receipts, or transferable warranty documents for the roof, if available?"
-      },
-      {
-        id: 'dl2',
-        findingTitle: 'Central Air Conditioning Compressor Permit Log Gap',
-        publicFact: 'City mechanical building permit logs show no recent HVAC permit recorded.',
-        requestedDocument: 'Annual HVAC service logs, compressor manufacture dataplate photos, and maintenance receipts.',
-        recommendedDisclosureLine: "Public permit logs list no recent HVAC filing — could you disclose the age of the central AC unit and provide any recent service or inspection records?"
-      }
-    ];
-  }
-
-  // Strictly NO vendor referral ads, contractor lead-gen widgets, or phone submission requests
-  const leadWidgets: any[] = [];
-
+  // None of them was rendered (PropertyReportView reads only canonicalFindings, inspectionPriorities,
+  // sellerQuestionsScript and the vendor slots), but every one was stored with the report and
+  // returned by GET /api/insights/:id, and most were constants dressed as findings about the
+  // address: "Zone X -- Minimal Hazard" from FEMA, "AQI 28", "1,000 Mbps Symmetrical Fiber",
+  // "EPA Radon Zone 2", "Zero open building code violations on file", a hospital "within 4.2
+  // miles", "no roof permit in digitized records" -- for every address, from no query at all. This
+  // is the same trap the earlier propertyRecordsSplit removal closed: unrendered today, one new
+  // component away from being published as fact. A claim that no longer exists cannot be
+  // rendered by accident.
   return {
     id: `rep_${Date.now()}`,
     generatedAt: reportDate,
@@ -2706,226 +2228,7 @@ function generateStructuredPropertyReport(
       propertyType: meta.propertyType,
       estimatedSqFt: meta.estimatedSqFt
     },
-    executiveSnapshot: [
-      { id: 'es1', category: 'Flood Risk', statusLabel: 'Zone X — Minimal Hazard', badgeColor: 'emerald', source: 'FEMA NFHL', lastUpdated: 'July 2026' },
-      { id: 'es2', category: 'Air Quality', statusLabel: 'AQI 28 — Good Atmospheric Rating', badgeColor: 'emerald', source: 'EPA AirNow', lastUpdated: 'Q2 2026' },
-      { id: 'es3', category: 'Permit Gaps Flagged', statusLabel: '2 Flagged for Verification', badgeColor: 'amber', source: 'Municipal Permit Registry', lastUpdated: 'Current Month 2026' },
-      { id: 'es4', category: 'Noise Exposure', statusLabel: '48 dB DNL — Moderate Corridor', badgeColor: 'blue', source: 'FAA Flight & Corridor Overlay', lastUpdated: 'Q2 2026' },
-      { id: 'es5', category: 'Broadband Access', statusLabel: '1,000 Mbps Symmetrical Fiber', badgeColor: 'emerald', source: 'FCC Broadband Map', lastUpdated: 'Q2 2026' },
-      { id: 'es6', category: 'Radon Hazard', statusLabel: 'Zone 2 — Moderate Potential', badgeColor: 'blue', source: 'EPA Radon Assessment Map', lastUpdated: 'Q1 2026' }
-    ],
-    bottomLine: {
-      worthVerifying: meta.isMultiFamilyOrApartment ? [
-        { title: 'HOA Reserve Study & Master Policy Terms', detail: 'Public records confirm multi-family parcel classification. Verifying HOA reserve fund balance, upcoming special assessments, and master policy terms will clarify long-term monthly financial commitments.' },
-        { title: 'Unit Utility Sub-metering Structure', detail: 'Municipal utility logs reflect main property meters. Confirming whether water, trash, and heating are sub-metered per unit or divided by square footage clarifies ongoing operational costs.' },
-        { title: 'Acoustic Sound Attenuation Between Shared Walls', detail: 'Standard building permits verify structural boundary type. Physical observation during walkthrough will help evaluate noise transmission between shared interior floors and walls.' }
-      ] : [
-        { title: 'Roof Permit & Installation History', detail: 'Municipal permit logs show no roof permit in digitized records. Requesting seller invoices or contractor receipts will clarify when the roof was last replaced or serviced.' },
-        { title: 'Mechanical HVAC Compressor Status', detail: 'City permit archives show no recent mechanical permit on file. Verifying compressor manufacture age and service logs during physical inspection will help assess current cooling operational condition.' },
-        { title: 'Indoor Radon Accumulation Level', detail: 'County mapping designates an EPA Zone 2 moderate radon zone. Performing a short-term indoor radon test during the inspection contingency period confirms actual baseline levels.' }
-      ],
-      likelyRoutine: meta.isMultiFamilyOrApartment ? [
-        { title: 'Shared Utility Main Connections', detail: 'Findings like this are common in multi-family residential parcels connected to central city mains and do not by themselves indicate a plumbing defect.' },
-        { title: 'Zone X Minimal Flood Risk Classification', detail: 'Findings like this are common in properties located outside high-risk coastal zones and do not by themselves eliminate the need to inspect localized site drainage.' },
-        { title: 'Digitized Permit Record Archives', detail: 'Findings like this are common in properties with established municipal permit archives where historical paper records were not back-digitized and do not by themselves indicate an issue.' }
-      ] : [
-        { title: 'Absence of Recent Permit Records', detail: 'Findings like this are common in properties with established municipal permit archives where historical paper records were not back-digitized and do not by themselves indicate an issue.' },
-        { title: 'Zone X Minimal Flood Risk Classification', detail: 'Findings like this are common in properties located outside high-risk coastal zones and do not by themselves eliminate the need to inspect localized site drainage.' },
-        { title: 'Municipal Sewer Line Connection', detail: 'Findings like this are common in residential parcels connected to city utility mains and do not by themselves replace a physical sewer line camera inspection.' }
-      ],
-      biggerPicture: 'BeforeRegret does not yet have a live, verified data connection to government records for this address. This checklist links you directly to the official public sources so you can verify each item yourself before closing.'
-    },
-    leadWidgets,
-    atAGlance: {
-      cards,
-      dataFreshness: 'Public Records & Risk Assessments Verified as of Current Month 2026',
-      mostImportantToVerify
-    },
-    whatWeFound: {
-      verified: meta.isMultiFamilyOrApartment ? [
-        'Certificate of Occupancy on file with municipal building department',
-        'Property sits outside FEMA designated 100-year flood risk zones',
-        'Connected to high-capacity municipal public water and sewer mains',
-        'Gigabit fiber broadband active on street according to FCC registry'
-      ] : [
-        'Zero open building code violations on file with municipal enforcement',
-        'Property sits outside FEMA designated 100-year flood risk zones',
-        'Direct connection to municipal public water and sewer authority',
-        'Gigabit fiber broadband active on street according to FCC registry'
-      ],
-      needsVerification: meta.isMultiFamilyOrApartment ? [
-        'Individual unit utility sub-metering structure for electricity, water, and trash',
-        'Mandatory community amenity fees and monthly management service charges',
-        'Developer punch list completion status and contractor warranty disclosures',
-        'Acoustic sound insulation rating between adjacent shared interior walls'
-      ] : [
-        'Roof replacement installation date and shingle manufacturer warranty',
-        'HVAC compressor age, refrigerant type, and annual service records',
-        'Indoor radon gas accumulation levels (County designated EPA Zone 2)',
-        'Original main sewer line material from building edge to street main'
-      ],
-      worthAskingAbout: meta.isMultiFamilyOrApartment ? [
-        'Building elevator maintenance contracts and emergency power generator backup',
-        'On-site package delivery lockers and controlled access security systems',
-        'Guest parking allocations and electric vehicle (EV) charging station availability',
-        'Pet policies, noise guidelines, and community quiet hour enforcement'
-      ] : [
-        'Past roof or attic water intrusion or ceiling spot repairs',
-        'Foundation maintenance records or perimeter drainage adjustments',
-        'Unpermitted interior modifications or non-structural wall removal',
-        'Planned state DOT road project travel detours nearby'
-      ]
-    },
-    nearbyEssentials: {
-      dataFreshness: 'HIFLD, City Planning & State DOT Public Registries as of Q2 2026',
-      items: [
-        {
-          id: 'ne1',
-          category: 'Hospital & Healthcare',
-          title: 'Emergency Healthcare Proximity',
-          finding: 'HIFLD public healthcare facility registry lists nearest acute care hospital with 24/7 emergency services within 4.2 miles.',
-          implication: 'Provides fast access to primary emergency medical care for households in urgent situations.',
-          source: 'HIFLD Public Healthcare Registry',
-          confidence: 'Verified Record' as const
-        },
-        {
-          id: 'ne2',
-          category: 'Zoning & Planning Dockets',
-          title: 'Pending Zoning & Planning Petitions',
-          finding: 'City Planning & Zoning Board public docket shows no commercial rezoning petitions or high-density variance requests filed within 0.5 miles.',
-          implication: 'Indicates a stabilized residential neighborhood setting with no immediate large-scale commercial developments under review.',
-          source: 'City Planning Board Docket',
-          confidence: 'Verified Record' as const
-        },
-        {
-          id: 'ne3',
-          category: 'Scheduled Infrastructure',
-          title: 'State & County Transportation Projects',
-          finding: 'State DOT Capital Improvement Program lists scheduled roadway resurfacing and bicycle lane upgrades on primary corridor 0.8 miles away.',
-          implication: 'Planned road maintenance will improve regional commuting access without directly disrupting immediate street traffic.',
-          source: 'State DOT Capital Improvement Program',
-          confidence: 'Verified Record' as const
-        }
-      ]
-    },
-    // recordsDataFreshness removed with the two fields below it: 'Municipal Building Permits & Tax
-    // Assessor Registry as of July 2026' asserted a dated snapshot of two record systems this app
-    // has never queried, which is the same fabrication as the fields it labelled. Also unrendered.
-    insuranceDataFreshness: 'Buyer Insurance Shopping Guidance as of 2026',
-    insuranceConsiderations: [
-      {
-        id: 'ic1',
-        findingTopic: 'Flood Insurance & Lender Rules',
-        publicFact: 'FEMA NFHL mapping confirms parcel is located in Flood Zone X (minimal flood hazard zone).',
-        insuranceFactor: 'Located outside mandatory flood zones, meaning mortgage lenders do not require flood insurance. Standard homeowners policies do not cover flood damage, but optional coverage can be added if desired.',
-        guidanceNote: 'Confirm specific lender requirements and optional policy add-ons with your insurance agent.',
-        source: 'FEMA NFHL / National Flood Insurance Program',
-        dataFreshness: 'July 2026'
-      },
-      {
-        id: 'ic2',
-        findingTopic: 'Major System Verification & Home Coverage',
-        publicFact: 'Municipal building permit archives show no recorded roof or mechanical permits in digitized logs.',
-        insuranceFactor: 'Insurers review major system condition during policy setup. Unrecorded or older roofs may prompt your insurer to ask for photos or a 4-point inspection prior to issuing coverage.',
-        guidanceNote: 'Ask your insurance agent if a standard roof photo or 4-point inspection is needed during your policy shopping process.',
-        source: 'Municipal Building Department Records',
-        dataFreshness: 'Current Month 2026'
-      },
-      {
-        id: 'ic3',
-        findingTopic: 'Optional Sewer & Utility Line Coverage',
-        publicFact: 'Direct connection to municipal public water and sewer authority mains.',
-        insuranceFactor: 'Standard home policies exclude water backup from drains or exterior utility line breaks. Most insurers offer inexpensive optional add-ons for water backup and service line repairs.',
-        guidanceNote: 'Ask your insurance agent about adding utility line and sewer backup coverage to your homeowners quote.',
-        source: 'Municipal Utility Authority Records',
-        dataFreshness: 'Q2 2026'
-      }
-    ],
-    sellerQuestions,
-    disclosureLevers,
-    visitChecklist: meta.isMultiFamilyOrApartment ? [
-      { id: 'c1', task: 'Walk building corridors after sunset', detail: 'Observe hallway lighting, building stillness, and evening atmosphere.', category: 'Building' },
-      { id: 'c2', task: 'Listen for shared wall traffic & sound', detail: 'Observe sound transmission from corridors and neighboring units during peak hours.', category: 'Sound' },
-      { id: 'c3', task: 'Inspect doors, windows, and balcony seals', detail: 'Verify windows operate smoothly, latch securely, and show no seal failure.', category: 'Windows' },
-      { id: 'c4', task: 'Flush every toilet & run sink taps', detail: 'Check water pressure, drain speed, and observe plumbing flow.', category: 'Plumbing' },
-      { id: 'c5', task: 'Test cellular signal strength inside unit', detail: 'Verify mobile phone signal bar strength inside bedrooms, living room, and kitchen.', category: 'Connectivity' },
-      { id: 'c6', task: 'Locate package lockers & trash chutes', detail: 'Confirm convenience and cleanliness of shared tenant utility areas.', category: 'Amenities' },
-      { id: 'c7', task: 'Verify assigned parking space & EV chargers', detail: 'Check parking garage access, gate security, and guest parking guidelines.', category: 'Parking' }
-    ] : [
-      { id: 'c1', task: 'Walk around after sunset', detail: 'Observe street lighting, neighborhood stillness, and night atmosphere.', category: 'Neighborhood' },
-      { id: 'c2', task: 'Listen for traffic sound', detail: 'Open street-facing windows to gauge road noise during rush hour.', category: 'Sound' },
-      { id: 'c3', task: 'Open and close every window', detail: 'Verify windows operate smoothly, latch securely, and show no fogged glass seal failure.', category: 'Windows' },
-      { id: 'c4', task: 'Flush every toilet', detail: 'Check flush strength, refill speed, and observe drain line performance.', category: 'Plumbing' },
-      { id: 'c5', task: 'Turn on multiple faucets', detail: 'Run sink and shower taps simultaneously to test water pressure and drain flow.', category: 'Plumbing' },
-      { id: 'c6', task: 'Test cellular signal strength', detail: 'Verify mobile phone signal bar strength inside bedrooms, kitchen, and basement/garage.', category: 'Connectivity' },
-      { id: 'c7', task: 'Inspect ceilings and closets', detail: 'Look for discoloration or water stains on upper ceilings and interior closet corners.', category: 'Interior' },
-      { id: 'c8', task: 'Check exterior ground drainage', detail: 'Verify downspouts extend away from exterior walls to prevent water pooling at foundation.', category: 'Yard & Foundation' }
-    ],
-    directSourceLinks: [
-      {
-        id: 'dsl1',
-        title: 'FEMA Flood Map Service Center (MSC)',
-        agency: 'Federal Emergency Management Agency (FEMA)',
-        category: 'Flood Risk & NFHL Mapping',
-        directUrl: 'https://msc.fema.gov/portal',
-        lastUpdatedPeriod: 'Updated July 2026',
-        description: 'Official portal for official flood maps, Flood Insurance Rate Maps (FIRMs), and Flood Insurance Studies.'
-      },
-      {
-        id: 'dsl2',
-        title: 'EPA Envirofacts & FRS Multisystem Database',
-        agency: 'U.S. Environmental Protection Agency (EPA)',
-        category: 'Environmental Hazards & Regulated Facilities',
-        directUrl: 'https://www.epa.gov/enviro',
-        lastUpdatedPeriod: 'Updated Q2 2026',
-        description: 'Comprehensive access to environmental data on air, water, waste, toxics, and regulated facilities.'
-      },
-      {
-        id: 'dsl3',
-        title: 'FCC National Broadband Map',
-        agency: 'Federal Communications Commission (FCC)',
-        category: 'Digital Infrastructure & Fiber Access',
-        directUrl: 'https://broadbandmap.fcc.gov/',
-        lastUpdatedPeriod: 'Updated Q2 2026',
-        description: 'Location-specific provider availability, broadband speeds, and technology type data.'
-      },
-      {
-        id: 'dsl4',
-        title: 'USGS Earthquake Hazards Program & Fault Maps',
-        agency: 'United States Geological Survey (USGS)',
-        category: 'Seismic Risk & Ground Acceleration',
-        directUrl: 'https://www.usgs.gov/programs/earthquake-hazards',
-        lastUpdatedPeriod: 'Updated 2026 Model',
-        description: 'Real-time and historic seismic data, hazard maps, and probabilistic ground motion calculations.'
-      },
-      {
-        id: 'dsl5',
-        title: 'FAA Airport Noise Compatibility Tool & Contours',
-        agency: 'Federal Aviation Administration (FAA)',
-        category: 'Acoustic & Flight Path Noise',
-        directUrl: 'https://www.faa.gov/about/office_org/headquarters_offices/apl/noise_emissions',
-        lastUpdatedPeriod: 'Updated Q1 2026',
-        description: 'Civil aircraft noise contours, flight path noise exposure models, and land use compatibility records.'
-      },
-      {
-        id: 'dsl6',
-        title: 'USFS Wildfire Risk to Communities Database',
-        agency: 'USDA Forest Service',
-        category: 'Wildfire Exposure & Fuel Load',
-        directUrl: 'https://wildfirerisk.org/',
-        lastUpdatedPeriod: 'Updated 2026',
-        description: 'Nationwide wildfire hazard potential, risk to homes, and defensible space assessment mapping.'
-      },
-      {
-        id: 'dsl7',
-        title: 'County Tax Assessor & Municipal Permit Registry',
-        agency: 'County Clerk & Building Department',
-        category: 'Property Records & Building Permits',
-        directUrl: 'https://www.usa.gov/public-records',
-        lastUpdatedPeriod: 'Updated Current Month 2026',
-        description: 'Official parcel records, historical tax assessments, deed filings, and building permit registries.'
-      }
-    ]
+    leadWidgets: []
   };
 }
 

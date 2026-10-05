@@ -28,7 +28,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
             <span>Return to Home</span>
           </button>
 
-          <span className="text-xs font-mono text-slate-500">Effective Date: August 17, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Effective Date: October 5, 2026</span>
         </div>
 
         {/* Content Pane */}
@@ -43,7 +43,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               Cancellation & Refund Policy
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              This Cancellation & Refund Policy outlines the terms governing consumer property insight report purchases and paid local business vendor placements for <strong>Before Regret</strong>, owned and operated by <strong>Atmostellar</strong>. Registered Office: Atmostellar, Mumbai, Maharashtra, India. Contact: <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>.
+              This Cancellation & Refund Policy outlines the terms governing paid local business vendor placements for <strong>Before Regret</strong>, owned and operated by <strong>Atmostellar</strong>. Registered Office: Atmostellar, Mumbai, Maharashtra, India. Contact: <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>.
             </p>
           </div>
 
@@ -51,10 +51,10 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
           <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2">
             <div className="flex items-center gap-2 font-bold text-emerald-950 text-sm">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-              <span>Your First Property Insight Report Is Free</span>
+              <span>Property Insight Reports Are Free</span>
             </div>
             <p className="text-xs text-emerald-800 leading-relaxed">
-              Every account is entitled to one free property insight report, with no payment information required. Because no financial transaction takes place for a first report, <strong>no cancellations, billing charges, or refund claims apply to a first free report.</strong> Additional reports beyond your first are a one-time paid purchase — see Section 1 below.
+              Reports are free for everyone, with no account and no payment information required. Because no financial transaction takes place for a report, <strong>no cancellations, billing charges, or refund claims apply to reports.</strong> The only paid products on Before Regret are vendor placements -- see Section 2 below.
             </p>
           </div>
 
@@ -63,20 +63,10 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
             {/* Section 1 */}
             <section className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
               <h2 className="text-base font-bold text-slate-900 border-b border-slate-200 pb-2">
-                1. Consumer Report Purchases
+                1. Consumer Reports
               </h2>
               <p>
-                Every consumer account is entitled to <strong>one free property insight report</strong>, with no payment information required. Each additional report beyond your first is a <strong>one-time purchase of $14.99 USD</strong> — this is a single, non-recurring charge per report, not a subscription. A new report request only reaches payment after the property address has already been confirmed eligible (a valid U.S. residential property); addresses that cannot be verified are never charged.
-              </p>
-              <p>
-                <strong>No Refunds:</strong> Because payment is only collected after address eligibility is confirmed and the report is generated and delivered immediately upon payment, <strong>all report purchases are final and non-refundable.</strong>
-              </p>
-              <p>
-                <strong>No Refunds for Inaccurate Self-Declared Input:</strong> A refund request
-                cannot be based on report content that follows from a property type, year built, or
-                unit number you supplied incorrectly at request time -- these fields are not
-                independently verified before a report is generated. See sections 3.5 and 3.6 of our{' '}
-                <a href="/terms/" className="text-blue-600 font-bold hover:underline">Terms of Service</a>.
+                Property insight reports are <strong>free</strong>, and Before Regret does not sell them, so there is no report charge to cancel or refund. Any report purchased before October 5, 2026 remains governed by the policy in effect when it was purchased.
               </p>
               {/* Savings clause. Without it, "final and non-refundable" is an unqualified statement
                   that a consumer has no refund rights at all -- which is not true everywhere, since
@@ -220,14 +210,9 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                   </thead>
                   <tbody className="divide-y divide-slate-200 text-slate-600">
                     <tr>
-                      <td className="p-3 font-semibold text-slate-900">Consumer First Report</td>
+                      <td className="p-3 font-semibold text-slate-900">Consumer Report</td>
                       <td className="p-3">N/A (Always Free)</td>
                       <td className="p-3 text-emerald-700 font-bold">N/A (No charge ever)</td>
-                    </tr>
-                    <tr>
-                      <td className="p-3 font-semibold text-slate-900">Consumer Additional Report Purchase ($14.99)</td>
-                      <td className="p-3">N/A (One-time purchase)</td>
-                      <td className="p-3 text-rose-700 font-bold">No refund</td>
                     </tr>
                     <tr>
                       <td className="p-3 font-semibold text-slate-900">Vendor Placement Expiration (Topic Ad / Report Ad, 30 Days Elapsed)</td>

@@ -210,7 +210,7 @@ const PAGES: LegalPageConfig[] = [
             name: 'Are reports one-time flat fee or subscription based?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'Your first Before Regret property report is free. Additional reports are a one-time flat fee of $14.99 each -- there is no subscription or recurring charge for consumer reports.',
+              text: 'Neither. Property reports are free. You do not need an account, and there is nothing to pay or subscribe to.',
             },
           },
         ],

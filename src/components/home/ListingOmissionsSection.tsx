@@ -20,7 +20,7 @@ export const ListingOmissionsSection: React.FC = () => {
   // content rules want a cited standard, but the headline is the question the buyer is asking.
   //
   // ORDER IS BY HOW MANY BUYERS IT HELPS. Seller questions and what to inspect first apply to every
-  // house; earthquake risk applies to some. "What we can't check yet" stays last on purpose -- it is
+  // house; earthquake risk applies to some. "Records to look up yourself" (was "What we can't check yet") stays last on purpose -- it is
   // the honest caveat, and it reads as one only after the reader has seen what IS covered.
   const categories = [
     {
@@ -36,7 +36,7 @@ export const ListingOmissionsSection: React.FC = () => {
     {
       icon: CheckSquare,
       title: 'What to look at during the visit',
-      publicFinding: 'A list of things to check with your own eyes on the day, that you can tick off on your phone.'
+      publicFinding: 'A checklist of what to arrange and look at before your walkthrough, that you can tick off on your phone.'
     },
     {
       icon: Activity,
@@ -45,8 +45,8 @@ export const ListingOmissionsSection: React.FC = () => {
     },
     {
       icon: ExternalLink,
-      title: 'What we can’t check yet',
-      publicFinding: 'Flood zone, permit history and similar records aren’t connected yet. We say so plainly and link you straight to the official source.'
+      title: 'Records to look up yourself',
+      publicFinding: 'Flood zone, permit history and code-enforcement records, each linked straight to the office that holds it.'
     }
   ];
 
@@ -62,9 +62,6 @@ export const ListingOmissionsSection: React.FC = () => {
           <p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed">
             One address, one clear page: what to ask, what to inspect, what to look at on the day, and what still has to be checked at the source.
           </p>
-          <a href="/sample-report/" className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 hover:gap-2.5 transition-all">
-            See a sample report <span aria-hidden="true">&rarr;</span>
-          </a>
           {/* 2026-10-04: the owner's kitchen photo -- the home the report is about. Lazy-loaded. */}
           <img
             src="/images/home/kitchen-1200.webp"
