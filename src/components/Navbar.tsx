@@ -20,6 +20,9 @@ interface NavbarProps {
 const MOBILE_NAV_LINKS: { href: string; label: string }[] = [
   { href: '/guides/', label: 'Guides' },
   { href: '/about/', label: 'About & Methodology' },
+  // Quiet door for trades (2026-10-06, owner): a business looking to advertise finds it here and in
+  // the footer, and a buyer is never pitched -- no homepage banner, no "your ad here" placeholders.
+  { href: '/advertise/', label: 'For businesses' },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -120,6 +123,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 Guides
               </button>
+            )}
+            {onNavigate && (
+              // md and up only: at sm the bar already carries Guides, the search button and Free Report.
+              // Phones get it from the menu (MOBILE_NAV_LINKS). A real href so it is crawlable.
+              <a
+                href="/advertise/"
+                onClick={(e) => {
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                  e.preventDefault();
+                  onNavigate('/advertise/');
+                }}
+                className="hidden md:inline px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-blue-700 rounded-lg transition-colors cursor-pointer"
+              >
+                For businesses
+              </a>
             )}
             {currentStep !== 'HOME' && (
               <button
