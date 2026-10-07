@@ -1,0 +1,129 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-07T12:50:15.352Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "flood zone by address",
+    "property tax by address",
+    "school district by address",
+    "internet providers by address",
+    "property lines by address"
+  ],
+  "keywords": [
+    {
+      "keyword": "flood zone by address",
+      "search_volume": 233,
+      "metric": "market",
+      "broad_impressions": 856,
+      "kind": "seed"
+    },
+    {
+      "keyword": "flood zone map by address",
+      "search_volume": 1589,
+      "metric": "market",
+      "broad_impressions": 2516,
+      "kind": "related"
+    },
+    {
+      "keyword": "fema flood zone map by address",
+      "search_volume": 608,
+      "metric": "market",
+      "broad_impressions": 608,
+      "kind": "related"
+    },
+    {
+      "keyword": "fema flood zone by address",
+      "search_volume": 507,
+      "metric": "market",
+      "broad_impressions": 507,
+      "kind": "related"
+    },
+    {
+      "keyword": "fema flood zone map by address search",
+      "search_volume": 319,
+      "metric": "market",
+      "broad_impressions": 319,
+      "kind": "related"
+    },
+    {
+      "keyword": "check flood zone by address",
+      "search_volume": 116,
+      "metric": "market",
+      "broad_impressions": 116,
+      "kind": "related"
+    },
+    {
+      "keyword": "property tax by address",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "school district by address",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 329,
+      "kind": "seed"
+    },
+    {
+      "keyword": "find school district by address",
+      "search_volume": 289,
+      "metric": "market",
+      "broad_impressions": 289,
+      "kind": "related"
+    },
+    {
+      "keyword": "internet providers by address",
+      "search_volume": 122,
+      "metric": "market",
+      "broad_impressions": 374,
+      "kind": "seed"
+    },
+    {
+      "keyword": "what internet providers service my address",
+      "search_volume": 2069,
+      "metric": "market",
+      "broad_impressions": 2069,
+      "kind": "related"
+    },
+    {
+      "keyword": "internet providers for my address",
+      "search_volume": 1337,
+      "metric": "market",
+      "broad_impressions": 1337,
+      "kind": "related"
+    },
+    {
+      "keyword": "find internet providers by address",
+      "search_volume": 152,
+      "metric": "market",
+      "broad_impressions": 152,
+      "kind": "related"
+    },
+    {
+      "keyword": "compare internet providers by address",
+      "search_volume": 41,
+      "metric": "market",
+      "broad_impressions": 41,
+      "kind": "related"
+    },
+    {
+      "keyword": "property lines by address",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 229,
+      "kind": "seed"
+    },
+    {
+      "keyword": "property lines map by address",
+      "search_volume": 265,
+      "metric": "market",
+      "broad_impressions": 265,
+      "kind": "related"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-07T12:52:03.273Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "building permits by address",
+    "when was my house built",
+    "previous owners of my house",
+    "sex offenders"
+  ],
+  "keywords": [
+    {
+      "keyword": "search for building permits by address",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 23,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permit-history-by-address-any-us-county/": 1,
+        "https://www.beforeregret.com/guides/check-building-permits-san-diego-county-ca/": 1,
+        "https://www.beforeregret.com/guides/look-up-building-permits-by-address": 1
+      }
+    },
+    {
+      "keyword": "how to look up building permits by address",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 32.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-philadelphia-county-pa/": 1,
+        "https://www.beforeregret.com/guides/look-up-building-permits-by-address": 1
+      }
+    },
+    {
+      "keyword": "building permits by address",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 54,
+      "pages": {
+        "https://www.beforeregret.com/guides/look-up-building-permits-by-address": 1
+      }
+    },
+    {
+      "keyword": "find building permits by address",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 12,
+      "pages": {
+        "https://www.beforeregret.com/guides/look-up-building-permits-by-address": 1
+      }
+    }
+  ]
+}

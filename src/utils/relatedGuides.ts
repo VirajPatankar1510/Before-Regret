@@ -76,7 +76,7 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   ['hvac', /\bhvac\b|furnace|air[- ]condition|heat[- ]pump|\bducts?\b|boiler/],
   ['structural', /foundation|settl|\bcracks?\b|basement|retaining[- ]wall|structural|bowing|crawlspace|framing/],
   ['pests', /termite|\bwdo\b|wood[- ]destroying|\bpests?\b|rodent|carpenter[- ]ant/],
-  ['environmental', /radon|asbestos|lead[- ]paint|\bmold\b|oil[- ]tank|underground[- ]storage|methane/],
+  ['environmental', /radon|asbestos|lead[- ]paint|\bmold\b|oil[- ]tank|underground[- ]storage|methane|flood[- ]zone|floodplain/],
   ['permits', /permit|unpermitted|code[- ]enforcement|zoning|violation/],
   // Which way a house and its windows face. Added 2026-09-24 with the first guide on it, because
   // "south facing house" and its three siblings carry more measured US search volume (3,200/mo in the

@@ -1,0 +1,128 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-07T12:52:03.273Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "building permits by address",
+    "when was my house built",
+    "previous owners of my house",
+    "sex offenders"
+  ],
+  "keywords": [
+    {
+      "keyword": "building permits by address",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "when was my house built",
+      "search_volume": 212,
+      "metric": "market",
+      "broad_impressions": 334,
+      "kind": "seed"
+    },
+    {
+      "keyword": "when was my house built by address",
+      "search_volume": 112,
+      "metric": "market",
+      "broad_impressions": 112,
+      "kind": "related"
+    },
+    {
+      "keyword": "how to find out when a house was built",
+      "search_volume": 24,
+      "metric": "market",
+      "broad_impressions": 24,
+      "kind": "related"
+    },
+    {
+      "keyword": "previous owners of my house",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "sex offenders",
+      "search_volume": 1038,
+      "metric": "market",
+      "broad_impressions": 8182,
+      "kind": "seed"
+    },
+    {
+      "keyword": "registered sex offenders lookup by address",
+      "search_volume": 2163,
+      "metric": "market",
+      "broad_impressions": 2163,
+      "kind": "related"
+    },
+    {
+      "keyword": "sex offenders near me",
+      "search_volume": 1735,
+      "metric": "market",
+      "broad_impressions": 2155,
+      "kind": "related"
+    },
+    {
+      "keyword": "sex offenders in my area",
+      "search_volume": 759,
+      "metric": "market",
+      "broad_impressions": 759,
+      "kind": "related"
+    },
+    {
+      "keyword": "registered sex offenders",
+      "search_volume": 490,
+      "metric": "market",
+      "broad_impressions": 3395,
+      "kind": "related"
+    },
+    {
+      "keyword": "registered sex offenders near me",
+      "search_volume": 420,
+      "metric": "market",
+      "broad_impressions": 420,
+      "kind": "related"
+    },
+    {
+      "keyword": "sex offenders registry",
+      "search_volume": 391,
+      "metric": "market",
+      "broad_impressions": 453,
+      "kind": "related"
+    },
+    {
+      "keyword": "sex offenders list",
+      "search_volume": 304,
+      "metric": "market",
+      "broad_impressions": 304,
+      "kind": "related"
+    },
+    {
+      "keyword": "sex offenders map",
+      "search_volume": 94,
+      "metric": "market",
+      "broad_impressions": 94,
+      "kind": "related"
+    },
+    {
+      "keyword": "national sex offenders registry",
+      "search_volume": 62,
+      "metric": "market",
+      "broad_impressions": 62,
+      "kind": "related"
+    },
+    {
+      "keyword": "can registered sex offenders vote",
+      "search_volume": 19,
+      "metric": "market",
+      "broad_impressions": 19,
+      "kind": "related"
+    }
+  ]
+}
