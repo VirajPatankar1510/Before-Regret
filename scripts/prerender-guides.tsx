@@ -581,10 +581,17 @@ async function run() {
       throw new Error(`[prerender-guides] llms.txt lists /research/${r.slug}/ but docs/${r.slug}.html does not exist`);
     }
   }
-  const researchSection = RESEARCH.map((r) =>
-    `- [${r.title}](https://www.beforeregret.com/research/${r.slug}/): ${r.summary}\n` +
-    r.data.map((f) => `  - \`https://www.beforeregret.com/research/data/${f}\``).join('\n')
-  ).join('\n');
+  // Every study now carries a #key-findings block (2026-10-06; Permit Pulse had the first). Linked
+  // here so a retrieval pipeline lands on the self-contained, quotable sentences rather than the
+  // middle of a long page. Asserted against the study source so a removed block cannot leave a
+  // dead fragment advertised.
+  const researchSection = RESEARCH.map((r) => {
+    const hasKf = fs.readFileSync(path.join(process.cwd(), 'docs', `${r.slug}.html`), 'utf8').includes('id="key-findings"');
+    if (!hasKf) throw new Error(`[prerender-guides] docs/${r.slug}.html has no #key-findings block`);
+    const kfLine = r.summary.includes('#key-findings') ? '' : `\n  - Quotable key findings: https://www.beforeregret.com/research/${r.slug}/#key-findings`;
+    return `- [${r.title}](https://www.beforeregret.com/research/${r.slug}/): ${r.summary}` + kfLine + '\n' +
+      r.data.map((f) => `  - \`https://www.beforeregret.com/research/data/${f}\``).join('\n');
+  }).join('\n');
 
   // Both county sections are omitted entirely when there is nothing to list. They used to render as
   // bare headings above blank space -- "## Counties (0 verified)" followed by nothing -- because the

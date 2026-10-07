@@ -171,6 +171,11 @@ a{color:var(--price)} a:focus-visible,*:focus-visible{outline:2px solid var(--ri
 footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--muted);line-height:1.8}
 @media (max-width:640px){body{font-size:16.5px;padding:0 16px 64px}header{padding:56px 0 32px}
   section{padding:44px 0}.finding{flex-direction:column;gap:6px}.fnum{padding-top:0}}
+  .kf{border:1px solid #dfe5e2;background:#fbfcfb;padding:1rem 1.2rem .4rem;margin:1.6rem 0 2rem}
+  .kf h2{margin:0 0 .7rem;padding:0;border:0;font-size:1.15rem}
+  .kf ul{margin:0 0 .8rem;padding-left:1.1rem}
+  .kf li{margin:0 0 .55rem}
+  .kf .kf-src{margin:0 0 .6rem;font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
 </style>
 
 <div class="wrap">
@@ -190,6 +195,20 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
     <div><span class="v">76.5%</span><span class="k">Modelled loss the policy excludes</span></div>
   </div>
 </header>
+
+<section class="spine" aria-label="Key findings">
+  <section class="kf" id="key-findings">
+    <h2>Key findings</h2>
+    <ul>
+      <li>Across 3,093 US counties, the state a home is in explains 44% of the variation in what mortgaged homeowners report paying to insure it (R&sup2; 0.44); FEMA&rsquo;s modelled natural-hazard risk explains 20% (R&sup2; 0.20).</li>
+      <li>Weighted by households, the gap widens: 65% for state against 30% for hazard risk.</li>
+      <li>Counties facing the same modelled hazard still pay very different prices: within twenty equal bands of risk, the median gap between the cheapest and the most expensive county is 2.3&times;.</li>
+      <li>In 11 of 43 states, counties facing more modelled hazard pay lower premiums than counties facing less.</li>
+      <li>76.5% of the building loss FEMA expects American homes to suffer each year comes from perils a standard HO-3 homeowners policy does not cover, flooding above all, then earthquake.</li>
+    </ul>
+    <p class="kf-src">Sources: US Census Bureau, American Community Survey 5-year 2023, table B25141 (premiums reported by 50,715,340 mortgaged households); FEMA National Risk Index; analysis by Before Regret.</p>
+  </section>
+</section>
 
 <section class="spine" id="lookup">
  <div class="lookup">

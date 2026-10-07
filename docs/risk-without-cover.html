@@ -187,6 +187,11 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
 .st-list td.n{text-align:right;font-family:var(--mono)}
 .st-hint{font-size:.86rem;color:var(--muted);margin-top:10px}
 .tk-fill{position:absolute;inset:0 auto 0 0;background:var(--risk);opacity:.42}
+  .kf{border:1px solid #dfe5e2;background:#fbfcfb;padding:1rem 1.2rem .4rem;margin:1.6rem 0 2rem}
+  .kf h2{margin:0 0 .7rem;padding:0;border:0;font-size:1.15rem}
+  .kf ul{margin:0 0 .8rem;padding-left:1.1rem}
+  .kf li{margin:0 0 .55rem}
+  .kf .kf-src{margin:0 0 .6rem;font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
 </style>
 <div class="wrap">
 <header class="spine stack">
@@ -206,6 +211,20 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
     <div><span class="v">0.23</span><span class="k">R&#178; from state alone</span></div>
   </div>
 </header>
+
+<section class="spine" aria-label="Key findings">
+  <section class="kf" id="key-findings">
+    <h2>Key findings</h2>
+    <ul>
+      <li>In the median US county, 15% of homes inside a FEMA-mapped flood zone carry NFIP flood insurance. In 705 of 2,304 counties fewer than one in ten do, and in 68 counties no policy is in force at all.</li>
+      <li>Nationally, 39.8% of flood-zone homes are covered, a figure carried by a few large coastal counties: Florida alone accounts for 566,635 of the 1.5 million policies.</li>
+      <li>Modelled flood risk explains almost none of the difference in coverage between counties (R&sup2; 0.004); the state a home is in explains 0.225.</li>
+      <li>West Virginia has the highest flood loss rate of any state, $2.71 per $1,000 of building value, and the lowest take-up, 10.3%.</li>
+      <li>South Carolina has the highest take-up in the country, 68.7%, and ranks forty-third of fifty on flood risk.</li>
+    </ul>
+    <p class="kf-src">Sources: FEMA OpenFEMA, NFIP residential penetration rates as of 3 August 2026; FEMA National Risk Index; analysis by Before Regret. NFIP policies only: private flood insurance is not counted, so true coverage is somewhat higher.</p>
+  </section>
+</section>
 
 <section class="spine" id="lookup">
  <div class="lookup">

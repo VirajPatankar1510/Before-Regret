@@ -32,6 +32,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { LOOKUP_CSS, lookupPayload, lookupMarkup, dataScript, JS_SCRIPT, embedDocument } from './lib/county-lookup.js';
+import { KF_CSS, keyFindingsBlock, assertKeyFindingsNumbers } from './lib/keyFindings.js';
 
 const FIG = path.join(process.cwd(), 'docs', 'data', 'storm-and-premium-figures.json');
 const OUT = path.join(process.cwd(), 'docs', 'allegheny-storm-premium.html');
@@ -149,6 +150,13 @@ const lookupData = lookupPayload(counties);
 const LOOKUP_MARKUP = lookupMarkup(counties.length);
 const DATA_SCRIPT = dataScript(lookupData);
 
+const KEY_FINDINGS = keyFindingsBlock([
+  `Among the ${counties.length} most populous US counties, Allegheny County, Pennsylvania (Pittsburgh) recorded ${num(A.stormEvents)} severe weather events from 2015 to 2024, the ${ord(rStorm)}-highest count, against a median of ${num(medStorm)}.`,
+  `Only ${pct(A.pctOver3000)} of Allegheny&rsquo;s ${num(A.mortgagedHouseholds)} mortgaged households report paying more than $3,000 a year to insure the home, the ${ord(rCheap)}-lowest share among the ${counties.length} counties; ${pct(A.pctUnder1000)} report paying under $1,000.`,
+  `In Oklahoma County, Oklahoma, which recorded fewer severe weather events, ${pct(O.pctOver3000)} of mortgaged households pay more than $3,000 a year, a difference of ${ratio3000.toFixed(1)}&times;.`,
+  `Allegheny County carries the EPA&rsquo;s Zone 1 radon designation, the highest of three.`,
+], 'Sources: NOAA Storm Events Database, 2015&ndash;2024; US Census Bureau American Community Survey (the insurance cost bands mortgaged households report); analysis by Before Regret. NOAA counts are reports of severe weather, and the insurance figures are reported bands, not quoted premiums.');
+
 const html = `<style>
   .wrap{max-width:46rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;font:16px/1.65 Charter,Georgia,'Times New Roman',serif;color:#1a1a1a}
   .wrap *{box-sizing:border-box}
@@ -183,6 +191,7 @@ const html = `<style>
   .cite code{font:400 12px ui-monospace,SFMono-Regular,Menlo,monospace;background:#fff;padding:.1em .3em;border:1px solid #e5e0d8}${LOOKUP_CSS}
   footer.spine{margin:2rem 0 0;padding-top:1.2rem;border-top:1px solid #e5e0d8;font:400 12.5px/1.7 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
   @media(max-width:560px){.wrap h1{font-size:1.85rem}.bar-row{grid-template-columns:7rem 1fr 2.8rem}}
+${KF_CSS}
 </style>
 
 <div class="wrap">
@@ -206,6 +215,8 @@ const html = `<style>
     <div class="fig"><b>${pct(A.pctOver3000)}</b><span>pay more than $3,000 &mdash; the ${ord(rCheap)}-lowest share among the ${counties.length}</span></div>
     <div class="fig"><b>Zone 1</b><span>EPA radon designation, the highest of three</span></div>
   </div>
+
+  ${KEY_FINDINGS}
 
   ${LOOKUP_MARKUP}
 
@@ -417,6 +428,7 @@ if (!html.includes('lk-caveat')) throw new Error('ABORT: study page lost the loo
 if (!html.includes('id="alg-data"')) throw new Error('ABORT: study page lost the lookup data');
 
 fs.writeFileSync(OUT_EMBED, embed);
+assertKeyFindingsNumbers(html, 'build-allegheny-study');
 fs.writeFileSync(OUT, html);
 console.log(`wrote ${path.relative(process.cwd(), OUT)}  (${(html.length / 1024).toFixed(1)} KB)`);
 console.log(`wrote ${path.relative(process.cwd(), OUT_EMBED)}  (${(embed.length / 1024).toFixed(1)} KB, ${lookupData.length} counties)`);

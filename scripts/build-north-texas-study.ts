@@ -33,6 +33,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { LOOKUP_CSS, lookupPayload, lookupMarkup, dataScript, JS_SCRIPT, embedDocument } from './lib/county-lookup.js';
+import { KF_CSS, keyFindingsBlock, assertKeyFindingsNumbers } from './lib/keyFindings.js';
 
 const FIG = path.join(process.cwd(), 'docs', 'data', 'storm-and-premium-figures.json');
 const RAW = path.join(process.cwd(), 'docs', 'data', 'storm-and-premium-yearbuilt.json');
@@ -119,6 +120,13 @@ const lookupData = lookupPayload(counties);
 const LOOKUP_MARKUP = lookupMarkup(counties.length);
 const DATA_SCRIPT = dataScript(lookupData);
 
+const KEY_FINDINGS = keyFindingsBlock([
+  `${pct(collin.conc)} of Collin County, Texas&rsquo;s ${num(collin.units)} homes were built in the ${collin.era.replace('–', ' or ')}; in Denton County the figure is ${pct(denton.conc)}, the ${ord(rankConc(denton))} most concentrated housing stock of the ${counties.length} counties in the study.`,
+  `NOAA recorded ${num(dfwHail)} hailstorms across the four Dallas&ndash;Fort Worth counties from 2015 to 2024.`,
+  `Only ${survivors.length} of the ${counties.length} counties have at least ${pct(CONC_MIN, 0)} of their housing built in one twenty-year window and at least ${HAIL_MIN} recorded hailstorms: ${survivors.map((r) => r.name).join('; ')}.`,
+  `Where most homes went up in the same two decades, their roofs age together, so many come due for replacement in the same years.`,
+], 'Sources: US Census Bureau American Community Survey year-built estimates; NOAA Storm Events Database, 2015&ndash;2024; analysis by Before Regret. NOAA counts are reports of severe weather, not a census of it.');
+
 const html = `<style>
   .wrap{max-width:46rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;font:16px/1.65 Charter,Georgia,'Times New Roman',serif;color:#1a1a1a}
   .wrap *{box-sizing:border-box}
@@ -156,6 +164,7 @@ const html = `<style>
   footer.spine{margin:2rem 0 0;padding-top:1.2rem;border-top:1px solid #e5e0d8;font:400 12.5px/1.7 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
 ${LOOKUP_CSS}
   @media(max-width:560px){.wrap h1{font-size:1.85rem}.cols{grid-template-columns:1fr;gap:1.2rem}}
+${KF_CSS}
 </style>
 
 <div class="wrap">
@@ -172,6 +181,8 @@ ${LOOKUP_CSS}
     <div class="fig"><b>${num(dfwHail)}</b><span>hailstorms recorded across the four DFW counties, 2015&ndash;2024</span></div>
     <div class="fig"><b>${survivors.length} of 100</b><span>counties are both this concentrated and this hail-exposed</span></div>
   </div>
+
+  ${KEY_FINDINGS}
 
   ${LOOKUP_MARKUP}
 
@@ -343,7 +354,10 @@ ${allRows}
   <div class="cite">
     <b>Cite this</b>
     Before Regret, &ldquo;Built together, due together: synchronised housing construction and hail
-    exposure in North Texas.&rdquo; Analysis of Census ACS year-built estimates and NOAA Storm
+    exposure in North Texas.&rdquo; 6 September 2026.<br>
+    <a href="https://www.beforeregret.com/research/north-texas-roof-age/">https://www.beforeregret.com/research/north-texas-roof-age/</a><br>
+    Data source: US Census Bureau ACS year-built estimates; NOAA Storm Events Database.<br>
+    Analysis of Census ACS year-built estimates and NOAA Storm
     Events across ${counties.length} US counties. Full county dataset:
     <a href="https://www.beforeregret.com/research/data/storm-and-premium-counties.csv">CSV</a> &middot;
     <a href="https://www.beforeregret.com/research/data/storm-and-premium-figures.json">JSON</a> &middot;
@@ -384,6 +398,7 @@ if (!embed.includes('embed-credit')) throw new Error('ABORT: embed lost its cred
 if (!html.includes('lk-caveat')) throw new Error('ABORT: study page lost the lookup caveat');
 if (!html.includes('id="alg-data"')) throw new Error('ABORT: study page lost the lookup data');
 
+assertKeyFindingsNumbers(html, 'build-north-texas-study');
 fs.writeFileSync(OUT, html);
 fs.writeFileSync(OUT_EMBED, embed);
 console.log(`wrote ${path.relative(process.cwd(), OUT)}  (${(html.length / 1024).toFixed(1)} KB)`);

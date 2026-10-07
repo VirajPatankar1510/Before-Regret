@@ -122,6 +122,11 @@ ol.meth li::before{content:counter(m,decimal-leading-zero);position:absolute;lef
 .code{font-family:var(--mono);font-size:.92em;overflow-wrap:anywhere}
 a{color:var(--price)} a:focus-visible,*:focus-visible{outline:2px solid var(--risk);outline-offset:3px}
 footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--muted);line-height:1.8}
+  .kf{border:1px solid #dfe5e2;background:#fbfcfb;padding:1rem 1.2rem .4rem;margin:1.6rem 0 2rem}
+  .kf h2{margin:0 0 .7rem;padding:0;border:0;font-size:1.15rem}
+  .kf ul{margin:0 0 .8rem;padding-left:1.1rem}
+  .kf li{margin:0 0 .55rem}
+  .kf .kf-src{margin:0 0 .6rem;font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
 </style>
 </head>
 <body>
@@ -141,6 +146,18 @@ footer{padding:56px 0 0;font-family:var(--mono);font-size:.76rem;color:var(--mut
     <div><span class="v">636</span><span class="k">Both, and no emergency action plan on file</span></div>
     <div><span class="v">1955</span><span class="k">Median completion year of those dams</span></div>
   </div>
+
+  <section class="kf" id="key-findings">
+    <h2>Key findings</h2>
+    <ul>
+      <li>The US Army Corps of Engineers&rsquo; National Inventory of Dams classifies 17,049 US dams as high hazard potential, meaning failure would be expected to cause loss of life. The classification describes what lies downstream, not how likely a dam is to fail.</li>
+      <li>Of those 17,049 dams, 2,791 (16.4%) have a recorded condition assessment of Poor or Unsatisfactory: 2,287 Poor and 504 Unsatisfactory.</li>
+      <li>2,476 high-hazard-potential dams (14.5%) have no emergency action plan recorded in the inventory, and 636 of them also carry a Poor or Unsatisfactory condition rating.</li>
+      <li>The 636 dams in that overlap have a median recorded completion year of 1955.</li>
+      <li>77.4% of high-hazard-potential dams (13,201 of 17,049) do have an emergency action plan recorded.</li>
+    </ul>
+    <p class="kf-src">Source: US Army Corps of Engineers, National Inventory of Dams, data last updated 2026-08-28; analysis by Before Regret. These are the regulating agencies&rsquo; own records, not an assessment of any dam.</p>
+  </section>
 
   <div class="lookup">
     <p class="lk-eyebrow">Interactive &#183; 2,274 counties</p>

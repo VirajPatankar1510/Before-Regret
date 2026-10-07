@@ -26,6 +26,7 @@
 // inspection finding. Nobody else writes for the person standing in a crawl space.
 import fs from 'node:fs';
 import path from 'node:path';
+import { KF_CSS, keyFindingsBlock, assertKeyFindingsNumbers } from './lib/keyFindings.js';
 
 const FIG = path.join(process.cwd(), 'docs', 'data', 'raise-or-remove-figures.json');
 const ZIPS = path.join(process.cwd(), 'docs', 'data', 'raise-or-remove-zips.json');
@@ -123,6 +124,13 @@ const JS_SCRIPT = `<script>
 })();
 </script>`;
 
+const KEY_FINDINGS = keyFindingsBlock([
+  `Of ${num(f.scope.decisions)} FEMA-funded decisions on flood-damaged single-family homes from ${f.source.fiscalYears[0]} to ${f.source.fiscalYears[1]}, ${num(f.scope.demolished)} homes were bought and demolished and ${num(f.scope.raised)} were raised in place: ${f.scope.ratio.toFixed(1)} demolitions for every elevation.`,
+  `Just ${elevatingStates.length} of the ${f.states.length} states in the analysis account for nearly all the elevations.`,
+  `Even in those states, ${pct(A.byFoundation[A.byFoundation.length - 1].demolishedShare, 0)} of homes with basements are removed rather than raised.`,
+  `Which outcome a home gets depends first on its state, and only then on what it stands on.`,
+], 'Source: FEMA, Hazard Mitigation Assistance &ndash; Mitigated Properties (OpenFEMA); analysis by Before Regret. These are grant records, not a register of every home bought or raised in the US.');
+
 const html = `<style>
   .wrap{max-width:45rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;font:16px/1.68 Charter,Georgia,'Times New Roman',serif;color:#191919}
   .wrap *{box-sizing:border-box}
@@ -166,6 +174,7 @@ const html = `<style>
   footer.spine{margin:2rem 0 0;padding-top:1.2rem;border-top:1px solid #e0dcd3;font:400 12.5px/1.7 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a}
 ${LOOKUP_CSS}
   @media(max-width:560px){.wrap h1{font-size:1.9rem}.split{grid-template-columns:1fr;gap:1.3rem}}
+${KF_CSS}
 </style>
 
 <div class="wrap">
@@ -183,6 +192,8 @@ ${LOOKUP_CSS}
     <div class="fig"><b>${elevatingStates.length} of ${f.states.length}</b><span>states do nearly all the elevating</span></div>
     <div class="fig"><b>${pct(A.byFoundation[A.byFoundation.length - 1].demolishedShare, 0)}</b><span>of basement homes are removed even in those states</span></div>
   </div>
+
+  ${KEY_FINDINGS}
 
   ${LOOKUP_MARKUP}
 
@@ -443,6 +454,7 @@ for (const [name, doc] of [['study', html], ['embed', embed]] as Array<[string, 
 }
 if (!embed.includes('embed-credit')) throw new Error('ABORT: embed lost its credit line');
 
+assertKeyFindingsNumbers(html, 'build-raise-or-remove-study');
 fs.writeFileSync(OUT, html);
 fs.writeFileSync(OUT_EMBED, embed);
 console.log(`wrote ${path.relative(process.cwd(), OUT)}  (${(html.length / 1024).toFixed(1)} KB)`);
