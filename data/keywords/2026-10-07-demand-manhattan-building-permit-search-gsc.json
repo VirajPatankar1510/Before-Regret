@@ -1,0 +1,14 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-07T14:06:23.234Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "manhattan building permit search",
+    "hpd violations",
+    "hpd online"
+  ],
+  "keywords": []
+}

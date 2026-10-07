@@ -1,0 +1,43 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-07T14:06:32.198Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "sacramento permit search",
+    "sacramento county permits",
+    "natomas flood zone"
+  ],
+  "keywords": [
+    {
+      "keyword": "sacramento permit search",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "sacramento county permits",
+      "search_volume": 24,
+      "metric": "market",
+      "broad_impressions": 24,
+      "kind": "seed"
+    },
+    {
+      "keyword": "sacramento county building permits",
+      "search_volume": 437,
+      "metric": "market",
+      "broad_impressions": 437,
+      "kind": "related"
+    },
+    {
+      "keyword": "natomas flood zone",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

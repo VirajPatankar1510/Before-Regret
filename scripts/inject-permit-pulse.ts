@@ -176,6 +176,27 @@ const BLOCKS: Block[] = [
       return `The mix of what Santa Clara County builds has shifted in a year. Units in multifamily buildings were ${before}% of everything permitted in the same months last year and are ${now}% now: ${n(c.mfCurrent)} units, ${dir(c.mfChangePct)}. Single-family permits barely moved, ${n(c.sfPrior)} to ${n(c.sfCurrent)} (${dir(c.sfChangePct)}), so the county's total, ${dir(c.unitsChangePct)} to ${n(c.unitsCurrent)} units, says almost nothing about the supply of houses.`;
     },
   },
+  {
+    // Added 2026-10-07 with batch B. Manhattan's figure is the near-absence of houses: the guide's whole
+    // argument is that a Manhattan buyer is buying into a building. Counts only -- the single-family
+    // number is far below MIN_SF_FOR_PCT, so no percentage for it is ever spoken.
+    slug: 'check-building-permits-manhattan-ny', fips: '36061',
+    heading: 'What Manhattan Is Permitting Right Now',
+    prose: (c) => `New construction in Manhattan is almost entirely apartment buildings. Of the ${n(c.unitsCurrent)} housing units permitted in the borough so far this year, ${n(c.sfCurrent)} ${c.sfCurrent === 1 ? 'is a single-family house' : 'are single-family houses'}; the rest, ${n(c.mfCurrent)} units, are in multifamily buildings, ${dir(c.mfChangePct)} on the same months last year. The record you pull for a Manhattan purchase is therefore nearly always the record of a building, which is why the HPD and landmark records above matter as much as the permits.`,
+  },
+  {
+    // Sacramento is still a house market, and the houses are what fell. Share computed, direction in
+    // words, and the percentage gated on volume like every other block.
+    slug: 'check-building-permits-sacramento-county-ca', fips: '06067',
+    heading: 'What Sacramento County Is Permitting Right Now',
+    prose: (c) => {
+      const share = Math.round((100 * c.sfCurrent) / c.unitsCurrent);
+      const houses = c.sfCurrent >= MIN_SF_FOR_PCT && c.sfPrior >= MIN_SF_FOR_PCT
+        ? `${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)} homes`
+        : `${n(c.sfPrior)} homes a year ago against ${n(c.sfCurrent)} now`;
+      return `Sacramento County still builds mostly houses: ${share}% of the ${n(c.unitsCurrent)} units permitted so far this year are single-family. That side is ${houses}, while multifamily permits are ${dir(c.mfChangePct)} to ${n(c.mfCurrent)} units, leaving the county total ${dir(c.unitsChangePct)}. In a county where most new homes are houses, a slowdown in house permits is the number that matters for anyone comparing an older home against new construction.`;
+    },
+  },
 ];
 
 const trigrams = (s: string) => {

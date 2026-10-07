@@ -164,6 +164,30 @@ export const TARGET_KEYWORDS: TargetKeyword[] = [
       'Bing records the portal name "sjpermits" far more than "santa clara county permits" (relative counts, not volumes): ' +
       'people search San Jose\'s system by name, so the title carries it. Growth plan batch A, restored 2026-10-03; read 2026-11-09.',
   },
+  {
+    keyword: 'hpd violations lookup',
+    capture: '2026-10-07-demand-manhattan-building-permit-search-bing',
+    slug: 'hpd-online-check-nyc-building-violations',
+    rationale:
+      'Bing records "hpd online" and "hpd violations" far above any permit phrasing this site has measured (relative counts, not ' +
+      'volumes). HPD covers all five boroughs, so it is its own page. New 2026-10-07 with batch B; read 2026-11-11.',
+  },
+  {
+    keyword: 'sacramento county building permits',
+    capture: '2026-10-07-demand-sacramento-permit-search-bing',
+    slug: 'check-building-permits-sacramento-county-ca',
+    rationale:
+      'The only Sacramento permit phrasing Bing records with a count (relative, not a volume). Growth plan batch B, restored ' +
+      '2026-10-07; read 2026-11-11.',
+  },
+  {
+    keyword: 'flood zone by address',
+    capture: '2026-10-07-demand-flood-zone-by-address-bing',
+    slug: 'flood-zone-by-address',
+    rationale:
+      'Bing records "flood zone map by address", "fema flood zone map by address" and "fema flood zone by address"; this site is ' +
+      'shown for none of them. First of the records-by-address guides, 2026-10-07; read 2026-11-11.',
+  },
 ];
 
 /** Sources that constitute measurement. Anything else is someone's opinion wearing a number. */
