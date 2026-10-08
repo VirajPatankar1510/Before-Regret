@@ -1,0 +1,44 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-08T13:21:01.181Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "pex to galvanized",
+    "galvanized to pex",
+    "copper to galvanized",
+    "dielectric union"
+  ],
+  "keywords": [
+    {
+      "keyword": "pex to galvanized",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "galvanized to pex",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "copper to galvanized",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "dielectric union",
+      "search_volume": 885,
+      "metric": "market",
+      "broad_impressions": 885,
+      "kind": "seed"
+    }
+  ]
+}

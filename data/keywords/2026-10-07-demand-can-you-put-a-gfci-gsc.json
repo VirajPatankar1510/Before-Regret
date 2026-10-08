@@ -1,0 +1,16 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-07T19:06:41.522Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "can you put a gfci",
+    "can you insulate knob and tube",
+    "can you connect pex",
+    "can you roof over shingles",
+    "can you replace fuse box"
+  ],
+  "keywords": []
+}

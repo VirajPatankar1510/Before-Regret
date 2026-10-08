@@ -1,0 +1,111 @@
+{
+  "_about": "Queue for the 'Yes, but' guide strand (owner-approved idea 2026-10-08; flow built, NOT started). Process: .claude/skills/yes-but-guide/SKILL.md. Every verdictHypothesis below is UNVERIFIED -- it is what we expect to find, and the facts ledger must confirm or overturn it before any drafting. If verification overturns it into a flat 'No', the article is dropped or reframed, never forced.",
+  "_why": "Research 2026-10-08: the three best-clicked guides open 'Yes, ... but' (Romex 11 clicks/90d at pos 5.8, fuse box 7 at 4.8, aluminum wiring 5 at 12.9). Same-shape guides opening with a flat 'No, a standard inspection does not...' rank similarly but get 0-1 clicks: the snippet answers them. Small sample (23 clicks / 3 pages), so this strand is itself an experiment.",
+  "strandStopCondition": "After the first four are 5+ weeks old: if they average under 1 Google click per page per 28 days, stop the strand and fold any that are shown into existing cluster guides.",
+  "pace": "2 per week, inside the 5-new-pages-a-week plan; never two of these on the same day",
+  "items": [
+    {
+      "order": 1,
+      "question": "Can you put a GFCI on an ungrounded outlet?",
+      "proposedSlug": "gfci-on-ungrounded-outlet-two-prong",
+      "cluster": "electrical",
+      "verdictHypothesis": "Yes -- a GFCI can replace a two-prong receptacle with no ground, but it must be labeled 'No Equipment Ground' and it does not provide a ground for surge protectors or three-prong equipment.",
+      "sourcesToVerify": [
+        "NEC 406.4(D)(2) replacement-of-non-grounding-receptacle text, at a primary or official publisher copy (NFPA free-access NFPA 70, or a state-adopted copy)",
+        "CPSC or ESFI page on GFCI protection, for what a GFCI does and does not do",
+        "the site's open-ground guide, for consistency and a natural link"
+      ],
+      "linksExpected": [
+        "/guides/open-ground-mean-electrical-inspection/",
+        "/guides/what-is-knob-and-tube-wiring/"
+      ],
+      "status": "covered",
+      "decision": "2026-10-08: covered by open-ground-mean-electrical-inspection (section \"Installing GFCI Protection\": No Equipment Ground label, GFCI does not create a ground; 487 impr/28d at pos 12.5) and linked from need-gfci-outlets-pass-home-inspection. A new URL would compete with it. Not written."
+    },
+    {
+      "order": 2,
+      "question": "Can you put a new roof over old shingles?",
+      "proposedSlug": "new-roof-over-old-shingles-layers",
+      "cluster": "roofing-exterior",
+      "verdictHypothesis": "Yes, once -- the IRC allows a recover over one existing layer in many cases, but not over two layers, wet or deteriorated roofing, or where the manufacturer forbids it; buyers should know how many layers a roof has.",
+      "sourcesToVerify": [
+        "IRC section on reroofing / recovering (R908.3.1 and its exceptions) at ICC's free public-access code (codes.iccsafe.org)",
+        "a shingle manufacturer's installation instruction on recovering, only if it can be read at the manufacturer's own site",
+        "PRIORITY_RULES roof_age for the replacement cost range (read at run time, never retyped)"
+      ],
+      "linksExpected": [
+        "/guides/how-to-tell-how-old-a-roof-is/"
+      ],
+      "status": "covered",
+      "decision": "2026-10-08: covered by how-to-tell-how-old-a-roof-is (roof recover, IRC limit of two applications, full tear-off). Not written."
+    },
+    {
+      "order": 3,
+      "question": "Can you connect PEX or copper to galvanized pipe?",
+      "proposedSlug": "connect-pex-copper-to-galvanized-pipe",
+      "cluster": "plumbing",
+      "verdictHypothesis": "Yes, with a listed transition fitting, but galvanized supply lines of that era corrode from the inside, so a partial repipe can leave the worst pipe in place.",
+      "sourcesToVerify": [
+        "the plumbing code section on joints between different materials (IRC P2906 / IPC 605) at codes.iccsafe.org",
+        "PRIORITY_RULES galvanized_supply for era and repipe cost (read at run time)",
+        "the site's pipes guide, for consistency",
+        "item 4 sources: IRC/IPC text on dielectric or approved joints between copper and galvanized steel"
+      ],
+      "linksExpected": [
+        "/guides/identify-water-pipes-pex-copper-galvanized/"
+      ],
+      "status": "published",
+      "decision": "2026-10-08: merged with item 4 (the queue anticipated it): one guide answers both joins. Only passing mentions exist (unpermitted-work, amateur-workmanship guides).",
+      "publishedAt": "2026-10-08",
+      "readOn": "2026-11-12"
+    },
+    {
+      "order": 4,
+      "question": "Can you mix copper and galvanized pipe?",
+      "proposedSlug": "copper-to-galvanized-pipe-dielectric-union",
+      "cluster": "plumbing",
+      "verdictHypothesis": "Yes, but only through a dielectric fitting or another approved method that separates the two metals; a direct joint corrodes.",
+      "sourcesToVerify": [
+        "IRC/IPC text requiring dielectric or approved joints between dissimilar metals, at codes.iccsafe.org",
+        "check overlap with item 3 first: if the two answers share most of their body, merge them into one guide"
+      ],
+      "linksExpected": [
+        "/guides/identify-water-pipes-pex-copper-galvanized/"
+      ],
+      "status": "merged",
+      "decision": "2026-10-08: merged into item 3."
+    },
+    {
+      "order": 5,
+      "question": "Can you get home insurance with a wood stove?",
+      "proposedSlug": "home-insurance-with-wood-stove",
+      "cluster": "insurance",
+      "verdictHypothesis": "Yes in many cases, but your carrier may ask how and when it was installed, whether it is listed, and for an inspection; the answer varies by carrier and state.",
+      "sourcesToVerify": [
+        "NFPA 211 scope and the Level 2 inspection trigger (consistent with the chimney rule in PRIORITY_RULES)",
+        "a state insurance department or NAIC consumer page on wood stoves and insurance, if one can be read",
+        "CARRIER RULE: never name an insurer; never 'most/many carriers will ...' -- write 'your carrier may' and how to get a written answer"
+      ],
+      "linksExpected": [],
+      "status": "queued"
+    },
+    {
+      "order": 6,
+      "question": "Can you insulate over knob-and-tube wiring?",
+      "proposedSlug": "insulate-over-knob-and-tube-wiring",
+      "cluster": "electrical",
+      "verdictHypothesis": "Generally no -- the NEC does not allow knob-and-tube in hollow spaces filled with insulation -- but some jurisdictions allow it after an electrician's evaluation; check the local rule.",
+      "sourcesToVerify": [
+        "NEC 394.12 uses-not-permitted text at a primary or official copy",
+        "at least one state or city rule that permits insulation after inspection, read at that jurisdiction's own site -- if none can be verified, the 'but' is cut and this item is dropped",
+        "consistency with the site's knob-and-tube guides"
+      ],
+      "linksExpected": [
+        "/guides/what-is-knob-and-tube-wiring/",
+        "/guides/knob-tube-wiring-have-be-replaced-before-closing/"
+      ],
+      "status": "covered",
+      "decision": "2026-10-08: covered by splice-romex-knob-tube-wiring (NEC prohibits insulation around active K&T) -- the site's best page -- and what-is-knob-and-tube-wiring. Not written."
+    }
+  ]
+}

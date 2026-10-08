@@ -1,0 +1,20 @@
+{
+  "_about": "Copy to data/fact-ledgers/<slug>.json BEFORE drafting. One entry per fact the article will state. assert-yes-but-guide.ts fails the article if it states a number or a code section that no entry carries. A fact read from memory, a search-result snippet or a secondary blog is not a fact here: open the source, quote it.",
+  "slug": "<proposed-slug>",
+  "question": "<the queue question>",
+  "verdictConfirmed": "<the verdict AFTER verification, in one sentence; it may differ from the queue hypothesis>",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "<what the article will say, in plain words>",
+      "quote": "<the exact words read at the source that support it>",
+      "url": "https://<primary source>",
+      "readOn": "YYYY-MM-DD",
+      "method": "browser | webfetch | pdf | engine"
+    }
+  ],
+  "cut": [
+    { "claim": "<something we wanted to say>", "why": "<could not open the source / bot check / secondary only / source said otherwise>" }
+  ],
+  "blockedSources": ["<sites that refused us, e.g. Akamai/Cloudflare check -- never worked around>"]
+}

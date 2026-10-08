@@ -188,6 +188,14 @@ export const TARGET_KEYWORDS: TargetKeyword[] = [
       'Bing records "flood zone map by address", "fema flood zone map by address" and "fema flood zone by address"; this site is ' +
       'shown for none of them. First of the records-by-address guides, 2026-10-07; read 2026-11-11.',
   },
+  {
+    keyword: 'dielectric union',
+    capture: '2026-10-08-demand-pex-to-galvanized-bing',
+    slug: 'connect-pex-copper-to-galvanized-pipe',
+    rationale:
+      'Bing records "dielectric union" (relative count, not a volume); the exact PEX/copper-to-galvanized phrasings show nothing. ' +
+      'First "Yes, but" guide, 2026-10-08; read 2026-11-12.',
+  },
 ];
 
 /** Sources that constitute measurement. Anything else is someone's opinion wearing a number. */

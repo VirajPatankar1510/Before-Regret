@@ -1,0 +1,62 @@
+{
+  "slug": "connect-pex-copper-to-galvanized-pipe",
+  "question": "Can you connect PEX or copper to galvanized pipe?",
+  "verdictConfirmed": "Yes, both joins are allowed by the IRC, but only through the right fitting (a copper alloy or dielectric fitting for copper, an approved adapter fitting for PEX), and a new joint does nothing about the galvanized pipe left on the other side of it.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "IRC 2021 P2906.18: joints between different piping materials must follow P2906.18.1 to P2906.18.4, or be a compression or mechanical-sealing joint with an elastomeric seal; installed per the manufacturer's instructions.",
+      "quote": "Joints between different piping materials shall be made in accordance with Section P2906.18.1, P2906.18.2, P2906.18.3 or P2906.18.4, or with a mechanical joint of the compression or mechanical sealing type having an elastomeric seal conforming to ASTM D1869 or ASTM F477. Joints shall be installed in accordance with the manufacturer's instructions.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-29-water-supply-and-distribution",
+      "readOn": "2026-10-08",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "IRC 2021 P2906.18.1: copper or copper-alloy tubing to galvanized steel pipe must use a copper alloy fitting or a dielectric fitting; copper joined to the fitting in an approved manner, fitting screwed to the threaded pipe.",
+      "quote": "P2906.18.1 Copper or copper-alloy tubing to galvanized steel pipe. Joints between copper or copper-alloy tubing and galvanized steel pipe shall be made with a copper alloy fitting or dielectric fitting. The copper tubing shall be joined to the fitting in an approved manner, and the fitting shall be screwed to the threaded pipe.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-29-water-supply-and-distribution",
+      "readOn": "2026-10-08",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "IRC 2021 P2906.18.3: plastic pipe (which includes PEX) to other piping material must be joined with an approved adapter fitting.",
+      "quote": "P2906.18.3 Plastic pipe or tubing to other piping material. Joints between different types of plastic pipe or between plastic pipe and other piping material shall be made with an approved adapter fitting.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-29-water-supply-and-distribution",
+      "readOn": "2026-10-08",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "Engine rule galvanized_supply covers homes built through 1969: galvanized steel supply piping was common, corrodes from the inside out, shows as low pressure and discolored water before it leaks.",
+      "quote": "maxYear 1969. Galvanized steel supply piping was common in homes of this era. It corrodes from the inside out, which shows up as reduced water pressure and discolored water long before it leaks.",
+      "url": "https://www.beforeregret.com/",
+      "readOn": "2026-10-08",
+      "method": "engine"
+    },
+    {
+      "id": "f5",
+      "claim": "Engine rule galvanized_supply repipe cost: whole-home repipe $4,000 – $15,000; check where visible, at the water heater and under sinks.",
+      "quote": "Whole-home repipe $4,000 – $15,000. Ask your inspector to identify the supply pipe material where it is visible — typically at the water heater and under sinks.",
+      "url": "https://www.beforeregret.com/",
+      "readOn": "2026-10-08",
+      "method": "engine"
+    },
+    {
+      "id": "f6",
+      "claim": "The IRC is a model code: the version and edition in force depends on what the local jurisdiction adopted (the page is the 2021 edition).",
+      "quote": "CHAPTER 29 WATER SUPPLY AND DISTRIBUTION - 2021 INTERNATIONAL RESIDENTIAL CODE (IRC)",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-29-water-supply-and-distribution",
+      "readOn": "2026-10-08",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "the galvanic-corrosion mechanism between copper and galvanized steel, explained", "why": "no primary source opened (copper.org returned 403/404 on 2026-10-05); the guide states the code requirement only" },
+    { "claim": "ASSE 1079 as the dielectric union standard", "why": "not in the IRC text read; not verified" },
+    { "claim": "which states use the Uniform Plumbing Code instead of the IRC", "why": "not verified; the guide says only that local codes can differ" },
+    { "claim": "fitting or plumber labor costs", "why": "no engine figure or primary source" }
+  ],
+  "blockedSources": ["codes.iccsafe.org refuses WebFetch (403); read in the browser without any bot check"]
+}
