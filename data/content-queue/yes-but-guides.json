@@ -87,7 +87,10 @@
         "CARRIER RULE: never name an insurer; never 'most/many carriers will ...' -- write 'your carrier may' and how to get a written answer"
       ],
       "linksExpected": [],
-      "status": "queued"
+      "status": "published",
+      "note": "Owner said \"publish now\" on 2026-10-08, overriding the one-a-day pace convention (Claude's, not an owner rule). No honest inbound anchor found; tier 3 demand, so no targetKeywords entry.",
+      "publishedAt": "2026-10-08",
+      "readOn": "2026-11-12"
     },
     {
       "order": 6,

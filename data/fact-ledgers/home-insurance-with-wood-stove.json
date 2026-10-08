@@ -1,0 +1,62 @@
+{
+  "slug": "home-insurance-with-wood-stove",
+  "question": "Can you get home insurance with a wood stove?",
+  "verdictConfirmed": "Yes, a house with a wood stove can be insured, but the stove can raise the premium and an insurer's eligibility rules can turn on how it was installed and whether it was inspected; a home with no thermostatically controlled central heat faces a harder question. The answer is carrier- and state-specific.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "The NAIC's 2022 consumer guide to home insurance lists having a wood furnace or wood stove among the household characteristics that can affect what you pay.",
+      "quote": "A CONSUMER'S GUIDE TO HOME INSURANCE: SMART SHOPPING 2022 NATIONAL ASSOCIATION OF INSURANCE COMMISSIONERS ... Other characteristics ... Having a wood furnace or wood stove.",
+      "url": "https://content.naic.org/sites/default/files/publication-hoi-pp-consumer-homeowners.pdf",
+      "readOn": "2026-10-08",
+      "method": "pdf"
+    },
+    {
+      "id": "f2",
+      "claim": "Maine's insurance regulator's consumer guide lists having a wood-burning appliance among the household characteristics insurers consider.",
+      "quote": "A Consumer's Guide to Homeowners Insurance (State of Maine, Department of Professional and Financial Regulation, Insurance) ... Other household characteristics ... Having a wood-burning appliance or using space heaters.",
+      "url": "https://www.maine.gov/pfr/insurance/sites/maine.gov.pfr.insurance/files/inline-files/consumers_guide_to_homeowner_insurance.pdf",
+      "readOn": "2026-10-08",
+      "method": "pdf"
+    },
+    {
+      "id": "f3",
+      "claim": "An insurer's new-business eligibility guidelines filed with Maine's insurance regulator list as ineligible a home with a wood, coal or pellet stove used as alternate or supplemental heat unless the stove was professionally installed or inspected and approved by the local fire department or building inspector. (Insurer not named, per the carrier rule.)",
+      "quote": "INELIGIBLE (ALL FORMS) ... W. A risk containing a wood stove, coal stove, pellet stove or other wood burning device as an alternate or supplemental heat source, unless the stove has been professionally installed or has been inspected and approved by the local fire department or building inspector.",
+      "url": "https://www.maine.gov/pfr/insurance/sites/maine.gov.pfr.insurance/files/inline-files/me-qh2.0-underwriting-guidelines.pdf",
+      "readOn": "2026-10-08",
+      "method": "pdf"
+    },
+    {
+      "id": "f4",
+      "claim": "The same filing lists as ineligible a dwelling without a thermostatically controlled gas, oil or electric central heating system.",
+      "quote": "U. A dwelling or condo without a thermostatically controlled gas, oil or electric central heating system.",
+      "url": "https://www.maine.gov/pfr/insurance/sites/maine.gov.pfr.insurance/files/inline-files/me-qh2.0-underwriting-guidelines.pdf",
+      "readOn": "2026-10-08",
+      "method": "pdf"
+    },
+    {
+      "id": "f5",
+      "claim": "The Office of the Maine State Fire Marshal's recommended stove installation standards (September 2008) are drawn from NFPA 211 and tell readers to check with the local fire department or building inspector before installing, and to consult their insurance company about any restrictions on wood-burning appliance installation.",
+      "quote": "Recommended Standards For the Installation Of Solid Fuel Burning Stoves Prepared By Office of Maine State Fire Marshal ... September 2008 ... from NFPA 211 ... Always check with your local Fire Department or Building Inspector before attempting installation. It is also important to consult with your insurance company regarding any restrictions they may have on wood burning appliance installation.",
+      "url": "https://www.maine.gov/dps/fmo/sites/maine.gov.dps.fmo/files/inline-files/standardsfor_solidfuel_stoves.pdf",
+      "readOn": "2026-10-08",
+      "method": "pdf"
+    },
+    {
+      "id": "f6",
+      "claim": "Engine rule chimney_level2: NFPA 211 calls for a Level 2 inspection when a property is sold or transferred; an industry standard, not usually a legal requirement; it adds a video scan of the flue a standard inspection does not include; $250 – $600; book a CSIA-certified chimney sweep.",
+      "quote": "NFPA 211, the national standard for chimneys, fireplaces, and solid-fuel-burning appliances, calls for a Level 2 inspection when a property is sold or transferred ... It is an industry standard, not usually a legal requirement for closing. $250 – $600 for a Level 2 inspection with a video flue scan. Book a CSIA-certified chimney sweep for a Level 2 inspection.",
+      "url": "https://www.beforeregret.com/",
+      "readOn": "2026-10-08",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    { "claim": "'if a licensed contractor installed it and it meets code, your premium may be lower'", "why": "appeared only in a search-result summary; the source behind it was not identified or opened" },
+    { "claim": "Michigan DIFS homeowners guide on wood stoves", "why": "PDF returned 403 to WebFetch; not read" },
+    { "claim": "any claim about what most or many insurers do", "why": "carrier rule; one filing is an example, not a market statement" },
+    { "claim": "EPA-certified stove labels as an insurance factor", "why": "no source connecting EPA certification to insurance was read" }
+  ],
+  "blockedSources": ["michigan.gov DIFS PDF (403 to WebFetch)"]
+}
