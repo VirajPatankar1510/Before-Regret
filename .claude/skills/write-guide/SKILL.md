@@ -129,6 +129,7 @@ makes not thinking visible.
 | no clichés | no `delve`, `furthermore`, `crucial`, `regulatory landscape`, `when it comes to` |
 | cluster | slug + title must match a `GUIDE_TOPIC_PATTERNS` bucket in `src/utils/relatedGuides.ts`. If the article opens a new segment the buckets don't describe, add one (as `orientation` was) instead of letting it fall into a wrong cluster. Place it so it reclassifies **zero** existing guides, check that, and accept that it starts as a one-member cluster, which is the experiment |
 | links | prose links only where the text ALREADY discusses the target |
+| intent match | NEW pages only (owner 2026-10-08: never retrofit existing guides). Decide what the searcher is trying to do. A navigational search ("X permit search", "hpd online", "flood zone by address") wants the official portal: link it, browser-verified, in the first section -- the 2026-09-04 rule "a dead link is worse than no link" still applies, so a portal that will not open cleanly stays unlinked and is named instead. A tool-intent search ends on the free report. |
 
 **Why the mobile ceiling.** 63.3% of this site's Google clicks come from mobile on 37.3% of
 impressions — the phone converts three times better than desktop and is the real reader.
