@@ -1,6 +1,6 @@
 ---
 name: yes-but-guide
-description: The enforced flow for the "Yes, but" guide strand on BeforeRegret -- "Can you [do X / get Y] with [an old-house system]?" articles whose honest answer is conditional. Use whenever the owner asks to start, continue, draft or publish the next one of these, names one of the queued questions (GFCI on an ungrounded outlet, roof over old shingles, PEX to galvanized, copper to galvanized, insurance with a wood stove, insulating over knob-and-tube), or asks what is next in this strand. Do NOT use for county permit guides, records-by-address guides or FAQs on an existing page.
+description: The enforced flow for the "Yes, but" guide strand on BeforeRegret -- "Can you [do X / get Y] with [an old-house system]?" articles whose honest answer is conditional. Use whenever the owner asks to start, continue, draft or publish the next one of these, names one of the queued questions (currently: home insurance with a wood stove; who pays for an unpermitted deck found after closing -- the queue file is the source of truth), or asks what is next in this strand. Do NOT use for county permit guides, records-by-address guides or FAQs on an existing page.
 ---
 
 # The "Yes, but" guide flow
@@ -76,6 +76,9 @@ Draft rules, beyond write-guide's:
 - vary structure, headings and length from the previous guide in this strand; 500-1,600 words, never
   padded; no "Step N" headings;
 - prose links only where the text already discusses the target (queue `linksExpected` are hints).
+- match the page to what the searcher is trying to do (owner, 2026-10-08, from a page-type/intent video):
+  if the question sends people to an official tool, code text or agency page, link that source -- verified
+  in the browser, never one behind a bot check -- in the first section, so nobody has to go back to search.
 
 **6. Gate.** `npx tsx scripts/assert-yes-but-guide.ts <slug>` must print "gate passed". Fix the draft or
 the ledger -- never the gate -- until it does. Set the queue status to `drafted`.

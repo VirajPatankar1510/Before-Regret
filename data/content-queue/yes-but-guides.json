@@ -1,7 +1,7 @@
 {
   "_about": "Queue for the 'Yes, but' guide strand (owner-approved idea 2026-10-08; flow built, NOT started). Process: .claude/skills/yes-but-guide/SKILL.md. Every verdictHypothesis below is UNVERIFIED -- it is what we expect to find, and the facts ledger must confirm or overturn it before any drafting. If verification overturns it into a flat 'No', the article is dropped or reframed, never forced.",
   "_why": "Research 2026-10-08: the three best-clicked guides open 'Yes, ... but' (Romex 11 clicks/90d at pos 5.8, fuse box 7 at 4.8, aluminum wiring 5 at 12.9). Same-shape guides opening with a flat 'No, a standard inspection does not...' rank similarly but get 0-1 clicks: the snippet answers them. Small sample (23 clicks / 3 pages), so this strand is itself an experiment.",
-  "strandStopCondition": "After the first four are 5+ weeks old: if they average under 1 Google click per page per 28 days, stop the strand and fold any that are shown into existing cluster guides.",
+  "strandStopCondition": "After the first three (connect-pex-copper-to-galvanized-pipe, the wood stove guide and the deck guide) are each 5+ weeks old: if they average under 1 Google click per page per 28 days, stop the strand and fold any that are shown into existing cluster guides. (Was 'first four' until 2026-10-08, when items 1, 2 and 6 were found already covered and 3+4 merged, leaving three.)",
   "pace": "2 per week, inside the 5-new-pages-a-week plan; never two of these on the same day",
   "items": [
     {
@@ -106,6 +106,25 @@
       ],
       "status": "covered",
       "decision": "2026-10-08: covered by splice-romex-knob-tube-wiring (NEC prohibits insulation around active K&T) -- the site's best page -- and what-is-knob-and-tube-wiring. Not written."
+    },
+    {
+      "order": 7,
+      "question": "Can you make the seller pay for an unpermitted deck you find after closing?",
+      "proposedSlug": "unpermitted-deck-after-closing-who-pays",
+      "cluster": "permits",
+      "addedOn": "2026-10-08",
+      "addedFrom": "Owner-approved idea from an outside research report (2026-10-08); the report's other gaps were already covered.",
+      "verdictHypothesis": "Sometimes -- if the seller knew and failed to disclose it where state law requires disclosure, a buyer may have a claim, but an as-is sale, a disclosed deck or a public permit record the buyer could have checked can weaken it; it varies by state, and a real-estate attorney decides.",
+      "sourcesToVerify": [
+        "COVERAGE FIRST: compare against legalize-unpermitted-deck (121 impr/90d, pos 6.2), find-unpermitted-work-before-buying, unpermitted-work-behind-the-wall and happens-if-seller-didn-t-disclose-past-insurance-claim; if the answer would mostly repeat them, drop this item",
+        "at least two state seller-disclosure statutes or official disclosure forms that ask about unpermitted work or additions, read at the state's own site",
+        "no legal-advice framing: state what the law says and when to ask an attorney; never 'you can sue'"
+      ],
+      "linksExpected": [
+        "/guides/legalize-unpermitted-deck/",
+        "/guides/find-unpermitted-work-before-buying/"
+      ],
+      "status": "queued"
     }
   ]
 }

@@ -1,0 +1,25 @@
+{
+  "_about": "Queue for NEW guides that are not 'Yes, but' questions (owner 2026-10-08). Same discipline: check coverage first, verify every fact into data/fact-ledgers/<slug>.json BEFORE drafting (template there), follow the write-guide skill, show the owner, publish only on 'publish'. Intent rule: navigational topics link the browser-verified official source in the first section. Never retrofit existing guides.",
+  "items": [
+    {
+      "order": 1,
+      "question": "Which states require sellers to disclose that a house is in a dam inundation zone?",
+      "proposedSlug": "dam-inundation-zone-seller-disclosure-by-state",
+      "cluster": "environmental (check GUIDE_TOPIC_PATTERNS; a 'dam' pattern may be needed -- it must reclassify no existing guide, and note 'dam' also matches 'damage')",
+      "addedOn": "2026-10-08",
+      "addedFrom": "Owner-approved idea from an outside research report (2026-10-08). Builds on the High-Hazard Dams by County study, which covers where the dams are but not what a seller must disclose.",
+      "angle": "What a buyer is told, and where to look it up when they are not: each state included only if its disclosure statute or official form is read at the state's own site; states not verified are left out, never assumed.",
+      "sourcesToVerify": [
+        "COVERAGE FIRST: compare against /research/high-hazard-dams/ and flood-zone-by-address; this page must be about disclosure law, not repeat the study",
+        "each state's seller disclosure statute or official disclosure form text, at the legislature's or real-estate commission's own site (e.g. California's Natural Hazard Disclosure statement -- verify, do not assume)",
+        "where a buyer can look up inundation mapping themselves, only from an official map or agency page that opens in the browser",
+        "study figures (if any are quoted) read from docs/data/dams-high-hazard.json, never retyped"
+      ],
+      "linksExpected": [
+        "/research/high-hazard-dams/",
+        "/guides/flood-zone-by-address/"
+      ],
+      "status": "queued"
+    }
+  ]
+}
