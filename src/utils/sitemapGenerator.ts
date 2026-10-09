@@ -211,6 +211,7 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       { loc: `${BASE_URL}/research/allegheny-storm-premium/`, lastmod: '2026-09-06', changefreq: 'yearly', priority: '0.8' },
       { loc: `${BASE_URL}/research/north-texas-roof-age/`, lastmod: '2026-09-06', changefreq: 'yearly', priority: '0.8' },
       { loc: `${BASE_URL}/research/raise-or-remove/`, lastmod: '2026-09-07', changefreq: 'yearly', priority: '0.8' },
+      { loc: `${BASE_URL}/research/oldest-housing/`, lastmod: '2026-10-09', changefreq: 'yearly', priority: '0.8' },
       // Permit Pulse is the exception to the rule stated above, and the only study that takes a
       // moving lastmod. The other seven are frozen analyses of a fixed data vintage, so re-stamping
       // them each build would claim a freshness they do not have. This one is genuinely rebuilt

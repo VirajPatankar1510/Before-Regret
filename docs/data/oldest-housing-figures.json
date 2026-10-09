@@ -1,0 +1,1019 @@
+{
+  "title": "Before 1940: housing built before 1940, by US county",
+  "source": "U.S. Census Bureau, American Community Survey 5-year estimates, table B25034 (Year Structure Built)",
+  "vintage": "2020-2024",
+  "api": "https://api.census.gov/data/2024/acs/acs5",
+  "variables": {
+    "total": "B25034_001E",
+    "built2020OrLater": "B25034_002E",
+    "built2010to2019": "B25034_003E",
+    "built2000to2009": "B25034_004E",
+    "built1990to1999": "B25034_005E",
+    "built1980to1989": "B25034_006E",
+    "built1970to1979": "B25034_007E",
+    "built1960to1969": "B25034_008E",
+    "built1950to1959": "B25034_009E",
+    "built1940to1949": "B25034_010E",
+    "built1939OrEarlier": "B25034_011E"
+  },
+  "fetchedAt": "2026-10-09T15:27:09.683Z",
+  "generated": "2026-10-09",
+  "scope": {
+    "counties": 3144,
+    "excludedPuertoRicoMunicipios": 78,
+    "minUnitsForShareRankings": 10000
+  },
+  "national": {
+    "housingUnits": 143775355,
+    "builtBefore1940": 16880456,
+    "shareBefore1940": 0.1174,
+    "shareBefore1960": 0.2564
+  },
+  "concentration": {
+    "top10Share": 0.2014,
+    "top50Share": 0.4118,
+    "top100Share": 0.5195,
+    "countiesHoldingHalf": 89,
+    "countiesAtLeast25pct": 582
+  },
+  "topByShare": [
+    {
+      "geoid": "29510",
+      "name": "St. Louis city, Missouri",
+      "share": 0.579,
+      "builtBefore1940": 100811,
+      "moe": 1884,
+      "housingUnits": 174111
+    },
+    {
+      "geoid": "36047",
+      "name": "Kings County, New York",
+      "share": 0.4704,
+      "builtBefore1940": 517749,
+      "moe": 4570,
+      "housingUnits": 1100772
+    },
+    {
+      "geoid": "36057",
+      "name": "Montgomery County, New York",
+      "share": 0.4685,
+      "builtBefore1940": 10767,
+      "moe": 493,
+      "housingUnits": 22981
+    },
+    {
+      "geoid": "42107",
+      "name": "Schuylkill County, Pennsylvania",
+      "share": 0.4666,
+      "builtBefore1940": 31397,
+      "moe": 940,
+      "housingUnits": 67295
+    },
+    {
+      "geoid": "25025",
+      "name": "Suffolk County, Massachusetts",
+      "share": 0.4561,
+      "builtBefore1940": 162961,
+      "moe": 2677,
+      "housingUnits": 357290
+    },
+    {
+      "geoid": "06075",
+      "name": "San Francisco County, California",
+      "share": 0.4521,
+      "builtBefore1940": 187447,
+      "moe": 2382,
+      "housingUnits": 414602
+    },
+    {
+      "geoid": "36073",
+      "name": "Orleans County, New York",
+      "share": 0.4326,
+      "builtBefore1940": 7927,
+      "moe": 449,
+      "housingUnits": 18326
+    },
+    {
+      "geoid": "36061",
+      "name": "New York County, New York",
+      "share": 0.4289,
+      "builtBefore1940": 396050,
+      "moe": 4686,
+      "housingUnits": 923472
+    },
+    {
+      "geoid": "24510",
+      "name": "Baltimore city, Maryland",
+      "share": 0.4147,
+      "builtBefore1940": 122342,
+      "moe": 2217,
+      "housingUnits": 295032
+    },
+    {
+      "geoid": "36077",
+      "name": "Otsego County, New York",
+      "share": 0.4079,
+      "builtBefore1940": 12259,
+      "moe": 560,
+      "housingUnits": 30057
+    },
+    {
+      "geoid": "42101",
+      "name": "Philadelphia County, Pennsylvania",
+      "share": 0.3987,
+      "builtBefore1940": 298317,
+      "moe": 4110,
+      "housingUnits": 748270
+    },
+    {
+      "geoid": "36013",
+      "name": "Chautauqua County, New York",
+      "share": 0.3952,
+      "builtBefore1940": 26270,
+      "moe": 975,
+      "housingUnits": 66476
+    },
+    {
+      "geoid": "36043",
+      "name": "Herkimer County, New York",
+      "share": 0.3919,
+      "builtBefore1940": 12721,
+      "moe": 715,
+      "housingUnits": 32459
+    },
+    {
+      "geoid": "36037",
+      "name": "Genesee County, New York",
+      "share": 0.3915,
+      "builtBefore1940": 10249,
+      "moe": 490,
+      "housingUnits": 26176
+    },
+    {
+      "geoid": "36121",
+      "name": "Wyoming County, New York",
+      "share": 0.3907,
+      "builtBefore1940": 7135,
+      "moe": 415,
+      "housingUnits": 18263
+    },
+    {
+      "geoid": "42097",
+      "name": "Northumberland County, Pennsylvania",
+      "share": 0.3808,
+      "builtBefore1940": 16526,
+      "moe": 650,
+      "housingUnits": 43395
+    },
+    {
+      "geoid": "42083",
+      "name": "McKean County, Pennsylvania",
+      "share": 0.379,
+      "builtBefore1940": 7377,
+      "moe": 332,
+      "housingUnits": 19465
+    },
+    {
+      "geoid": "19015",
+      "name": "Boone County, Iowa",
+      "share": 0.3786,
+      "builtBefore1940": 4559,
+      "moe": 406,
+      "housingUnits": 12041
+    },
+    {
+      "geoid": "26061",
+      "name": "Houghton County, Michigan",
+      "share": 0.3766,
+      "builtBefore1940": 7107,
+      "moe": 330,
+      "housingUnits": 18870
+    },
+    {
+      "geoid": "30093",
+      "name": "Silver Bow County, Montana",
+      "share": 0.3706,
+      "builtBefore1940": 6486,
+      "moe": 466,
+      "housingUnits": 17499
+    },
+    {
+      "geoid": "18023",
+      "name": "Clinton County, Indiana",
+      "share": 0.369,
+      "builtBefore1940": 4988,
+      "moe": 404,
+      "housingUnits": 13517
+    },
+    {
+      "geoid": "36011",
+      "name": "Cayuga County, New York",
+      "share": 0.3657,
+      "builtBefore1940": 13467,
+      "moe": 617,
+      "housingUnits": 36829
+    },
+    {
+      "geoid": "17183",
+      "name": "Vermilion County, Illinois",
+      "share": 0.363,
+      "builtBefore1940": 12461,
+      "moe": 666,
+      "housingUnits": 34327
+    },
+    {
+      "geoid": "18017",
+      "name": "Cass County, Indiana",
+      "share": 0.362,
+      "builtBefore1940": 5933,
+      "moe": 358,
+      "housingUnits": 16388
+    },
+    {
+      "geoid": "42069",
+      "name": "Lackawanna County, Pennsylvania",
+      "share": 0.361,
+      "builtBefore1940": 36162,
+      "moe": 1198,
+      "housingUnits": 100177
+    }
+  ],
+  "topByCount": [
+    {
+      "geoid": "17031",
+      "name": "Cook County, Illinois",
+      "builtBefore1940": 632386,
+      "moe": 5373,
+      "share": 0.2778
+    },
+    {
+      "geoid": "06037",
+      "name": "Los Angeles County, California",
+      "builtBefore1940": 522483,
+      "moe": 5416,
+      "share": 0.1431
+    },
+    {
+      "geoid": "36047",
+      "name": "Kings County, New York",
+      "builtBefore1940": 517749,
+      "moe": 4570,
+      "share": 0.4704
+    },
+    {
+      "geoid": "36061",
+      "name": "New York County, New York",
+      "builtBefore1940": 396050,
+      "moe": 4686,
+      "share": 0.4289
+    },
+    {
+      "geoid": "42101",
+      "name": "Philadelphia County, Pennsylvania",
+      "builtBefore1940": 298317,
+      "moe": 4110,
+      "share": 0.3987
+    },
+    {
+      "geoid": "36081",
+      "name": "Queens County, New York",
+      "builtBefore1940": 272637,
+      "moe": 3470,
+      "share": 0.2995
+    },
+    {
+      "geoid": "25017",
+      "name": "Middlesex County, Massachusetts",
+      "builtBefore1940": 214248,
+      "moe": 2739,
+      "share": 0.3225
+    },
+    {
+      "geoid": "06075",
+      "name": "San Francisco County, California",
+      "builtBefore1940": 187447,
+      "moe": 2382,
+      "share": 0.4521
+    },
+    {
+      "geoid": "36005",
+      "name": "Bronx County, New York",
+      "builtBefore1940": 186431,
+      "moe": 3448,
+      "share": 0.3333
+    },
+    {
+      "geoid": "39035",
+      "name": "Cuyahoga County, Ohio",
+      "builtBefore1940": 171286,
+      "moe": 2774,
+      "share": 0.2784
+    },
+    {
+      "geoid": "42003",
+      "name": "Allegheny County, Pennsylvania",
+      "builtBefore1940": 170768,
+      "moe": 2591,
+      "share": 0.2814
+    },
+    {
+      "geoid": "26163",
+      "name": "Wayne County, Michigan",
+      "builtBefore1940": 170163,
+      "moe": 2733,
+      "share": 0.2124
+    },
+    {
+      "geoid": "25025",
+      "name": "Suffolk County, Massachusetts",
+      "builtBefore1940": 162961,
+      "moe": 2677,
+      "share": 0.4561
+    },
+    {
+      "geoid": "36029",
+      "name": "Erie County, New York",
+      "builtBefore1940": 129729,
+      "moe": 2242,
+      "share": 0.294
+    },
+    {
+      "geoid": "06001",
+      "name": "Alameda County, California",
+      "builtBefore1940": 124974,
+      "moe": 1997,
+      "share": 0.1961
+    },
+    {
+      "geoid": "24510",
+      "name": "Baltimore city, Maryland",
+      "builtBefore1940": 122342,
+      "moe": 2217,
+      "share": 0.4147
+    },
+    {
+      "geoid": "55079",
+      "name": "Milwaukee County, Wisconsin",
+      "builtBefore1940": 118608,
+      "moe": 2106,
+      "share": 0.278
+    },
+    {
+      "geoid": "25009",
+      "name": "Essex County, Massachusetts",
+      "builtBefore1940": 114098,
+      "moe": 2139,
+      "share": 0.346
+    },
+    {
+      "geoid": "11001",
+      "name": "District of Columbia, District of Columbia",
+      "builtBefore1940": 113693,
+      "moe": 2357,
+      "share": 0.3149
+    },
+    {
+      "geoid": "53033",
+      "name": "King County, Washington",
+      "builtBefore1940": 109564,
+      "moe": 2274,
+      "share": 0.1092
+    },
+    {
+      "geoid": "36119",
+      "name": "Westchester County, New York",
+      "builtBefore1940": 108495,
+      "moe": 2478,
+      "share": 0.2751
+    },
+    {
+      "geoid": "27053",
+      "name": "Hennepin County, Minnesota",
+      "builtBefore1940": 106027,
+      "moe": 1941,
+      "share": 0.1855
+    },
+    {
+      "geoid": "29510",
+      "name": "St. Louis city, Missouri",
+      "builtBefore1940": 100811,
+      "moe": 1884,
+      "share": 0.579
+    },
+    {
+      "geoid": "44007",
+      "name": "Providence County, Rhode Island",
+      "builtBefore1940": 99748,
+      "moe": 2259,
+      "share": 0.3591
+    },
+    {
+      "geoid": "34013",
+      "name": "Essex County, New Jersey",
+      "builtBefore1940": 98068,
+      "moe": 2209,
+      "share": 0.291
+    }
+  ],
+  "states": [
+    {
+      "state": "District of Columbia",
+      "housingUnits": 361014,
+      "builtBefore1940": 113693,
+      "share": 0.3149
+    },
+    {
+      "state": "Massachusetts",
+      "housingUnits": 3030406,
+      "builtBefore1940": 925420,
+      "share": 0.3054
+    },
+    {
+      "state": "New York",
+      "housingUnits": 8585241,
+      "builtBefore1940": 2598944,
+      "share": 0.3027
+    },
+    {
+      "state": "Rhode Island",
+      "housingUnits": 485932,
+      "builtBefore1940": 146414,
+      "share": 0.3013
+    },
+    {
+      "state": "Pennsylvania",
+      "housingUnits": 5806452,
+      "builtBefore1940": 1450253,
+      "share": 0.2498
+    },
+    {
+      "state": "Vermont",
+      "housingUnits": 339042,
+      "builtBefore1940": 82559,
+      "share": 0.2435
+    },
+    {
+      "state": "Iowa",
+      "housingUnits": 1437699,
+      "builtBefore1940": 338420,
+      "share": 0.2354
+    },
+    {
+      "state": "Maine",
+      "housingUnits": 751876,
+      "builtBefore1940": 171959,
+      "share": 0.2287
+    },
+    {
+      "state": "Illinois",
+      "housingUnits": 5457452,
+      "builtBefore1940": 1104684,
+      "share": 0.2024
+    },
+    {
+      "state": "Connecticut",
+      "housingUnits": 1541822,
+      "builtBefore1940": 311584,
+      "share": 0.2021
+    },
+    {
+      "state": "Ohio",
+      "housingUnits": 5292391,
+      "builtBefore1940": 1005529,
+      "share": 0.19
+    },
+    {
+      "state": "Nebraska",
+      "housingUnits": 863444,
+      "builtBefore1940": 161475,
+      "share": 0.187
+    },
+    {
+      "state": "New Hampshire",
+      "housingUnits": 648472,
+      "builtBefore1940": 120399,
+      "share": 0.1857
+    },
+    {
+      "state": "Wisconsin",
+      "housingUnits": 2778572,
+      "builtBefore1940": 495155,
+      "share": 0.1782
+    },
+    {
+      "state": "New Jersey",
+      "housingUnits": 3791354,
+      "builtBefore1940": 658007,
+      "share": 0.1736
+    },
+    {
+      "state": "Indiana",
+      "housingUnits": 2976568,
+      "builtBefore1940": 474947,
+      "share": 0.1596
+    },
+    {
+      "state": "South Dakota",
+      "housingUnits": 408584,
+      "builtBefore1940": 64494,
+      "share": 0.1578
+    },
+    {
+      "state": "Minnesota",
+      "housingUnits": 2545030,
+      "builtBefore1940": 395770,
+      "share": 0.1555
+    },
+    {
+      "state": "Kansas",
+      "housingUnits": 1293635,
+      "builtBefore1940": 198683,
+      "share": 0.1536
+    },
+    {
+      "state": "West Virginia",
+      "housingUnits": 861325,
+      "builtBefore1940": 127962,
+      "share": 0.1486
+    },
+    {
+      "state": "Michigan",
+      "housingUnits": 4622236,
+      "builtBefore1940": 672770,
+      "share": 0.1456
+    },
+    {
+      "state": "Missouri",
+      "housingUnits": 2825287,
+      "builtBefore1940": 375257,
+      "share": 0.1328
+    },
+    {
+      "state": "Montana",
+      "housingUnits": 528419,
+      "builtBefore1940": 67412,
+      "share": 0.1276
+    },
+    {
+      "state": "North Dakota",
+      "housingUnits": 377281,
+      "builtBefore1940": 43263,
+      "share": 0.1147
+    },
+    {
+      "state": "Wyoming",
+      "housingUnits": 277141,
+      "builtBefore1940": 29882,
+      "share": 0.1078
+    },
+    {
+      "state": "Maryland",
+      "housingUnits": 2560784,
+      "builtBefore1940": 273682,
+      "share": 0.1069
+    },
+    {
+      "state": "Oregon",
+      "housingUnits": 1857992,
+      "builtBefore1940": 198252,
+      "share": 0.1067
+    },
+    {
+      "state": "Washington",
+      "housingUnits": 3306620,
+      "builtBefore1940": 317148,
+      "share": 0.0959
+    },
+    {
+      "state": "Kentucky",
+      "housingUnits": 2023116,
+      "builtBefore1940": 181655,
+      "share": 0.0898
+    },
+    {
+      "state": "California",
+      "housingUnits": 14644735,
+      "builtBefore1940": 1298992,
+      "share": 0.0887
+    },
+    {
+      "state": "Delaware",
+      "housingUnits": 464203,
+      "builtBefore1940": 37351,
+      "share": 0.0805
+    },
+    {
+      "state": "Idaho",
+      "housingUnits": 795014,
+      "builtBefore1940": 62668,
+      "share": 0.0788
+    },
+    {
+      "state": "Virginia",
+      "housingUnits": 3684756,
+      "builtBefore1940": 259275,
+      "share": 0.0704
+    },
+    {
+      "state": "Colorado",
+      "housingUnits": 2589053,
+      "builtBefore1940": 180970,
+      "share": 0.0699
+    },
+    {
+      "state": "Oklahoma",
+      "housingUnits": 1775127,
+      "builtBefore1940": 122860,
+      "share": 0.0692
+    },
+    {
+      "state": "Louisiana",
+      "housingUnits": 2108902,
+      "builtBefore1940": 129432,
+      "share": 0.0614
+    },
+    {
+      "state": "Utah",
+      "housingUnits": 1223468,
+      "builtBefore1940": 74790,
+      "share": 0.0611
+    },
+    {
+      "state": "Tennessee",
+      "housingUnits": 3143670,
+      "builtBefore1940": 175771,
+      "share": 0.0559
+    },
+    {
+      "state": "North Carolina",
+      "housingUnits": 4895668,
+      "builtBefore1940": 241025,
+      "share": 0.0492
+    },
+    {
+      "state": "Alabama",
+      "housingUnits": 2337265,
+      "builtBefore1940": 113460,
+      "share": 0.0485
+    },
+    {
+      "state": "New Mexico",
+      "housingUnits": 956964,
+      "builtBefore1940": 42239,
+      "share": 0.0441
+    },
+    {
+      "state": "Arkansas",
+      "housingUnits": 1394673,
+      "builtBefore1940": 57526,
+      "share": 0.0412
+    },
+    {
+      "state": "Mississippi",
+      "housingUnits": 1341114,
+      "builtBefore1940": 53957,
+      "share": 0.0402
+    },
+    {
+      "state": "Georgia",
+      "housingUnits": 4541835,
+      "builtBefore1940": 178816,
+      "share": 0.0394
+    },
+    {
+      "state": "South Carolina",
+      "housingUnits": 2443039,
+      "builtBefore1940": 88106,
+      "share": 0.0361
+    },
+    {
+      "state": "Hawaii",
+      "housingUnits": 567896,
+      "builtBefore1940": 18365,
+      "share": 0.0323
+    },
+    {
+      "state": "Texas",
+      "housingUnits": 12128515,
+      "builtBefore1940": 375168,
+      "share": 0.0309
+    },
+    {
+      "state": "Florida",
+      "housingUnits": 10256470,
+      "builtBefore1940": 199988,
+      "share": 0.0195
+    },
+    {
+      "state": "Alaska",
+      "housingUnits": 328491,
+      "builtBefore1940": 5431,
+      "share": 0.0165
+    },
+    {
+      "state": "Arizona",
+      "housingUnits": 3192839,
+      "builtBefore1940": 44168,
+      "share": 0.0138
+    },
+    {
+      "state": "Nevada",
+      "housingUnits": 1326471,
+      "builtBefore1940": 14426,
+      "share": 0.0109
+    }
+  ],
+  "dataQuality": {
+    "countiesWithMoeOverHalf": 149
+  },
+  "age": {
+    "usMedianYearBuilt": 1980,
+    "usMedianMoe": 1,
+    "shareBefore1950": 0.1616,
+    "shareBefore1960": 0.2564,
+    "shareBefore1980": 0.4965,
+    "stateMedians": [
+      {
+        "state": "District of Columbia",
+        "medianYearBuilt": 1958,
+        "moe": 1
+      },
+      {
+        "state": "New York",
+        "medianYearBuilt": 1959,
+        "moe": 1
+      },
+      {
+        "state": "Rhode Island",
+        "medianYearBuilt": 1962,
+        "moe": 1
+      },
+      {
+        "state": "Massachusetts",
+        "medianYearBuilt": 1964,
+        "moe": 1
+      },
+      {
+        "state": "Pennsylvania",
+        "medianYearBuilt": 1965,
+        "moe": 1
+      },
+      {
+        "state": "Connecticut",
+        "medianYearBuilt": 1967,
+        "moe": 1
+      },
+      {
+        "state": "New Jersey",
+        "medianYearBuilt": 1970,
+        "moe": 1
+      },
+      {
+        "state": "Ohio",
+        "medianYearBuilt": 1970,
+        "moe": 1
+      },
+      {
+        "state": "Illinois",
+        "medianYearBuilt": 1971,
+        "moe": 2
+      },
+      {
+        "state": "Iowa",
+        "medianYearBuilt": 1972,
+        "moe": 1
+      },
+      {
+        "state": "Michigan",
+        "medianYearBuilt": 1972,
+        "moe": 1
+      },
+      {
+        "state": "Nebraska",
+        "medianYearBuilt": 1975,
+        "moe": 1
+      },
+      {
+        "state": "Wisconsin",
+        "medianYearBuilt": 1975,
+        "moe": 1
+      },
+      {
+        "state": "California",
+        "medianYearBuilt": 1976,
+        "moe": 1
+      },
+      {
+        "state": "Indiana",
+        "medianYearBuilt": 1976,
+        "moe": 1
+      },
+      {
+        "state": "Kansas",
+        "medianYearBuilt": 1976,
+        "moe": 1
+      },
+      {
+        "state": "Vermont",
+        "medianYearBuilt": 1976,
+        "moe": 1
+      },
+      {
+        "state": "West Virginia",
+        "medianYearBuilt": 1976,
+        "moe": 1
+      },
+      {
+        "state": "Maine",
+        "medianYearBuilt": 1977,
+        "moe": 1
+      },
+      {
+        "state": "Missouri",
+        "medianYearBuilt": 1978,
+        "moe": 1
+      },
+      {
+        "state": "Maryland",
+        "medianYearBuilt": 1979,
+        "moe": 1
+      },
+      {
+        "state": "Minnesota",
+        "medianYearBuilt": 1979,
+        "moe": 1
+      },
+      {
+        "state": "New Hampshire",
+        "medianYearBuilt": 1979,
+        "moe": 1
+      },
+      {
+        "state": "Hawaii",
+        "medianYearBuilt": 1980,
+        "moe": 1
+      },
+      {
+        "state": "Oklahoma",
+        "medianYearBuilt": 1980,
+        "moe": 1
+      },
+      {
+        "state": "South Dakota",
+        "medianYearBuilt": 1980,
+        "moe": 1
+      },
+      {
+        "state": "Montana",
+        "medianYearBuilt": 1981,
+        "moe": 1
+      },
+      {
+        "state": "Oregon",
+        "medianYearBuilt": 1981,
+        "moe": 1
+      },
+      {
+        "state": "Wyoming",
+        "medianYearBuilt": 1981,
+        "moe": 2
+      },
+      {
+        "state": "Kentucky",
+        "medianYearBuilt": 1982,
+        "moe": 1
+      },
+      {
+        "state": "North Dakota",
+        "medianYearBuilt": 1982,
+        "moe": 1
+      },
+      {
+        "state": "Louisiana",
+        "medianYearBuilt": 1983,
+        "moe": 1
+      },
+      {
+        "state": "Virginia",
+        "medianYearBuilt": 1984,
+        "moe": 1
+      },
+      {
+        "state": "New Mexico",
+        "medianYearBuilt": 1985,
+        "moe": 2
+      },
+      {
+        "state": "Washington",
+        "medianYearBuilt": 1985,
+        "moe": 1
+      },
+      {
+        "state": "Alabama",
+        "medianYearBuilt": 1986,
+        "moe": 1
+      },
+      {
+        "state": "Alaska",
+        "medianYearBuilt": 1986,
+        "moe": 2
+      },
+      {
+        "state": "Mississippi",
+        "medianYearBuilt": 1986,
+        "moe": 1
+      },
+      {
+        "state": "Arkansas",
+        "medianYearBuilt": 1987,
+        "moe": 1
+      },
+      {
+        "state": "Delaware",
+        "medianYearBuilt": 1987,
+        "moe": 1
+      },
+      {
+        "state": "Tennessee",
+        "medianYearBuilt": 1987,
+        "moe": 1
+      },
+      {
+        "state": "Colorado",
+        "medianYearBuilt": 1988,
+        "moe": 1
+      },
+      {
+        "state": "Florida",
+        "medianYearBuilt": 1988,
+        "moe": 1
+      },
+      {
+        "state": "Idaho",
+        "medianYearBuilt": 1991,
+        "moe": 1
+      },
+      {
+        "state": "North Carolina",
+        "medianYearBuilt": 1991,
+        "moe": 1
+      },
+      {
+        "state": "Arizona",
+        "medianYearBuilt": 1992,
+        "moe": 1
+      },
+      {
+        "state": "Georgia",
+        "medianYearBuilt": 1992,
+        "moe": 1
+      },
+      {
+        "state": "South Carolina",
+        "medianYearBuilt": 1992,
+        "moe": 1
+      },
+      {
+        "state": "Texas",
+        "medianYearBuilt": 1992,
+        "moe": 1
+      },
+      {
+        "state": "Utah",
+        "medianYearBuilt": 1992,
+        "moe": 1
+      },
+      {
+        "state": "Nevada",
+        "medianYearBuilt": 1996,
+        "moe": 1
+      }
+    ]
+  },
+  "faq": [
+    {
+      "q": "What percentage of US homes were built before 1940?",
+      "a": "11.7%. Of 143,775,355 housing units in the 50 states and the District of Columbia, 16,880,456 were built in 1939 or earlier, according to the Census Bureau's American Community Survey 5-year estimates, 2020-2024."
+    },
+    {
+      "q": "How old is the average house in the US?",
+      "a": "The median US housing unit was built in 1980 (margin of error plus or minus 1 year), according to the Census Bureau's American Community Survey, 2020-2024. About half of all housing units, 49.7%, were built before 1980; 25.6% before 1960; and 16.2% before 1950."
+    },
+    {
+      "q": "Which state has the oldest housing?",
+      "a": "By share built before 1940, Massachusetts (30.5%), then New York (30.3%) and Rhode Island (30.1%). By median year built, New York has the oldest housing of any state, 1959; the District of Columbia's median is 1958. Nevada has the newest, 1996."
+    },
+    {
+      "q": "Which US county has the oldest housing?",
+      "a": "Among counties with at least 10,000 housing units, St. Louis city, Missouri: 57.9% of its housing was built before 1940, and its median year built falls in the Census bracket of 1939 or earlier. Cook County, Illinois has the most pre-1940 housing units of any county, 632,386."
+    },
+    {
+      "q": "How can I find out what year my house was built?",
+      "a": "Look up the parcel on your county assessor's or property appraiser's website and find the year built field, then check the building permit history for the address. Counties define the field differently: Sarasota County, Florida's property appraiser defines Actual Year Built as the year an improvement is completed, while Gunnison County, Colorado's assessor records Original Year Built as the year the construction permit was initiated. An effective year built is not the construction year."
+    },
+    {
+      "q": "Where can I download housing age data by county?",
+      "a": "This study publishes a CSV for all 3,144 counties in the 50 states and DC, with housing units by decade built, the share built before 1940 and before 1960, the median year built and the Census margins of error, under a CC BY 4.0 licence. The source is Census table B25034 (Year Structure Built) and B25035 (Median Year Structure Built), 2020-2024."
+    }
+  ]
+}

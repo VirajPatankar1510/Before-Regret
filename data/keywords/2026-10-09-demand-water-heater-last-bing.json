@@ -1,0 +1,74 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-09T14:50:14.355Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "water heater last",
+    "water heater lifespan",
+    "clay sewer pipe",
+    "galvanized pipes last",
+    "furnace last",
+    "heat exchanger crack"
+  ],
+  "keywords": [
+    {
+      "keyword": "water heater last",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 396,
+      "kind": "seed"
+    },
+    {
+      "keyword": "how long does a water heater last",
+      "search_volume": 371,
+      "metric": "market",
+      "broad_impressions": 371,
+      "kind": "related"
+    },
+    {
+      "keyword": "water heater lifespan",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "clay sewer pipe",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "galvanized pipes last",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "furnace last",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 18,
+      "kind": "seed"
+    },
+    {
+      "keyword": "how long does a furnace last",
+      "search_volume": 18,
+      "metric": "market",
+      "broad_impressions": 18,
+      "kind": "related"
+    },
+    {
+      "keyword": "heat exchanger crack",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

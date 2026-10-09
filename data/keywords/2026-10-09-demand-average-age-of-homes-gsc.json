@@ -1,0 +1,17 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-09T15:21:28.799Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "average age of homes",
+    "oldest housing stock",
+    "homes built before 1940",
+    "median year built",
+    "how old is my house",
+    "percentage of homes built before"
+  ],
+  "keywords": []
+}

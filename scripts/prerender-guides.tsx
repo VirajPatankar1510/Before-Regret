@@ -568,6 +568,17 @@ async function run() {
         return `US residential building permits by county from the Census Building Permits Survey, rebuilt monthly. Year to date through ${through} against the same months a year earlier: all permitted units ${sg(g.national.all.changePct)} (${g.national.all.prior.toLocaleString('en-US')} to ${g.national.all.current.toLocaleString('en-US')}), single-family ${sg(sz[0].changePct)}, buildings of 5+ units ${sg(sz[3].changePct)}. Three of the four size classes fell; the composite is flat because the fourth offset them. House permits fell in ${g.findings.countiesHousesFell} of ${g.findings.eligibleCounties} counties passing the volume and reporting thresholds. Counties below 100 units or below 80% directly reported are withheld, not estimated. Quotable key findings: https://www.beforeregret.com/research/permit-pulse/#key-findings -- embeddable county lookup: https://www.beforeregret.com/research/permit-pulse/embed/`;
       })(),
       data: ['permit-pulse-by-county.csv', 'permit-pulse-figures.json'] },
+    // Ninth study (2026-10-09). Summary READ from its figures file, same reason as Permit Pulse.
+    { slug: 'oldest-housing', title: 'Before 1940',
+      summary: ((): string => {
+        const p = path.join(process.cwd(), 'docs', 'data', 'oldest-housing-figures.json');
+        if (!fs.existsSync(p)) throw new Error('[prerender-guides] llms.txt lists oldest-housing but docs/data/oldest-housing-figures.json is missing -- run scripts/build-oldest-housing-study.ts');
+        const g = JSON.parse(fs.readFileSync(p, 'utf8'));
+        const n = (v: number) => v.toLocaleString('en-US');
+        const top = g.topByShare[0], cnt = g.topByCount[0];
+        return `Housing units built before 1940 in every US county (50 states and DC), from Census ACS 5-year table B25034, ${g.vintage}. ${n(g.national.builtBefore1940)} of ${n(g.national.housingUnits)} units (${(g.national.shareBefore1940 * 100).toFixed(1)}%) were built before 1940; half of them are in ${g.concentration.countiesHoldingHalf} of ${n(g.scope.counties)} counties. Highest share among counties with 10,000+ units: ${top.name}, ${(top.share * 100).toFixed(1)}%. Most by count: ${cnt.name}, ${n(cnt.builtBefore1940)}. Median US year built: ${g.age.usMedianYearBuilt} (Census B25035); ${(g.age.shareBefore1980 * 100).toFixed(1)}% of units were built before 1980. Year built is self-reported and is not evidence of what is inside any house. Embeddable county lookup: https://www.beforeregret.com/research/oldest-housing/embed/`;
+      })(),
+      data: ['oldest-housing-by-county.csv', 'oldest-housing-figures.json'] },
   ];
   // Asserted against docs/ rather than dist/, because prerender-research.tsx runs AFTER this script
   // in the build, so dist/research/ does not exist yet at this point. docs/<slug>.html is the source
