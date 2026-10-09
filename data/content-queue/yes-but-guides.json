@@ -127,7 +127,11 @@
         "/guides/legalize-unpermitted-deck/",
         "/guides/find-unpermitted-work-before-buying/"
       ],
-      "status": "queued"
+      "status": "published",
+      "publishedAt": "2026-10-09",
+      "readOn": "2026-11-13",
+      "note": "Article #326. Owner said \"publish\" on 2026-10-09 (third of the strand that week; the two-a-week pace is Claude's convention). Inbound links placed by hand (suggester found no distinctive terms) from legalize-unpermitted-deck and find-unpermitted-work-before-buying. Tier 3, so no targetKeywords entry.",
+      "decision": "2026-10-09: coverage check passed -- legalize-unpermitted-deck covers the after-the-fact permit, find-unpermitted-work-before-buying covers discovery and negotiation BEFORE closing, unpermitted-work-behind-the-wall is contractor-facing; none answers whether the seller can be made to pay after closing. Demand tier 3 (no first-party signal), so it runs as an experiment with a stop condition. Ledger: Texas Property Code 5.008 and Washington RCW 64.06 read at the legislatures' sites; California cut (site down for maintenance)."
     }
   ]
 }

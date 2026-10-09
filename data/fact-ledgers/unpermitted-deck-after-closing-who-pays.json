@@ -1,0 +1,111 @@
+{
+  "slug": "unpermitted-deck-after-closing-who-pays",
+  "question": "Can you make the seller pay for an unpermitted deck you find after closing?",
+  "verdictConfirmed": "Sometimes. Texas and Washington both make a seller answer, on a statutory form, what they know about work done without permits, and a seller who knew and answered wrongly may face a claim. But Washington's statute says a seller is not liable for an error they had no actual knowledge of, the disclosure forms are not warranties, some transfers (foreclosure, estate sales) are exempt from them, and Washington's chapter creates no new after-closing remedy beyond rescission before closing: any claim rests on other law or the contract. Whether a particular buyer can recover is a question for a real-estate attorney in that state.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Texas Property Code Section 5.008 requires a seller of residential property with not more than one dwelling unit to give the purchaser a written disclosure notice.",
+      "quote": "Sec. 5.008. SELLER'S DISCLOSURE OF PROPERTY CONDITION. (a) A seller of residential real property comprising not more than one dwelling unit located in this state shall give to the purchaser of the property a written notice as prescribed by this section or a written notice substantially similar to the notice prescribed by this section which contains, at a minimum, all of the items in the notice prescribed by this section.",
+      "url": "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.5.htm#5.008",
+      "readOn": "2026-10-09",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "The Texas notice asks whether the seller is aware of room additions, structural modifications, or other alterations or repairs made without necessary permits or not in compliance with building codes in effect at that time; the seller writes Yes if aware and No if not aware.",
+      "quote": "9. Are you (Seller) aware of any of the following? Write Yes (Y) if you are aware, write No (N) if you are not aware. __ Room additions, structural modifications, or other alterations or repairs made without necessary permits or not in compliance with building codes in effect at that time.",
+      "url": "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.5.htm#5.008",
+      "readOn": "2026-10-09",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "The Texas notice states it is a disclosure of the seller's knowledge as of the date signed, not a substitute for inspections, and not a warranty of any kind.",
+      "quote": "THIS NOTICE IS A DISCLOSURE OF SELLER'S KNOWLEDGE OF THE CONDITION OF THE PROPERTY AS OF THE DATE SIGNED BY SELLER AND IS NOT A SUBSTITUTE FOR ANY INSPECTIONS OR WARRANTIES THE PURCHASER MAY WISH TO OBTAIN. IT IS NOT A WARRANTY OF ANY KIND BY SELLER OR SELLER'S AGENTS.",
+      "url": "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.5.htm#5.008",
+      "readOn": "2026-10-09",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "The Texas section does not apply to transfers that include a court order or foreclosure sale, a fiduciary administering a decedent's estate, and a new home never occupied as a residence.",
+      "quote": "(e) This section does not apply to a transfer: (1) pursuant to a court order or foreclosure sale; ... (5) by a fiduciary in the course of the administration of a decedent's estate, guardianship, conservatorship, or trust; ... (10) of a new residence of not more than one dwelling unit which has not previously been occupied for residential purposes",
+      "url": "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.5.htm#5.008",
+      "readOn": "2026-10-09",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "In Texas the notice is due on or before the effective date of the contract; if the contract is signed without it, the purchaser may terminate for any reason within seven days after receiving the notice.",
+      "quote": "(f) The notice shall be delivered by the seller to the purchaser on or before the effective date of an executory contract binding the purchaser to purchase the property. If a contract is entered without the seller providing the notice required by this section, the purchaser may terminate the contract for any reason within seven days after receiving the notice.",
+      "url": "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.5.htm#5.008",
+      "readOn": "2026-10-09",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "Washington's seller disclosure statement (RCW 64.06.020) asks whether there have been any conversions, additions, or remodeling, and if yes whether all building permits and all final inspections were obtained, with Yes, No and Don't know as the answers.",
+      "quote": "*C. Have there been any conversions, additions, or remodeling? [ ] Yes [ ] No [ ] Don't know *(1) If yes, were all building permits obtained? [ ] Yes [ ] No [ ] Don't know *(2) If yes, were all final inspections obtained? [ ] Yes [ ] No [ ] Don't know",
+      "url": "https://app.leg.wa.gov/rcw/default.aspx?cite=64.06.020",
+      "readOn": "2026-10-09",
+      "method": "webfetch"
+    },
+    {
+      "id": "f7",
+      "claim": "Washington's statute says the disclosure statement is a disclosure made by the seller and shall not be construed as a warranty of any kind.",
+      "quote": "The seller disclosure statement shall be only a disclosure made by the seller, and not any real estate licensee involved in the transaction, and shall not be construed as a warranty of any kind by the seller or any real estate licensee involved in the transaction.",
+      "url": "https://app.leg.wa.gov/rcw/default.aspx?cite=64.06.020",
+      "readOn": "2026-10-09",
+      "method": "webfetch"
+    },
+    {
+      "id": "f8",
+      "claim": "In Washington the statement must be delivered no later than five business days after mutual acceptance of the purchase contract, unless otherwise agreed.",
+      "quote": "Delivery of the disclosure statement must occur not later than five business days, unless otherwise agreed, after mutual acceptance of a written contract to purchase between a buyer and a seller.",
+      "url": "https://app.leg.wa.gov/rcw/default.aspx?cite=64.06.020",
+      "readOn": "2026-10-09",
+      "method": "webfetch"
+    },
+    {
+      "id": "f9",
+      "claim": "Under RCW 64.06.030 the buyer has three business days after receiving the statement, or as otherwise agreed, to accept it or rescind the purchase agreement and get deposits back.",
+      "quote": "Within three business days, or as otherwise agreed to, of receipt of the real property transfer disclosure statement, the buyer shall have the right to exercise one of the following two options: (1) Approving and accepting the real property transfer disclosure statement; or (2) rescinding the agreement for the purchase and sale of the property, which decision may be made by the buyer in the buyer's sole discretion. ... the buyer shall be entitled to immediate return of all deposits",
+      "url": "https://app.leg.wa.gov/rcw/default.aspx?cite=64.06.030",
+      "readOn": "2026-10-09",
+      "method": "webfetch"
+    },
+    {
+      "id": "f10",
+      "claim": "Under RCW 64.06.050 a seller is not liable for an error, inaccuracy or omission in the statement if the seller had no actual knowledge of it, and, without actual knowledge, is not liable where the disclosure was based on information from public agencies or licensed professionals such as a structural inspector or contractor.",
+      "quote": "(1) The seller shall not be liable for any error, inaccuracy, or omission in the real property transfer disclosure statement if the seller had no actual knowledge of the error, inaccuracy, or omission. Unless the seller has actual knowledge of an error, inaccuracy, or omission in a real property transfer disclosure statement, the seller shall not be liable for such error, inaccuracy, or omission if the disclosure was based on information provided by public agencies, or by other persons providing information within the scope of their professional license or expertise, including, but not limited to, a report or opinion delivered by a land surveyor, title company, title insurance company, structural inspector, pest inspector, licensed engineer, or contractor.",
+      "url": "https://app.leg.wa.gov/rcw/default.aspx?cite=64.06.050",
+      "readOn": "2026-10-09",
+      "method": "webfetch"
+    },
+    {
+      "id": "f11",
+      "claim": "RCW 64.06.070 says the disclosure chapter does not take away a buyer's existing rights against the seller under common law, statute or contract, and creates no new remedy other than the rescission right within the chapter's time limits.",
+      "quote": "Except as provided in RCW 64.06.050, nothing in this chapter shall extinguish or impair any rights or remedies of a buyer of real estate against the seller or against any agent acting for the seller otherwise existing pursuant to common law, statute, or contract; nor shall anything in this chapter create any new right or remedy for a buyer of real property other than the right of recision exercised on the basis and within the time limits provided in this chapter.",
+      "url": "https://app.leg.wa.gov/rcw/default.aspx?cite=64.06.070",
+      "readOn": "2026-10-09",
+      "method": "webfetch"
+    },
+    {
+      "id": "f12",
+      "claim": "Washington's disclosure chapter (RCW 64.06.010) does not apply to a foreclosure or deed in lieu, a sale by the personal representative of a decedent's estate, or a sale where the buyer expressly waived the statement.",
+      "quote": "This chapter does not apply to the following transfers of real property: (1) A foreclosure or deed-in-lieu of foreclosure; ... (6) A transfer made by the personal representative of the estate of the decedent or by a trustee in bankruptcy; and (7) A transfer in which the buyer has expressly waived the receipt of the seller disclosure statement.",
+      "url": "https://app.leg.wa.gov/rcw/default.aspx?cite=64.06.010",
+      "readOn": "2026-10-09",
+      "method": "webfetch"
+    }
+  ],
+  "cut": [
+    { "claim": "California's Transfer Disclosure Statement (Civil Code 1102.6) and its permit line", "why": "leginfo.legislature.ca.gov returned 503 Service Unavailable (maintenance) in the browser and 403 to WebFetch on 2026-10-09; not read, so not written" },
+    { "claim": "an as-is clause weakens or does not weaken a buyer's claim", "why": "no statute or official source on as-is sales was read" },
+    { "claim": "filing deadlines / statutes of limitation for misrepresentation claims", "why": "not read at a primary source; state-specific; left to the attorney" },
+    { "claim": "'most states require sellers to disclose known unpermitted work' (wording on two existing guides)", "why": "no multi-state source read; only two states verified, so the article names those two and says other states differ" },
+    { "claim": "code enforcement obligation follows the property to the new owner", "why": "stated on existing guides but not read at a primary source for this ledger; the article links to the legalize-a-deck guide instead of restating it" }
+  ],
+  "blockedSources": ["leginfo.legislature.ca.gov (503 maintenance in browser, 403 to WebFetch, 2026-10-09) -- an outage, not a bot check; not worked around"]
+}
