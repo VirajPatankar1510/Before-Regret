@@ -55,6 +55,95 @@ if (counties.length < 500) throw new Error(`ABORT: only ${counties.length} count
 
 const TZS = [...new Set(counties.map((c) => c.z))].sort();
 
+// -----------------------------------------------------------------------------------------------
+// STATIC RESULTS, KEY FINDINGS AND "CITE THIS" (drafted 2026-10-09 for the LLM-citation plan).
+//
+// Everything the calculator shows is computed in the reader's browser, so a crawler or an answer
+// engine fetching this page saw no result at all -- nothing it could quote. This block computes a
+// small set of real results at build time with the self-tested engine (scripts/solar-window.ts) and
+// prints them as plain HTML, then states the key findings from those same numbers.
+//
+// No figure here is typed. The table cells come from windowDay(); the findings read the same
+// values; and each comparative word in a finding ("more than three times", "about twice", "no
+// direct sun") is asserted against the numbers below, so if the engine ever changes, the build
+// stops instead of the sentence quietly becoming false. assertKeyFindingsNumbers() then checks that
+// every number in the findings also appears in the tables.
+//
+// The two counties are chosen for spread (47.5 N and 25.6 N), not to repeat the Cook / Maricopa
+// pair the south-facing-house guide already tabulates.
+const { windowDay } = await import('./solar-window.js');
+const { KF_CSS, keyFindingsBlock, assertKeyFindingsNumbers } = await import('./lib/keyFindings.js');
+
+const pickCounty = (fips: string) => {
+  const c = counties.find((x) => x.f === fips);
+  if (!c) throw new Error(`ABORT: county ${fips} is not in the location file`);
+  return c;
+};
+const KING = pickCounty('53033');
+const MIAMI = pickCounty('12086');
+const SAMPLE_DIRS: Array<[string, number]> = [
+  ['North', 0], ['Northeast', 45], ['East', 90], ['Southeast', 135],
+  ['South', 180], ['Southwest', 225], ['West', 270], ['Northwest', 315],
+];
+const dayFor = (c: { y: number; x: number; z: string }, m: number, d: number, az: number, cut = 0) =>
+  windowDay(2026, m, d, c.y, c.x, c.z, az, cut);
+const sample = SAMPLE_DIRS.map(([label, az]) => ({
+  label, az,
+  kingDec: dayFor(KING, 12, 21, az).directMinutes, kingJun: dayFor(KING, 6, 21, az).directMinutes,
+  miaDec: dayFor(MIAMI, 12, 21, az).directMinutes, miaJun: dayFor(MIAMI, 6, 21, az).directMinutes,
+}));
+const row = (label: string) => sample.find((s) => s.label === label)!;
+const N = row('North'), E = row('East'), S = row('South');
+const kingEastOpen = dayFor(KING, 12, 21, 90, 0);
+const kingEastObs = dayFor(KING, 12, 21, 90, 15);
+const clock = (v: number | null) => {
+  if (v === null) throw new Error('ABORT: a finding needs a time the engine did not return');
+  return `${String(Math.floor(v / 60)).padStart(2, '0')}:${String(v % 60).padStart(2, '0')}`;
+};
+
+// The words in the findings, checked against the numbers they describe.
+if (N.kingDec !== 0 || N.miaDec !== 0) throw new Error('ABORT: finding says a north window gets no direct sun on Dec 21');
+if (!(N.miaJun > 3 * S.miaJun)) throw new Error('ABORT: finding says Miami north > three times south in June');
+for (const [s, e] of [[S.kingDec, E.kingDec], [S.miaDec, E.miaDec]]) {
+  if (Math.abs(s / e - 2) > 0.1) throw new Error(`ABORT: finding says south is about twice east in December (${s}/${e})`);
+}
+if (kingEastObs.morningDirectMinutes !== 0) throw new Error('ABORT: finding says the obstruction removes the morning');
+
+const SAMPLE_TABLE = `<div class="scroll"><table>
+      <thead><tr><th>Window faces</th><th>King Co., WA<br>Dec 21</th><th>King Co., WA<br>Jun 21</th><th>Miami-Dade, FL<br>Dec 21</th><th>Miami-Dade, FL<br>Jun 21</th></tr></thead>
+      <tbody>
+${sample.map((s) => `        <tr><td>${s.label}</td><td>${s.kingDec} min</td><td>${s.kingJun} min</td><td>${s.miaDec} min</td><td>${s.miaJun} min</td></tr>`).join('\n')}
+      </tbody>
+    </table></div>
+    <p class="cap">Minutes of direct sun reaching the glass on the shortest and longest days of 2026, open
+    horizon, at each county&rsquo;s US Census Gazetteer point (King County ${KING.y.toFixed(2)}&deg;N, Miami-Dade
+    ${MIAMI.y.toFixed(2)}&deg;N).</p>
+    <div class="scroll"><table>
+      <thead><tr><th>East window, King Co., WA, Dec 21</th><th>Sunrise</th><th>First direct sun</th><th>Total</th><th>Before 9am</th></tr></thead>
+      <tbody>
+        <tr><td>Open horizon</td><td>${clock(kingEastOpen.sunriseMin)}</td><td>${clock(kingEastOpen.firstDirectMin)}</td><td>${kingEastOpen.directMinutes} min</td><td>${kingEastOpen.morningDirectMinutes} min</td></tr>
+        <tr><td>Lowest 15&deg; of sky blocked</td><td>${clock(kingEastObs.sunriseMin)}</td><td>${clock(kingEastObs.firstDirectMin)}</td><td>${kingEastObs.directMinutes} min</td><td>${kingEastObs.morningDirectMinutes} min</td></tr>
+      </tbody>
+    </table></div>
+    <p class="cap">The same window with and without a building or tree line close by. Local clock time.</p>`;
+
+const KEY_FINDINGS = keyFindingsBlock([
+  `On June 21, 2026, the longest day of the year, a north-facing window in Miami-Dade County, Florida gets ${N.miaJun} minutes of direct sun, more than three times the ${S.miaJun} minutes a south-facing window there gets.`,
+  `On December 21, 2026, the shortest day, a north-facing window gets no direct sun at all, in King County, Washington as in Miami-Dade County, Florida.`,
+  `On December 21, a south-facing window gets about twice the direct sun of an east-facing one: ${S.kingDec} against ${E.kingDec} minutes in King County, Washington, and ${S.miaDec} against ${E.miaDec} in Miami-Dade County, Florida.`,
+  `A building or tree line that blocks the lowest 15&deg; of sky moves the first direct sun through an east-facing window in King County, Washington on December 21 from ${clock(kingEastOpen.firstDirectMin)} to ${clock(kingEastObs.firstDirectMin)}, cuts the day&rsquo;s direct sun from ${kingEastOpen.directMinutes} to ${kingEastObs.directMinutes} minutes, and leaves no direct sun before 9am.`,
+], 'Calculated by Before Regret with the NOAA solar position algorithm at each county&rsquo;s US Census Gazetteer point. Open horizon unless stated; local clock time.');
+
+const CITE_BOX = `<div class="cite">
+    <b>Cite this</b>
+    Before Regret, &ldquo;Which Direction Should a House Face? Check Any Room.&rdquo; 2026.<br>
+    <a href="https://www.beforeregret.com/sunlight/">https://www.beforeregret.com/sunlight/</a><br>
+    Sun position: NOAA solar position algorithm. County points: US Census Bureau 2023 Gazetteer.<br>
+    The text and tables on this page may be reused under
+    <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, with credit to Before Regret
+    and a link to this page. Questions and corrections: hello@beforeregret.com
+  </div>`;
+
 const html = `<style>
   .wrap{max-width:46rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;font:16px/1.65 Charter,Georgia,'Times New Roman',serif;color:#1a1a1a}
   .wrap *{box-sizing:border-box}
@@ -96,6 +185,7 @@ const html = `<style>
   .cite b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#a8710f;margin-bottom:.5rem}
   footer.spine{margin:2rem 0 0;padding-top:1.2rem;border-top:1px solid #e7e0d2;font:400 12.5px/1.7 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
   @media(max-width:560px){.wrap h1{font-size:1.85rem}}
+${KF_CSS}
 </style>
 
 <div class="wrap">
@@ -144,6 +234,13 @@ const html = `<style>
     <div class="scroll"><table id="sl-table"></table></div>
     <p class="cap" id="sl-cap"></p>
   </div>
+
+  ${KEY_FINDINGS}
+
+  <h2>Two counties, eight directions</h2>
+  <p>The same calculation the tool runs, worked through in advance for a northern county and a
+  southern one, so the results can be read and quoted without running it.</p>
+  ${SAMPLE_TABLE}
 
   <h2>What a south facing house actually means</h2>
   <p>Almost everything written about a <strong>south facing house</strong> is describing the street
@@ -203,6 +300,8 @@ const html = `<style>
   window size, glazing, wall colour and indirect daylight all matter and none of them are here. The
   obstruction setting is one approximation, not a model of your neighbour&rsquo;s actual roofline.
   And it counts minutes of sunlight; it makes no claim about health or sleep.</p>
+
+  ${CITE_BOX}
 
   <footer class="spine">
     <p style="margin:0">Looking at a specific address? The free
@@ -356,6 +455,9 @@ const html = `<style>
 `;
 
 if (!html.includes('<div class="wrap">')) throw new Error('ABORT: prerender slices at <div class="wrap">');
+// Every number in the key findings must also be in the static tables above (the calculator's own
+// output is drawn by script and does not count).
+assertKeyFindingsNumbers(html.slice(0, html.indexOf('<script type="application/json"')), 'sunlight');
 // The page must keep naming its source and its limits. Both are reader-facing -- somebody deciding
 // whether to trust a number wants to know where it came from and what it does not cover -- and both
 // are easy to lose in a tidy-up.

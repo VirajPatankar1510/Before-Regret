@@ -69,6 +69,8 @@ function run(): void {
       operatingSystem: 'Any',
       browserRequirements: 'Requires JavaScript',
       isAccessibleForFree: true,
+      // Matches the visible "Cite this" box (2026-10-09) and the studies' licence.
+      license: 'https://creativecommons.org/licenses/by/4.0/',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       inLanguage: 'en-US',
       creator: { '@type': 'Organization', name: 'Before Regret', url: 'https://www.beforeregret.com/' },

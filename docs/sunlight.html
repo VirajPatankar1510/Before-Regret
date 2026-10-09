@@ -39,6 +39,11 @@
   .cite b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#a8710f;margin-bottom:.5rem}
   footer.spine{margin:2rem 0 0;padding-top:1.2rem;border-top:1px solid #e7e0d2;font:400 12.5px/1.7 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
   @media(max-width:560px){.wrap h1{font-size:1.85rem}}
+  .kf{border:1px solid #dfe5e2;background:#fbfcfb;padding:1rem 1.2rem .4rem;margin:1.6rem 0 2rem}
+  .kf h2{margin:0 0 .7rem;padding:0;border:0;font-size:1.15rem}
+  .kf ul{margin:0 0 .8rem;padding-left:1.1rem}
+  .kf li{margin:0 0 .55rem}
+  .kf .kf-src{margin:0 0 .6rem;font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
 </style>
 
 <div class="wrap">
@@ -87,6 +92,45 @@
     <div class="scroll"><table id="sl-table"></table></div>
     <p class="cap" id="sl-cap"></p>
   </div>
+
+  <section class="kf" id="key-findings">
+    <h2>Key findings</h2>
+    <ul>
+      <li>On June 21, 2026, the longest day of the year, a north-facing window in Miami-Dade County, Florida gets 619 minutes of direct sun, more than three times the 203 minutes a south-facing window there gets.</li>
+      <li>On December 21, 2026, the shortest day, a north-facing window gets no direct sun at all, in King County, Washington as in Miami-Dade County, Florida.</li>
+      <li>On December 21, a south-facing window gets about twice the direct sun of an east-facing one: 502 against 251 minutes in King County, Washington, and 630 against 315 in Miami-Dade County, Florida.</li>
+      <li>A building or tree line that blocks the lowest 15&deg; of sky moves the first direct sun through an east-facing window in King County, Washington on December 21 from 07:55 to 10:17, cuts the day&rsquo;s direct sun from 251 to 109 minutes, and leaves no direct sun before 9am.</li>
+    </ul>
+    <p class="kf-src">Calculated by Before Regret with the NOAA solar position algorithm at each county&rsquo;s US Census Gazetteer point. Open horizon unless stated; local clock time.</p>
+  </section>
+
+  <h2>Two counties, eight directions</h2>
+  <p>The same calculation the tool runs, worked through in advance for a northern county and a
+  southern one, so the results can be read and quoted without running it.</p>
+  <div class="scroll"><table>
+      <thead><tr><th>Window faces</th><th>King Co., WA<br>Dec 21</th><th>King Co., WA<br>Jun 21</th><th>Miami-Dade, FL<br>Dec 21</th><th>Miami-Dade, FL<br>Jun 21</th></tr></thead>
+      <tbody>
+        <tr><td>North</td><td>0 min</td><td>421 min</td><td>0 min</td><td>619 min</td></tr>
+        <tr><td>Northeast</td><td>51 min</td><td>386 min</td><td>137 min</td><td>402 min</td></tr>
+        <tr><td>East</td><td>251 min</td><td>477 min</td><td>315 min</td><td>411 min</td></tr>
+        <tr><td>Southeast</td><td>451 min</td><td>568 min</td><td>492 min</td><td>421 min</td></tr>
+        <tr><td>South</td><td>502 min</td><td>533 min</td><td>630 min</td><td>203 min</td></tr>
+        <tr><td>Southwest</td><td>451 min</td><td>568 min</td><td>493 min</td><td>420 min</td></tr>
+        <tr><td>West</td><td>251 min</td><td>477 min</td><td>315 min</td><td>411 min</td></tr>
+        <tr><td>Northwest</td><td>51 min</td><td>386 min</td><td>138 min</td><td>401 min</td></tr>
+      </tbody>
+    </table></div>
+    <p class="cap">Minutes of direct sun reaching the glass on the shortest and longest days of 2026, open
+    horizon, at each county&rsquo;s US Census Gazetteer point (King County 47.49&deg;N, Miami-Dade
+    25.62&deg;N).</p>
+    <div class="scroll"><table>
+      <thead><tr><th>East window, King Co., WA, Dec 21</th><th>Sunrise</th><th>First direct sun</th><th>Total</th><th>Before 9am</th></tr></thead>
+      <tbody>
+        <tr><td>Open horizon</td><td>07:53</td><td>07:55</td><td>251 min</td><td>65 min</td></tr>
+        <tr><td>Lowest 15&deg; of sky blocked</td><td>07:53</td><td>10:17</td><td>109 min</td><td>0 min</td></tr>
+      </tbody>
+    </table></div>
+    <p class="cap">The same window with and without a building or tree line close by. Local clock time.</p>
 
   <h2>What a south facing house actually means</h2>
   <p>Almost everything written about a <strong>south facing house</strong> is describing the street
@@ -146,6 +190,16 @@
   window size, glazing, wall colour and indirect daylight all matter and none of them are here. The
   obstruction setting is one approximation, not a model of your neighbour&rsquo;s actual roofline.
   And it counts minutes of sunlight; it makes no claim about health or sleep.</p>
+
+  <div class="cite">
+    <b>Cite this</b>
+    Before Regret, &ldquo;Which Direction Should a House Face? Check Any Room.&rdquo; 2026.<br>
+    <a href="https://www.beforeregret.com/sunlight/">https://www.beforeregret.com/sunlight/</a><br>
+    Sun position: NOAA solar position algorithm. County points: US Census Bureau 2023 Gazetteer.<br>
+    The text and tables on this page may be reused under
+    <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, with credit to Before Regret
+    and a link to this page. Questions and corrections: hello@beforeregret.com
+  </div>
 
   <footer class="spine">
     <p style="margin:0">Looking at a specific address? The free
