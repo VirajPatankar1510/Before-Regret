@@ -30,7 +30,7 @@ Don't re-pick the topic. The council weighed more evidence than step 1 does. Car
 | the segment and topic (Moskowitz) | skip step 1's topic choice; step 1 only chooses the **exact phrasing**, the query whose wording best matches the job |
 | the job (Christensen) | the brief's `who` / `want` / `achieve`, and the sections: the page is organised around finishing that job |
 | the scent warning (Pirolli & Card) | `titlePromise`, the title and the first line of `quick_answer`: the words a searcher sees must promise exactly what the page delivers |
-| "good enough to stop searching" and the glance test (Pirolli & Card) | `quick_answer` settles the question on its own; read the title, `quick_answer` and any image in isolation, and each must be true without the rest of the page |
+| "good enough to stop searching" and the glance test (Pirolli & Card) | on a question-titled page, `quick_answer` settles the question on its own (other pages omit it); read the title, `quick_answer` and any image in isolation, and each must be true without the rest of the page |
 | the verification list (Feynman) | a fact-check step **before drafting**: every portal, code section, figure and regulation verified at its primary source, in a browser if needed. Anything that cannot be verified is cut, not softened |
 | the read date and stop condition (Kohavi) | the brief's `stopCondition`, the publish script header, and a memory entry with the date |
 | who would cite or share it (Berger) | whether a diagram or data point is worth making, and who outside the site might link to it |
@@ -122,7 +122,7 @@ makes not thinking visible.
 |---|---|
 | title | promises an outcome, not a bare definition echo · ≤60 chars |
 | meta | 70–155 chars |
-| `quick_answer` | **120–450 chars** that actually answers — 450 is a mobile ceiling |
+| `quick_answer` | **only when the title asks a question** (a `?` anywhere, or opening Can/Does/Is/What/How…; same test as `isQuestionTitle` in assert-article-quality.ts): then 120–450 chars that actually answers — 450 is a mobile ceiling. A checklist, news-hooked or how-to page with no single question to answer leaves it **empty** (no box renders): owner, 2026-10-09, a quick-answer box on a page that answers no one question reads as AI filler |
 | reproducibility | at least one real cost figure, **or** a standard cited by name AND number (NFPA, NEC, IRC, ASTM…), **or** a law cited by number (`24 CFR Part 3280`, `42 U.S.C. § 5401`, `Florida Statutes § 119.071`). Use whichever is the page's real authority; never add a figure just to pass |
 | carriers | **never** a named insurer beside an underwriting verb |
 | no bait | no "read on", "we'll explain below" |

@@ -173,7 +173,17 @@ const NUMBERED_STANDARD = /\b(NFPA|NEC|IRC|IBC|ASTM|ASCE|ANSI|UL)\s*[A-Z]?\s?[\d
 // cost figure into pages whose real authority is a regulation. Number still mandatory.
 const NUMBERED_LAW = /\b\d+\s*CFR\s*(Part\s*)?\d+|\b\d+\s*U\.?\s?S\.?\s?C\.?\s*§*\s*\d+|\bStatutes\s*§+\s*\d+|\bCode\s*§+\s*\d+/i; // + city/state codes by section, e.g. \"NYC Administrative Code § 25-305\", \"Health and Safety Code § 19850\" (2026-10-03)
 
-/** RULE 3: quick_answer is the TL;DR above the fold. All 57 guides have one; keep it that way.
+/** A title that asks something: it carries a question mark anywhere ("Can You Get Home Insurance With a
+ *  Fuse Box? Carrier Limits"), or opens like a question ("How to Legalize an Unpermitted Deck" answers
+ *  "how do I"). Those pages promise an answer, and the quick answer is where a phone reader (and an
+ *  answer engine) gets it before scrolling. */
+const isQuestionTitle = (title: string) =>
+  /\?/.test(title) || /^(can|could|does|do|did|is|are|was|should|will|would|what|when|where|which|who|why|how)\b/i.test(title.trim());
+
+/** RULE 3: quick_answer is the TL;DR above the fold -- REQUIRED ON QUESTION TITLES ONLY since
+ *  2026-10-09. The owner judged a quick-answer box on a news-hooked guide ("Hurricane Isaias: Flood
+ *  Risk and Insurance for Gulf Buyers") to read as AI filler: a page that does not answer one question
+ *  should not pretend to. Every existing guide still has one; only new non-question pages may omit it.
  *
  *  A CEILING AS WELL AS A FLOOR, added 2026-09-11 after measuring the device split. 63.3% of this
  *  site's Google clicks come from mobile, on 37.3% of the impressions -- mobile converts three times
@@ -276,8 +286,13 @@ async function main() {
   for (const r of rows) {
     for (const h of carrierClaims(r)) hard.push(`[carrier] ${r.slug}: ${h}`);
 
-    if (!r.quick_answer || !r.quick_answer.trim()) hard.push(`[tldr] ${r.slug}: no quick_answer`);
-    else if (r.quick_answer.trim().length < QA_MIN) {
+    // Required only where the title asks a question (owner, 2026-10-09: "only where it's relevant and
+    // when the article answers a question"). A checklist or news-hooked guide may leave it empty, and
+    // the page then renders no box and no title-as-question schema entry. If present, the floor and
+    // ceiling still apply.
+    if (!r.quick_answer || !r.quick_answer.trim()) {
+      if (isQuestionTitle(r.title)) hard.push(`[tldr] ${r.slug}: the title asks a question, so it needs a quick_answer`);
+    } else if (r.quick_answer.trim().length < QA_MIN) {
       hard.push(`[tldr] ${r.slug}: quick_answer ${r.quick_answer.trim().length} chars, under ${QA_MIN}`);
     } else if (r.quick_answer.trim().length > QA_MAX) {
       const msg = `[tldr] ${r.slug}: quick_answer ${r.quick_answer.trim().length} chars, over ${QA_MAX} — a wall of text on a phone`;
@@ -357,7 +372,7 @@ async function main() {
       `\n  [carrier]      never state a named insurer's underwriting position; we hold no such data.\n` +
       `                 Write "your carrier" / "some carriers" and tell the reader how to get it in writing.\n` +
       `  [reproducible] a new guide needs a real cost figure or a standard cited by name AND number.\n` +
-      `  [tldr]         every guide needs a quick_answer of ${QA_MIN}+ characters.\n`
+      `  [tldr]         a guide whose title asks a question (a ? anywhere, or opening Can/Does/Is/What/How...) needs a quick_answer of ${QA_MIN}+ characters; others may omit it.\n`
     );
     process.exit(1);
   }
