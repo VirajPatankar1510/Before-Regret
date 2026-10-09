@@ -1,0 +1,17 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-09T15:43:27.398Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "outside flood zone flood",
+    "homeowners insurance cover flooding",
+    "check flood risk before buying",
+    "flood history of a property",
+    "flood insurance before closing",
+    "hurricane deductible"
+  ],
+  "keywords": []
+}
