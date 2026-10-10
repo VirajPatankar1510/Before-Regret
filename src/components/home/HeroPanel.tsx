@@ -20,11 +20,13 @@ import React from 'react';
  * so the page's primary heading names the site), and the paragraph under it stays word for word: it
  * is the prose an AI answer quotes for "what is Before Regret" (see the 2026-09-20 note in git history).
  *
- * The headline itself changed 2026-10-10 at the owner's direction, from "Could you regret moving
- * here?" to the moment the product owns: "Know what to check, ask and verify before your inspection
- * deadline." Its three verbs name the report's three sections (inspection priorities, seller
- * questions, records to pull), and it drops a question that promised a verdict on the move rather than
- * on the house.
+ * The headline changed 2026-10-10/11 at the owner's direction, from "Could you regret moving here?"
+ * to "Know what to check, ask and verify before you buy a home." Its three verbs name the report's
+ * three sections (inspection priorities, seller questions, records to pull). Two drafts were dropped:
+ * "...before your inspection deadline" read as only for buyers already under contract, and "...about
+ * any house" implied house-specific findings -- the report is built from the home's age, county and
+ * census tract, not from records about that house. "Before you buy a home" promises guidance, not
+ * findings.
  *
  * Alignment: the owner chose a centred hero once. This version is left-aligned on desktop because
  * the copy sits over the photo's empty third; HERO_ALIGN flips it back to centred in one edit.
@@ -123,7 +125,7 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
             <span className="block mb-4 font-sans text-xs sm:text-sm font-bold uppercase tracking-[0.24em] text-home-oak leading-none">
               Before Regret<span className="sr-only">:</span>
             </span>
-            Know what to check, ask and verify before your <span className="italic text-[#f2c98f]">inspection deadline</span>.
+            Know what to check, ask and verify before you <span className="italic text-[#f2c98f]">buy a home</span>.
           </h1>
 
           <p className="mt-6 max-w-xl text-base sm:text-lg text-slate-200 leading-relaxed">
