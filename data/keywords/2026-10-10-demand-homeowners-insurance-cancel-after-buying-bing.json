@@ -1,0 +1,60 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-10T05:52:47.264Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "homeowners insurance cancel after buying",
+    "insurance cancelled roof age",
+    "require new roof after closing",
+    "insure 20 year old roof",
+    "homeowners insurance cancels mortgage",
+    "prove roof replacement date"
+  ],
+  "keywords": [
+    {
+      "keyword": "homeowners insurance cancel after buying",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "insurance cancelled roof age",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "require new roof after closing",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "insure 20 year old roof",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "homeowners insurance cancels mortgage",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "prove roof replacement date",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

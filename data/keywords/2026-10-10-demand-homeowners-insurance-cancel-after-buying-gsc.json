@@ -1,0 +1,17 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-10T05:52:47.264Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "homeowners insurance cancel after buying",
+    "insurance cancelled roof age",
+    "require new roof after closing",
+    "insure 20 year old roof",
+    "homeowners insurance cancels mortgage",
+    "prove roof replacement date"
+  ],
+  "keywords": []
+}

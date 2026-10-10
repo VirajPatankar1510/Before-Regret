@@ -1,0 +1,87 @@
+{
+  "slug": "home-insurance-cancelled-after-buying-house-roof",
+  "question": "Can homeowners insurance cancel your policy after you buy a house because of the roof?",
+  "verdictConfirmed": "Sometimes, mainly early. In Texas and Florida an insurer has a window of about 60 days after a homeowners policy starts in which it can cancel for an undisclosed condition or unmet underwriting or inspection requirements; after that, both states limit cancellation to narrow grounds (non-payment, fraud or misstatement, a substantial or insured-controlled change in risk), with written notice and a stated reason. Roof age is otherwise dealt with at renewal, with notice, and Florida bars refusing to issue or renew solely on the age of a roof under 15 years old. Other states have their own rules.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Texas Insurance Code Section 551.104: an insurer may cancel a policy only as the section provides; any policy may be cancelled for non-payment, a fraudulent claim, or when continuing it would violate insurance law.",
+      "quote": "Sec. 551.104. AUTHORIZED CANCELLATION OF POLICIES. (a) An insurer may cancel an insurance policy only as provided by this section. (b) An insurer may cancel any policy if: (1) the named insured does not pay any portion of the premium when due; (2) the insured submits a fraudulent claim; or (3) the department determines that continuation of the policy would result in a violation of this code or any other law governing the business of insurance in this state.",
+      "url": "https://statutes.capitol.texas.gov/Docs/IN/htm/IN.551.htm#551.104",
+      "readOn": "2026-10-10",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "Texas 551.104(c) and (e): a non-auto policy may also be cancelled for an increase in hazard within the insured's control that would raise the premium rate; cancellation under (b) or (c) takes effect no sooner than the 10th day after notice is mailed.",
+      "quote": "(c) An insurer may cancel a policy, other than a personal automobile insurance policy, if there is an increase in the hazard covered by the policy that is within the control of the insured and that would produce an increase in the premium rate of the policy. ... (e) Cancellation of a policy under Subsection (b), (c), or (d) does not take effect until the 10th day after the date the insurer mails notice of the cancellation to the insured.",
+      "url": "https://statutes.capitol.texas.gov/Docs/IN/htm/IN.551.htm#551.104",
+      "readOn": "2026-10-10",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Texas 551.104(g)-(h): a homeowners policy in effect less than 60 days may be cancelled if the insurer identifies an undisclosed condition that increases the risk and was not the subject of a prior claim, or if before the effective date it did not accept a required inspection report by a licensed inspector dated no earlier than the 90th day before the effective date; a report is considered accepted if not rejected before the 11th day after receipt.",
+      "quote": "An insurer may cancel a homeowners insurance policy if the policy has been in effect less than 60 days and: (1) the insurer identifies a condition that: (A) creates an increased risk of hazard; (B) was not disclosed in the application for insurance coverage; and (C) is not the subject of a prior claim; or (2) before the effective date of the policy, the insurer does not accept a copy of a required inspection report that: (A) was completed by an inspector who is licensed by the Texas Real Estate Commission or who is otherwise authorized to perform inspections; and (B) is dated not earlier than the 90th day before the effective date of the policy. (h) For purposes of Subsection (g), an inspection report is considered accepted if an insurer does not reject the inspection report given to the insurer under Subsection (g)(2) before the 11th day after the date the inspection report is received by the insurer.",
+      "url": "https://statutes.capitol.texas.gov/Docs/IN/htm/IN.551.htm#551.104",
+      "readOn": "2026-10-10",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "Texas 551.105: unless the insurer mails written notice of nonrenewal at least 60 days before the policy expires, it must renew at the insured's request.",
+      "quote": "Sec. 551.105. NONRENEWAL OF POLICIES; NOTICE REQUIRED. Unless the insurer has mailed written notice of nonrenewal or renewal with written notice of change in coverage as provided by Section 2002.001 to the insured not later than the 60th day before the date on which the insurance policy expires, an insurer must renew an insurance policy, at the request of the insured, on the expiration of the policy.",
+      "url": "https://statutes.capitol.texas.gov/Docs/IN/htm/IN.551.htm#551.105",
+      "readOn": "2026-10-10",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "Texas 551.002: an insurer that cancels or refuses to renew must give a written statement of the precise reason and the source of the information it relied on.",
+      "quote": "Sec. 551.002. WRITTEN STATEMENT OF REASONS FOR DECLINATION, CANCELLATION, OR NONRENEWAL. ... The statement must: (1) state the precise incident, circumstance, or risk factors applicable to the applicant for insurance or the policyholder that violates any applicable guidelines; (2) state the source of information on which the insurer relied regarding the incident, circumstance, or risk factors",
+      "url": "https://statutes.capitol.texas.gov/Docs/IN/htm/IN.551.htm#551.002",
+      "readOn": "2026-10-10",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "Florida Statutes 627.4133(2)(b): for residential property policies, written notice of nonrenewal, cancellation or termination at least 120 days before it takes effect, with the reason; in the first 60 days, cancellation for reasons other than non-payment needs at least 20 days' notice with the reason unless there was a material misstatement or a failure to comply with underwriting requirements; after 60 days, cancellation only for a material misstatement, non-payment, failure to comply within 60 days with underwriting requirements set before coverage took effect, a substantial change in the risk, or a class-wide cancellation.",
+      "quote": "(b) The insurer shall give the first-named insured written notice of nonrenewal, cancellation, or termination at least 120 days before the effective date of the nonrenewal, cancellation, or termination. The notice must include the reason for the nonrenewal, cancellation, or termination, except that: ... 2. If cancellation or termination occurs during the first 60 days the insurance is in force and the insurance is canceled or terminated for reasons other than nonpayment of premium, at least 20 days' written notice of cancellation or termination accompanied by the reason therefor must be given unless there has been a material misstatement or misrepresentation or a failure to comply with the underwriting requirements established by the insurer. 3. After the policy has been in effect for 60 days, the policy may not be canceled by the insurer unless there has been a material misstatement; a nonpayment of premium; a failure to comply, within 60 days after the date of effectuation of coverage, with underwriting requirements established by the insurer before the date of effectuation of coverage; or a substantial change in the risk covered by the policy or unless the cancellation is for all insureds under such policies for a given class of insureds.",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2026/627.4133",
+      "readOn": "2026-10-10",
+      "method": "webfetch"
+    },
+    {
+      "id": "f7",
+      "claim": "Florida Statutes 627.7011(5): an insurer may not refuse to issue or renew solely because of roof age when the roof is less than 15 years old; for a roof at least 15 years old it must allow an inspection by an authorized inspector at the homeowner's expense before requiring replacement, and may not refuse solely on age if that inspection shows 5 years or more of useful life remaining; roof age runs from the last date 100 percent of the roof surface was built or replaced; applies to policies issued or renewed on or after July 1, 2022.",
+      "quote": "(b) An insurer may not refuse to issue or refuse to renew a homeowner's policy insuring a residential structure with a roof that is less than 15 years old solely because of the age of the roof. (c) For a roof that is at least 15 years old, an insurer must allow a homeowner to have a roof inspection performed by an authorized inspector at the homeowner's expense before requiring the replacement of the roof of a residential structure as a condition of issuing or renewing a homeowner's insurance policy. The insurer may not refuse to issue or refuse to renew a homeowner's insurance policy solely because of roof age if an inspection of the roof of the residential structure performed by an authorized inspector indicates that the roof has 5 years or more of useful life remaining. (d) For purposes of this subsection, a roof's age shall be calculated using the last date on which 100 percent of the roof's surface area was built or replaced in accordance with the building code in effect at that time ... (e) This subsection applies to homeowners' insurance policies issued or renewed on or after July 1, 2022.",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2026/627.7011",
+      "readOn": "2026-10-10",
+      "method": "webfetch"
+    },
+    {
+      "id": "f8",
+      "claim": "12 CFR 1024.37 (Regulation X): a mortgage servicer may not charge for force-placed insurance without a reasonable basis to believe the borrower failed to keep required hazard insurance; it must send a written notice at least 45 days before charging and a reminder at least 15 days before; within 15 days of receiving evidence of continuous coverage it must cancel the force-placed policy and refund overlapping charges.",
+      "quote": "(b) Basis for charging borrower for force-placed insurance. A servicer may not assess on a borrower a premium charge or fee related to force-placed insurance unless the servicer has a reasonable basis to believe that the borrower has failed to comply with the mortgage loan contract's requirement to maintain hazard insurance. (c)(1)(i) Deliver to a borrower or place in the mail a written notice ... at least 45 days before a servicer assesses on a borrower such charge or fee ... (d)(1) The notice required by paragraph (c)(1)(ii) of this section shall be delivered to the borrower or placed in the mail at least 15 days before a servicer assesses on a borrower a premium charge or fee related to force-placed insurance. ... (g) Cancellation of force-placed insurance. Within 15 days of receiving, from the borrower or otherwise, evidence demonstrating that the borrower has had in place hazard insurance coverage that complies with the loan contract's requirements to maintain hazard insurance, a servicer must: (1) Cancel the force-placed insurance ... and (2) Refund to such borrower all force-placed insurance premium charges and related fees paid by such borrower for any period of overlapping insurance coverage",
+      "url": "https://www.ecfr.gov/current/title-12/chapter-X/part-1024/subpart-C/section-1024.37",
+      "readOn": "2026-10-10",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "claim": "Texas Department of Insurance glossary: a binder is a temporary insurance contract that provides proof of coverage until you receive a permanent policy; cancellation is termination of a policy before the renewal date.",
+      "quote": "Binder – A temporary insurance contract that provides proof of coverage until you receive a permanent policy. ... Cancellation – Termination of an insurance policy by the company or insured before the renewal date.",
+      "url": "https://www.tdi.texas.gov/consumer/home-insurance-glossary.html",
+      "readOn": "2026-10-10",
+      "method": "webfetch"
+    }
+  ],
+  "cut": [
+    { "claim": "NerdWallet October 2026 estimate of a $1,149 premium difference for a 1984 home vs new construction (from the owner-pasted brief)", "why": "third-party analysis, not a primary source, and by the brief's own admission not about roofs" },
+    { "claim": "Reddit posts from North Carolina and an insurance agent (from the brief)", "why": "anecdotes, not citable sources" },
+    { "claim": "how often insurers inspect after closing, or that roof age usually surfaces at renewal", "why": "no source measures it; carrier generalisation" },
+    { "claim": "North Carolina and Maine cancellation statutes", "why": "not read for this ledger; the article names only the two states verified and says others differ" },
+    { "claim": "NAIC guidance to get quotes in writing (from the brief)", "why": "not re-read for this article; the advice to get answers in writing stands on its own as an instruction" }
+  ],
+  "blockedSources": ["consumerfinance.gov rule page (403 to curl; the same regulation was read at ecfr.gov in the browser)"]
+}

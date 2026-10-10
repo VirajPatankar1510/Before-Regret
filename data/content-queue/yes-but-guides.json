@@ -1,7 +1,7 @@
 {
   "_about": "Queue for the 'Yes, but' guide strand (owner-approved idea 2026-10-08; flow built, NOT started). Process: .claude/skills/yes-but-guide/SKILL.md. Every verdictHypothesis below is UNVERIFIED -- it is what we expect to find, and the facts ledger must confirm or overturn it before any drafting. If verification overturns it into a flat 'No', the article is dropped or reframed, never forced.",
   "_why": "Research 2026-10-08: the three best-clicked guides open 'Yes, ... but' (Romex 11 clicks/90d at pos 5.8, fuse box 7 at 4.8, aluminum wiring 5 at 12.9). Same-shape guides opening with a flat 'No, a standard inspection does not...' rank similarly but get 0-1 clicks: the snippet answers them. Small sample (23 clicks / 3 pages), so this strand is itself an experiment.",
-  "strandStopCondition": "After the first three (connect-pex-copper-to-galvanized-pipe, the wood stove guide and the deck guide) are each 5+ weeks old: if they average under 1 Google click per page per 28 days, stop the strand and fold any that are shown into existing cluster guides. (Was 'first four' until 2026-10-08, when items 1, 2 and 6 were found already covered and 3+4 merged, leaving three.)",
+  "strandStopCondition": "After the first three (connect-pex-copper-to-galvanized-pipe, the wood stove guide and the deck guide) are each 5+ weeks old: if they average under 1 Google click per page per 28 days, stop the strand and fold any that are shown into existing cluster guides. (Was 'first four' until 2026-10-08, when items 1, 2 and 6 were found already covered and 3+4 merged, leaving three.) Item 8 added 2026-10-10 after the first three were published; it is read on its own date and does not extend the stop rule's window.",
   "pace": "2 per week, inside the 5-new-pages-a-week plan; never two of these on the same day",
   "items": [
     {
@@ -132,6 +132,31 @@
       "readOn": "2026-11-13",
       "note": "Article #326. Owner said \"publish\" on 2026-10-09 (third of the strand that week; the two-a-week pace is Claude's convention). Inbound links placed by hand (suggester found no distinctive terms) from legalize-unpermitted-deck and find-unpermitted-work-before-buying. Tier 3, so no targetKeywords entry.",
       "decision": "2026-10-09: coverage check passed -- legalize-unpermitted-deck covers the after-the-fact permit, find-unpermitted-work-before-buying covers discovery and negotiation BEFORE closing, unpermitted-work-behind-the-wall is contractor-facing; none answers whether the seller can be made to pay after closing. Demand tier 3 (no first-party signal), so it runs as an experiment with a stop condition. Ledger: Texas Property Code 5.008 and Washington RCW 64.06 read at the legislatures' sites; California cut (site down for maintenance)."
+    },
+    {
+      "order": 8,
+      "question": "Can homeowners insurance cancel your policy after you buy a house because of the roof?",
+      "proposedSlug": "home-insurance-cancelled-after-buying-house-roof",
+      "cluster": "roofing-exterior",
+      "addedOn": "2026-10-10",
+      "addedFrom": "Owner question 2026-10-10, with an outside brief (treated as unverified data).",
+      "verdictHypothesis": "Sometimes, mainly in the first weeks; after that state law narrows cancellation, and roof age is handled at renewal with notice.",
+      "sourcesToVerify": [
+        "Texas Insurance Code 551.104/551.105/551.002",
+        "Florida Statutes 627.4133 and 627.7011(5)",
+        "12 CFR 1024.37 force-placed insurance",
+        "a regulator definition of a binder"
+      ],
+      "linksExpected": [
+        "/guides/home-insurance-aerial-photos-roof/",
+        "/guides/prove-roof-age-for-insurance/",
+        "/guides/how-to-tell-how-old-a-roof-is/"
+      ],
+      "status": "published",
+      "decision": "2026-10-10: coverage check -- home-insurance-aerial-photos-roof (#312) covers aerial-image NONRENEWALS and regulator complaints; prove-roof-age-for-insurance (#307) covers documenting roof age. Neither answers when an insurer may CANCEL mid-term after closing. New page keeps to cancellation timing, buyer rights and the mortgage consequence, and links #312/#307 rather than repeating them. Demand tier 3 (capture 2026-10-10-demand-homeowners-insurance-cancel-after-buying-*). Cluster corrected to roofing-exterior: guideTopic matches 'roof' before 'insurance', the same cluster as its roof-insurance siblings.",
+      "publishedAt": "2026-10-10",
+      "readOn": "2026-11-14",
+      "note": "Article #329. Owner said \"publish\" 2026-10-10. Three FAQs. Hand-placed inbound links from home-insurance-aerial-photos-roof (\"after a nonrenewal notice\") and prove-roof-age-for-insurance (\"After closing\"). Tier 3, no targetKeywords entry."
     }
   ]
 }
