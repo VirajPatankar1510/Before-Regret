@@ -1,5 +1,5 @@
-import React from 'react';
-import { ClipboardCheck, Info, ShieldAlert } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ClipboardCheck, ShieldAlert, ChevronDown, CheckSquare, Square } from 'lucide-react';
 import { getInspectionPriorities, PriorityLevel } from '../engine/inspectionPriorities';
 import { InspectionPrioritiesReportData, InspectionPriorityWithVendor } from '../types';
 import { SponsoredVendorCards } from './SponsoredVendorCard';
@@ -8,150 +8,155 @@ interface InspectionPrioritiesProps {
   yearBuilt?: number | null;
   county?: string | null;
   state?: string | null;
-  // If provided, skip client-side computation and render this directly. Used by the paid report,
-  // which computes server-side so it can attach a real, trade-matched vendor per item (vendor
-  // data lives server-side only -- same reason CanonicalFinding.sponsoredVendors is set server-side
-  // rather than computed here). Takes precedence over yearBuilt/county when present.
   precomputed?: InspectionPrioritiesReportData | null;
 }
 
-const PRIORITY_STYLES: Record<PriorityLevel, { label: string; chip: string; rail: string }> = {
-  high: {
-    label: 'Worth checking first',
-    chip: 'bg-blue-50 text-blue-700 border-blue-200',
-    rail: 'bg-blue-600',
-  },
-  medium: {
-    label: 'Worth checking',
-    chip: 'bg-slate-100 text-slate-700 border-slate-200',
-    rail: 'bg-slate-400',
-  },
-  lower: {
-    label: 'Lower priority',
-    chip: 'bg-slate-100 text-slate-500 border-slate-200',
-    rail: 'bg-slate-300',
-  },
+// Redesigned 2026-10-10 (owner: "more professional and uncluttered"). Each priority is now one row
+// in a single card instead of a free-floating block: a checkbox, the title, the action to take and
+// the two costs are always visible; the era background ("Why it matters") folds away behind a
+// toggle. That background is the longest text in the report and the part a reader needs least on a
+// second visit. The checkboxes replace the separate "Your Action List" section, which repeated each
+// priority's howToCheck word for word.
+//
+// PRINT: a collapsed "Why it matters" body is still in the DOM with `hidden print:block`, so the
+// exported PDF always carries it. The toggle button itself is hidden in print by index.css; the
+// checkbox carries .print-keep so it survives as a box to tick on paper.
+const PRIORITY_STYLES: Record<PriorityLevel, { label: string; dot: string; text: string }> = {
+  high: { label: 'Check first', dot: 'bg-blue-600', text: 'text-blue-700' },
+  medium: { label: 'Worth checking', dot: 'bg-slate-400', text: 'text-slate-600' },
+  lower: { label: 'Lower priority', dot: 'bg-slate-300', text: 'text-slate-500' },
 };
 
-// Renders nothing at all when no rule applies -- in practice that now only happens for a missing
-// or implausible year built, since national rules (federal disclosure law, product recalls,
-// system age) cover every US county. Never falls back to generic filler, same principle as
-// SponsoredVendorCard rendering nothing without a real paying vendor.
 export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ yearBuilt, county, state, precomputed }) => {
   const result = precomputed !== undefined ? precomputed : getInspectionPriorities(yearBuilt, county, state);
+  const [done, setDone] = useState<Record<string, boolean>>({});
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+
+  // Expand every "Why it matters" before the browser lays out the PDF, so the printed copy matches
+  // the CSS fallback even in browsers that snapshot the live layout.
+  useEffect(() => {
+    const expandAll = () => setOpen(Object.fromEntries((result?.priorities || []).map((p) => [p.id, true])));
+    window.addEventListener('beforeprint', expandAll);
+    return () => window.removeEventListener('beforeprint', expandAll);
+  }, [result]);
+
   if (!result) return null;
 
   const renderPriorityItem = (item: (typeof result.priorities)[number]) => {
     const styles = PRIORITY_STYLES[item.priority];
+    const isDone = Boolean(done[item.id]);
+    const isOpen = Boolean(open[item.id]);
+    const vendors = (item as InspectionPriorityWithVendor).sponsoredVendors;
     return (
-      <div key={item.id} data-print-block className="flex gap-3.5">
-        <div className={`w-1 rounded-full shrink-0 ${styles.rail}`} aria-hidden="true" />
-        <div className="min-w-0 flex-1 space-y-2 py-0.5">
-          <div className="flex flex-wrap items-center gap-2">
-            <h4 className="font-bold text-sm sm:text-base text-slate-900">{item.title}</h4>
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${styles.chip}`}>
-              {styles.label}
-            </span>
-          </div>
-
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{item.eraBasis}</p>
-
-          <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs">
-            <div>
-              <span className="text-slate-500">Cost to check: </span>
-              <span className="font-bold text-slate-900">{item.costToCheck}</span>
+      <li key={item.id} data-print-block className="py-5 first:pt-0 last:pb-0">
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => setDone((d) => ({ ...d, [item.id]: !d[item.id] }))}
+            aria-pressed={isDone}
+            aria-label={isDone ? `Mark "${item.title}" as not done` : `Mark "${item.title}" as done`}
+            className="print-keep self-start mt-0.5 shrink-0 cursor-pointer"
+          >
+            {isDone ? <CheckSquare className="w-5 h-5 text-emerald-600" /> : <Square className="w-5 h-5 text-slate-300 hover:text-slate-500" />}
+          </button>
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h3 className={`font-semibold text-[15px] leading-snug ${isDone ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+                {item.title}
+              </h3>
+              <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold ${styles.text}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${styles.dot}`} aria-hidden="true" />
+                {styles.label}
+              </span>
             </div>
-            {item.typicalRepairCost && (
-              <div>
-                <span className="text-slate-500">Typical cost if present: </span>
-                <span className="font-bold text-slate-900">{item.typicalRepairCost}</span>
-              </div>
-            )}
+
+            <p className="text-sm text-slate-700 leading-relaxed">{item.howToCheck}</p>
+
+            <div className="space-y-0.5 text-xs leading-relaxed">
+              <p>
+                <span className="text-slate-500">To check: </span>
+                <span className="font-semibold text-slate-800">{item.costToCheck}</span>
+              </p>
+              {item.typicalRepairCost && (
+                <p>
+                  <span className="text-slate-500">If found: </span>
+                  <span className="font-semibold text-slate-800">{item.typicalRepairCost}</span>
+                </p>
+              )}
+            </div>
+
+            <div>
+              <button
+                type="button"
+                onClick={() => setOpen((o) => ({ ...o, [item.id]: !o[item.id] }))}
+                aria-expanded={isOpen}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-800 cursor-pointer"
+              >
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                <span>Why it matters</span>
+              </button>
+              <p className={`${isOpen ? 'block' : 'hidden print:block'} mt-1.5 text-xs text-slate-600 leading-relaxed`}>
+                {item.eraBasis}
+              </p>
+            </div>
           </div>
-
-          <p className="text-xs text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 leading-relaxed">
-            {item.howToCheck}
-          </p>
-
-          {/* Contextual vendor match(es) for this item's trade category, if a real vendor has
-              paid for it in this ZIP -- only ever present on the server-precomputed
-              (paid report) path; absent entirely when computed client-side. */}
-          <SponsoredVendorCards vendors={(item as InspectionPriorityWithVendor).sponsoredVendors} />
         </div>
-      </div>
+
+        {/* Contextual vendor match(es) for this item's trade category, if a real vendor has paid
+            for it in this ZIP -- present only on the server-precomputed path. Set apart from the
+            item by indent and the ad card's own amber treatment. */}
+        {vendors && vendors.length > 0 && (
+          <div className="mt-3 sm:pl-8">
+            <SponsoredVendorCards vendors={vendors} />
+          </div>
+        )}
+      </li>
     );
   };
 
-  const [firstPriority, ...remainingPriorities] = result.priorities;
-
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
-      {/* Intro is wrapped together with the first priority item in one data-print-block so the
-          heading can never be stranded alone at the bottom of a printed page while the whole
-          list jumps to the next one -- confirmed on a real export: break-after: avoid on the
-          intro block by itself doesn't survive WebKit's pagination when the very next block is
-          itself break-inside: avoid and doesn't fit the remaining space. Only the first item is
-          glued in, not the whole list -- gluing all of them would force the entire (often
-          multi-page) list into one unbreakable chunk, which is the near-empty-page problem the
-          section-level break-before: page attempt already ran into once (see index.css). */}
-      <div className="space-y-6" data-print-block>
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
-            <ClipboardCheck className="w-3.5 h-3.5" />
-            <span>Guidance for a home of this age</span>
-          </div>
-          <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-            Where your inspection budget goes furthest
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            Based on the year built you entered (<strong className="text-slate-900">{result.yearBuilt}</strong>), not on records
-            for this house. These are the checks that tend to matter most for homes of this era and area — not findings
-            about this specific house. If the listing shows a different year, run the report again with that year.
-          </p>
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-7">
+      <div className="space-y-1.5 mb-6">
+        <div className="flex items-center gap-2 text-slate-900">
+          <ClipboardCheck className="w-5 h-5 text-blue-600 shrink-0" />
+          <h2 className="text-xl font-serif font-bold tracking-tight">Inspection priorities</h2>
         </div>
-        {firstPriority && renderPriorityItem(firstPriority)}
+        <p className="text-sm text-slate-500 leading-relaxed">
+          What tends to matter most for a home built in <strong className="text-slate-800 font-semibold">{result.yearBuilt}</strong> in
+          this area, as the year you entered. Not findings about this house. Tick each one off as you go.
+        </p>
       </div>
 
-      {remainingPriorities.length > 0 && (
-        // mt-4, not the space-y-6 the container above uses -- this is the gap between the glued
-        // first item and the second item, which has to match the space-y-4 (16px) gap the rest of
-        // the list uses between items, not the 24px gap between the intro and the first item.
-        <div className="space-y-4 mt-4">
-          {remainingPriorities.map(renderPriorityItem)}
-        </div>
-      )}
+      <ol className="divide-y divide-slate-100">
+        {result.priorities.map(renderPriorityItem)}
+      </ol>
 
-      {/* Cross-cutting view of items above that already carry a documented insurance impact --
-          no new facts, just pulled out of individual eraBasis paragraphs so a buyer skimming
-          past the full list doesn't miss the theme. Renders nothing when none of the matched
-          rules for this era/region carry one. */}
+      {/* Cross-cutting view of items above that already carry a documented insurance impact -- no
+          new facts, pulled out of individual eraBasis paragraphs. Rose, not amber: amber is
+          reserved for sponsored placements in the report. */}
       {result.insuranceRedFlags.length > 0 && (
-        <div data-print-block className="mt-6 bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-3">
-          <div className="flex items-center gap-2 text-amber-800">
+        <div data-print-block className="mt-6 bg-rose-50 border border-rose-200 rounded-xl p-4 space-y-2">
+          <div className="flex items-center gap-2 text-rose-800">
             <ShieldAlert className="w-4 h-4 shrink-0" />
             <h3 className="text-sm font-bold">Insurance red flags for a {result.eraLabel} home</h3>
           </div>
-          <ul className="space-y-1.5 text-xs sm:text-sm text-amber-900 leading-relaxed list-disc pl-4">
+          <ul className="space-y-1 text-sm text-rose-950/80 leading-relaxed list-disc pl-5">
             {result.insuranceRedFlags.map((flag, i) => (
               <li key={i}>{flag}</li>
             ))}
           </ul>
-          <p className="text-[11px] text-amber-700 leading-relaxed">
+          <p className="text-xs text-rose-800/80 leading-relaxed">
             Call an insurance agent for a quote before you remove contingencies — not after. Carrier rules vary and this is not a determination that any of the above is actually present in this home.
           </p>
         </div>
       )}
 
-      <div className="flex items-start gap-2.5 text-[11px] text-slate-500 leading-relaxed border-t border-slate-200 pt-4 mt-6">
-        <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-        <p>
-          This is a budgeting guide built from published building-science norms for this construction era and region —
-          it is not a home inspection, a condition assessment, or an opinion of value, and nothing here is a finding
-          about this particular property. Year built is as you entered it and has not been independently verified.
-          Costs are typical ranges and vary by contractor and scope. Every item above should be confirmed by an
-          appropriately licensed professional.
-        </p>
-      </div>
+      <p className="text-[11px] text-slate-400 leading-relaxed border-t border-slate-100 pt-4 mt-6">
+        A budgeting guide built from published building-science norms for this construction era and region — not a home
+        inspection, a condition assessment, or an opinion of value. Year built is as you entered it and has not been
+        independently verified. Costs are typical ranges and vary by contractor and scope; confirm every item with an
+        appropriately licensed professional.
+      </p>
     </div>
   );
 };

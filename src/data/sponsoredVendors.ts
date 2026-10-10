@@ -87,7 +87,8 @@ export const FINDING_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGOR
   f_roof: 'Roof Inspection',
   f_elec: 'Electrician',
   f_hvac: 'HVAC Inspection',
-  f_seismic: 'General Contractor',
+  // f_seismic: 'General Contractor' removed 2026-10-10 with the USGS seismic finding itself;
+  // General Contractor keeps its placement through foundation_type_general below.
 };
 
 // Same pattern as FINDING_TRADE_CATEGORY, for the era-based inspection priority items (see
@@ -113,9 +114,9 @@ export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGO
   // foundation_type_general is the region-agnostic sibling of the two rules above (same "hire a
   // structural engineer" howToCheck, same topic, just outside the 13 expansive-soil counties) --
   // grouping it with the same trade keeps the foundation family coherent rather than splitting it
-  // across two categories for no reason tied to the content itself. Side benefit: General
-  // Contractor's other mapping (f_seismic) depends on a live USGS API call that returns null on
-  // failure, with no other national fallback; this one is pure code, so it can't fail the same way.
+  // across two categories for no reason tied to the content itself. Since 2026-10-10 this is
+  // General Contractor's only report placement (the f_seismic finding was removed); it is pure code,
+  // so it renders for every report.
   foundation_type_general: 'General Contractor',
   pier_and_beam: 'Home Inspector',
   eifs_stucco: 'Home Inspector',

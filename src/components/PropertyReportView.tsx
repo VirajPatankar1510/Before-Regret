@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import {
-  MapPin, ExternalLink,
-  Check, Clock, CheckSquare, Square,
-  FileCheck, AlertCircle, Download, Building, Layers,
-  BarChart3, Calendar, Database, Sparkles, Filter, ArrowRight
+  ExternalLink, Download, Building, Database, ArrowRight, Users, FileSearch,
 } from 'lucide-react';
 import { PropertyReport, CanonicalFinding } from '../types';
 import { LeadMarketplaceWidget } from './LeadMarketplaceWidget';
@@ -20,7 +17,6 @@ interface PropertyReportViewProps {
 }
 
 export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, onNewSearch }) => {
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
@@ -92,169 +88,105 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   // this component renders -- App.tsx guarantees a report via createFallbackReport
   // (reportFallback.ts) even when the server call fails -- so this is a defensive empty-array
   // fallback, not a second copy of fabricated content.
-  const findings: CanonicalFinding[] = report.canonicalFindings || [];
-
-  // Source count shown in the header/metrics comes from the same honest registry the modal
-  // renders (src/data/sourceRegistry.ts) -- not a report-specific list, since BeforeRegret
-  // queries the same fixed set of public sources for every address.
-  const sourceCount = OFFICIAL_SOURCE_REGISTRY.length;
-
-  // Filter findings by status. Most findings today are 'NOT YET VERIFIED' because BeforeRegret
-  // has no live data connection yet -- this stays generic so it renders correctly once real
-  // 'CONFIRMED RECORD' / 'NO RECORD FOUND' data exists for a jurisdiction.
-  const verifiedFindings = findings.filter(f => f.status === 'CONFIRMED RECORD');
-  const pendingFindings = findings.filter(f => f.status === 'NOT YET VERIFIED');
-  // This used to only flip to the confident "VERIFIED PUBLIC PROPERTY RESEARCH" / "Full Public
-  // Audit" label when *every* finding was unverified. Once USGS seismic became a genuinely live
-  // finding queried for every address, that meant a single real source out of ~21 permanently
-  // flipped every report to the confident label -- 1-for-21 is not an audit. Require verified
-  // findings to be a real majority before making that claim; short of that, stay in the honest
-  // reference-checklist framing regardless of exactly how many sources are still pending.
-  const mostlyUnverified = findings.length === 0 || verifiedFindings.length < findings.length / 2;
-
-  // Inspection Budget Priorities and Questions for Seller are each optional and independent of
-  // one another (a property can match one rule set but not the other) -- both sub-components own
-  // their full heading now, so no section-numbering scheme is needed here.
-  const hasInspectionPriorities = Boolean(report.inspectionPriorities);
-  const hasSellerQuestions = Boolean(report.sellerQuestionsScript);
-
-  // The action list used to be built only from findings carrying actionItem.type ===
-  // 'walkthroughItem'. Exactly one of the fallback findings (f_elec) is tagged that way and the
-  // live findings carry no actionItem at all, so "Your Action List" was a titled section that
-  // always rendered a single checkbox regardless of the property.
   //
-  // Each inspection priority already ends in howToCheck -- an imperative, era- and county-specific
-  // next action ("Book a sewer scope with a licensed plumber...", "Ask your inspector to confirm in
-  // writing whether any knob-and-tube is still energized..."). Those are precisely what belongs on
-  // a pre-walkthrough action list, and there are 8-9 of them. Reusing them here is not padding:
-  // the priorities section explains *why* each matters, this section is the carryable tick-list of
-  // *what to do*, which is a different job for the same content.
-  const priorityActions = (report.inspectionPriorities?.priorities || []).map((p) => ({
-    title: p.title,
-    description: p.howToCheck,
-  }));
-  const findingActions = findings
-    .filter((f) => f.actionItem?.type === 'walkthroughItem')
-    .map((f) => ({
-      title: f.actionItem?.title || f.subject,
-      description: f.actionItem?.description || '',
-    }));
-  // Findings first (they're address-specific), then the era/county priorities. De-duplicated on
-  // title so a finding and a priority covering the same ground don't both appear.
-  const actionListItems = [...findingActions, ...priorityActions].filter(
-    (item, idx, all) => all.findIndex((o) => o.title === item.title) === idx
+  // The USGS seismic design category finding was removed 2026-10-10 (owner: "I don't think it's
+  // useful"). New reports no longer carry it; reports saved before that date still do in their
+  // stored JSON, so it is filtered here too and a reopened permalink matches a fresh report.
+  const findings: CanonicalFinding[] = (report.canonicalFindings || []).filter(
+    (f) => f.id !== 'f_seismic' && !/seismic/i.test(f.subject || '')
   );
 
-  // Findings whose status is a real outcome -- we queried a live source and got an answer either
-  // way -- get a full card. 'NOT YET VERIFIED' ones are rendered as a compact list instead: they
-  // all say materially the same thing ("no live connection yet, check it here"), so six identical
-  // full-size cards made the report look padded rather than thorough.
+  // Source count shown in the header comes from the same honest registry the modal renders
+  // (src/data/sourceRegistry.ts) -- BeforeRegret queries the same fixed set of public sources for
+  // every address.
+  const sourceCount = OFFICIAL_SOURCE_REGISTRY.length;
+
+  const pendingFindings = findings.filter(f => f.status === 'NOT YET VERIFIED');
+  // Findings whose status is a real outcome -- a live source answered either way -- get a full
+  // card. 'NOT YET VERIFIED' ones are the compact "Records to pull" list instead.
   const resolvedFindings = findings.filter(f => f.status !== 'NOT YET VERIFIED');
 
-  const statusBadgeClasses = (status: string) => {
-    if (status === 'CONFIRMED RECORD') return 'bg-emerald-50 text-emerald-800 border-emerald-200';
-    if (status === 'NO RECORD FOUND') return 'bg-amber-50 text-amber-800 border-amber-200';
-    return 'bg-slate-100 text-slate-600 border-slate-300';
-  };
+  const priorityCount = report.inspectionPriorities?.priorities?.length || 0;
+  const questionCount = report.sellerQuestionsScript?.questions?.length || 0;
 
-  // Display-only labels. The underlying CanonicalStatus values are the wire/data contract (they
-  // come back from the server and drive the filters above), so they stay as-is -- only what the
-  // reader sees changes. 'NOT YET VERIFIED' in particular read as a system error rather than an
-  // instruction; 'Needs verification' says the same thing as a next step.
-  //
-  // 'CONFIRMED RECORD' deliberately maps to null, not to a word. The badge read "Confirmed",
-  // which overstates what actually happened: a live API call returned a value for this address.
-  // That is a real check and worth distinguishing, but "Confirmed" invites a reader to treat the
-  // finding as settled fact about their house rather than as one data point to take to a
-  // professional. Removed 2026-08-29 at the owner's request.
-  //
-  // The DISTINCTION is not removed with it -- see "Checked live for this address" as the section
-  // heading below, and the disclosure paragraph at the foot of the report. Those say the same
-  // thing in a full sentence, where the caveat travels with the claim instead of being compressed
-  // into a green pill.
-  const STATUS_LABEL: Record<string, string | null> = {
-    'CONFIRMED RECORD': null,
-    'NO RECORD FOUND': 'No record found',
-    'NOT YET VERIFIED': 'Needs verification',
+  // REDESIGN 2026-10-10 (owner: "more professional and uncluttered", ads "highlighted and do not
+  // get hidden/camouflaged"). What changed and why:
+  //   - One reading column (max-w-3xl) and one card per section with the same header pattern, in
+  //     place of an uppercase eyebrow + large serif heading + intro on every block.
+  //   - A summary line and jump links under the address: the report runs to several screens.
+  //   - "Your Action List" is gone: it repeated every inspection priority's howToCheck word for word.
+  //     Those priorities now carry the checkboxes themselves (InspectionPriorities.tsx).
+  //   - Sponsored cards have their own amber treatment (SponsoredVendorCard.tsx), so an ad can't be
+  //     read as a finding and a vendor can see their placement at a glance. Unsold slots still
+  //     render nothing: a homebuyer's report never carries an "advertise here" pitch.
+  const PROPERTY_TYPE_LABEL: Record<string, string> = {
+    single_family: 'Single-family home', condo: 'Condo', townhouse: 'Townhouse',
+    multi_family: 'Multi-family', manufactured: 'Manufactured home', mobile_home: 'Manufactured home',
   };
+  const rawType = report.propertyInfo?.propertyType || '';
+  const typeLabel = PROPERTY_TYPE_LABEL[rawType] || (rawType ? rawType.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase()) : '');
+  // The declared year travels with the era engine's output rather than propertyInfo on most reports.
+  const yearBuilt = report.propertyInfo?.yearBuilt || report.headerInfo?.yearBuilt
+    || report.inspectionPriorities?.yearBuilt || report.sellerQuestionsScript?.yearBuilt;
+  const county = report.propertyInfo?.county;
+  const summaryBits = [
+    typeLabel,
+    yearBuilt ? `built ${yearBuilt} (as entered)` : '',
+    county ? (/\b(county|parish|borough)\b/i.test(county) ? county : `${county} County`) : '',
+  ].filter(Boolean);
+
+  const sections = [
+    resolvedFindings.length > 0 && { id: 'section-findings', label: 'Neighborhood' },
+    priorityCount > 0 && { id: 'section-inspection-priorities', label: `Inspection priorities (${priorityCount})` },
+    questionCount > 0 && { id: 'section-seller-questions', label: `Seller questions (${questionCount})` },
+    pendingFindings.length > 0 && { id: 'section-needs-verification', label: `Records to pull (${pendingFindings.length})` },
+  ].filter(Boolean) as Array<{ id: string; label: string }>;
+
   const statusLabel = (status: string): string | null =>
-    status in STATUS_LABEL ? STATUS_LABEL[status] : status;
+    status === 'NO RECORD FOUND' ? 'No record found' : null;
 
-  // Toggle checklist checkbox
-  const toggleCheck = (id: string) => {
-    setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  // Extracted so the first finding card can be rendered once, glued to its section heading (see
-  // the data-print-block wrapper below), while the rest of the list renders separately and keeps
-  // breaking freely across pages.
   const renderFindingCard = (finding: (typeof resolvedFindings)[number]) => (
-    <div
-      key={finding.id}
-      data-print-block
-      className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 hover:border-slate-300 transition-colors"
-    >
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <div key={finding.id} data-print-block className="space-y-4">
+      <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <span className="text-[11px] text-slate-400 font-medium block">
-            {finding.category} · {finding.sourceAgency || 'Public Source'}
-          </span>
-          <h3 className="text-lg font-serif font-bold text-slate-900 mt-0.5">
-            {finding.subject}
-          </h3>
+          <h3 className="text-base font-semibold text-slate-900">{finding.subject}</h3>
+          <p className="text-xs text-slate-500 mt-0.5">{finding.sourceAgency || 'Public source'}</p>
         </div>
-        {/* No badge at all when the label is null -- an empty pill would be worse than none.
-            Only statuses that ask something of the reader are badged now. */}
         {statusLabel(finding.status) && (
-          <span className={`shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full border ${statusBadgeClasses(finding.status)}`}>
+          <span className="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full border bg-slate-50 text-slate-600 border-slate-200">
             {statusLabel(finding.status)}
           </span>
         )}
       </div>
 
-      {/* whatWeFound / whyItMatters / suggestedNextStep used to be concatenated into a
-          single paragraph, which on the Census finding produced a ~130-word block of
-          run-on prose. They answer three different questions, so they're rendered as
-          three separately-labeled blocks, with the numbers pulled out above as a grid. */}
-      <p className="text-sm text-slate-800 leading-relaxed font-medium">
-        {finding.whatWeFound}
-      </p>
+      <p className="text-sm text-slate-800 leading-relaxed">{finding.whatWeFound}</p>
 
       {finding.metrics && finding.metrics.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-slate-200 border border-slate-200 rounded-xl overflow-hidden">
           {finding.metrics.map((m) => (
-            <div key={m.label} className="bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
-              <div className="text-[10px] uppercase tracking-wide text-slate-500 font-semibold leading-tight">
-                {m.label}
-              </div>
-              <div className="text-sm font-bold text-slate-900 mt-0.5 leading-tight">{m.value}</div>
-              {m.comparison && (
-                <div className="text-[11px] text-slate-500 leading-snug mt-0.5">{m.comparison}</div>
-              )}
+            <div key={m.label} className="bg-white px-3 py-3">
+              <div className="text-[10px] uppercase tracking-wide text-slate-500 font-semibold leading-tight">{m.label}</div>
+              <div className="text-base font-bold text-slate-900 mt-1 leading-tight tabular-nums">{m.value}</div>
+              {m.comparison && <div className="text-[11px] text-slate-500 leading-snug mt-0.5">{m.comparison}</div>}
             </div>
           ))}
         </div>
       )}
 
-      <div className="space-y-2 pt-1">
+      <div className="grid sm:grid-cols-2 gap-4 text-sm">
         <div>
-          <span className="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Why it matters</span>
-          <p className="text-sm text-slate-600 leading-relaxed mt-0.5">{finding.whyItMatters}</p>
+          <div className="text-xs font-semibold text-slate-900">Why it matters</div>
+          <p className="text-slate-600 leading-relaxed mt-0.5">{finding.whyItMatters}</p>
         </div>
         <div>
-          <span className="text-[10px] uppercase tracking-wide text-slate-500 font-bold">What to do next</span>
-          <p className="text-sm text-slate-600 leading-relaxed mt-0.5">
+          <div className="text-xs font-semibold text-slate-900">What to do next</div>
+          <p className="text-slate-600 leading-relaxed mt-0.5">
             {finding.suggestedNextStep}
             {finding.sourceUrl && (
               <>
                 {' '}
-                <a
-                  href={finding.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold hover:underline"
-                >
-                  <span>Check the official record</span>
+                <a href={finding.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold hover:underline">
+                  <span>Official record</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </>
@@ -263,292 +195,171 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         </div>
       </div>
 
-      {/* Contextual vendor match(es) for this specific finding's trade category, if a real
-          vendor has paid for it in this ZIP -- renders nothing otherwise. */}
       <SponsoredVendorCards vendors={finding.sponsoredVendors} />
     </div>
   );
 
-  const [firstFinding, ...remainingFindings] = resolvedFindings;
-
-  // Extracted for the same reason as renderFindingCard -- the Walkthrough Checklist card's own
-  // internal heading needs to glue to just its first item, not the whole (potentially 8-9 item)
-  // list, the same class of bug fixed in InspectionPriorities.tsx / SellerQuestions.tsx.
-  const renderActionListItem = (item: (typeof actionListItems)[number], idx: number) => {
-    const checkId = `wt-${idx}`;
-    const isChecked = checkedItems[checkId] || false;
-    return (
-      <div
-        key={checkId}
-        onClick={() => toggleCheck(checkId)}
-        className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-3 text-xs ${
-          isChecked
-            ? 'bg-emerald-50/60 border-emerald-200 text-emerald-950'
-            : 'bg-slate-50 border-slate-200 text-slate-900 hover:border-slate-300'
-        }`}
-      >
-        {/* print-keep: this box has to survive into the exported PDF -- the whole
-            point of a walkthrough checklist is carrying it and ticking items off. */}
-        <button className="print-keep mt-0.5 text-blue-600 shrink-0">
-          {isChecked ? <CheckSquare className="w-4 h-4 text-emerald-600" /> : <Square className="w-4 h-4 text-slate-400" />}
-        </button>
-        <div className="space-y-0.5">
-          <span className={`font-bold block ${isChecked ? 'line-through text-emerald-900' : 'text-slate-900'}`}>
-            {item.title}
-          </span>
-          <p className="text-slate-600 leading-relaxed">{item.description}</p>
-        </div>
+  const SectionHeader: React.FC<{ icon: React.ReactNode; title: string; intro?: React.ReactNode }> = ({ icon, title, intro }) => (
+    <div className="space-y-1.5 mb-6">
+      <div className="flex items-center gap-2 text-slate-900">
+        {icon}
+        <h2 className="text-xl font-serif font-bold tracking-tight">{title}</h2>
       </div>
-    );
-  };
-
-  const [firstActionItem, ...remainingActionItems] = actionListItems;
+      {intro && <p className="text-sm text-slate-500 leading-relaxed">{intro}</p>}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-20">
-      {/* Header Bar */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          {/* Just a label, not a second brand lockup -- the global Navbar directly above this
-              already carries the logo and wordmark, and stacking two of them read as chrome
-              rather than as a document. */}
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-            Property Insights
-          </span>
-
-          <div className="flex items-center gap-2">
+      {/* Toolbar. Just a label, not a second brand lockup -- the global Navbar above already
+          carries the logo. */}
+      <header className="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-30">
+        <div className="max-w-3xl mx-auto px-4 py-2.5 flex items-center justify-between">
+          <span className="hidden sm:inline text-xs font-semibold text-slate-500 uppercase tracking-wide">Property report</span>
+          <div className="flex items-center gap-2 ml-auto">
             <button
               onClick={() => setIsSourceModalOpen(true)}
-              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-1.5 whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
             >
-              <Database className="w-3.5 h-3.5 text-slate-500" />
-              <span className="hidden sm:inline">Source Registry</span> ({sourceCount})
+              <Database className="w-3.5 h-3.5" />
+              <span>Sources ({sourceCount})</span>
             </button>
             <button
               onClick={() => window.print()}
-              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-3.5 py-1.5 whitespace-nowrap bg-slate-900 hover:bg-slate-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Export PDF</span>
+              <span>Save PDF</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-10">
-
-        {/* Document Header Panel */}
-        <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xs">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <div>
-              {/* The "what kind of document is this" line. The caveat it used to spell out in full
-                  caps now lives where it's actionable instead -- the Needs verification list below
-                  and the closing disclaimer -- rather than shouting it above the address. */}
-              <span className={`text-xs font-semibold uppercase tracking-wide block ${mostlyUnverified ? 'text-slate-500' : 'text-blue-600'}`}>
-                {mostlyUnverified ? 'Public records reference' : 'Verified public property research'}
-              </span>
-              <h1 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight mt-1">
-                {formattedAddress}
-              </h1>
-            </div>
-            <span className="text-xs text-slate-400 shrink-0">
-              {report.headerInfo?.reportDate || 'August 2026'}
-            </span>
+      <main className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+        {/* Document header */}
+        <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <span className="text-xs font-semibold text-slate-500">Property report</span>
+            <span className="text-xs text-slate-400">{report.headerInfo?.reportDate}</span>
           </div>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight mt-2 leading-tight">
+            {formattedAddress}
+          </h1>
+          {summaryBits.length > 0 && (
+            <p className="text-sm text-slate-500 mt-2">{summaryBits.join(' · ')}</p>
+          )}
+          {sections.length > 1 && (
+            <nav aria-label="Report sections" className="quick-jump-bar flex flex-wrap gap-2 mt-6 pt-5 border-t border-slate-100">
+              {sections.map((s) => (
+                <a
+                  key={s.id}
+                  href={`#${s.id}`}
+                  className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full px-3 py-1.5 transition-colors"
+                >
+                  {s.label}
+                </a>
+              ))}
+            </nav>
+          )}
         </section>
 
-        {/* Moving Company is the one trade category not tied to any specific finding or
-            inspection topic -- see the comment on PropertyReport.movingCompanyVendors in
-            types.ts -- so it gets a fixed slot right below the address instead of competing for a
-            topic-relevant spot it doesn't have. SponsoredVendorCards renders nothing at all when
-            the list is empty or absent, same as every other sponsored slot in this report -- no
-            placeholder, no "advertise here" pitch shown to a reader. */}
+        {/* Moving Company is the one trade category not tied to any specific finding or inspection
+            topic (see PropertyReport.movingCompanyVendors in types.ts), so it gets a fixed slot right
+            below the address. Renders nothing when no vendor has bought it. */}
         <SponsoredVendorCards vendors={report.movingCompanyVendors} />
 
-        {/* SECTION: DETAILED FINDINGS */}
-        {/* Hidden when nothing was checked live (2026-10-06): a lookup can fail, and a "Checked
-            live for this address" heading over an empty space reads as a broken report. */}
+        {/* Neighborhood: the live lookup(s). Hidden when nothing was checked live (2026-10-06): a
+            lookup can fail, and a heading over an empty space reads as a broken report. */}
         {resolvedFindings.length > 0 && (
-        <section id="section-findings" className="space-y-6">
-          {/* Heading glued to the first finding card in one data-print-block, same fix as
-              InspectionPriorities.tsx / SellerQuestions.tsx -- break-after: avoid on the heading
-              alone doesn't survive WebKit pagination when the next block is break-inside: avoid
-              and doesn't fit. Only the first card is glued in so a long findings list still
-              breaks freely after that. */}
-          <div className="space-y-6" data-print-block>
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
-                <FileCheck className="w-3.5 h-3.5" />
-                <span>Checked live for this address</span>
-              </div>
-              {/* Was "What We Checked" covering both confirmed findings and the pending list. Those
-                  are two different things to a buyer -- what we actually found vs. what they still
-                  have to go look up -- so the pending list now has its own section near the end and
-                  this one leads with the real results. */}
-              <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-                What We Found
-              </h2>
-              <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">
-                Live lookups run against public data for this specific address.
-              </p>
+          <section id="section-findings" className="scroll-mt-20 bg-white border border-slate-200 rounded-2xl p-5 sm:p-7">
+            <div data-print-block>
+              <SectionHeader
+                icon={<Users className="w-5 h-5 text-blue-600 shrink-0" />}
+                title="The neighborhood"
+                intro="Checked live for this address against public data."
+              />
             </div>
-
-            {firstFinding && renderFindingCard(firstFinding)}
-          </div>
-
-          {/* Remaining outcomes -- mt-4 to match the space-y-4 gap the rest of the list uses
-              between cards, not the space-y-6 gap the wrapper above uses for intro-to-first-card. */}
-          {remainingFindings.length > 0 && (
-            <div className="space-y-4 mt-4">
-              {remainingFindings.map(renderFindingCard)}
+            <div className="space-y-8 divide-y divide-slate-100 [&>*+*]:pt-8">
+              {resolvedFindings.map(renderFindingCard)}
             </div>
-          )}
-
-          {/* print:hidden on the whole paragraph, not just the button -- the button alone was
-              already hidden in print, which left the sentence dangling as "...reference-only? ."
-              in the exported PDF. A modal-opening CTA has no meaning on paper anyway. */}
-          <p className="print:hidden text-xs text-slate-500 leading-relaxed">
-            Want to see every public source behind this report, and which ones were checked live?{' '}
-            <button
-              onClick={() => setIsSourceModalOpen(true)}
-              className="text-blue-600 hover:text-blue-800 font-semibold hover:underline cursor-pointer"
-            >
-              Open the full Source Registry
-            </button>.
-          </p>
-        </section>
+          </section>
         )}
 
-        {/* SECTION: INSPECTION BUDGET PRIORITIES -- renders nothing when no rule set covers
-            this (year built, county) pair, same as the free summary version. Owns its own full
-            heading now (see InspectionPriorities.tsx), so no outer wrapper heading here. */}
-        {hasInspectionPriorities && (
-          <section id="section-inspection-priorities">
+        {/* Inspection priorities and seller questions own their full card and heading (see
+            InspectionPriorities.tsx / SellerQuestions.tsx). Each renders nothing when no rule set
+            covers this (year built, county) pair. */}
+        {report.inspectionPriorities && (
+          <section id="section-inspection-priorities" className="scroll-mt-20">
             <InspectionPriorities precomputed={report.inspectionPriorities} />
           </section>
         )}
 
-        {/* SECTION: QUESTIONS FOR SELLER -- same render-nothing-when-no-rule-applies principle.
-            Replaces the old per-finding actionItem-derived mini card, which pulled from a fixed,
-            non-era-aware Gemini/fallback list rather than this deterministic engine. Owns its
-            own full heading now (see SellerQuestions.tsx). */}
-        {hasSellerQuestions && (
-          <section id="section-seller-questions">
+        {report.sellerQuestionsScript && (
+          <section id="section-seller-questions" className="scroll-mt-20">
             <SellerQuestions precomputed={report.sellerQuestionsScript} />
           </section>
         )}
 
-        {/* SECTION: YOUR ACTION LIST */}
-        <section id="section-action-list" className="space-y-6">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
-              <CheckSquare className="w-3.5 h-3.5" />
-              <span>Before your walkthrough</span>
-            </div>
-            <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-              Your Action List
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6">
-            {/* Walkthrough Checklist */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
-              {/* Card heading glued to the first item only, in one data-print-block -- same fix
-                  as InspectionPriorities.tsx / SellerQuestions.tsx, kept inside this card's own
-                  border/padding so it doesn't visually split into two cards. The rest of the list
-                  (can run 8-9 items) stays free to break across pages after that. */}
-              <div data-print-block>
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <CheckSquare className="w-4 h-4 text-blue-600" />
-                    <span>Walkthrough Checklist</span>
-                  </h3>
-                </div>
-                {firstActionItem && (
-                  <div className="mt-4">{renderActionListItem(firstActionItem, 0)}</div>
-                )}
-              </div>
-
-              {remainingActionItems.length > 0 && (
-                <div className="space-y-3 mt-3">
-                  {remainingActionItems.map((item, i) => renderActionListItem(item, i + 1))}
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION: STILL NEEDS VERIFICATION -- deliberately last of the content sections.
-            This used to sit on page 1, directly under the two confirmed findings, which meant a
-            reader hit five "go look this up yourself" items before reaching the inspection
-            priorities and seller questions -- the material a buyer most needs. The
-            list is still here in full and still honestly labeled; it just no longer leads. */}
+        {/* Records still to pull -- deliberately last of the content sections: the priorities and
+            seller questions are what a buyer most needs, and five "look this up yourself" items
+            used to lead the report. Still listed in full, still honestly labeled. */}
         {pendingFindings.length > 0 && (
-          <section id="section-needs-verification" className="space-y-4">
-            {/* Unlike the findings/priorities/questions lists above, this one is a small, fixed
-                set (at most the 5 record types the app checks -- roof, electrical, HVAC, flood,
-                code enforcement), not an engine-driven list that can run to a second or third
-                page. Heading and card together comfortably fit on one page, so the whole thing is
-                glued as a single data-print-block rather than splitting off just the first row --
-                that also keeps the divide-y card's single continuous-card look intact instead of
-                visually splitting it into two cards. */}
+          <section id="section-needs-verification" className="scroll-mt-20 bg-white border border-slate-200 rounded-2xl p-5 sm:p-7">
             <div data-print-block>
-              <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  <FileCheck className="w-3.5 h-3.5" />
-                  <span>Check these yourself</span>
-                </div>
-                <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-                  Records You Still Need to Pull
-                </h2>
-                <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">
-                  These {pendingFindings.length} records were not checked for this address. Each one links to
-                  the official source we know for this area, so you can look it up before you sign.
-                </p>
-              </div>
-
-              <div className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100 overflow-hidden mt-4">
-                {pendingFindings.map((finding) => (
-                  <div key={finding.id} className="p-5 space-y-2">
-                    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                      <h4 className="text-sm font-bold text-slate-900 min-w-0">
-                        {finding.subject}
-                      </h4>
-                      {finding.sourceUrl && (
-                        <a
-                          href={finding.sourceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold hover:underline"
-                        >
-                          {/* Where this county has no known portal the link is the USA.gov local-office
-                              directory, so it must not be labelled as if it were the record office. */}
-                          <span>{/usa\.gov\/local-governments/.test(finding.sourceUrl) ? 'Find your local office' : (finding.sourceAgency || 'Check record')}</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      {finding.suggestedNextStep}
-                    </p>
-
-                    <SponsoredVendorCards vendors={finding.sponsoredVendors} />
-                  </div>
-                ))}
-              </div>
+              <SectionHeader
+                icon={<FileSearch className="w-5 h-5 text-blue-600 shrink-0" />}
+                title="Records to pull yourself"
+                intro={`These ${pendingFindings.length} records were not checked for this address. Each links to the official source for this area, so you can look it up before you sign.`}
+              />
             </div>
+            <ul className="divide-y divide-slate-100">
+              {pendingFindings.map((finding) => (
+                <li key={finding.id} data-print-block className="py-4 first:pt-0 last:pb-0 space-y-2">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <h3 className="text-sm font-semibold text-slate-900 min-w-0">{finding.subject}</h3>
+                    {finding.sourceUrl && (
+                      <a
+                        href={finding.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+                      >
+                        {/* Where this county has no known portal the link is the USA.gov local-office
+                            directory, so it must not be labelled as if it were the record office. */}
+                        <span>{/usa\.gov\/local-governments/.test(finding.sourceUrl) ? 'Find your local office' : (finding.sourceAgency || 'Check record')}</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
+                  <p className="text-sm text-slate-600 leading-relaxed">{finding.suggestedNextStep}</p>
+                  <SponsoredVendorCards vendors={finding.sponsoredVendors} />
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 
-        {/* Legal Disclaimer -- kept short and at the bottom, not a full page section, but the
-            substance (no physical inspection, no title search, no valuation, verify at source)
-            has to stay somewhere on every report. */}
-        <div data-print-block className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-[11px] text-slate-500 leading-relaxed">
-          <span className="font-bold text-slate-700 block uppercase font-mono tracking-wider mb-1">Disclaimer</span>
-          Before Regret links you to official public sources -- it does not perform physical engineering inspections, legal title searches, or property valuations. Records listed under <strong>Records You Still Need to Pull</strong> were not checked for this address: look each one up with the office that holds it before relying on it. Findings under <strong>Checked live for this address</strong> come from a query run against a government API for this address at the time this report was generated. That means the value was returned by the agency, not that the condition of your property has been verified -- and agencies update their data, so it can change. Physical building conditions should always be confirmed with a licensed home inspector before closing.
-        </div>
+        <p className="print:hidden text-xs text-slate-500 leading-relaxed px-1">
+          Want every public source behind this report, and which were checked live?{' '}
+          <button
+            onClick={() => setIsSourceModalOpen(true)}
+            className="text-blue-600 hover:text-blue-800 font-semibold hover:underline cursor-pointer"
+          >
+            Open the source list
+          </button>.
+        </p>
 
+        {/* Disclaimer -- short and at the bottom, but the substance (no physical inspection, no title
+            search, no valuation, verify at source) has to stay on every report. */}
+        <div data-print-block className="border-t border-slate-200 pt-5 text-[11px] text-slate-500 leading-relaxed px-1">
+          <span className="font-semibold text-slate-700">Disclaimer. </span>
+          Before Regret links you to official public sources; it does not perform physical engineering inspections, legal title
+          searches, or property valuations. Records under <strong>Records to pull yourself</strong> were not checked for this
+          address: look each one up with the office that holds it before relying on it. Results under <strong>The neighborhood</strong> come
+          from a query run against a government API for this address when the report was generated. The value was returned by the
+          agency, not a verification of your property's condition, and agencies update their data. Sponsored listings are paid
+          placements whose details we do not verify. Confirm physical building conditions with a licensed home inspector before closing.
+        </div>
       </main>
 
       {/* Source Modal */}

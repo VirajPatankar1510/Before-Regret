@@ -614,7 +614,7 @@ async function run() {
 
   const llmsTxt = `# Before Regret
 
-> Free, address-based public property research for U.S. homebuyers and renters. Runs a live USGS seismic hazard check and validates the address against U.S. Census records automatically; everything else is a curated checklist linking to the real government source for each check (FEMA, EPA, USDA, U.S. DOT, FCC, local municipal records) -- clearly labeled as not yet independently verified until you follow the link and check it yourself. Reports are free, with no account and no payment; the site is funded by clearly labeled business ads.
+> Free, address-based public property research for U.S. homebuyers and renters. Validates the address against U.S. Census records and pulls a live Census profile of the neighborhood automatically; everything else is a curated checklist linking to the real government source for each check (FEMA, EPA, USDA, U.S. DOT, FCC, local municipal records) -- clearly labeled as not yet independently verified until you follow the link and check it yourself. Reports are free, with no account and no payment; the site is funded by clearly labeled business ads.
 
 Before Regret does not fabricate data. If a claim in these guides isn't backed by a live check or a cited government source, it says so explicitly rather than guessing.
 
@@ -630,7 +630,7 @@ Values are sourced from the named federal agency and are not model-generated or 
 
 ## Report
 
-Address-based due-diligence report for a specific US residential address: a live USGS/ASCE 7-22 seismic design category lookup, US Census address validation, inspection-budget priorities for a home of that decade and county, exact seller questions with what a reassuring answer sounds like, a phone-tickable walkthrough checklist, and a plainly labeled "what's not yet verified" section linking to the real government source. Free, with no account and no card required. https://www.beforeregret.com/
+Address-based due-diligence report for a specific US residential address: US Census address validation with a live census-tract neighborhood profile (typical home age, owner costs, home values), inspection-budget priorities for a home of that decade and county, exact seller questions with what a reassuring answer sounds like, a phone-tickable walkthrough checklist, and a plainly labeled "what's not yet verified" section linking to the real government source. Free, with no account and no card required. https://www.beforeregret.com/
 
 ## Research
 

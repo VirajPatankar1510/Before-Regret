@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { MessageCircleQuestion, Info, Copy, Check } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { MessageCircleQuestion, Copy, Check, ChevronDown } from 'lucide-react';
 import { getSellerQuestions, QuestionPriority, DeclaredPropertyType } from '../engine/sellerQuestions';
 import { SellerQuestionsReportData, SellerQuestionWithVendor } from '../types';
 import { SponsoredVendorCards } from './SponsoredVendorCard';
@@ -9,36 +9,19 @@ interface SellerQuestionsProps {
   county?: string | null;
   state?: string | null;
   declaredPropertyType?: DeclaredPropertyType | null;
-  // If provided, skip client-side computation and render this directly -- same dual-mode pattern
-  // as InspectionPriorities.tsx (see the comment there). Takes precedence over the individual
-  // props when present.
   precomputed?: SellerQuestionsReportData | null;
 }
 
-const PRIORITY_STYLES: Record<QuestionPriority, { label: string; chip: string; rail: string }> = {
-  high: {
-    label: 'Ask first',
-    chip: 'bg-blue-50 text-blue-700 border-blue-200',
-    rail: 'bg-blue-600',
-  },
-  medium: {
-    label: 'Ask',
-    chip: 'bg-slate-100 text-slate-700 border-slate-200',
-    rail: 'bg-slate-400',
-  },
-  lower: {
-    label: 'If relevant',
-    chip: 'bg-slate-100 text-slate-500 border-slate-200',
-    rail: 'bg-slate-300',
-  },
+// Redesigned 2026-10-10 alongside InspectionPriorities.tsx: one numbered list in a single card. The
+// question and "Listen for" (what a reassuring answer sounds like) stay visible -- they are what a
+// buyer reads off a phone in front of the agent; the reasoning ("Why ask") folds away. Collapsed
+// text stays in the DOM with `hidden print:block`, so the PDF always carries it.
+const PRIORITY_STYLES: Record<QuestionPriority, { label: string; text: string }> = {
+  high: { label: 'Ask first', text: 'text-blue-700' },
+  medium: { label: 'Ask', text: 'text-slate-500' },
+  lower: { label: 'If relevant', text: 'text-slate-400' },
 };
 
-// Every question renders fully expanded, matching InspectionPriorities' rail layout. This was
-// previously a tap-to-open accordion, which hid why-asking / what-to-listen-for behind an
-// interaction -- fine on screen, but it meant a printed or PDF-exported report lost that content
-// entirely (collapsed panels don't print), and the paid report is explicitly meant to be
-// PDF-friendly. Renders nothing at all when no rule applies, same principle as
-// InspectionPriorities.
 export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
   yearBuilt,
   county,
@@ -49,6 +32,13 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
   const result =
     precomputed !== undefined ? precomputed : getSellerQuestions(yearBuilt, county, state, declaredPropertyType);
   const [copied, setCopied] = useState(false);
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const expandAll = () => setOpen(Object.fromEntries((result?.questions || []).map((q) => [q.id, true])));
+    window.addEventListener('beforeprint', expandAll);
+    return () => window.removeEventListener('beforeprint', expandAll);
+  }, [result]);
 
   if (!result) return null;
 
@@ -59,88 +49,78 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const renderQuestionItem = (item: (typeof result.questions)[number]) => {
+  const renderQuestionItem = (item: (typeof result.questions)[number], idx: number) => {
     const styles = PRIORITY_STYLES[item.priority];
+    const isOpen = Boolean(open[item.id]);
+    const vendors = (item as SellerQuestionWithVendor).sponsoredVendors;
     return (
-      <div key={item.id} data-print-block className="flex gap-3.5">
-        <div className={`w-1 rounded-full shrink-0 ${styles.rail}`} aria-hidden="true" />
-        <div className="min-w-0 flex-1 space-y-2 py-0.5">
-          <div className="flex flex-wrap items-center gap-2">
-            <h4 className="font-bold text-sm sm:text-base text-slate-900">{item.question}</h4>
-            <span
-              className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${styles.chip}`}
-            >
-              {styles.label}
-            </span>
+      <li key={item.id} data-print-block className="py-5 first:pt-0 last:pb-0">
+        <div className="flex gap-3">
+          <span className="self-start shrink-0 w-6 h-6 rounded-full bg-slate-100 text-slate-600 text-xs font-bold flex items-center justify-center mt-0.5 tabular-nums">
+            {idx + 1}
+          </span>
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h3 className="font-semibold text-[15px] leading-snug text-slate-900">{item.question}</h3>
+              <span className={`text-[11px] font-semibold ${styles.text}`}>{styles.label}</span>
+            </div>
+            <p className="text-sm text-slate-700 leading-relaxed">
+              <span className="font-semibold text-slate-900">Listen for: </span>
+              {item.whatToListenFor}
+            </p>
+            <div>
+              <button
+                type="button"
+                onClick={() => setOpen((o) => ({ ...o, [item.id]: !o[item.id] }))}
+                aria-expanded={isOpen}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-800 cursor-pointer"
+              >
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                <span>Why ask</span>
+              </button>
+              <p className={`${isOpen ? 'block' : 'hidden print:block'} mt-1.5 text-xs text-slate-600 leading-relaxed`}>
+                {item.whyAsking}
+              </p>
+            </div>
           </div>
-
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{item.whyAsking}</p>
-
-          <p className="text-xs text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 leading-relaxed">
-            <span className="font-bold text-slate-900">Listen for: </span>
-            {item.whatToListenFor}
-          </p>
-
-          {/* Only septic_seller ever carries a vendor match (see SELLER_QUESTION_TRADE_CATEGORY
-              in sponsoredVendors.ts) -- only present on the server-precomputed (paid report)
-              path, same as InspectionPriorities.tsx. */}
-          <SponsoredVendorCards vendors={(item as SellerQuestionWithVendor).sponsoredVendors} />
         </div>
-      </div>
+        {/* Contextual vendor match(es), if a real vendor has paid for it in this ZIP (see
+            sponsoredVendors.ts) -- server-precomputed path only, same as InspectionPriorities.tsx. */}
+        {vendors && vendors.length > 0 && (
+          <div className="mt-3 sm:pl-9">
+            <SponsoredVendorCards vendors={vendors} />
+          </div>
+        )}
+      </li>
     );
   };
 
-  const [firstQuestion, ...remainingQuestions] = result.questions;
-
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
-      {/* Intro glued to the first question in one data-print-block -- same fix, same reasoning,
-          as InspectionPriorities.tsx: break-after: avoid alone doesn't survive WebKit pagination
-          when the next block is itself break-inside: avoid and doesn't fit. Only the first item
-          is glued in so the rest of the (potentially multi-page) list can still break freely. */}
-      <div className="space-y-6" data-print-block>
-        <div className="space-y-2">
-          <div className="flex items-start justify-between gap-3">
-            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-600">
-              <MessageCircleQuestion className="w-3.5 h-3.5" />
-              <span>Questions for the seller</span>
-            </div>
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium cursor-pointer print:hidden"
-            >
-              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'Copied!' : 'Copy questions'}</span>
-            </button>
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-7">
+      <div className="space-y-1.5 mb-6">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-slate-900">
+            <MessageCircleQuestion className="w-5 h-5 text-blue-600 shrink-0" />
+            <h2 className="text-xl font-serif font-bold tracking-tight">Questions for the seller</h2>
           </div>
-          <h2 className="text-2xl font-serif font-black text-slate-900 tracking-tight">
-            Questions to ask the seller or listing agent
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            Based on the year built you entered (<strong className="text-slate-900">{result.yearBuilt}</strong>) and what is
-            common for homes of that era in this area, not on records for this house.
-          </p>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold cursor-pointer print:hidden"
+          >
+            {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+            <span>{copied ? 'Copied' : 'Copy all'}</span>
+          </button>
         </div>
-        {firstQuestion && renderQuestionItem(firstQuestion)}
-      </div>
-
-      {remainingQuestions.length > 0 && (
-        // mt-4 to match the space-y-4 gap the rest of the list uses between items, not the
-        // space-y-6 gap the container above uses between the intro and the first item.
-        <div className="space-y-4 mt-4">
-          {remainingQuestions.map(renderQuestionItem)}
-        </div>
-      )}
-
-      <div className="flex items-start gap-2.5 text-[11px] text-slate-500 leading-relaxed border-t border-slate-200 pt-4 mt-6">
-        <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-        <p>
-          These are questions to ask, not verified answers. A seller's or agent's answer is not checked by Before
-          Regret. Get anything important in writing and confirm it with a licensed professional
-          before your inspection deadline.
+        <p className="text-sm text-slate-500 leading-relaxed">
+          For the seller or listing agent, based on the year you entered (<strong className="text-slate-800 font-semibold">{result.yearBuilt}</strong>)
+          and what is common for homes of that era here. Answers are not checked by Before Regret; get anything important in writing.
         </p>
       </div>
+
+      <ol className="divide-y divide-slate-100">
+        {result.questions.map((q, i) => renderQuestionItem(q, i))}
+      </ol>
     </div>
   );
 };

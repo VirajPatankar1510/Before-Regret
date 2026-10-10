@@ -1,7 +1,8 @@
 import React from 'react';
 
 /**
- * Names the public sources the site actually uses (2026-10-04): USGS (live seismic lookup), US Census
+ * Names the public sources the site actually uses (2026-10-04; USGS seismic lookup removed 2026-10-10,
+ * USGS stays for the landslide-susceptibility check): USGS, US Census
  * Bureau (address validation, housing age, building permits), FEMA (flood claims, hazard index), EPA
  * (radon zones, lead rules), NOAA (storm events). Plain text on purpose -- agency seals or logos
  * would read as an endorsement these agencies have not given.

@@ -40,8 +40,8 @@ export const ListingOmissionsSection: React.FC = () => {
     },
     {
       icon: Activity,
-      title: 'Earthquake risk for this address',
-      publicFinding: 'The seismic design category engineers use (ASCE 7-22), pulled live from the USGS for this exact address.'
+      title: 'The neighborhood, in numbers',
+      publicFinding: 'How old the typical nearby home is, plus median owner costs and home values for the census tract, pulled live from the U.S. Census Bureau.'
     },
     {
       icon: ExternalLink,

@@ -43,7 +43,7 @@ export const HomepageDefinitions: React.FC = () => (
 export const HOMEPAGE_FAQS: { q: string; a: string }[] = [
   {
     q: 'Is Before Regret a substitute for a licensed home inspection?',
-    a: 'No. A physical home inspection evaluates the current physical and mechanical condition of a property — testing outlets, inspecting shingles, running plumbing. Before Regret combines live-checked data (like seismic hazard), cited public research on what matters for a home\'s era and region, and a plain-language summary. The two complement each other: Before Regret tells you exactly what to point your inspector at.'
+    a: 'No. A physical home inspection evaluates the current physical and mechanical condition of a property — testing outlets, inspecting shingles, running plumbing. Before Regret combines live-checked data (like the Census profile of the neighborhood), cited public research on what matters for a home\'s era and region, and a plain-language summary. The two complement each other: Before Regret tells you exactly what to point your inspector at.'
   },
   {
     q: 'How does Before Regret compare to real estate listing sites?',

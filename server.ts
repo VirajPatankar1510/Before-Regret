@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import { generateSitemapIndexXml, generateChildSitemapXml, generateRobotsTxt } from "./src/utils/sitemapGenerator.js";
 import { submitUrlsToIndexNow, INDEXNOW_KEY } from "./src/utils/indexNowService.js";
 import { runAddressGate, toUsStateCode } from "./src/engine/geoValidationGate.js";
-import { fetchSeismicHazardFinding } from "./src/engine/seismicHazard.js";
 import { fetchNeighborhoodContextFinding } from "./src/engine/neighborhoodContext.js";
 import { getInspectionPriorities } from "./src/engine/inspectionPriorities.js";
 import { getSellerQuestions } from "./src/engine/sellerQuestions.js";
@@ -643,7 +642,6 @@ export async function createApp() {
       { id: 'epa_airnow', name: 'EPA AirNow & AQI Historical Index', category: 'Environmental' },
       { id: 'usgs_radon', name: 'USGS / EPA Indoor Radon Zone Map', category: 'Environmental' },
       { id: 'usda_soil', name: 'USDA Natural Resources Conservation Service Soil Survey', category: 'Environmental' },
-      { id: 'usgs_seismic', name: 'USGS National Seismic Hazard Maps', category: 'Hazards' },
       { id: 'usfs_wildfire', name: 'USFS Wildfire Risk to Communities Dataset', category: 'Hazards' },
       { id: 'noaa_storm', name: 'NOAA Severe Weather & Storm Surge Database', category: 'Hazards' },
       { id: 'fema_disaster', name: 'FEMA Historical Disaster Declarations', category: 'Hazards' },
@@ -799,8 +797,10 @@ export async function createApp() {
       if (located) { liveLat = located.lat; liveLon = located.lon; }
     }
 
-    const [liveSeismicFinding, liveNeighborhoodFinding, zipVendorMap, requesterClerkUserId] = await Promise.all([
-      fetchSeismicHazardFinding(liveLat as number, liveLon as number),
+    // The USGS seismic design category lookup was removed 2026-10-10 at the owner's request ("I
+    // don't think it's useful"): an engineering design value told a homebuyer little they could act
+    // on. The Census neighborhood profile is now the one live lookup in the report.
+    const [liveNeighborhoodFinding, zipVendorMap, requesterClerkUserId] = await Promise.all([
       fetchNeighborhoodContextFinding(
         liveLat as number,
         liveLon as number,
@@ -891,12 +891,12 @@ export async function createApp() {
     );
 
     // No AI step (2026-10-05, owner): every report is built entirely from this site's own engine and
-    // live public data -- the address gate, USGS seismic, Census ACS, PRIORITY_RULES, the seller
+    // live public data -- the address gate, Census ACS, PRIORITY_RULES, the seller
     // questions script and the ZIP vendor map. Gemini used to rewrite only the generic sections
     // (at-a-glance cards, finding wording, a generic question list, visit checklist, disclosure
     // levers) and was never allowed to assert anything about the address itself; the fallback
     // report below already carried every one of those sections, and is now the only path.
-    let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveSeismicFinding, liveNeighborhoodFinding].filter(Boolean));
+    let cleanedReport = validateAndFixReportContradictions(fallbackReport, [liveNeighborhoodFinding].filter(Boolean));
     cleanedReport = stripInternalMetadata(cleanedReport);
     const seenVendorCategories = new Set<string>();
     attachSponsoredVendorsToResolvedFindings(cleanedReport, zipVendorMap, seenVendorCategories);

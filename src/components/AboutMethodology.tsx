@@ -101,8 +101,8 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
               <span>What's a live check versus a curated link</span>
             </h2>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Every property report runs two live lookups against the address you enter: a USGS seismic hazard
-              query and a U.S. Census Bureau address/neighborhood validation. Those are shown under <strong>Checked live for this
+              Every property report runs a live U.S. Census Bureau lookup against the address you enter: the address is
+              validated, and the census tract's neighborhood profile is pulled. That is shown under <strong>Checked live for this
               address</strong> because a real API call ran for that specific address. Everything else in a report -- FEMA flood data, EPA
               records, local permit and code-enforcement portals -- is a curated link straight to the actual
               government or municipal source, listed under <strong>Records You Still Need to Pull</strong> so you

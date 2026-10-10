@@ -68,16 +68,6 @@ export const OFFICIAL_SOURCE_REGISTRY: SourceRegistryEntry[] = [
     isLive: true,
     statusNote: 'Queried live on every address submitted -- part of the Layer 2 federal-facility exclusion check.',
   },
-  {
-    id: 'src_usgs_seismic',
-    name: 'USGS Seismic Design Maps (ASCE 7-22)',
-    agency: 'U.S. Geological Survey',
-    governmentLevel: 'Federal',
-    officialUrl: 'https://earthquake.usgs.gov/ws/designmaps/',
-    dataTypes: ['Seismic Design Category', 'Spectral Acceleration Values'],
-    isLive: true,
-    statusNote: 'Queried live for every generated report -- Before Regret\'s first live-confirmed report finding.',
-  },
 
   // --- Reference links only -- not yet queried by BeforeRegret ---
   {

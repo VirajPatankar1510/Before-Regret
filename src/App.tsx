@@ -589,7 +589,7 @@ export function App() {
                 'name': 'Where does Before Regret source its property hazard data?',
                 'acceptedAnswer': {
                   '@type': 'Answer',
-                  'text': 'Before Regret runs a live USGS seismic hazard check and validates your address against U.S. Census records automatically. The rest of the report is a curated, address-specific checklist linking directly to the real FEMA, EPA, USDA, U.S. DOT, FCC, and local municipal sources you would otherwise have to track down yourself -- clearly labeled as not yet independently verified until you check them.'
+                  'text': 'Before Regret validates your address against U.S. Census records and pulls a live Census profile of the neighborhood automatically. The rest of the report is a curated, address-specific checklist linking directly to the real FEMA, EPA, USDA, U.S. DOT, FCC, and local municipal sources you would otherwise have to track down yourself -- clearly labeled as not yet independently verified until you check them.'
                 }
               },
               {
