@@ -220,7 +220,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               <Bullet>Your licence number prints on the listing, with a line telling readers it is advertiser-supplied.</Bullet>
             </ul>
             <ContentLink
-              href="/report-ads"
+              href="/report-ads/"
               onNavigate={onNavigate}
               className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 bg-home-navy hover:bg-home-ink text-white text-sm font-bold rounded-xl shadow-lg transition-colors"
             >
@@ -293,7 +293,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               <Bullet>Pick as many articles as you like in one checkout, each for 30 days.</Bullet>
             </ul>
             <ContentLink
-              href="/topic-ads"
+              href="/topic-ads/"
               onNavigate={onNavigate}
               className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 bg-white border border-home-navy text-home-navy hover:bg-home-stone text-sm font-bold rounded-xl transition-colors"
             >
@@ -409,10 +409,10 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               </p>
             </div>
             <div className="flex flex-col sm:flex-row md:flex-col gap-3">
-              <ContentLink href="/report-ads" onNavigate={onNavigate} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-home-navy font-bold text-sm rounded-xl hover:bg-home-stone transition-colors">
+              <ContentLink href="/report-ads/" onNavigate={onNavigate} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-home-navy font-bold text-sm rounded-xl hover:bg-home-stone transition-colors">
                 Report Ads: choose ZIP codes <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </ContentLink>
-              <ContentLink href="/topic-ads" onNavigate={onNavigate} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-white/30 text-white font-bold text-sm rounded-xl hover:bg-white/10 transition-colors">
+              <ContentLink href="/topic-ads/" onNavigate={onNavigate} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-white/30 text-white font-bold text-sm rounded-xl hover:bg-white/10 transition-colors">
                 Topic Ads: choose articles <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </ContentLink>
             </div>

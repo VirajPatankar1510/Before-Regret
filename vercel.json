@@ -21,6 +21,11 @@
       "permanent": true
     },
     {
+      "source": "/:page(about|support|terms|privacy|refunds|disclaimer|accessibility|advertise|topic-ads|report-ads|my-ads|walkthrough|sunlight|research)",
+      "destination": "/:page/",
+      "permanent": true
+    },
+    {
       "source": "/guides",
       "destination": "/guides/",
       "permanent": true

@@ -60,6 +60,15 @@ export const LEGACY_GONE_PATHS: readonly string[] = [
   // A SIXTH relationship guide, found 2026-10-05 by sweeping every URL Search Console has reported in
   // 16 months: it was answering 404 (after the trailing-slash redirect), not 410.
   '/guides/long-distance-deadlock-closing-the-gap',
+  // 2026-10-11, owner: Search Console listed these under "Crawled - currently not indexed". The two
+  // relationship guides were answering 404 after the trailing-slash redirect, and /flags 404 -- all
+  // previous-product URLs, so 410 like the rest. The bare /expert, /stories and /city (no trailing
+  // segment) were NOT caught by LEGACY_GONE_PREFIXES below, which only matches paths that start with
+  // '/expert/' etc.; the owner asked for every /expert URL to be gone.
+  '/guides/infidelity-reconciliation-math-of-forgiveness',
+  '/guides/stonewalling-silent-treatment-emotional-punishment',
+  '/flags',
+  '/expert', '/stories', '/city',
 ];
 
 /**
