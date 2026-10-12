@@ -74,7 +74,8 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   // a stucco specialist sponsors these pages, so they must not sit in one bucket with roof-insurance
   // guides. Checked before roofing-exterior, which still lists the same words but no longer wins for
   // them. Verified when added to move exactly one existing guide, the EIFS evaluation guide.
-  ['stucco', /stucco|\beifs\b|\befis\b/],
+  // 'dryvit' added 2026-10-13 with the Dryvit buyer guide (a brand of EIFS); it matched no existing guide.
+  ['stucco', /stucco|\beifs\b|\befis\b|dryvit/],
   ['electrical', /electric|wiring|panel|breaker|gfci|outlet|polarity|open[- ]ground|zinsco|federal[- ]pacific|stab[- ]lok|knob[- ](and[- ])?tube|aluminum|fuse|amp\b|split[- ]bus|romex/],
   ['plumbing', /plumb|\bpipes?\b|sewer|drain|water[- ]heater|\btpr\b|polybutylene|orangeburg|cast[- ]iron|galvanized|sump|septic|\bwell\b|backwater|slab[- ]leak|repipe/],
   ['roofing-exterior', /\broof|stucco|eifs|siding|chimney|flashing|gutter|flat[- ]roof/],

@@ -1,0 +1,16 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-12T18:36:21.701Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "stucco problems",
+    "stucco cracks",
+    "buying a house with stucco",
+    "hard coat stucco",
+    "stucco mold"
+  ],
+  "keywords": []
+}

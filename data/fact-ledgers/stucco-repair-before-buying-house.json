@@ -1,0 +1,86 @@
+{
+  "_about": "Stucco cluster page (repair). Every fact the article states, with the words read at the source.",
+  "slug": "stucco-repair-before-buying-house",
+  "question": "Is a stucco patch on a house you're buying routine, or a sign of hidden damage?",
+  "verdictConfirmed": "The patch alone can't tell you; what caused the damage, whether that was fixed, and where the patch sits decide it.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "NPS Preservation Brief 22, The Preservation and Repair of Historic Stucco, by Anne Grimmer; written for historic stucco.",
+      "quote": "PRESERVATION BRIEFS The Preservation and Repair of Historic Stucco Anne Grimmer U.S. Department of the Interior National Park Service",
+      "url": "https://www.nps.gov/orgs/1739/upload/preservation-brief-22-stucco.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f2",
+      "claim": "Small hairline cracks usually are not serious; can be sealed with a thin slurry of finish-coat ingredients or even paint; caulking compounds are not suitable, weather differently and attract dirt.",
+      "quote": "Small hairline cracks usually are not serious and may be sealed with a thin slurry coat consisting of the finish coat ingredients, or even with a coat of paint or whitewash. Commercially available caulking compounds are not suitable materials for patching hairline cracks. Because their consistency and texture is unlike that of stucco, they tend to weather differently, and attract more dirt",
+      "url": "https://www.nps.gov/orgs/1739/upload/preservation-brief-22-stucco.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f3",
+      "claim": "Bulging or cracked areas are obvious places to begin; unsound areas that have lost their key echo with a hollow sound when tapped gently.",
+      "quote": "Bulging or cracked areas are obvious places to begin. Unsound, punky or soft areas that have lost their key will echo with a hollow sound when tapped gently with a wooden or acrylic hammer or mallet.",
+      "url": "https://www.nps.gov/orgs/1739/upload/preservation-brief-22-stucco.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f4",
+      "claim": "Most stucco deterioration is the result of water infiltration through the roof, around chimneys, window and door openings, or from ground water and splash-up at the foundation.",
+      "quote": "Most stucco deterioration is the result of water infiltration into the building structure, either through the roof, around chimneys, window and door openings, or excessive ground water or moisture penetrating through, or splashing up from the foundation.",
+      "url": "https://www.nps.gov/orgs/1739/upload/preservation-brief-22-stucco.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f5",
+      "claim": "Water infiltration rots wood lath and rusts metal lath and nails, eventually causing stucco to lose its bond and pull away.",
+      "quote": "Water infiltration will cause wood lath to rot, and metal lath and nails to rust, which eventually will cause stucco to lose its bond and pull away from its substrate.",
+      "url": "https://www.nps.gov/orgs/1739/upload/preservation-brief-22-stucco.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f6",
+      "claim": "Fix the cause first: roof, gutter, downspout and flashing repairs, drainage, redirecting runoff.",
+      "quote": "After the cause of deterioration has been identified, any necessary repairs to the building should be made first before repairing the stucco. Such work is likely to include repairs designed to keep excessive water away from the stucco, such as roof, gutter, downspout and flashing repairs, improving drainage, and redirecting rainwater runoff and splash-back away from the building.",
+      "url": "https://www.nps.gov/orgs/1739/upload/preservation-brief-22-stucco.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f7",
+      "claim": "Complete replacement probably necessary only with extreme deterioration: loss of bond on over 40-50 per cent of the surface.",
+      "quote": "Complete replacement of the historic stucco ... will probably be necessary only in cases of extreme deterioration — that is, a loss of bond on over 40-50 per cent of the stucco surface.",
+      "url": "https://www.nps.gov/orgs/1739/upload/preservation-brief-22-stucco.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f8",
+      "claim": "EIFS sounds hollow when tapped because of the foam and thin base coat (so a hollow sound is normal on EIFS).",
+      "quote": "Do they produce a \"hollow\" sound or does it appear to be more solid? ... hollow sound indicates EIFS (thinner base coat and insulation board)",
+      "url": "https://www.lerchbates.com/?p=2297",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f9",
+      "claim": "EIFS moisture survey: $400 – $800 for a moisture survey by an EIFS-qualified inspector.",
+      "quote": "costToCheck: '$400 – $800 for a moisture survey by an EIFS-qualified inspector'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES, id eifs_stucco)",
+      "readOn": "2026-10-13",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    { "claim": "Stucco repair costs for cement stucco", "why": "no engine figure and no primary source read" },
+    { "claim": "Whether stucco patching needs a permit", "why": "varies by jurisdiction; not read" },
+    { "claim": "Seller disclosure duties for past repairs", "why": "state law varies; the page only says to ask whether it is disclosed" }
+  ],
+  "blockedSources": []
+}

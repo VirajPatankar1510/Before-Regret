@@ -1,0 +1,78 @@
+{
+  "_about": "Stucco cluster page (Dryvit). Brand page: every statement about Dryvit is quoted from Dryvit's own site; the moisture risk is attributed to barrier EIFS generally (IRC, engine), never to Dryvit.",
+  "slug": "dryvit-house-what-it-means-buyer",
+  "question": "What does it mean for a buyer when a listing or report says the house has Dryvit?",
+  "verdictConfirmed": "It points to EIFS but isn't proof, and it never says which system was installed or whether water has got behind it.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Dryvit calls itself the manufacturer of Outsulation systems and says it brought the EIFS industry to North America in 1969.",
+      "quote": "Dryvit, the manufacturer of Outsulation® systems, brought the Exterior Insulation and Finish Systems industry to North America in 1969.",
+      "url": "https://www.dryvit.com/",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "Outsulation systems are EIFS; the site lists many Outsulation system options (Outsulation, Outsulation MD, Outsulation Plus MD, RMD, X, HDCI, Mineral Wool and more).",
+      "quote": "Outsulation® exterior insulation and finish systems (EIFS) ... Choose from one of the many Dryvit Outsulation system options ... OUTSULATION® PLUS MD ... OUTSULATION® MD ... OUTSULATION® X ... OUTSULATION® ... OUTSULATION® HDCI ... OUTSULATION® RMD",
+      "url": "https://www.dryvit.com/systems/continuous-insulation-eifs",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Dryvit's FAQ: EIFS is sometimes also referred to as EFIS; it lists a question comparing rainscreen systems to barrier EIFS for moisture management.",
+      "quote": "EIFS (pronounced \"EEFS\") is an acronym for \"exterior insulation and finish system\". It is sometimes also referred to as EFIS ... How Do Rainscreen Systems compare to Barrier EIFS for Moisture Management?",
+      "url": "https://www.dryvit.com/systems/continuous-insulation-eifs",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "Dryvit also sells StucCoat stucco wall assemblies: complete code-compliant stucco assemblies, single- or multiple-coat, usable as a stucco patch.",
+      "quote": "Dryvit StucCoat® Stucco Wall Assemblies ... StucCoat systems are complete code-compliant stucco assemblies ... installed over a variety of substrates in a single- or multiple-coat system. They can even be used as a stucco patch for areas in need of repair.",
+      "url": "https://www.dryvit.com/systems/stucco-assemblies",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "2021 IRC: barrier EIFS limited to concrete or masonry walls; EIFS with drainage required over all other wall assemblies, with a water-resistive barrier between EIFS and sheathing (R703.9.1, R703.9.2).",
+      "quote": "EIFS shall be limited to applications over substrates of concrete or masonry wall assemblies. ... EIFS with drainage shall be required over all wall assemblies with the exception of substrates of concrete or masonry wall assemblies. ... The water-resistive barrier shall be applied between the EIFS and the wall sheathing.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-7-wall-covering",
+      "readOn": "2026-10-12",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "Engine: EIFS was used on some homes built in the 1990s and early 2000s; early barrier-type installations could trap water behind the cladding.",
+      "quote": "Synthetic stucco (EIFS) was used on some homes built in the 1990s and early 2000s. Early barrier-type installations could trap water behind the cladding, causing sheathing and framing damage that is not visible from outside.",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES, id eifs_stucco)",
+      "readOn": "2026-10-13",
+      "method": "engine"
+    },
+    {
+      "id": "f7",
+      "claim": "Moisture survey: $400 – $800 for a moisture survey by an EIFS-qualified inspector.",
+      "quote": "costToCheck: '$400 – $800 for a moisture survey by an EIFS-qualified inspector'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES, id eifs_stucco)",
+      "readOn": "2026-10-13",
+      "method": "engine"
+    },
+    {
+      "id": "f8",
+      "claim": "Dryvit's site footer lists it among Tremco CPG brands.",
+      "quote": "Tremco CPG Brands",
+      "url": "https://www.dryvit.com/",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "Which Dryvit systems include drainage", "why": "the drainage FAQ answer did not load; product sheets not read. The page tells the buyer to find out which system was installed instead" },
+    { "claim": "That people use 'Dryvit' loosely for any EIFS", "why": "no source; the page only says a listing's wording is a description, not a product label" },
+    { "claim": "Any statement about Dryvit product failures or litigation", "why": "never made: brand page rule" }
+  ],
+  "blockedSources": []
+}

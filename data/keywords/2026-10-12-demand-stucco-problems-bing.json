@@ -1,0 +1,52 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-12T18:36:21.701Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "stucco problems",
+    "stucco cracks",
+    "buying a house with stucco",
+    "hard coat stucco",
+    "stucco mold"
+  ],
+  "keywords": [
+    {
+      "keyword": "stucco problems",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "stucco cracks",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "buying a house with stucco",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "hard coat stucco",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "stucco mold",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

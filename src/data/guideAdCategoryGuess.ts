@@ -10,7 +10,7 @@ import { TRADE_CATEGORIES } from './sponsoredVendors.js';
 // feature nobody's paid for yet.
 const KEYWORD_RULES: Array<{ keywords: string[]; category: typeof TRADE_CATEGORIES[number] }> = [
   // Before roof and the broad inspection rule: a stucco or EIFS guide is for stucco specialists.
-  { keywords: ['eifs', 'efis', 'stucco'], category: 'Stucco & EIFS' },
+  { keywords: ['eifs', 'efis', 'stucco', 'dryvit'], category: 'Stucco & EIFS' },
   { keywords: ['roof'], category: 'Roof Inspection' },
   { keywords: ['hvac', 'furnace', 'air condition', 'heat pump', 'compressor'], category: 'HVAC Inspection' },
   { keywords: ['sewer', 'cast iron', 'orangeburg'], category: 'Sewer Scope' },
