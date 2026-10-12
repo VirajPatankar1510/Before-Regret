@@ -129,6 +129,11 @@ function main() {
   // NOINDEX PAGES ARE SKIPPED, and that is the point rather than a loophole. The same audit flagged
   // seven /embed/ iframes for having no meta description; they carry noindex, and a search engine
   // does not show a snippet for a page it will not index. Nine findings, two real.
+  // Pages whose title the OWNER chose to run past 60 characters, knowing Google truncates it. Each entry is
+  // an explicit owner decision with its date; never add one to make a gate pass.
+  const OWNER_LONG_TITLES = new Set<string>([
+    '/guides/sewer-line-belly-found-inspection/', // owner 2026-10-13: "Exact everywhere" (85 chars)
+  ]);
   for (const f of walk(DIST).filter((p) => p.endsWith('index.html'))) {
     const html = fs.readFileSync(f, 'utf8');
     if (/<meta[^>]+name="robots"[^>]*content="[^"]*noindex/i.test(html)) continue;
@@ -142,7 +147,7 @@ function main() {
     const robots = (html.match(/<meta[^>]+name="robots"[^>]+content="([^"]*)"/) ?? [, ''])[1];
     if (!/max-image-preview:large/.test(robots)) bad.push(`${rel}  [robots]  "${robots}" lacks max-image-preview:large`);
     if (!title) bad.push(`${rel}  [title]  missing`);
-    else if (title.length > 60) bad.push(`${rel}  [title]  ${title.length} chars, over 60`);
+    else if (title.length > 60 && !OWNER_LONG_TITLES.has(rel)) bad.push(`${rel}  [title]  ${title.length} chars, over 60`);
     if (!meta) bad.push(`${rel}  [meta]  missing on an indexable page`);
     else if (meta.length > 155) bad.push(`${rel}  [meta]  ${meta.length} chars, over 155`);
   }

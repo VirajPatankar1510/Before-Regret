@@ -1,0 +1,87 @@
+{
+  "_about": "Owner-requested guide 2026-10-13. Every fact the article states, with the words read at the source.",
+  "slug": "sewer-line-belly-found-inspection",
+  "question": "A sewer scope found a belly in the line of a house I'm buying: how serious is it, how is it fixed, what does it cost, and what should I ask?",
+  "verdictConfirmed": "It depends on how deep the sag is and what collects in it; trenchless lining and bursting can't remove a significant sag, so a real fix means excavating that section or replacing the line.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "San Mateo's Sewer Lateral Inspection Form lists Sale of Property as a reason for inspection.",
+      "quote": "City of San Mateo Sewer Lateral Inspection Form ... Reason for Inspection: ☐ Sale of Property ☐ Improvements ≥$90,000 ☐ Sewer Lateral Overflow",
+      "url": "https://cityofsanmateo.org/DocumentCenter/View/82627/Sewer-Lateral-Inspection-Form",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f2",
+      "claim": "San Mateo grades sags: shallow (<30%) = 3, medium (30% - 50%) = 4, deep (> 50%) = 5, as structural defects.",
+      "quote": "Structural Defects ... Sag – Shallow (<30%) = 3 ... Sag – Medium (30% - 50%) = 4 ... Sag – Deep (> 50%) = 5",
+      "url": "https://cityofsanmateo.org/DocumentCenter/View/82627/Sewer-Lateral-Inspection-Form",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f3",
+      "claim": "Passing requires no grade 5 structural defect, no grade 4 or 5 operational defect, and a sum of all defect grades under thirteen (13).",
+      "quote": "A sewer lateral inspection passing grade shall have no pipe with structural grade 5 defects and no operational grade 4 or 5 defects, and the sum of all defect grades shall be less than thirteen (13).",
+      "url": "https://cityofsanmateo.org/DocumentCenter/View/82627/Sewer-Lateral-Inspection-Form",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f4",
+      "claim": "Required work options on a failed lateral: full replacement, spot repair, new connection to main, cleaning (jet to remove debris, root removal).",
+      "quote": "If the lateral is in \"Fail\" condition, select the required work: ☐ Full sewer lateral replacement ☐ Spot Repair ☐ New connection to main ☐ Old P-trap removed / New cleanout installed ☐ Cleaning – Jet to remove debris/deposits/blockage ☐ Cleaning – Root removal",
+      "url": "https://cityofsanmateo.org/DocumentCenter/View/82627/Sewer-Lateral-Inspection-Form",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f5",
+      "claim": "WERF 2006 report, Methods for Cost-Effective Rehabilitation of Private Lateral Sewers (Sterling et al.): camera inspection is used to identify sags that can promote buildup of material.",
+      "quote": "To identify any existing sags or misaligned joints that can promote buildup of material in the pipes",
+      "url": "https://mwrd.org/sites/default/files/documents/Cost-Effective_Rehabilitation_of_Private_Lateral_Sewers.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f6",
+      "claim": "Cured-in-place lining will not remove sags.",
+      "quote": "The CIPP will not remove sags or curves in the existing pipe. ... Can't upsize pipes, remove sags",
+      "url": "https://mwrd.org/sites/default/files/documents/Cost-Effective_Rehabilitation_of_Private_Lateral_Sewers.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f7",
+      "claim": "Pipe bursting follows the old alignment and does not remove sags, though it may smooth abrupt ones; significant sags cannot be removed; a soft zone under the sag can deepen it.",
+      "quote": "HDPE pipe follows the old pipe alignment, whether or not that alignment is straight. Pipe bursting does not remove sags or curves in the existing pipe, although it may smooth them out if they are abrupt. ... Significant sags cannot be removed. ... if there is a soft zone beneath the existing pipe in the sag area, the new pipe may be driven towards the soft zone and the sag deepened.",
+      "url": "https://mwrd.org/sites/default/files/documents/Cost-Effective_Rehabilitation_of_Private_Lateral_Sewers.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f8",
+      "claim": "In one program, 15 burst laterals had to be replaced by open cut because of sags or collapsed piping.",
+      "quote": "15 laterals had to be replaced after bursting with an open-cut due to sags or collapsed piping",
+      "url": "https://mwrd.org/sites/default/files/documents/Cost-Effective_Rehabilitation_of_Private_Lateral_Sewers.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f9",
+      "claim": "Engine sewer figures: camera scope $300 – $500; spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+.",
+      "quote": "costToCheck: '$300 – $500 for a camera scope'; typicalRepairCost: 'Spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES, id sewer_cast_iron)",
+      "readOn": "2026-10-13",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    { "claim": "What the San Mateo sag percentage measures", "why": "the form does not define it; the article tells the buyer to ask the inspector" },
+    { "claim": "Who owns the lateral between house and main", "why": "varies by city; not read for a general rule; the article says to ask the city" },
+    { "claim": "Trenchless 'belly' fixes from contractor blogs", "why": "secondary, commercial sources" },
+    { "claim": "How common bellies are", "why": "the 1980s Berkeley pilot numbers are too old and too small to generalise" }
+  ],
+  "blockedSources": ["sanitation.lacity.gov PDF (403)"]
+}
