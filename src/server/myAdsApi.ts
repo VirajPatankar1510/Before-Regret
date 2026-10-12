@@ -5,6 +5,7 @@ import { checkVendorWebsite } from '../data/vendorWebsite.js';
 import { requiresLicenceNumber } from '../data/sponsoredVendors.js';
 import { PRICE_PER_SLOT_USD as GUIDE_PRICE_USD, SLOT_DURATION_DAYS as RENEWAL_DAYS } from './guideAdsApi.js';
 import { PRICE_PER_BUNDLE_USD as ZIP_PRICE_USD, ZIPS_PER_BUNDLE } from './zipAdsApi.js';
+import { adClusterByKey } from '../data/adClusters.js';
 import { GUIDE_AD_TIER_PRICES_USD, normaliseTier, priceForTier } from './adPricing.js';
 
 // The vendor-facing placement manager (/my-ads). Its job: proof of purchase, expiry, contact-detail
@@ -85,7 +86,7 @@ export function registerMyAdsRoutes(app: Express) {
         SELECT p.id AS purchase_id, p.article_id, a.slug, a.title, p.business_name, p.trade_category,
                p.phone, p.website, p.licence_number, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id,
                o.amount_usd, o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at,
-               p.price_usd, a.ad_tier
+               p.price_usd, a.ad_tier, p.cluster_key
         FROM guide_ad_purchases p
         JOIN guide_ad_orders o ON o.id = p.order_id
         JOIN articles a ON a.id = p.article_id
@@ -113,7 +114,8 @@ export function registerMyAdsRoutes(app: Express) {
       // proof-of-purchase record this app gives a vendor.
       const guideOrderRows = await withDb((sql) => sql`
         SELECT o.id, o.paypal_order_id, o.paypal_capture_id, o.amount_usd, o.status, o.slots_json,
-               o.created_at, o.renews_purchase_id, a.title AS renewed_title
+               o.created_at, o.renews_purchase_id, a.title AS renewed_title,
+               o.cluster_key, rp.cluster_key AS renewed_cluster_key
         FROM guide_ad_orders o
         LEFT JOIN guide_ad_purchases rp ON rp.id = o.renews_purchase_id
         LEFT JOIN articles a ON a.id = rp.article_id
@@ -141,7 +143,7 @@ export function registerMyAdsRoutes(app: Express) {
         trade_category: string; phone: string; website: string | null; licence_number: string | null;
         paid_through: string; created_at: string; contact_edited: boolean; order_id: number; amount_usd: string;
         paypal_order_id: string; paypal_capture_id: string | null; order_created_at: string;
-        price_usd: string | null; ad_tier: string;
+        price_usd: string | null; ad_tier: string; cluster_key: string | null;
       };
       type ZipPurchaseRow = {
         purchase_id: number; zip_code: string; trade_category: string; business_name: string;
@@ -180,6 +182,10 @@ export function registerMyAdsRoutes(app: Express) {
         // Whether this placement's price is locked to what was actually paid, rather than tracking
         // the tier. Shown to the vendor so a founding rate is visible as a thing they hold.
         priceLocked: r.price_usd !== null,
+        // A topic sponsorship is one row on the cluster's anchor guide but shows on every guide in
+        // the topic (src/data/adClusters.ts), so the dashboard names the topic, not the anchor.
+        clusterKey: adClusterByKey(r.cluster_key)?.key ?? null,
+        clusterName: adClusterByKey(r.cluster_key)?.name ?? null,
       }));
       const zipPlacements = (zipRows as unknown as ZipPurchaseRow[]).map((r) => ({
         purchaseId: r.purchase_id,
@@ -204,6 +210,7 @@ export function registerMyAdsRoutes(app: Express) {
           id: number; paypal_order_id: string; paypal_capture_id: string | null; amount_usd: string;
           status: string; slots_json: string; created_at: string;
           renews_purchase_id: number | null; renewed_title: string | null;
+          cluster_key: string | null; renewed_cluster_key: string | null;
         }>).map((o) => ({
           type: 'guide' as const,
           orderId: o.id,
@@ -212,8 +219,12 @@ export function registerMyAdsRoutes(app: Express) {
           amountUsd: o.amount_usd,
           createdAt: o.created_at,
           description: o.renews_purchase_id
-            ? `Renewal -- ${o.renewed_title ?? 'guide placement'}`
-            : `${(JSON.parse(o.slots_json) as unknown[]).length} guide placement(s)`,
+            ? `Renewal -- ${adClusterByKey(o.renewed_cluster_key)
+                ? `${adClusterByKey(o.renewed_cluster_key)!.name} topic sponsorship`
+                : (o.renewed_title ?? 'guide placement')}`
+            : adClusterByKey(o.cluster_key)
+              ? `${adClusterByKey(o.cluster_key)!.name} topic sponsorship`
+              : `${(JSON.parse(o.slots_json) as unknown[]).length} guide placement(s)`,
         })),
         ...(zipOrderRows as unknown as Array<{
           id: number; paypal_order_id: string; paypal_capture_id: string | null; amount_usd: string;

@@ -1,0 +1,127 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-12T04:27:29.370Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "radon mitigation",
+    "radon test",
+    "radon levels"
+  ],
+  "keywords": [
+    {
+      "keyword": "can someone change the pa terms at the closing based on a radon mitigation results",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 1,
+      "position": 3
+    },
+    {
+      "keyword": "if radon mitigation was paid to the buyer at closing buyerdidn't do can you get the money back",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "if radon mitigation was paid to the buyer at closing didn't do can you get the money back",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "radon mitigation",
+      "search_volume": 730,
+      "metric": "market",
+      "broad_impressions": 4965,
+      "kind": "seed"
+    },
+    {
+      "keyword": "radon mitigation system",
+      "search_volume": 2929,
+      "metric": "market",
+      "broad_impressions": 3477,
+      "kind": "related"
+    },
+    {
+      "keyword": "radon mitigation near me",
+      "search_volume": 468,
+      "metric": "market",
+      "broad_impressions": 468,
+      "kind": "related"
+    },
+    {
+      "keyword": "radon mitigation system cost",
+      "search_volume": 454,
+      "metric": "market",
+      "broad_impressions": 454,
+      "kind": "related"
+    },
+    {
+      "keyword": "radon mitigation companies near me",
+      "search_volume": 140,
+      "metric": "market",
+      "broad_impressions": 140,
+      "kind": "related"
+    },
+    {
+      "keyword": "radon mitigation system installers near me",
+      "search_volume": 68,
+      "metric": "market",
+      "broad_impressions": 68,
+      "kind": "related"
+    },
+    {
+      "keyword": "cost of radon mitigation system in one store home",
+      "search_volume": 26,
+      "metric": "market",
+      "broad_impressions": 26,
+      "kind": "related"
+    },
+    {
+      "keyword": "radon test",
+      "search_volume": 382,
+      "metric": "market",
+      "broad_impressions": 1365,
+      "kind": "seed"
+    },
+    {
+      "keyword": "radon test kit",
+      "search_volume": 888,
+      "metric": "market",
+      "broad_impressions": 888,
+      "kind": "related"
+    },
+    {
+      "keyword": "how to test for radon",
+      "search_volume": 349,
+      "metric": "market",
+      "broad_impressions": 349,
+      "kind": "related"
+    },
+    {
+      "keyword": "radon.com test results",
+      "search_volume": 128,
+      "metric": "market",
+      "broad_impressions": 128,
+      "kind": "related"
+    },
+    {
+      "keyword": "what is a radon test",
+      "search_volume": 56,
+      "metric": "market",
+      "broad_impressions": 56,
+      "kind": "related"
+    },
+    {
+      "keyword": "radon levels",
+      "search_volume": 420,
+      "metric": "market",
+      "broad_impressions": 503,
+      "kind": "seed"
+    }
+  ]
+}

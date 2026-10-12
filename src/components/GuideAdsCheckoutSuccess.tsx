@@ -31,6 +31,8 @@ export const GuideAdsCheckoutSuccess: React.FC<GuideAdsCheckoutSuccessProps> = (
   const [paidThrough, setPaidThrough] = useState<string | null>(null);
   const [grantedGuides, setGrantedGuides] = useState<GrantedGuide[]>([]);
   const [skippedGuides, setSkippedGuides] = useState<GrantedGuide[]>([]);
+  // Set for a topic sponsorship: one placement that shows on every guide in the topic.
+  const [cluster, setCluster] = useState<{ key: string; name: string } | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -52,6 +54,7 @@ export const GuideAdsCheckoutSuccess: React.FC<GuideAdsCheckoutSuccessProps> = (
         setPaidThrough(data.paidThrough ?? null);
         setGrantedGuides(data.grantedGuides ?? []);
         setSkippedGuides(data.skippedGuides ?? []);
+        setCluster(data.cluster ?? null);
         setStatus('success');
       })
       .catch(() => {
@@ -82,9 +85,16 @@ export const GuideAdsCheckoutSuccess: React.FC<GuideAdsCheckoutSuccessProps> = (
 
             <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-left space-y-3">
               <p className="text-sm text-emerald-900 font-semibold">
-                {grantedGuides.length} guide{grantedGuides.length === 1 ? '' : 's'} activated
+                {cluster && grantedGuides.length > 0
+                  ? `Your ${cluster.name} topic sponsorship is active`
+                  : `${grantedGuides.length} guide${grantedGuides.length === 1 ? '' : 's'} activated`}
               </p>
-              {grantedGuides.length > 0 && (
+              {cluster && grantedGuides.length > 0 && (
+                <p className="text-xs text-emerald-800">
+                  Your ad now shows on every {cluster.name} guide, including new ones we publish while it's active.
+                </p>
+              )}
+              {!cluster && grantedGuides.length > 0 && (
                 <ul className="space-y-1.5">
                   {grantedGuides.map((g) => (
                     <li key={g.articleId} className="text-xs text-emerald-800">

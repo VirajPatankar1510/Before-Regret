@@ -20,6 +20,19 @@ interface GuideRow {
   priceUsd?: number;
 }
 
+// A topic sponsorship on offer (src/data/adClusters.ts): one advertiser on every open guide in a
+// topic, for one flat price, priced and checked server-side. The server only lists topics nobody
+// sponsors that still have at least 4 open guides; `taken` marks a guide held by a single-guide
+// advertiser, which the sponsorship takes over only when that placement ends.
+interface ClusterOffer {
+  key: string;
+  name: string;
+  priceUsd: number;
+  trades: string[];
+  openCount: number;
+  guides: Array<{ articleId: number; slug: string; title: string; taken: boolean }>;
+}
+
 interface GuideAdsCheckoutProps {
   onNavigate: (path: string) => void;
 }
@@ -32,6 +45,10 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'How many people will see my ad?',
     a: "We don't guarantee impressions, clicks, or leads -- you're buying a fixed placement for the window, not a performance number. Views can't be measured from our side either: guide pages are served from a cache that never reaches our server.",
+  },
+  {
+    q: 'What is a topic sponsorship?',
+    a: 'One advertiser on every guide we publish on a topic, for one flat price per 30 days. Your ad shows on each of those guides, including new ones we publish on the topic while your sponsorship is active, and no other business can advertise on them in that time. You never see or approve the articles before they publish: they stay independent.',
   },
   {
     q: 'Can I pick more than one guide?',
@@ -75,6 +92,9 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [pricePerSlot, setPricePerSlot] = useState(7.99);
   const [slotDurationDays, setSlotDurationDays] = useState(30);
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [clusters, setClusters] = useState<ClusterOffer[]>([]);
+  // A topic sponsorship and single guides are separate purchases, so choosing one clears the other.
+  const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [showAllGuides, setShowAllGuides] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -127,9 +147,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     const restore = (raw: string) => {
       const stash = JSON.parse(raw) as {
         articleIds: number[]; businessName: string; tradeCategory: string; phone: string;
-        website: string | null; licenceNumber?: string | null;
+        website: string | null; licenceNumber?: string | null; clusterKey?: string | null;
       };
       setSelected(new Set(stash.articleIds));
+      setSelectedCluster(stash.clusterKey || null);
       setBusinessName(stash.businessName || '');
       setTradeCategory(stash.tradeCategory || '');
       setPhone(stash.phone || '');
@@ -155,6 +176,14 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       .then((data) => {
         if (data?.success) {
           setGuides(data.guides);
+          const offers: ClusterOffer[] = Array.isArray(data.clusters) ? data.clusters : [];
+          setClusters(offers);
+          // /topic-ads/?topic=stucco opens with that sponsorship chosen, so a pitch email can link
+          // straight to it. Only when it is actually available, and never over a restored selection.
+          const wanted = new URLSearchParams(window.location.search).get('topic');
+          if (wanted && offers.some((c) => c.key === wanted)) {
+            setSelectedCluster((prev) => prev ?? wanted);
+          }
           if (typeof data.pricePerSlotUsd === 'number') setPricePerSlot(data.pricePerSlotUsd);
           if (typeof data.tierPricesUsd?.standard === 'number') setPricePerSlot(data.tierPricesUsd.standard);
           if (typeof data.slotDurationDays === 'number') setSlotDurationDays(data.slotDurationDays);
@@ -175,12 +204,13 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   // fields just restores to the same empty, blank state, which costs nothing.
   const handleSignInClick = () => {
     sessionStorage.setItem(AUTH_STASH_KEY, JSON.stringify({
-      articleIds: Array.from(selected), businessName, tradeCategory, phone, website, licenceNumber,
+      articleIds: Array.from(selected), clusterKey: selectedCluster, businessName, tradeCategory, phone, website, licenceNumber,
     }));
     triggerClerkSignIn();
   };
 
   const toggleSlot = (articleId: number) => {
+    setSelectedCluster(null);
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(articleId)) next.delete(articleId);
@@ -207,6 +237,23 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     return { matchedGuides: matched, otherGuides: rest };
   }, [guides, search, tradeCategory]);
 
+  const toggleCluster = (key: string) => {
+    setSelected(new Set());
+    setSelectedCluster((prev) => (prev === key ? null : key));
+  };
+  // Topics follow the business type: a roof inspector is offered roof topics, not stucco. Before a
+  // type is picked, every topic on offer shows.
+  const visibleClusters = useMemo(
+    () => (tradeCategory ? clusters.filter((c) => c.trades.includes(tradeCategory)) : clusters),
+    [clusters, tradeCategory]
+  );
+  // A chosen topic that the newly picked business type no longer shows must not stay in the cart
+  // out of sight.
+  useEffect(() => {
+    if (selectedCluster && !visibleClusters.some((c) => c.key === selectedCluster)) setSelectedCluster(null);
+  }, [visibleClusters, selectedCluster]);
+  const chosenCluster = visibleClusters.find((c) => c.key === selectedCluster) ?? null;
+
   const selectedCount = selected.size;
   // Summed per guide rather than multiplied by one rate: each guide carries its own price from its
   // tier (src/server/adPricing.ts). Both tiers are $7.99 since 2026-10-04, but summing stays correct
@@ -214,9 +261,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   // server-side from each guide's stored tier at checkout, and never taken from the client.
   const priceOf = (g: GuideRow) => (typeof g.priceUsd === 'number' ? g.priceUsd : pricePerSlot);
   const total = useMemo(() => {
+    if (chosenCluster) return chosenCluster.priceUsd;
     if (!guides) return selectedCount * pricePerSlot;
     return guides.reduce((sum, g) => (selected.has(g.articleId) ? sum + priceOf(g) : sum), 0);
-  }, [guides, selected, pricePerSlot, selectedCount]);
+  }, [guides, selected, pricePerSlot, selectedCount, chosenCluster]);
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,7 +272,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     if (!businessName.trim()) return setSubmitError('Enter your business name.');
     if (!tradeCategory) return setSubmitError('Choose a business type.');
     if (!phone.trim()) return setSubmitError('Enter a phone number for readers to call.');
-    if (selectedCount === 0) return setSubmitError('Select at least one guide below.');
+    if (selectedCount === 0 && !chosenCluster) return setSubmitError('Select at least one guide below.');
     // Mirrors the server check in guideAdsApi.ts -- surfaced early, but the server is the gate.
     if (requiresLicenceNumber(tradeCategory) && licenceNumber.trim().length < 3) {
       return setSubmitError(`A licence, registration, or certification number is required for ${tradeCategory}.`);
@@ -248,23 +296,27 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       return;
     }
     try {
-      const res = await fetch('/api/guide-ads/checkout', {
+      const details = {
+        businessName: businessName.trim(),
+        tradeCategory,
+        phone: phone.trim(),
+        website: website.trim() || undefined,
+        licenceNumber: licenceNumber.trim() || undefined,
+        contactEmail,
+        attestedAccurate,
+      };
+      const res = await fetch(chosenCluster ? '/api/guide-ads/cluster-checkout' : '/api/guide-ads/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          businessName: businessName.trim(),
-          tradeCategory,
-          phone: phone.trim(),
-          website: website.trim() || undefined,
-          licenceNumber: licenceNumber.trim() || undefined,
-          contactEmail,
-          slots: Array.from(selected),
-          attestedAccurate,
-        }),
+        body: JSON.stringify(
+          chosenCluster ? { ...details, clusterKey: chosenCluster.key } : { ...details, slots: Array.from(selected) }
+        ),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        if (data?.takenArticleIds) {
+        if (data?.clusterTaken) {
+          setSubmitError('This topic was just sponsored by someone else, or one of its guides was taken -- refresh the page.');
+        } else if (data?.takenArticleIds) {
           setSubmitError('One or more guides you picked were just taken by someone else -- refresh the page and try again.');
         } else {
           setSubmitError(data?.error || 'Could not start checkout.');
@@ -525,6 +577,70 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
               )}
             </div>
 
+            {visibleClusters.map((c) => {
+              const isChosen = selectedCluster === c.key;
+              return (
+                <div
+                  key={c.key}
+                  className={`rounded-xl border p-4 space-y-3 ${isChosen ? 'border-blue-600 bg-blue-50/60' : 'border-amber-300 bg-amber-50/60'}`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wide text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
+                        Topic sponsorship
+                      </span>
+                      <h3 className="text-sm font-bold text-slate-900">Sponsor every {c.name} guide</h3>
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        Your ad on {c.openCount === c.guides.length ? 'all' : 'the'} {c.openCount} {c.openCount === c.guides.length ? '' : 'open '}guides below, and on every new one we add. One sponsor per topic.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => toggleCluster(c.key)}
+                      className={`self-start inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border shrink-0 cursor-pointer ${
+                        isChosen ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-300 text-slate-700'
+                      }`}
+                    >
+                      {isChosen ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                      <span>{isChosen ? 'Selected' : `Sponsor: $${c.priceUsd.toFixed(2)} / ${slotDurationDays} days`}</span>
+                    </button>
+                  </div>
+                  <ul className="space-y-1 border-t border-amber-200/70 pt-2">
+                    {c.guides.map((g) => (
+                      <li key={g.articleId} className="text-xs">
+                        {g.taken ? (
+                          <span className="text-slate-400">
+                            <span className="line-through">{g.title}</span>{' '}
+                            <span className="no-underline font-semibold">(already taken)</span>
+                          </span>
+                        ) : (
+                          <a href={`/guides/${g.slug}/`} target="_blank" rel="noopener noreferrer" className="text-slate-700 hover:underline">
+                            {g.title}
+                          </a>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+
+            {/* A topic sponsorship and single guides are two separate purchases (choosing one clears
+                the other), so the divider says so plainly rather than leaving vendors to wonder
+                whether they need both. */}
+            {visibleClusters.length > 0 && (
+              <div className="py-3 space-y-1.5" role="separator" aria-label="or choose individual guides">
+                <div className="flex items-center gap-4">
+                  <div className="h-px flex-1 bg-slate-300" />
+                  <span className="text-3xl font-black tracking-widest text-slate-400">OR</span>
+                  <div className="h-px flex-1 bg-slate-300" />
+                </div>
+                <p className="text-center text-xs font-semibold text-slate-500">
+                  Pick individual guides instead, ${pricePerSlot.toFixed(2)} each
+                </p>
+              </div>
+            )}
+
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -627,13 +743,17 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             <div>
               <div className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Total</div>
               <div className="text-2xl font-black">${total.toFixed(2)}</div>
-              <div className="text-xs text-slate-400 mt-0.5">{selectedCount} guide{selectedCount === 1 ? '' : 's'} selected</div>
+              <div className="text-xs text-slate-400 mt-0.5">
+                {chosenCluster
+                  ? `Topic sponsorship: every ${chosenCluster.name} guide`
+                  : `${selectedCount} guide${selectedCount === 1 ? '' : 's'} selected`}
+              </div>
             </div>
 
             {!authLoading && user ? (
               <button
                 type="submit"
-                disabled={submitting || selectedCount === 0}
+                disabled={submitting || (selectedCount === 0 && !chosenCluster)}
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-all cursor-pointer flex items-center gap-2"
               >
                 {submitting && <Loader2 className="w-4 h-4 animate-spin" />}

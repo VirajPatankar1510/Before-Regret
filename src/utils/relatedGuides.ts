@@ -70,6 +70,11 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   // a mobile home's wiring or insurance is first a guide for that buyer. Verified to reclassify zero
   // existing guides when it was added.
   ['manufactured-housing', /mobile[- ]home|manufactured[- ]home|manufactured[- ]housing/],
+  // Stucco and EIFS. Added 2026-10-12 for the first sponsored topic cluster (marketing/cluster-plan.md):
+  // a stucco specialist sponsors these pages, so they must not sit in one bucket with roof-insurance
+  // guides. Checked before roofing-exterior, which still lists the same words but no longer wins for
+  // them. Verified when added to move exactly one existing guide, the EIFS evaluation guide.
+  ['stucco', /stucco|\beifs\b|\befis\b/],
   ['electrical', /electric|wiring|panel|breaker|gfci|outlet|polarity|open[- ]ground|zinsco|federal[- ]pacific|stab[- ]lok|knob[- ](and[- ])?tube|aluminum|fuse|amp\b|split[- ]bus|romex/],
   ['plumbing', /plumb|\bpipes?\b|sewer|drain|water[- ]heater|\btpr\b|polybutylene|orangeburg|cast[- ]iron|galvanized|sump|septic|\bwell\b|backwater|slab[- ]leak|repipe/],
   ['roofing-exterior', /\broof|stucco|eifs|siding|chimney|flashing|gutter|flat[- ]roof/],

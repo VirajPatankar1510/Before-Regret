@@ -1,0 +1,116 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-12T04:27:21.004Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "sewer scope",
+    "sewer line inspection",
+    "cast iron pipe",
+    "sewer line replacement"
+  ],
+  "keywords": [
+    {
+      "keyword": "cast iron pipe damage",
+      "search_volume": 186,
+      "impressions": 186,
+      "clicks": 0,
+      "position": 80.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/": 186
+      }
+    },
+    {
+      "keyword": "corroded cast iron pipe",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 73.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/": 2
+      }
+    },
+    {
+      "keyword": "are cast iron pipes bad",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 56,
+      "pages": {
+        "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/": 1
+      }
+    },
+    {
+      "keyword": "cast iron pipe corrosion",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 79,
+      "pages": {
+        "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/": 1
+      }
+    },
+    {
+      "keyword": "cast iron pipe problems",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 99,
+      "pages": {
+        "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/": 1
+      }
+    },
+    {
+      "keyword": "cast iron pipe rust",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 53,
+      "pages": {
+        "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/": 1
+      }
+    },
+    {
+      "keyword": "does cast iron pipe rust",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 61,
+      "pages": {
+        "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/": 1
+      }
+    },
+    {
+      "keyword": "is cast iron pipe magnetic",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 1,
+      "pages": {
+        "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/": 1
+      }
+    },
+    {
+      "keyword": "tuberculation in cast iron pipes",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 69,
+      "pages": {
+        "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/": 1
+      }
+    },
+    {
+      "keyword": "why are cast iron pipes bad",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 36,
+      "pages": {
+        "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/": 1
+      }
+    }
+  ]
+}

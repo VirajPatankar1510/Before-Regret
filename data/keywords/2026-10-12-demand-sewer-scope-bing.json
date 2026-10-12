@@ -1,0 +1,72 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-12T04:27:21.004Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "sewer scope",
+    "sewer line inspection",
+    "cast iron pipe",
+    "sewer line replacement"
+  ],
+  "keywords": [
+    {
+      "keyword": "will salt damage cast iron pipes",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 8
+    },
+    {
+      "keyword": "property was built in 1996 is a sewer scope a smart idea inspection",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "sewer scope",
+      "search_volume": 18,
+      "metric": "market",
+      "broad_impressions": 39,
+      "kind": "seed"
+    },
+    {
+      "keyword": "sewer line inspection",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "cast iron pipe",
+      "search_volume": 442,
+      "metric": "market",
+      "broad_impressions": 1312,
+      "kind": "seed"
+    },
+    {
+      "keyword": "american cast iron pipe company",
+      "search_volume": 852,
+      "metric": "market",
+      "broad_impressions": 852,
+      "kind": "related"
+    },
+    {
+      "keyword": "american cast iron pipe",
+      "search_volume": 18,
+      "metric": "market",
+      "broad_impressions": 870,
+      "kind": "related"
+    },
+    {
+      "keyword": "sewer line replacement",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 26,
+      "kind": "seed"
+    }
+  ]
+}

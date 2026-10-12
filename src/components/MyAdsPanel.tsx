@@ -22,6 +22,10 @@ interface GuidePlacement {
   // placement bought at a founding rate keeps that rate. Optional for older server responses.
   renewalPriceUsd?: number;
   priceLocked?: boolean;
+  // Set on a topic sponsorship (src/data/adClusters.ts): one placement shown on every guide in the
+  // topic, so it is named by the topic rather than by the guide it is stored against.
+  clusterKey?: string | null;
+  clusterName?: string | null;
 }
 
 interface ZipPlacement {
@@ -417,7 +421,9 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
 
   const renewGuide = (p: GuidePlacement) => {
     sessionStorage.setItem(RENEW_GUIDE_KEY, JSON.stringify({
-      articleIds: [p.articleId], businessName: p.businessName, tradeCategory: p.tradeCategory,
+      // A lapsed topic sponsorship is bought again as the topic, not as the one guide it was stored on.
+      articleIds: p.clusterKey ? [] : [p.articleId], clusterKey: p.clusterKey ?? null,
+      businessName: p.businessName, tradeCategory: p.tradeCategory,
       phone: p.phone, website: p.website, licenceNumber: p.licenceNumber,
     }));
     onNavigate('/topic-ads');
@@ -592,10 +598,10 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-blue-600">
-                          <BookOpen className="w-3 h-3" /><span>Topic Ad</span>
+                          <BookOpen className="w-3 h-3" /><span>{p.clusterName ? 'Topic sponsorship' : 'Topic Ad'}</span>
                         </div>
                         <a href={`/guides/${p.slug}/`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-bold text-slate-900 hover:text-blue-700 mt-0.5">
-                          <span>{p.title}</span><ExternalLink className="w-3 h-3 shrink-0" />
+                          <span>{p.clusterName ? `Every ${p.clusterName} guide` : p.title}</span><ExternalLink className="w-3 h-3 shrink-0" />
                         </a>
                         <p className="text-xs text-slate-500 mt-1">{p.businessName} &middot; {p.tradeCategory} &middot; {p.phone}</p>
                         {/* Shown so the vendor can see the licence number being published in their
@@ -705,7 +711,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                 {expiredGuides.map((p) => (
                   <div key={`ex-guide-${p.purchaseId}`} className="bg-slate-100 border border-slate-200 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 opacity-80">
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-slate-600">{p.title}</p>
+                      <p className="text-sm font-bold text-slate-600">{p.clusterName ? `Every ${p.clusterName} guide` : p.title}</p>
                       <p className="text-xs text-slate-400">Expired {expiryLabel(p.paidThrough)}</p>
                     </div>
                     <button type="button" onClick={() => renewGuide(p)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg shrink-0">

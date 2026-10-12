@@ -1,0 +1,164 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-12T04:27:41.449Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "foundation crack",
+    "structural engineer",
+    "foundation repair",
+    "chimney inspection",
+    "termite inspection"
+  ],
+  "keywords": [
+    {
+      "keyword": "foundation crack",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 143,
+      "kind": "seed"
+    },
+    {
+      "keyword": "structural engineer",
+      "search_volume": 2132,
+      "metric": "market",
+      "broad_impressions": 3785,
+      "kind": "seed"
+    },
+    {
+      "keyword": "structural engineer near me",
+      "search_volume": 1004,
+      "metric": "market",
+      "broad_impressions": 1039,
+      "kind": "related"
+    },
+    {
+      "keyword": "structural engineer salary",
+      "search_volume": 247,
+      "metric": "market",
+      "broad_impressions": 247,
+      "kind": "related"
+    },
+    {
+      "keyword": "what does a structural engineer do",
+      "search_volume": 195,
+      "metric": "market",
+      "broad_impressions": 195,
+      "kind": "related"
+    },
+    {
+      "keyword": "what is a structural engineer",
+      "search_volume": 125,
+      "metric": "market",
+      "broad_impressions": 125,
+      "kind": "related"
+    },
+    {
+      "keyword": "residential structural engineer near me",
+      "search_volume": 35,
+      "metric": "market",
+      "broad_impressions": 35,
+      "kind": "related"
+    },
+    {
+      "keyword": "foundation repair",
+      "search_volume": 2084,
+      "metric": "market",
+      "broad_impressions": 11165,
+      "kind": "seed"
+    },
+    {
+      "keyword": "groundworks foundation repair",
+      "search_volume": 1865,
+      "metric": "market",
+      "broad_impressions": 1907,
+      "kind": "related"
+    },
+    {
+      "keyword": "thrasher foundation repair",
+      "search_volume": 1241,
+      "metric": "market",
+      "broad_impressions": 1241,
+      "kind": "related"
+    },
+    {
+      "keyword": "foundation repair near me",
+      "search_volume": 1158,
+      "metric": "market",
+      "broad_impressions": 1158,
+      "kind": "related"
+    },
+    {
+      "keyword": "foundation repair companies near me",
+      "search_volume": 973,
+      "metric": "market",
+      "broad_impressions": 973,
+      "kind": "related"
+    },
+    {
+      "keyword": "olshan foundation repair",
+      "search_volume": 920,
+      "metric": "market",
+      "broad_impressions": 920,
+      "kind": "related"
+    },
+    {
+      "keyword": "jes foundation repair",
+      "search_volume": 708,
+      "metric": "market",
+      "broad_impressions": 708,
+      "kind": "related"
+    },
+    {
+      "keyword": "ram jack foundation repair",
+      "search_volume": 542,
+      "metric": "market",
+      "broad_impressions": 542,
+      "kind": "related"
+    },
+    {
+      "keyword": "lre foundation repair",
+      "search_volume": 219,
+      "metric": "market",
+      "broad_impressions": 219,
+      "kind": "related"
+    },
+    {
+      "keyword": "structured foundation repair",
+      "search_volume": 42,
+      "metric": "market",
+      "broad_impressions": 42,
+      "kind": "related"
+    },
+    {
+      "keyword": "chimney inspection",
+      "search_volume": 83,
+      "metric": "market",
+      "broad_impressions": 452,
+      "kind": "seed"
+    },
+    {
+      "keyword": "chimney inspection near me",
+      "search_volume": 369,
+      "metric": "market",
+      "broad_impressions": 369,
+      "kind": "related"
+    },
+    {
+      "keyword": "termite inspection",
+      "search_volume": 1038,
+      "metric": "market",
+      "broad_impressions": 1582,
+      "kind": "seed"
+    },
+    {
+      "keyword": "termite inspection near me",
+      "search_volume": 544,
+      "metric": "market",
+      "broad_impressions": 544,
+      "kind": "related"
+    }
+  ]
+}

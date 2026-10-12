@@ -5,7 +5,9 @@ import { TRADE_CATEGORIES, requiresLicenceNumber } from '../data/sponsoredVendor
 import { requireVerifiedUser } from './clerkAuth.js';
 import { TERMS_VERSION } from '../data/legalVersions.js';
 import { checkVendorWebsite } from '../data/vendorWebsite.js';
+import { AD_CLUSTERS, MIN_OPEN_GUIDES_FOR_SPONSORSHIP, adClusterByKey, adClusterForGuide } from '../data/adClusters.js';
 import {
+  AD_CLUSTER_PRICE_USD,
   GUIDE_AD_TIER_PRICES_USD,
   SLOT_DURATION_DAYS,
   normaliseTier,
@@ -43,24 +45,102 @@ function isValidArticleIdList(slots: unknown): slots is number[] {
   return Array.isArray(slots) && slots.length > 0 && slots.every((id) => Number.isFinite(id));
 }
 
+type Sql = Parameters<Parameters<typeof withDb>[0]>[0];
+
+// Topic sponsorships with a live placement right now (see src/data/adClusters.ts). Same definition
+// of "live" as every other availability check in this file.
+async function sponsoredClusterKeys(sql: Sql): Promise<Set<string>> {
+  const rows = await sql`
+    SELECT DISTINCT cluster_key FROM guide_ad_purchases
+    WHERE cluster_key IS NOT NULL AND position = ${SLOT_POSITION} AND active = true AND paid_through > now()
+  `;
+  return new Set((rows as unknown as Array<{ cluster_key: string }>).map((r) => r.cluster_key));
+}
+
+// Whether a guide is covered by a live topic sponsorship. A sponsored cluster's guides are sold out
+// as single slots: the sponsor bought "the only advertiser on every guide in this topic", and that
+// includes guides published after they paid, which have no purchase row of their own.
+async function isInSponsoredCluster(sql: Sql, articleId: number, sponsored: Set<string>): Promise<boolean> {
+  if (sponsored.size === 0) return false;
+  const rows = await sql`SELECT slug, title FROM articles WHERE id = ${articleId} LIMIT 1`;
+  const row = (rows as unknown as Array<{ slug: string; title: string }>)[0];
+  const cluster = row ? adClusterForGuide(row.slug, row.title) : null;
+  return cluster !== null && sponsored.has(cluster.key);
+}
+
 // Shared by checkout and capture -- checkout must reject an already-taken slot before a vendor
 // pays for it, and capture must re-check the same thing in case someone else bought it in the
 // gap between order creation and payment completing. Same query, same definition of "taken"
 // (paid_through in the future AND active), used both places so they can't quietly diverge.
 async function findAlreadyTakenArticleIds(articleIds: number[]): Promise<number[]> {
   return withDb(async (sql) => {
+    const sponsored = await sponsoredClusterKeys(sql);
     const taken: number[] = [];
     for (const articleId of articleIds) {
+      // cluster_key IS NULL: a topic sponsorship's row sits on its anchor guide but is not that
+      // guide's single-guide advertiser; the sponsorship check below covers it.
       const rows = await sql`
         SELECT id FROM guide_ad_purchases
-        WHERE article_id = ${articleId} AND position = ${SLOT_POSITION}
+        WHERE article_id = ${articleId} AND position = ${SLOT_POSITION} AND cluster_key IS NULL
           AND active = true AND paid_through > now()
         LIMIT 1
       `;
-      if ((rows as unknown[]).length > 0) taken.push(articleId);
+      if ((rows as unknown[]).length > 0 || (await isInSponsoredCluster(sql, articleId, sponsored))) taken.push(articleId);
     }
     return taken;
   });
+}
+
+type VendorDetails =
+  | { ok: false; error: string }
+  | {
+      ok: true; businessName: string; tradeCategory: string; phone: string; contactEmail: string;
+      website: string | null; licenceNumber: string;
+    };
+
+// The business details both checkouts (single guides and topic sponsorships) collect, validated
+// once. A rule enforced on one checkout and not the other would just move a vendor to the other.
+function readVendorDetails(body: any): VendorDetails {
+  const { businessName, tradeCategory, phone, website, contactEmail, attestedAccurate, licenceNumber } = body || {};
+  if (!businessName || typeof businessName !== 'string') return { ok: false, error: 'Business name is required.' };
+  if (!tradeCategory || !(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) {
+    return { ok: false, error: 'Please choose a valid trade category.' };
+  }
+  if (!phone || typeof phone !== 'string') return { ok: false, error: 'Phone number is required.' };
+  if (!contactEmail || typeof contactEmail !== 'string') return { ok: false, error: 'Contact email is required.' };
+  if (attestedAccurate !== true) {
+    return { ok: false, error: 'You must accept the Terms of Service and confirm your business details before checking out.' };
+  }
+  // Mirrors the identical check in zipAdsApi.ts's checkout -- both ad products are advertising for
+  // the same trades, so a licence requirement enforced on only one of them would just move an
+  // unlicensed advertiser to the cheaper product. See requiresLicenceNumber() for the rationale.
+  const trimmedLicence = typeof licenceNumber === 'string' ? licenceNumber.trim() : '';
+  if (requiresLicenceNumber(tradeCategory)) {
+    if (trimmedLicence.length < 3) {
+      return { ok: false, error: 'A licence, registration, or certification number is required for this trade category.' };
+    }
+    if (trimmedLicence.length > 60) {
+      return { ok: false, error: 'That licence number looks too long -- please enter just the number.' };
+    }
+  }
+  // Official business website only -- see src/data/vendorWebsite.ts. Normalised value is what's stored.
+  const site = checkVendorWebsite(website);
+  if (!site.ok) return { ok: false, error: site.error as string };
+  return {
+    ok: true, businessName, tradeCategory, phone, contactEmail, website: site.url ?? null, licenceNumber: trimmedLicence,
+  };
+}
+
+/** What the success page needs to say "you sponsor the Stucco & EIFS guides" instead of naming one guide. */
+function clusterSummary(key: unknown): { key: string; name: string } | null {
+  const cluster = adClusterByKey(key);
+  return cluster ? { key: cluster.key, name: cluster.name } : null;
+}
+
+function approvalUrlFor(orderId: string): string {
+  return `https://www.${
+    process.env.PAYPAL_MODE === 'live' ? 'paypal.com' : 'sandbox.paypal.com'
+  }/cgi-bin/webscr?cmd=_express-checkout&token=${orderId}`;
 }
 
 export function registerGuideAdsRoutes(app: Express) {
@@ -72,26 +152,50 @@ export function registerGuideAdsRoutes(app: Express) {
         (sql) => sql`SELECT id, slug, title, ad_tier FROM articles WHERE status = 'published' ORDER BY title ASC`
       );
       const takenRows = await withDb(
-        (sql) => sql`SELECT article_id FROM guide_ad_purchases WHERE position = ${SLOT_POSITION} AND active = true AND paid_through > now()`
+        (sql) => sql`SELECT article_id FROM guide_ad_purchases WHERE position = ${SLOT_POSITION} AND cluster_key IS NULL AND active = true AND paid_through > now()`
       );
       const takenSet = new Set((takenRows as unknown as Array<{ article_id: number }>).map((r) => r.article_id));
+      const sponsored = await withDb((sql) => sponsoredClusterKeys(sql));
       // Each guide now carries its own price. The client renders these and sums them for display,
       // but the amount actually charged is always recomputed server-side at checkout from the same
       // ad_tier column -- see quoteGuideSlots(). What's shown here is a quote, never the invoice.
-      const result = (guides as unknown as Array<{ id: number; slug: string; title: string; ad_tier: string }>).map((g) => {
+      const guideRows = guides as unknown as Array<{ id: number; slug: string; title: string; ad_tier: string }>;
+      const result = guideRows.map((g) => {
         const tier = normaliseTier(g.ad_tier);
+        const cluster = adClusterForGuide(g.slug, g.title);
         return {
           articleId: g.id,
           slug: g.slug,
           title: g.title,
-          taken: takenSet.has(g.id),
+          // A guide inside a sponsored topic is taken even with no purchase row of its own.
+          taken: takenSet.has(g.id) || (cluster !== null && sponsored.has(cluster.key)),
           tier,
           priceUsd: priceForTier(tier),
+          clusterKey: cluster?.key ?? null,
         };
+      });
+      // Topic sponsorships on offer. Only topics nobody sponsors yet, and only while at least
+      // MIN_OPEN_GUIDES_FOR_SPONSORSHIP of their guides are open (owner rule 2026-10-12). Every member
+      // is listed, with `taken` marking the ones a single-guide advertiser holds, so the vendor sees
+      // exactly which pages the sponsorship starts on.
+      const clusters = AD_CLUSTERS.flatMap((c) => {
+        const members = guideRows.filter((g) => adClusterForGuide(g.slug, g.title)?.key === c.key);
+        const open = members.filter((g) => !takenSet.has(g.id));
+        if (!members.some((g) => g.slug === c.anchorSlug)) return [];
+        if (sponsored.has(c.key) || open.length < MIN_OPEN_GUIDES_FOR_SPONSORSHIP) return [];
+        return [{
+          key: c.key,
+          name: c.name,
+          priceUsd: AD_CLUSTER_PRICE_USD,
+          trades: c.trades,
+          openCount: open.length,
+          guides: members.map((g) => ({ articleId: g.id, slug: g.slug, title: g.title, taken: takenSet.has(g.id) })),
+        }];
       });
       res.json({
         success: true,
         guides: result,
+        clusters,
         // Retained for older clients that read a single flat price; current ones use guide.priceUsd.
         pricePerSlotUsd: PRICE_PER_SLOT_USD,
         tierPricesUsd: GUIDE_AD_TIER_PRICES_USD,
@@ -127,12 +231,34 @@ export function registerGuideAdsRoutes(app: Express) {
         SELECT p.id, p.business_name, p.trade_category, p.phone, p.website, p.licence_number
         FROM guide_ad_purchases p
         JOIN articles a ON a.id = p.article_id
-        WHERE p.article_id = ${articleId} AND p.position = ${SLOT_POSITION}
+        WHERE p.article_id = ${articleId} AND p.position = ${SLOT_POSITION} AND p.cluster_key IS NULL
           AND p.active = true AND p.paid_through > now()
           AND a.status = 'published'
         ORDER BY p.created_at DESC LIMIT 1
       `);
-      const row = (rows as unknown as any[])[0];
+      let row = (rows as unknown as any[])[0];
+      // No advertiser of its own: the guide may sit in a sponsored topic. That sponsor's row is
+      // stored on the cluster's anchor guide and shown on every member, including guides published
+      // after the sponsor paid (see src/data/adClusters.ts). Clicks attribute to that same row.
+      if (!row) {
+        const articleRows = await withDb((sql) => sql`
+          SELECT slug, title FROM articles WHERE id = ${articleId} AND status = 'published' LIMIT 1
+        `);
+        const article = (articleRows as unknown as Array<{ slug: string; title: string }>)[0];
+        const cluster = article ? adClusterForGuide(article.slug, article.title) : null;
+        if (cluster) {
+          const sponsorRows = await withDb((sql) => sql`
+            SELECT p.id, p.business_name, p.trade_category, p.phone, p.website, p.licence_number
+            FROM guide_ad_purchases p
+            JOIN articles a ON a.id = p.article_id
+            WHERE p.cluster_key = ${cluster.key} AND p.position = ${SLOT_POSITION}
+              AND p.active = true AND p.paid_through > now()
+              AND a.status = 'published'
+            ORDER BY p.created_at DESC LIMIT 1
+          `);
+          row = (sponsorRows as unknown as any[])[0];
+        }
+      }
       if (!row) {
         res.json({ success: true, active: false });
         return;
@@ -174,23 +300,13 @@ export function registerGuideAdsRoutes(app: Express) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const { businessName, tradeCategory, phone, website, contactEmail, slots, attestedAccurate, licenceNumber } = req.body;
-    if (!businessName || typeof businessName !== 'string') {
-      res.status(400).json({ success: false, error: 'Business name is required.' });
+    const vendor = readVendorDetails(req.body);
+    if ('error' in vendor) {
+      res.status(400).json({ success: false, error: vendor.error });
       return;
     }
-    if (!tradeCategory || !(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) {
-      res.status(400).json({ success: false, error: 'Please choose a valid trade category.' });
-      return;
-    }
-    if (!phone || typeof phone !== 'string') {
-      res.status(400).json({ success: false, error: 'Phone number is required.' });
-      return;
-    }
-    if (!contactEmail || typeof contactEmail !== 'string') {
-      res.status(400).json({ success: false, error: 'Contact email is required.' });
-      return;
-    }
+    const { businessName, tradeCategory, phone, contactEmail } = vendor;
+    const { slots } = req.body;
     if (!isValidArticleIdList(slots)) {
       res.status(400).json({ success: false, error: 'Select at least one guide page.' });
       return;
@@ -205,32 +321,6 @@ export function registerGuideAdsRoutes(app: Express) {
     // list and read back by capture, so a duplicate surviving to storage would reappear as a
     // "skipped" guide on the vendor's receipt for a slot they were charged for.
     const uniqueSlots = [...new Set(slots)];
-    if (attestedAccurate !== true) {
-      res.status(400).json({ success: false, error: 'You must accept the Terms of Service and confirm your business details before checking out.' });
-      return;
-    }
-
-    // Mirrors the identical check in zipAdsApi.ts's checkout -- both ad products are advertising for
-    // the same trades, so a licence requirement enforced on only one of them would just move an
-    // unlicensed advertiser to the cheaper product. See requiresLicenceNumber() for the rationale.
-    const trimmedLicence = typeof licenceNumber === 'string' ? licenceNumber.trim() : '';
-    if (requiresLicenceNumber(tradeCategory)) {
-      if (trimmedLicence.length < 3) {
-        res.status(400).json({ success: false, error: 'A licence, registration, or certification number is required for this trade category.' });
-        return;
-      }
-      if (trimmedLicence.length > 60) {
-        res.status(400).json({ success: false, error: 'That licence number looks too long -- please enter just the number.' });
-        return;
-      }
-    }
-
-    // Official business website only -- see src/data/vendorWebsite.ts. Normalised value is what's stored.
-    const site = checkVendorWebsite(website);
-    if (!site.ok) {
-      res.status(400).json({ success: false, error: site.error });
-      return;
-    }
 
     try {
       const alreadyTaken = await findAlreadyTakenArticleIds(uniqueSlots);
@@ -266,17 +356,15 @@ export function registerGuideAdsRoutes(app: Express) {
           paypal_order_id, business_name, trade_category, phone, website, contact_email, slots_json, amount_usd, status, clerk_user_id,
           terms_version, terms_accepted_at, licence_number, slot_prices_json
         ) VALUES (
-          ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${phone}, ${site.url},
+          ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${phone}, ${vendor.website},
           ${contactEmail}, ${JSON.stringify(uniqueSlots)}, ${amount}, 'pending', ${req.verifiedUserId as string},
-          ${TERMS_VERSION}, now(), ${trimmedLicence || null}, ${JSON.stringify(quote.lines)}
+          ${TERMS_VERSION}, now(), ${vendor.licenceNumber || null}, ${JSON.stringify(quote.lines)}
         )
       `);
 
       // Same approval-URL shape the generic /api/paypal/orders route builds -- the client does a
       // full-page redirect here, there's no PayPal JS SDK button on this page.
-      const approvalUrl = `https://www.${
-        process.env.PAYPAL_MODE === 'live' ? 'paypal.com' : 'sandbox.paypal.com'
-      }/cgi-bin/webscr?cmd=_express-checkout&token=${paypalOrder.orderId}`;
+      const approvalUrl = approvalUrlFor(paypalOrder.orderId);
 
       res.json({ success: true, orderId: paypalOrder.orderId, amount, lines: quote.lines, approvalUrl });
     } catch (err: any) {
@@ -293,6 +381,81 @@ export function registerGuideAdsRoutes(app: Express) {
         return;
       }
       console.error('[guide-ads] checkout failed:', err);
+      res.status(500).json({ success: false, error: err.message || 'Could not start checkout.' });
+    }
+  });
+
+  // --- Start checkout for a topic sponsorship (src/data/adClusters.ts) -------------------------
+  // One flat price for every guide in a topic. Stored as a single order for the cluster's anchor
+  // guide, tagged with cluster_key, so the capture route below grants it with no separate path.
+  app.post('/api/guide-ads/cluster-checkout', requireVerifiedUser, async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    if (!isPayPalConfigured()) {
+      res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
+      return;
+    }
+    const cluster = adClusterByKey(req.body?.clusterKey);
+    if (!cluster) {
+      res.status(400).json({ success: false, error: 'That topic is not available for sponsorship.' });
+      return;
+    }
+    const vendor = readVendorDetails(req.body);
+    if ('error' in vendor) {
+      res.status(400).json({ success: false, error: vendor.error });
+      return;
+    }
+    try {
+      const guides = (await withDb((sql) => sql`
+        SELECT id, slug, title, ad_tier FROM articles WHERE status = 'published'
+      `)) as unknown as Array<{ id: number; slug: string; title: string; ad_tier: string }>;
+      const members = guides.filter((g) => adClusterForGuide(g.slug, g.title)?.key === cluster.key);
+      const anchor = members.find((g) => g.slug === cluster.anchorSlug);
+      if (!anchor) {
+        res.status(400).json({ success: false, error: 'This topic is not open for sponsorship yet.' });
+        return;
+      }
+      const live = (await withDb((sql) => sql`
+        SELECT article_id, cluster_key FROM guide_ad_purchases
+        WHERE position = ${SLOT_POSITION} AND active = true AND paid_through > now()
+      `)) as unknown as Array<{ article_id: number; cluster_key: string | null }>;
+      const singleTaken = new Set(live.filter((p) => p.cluster_key === null).map((p) => p.article_id));
+      const openCount = members.filter((g) => !singleTaken.has(g.id)).length;
+      if (live.some((p) => p.cluster_key === cluster.key) || openCount < MIN_OPEN_GUIDES_FOR_SPONSORSHIP) {
+        res.status(409).json({
+          success: false,
+          error: 'This topic is no longer open for sponsorship.',
+          clusterTaken: true,
+        });
+        return;
+      }
+
+      const amount = AD_CLUSTER_PRICE_USD.toFixed(2);
+      const lines = [{ articleId: anchor.id, tier: normaliseTier(anchor.ad_tier), priceUsd: AD_CLUSTER_PRICE_USD }];
+      const appUrl = process.env.APP_URL || 'http://localhost:3000';
+      const paypalOrder = await createPayPalOrder({
+        amount,
+        currency: 'USD',
+        type: 'vendor_subscription',
+        description: `Before Regret topic sponsorship -- ${cluster.name} guides x ${SLOT_DURATION_DAYS} days`,
+        returnUrl: `${appUrl}/topic-ads/success`,
+        cancelUrl: `${appUrl}/topic-ads`,
+        userEmail: vendor.contactEmail,
+      });
+
+      await withDb((sql) => sql`
+        INSERT INTO guide_ad_orders (
+          paypal_order_id, business_name, trade_category, phone, website, contact_email, slots_json, amount_usd, status, clerk_user_id,
+          terms_version, terms_accepted_at, licence_number, slot_prices_json, cluster_key
+        ) VALUES (
+          ${paypalOrder.orderId}, ${vendor.businessName}, ${vendor.tradeCategory}, ${vendor.phone}, ${vendor.website},
+          ${vendor.contactEmail}, ${JSON.stringify([anchor.id])}, ${amount}, 'pending', ${req.verifiedUserId as string},
+          ${TERMS_VERSION}, now(), ${vendor.licenceNumber || null}, ${JSON.stringify(lines)}, ${cluster.key}
+        )
+      `);
+
+      res.json({ success: true, orderId: paypalOrder.orderId, amount, approvalUrl: approvalUrlFor(paypalOrder.orderId) });
+    } catch (err: any) {
+      console.error('[guide-ads] cluster checkout failed:', err);
       res.status(500).json({ success: false, error: err.message || 'Could not start checkout.' });
     }
   });
@@ -339,6 +502,7 @@ export function registerGuideAdsRoutes(app: Express) {
           paidThrough: rows[0]?.paid_through ?? null,
           grantedGuides: rows.map((r) => ({ articleId: r.article_id, slug: r.slug, title: r.title })),
           skippedGuides: [],
+          cluster: clusterSummary(order.cluster_key),
         });
         return;
       }
@@ -389,8 +553,17 @@ export function registerGuideAdsRoutes(app: Express) {
       const paidThrough = new Date(Date.now() + SLOT_DURATION_DAYS * 24 * 60 * 60 * 1000);
       const grantedArticleIds: number[] = [];
       const skippedArticleIds: number[] = [];
+      const clusterKey: string | null = order.cluster_key ?? null;
       await withDb(async (sql) => {
+        // A single-guide order must not claim a guide that a topic sponsor bought in the meantime.
+        // Checked before the insert rather than inside it: sponsored membership is computed from
+        // titles (src/data/adClusters.ts), which no SQL predicate here can see.
+        const sponsored = clusterKey ? new Set<string>() : await sponsoredClusterKeys(sql);
         for (const articleId of requestedArticleIds) {
+          if (await isInSponsoredCluster(sql, articleId, sponsored)) {
+            skippedArticleIds.push(articleId);
+            continue;
+          }
           // The availability check and the insert used to be two separate round trips (a
           // findAlreadyTakenArticleIds SELECT, then an unconditional INSERT), which left a real
           // race window: two vendors' capture calls for the same guide, close enough together,
@@ -402,14 +575,17 @@ export function registerGuideAdsRoutes(app: Express) {
           const inserted = await sql`
             INSERT INTO guide_ad_purchases (
               order_id, article_id, position, business_name, trade_category, phone, website, paid_through,
-              licence_number, price_usd
+              licence_number, price_usd, cluster_key
             )
             SELECT ${order.id}, ${articleId}, ${SLOT_POSITION}, ${order.business_name}, ${order.trade_category},
                    ${order.phone}, ${order.website}, ${paidThrough.toISOString()},
-                   ${order.licence_number ?? null}, ${quotedPrices.get(articleId) ?? null}
+                   ${order.licence_number ?? null}, ${quotedPrices.get(articleId) ?? null}, ${clusterKey}
             WHERE NOT EXISTS (
               SELECT 1 FROM guide_ad_purchases
-              WHERE article_id = ${articleId} AND position = ${SLOT_POSITION} AND active = true AND paid_through > now()
+              -- A topic sponsorship contends only with another sponsorship of the same topic: its row
+              -- may share the anchor guide with that guide's single-guide advertiser, who keeps it.
+              WHERE (CASE WHEN ${clusterKey}::text IS NULL THEN article_id = ${articleId} ELSE cluster_key = ${clusterKey} END)
+                AND position = ${SLOT_POSITION} AND active = true AND paid_through > now()
             )
             RETURNING id
           `;
@@ -448,6 +624,7 @@ export function registerGuideAdsRoutes(app: Express) {
         paidThrough: paidThrough.toISOString(),
         grantedGuides: toGuideList(grantedArticleIds),
         skippedGuides: toGuideList(skippedArticleIds),
+        cluster: clusterSummary(clusterKey),
       });
     } catch (err: any) {
       console.error('[guide-ads] capture failed:', err);

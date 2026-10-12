@@ -514,6 +514,13 @@ export async function ensureArticlesSchema(): Promise<void> {
   // existed have no breakdown, and capture falls back to the tier price for them.
   await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS slot_prices_json TEXT`;
 
+  // Topic sponsorships (src/data/adClusters.ts). Set on the order at checkout and copied onto the
+  // single purchase row at capture; that row sits on the cluster's anchor guide and is shown on
+  // every guide in the cluster. NULL means an ordinary single-guide placement, which is every row
+  // sold before this column existed.
+  await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS cluster_key TEXT`;
+  await sql`ALTER TABLE guide_ad_purchases ADD COLUMN IF NOT EXISTS cluster_key TEXT`;
+
   // zip_ad_orders / zip_ad_purchases: same split as guide_ad_orders/guide_ad_purchases above and
   // for the same reason (order = checkout attempt, purchase = actually-sold inventory, "who's
   // active right now" is always a live query never a status flag). One selection per order here

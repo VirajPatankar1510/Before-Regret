@@ -42,6 +42,11 @@ export const GUIDE_AD_TIER_LABELS: Record<GuideAdTier, string> = {
 
 export const SLOT_DURATION_DAYS = 30;
 
+// Topic sponsorship (src/data/adClusters.ts): one advertiser on every guide in a topic cluster.
+// Owner decision 2026-10-12. Stored on the sponsorship row as price_usd like any other placement,
+// so quoteGuideRenewal below renews it at the price the vendor paid, with no cluster-specific path.
+export const AD_CLUSTER_PRICE_USD = 39;
+
 /** Anything not exactly 'geo' prices as standard -- an unrecognised value must never price as free. */
 export function normaliseTier(raw: unknown): GuideAdTier {
   return raw === 'geo' ? 'geo' : 'standard';

@@ -1,0 +1,128 @@
+{
+  "_about": "Stucco cluster page A (marketing/cluster-plan.md). Every fact the article states, with the words read at the source.",
+  "slug": "eifs-vs-stucco-how-to-tell",
+  "question": "How can a buyer tell whether a house has EIFS or traditional stucco?",
+  "verdictConfirmed": "Not reliably from a distance; a few hands-on checks point one way or the other, and none is proof on its own.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "The finish coat can look the same on either system.",
+      "quote": "all systems have a finish coat that can be applied in similar colors and textures",
+      "url": "https://www.lerchbates.com/?p=2297",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "claim": "Traditional stucco on a frame wall: IRC R703.7 requires installation per ASTM C926 and ASTM C1063, over metal or wire lath, not less than three coats over metal or wire lath.",
+      "quote": "Installation of exterior plaster shall be in compliance with ASTM C926, ASTM C1063 and the provisions of this code. ... Plaster shall be not less than three coats where applied over metal lath or wire lath",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-7-wall-covering",
+      "readOn": "2026-10-12",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Cement plaster over wire lath: 7/8 inch minimum on exterior walls.",
+      "quote": "TABLE R702.1(1) THICKNESS OF PLASTER ... Wire lath ... Cement Plaster ... 7/8, minimum (exterior)",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-7-wall-covering",
+      "readOn": "2026-10-12",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "Common (PB) EIFS: foam board, base coat typically 1/16 to 3/32 inch with fiberglass mesh embedded, then finish coat.",
+      "quote": "Base coat \"typically 1/16″ to 3/32″\" with fiberglass mesh fully embedded",
+      "url": "https://www.lerchbates.com/?p=2297",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f5",
+      "claim": "Tap test: hollow suggests EIFS, solid suggests stucco's thicker base coat; PM EIFS or hybrid stucco can also sound solid.",
+      "quote": "Do they produce a \"hollow\" sound or does it appear to be more solid? ... PM EIFS or hybrid stucco system can also produce a \"solid\" sound.",
+      "url": "https://www.lerchbates.com/?p=2297",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f6",
+      "claim": "Push test: give suggests EIFS; no give suggests stucco or a hybrid/PM system; don't injure fingers.",
+      "quote": "Is there any deflection? Can you feel the façade give a little? ... no give or deflection ... injure any fingers or thumbs",
+      "url": "https://www.lerchbates.com/?p=2297",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f7",
+      "claim": "Crack pattern: properly installed PB EIFS doesn't typically crack in the field of the wall; EIFS cracks are smaller and around penetrations; stucco can crack in the field.",
+      "quote": "Properly installed PB EIFS does not typically produce cracks in the field of the wall ... smaller and typically around penetrations ... can crack in the field of the wall",
+      "url": "https://www.lerchbates.com/?p=2297",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f8",
+      "claim": "Control joints suggest stucco (or PM EIFS/hybrid); expansion joints belong at floor lines and changes in substrate on both systems.",
+      "quote": "are, or should be, installed at all floor lines and changes in substrate for both stucco and EIFS systems",
+      "url": "https://www.lerchbates.com/?p=2297",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f9",
+      "claim": "Foam shapes can be planted on stucco; that doesn't make the facade EIFS.",
+      "quote": "EPS insulation shapes can also be \"planted on\" the stucco base coat ... This does NOT, however, mean the façade is EIFS.",
+      "url": "https://www.lerchbates.com/?p=2297",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f10",
+      "claim": "From a short distance the two are extremely difficult to tell apart.",
+      "quote": "extremely difficult",
+      "url": "https://www.lerchbates.com/?p=2297",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f11",
+      "claim": "Weep screed for stucco on exterior stud walls: at or below the foundation plate line, at least 4 inches above earth or 2 inches above paved areas, lets trapped water drain (IRC R703.7.2.1).",
+      "quote": "shall be provided at or below the foundation plate line on exterior stud walls ... not less than 4 inches (102 mm) above the earth or 2 inches (51 mm) above paved areas ... allow trapped water to drain to the exterior",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-7-wall-covering",
+      "readOn": "2026-10-12",
+      "method": "browser"
+    },
+    {
+      "id": "f12",
+      "claim": "EIFS and EIFS with drainage must terminate at least 6 inches above finished ground (IRC R703.9.1 item 5, R703.9.2 item 8).",
+      "quote": "EIFS shall terminate not less than 6 inches (152 mm) above the finished ground level.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-7-wall-covering",
+      "readOn": "2026-10-12",
+      "method": "browser"
+    },
+    {
+      "id": "f13",
+      "claim": "Barrier EIFS limited to concrete or masonry substrates; EIFS with drainage required over all other wall assemblies, with 90 percent average minimum drainage efficiency per ASTM E2273 and a water-resistive barrier between EIFS and sheathing (2021 IRC R703.9.1, R703.9.2).",
+      "quote": "EIFS shall be limited to applications over substrates of concrete or masonry wall assemblies. ... EIFS with drainage shall be required over all wall assemblies with the exception of substrates of concrete or masonry wall assemblies. ... average minimum drainage efficiency of 90 percent when tested in accordance with ASTM E2273. ... The water-resistive barrier shall be applied between the EIFS and the wall sheathing.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-7-wall-covering",
+      "readOn": "2026-10-12",
+      "method": "browser"
+    },
+    {
+      "id": "f14",
+      "claim": "Moisture survey cost: $400 – $800 for a moisture survey by an EIFS-qualified inspector.",
+      "quote": "costToCheck: '$400 – $800 for a moisture survey by an EIFS-qualified inspector'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES, id eifs_stucco)",
+      "readOn": "2026-10-12",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    { "claim": "Pull an exterior outlet cover to look for foam", "why": "forum advice only; also asks a buyer to open electrical fittings in someone else's house" },
+    { "claim": "Scratch the finish with a knife", "why": "forum advice; damages the seller's finish" },
+    { "claim": "Metal control joints mean stucco, so use a magnet", "why": "forum anecdote" },
+    { "claim": "North Carolina 1990s moisture surveys (98% of 300 houses, $25,000 average repair)", "why": "secondary reports only; the primary documents were a scanned PDF and a 410" },
+    { "claim": "Which IRC edition first required drainage EIFS", "why": "not read; the article only states the 2021 text" }
+  ],
+  "blockedSources": ["homeinspector.org ASHI standard PDF (text not extractable here, not a block)"]
+}

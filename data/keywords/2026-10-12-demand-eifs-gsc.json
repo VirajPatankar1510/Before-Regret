@@ -1,0 +1,167 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-12T04:27:10.653Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "eifs",
+    "synthetic stucco",
+    "stucco inspection",
+    "stucco moisture",
+    "stucco house"
+  ],
+  "keywords": [
+    {
+      "keyword": "eifs stucco evaluations",
+      "search_volume": 383,
+      "impressions": 383,
+      "clicks": 2,
+      "position": 32.8,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 383
+      }
+    },
+    {
+      "keyword": "eifs evaluation",
+      "search_volume": 141,
+      "impressions": 141,
+      "clicks": 0,
+      "position": 23.6,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 141
+      }
+    },
+    {
+      "keyword": "eifs evaluations",
+      "search_volume": 102,
+      "impressions": 102,
+      "clicks": 0,
+      "position": 39.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 102
+      }
+    },
+    {
+      "keyword": "eifs inspection",
+      "search_volume": 45,
+      "impressions": 45,
+      "clicks": 0,
+      "position": 49.1,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 45
+      }
+    },
+    {
+      "keyword": "eifs stucco inspection",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 18.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 4
+      }
+    },
+    {
+      "keyword": "eifs testing",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 48,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 4
+      }
+    },
+    {
+      "keyword": "eifs evaluation chicago",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 39.7,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 3
+      }
+    },
+    {
+      "keyword": "should i buy a house with eifs stucco",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 3.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 3
+      }
+    },
+    {
+      "keyword": "eifs moisture testing",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 66,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 2
+      }
+    },
+    {
+      "keyword": "eifs evaluations chicago",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 87,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 1
+      }
+    },
+    {
+      "keyword": "eifs inspections",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 52,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 1
+      }
+    },
+    {
+      "keyword": "eifs inspector",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 39,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 1
+      }
+    },
+    {
+      "keyword": "eifs mold",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 81,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 1
+      }
+    },
+    {
+      "keyword": "water managed eifs",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 36,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 1
+      }
+    },
+    {
+      "keyword": "how to identify synthetic stucco",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 85,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 1
+      }
+    }
+  ]
+}

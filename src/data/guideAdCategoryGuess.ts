@@ -9,6 +9,8 @@ import { TRADE_CATEGORIES } from './sponsoredVendors.js';
 // isn't a new admin-managed field on articles, since that's real ongoing maintenance for a
 // feature nobody's paid for yet.
 const KEYWORD_RULES: Array<{ keywords: string[]; category: typeof TRADE_CATEGORIES[number] }> = [
+  // Before roof and the broad inspection rule: a stucco or EIFS guide is for stucco specialists.
+  { keywords: ['eifs', 'efis', 'stucco'], category: 'Stucco & EIFS' },
   { keywords: ['roof'], category: 'Roof Inspection' },
   { keywords: ['hvac', 'furnace', 'air condition', 'heat pump', 'compressor'], category: 'HVAC Inspection' },
   { keywords: ['sewer', 'cast iron', 'orangeburg'], category: 'Sewer Scope' },
@@ -31,7 +33,7 @@ const KEYWORD_RULES: Array<{ keywords: string[]; category: typeof TRADE_CATEGORI
   // Estate Attorney' have been dropped from TRADE_CATEGORIES -- no safe substitute trade fits an
   // insurance product or legal practice, so those guides fall through to this generic guess
   // rather than mismatching to an unrelated category.
-  { keywords: ['plumb', 'pipe', 'water heater', 'inspection', 'eifs', 'stucco'], category: 'Home Inspector' },
+  { keywords: ['plumb', 'pipe', 'water heater', 'inspection'], category: 'Home Inspector' },
 ];
 
 export function guessTradeCategoryFromTitle(title: string): typeof TRADE_CATEGORIES[number] {
@@ -55,6 +57,7 @@ const BUSINESS_PHRASE: Record<typeof TRADE_CATEGORIES[number], string> = {
   'Electrician': 'electrical',
   'Plumber': 'plumbing',
   'Home Inspector': 'home inspection',
+  'Stucco & EIFS': 'stucco & EIFS',
   'General Contractor': 'general contracting',
   'Asbestos/Mold Abatement': 'asbestos or mold abatement',
   'Pest/Termite Control': 'pest control',

@@ -1,0 +1,63 @@
+{
+  "_about": "Stucco cluster page B (marketing/cluster-plan.md). Every fact the article states, with the words read at the source.",
+  "slug": "buy-house-with-eifs-stucco",
+  "question": "Should you buy a house with EIFS, and what should you check first?",
+  "verdictConfirmed": "It can be a reasonable buy once a specialist moisture survey has checked behind the walls, done in time to renegotiate or walk away.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Texas standards of practice: the inspection is a limited visual survey, not an exploratory probe; inspectors aren't required to use moisture meters or destructive testing that damages sound finishes; not required to inspect anything concealed (22 Tex. Admin. Code § 535.227).",
+      "quote": "is a limited visual survey and basic performance evaluation of the systems and components of a building ... is not intended to be a comprehensive investigation or exploratory probe ... moisture meters ... any method employing destructive testing that damages otherwise sound materials or finishes ... anything buried, hidden, latent, or concealed",
+      "url": "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-535-227",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "claim": "2021 IRC: barrier EIFS limited to concrete or masonry walls; EIFS with drainage required over all other wall assemblies, with a water-resistive barrier between the EIFS and the sheathing (R703.9.1, R703.9.2).",
+      "quote": "EIFS shall be limited to applications over substrates of concrete or masonry wall assemblies. ... EIFS with drainage shall be required over all wall assemblies with the exception of substrates of concrete or masonry wall assemblies. ... The water-resistive barrier shall be applied between the EIFS and the wall sheathing.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-7-wall-covering",
+      "readOn": "2026-10-12",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Moisture survey: $400 – $800 for a moisture survey by an EIFS-qualified inspector.",
+      "quote": "costToCheck: '$400 – $800 for a moisture survey by an EIFS-qualified inspector'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES, id eifs_stucco)",
+      "readOn": "2026-10-12",
+      "method": "engine"
+    },
+    {
+      "id": "f4",
+      "claim": "Repair: varies widely; extensive sheathing replacement can exceed $10,000.",
+      "quote": "typicalRepairCost: 'Varies widely; extensive sheathing replacement can exceed $10,000'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES, id eifs_stucco)",
+      "readOn": "2026-10-12",
+      "method": "engine"
+    },
+    {
+      "id": "f5",
+      "claim": "Engine wording on the era and the mechanism: EIFS was used on some homes built in the 1990s and early 2000s; early barrier-type installations could trap water behind the cladding, damaging sheathing and framing that is not visible from outside.",
+      "quote": "Synthetic stucco (EIFS) was used on some homes built in the 1990s and early 2000s. Early barrier-type installations could trap water behind the cladding, causing sheathing and framing damage that is not visible from outside.",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES, id eifs_stucco)",
+      "readOn": "2026-10-12",
+      "method": "engine"
+    },
+    {
+      "id": "f6",
+      "claim": "Probe testing drills small holes (about one-eighth inch) through the finish and foam into the sheathing; the holes are sealed afterwards.",
+      "quote": "The inspector drills two tiny holes—approximately one-eighth of an inch in diameter—through the synthetic stucco finish and foam insulation ... seals each tiny probe hole",
+      "url": "/guides/standard-home-inspection-check-eifs-stucco-moisture/ (our anchor guide; the article links it rather than restating it)",
+      "readOn": "2026-10-12",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "Any statement about how insurers or lenders treat EIFS", "why": "no carrier data; the anchor guide already covers this with hedged wording; this page only tells the buyer to ask their own insurer" },
+    { "claim": "What other states' inspection standards say", "why": "only Texas was read; the article names Texas as one example" },
+    { "claim": "How common moisture problems are in EIFS houses", "why": "only secondary reports of 1990s North Carolina surveys; not used" },
+    { "claim": "Seller disclosure duties for EIFS", "why": "state law varies and was not read" }
+  ],
+  "blockedSources": []
+}

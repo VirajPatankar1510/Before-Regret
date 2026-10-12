@@ -1,0 +1,129 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-12T04:27:10.653Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "eifs",
+    "synthetic stucco",
+    "stucco inspection",
+    "stucco moisture",
+    "stucco house"
+  ],
+  "keywords": [
+    {
+      "keyword": "eifs stucco home inspection moisture meter before drilling",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "eifs",
+      "search_volume": 3207,
+      "metric": "market",
+      "broad_impressions": 7080,
+      "kind": "seed"
+    },
+    {
+      "keyword": "eifs system",
+      "search_volume": 860,
+      "metric": "market",
+      "broad_impressions": 860,
+      "kind": "related"
+    },
+    {
+      "keyword": "eifs siding",
+      "search_volume": 746,
+      "metric": "market",
+      "broad_impressions": 746,
+      "kind": "related"
+    },
+    {
+      "keyword": "what is eifs",
+      "search_volume": 602,
+      "metric": "market",
+      "broad_impressions": 807,
+      "kind": "related"
+    },
+    {
+      "keyword": "eifs stucco",
+      "search_volume": 419,
+      "metric": "market",
+      "broad_impressions": 419,
+      "kind": "related"
+    },
+    {
+      "keyword": "eifs construction",
+      "search_volume": 342,
+      "metric": "market",
+      "broad_impressions": 342,
+      "kind": "related"
+    },
+    {
+      "keyword": "dryvit eifs",
+      "search_volume": 286,
+      "metric": "market",
+      "broad_impressions": 286,
+      "kind": "related"
+    },
+    {
+      "keyword": "what is eifs in construction",
+      "search_volume": 205,
+      "metric": "market",
+      "broad_impressions": 205,
+      "kind": "related"
+    },
+    {
+      "keyword": "eifs meaning",
+      "search_volume": 162,
+      "metric": "market",
+      "broad_impressions": 162,
+      "kind": "related"
+    },
+    {
+      "keyword": "eifs wall",
+      "search_volume": 95,
+      "metric": "market",
+      "broad_impressions": 102,
+      "kind": "related"
+    },
+    {
+      "keyword": "what does eifs stand for",
+      "search_volume": 20,
+      "metric": "market",
+      "broad_impressions": 20,
+      "kind": "related"
+    },
+    {
+      "keyword": "synthetic stucco",
+      "search_volume": 130,
+      "metric": "market",
+      "broad_impressions": 130,
+      "kind": "seed"
+    },
+    {
+      "keyword": "stucco inspection",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "stucco moisture",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "stucco house",
+      "search_volume": 467,
+      "metric": "market",
+      "broad_impressions": 467,
+      "kind": "seed"
+    }
+  ]
+}

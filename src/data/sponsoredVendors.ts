@@ -31,6 +31,11 @@ export const TRADE_CATEGORIES = [
   // Licence number required at checkout like every trade except Chimney Sweep.
   'Plumber',
   'Home Inspector',
+  // Added 2026-10-12 at the owner's request, with the first sponsored topic (Stucco & EIFS). Until
+  // then a stucco or EIFS inspection firm had to buy as 'Home Inspector' or 'General Contractor'.
+  // Licence number required like every trade except Chimney Sweep; the field already accepts a
+  // certification number, which is what many EIFS inspectors hold.
+  'Stucco & EIFS',
   'General Contractor',
   'Asbestos/Mold Abatement',
   'Pest/Termite Control',
@@ -119,7 +124,9 @@ export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGO
   // so it renders for every report.
   foundation_type_general: 'General Contractor',
   pier_and_beam: 'Home Inspector',
-  eifs_stucco: 'Home Inspector',
+  // Was Home Inspector until 2026-10-12, when Stucco & EIFS became its own business type. No Report
+  // Ad had been sold, so no placement moved; Home Inspector keeps pier_and_beam above.
+  eifs_stucco: 'Stucco & EIFS',
   // roof_age / hvac_age (see the split rationale on the rule itself in
   // engine/inspectionPriorities.ts) give Roof Inspection and HVAC Inspection their first real
   // placement anywhere in the report -- previously neither category matched anything except its

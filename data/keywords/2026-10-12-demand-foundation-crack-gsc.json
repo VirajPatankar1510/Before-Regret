@@ -1,0 +1,457 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-12T04:27:41.449Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "foundation crack",
+    "structural engineer",
+    "foundation repair",
+    "chimney inspection",
+    "termite inspection"
+  ],
+  "keywords": [
+    {
+      "keyword": "termite inspections loan",
+      "search_volume": 39,
+      "impressions": 39,
+      "clicks": 0,
+      "position": 72.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 39
+      }
+    },
+    {
+      "keyword": "termite inspections va refinance",
+      "search_volume": 35,
+      "impressions": 35,
+      "clicks": 0,
+      "position": 74.4,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 35
+      }
+    },
+    {
+      "keyword": "va termite inspection",
+      "search_volume": 21,
+      "impressions": 21,
+      "clicks": 0,
+      "position": 29.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 21
+      }
+    },
+    {
+      "keyword": "termite inspection va",
+      "search_volume": 20,
+      "impressions": 20,
+      "clicks": 0,
+      "position": 66.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 20
+      }
+    },
+    {
+      "keyword": "va loan termite inspection",
+      "search_volume": 14,
+      "impressions": 14,
+      "clicks": 0,
+      "position": 34,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 14
+      }
+    },
+    {
+      "keyword": "va loans termite inspections",
+      "search_volume": 10,
+      "impressions": 10,
+      "clicks": 0,
+      "position": 71.4,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 10
+      }
+    },
+    {
+      "keyword": "va termite inspection requirements",
+      "search_volume": 9,
+      "impressions": 9,
+      "clicks": 0,
+      "position": 28.8,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 9
+      }
+    },
+    {
+      "keyword": "who pays for termite inspection buyer or seller",
+      "search_volume": 9,
+      "impressions": 9,
+      "clicks": 0,
+      "position": 73.6,
+      "pages": {
+        "https://www.beforeregret.com/guides/happens-if-termite-infestation-found-during-home-inspection/": 9
+      }
+    },
+    {
+      "keyword": "does va require termite inspection",
+      "search_volume": 6,
+      "impressions": 6,
+      "clicks": 0,
+      "position": 17.2,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 6
+      }
+    },
+    {
+      "keyword": "do va loans require termite inspection",
+      "search_volume": 5,
+      "impressions": 5,
+      "clicks": 0,
+      "position": 7.4,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 5
+      }
+    },
+    {
+      "keyword": "va loan termite inspection who pays",
+      "search_volume": 5,
+      "impressions": 5,
+      "clicks": 0,
+      "position": 38,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 5
+      }
+    },
+    {
+      "keyword": "va termite inspection asheville",
+      "search_volume": 5,
+      "impressions": 5,
+      "clicks": 0,
+      "position": 49.2,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 5
+      }
+    },
+    {
+      "keyword": "va termite inspection delaware",
+      "search_volume": 5,
+      "impressions": 5,
+      "clicks": 0,
+      "position": 87.4,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 5
+      }
+    },
+    {
+      "keyword": "va termite inspection form",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 56.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 4
+      }
+    },
+    {
+      "keyword": "buying a house that had previous foundation repair",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 15.7,
+      "pages": {
+        "https://www.beforeregret.com/guides/should-buy-house-s-already-had-foundation-repair/": 3
+      }
+    },
+    {
+      "keyword": "do va loans require a termite inspection",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 8.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 3
+      }
+    },
+    {
+      "keyword": "is a termite inspection required for a va loan",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 10.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 3
+      }
+    },
+    {
+      "keyword": "termite inspection laws for va loans",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 42.7,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 3
+      }
+    },
+    {
+      "keyword": "va loan termite inspection requirements",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 8.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 3
+      }
+    },
+    {
+      "keyword": "foundation crack structural engineer",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 55,
+      "pages": {
+        "https://www.beforeregret.com/guides/when-foundation-crack-need-structural-engineer/": 2
+      }
+    },
+    {
+      "keyword": "failed termite inspection va loan",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 45,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 2
+      }
+    },
+    {
+      "keyword": "termite inspection for va",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 57,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 2
+      }
+    },
+    {
+      "keyword": "termite inspection for va loan",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 58.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 2
+      }
+    },
+    {
+      "keyword": "termite inspection for va refinance",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 73.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 2
+      }
+    },
+    {
+      "keyword": "termite inspection required for va loan",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 33.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 2
+      }
+    },
+    {
+      "keyword": "termite inspections for va loans",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 10.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 2
+      }
+    },
+    {
+      "keyword": "va termite inspection florida",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 86,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 2
+      }
+    },
+    {
+      "keyword": "buying a house with history of foundation repair",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 20,
+      "pages": {
+        "https://www.beforeregret.com/guides/should-buy-house-s-already-had-foundation-repair/": 1
+      }
+    },
+    {
+      "keyword": "should i buy a house with foundation repair",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 48,
+      "pages": {
+        "https://www.beforeregret.com/guides/should-buy-house-s-already-had-foundation-repair/": 1
+      }
+    },
+    {
+      "keyword": "does a va loan require a termite inspection",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 10,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "does the va require a termite inspection",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 9,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "does va require a termite inspection",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 8,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "is termite inspection required for va loan",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 10,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "termite inspection fha loan",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 92,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "termite inspection for mortgage",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 73,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "termite inspection for refinance",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 90,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "termite inspection report for closing",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 89,
+      "pages": {
+        "https://www.beforeregret.com/guides/happens-if-termite-infestation-found-during-home-inspection/": 1
+      }
+    },
+    {
+      "keyword": "va home loan termite inspection",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 72,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "va home loan termite inspection requirements",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 60,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "va termite inspection cost",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 81,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "va termite inspection form pdf",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 53,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "va termite inspection map",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 33,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "va termite inspection states",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 50,
+      "pages": {
+        "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/": 1
+      }
+    },
+    {
+      "keyword": "who is responsible for termite inspection seller or buyer",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 87,
+      "pages": {
+        "https://www.beforeregret.com/guides/happens-if-termite-infestation-found-during-home-inspection/": 1
+      }
+    }
+  ]
+}

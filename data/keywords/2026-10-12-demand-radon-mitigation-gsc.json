@@ -1,0 +1,35 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-12T04:27:29.370Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "radon mitigation",
+    "radon test",
+    "radon levels"
+  ],
+  "keywords": [
+    {
+      "keyword": "who pays for radon mitigation buyer or seller",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 69.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/negotiate-radon-mitigation-after-inspection/": 4
+      }
+    },
+    {
+      "keyword": "alameda radon testing",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 33,
+      "pages": {
+        "https://www.beforeregret.com/county/alameda-county-ca/": 1
+      }
+    }
+  ]
+}
