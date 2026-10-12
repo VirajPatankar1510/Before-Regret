@@ -1,0 +1,63 @@
+{
+  "_about": "Stucco cluster page C (marketing/cluster-plan.md). Every fact the article states, with the words read at the source.",
+  "slug": "how-to-choose-eifs-stucco-inspector",
+  "question": "How should a buyer choose an EIFS inspector, and what should they ask before booking?",
+  "verdictConfirmed": "Hire someone who probe-tests the sheathing rather than only scanning the surface, who doesn't sell the repairs, and whose written report arrives before the inspection period ends.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Non-invasive scanning meters read changes in density behind the foam; they don't give the exact moisture content but point to where water may have got in.",
+      "quote": "Further testing can be done by qualified inspector's non-invasive scanning meters that read changes in density behind foam. ... That won't tell the exact moisture content either, but it will identify areas in which some water may have seeped.",
+      "url": "https://www.thisoldhouse.com/this-old-house/season-34/cambridge-house/better-waterproofing",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "claim": "A pin-probe meter drills through the cladding and sheathing and measures water content and how far damage has gone.",
+      "quote": "There, inspectors can use a pin-probe meter that drills through cladding and sheathing. (summary: can show how far damage has progressed and measure water content)",
+      "url": "https://www.thisoldhouse.com/this-old-house/season-34/cambridge-house/better-waterproofing",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f3",
+      "claim": "This Old House describes the Exterior Design Institute as a non-profit that offers an online directory of qualified EIFS inspectors and moisture analysts.",
+      "quote": "The Exterior Design Institute, a non-profit agency advocating integrity in EIFS installations, offers an online directory of qualified inspectors that can conduct such tests. ... directory of qualified EIFS inspectors and moisture analysts",
+      "url": "https://www.thisoldhouse.com/this-old-house/season-34/cambridge-house/better-waterproofing",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f4",
+      "claim": "Texas: an inspector shall not accept employment to repair, replace, maintain or upgrade systems or components they inspected under a real estate contract within 12 months of the inspection (22 Tex. Admin. Code § 535.220(e)(6)).",
+      "quote": "An inspector shall not accept employment to repair, replace, maintain or upgrade systems or components of property ... covered by the Standards of Practice under this subchapter on which the inspector has performed an inspection ... under a real estate contract, lease, or exchange of real property within 12 months of the date of the inspection.",
+      "url": "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-535-220",
+      "readOn": "2026-10-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f5",
+      "claim": "Survey cost: $400 – $800 for a moisture survey by an EIFS-qualified inspector.",
+      "quote": "costToCheck: '$400 – $800 for a moisture survey by an EIFS-qualified inspector'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES, id eifs_stucco)",
+      "readOn": "2026-10-12",
+      "method": "engine"
+    },
+    {
+      "id": "f6",
+      "claim": "The anchor guide lists the high-risk test points (termination points, sealant joints, window and door perimeters, roof kick-out flashings, deck attachments) and says inspectors seal each probe hole afterwards.",
+      "quote": "focusing on high-risk termination points, sealant joints, window and door perimeters, roof kick-out flashings, and deck attachments ... seals each tiny probe hole",
+      "url": "/guides/standard-home-inspection-check-eifs-stucco-moisture/ (linked, not restated)",
+      "readOn": "2026-10-12",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "EDI certification names, levels, exam pass mark, fees", "why": "EDI's site blocked us (Wordfence regional block); wconline is behind a Cloudflare check; nachi.org returned 403. Never worked around. Only This Old House's description is used." },
+    { "claim": "Which states license EIFS or home inspectors", "why": "not read; the page only cites the Texas rule as an example" },
+    { "claim": "Moisture Warranty Corporation certification", "why": "named in the anchor guide but not verified here" },
+    { "claim": "ASTM E2128 as a testing standard", "why": "not opened" }
+  ],
+  "blockedSources": ["exteriordesigninstitute.org (Wordfence regional block)", "wconline.com (Cloudflare check)", "nachi.org (403)"]
+}
