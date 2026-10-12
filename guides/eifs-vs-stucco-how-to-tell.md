@@ -1,14 +1,14 @@
 ---
-meta: EIFS and traditional stucco can look identical. Five checks you can make at a showing, what each one can and can't prove, and when you need a specialist.
+meta: EIFS (synthetic stucco) and traditional stucco can look identical. Five checks to make at a showing, what each tells you, and when to call a specialist.
 quick:
 ---
 # EIFS vs Stucco: How to Tell Which Your House Has
 
-From the sidewalk, you usually can't. Either system can be finished smooth or textured and in any color. Building-envelope engineer Brian Erickson makes the point in [his Lerch Bates guide to telling them apart](https://www.lerchbates.com/?p=2297): the finish coat on every system "can be applied in similar colors and textures." What differs is what sits underneath, and that you can check with your hands.
+From the sidewalk, you usually can't identify synthetic stucco by sight. Either system can be finished smooth or textured and in any color. Building-envelope engineer Brian Erickson makes the point in [his Lerch Bates guide to telling them apart](https://www.lerchbates.com/?p=2297): the finish coat on every system "can be applied in similar colors and textures." What differs is what sits underneath, and that you can check with your hands.
 
 It's worth knowing before you make an offer, because the answer decides your next step. If the walls are traditional stucco, your general inspector looks at them along with the rest of the exterior. If they're EIFS, the real question is what's behind the foam, and answering it takes [a dedicated EIFS stucco evaluation](/guides/standard-home-inspection-check-eifs-stucco-moisture/).
 
-## What's under each one
+## What EIFS (synthetic stucco) is, and what stucco is
 
 **Traditional stucco** is cement plaster. The 2021 International Residential Code (IRC Section R703.7) has it installed to ASTM C926 and ASTM C1063. On a framed wall it goes over metal or wire lath, and the code requires at least three coats over that lath. The code's plaster-thickness table calls for at least 7/8 inch of cement plaster over wire lath on an exterior wall. The result is heavy, hard and dense.
 

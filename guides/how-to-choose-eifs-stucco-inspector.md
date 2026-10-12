@@ -8,9 +8,9 @@ By the time you're booking an EIFS inspector, two things are settled: the walls 
 
 Price is the easy part to compare: our report engine puts the job at **$400 – $800 for a moisture survey by an EIFS-qualified inspector**. What really separates one inspector from another is the method, the report, and the timing.
 
-## A scan is not a survey
+## Moisture meters: a scan is not a probe test
 
-A surface scan and a probe test answer different questions. This Old House's guide to EIFS waterproofing, by Eileen Colkin Cuneo, explains it plainly:
+In EIFS testing, a surface scan and a probe test answer different questions. This Old House's guide to EIFS waterproofing, by Eileen Colkin Cuneo, explains it plainly:
 - **A scanning meter** reads changes in density behind the foam. It can point to where water may have got in, but it "won't tell the exact moisture content."
 - **A pin-probe meter** drills through the cladding into the sheathing. It measures the water content there and shows how far any damage has gone.
 
