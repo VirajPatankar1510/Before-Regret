@@ -1,4 +1,4 @@
-import { guideTopic } from '../utils/relatedGuides';
+import { guideTopic } from '../utils/relatedGuides.js';
 
 // Topic sponsorships: one advertiser on every guide in a topic cluster, for one flat price.
 // Owner decision 2026-10-12 ($39 / 30 days; see marketing/cluster-plan.md).
