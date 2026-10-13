@@ -1,0 +1,78 @@
+{
+  "_about": "Owner-requested guide 2026-10-13, exact title. Every fact stated, with the words read at the source. Differentiated from legalize-unpermitted-deck (#311: process, ledger/flashing/footings in depth, cost) and unpermitted-deck-after-closing-who-pays (#326: disclosure law after closing).",
+  "slug": "buying-house-unpermitted-deck-before-closing",
+  "question": "Buying a house with an unpermitted deck: what should be checked before closing?",
+  "verdictConfirmed": "First confirm a permit was even required; then check the visible safety items, get the building department's answer and price it before closing.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "IRC R105.2 exempts from permit decks not exceeding 200 square feet, not more than 30 inches above grade at any point, not attached to a dwelling and not serving the required exit door.",
+      "quote": "10. Decks not exceeding 200 square feet (18.58 m2) in area, that are not more than 30 inches (762 mm) above grade at any point, are not attached to a dwelling and do not serve the exit door required by Section R311.4.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-1-scope-and-administration",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "Guards are required on open sides of walking surfaces more than 30 inches above the floor or grade below within 36 inches horizontally (R312.1.1).",
+      "quote": "Guards shall be provided for those portions of open-sided walking surfaces ... that are located more than 30 inches (762 mm) measured vertically to the floor or grade below at any point within 36 inches (914 mm) horizontally to the edge of the open side.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-3-building-planning",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Required guards must be at least 36 inches high (R312.1.2); stair guards 34 inches.",
+      "quote": "Required guards at open-sided walking surfaces, including stairs, porches, balconies or landings, shall be not less than 36 inches (914 mm) in height ... Guards on the open sides of stairs shall have a height of not less than 34 inches (864 mm)",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-3-building-planning",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "Required guards must not have openings that pass a 4-inch sphere (R312.1.3).",
+      "quote": "Required guards shall not have openings from the walking surface to the required guard height that allow passage of a sphere 4 inches (102 mm) in diameter.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-3-building-planning",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "Deck ledgers shall not be supported on stone or masonry veneer (R507.9.1.1).",
+      "quote": "Deck ledgers shall not be supported on stone or masonry veneer.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-5-floors",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "Ledger fasteners must be hot-dipped galvanized or stainless steel (R507.9.1.3).",
+      "quote": "Fasteners used in deck ledger connections in accordance with Table R507.9.1.3(1) shall be hot-dipped galvanized or stainless steel",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-5-floors",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "Decks shall be supported on concrete footings or other approved structural systems (R507.3), with exceptions for certain free-standing decks.",
+      "quote": "Decks shall be supported on concrete footings or other approved structural systems designed to accommodate all loads ... Exceptions: 1. Footings shall not be required for free-standing decks consisting of joists directly supported on grade over their entire length.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-5-floors",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "claim": "Flashing is required where exterior porches, decks or stairs attach to a wall or floor assembly of wood-frame construction (R703.4, item 5).",
+      "quote": "5. Where exterior porches, decks or stairs attach to a wall or floor assembly of wood-frame construction.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-7-wall-covering",
+      "readOn": "2026-10-13",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "Any deck repair or permit cost figure", "why": "no engine rule for decks and #311 already explains why no honest number exists" },
+    { "claim": "How insurers or lenders treat unpermitted decks", "why": "no carrier data; #311 covers it with hedged wording" },
+    { "claim": "Deck collapse statistics", "why": "not read at a primary source" }
+  ],
+  "blockedSources": []
+}

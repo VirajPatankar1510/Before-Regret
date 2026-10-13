@@ -1,0 +1,25 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-13T05:46:07.980Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "unpermitted deck",
+    "buying a house with unpermitted deck"
+  ],
+  "keywords": [
+    {
+      "keyword": "unpermitted deck",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 6.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/legalize-unpermitted-deck/": 1,
+        "https://www.beforeregret.com/guides/unpermitted-deck-after-closing-who-pays/": 1
+      }
+    }
+  ]
+}

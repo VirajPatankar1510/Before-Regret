@@ -133,6 +133,7 @@ function main() {
   // an explicit owner decision with its date; never add one to make a gate pass.
   const OWNER_LONG_TITLES = new Set<string>([
     '/guides/sewer-line-belly-found-inspection/', // owner 2026-10-13: "Exact everywhere" (85 chars)
+    '/guides/buying-house-unpermitted-deck-before-closing/', // owner 2026-10-13: exact title (70 chars)
   ]);
   for (const f of walk(DIST).filter((p) => p.endsWith('index.html'))) {
     const html = fs.readFileSync(f, 'utf8');
