@@ -42,6 +42,13 @@ export const TRADE_CATEGORIES = [
   'Chimney Sweep',
   'Well & Septic Services',
   'Moving Company',
+  // Added 2026-10-13 at the owner's request: agents and real estate advisors, for both Topic Ads and
+  // Report Ads. Unlike the excluded professions above, an agent's own state licence is the thing being
+  // advertised, so the safeguards are built in rather than the category left out: a licence number is
+  // required (default rule below), and so is the BROKERAGE name, which is printed on the ad line beside
+  // the agent's name -- see BROKERAGE_REQUIRED_CATEGORIES. In Report Ads the category has a fixed slot on
+  // every report in the agent's ZIPs (PropertyReport.realEstateAgentVendors), like Moving Company.
+  'Real Estate Agent',
 ] as const;
 
 // Trades for which a licence, registration, or certification number must be supplied at checkout
@@ -77,6 +84,34 @@ export const LICENCE_EXEMPT_CATEGORIES: ReadonlySet<string> = new Set<string>([
 
 export function requiresLicenceNumber(tradeCategory: string): boolean {
   return !LICENCE_EXEMPT_CATEGORIES.has(tradeCategory);
+}
+
+// Trades whose ads must name the brokerage. Texas, for one, requires every real estate ad to include
+// "the broker's name in at least half the size of the largest contact information" (22 Tex. Admin. Code
+// § 535.155(a)(2), read 2026-10-13). Rather than trusting each agent to type it into the business-name
+// box, checkout collects it as its own required field and the SERVER joins it onto the business name
+// (composeAdvertiserName), so it renders on the same line, at the same size, in every ad. Not a legal
+// opinion: other states' rules differ, and the agent remains responsible for their own compliance.
+export const BROKERAGE_REQUIRED_CATEGORIES: ReadonlySet<string> = new Set<string>(['Real Estate Agent']);
+
+export function requiresBrokerageName(tradeCategory: string): boolean {
+  return BROKERAGE_REQUIRED_CATEGORIES.has(tradeCategory);
+}
+
+/** The brokerage-name check both checkouts run. Returns an error message, or null when it's fine. */
+export function brokerageNameError(raw: unknown): string | null {
+  const v = typeof raw === 'string' ? raw.trim() : '';
+  if (v.length < 2) return 'Enter the name of your brokerage. It appears in your ad next to your name.';
+  if (v.length > 80) return 'That brokerage name looks too long -- enter just the brokerage name.';
+  return null;
+}
+
+/** "Jane Doe" + "Acme Realty" -> "Jane Doe · Acme Realty"; left alone if the name already includes it. */
+export function composeAdvertiserName(businessName: string, brokerageName: string): string {
+  const name = businessName.trim();
+  const brokerage = brokerageName.trim();
+  if (!brokerage || name.toLowerCase().includes(brokerage.toLowerCase())) return name;
+  return `${name} · ${brokerage}`;
 }
 
 // Matches a specific report finding's trade category, not just its ZIP. Report findings today

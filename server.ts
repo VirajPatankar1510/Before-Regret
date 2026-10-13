@@ -905,6 +905,7 @@ export async function createApp() {
     cleanedReport.sellerQuestionsScript = buildSellerQuestionsForReport(yearBuilt, resolvedMeta.county, resolvedMeta.state, declaredPropertyType, zipVendorMap, seenVendorCategories);
     attachSponsoredVendorsToPendingFindings(cleanedReport, zipVendorMap, seenVendorCategories);
     cleanedReport.movingCompanyVendors = zipVendorMap.get('Moving Company') ?? [];
+    cleanedReport.realEstateAgentVendors = zipVendorMap.get('Real Estate Agent') ?? [];
 
     if (!cleanedReport.id) {
       cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -1753,6 +1754,7 @@ const CLIENT_REPORT_FIELDS = [
   'inspectionPriorities',
   'sellerQuestionsScript',
   'movingCompanyVendors',
+  'realEstateAgentVendors',
   // The three fields the blocked/non-residential path returns instead of a real report.
   'isNonResidential',
   'rejectionReason',

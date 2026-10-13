@@ -406,6 +406,12 @@ export interface PropertyReport {
   // nothing, never a placeholder.
   movingCompanyVendors?: SponsoredVendor[];
 
+  // Fixed slot for Real Estate Agent vendors (2026-10-13), same reasoning as movingCompanyVendors: an
+  // agent isn't tied to any finding, so every report in the agent's ZIPs carries it. Rendered right
+  // after "Questions to ask the seller" -- the point where the buyer needs someone to put those
+  // questions to the seller and negotiate the answers. Empty or absent renders nothing.
+  realEstateAgentVendors?: SponsoredVendor[];
+
   // Bottom Line Synthesis. Optional since 2026-10-05: no report generator writes it any more (see the
   // REMOVED note in server.ts's generateStructuredPropertyReport); older stored reports may have it.
   bottomLine?: {

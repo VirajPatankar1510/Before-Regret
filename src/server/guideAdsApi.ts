@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { isPayPalConfigured, createPayPalOrder, capturePayPalOrder } from './paypalService.js';
-import { TRADE_CATEGORIES, requiresLicenceNumber } from '../data/sponsoredVendors.js';
+import { TRADE_CATEGORIES, requiresLicenceNumber, requiresBrokerageName, brokerageNameError, composeAdvertiserName } from '../data/sponsoredVendors.js';
 import { requireVerifiedUser } from './clerkAuth.js';
 import { TERMS_VERSION } from '../data/legalVersions.js';
 import { checkVendorWebsite } from '../data/vendorWebsite.js';
@@ -123,11 +123,19 @@ function readVendorDetails(body: any): VendorDetails {
       return { ok: false, error: 'That licence number looks too long -- please enter just the number.' };
     }
   }
+  // Agents must name their brokerage (sponsoredVendors.ts, BROKERAGE_REQUIRED_CATEGORIES); it is joined
+  // onto the business name here, server-side, so the ad always shows it beside the agent's name.
+  let advertiserName: string = businessName;
+  if (requiresBrokerageName(tradeCategory)) {
+    const brokerageErr = brokerageNameError(body?.brokerageName);
+    if (brokerageErr) return { ok: false, error: brokerageErr };
+    advertiserName = composeAdvertiserName(businessName, body.brokerageName);
+  }
   // Official business website only -- see src/data/vendorWebsite.ts. Normalised value is what's stored.
   const site = checkVendorWebsite(website);
   if (!site.ok) return { ok: false, error: site.error as string };
   return {
-    ok: true, businessName, tradeCategory, phone, contactEmail, website: site.url ?? null, licenceNumber: trimmedLicence,
+    ok: true, businessName: advertiserName, tradeCategory, phone, contactEmail, website: site.url ?? null, licenceNumber: trimmedLicence,
   };
 }
 

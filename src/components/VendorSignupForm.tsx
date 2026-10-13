@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle, Lock, X } from 'lucide-react';
-import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber } from '../data/sponsoredVendors';
+import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber, requiresBrokerageName, brokerageNameError } from '../data/sponsoredVendors';
 import { checkVendorWebsite, VENDOR_WEBSITE_RULE } from '../data/vendorWebsite';
 import { useAuth } from '../context/AuthContext';
 
@@ -37,6 +37,7 @@ export const VendorSignupForm: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
   const [licenceNumber, setLicenceNumber] = useState('');
+  const [brokerageName, setBrokerageName] = useState('');
   const [attestedAccurate, setAttestedAccurate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
@@ -119,13 +120,14 @@ export const VendorSignupForm: React.FC = () => {
     const restore = (raw: string) => {
       const stash = JSON.parse(raw) as {
         zipCodes: string[]; tradeCategory: string; businessName?: string; phone?: string; website?: string | null;
-        licenceNumber?: string | null;
+        licenceNumber?: string | null; brokerageName?: string | null;
       };
       setTradeCategory(stash.tradeCategory || '');
       setBusinessName(stash.businessName || '');
       setPhone(stash.phone || '');
       setWebsite(stash.website || '');
       setLicenceNumber(stash.licenceNumber || '');
+      setBrokerageName(stash.brokerageName || '');
       (async () => {
         for (const zip of (stash.zipCodes || []).slice(0, ZIPS_PER_BUNDLE)) {
           await addZip(zip, stash.tradeCategory);
@@ -157,6 +159,10 @@ export const VendorSignupForm: React.FC = () => {
     if (requiresLicenceNumber(tradeCategory) && licenceNumber.trim().length < 3) {
       return setSubmitErrors([`A licence, registration, or certification number is required for ${tradeCategory}.`]);
     }
+    if (requiresBrokerageName(tradeCategory)) {
+      const brokerageErr = brokerageNameError(brokerageName);
+      if (brokerageErr) return setSubmitErrors([brokerageErr]);
+    }
     // Same rule the server enforces (src/data/vendorWebsite.ts) -- caught here so the vendor hears it now.
     const siteCheck = checkVendorWebsite(website);
     if (!siteCheck.ok) return setSubmitErrors([siteCheck.error || VENDOR_WEBSITE_RULE]);
@@ -184,6 +190,7 @@ export const VendorSignupForm: React.FC = () => {
           phone: phone.trim(),
           website: website.trim() || undefined,
           licenceNumber: licenceNumber.trim() || undefined,
+          brokerageName: requiresBrokerageName(tradeCategory) ? brokerageName.trim() : undefined,
           contactEmail,
           attestedAccurate,
         }),
@@ -346,6 +353,23 @@ export const VendorSignupForm: React.FC = () => {
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
             />
             <p className="text-[11px] text-slate-500 leading-snug -mt-1">{VENDOR_WEBSITE_RULE}</p>
+            {/* Agents only: the brokerage name is its own required field, and the server prints it beside
+                the agent's name in the ad (sponsoredVendors.ts, BROKERAGE_REQUIRED_CATEGORIES). */}
+            {tradeCategory && requiresBrokerageName(tradeCategory) && (
+              <div className="space-y-1.5">
+                <input
+                  type="text" required placeholder="Brokerage name" value={brokerageName}
+                  onChange={(e) => setBrokerageName(e.target.value)}
+                  maxLength={80}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+                />
+                <p className="text-[11px] text-slate-500 leading-relaxed px-1">
+                  Shown in your ad right after your name. Some states require it in every real estate ad
+                  (Texas, for example, requires the broker&apos;s name). Following your state&apos;s advertising
+                  rules is your responsibility.
+                </p>
+              </div>
+            )}
             {/* Rendered only for categories that need one, so the licence-exempt trade never sees a
                 field it cannot honestly fill. The helper text states plainly that the number is
                 published and unverified -- a vendor should know their number will appear in the ad
@@ -369,7 +393,7 @@ export const VendorSignupForm: React.FC = () => {
                   Required for {tradeCategory}. This <strong>appears in your ad</strong> exactly as
                   you type it. You are confirming it is current, valid for this trade, and held by
                   this business -- a false or expired number means removal without refund (Terms
-                  4.4). Movers may enter a USDOT or MC number.
+                  4.4). Movers may enter a USDOT or MC number; agents, their real estate licence number.
                 </p>
               </div>
             )}

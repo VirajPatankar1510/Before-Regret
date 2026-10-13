@@ -300,6 +300,11 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           </section>
         )}
 
+        {/* Real Estate Agent: a fixed slot on every report in the agent's ZIPs (see
+            PropertyReport.realEstateAgentVendors in types.ts), placed right after the seller questions,
+            where the buyer needs someone to put them to the seller. Renders nothing when unsold. */}
+        <SponsoredVendorCards vendors={report.realEstateAgentVendors} />
+
         {/* Records still to pull -- deliberately last of the content sections: the priorities and
             seller questions are what a buyer most needs, and five "look this up yourself" items
             used to lead the report. Still listed in full, still honestly labeled. */}

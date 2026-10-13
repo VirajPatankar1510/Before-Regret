@@ -27,6 +27,10 @@ const KEYWORD_RULES: Array<{ keywords: string[]; category: typeof TRADE_CATEGORI
   // Plumbing topics get their own trade now that 'Plumber' exists (2026-10-03). Sewer and cast iron
   // topics still match 'Sewer Scope' above, which runs first.
   { keywords: ['plumb', 'polybutylene', 'pipe', 'water heater', 'repipe', 'tpr valve', 'sump', 'service line', 'water line'], category: 'Plumber' },
+  // Real Estate Agent (2026-10-13): guides about the transaction itself -- offers, sellers, closing,
+  // contingencies. Checked after every trade above, so a defect guide that mentions closing still
+  // goes to its trade.
+  { keywords: ['seller', 'closing', 'escrow', 'contingen', 'earnest', 'walk away', 'appraisal', 'hoa', 'making an offer', 'title insurance'], category: 'Real Estate Agent' },
   // Deliberately last and broad: plumbing, water heater, and general inspection topics all land
   // here rather than in a forced, less-accurate specific bucket above. Also catches the old
   // flood/insurance and attorney/title/disclosure topics now that 'Insurance Agent' and 'Real
@@ -64,6 +68,7 @@ const BUSINESS_PHRASE: Record<typeof TRADE_CATEGORIES[number], string> = {
   'Chimney Sweep': 'chimney sweep',
   'Well & Septic Services': 'well & septic',
   'Moving Company': 'moving',
+  'Real Estate Agent': 'real estate',
 };
 
 export function guessBusinessPhraseFromTitle(title: string): string {

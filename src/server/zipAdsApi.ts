@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import zipcodes from 'zipcodes';
 import { withDb, isDbConfigured } from './db.js';
 import { isPayPalConfigured, createPayPalOrder, capturePayPalOrder } from './paypalService.js';
-import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber } from '../data/sponsoredVendors.js';
+import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber, requiresBrokerageName, brokerageNameError, composeAdvertiserName } from '../data/sponsoredVendors.js';
 import type { SponsoredVendor } from '../types.js';
 import { requireVerifiedUser } from './clerkAuth.js';
 import { TERMS_VERSION } from '../data/legalVersions.js';
@@ -154,7 +154,8 @@ export function registerZipAdsRoutes(app: Express) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const { businessName, tradeCategory, zipCodes, phone, website, contactEmail, attestedAccurate, licenceNumber } = req.body || {};
+    const { tradeCategory, zipCodes, phone, website, contactEmail, attestedAccurate, licenceNumber, brokerageName } = req.body || {};
+    let { businessName } = req.body || {};
     const errors: string[] = [];
     if (typeof businessName !== 'string' || !businessName.trim()) errors.push('Business name is required.');
     if (typeof tradeCategory !== 'string' || !(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) errors.push('Please choose a valid trade category.');
@@ -180,6 +181,13 @@ export function registerZipAdsRoutes(app: Express) {
       } else if (trimmedLicence.length > 60) {
         errors.push('That licence number looks too long -- please enter just the number.');
       }
+    }
+    // Brokerage name for agents (sponsoredVendors.ts, BROKERAGE_REQUIRED_CATEGORIES): required here and
+    // joined onto the business name server-side, so the ad always shows it beside the agent's name.
+    if (typeof tradeCategory === 'string' && requiresBrokerageName(tradeCategory)) {
+      const brokerageErr = brokerageNameError(brokerageName);
+      if (brokerageErr) errors.push(brokerageErr);
+      else if (typeof businessName === 'string') businessName = composeAdvertiserName(businessName, brokerageName);
     }
     // Official business website only -- see src/data/vendorWebsite.ts.
     const site = checkVendorWebsite(website);

@@ -3,7 +3,7 @@ import {
   ArrowLeft, Loader2, AlertCircle, CheckSquare, Square, Lock, Search, Megaphone, Globe,
   ListChecks, CircleDollarSign, Phone, ExternalLink, ChevronDown, CreditCard, ShieldCheck, XCircle,
 } from 'lucide-react';
-import { TRADE_CATEGORIES, requiresLicenceNumber } from '../data/sponsoredVendors';
+import { TRADE_CATEGORIES, requiresLicenceNumber, requiresBrokerageName, brokerageNameError } from '../data/sponsoredVendors';
 import { checkVendorWebsite, VENDOR_WEBSITE_RULE } from '../data/vendorWebsite';
 import { guessTradeCategoryFromTitle } from '../data/guideAdCategoryGuess';
 import { useAuth } from '../context/AuthContext';
@@ -104,6 +104,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
   const [licenceNumber, setLicenceNumber] = useState('');
+  const [brokerageName, setBrokerageName] = useState('');
   const [attestedAccurate, setAttestedAccurate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -147,7 +148,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     const restore = (raw: string) => {
       const stash = JSON.parse(raw) as {
         articleIds: number[]; businessName: string; tradeCategory: string; phone: string;
-        website: string | null; licenceNumber?: string | null; clusterKey?: string | null;
+        website: string | null; licenceNumber?: string | null; clusterKey?: string | null; brokerageName?: string | null;
       };
       setSelected(new Set(stash.articleIds));
       setSelectedCluster(stash.clusterKey || null);
@@ -156,6 +157,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       setPhone(stash.phone || '');
       setWebsite(stash.website || '');
       setLicenceNumber(stash.licenceNumber || '');
+      setBrokerageName(stash.brokerageName || '');
     };
     const authRaw = sessionStorage.getItem(AUTH_STASH_KEY);
     if (authRaw) {
@@ -204,7 +206,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   // fields just restores to the same empty, blank state, which costs nothing.
   const handleSignInClick = () => {
     sessionStorage.setItem(AUTH_STASH_KEY, JSON.stringify({
-      articleIds: Array.from(selected), clusterKey: selectedCluster, businessName, tradeCategory, phone, website, licenceNumber,
+      articleIds: Array.from(selected), clusterKey: selectedCluster, businessName, tradeCategory, phone, website, licenceNumber, brokerageName,
     }));
     triggerClerkSignIn();
   };
@@ -277,6 +279,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     if (requiresLicenceNumber(tradeCategory) && licenceNumber.trim().length < 3) {
       return setSubmitError(`A licence, registration, or certification number is required for ${tradeCategory}.`);
     }
+    if (requiresBrokerageName(tradeCategory)) {
+      const brokerageErr = brokerageNameError(brokerageName);
+      if (brokerageErr) return setSubmitError(brokerageErr);
+    }
     // Same rule the server enforces (src/data/vendorWebsite.ts) -- caught here so the vendor hears it now.
     const siteCheck = checkVendorWebsite(website);
     if (!siteCheck.ok) return setSubmitError(siteCheck.error || VENDOR_WEBSITE_RULE);
@@ -302,6 +308,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
         phone: phone.trim(),
         website: website.trim() || undefined,
         licenceNumber: licenceNumber.trim() || undefined,
+        brokerageName: requiresBrokerageName(tradeCategory) ? brokerageName.trim() : undefined,
         contactEmail,
         attestedAccurate,
       };
@@ -530,6 +537,23 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                 className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm sm:col-span-2"
               />
               <p className="text-[11px] text-slate-500 leading-snug sm:col-span-2 -mt-1">{VENDOR_WEBSITE_RULE}</p>
+              {/* Agents only: the brokerage name is its own required field, and the server prints it beside
+                  the agent's name in the ad (sponsoredVendors.ts, BROKERAGE_REQUIRED_CATEGORIES). */}
+              {tradeCategory && requiresBrokerageName(tradeCategory) && (
+                <div className="sm:col-span-2 space-y-1.5">
+                  <input
+                    type="text" required placeholder="Brokerage name" value={brokerageName}
+                    onChange={(e) => setBrokerageName(e.target.value)}
+                    maxLength={80}
+                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm"
+                  />
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Shown in your ad right after your name. Some states require it in every real estate ad
+                    (Texas, for example, requires the broker&apos;s name). Following your state&apos;s advertising
+                    rules is your responsibility.
+                  </p>
+                </div>
+              )}
               {/* Same field and same rules as the ZIP-ad form -- see the comment on the licence
                   input in VendorSignupForm.tsx, including why the helper text below deliberately
                   omits "we don't verify this": that fact belongs on the public-facing card, not
@@ -548,7 +572,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                     Required for {tradeCategory}. <strong>Appears in your ad</strong> exactly as
                     typed. You are confirming it is current, valid for this trade, and held by this
                     business -- a false or expired number means removal without refund (Terms 4.4).
-                    Movers may enter a USDOT or MC number.
+                    Movers may enter a USDOT or MC number; agents, their real estate licence number.
                   </p>
                 </div>
               )}
