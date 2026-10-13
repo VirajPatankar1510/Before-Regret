@@ -15,7 +15,7 @@ script enforces the rules -- so a step that is skipped fails rather than quietly
 | `data/fact-ledgers/<slug>.json` | every fact the article states, with the source's own words, URL, date and method |
 | `scripts/assert-yes-but-guide.ts <slug>` | the gate: no number or code section without a ledger fact; "Can You" title; conditional verdict; banned wording |
 
-Also apply `write-guide` (the general pipeline) and `beforeregret_content_standard.md` §1-§7. This flow adds
+Also apply `write-article` (the five high-effort questions, the human voice and the general pipeline) and `beforeregret_content_standard.md` §1-§7. This flow adds
 to them; it never loosens them.
 
 ## Why this strand exists (so it is not misapplied)
@@ -66,7 +66,7 @@ both; contractors are an audience.
 
     <body>
 
-Draft rules, beyond write-guide's:
+Draft rules, beyond write-article's:
 - the quick answer opens with the verdict (Yes / Generally / Usually / Only ...) and the condition
   arrives in its first two sentences;
 - the body explains the condition with the ledger's specifics, then what to ask or do -- not a lecture;
