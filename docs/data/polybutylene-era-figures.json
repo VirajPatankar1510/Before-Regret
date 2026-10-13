@@ -1,0 +1,140 @@
+{
+  "generatedBy": "scripts/build-polybutylene-era-figures.ts",
+  "input": "docs/data/oldest-housing-raw.json",
+  "source": "U.S. Census Bureau, American Community Survey 5-year estimates, table B25034 (Year Structure Built)",
+  "vintage": "2020-2024",
+  "api": "https://api.census.gov/data/2024/acs/acs5",
+  "fetchedAt": "2026-10-09T15:27:09.683Z",
+  "engineWindow": {
+    "rule": "polybutylene_supply",
+    "minYear": 1978,
+    "maxYear": 1996,
+    "typicalRepairCost": "Whole-home repipe $4,000 – $15,000"
+  },
+  "scope": "3144 counties and county equivalents in the 50 states and DC (Puerto Rico excluded)",
+  "national": {
+    "totalUnits": 143775355,
+    "built1980s": 18539918,
+    "share1980sPct": 12.9,
+    "built1970to1999": 56693670,
+    "share1970to1999Pct": 39.4
+  },
+  "topCountiesByCount1980s": [
+    {
+      "name": "Los Angeles County, California",
+      "built1980s": 436870,
+      "share1980sPct": 12
+    },
+    {
+      "name": "Maricopa County, Arizona",
+      "built1980s": 318055,
+      "share1980sPct": 16.9
+    },
+    {
+      "name": "Harris County, Texas",
+      "built1980s": 292528,
+      "share1980sPct": 15.3
+    },
+    {
+      "name": "San Diego County, California",
+      "built1980s": 233152,
+      "share1980sPct": 18.6
+    },
+    {
+      "name": "Palm Beach County, Florida",
+      "built1980s": 189546,
+      "share1980sPct": 26.3
+    },
+    {
+      "name": "Dallas County, Texas",
+      "built1980s": 183734,
+      "share1980sPct": 17.3
+    },
+    {
+      "name": "Riverside County, California",
+      "built1980s": 175091,
+      "share1980sPct": 20.1
+    },
+    {
+      "name": "Cook County, Illinois",
+      "built1980s": 171892,
+      "share1980sPct": 7.6
+    },
+    {
+      "name": "Orange County, California",
+      "built1980s": 169345,
+      "share1980sPct": 14.8
+    },
+    {
+      "name": "San Bernardino County, California",
+      "built1980s": 166415,
+      "share1980sPct": 22.4
+    }
+  ],
+  "topCountiesByShare1980s": {
+    "minUnits": 50000,
+    "rows": [
+      {
+        "name": "Hernando County, Florida",
+        "total": 92535,
+        "built1980s": 27331,
+        "share1980sPct": 29.5
+      },
+      {
+        "name": "Highlands County, Florida",
+        "total": 58635,
+        "built1980s": 16685,
+        "share1980sPct": 28.5
+      },
+      {
+        "name": "Worcester County, Maryland",
+        "total": 56867,
+        "built1980s": 16121,
+        "share1980sPct": 28.3
+      },
+      {
+        "name": "Martin County, Florida",
+        "total": 83121,
+        "built1980s": 23127,
+        "share1980sPct": 27.8
+      },
+      {
+        "name": "Virginia Beach city, Virginia",
+        "total": 191294,
+        "built1980s": 52321,
+        "share1980sPct": 27.4
+      },
+      {
+        "name": "Palm Beach County, Florida",
+        "total": 719463,
+        "built1980s": 189546,
+        "share1980sPct": 26.3
+      },
+      {
+        "name": "Citrus County, Florida",
+        "total": 84929,
+        "built1980s": 21758,
+        "share1980sPct": 25.6
+      },
+      {
+        "name": "Seminole County, Florida",
+        "total": 199565,
+        "built1980s": 50153,
+        "share1980sPct": 25.1
+      },
+      {
+        "name": "Charlotte County, Florida",
+        "total": 118679,
+        "built1980s": 29086,
+        "share1980sPct": 24.5
+      },
+      {
+        "name": "Anchorage Municipality, Alaska",
+        "total": 120348,
+        "built1980s": 29279,
+        "share1980sPct": 24.3
+      }
+    ]
+  },
+  "caveat": "Census year built is self-reported and says nothing about pipe material. Counts are homes worth asking about, not homes with polybutylene."
+}
