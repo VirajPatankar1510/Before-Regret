@@ -14,14 +14,15 @@ const CTAS = new Set(['guide_closing_report', 'nav_free_report']);
 
 export function registerCtaClickRoutes(app: Express) {
   app.post('/api/cta-click', async (req: Request, res: Response) => {
-    res.status(204).end();
-    if (!isDbConfigured()) return;
-    if (detectAiCrawler(String(req.headers['user-agent'] || ''))) return;
-    const { cta, page } = req.body || {};
-    if (typeof cta !== 'string' || !CTAS.has(cta)) return;
-    if (typeof page !== 'string' || !page.startsWith('/') || page.length > 200) return;
-    const path = page.split('?')[0].split('#')[0];
+    // Write first, then answer 204 -- on Vercel the function may be frozen the moment the response is
+    // sent, so replying first dropped every click (caught in the first live test, 2026-10-14).
     try {
+      if (!isDbConfigured()) return;
+      if (detectAiCrawler(String(req.headers['user-agent'] || ''))) return;
+      const { cta, page } = req.body || {};
+      if (typeof cta !== 'string' || !CTAS.has(cta)) return;
+      if (typeof page !== 'string' || !page.startsWith('/') || page.length > 200) return;
+      const path = page.split('?')[0].split('#')[0];
       await withDb((sql) => sql`
         INSERT INTO cta_clicks (page_path, cta, click_day, visitor_hash)
         VALUES (${path}, ${cta}, current_date, ${hashVisitor(req)})
@@ -29,6 +30,8 @@ export function registerCtaClickRoutes(app: Express) {
       `);
     } catch (err) {
       console.error('[cta-clicks] could not record click:', err);
+    } finally {
+      res.status(204).end();
     }
   });
 }

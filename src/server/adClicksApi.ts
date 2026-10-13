@@ -169,17 +169,19 @@ export function registerAdClickRoutes(app: Express) {
   // dialling -- far worse than the cost of this approach, which is undercounting clicks from
   // readers with JavaScript disabled.
   app.post('/api/ad-click', async (req: Request, res: Response) => {
-    // 204 unconditionally, before any validation outcome can change the response. This is a
-    // beacon: the browser has already navigated away and nothing reads the result. Returning
-    // errors here would only tell a prober which placement ids exist.
-    res.status(204).end();
-    if (!isDbConfigured()) return;
-    const { adKind, purchaseId, target } = req.body || {};
-    const id = parseInt(String(purchaseId), 10);
-    if (!AD_KINDS.has(adKind) || !CLICK_TARGETS.has(target) || !Number.isFinite(id)) return;
-    // Confirm the placement is real, live, and paid before recording anything against it, so a
-    // fabricated id can't create rows for a placement that doesn't exist.
+    // Always 204, whatever happens: this is a beacon, the browser has already moved on and nothing
+    // reads the result, and returning errors would only tell a prober which placement ids exist.
+    //
+    // The 204 is sent AFTER the write, not before (fixed 2026-10-14). On Vercel the function can be
+    // frozen as soon as the response is sent, so the old "reply first, write after" order could drop
+    // every click -- found when a test click on the new /api/cta-click (same pattern) never landed.
     try {
+      if (!isDbConfigured()) return;
+      const { adKind, purchaseId, target } = req.body || {};
+      const id = parseInt(String(purchaseId), 10);
+      if (!AD_KINDS.has(adKind) || !CLICK_TARGETS.has(target) || !Number.isFinite(id)) return;
+      // Confirm the placement is real, live, and paid before recording anything against it, so a
+      // fabricated id can't create rows for a placement that doesn't exist.
       const rows = await withDb((sql) =>
         adKind === 'guide'
           ? sql`SELECT 1 AS ok FROM guide_ad_purchases WHERE id = ${id} AND active = true AND paid_through > now() LIMIT 1`
@@ -189,6 +191,8 @@ export function registerAdClickRoutes(app: Express) {
       await recordClick(req, adKind, id, target);
     } catch (err) {
       console.error('[ad-clicks] beacon failed:', err);
+    } finally {
+      res.status(204).end();
     }
   });
 }
