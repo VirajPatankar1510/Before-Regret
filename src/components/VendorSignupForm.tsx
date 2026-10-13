@@ -40,6 +40,7 @@ export const VendorSignupForm: React.FC = () => {
   const [brokerageName, setBrokerageName] = useState('');
   const [attestedAccurate, setAttestedAccurate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [returnNotice, setReturnNotice] = useState<string | null>(null);
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
 
   // Checks one ZIP against live availability (real purchases + other vendors' in-progress holds)
@@ -115,6 +116,9 @@ export const VendorSignupForm: React.FC = () => {
   // action the vendor took most recently if, somehow, both were ever present at once.
   const AUTH_STASH_KEY = 'br_pending_zip_signup';
   const RENEW_STASH_KEY = 'br_renew_zip_ad';
+  // Written right before the redirect to PayPal, so "Cancel and return" (?token=...) brings the
+  // vendor back to a filled form instead of an empty one (found in QA 2026-10-13).
+  const PAYPAL_STASH_KEY = 'br_paypal_return_zip_ad';
 
   useEffect(() => {
     const restore = (raw: string) => {
@@ -134,6 +138,21 @@ export const VendorSignupForm: React.FC = () => {
         }
       })();
     };
+    // Back from PayPal's "Cancel and return": restore everything, ZIPs re-checked for availability by
+    // restore() as usual, and say what happened. Cleared on every visit so it never goes stale.
+    const paypalRaw = sessionStorage.getItem(PAYPAL_STASH_KEY);
+    sessionStorage.removeItem(PAYPAL_STASH_KEY);
+    const params = new URLSearchParams(window.location.search);
+    if (paypalRaw && params.has('token')) {
+      try {
+        restore(paypalRaw);
+        setReturnNotice('Your PayPal checkout was cancelled and nothing was charged. Your details are filled back in -- tick the confirmation box again to continue.');
+      } catch { /* malformed stash, ignore */ }
+      params.delete('token');
+      const rest = params.toString();
+      window.history.replaceState(null, '', `${window.location.pathname}${rest ? `?${rest}` : ''}`);
+      return;
+    }
     const authRaw = sessionStorage.getItem(AUTH_STASH_KEY);
     if (authRaw) {
       sessionStorage.removeItem(AUTH_STASH_KEY);
@@ -204,6 +223,9 @@ export const VendorSignupForm: React.FC = () => {
         setSubmitting(false);
         return;
       }
+      sessionStorage.setItem(PAYPAL_STASH_KEY, JSON.stringify({
+        zipCodes: selectedZips, tradeCategory, businessName, phone, website, licenceNumber, brokerageName,
+      }));
       window.location.href = data.approvalUrl;
     } catch {
       setSubmitErrors(['Could not reach the server. Please try again.']);
@@ -412,6 +434,12 @@ export const VendorSignupForm: React.FC = () => {
               </span>
             </label>
 
+            {returnNotice && !submitting && (
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800" role="status">
+                {returnNotice}
+              </div>
+            )}
+
             {submitErrors.length > 0 && (
               <ul className="text-xs text-red-600 font-medium space-y-0.5 flex flex-col">
                 {submitErrors.map((err, idx) => (
@@ -429,8 +457,15 @@ export const VendorSignupForm: React.FC = () => {
               className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-60"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
-              <span>Continue to PayPal -- ${(pricing?.pricePerBundleUsd ?? 29).toFixed(0)}</span>
+              <span>{submitting ? 'Taking you to PayPal…' : `Continue to PayPal -- $${(pricing?.pricePerBundleUsd ?? 29).toFixed(0)}`}</span>
             </button>
+            {/* PayPal can take several seconds to open (QA 2026-10-13); this keeps the vendor from
+                thinking the button did nothing and clicking again. */}
+            {submitting && (
+              <p className="text-xs text-slate-600 text-center" role="status">
+                Taking you to PayPal. This can take a few seconds -- please keep this page open.
+              </p>
+            )}
             <p className="text-[11px] text-slate-500 text-center">
               ${(pricing?.pricePerBundleUsd ?? 29).toFixed(0)} flat for {ZIPS_PER_BUNDLE} ZIP codes, {pricing?.slotDurationDays ?? 30} days, no subscription and no auto-renewal.
               First come, first served; each slot reopens automatically once it expires unless you buy another {pricing?.slotDurationDays ?? 30}-day window.

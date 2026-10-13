@@ -83,6 +83,9 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
 // effect below for why both exist and why order matters when checking them.
 const AUTH_STASH_KEY = 'br_pending_guide_ads_signup';
 const RENEW_STASH_KEY = 'br_renew_guide_ads';
+// Written right before the redirect to PayPal. PayPal's "Cancel and return" link brings the vendor
+// back here with ?token=..., and without this the whole form came back empty (found in QA 2026-10-13).
+const PAYPAL_STASH_KEY = 'br_paypal_return_guide_ads';
 
 export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }) => {
   const { user, loading: authLoading, triggerClerkSignIn, getToken, requestClerkLoad } = useAuth();
@@ -107,6 +110,8 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   const [brokerageName, setBrokerageName] = useState('');
   const [attestedAccurate, setAttestedAccurate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  // Shown after a vendor cancels on PayPal and lands back here with their details restored.
+  const [returnNotice, setReturnNotice] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Starts the Clerk chunk loading as soon as this page mounts -- not on the "Sign In to Pay"
@@ -159,6 +164,21 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       setLicenceNumber(stash.licenceNumber || '');
       setBrokerageName(stash.brokerageName || '');
     };
+    // Back from PayPal's "Cancel and return" (?token= in the URL): put their details back and say so.
+    // The stash is cleared on every visit, so it can never refill the form on some later, unrelated one.
+    const paypalRaw = sessionStorage.getItem(PAYPAL_STASH_KEY);
+    sessionStorage.removeItem(PAYPAL_STASH_KEY);
+    const params = new URLSearchParams(window.location.search);
+    if (paypalRaw && params.has('token')) {
+      try {
+        restore(paypalRaw);
+        setReturnNotice('Your PayPal checkout was cancelled and nothing was charged. Your details are filled back in -- tick the confirmation box again to continue.');
+      } catch { /* malformed stash, ignore */ }
+      params.delete('token');
+      const rest = params.toString();
+      window.history.replaceState(null, '', `${window.location.pathname}${rest ? `?${rest}` : ''}`);
+      return;
+    }
     const authRaw = sessionStorage.getItem(AUTH_STASH_KEY);
     if (authRaw) {
       sessionStorage.removeItem(AUTH_STASH_KEY);
@@ -331,6 +351,9 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
         setSubmitting(false);
         return;
       }
+      sessionStorage.setItem(PAYPAL_STASH_KEY, JSON.stringify({
+        articleIds: Array.from(selected), clusterKey: selectedCluster, businessName, tradeCategory, phone, website, licenceNumber, brokerageName,
+      }));
       window.location.href = data.approvalUrl;
     } catch {
       setSubmitError('Could not reach the server.');
@@ -781,7 +804,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-all cursor-pointer flex items-center gap-2"
               >
                 {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>Continue to PayPal</span>
+                <span>{submitting ? 'Taking you to PayPal…' : 'Continue to PayPal'}</span>
               </button>
             ) : (
               <button
@@ -804,6 +827,20 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                 My Placements
               </button>.
             </p>
+          )}
+
+          {/* PayPal can take several seconds to open (measured in QA 2026-10-13); without this the
+              button looked dead and invited a second click. */}
+          {submitting && (
+            <p className="text-xs text-slate-600 -mt-2" role="status">
+              Taking you to PayPal. This can take a few seconds -- please keep this page open.
+            </p>
+          )}
+
+          {returnNotice && !submitting && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800" role="status">
+              {returnNotice}
+            </div>
           )}
 
           {submitError && (

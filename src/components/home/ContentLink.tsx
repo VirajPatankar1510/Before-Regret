@@ -5,6 +5,8 @@ interface ContentLinkProps {
   onNavigate?: (path: string) => void;
   className?: string;
   children: React.ReactNode;
+  /** Called on every click, before any SPA navigation -- used to count CTA clicks. Must not throw. */
+  onClickTrack?: () => void;
 }
 
 /**
@@ -16,11 +18,12 @@ interface ContentLinkProps {
  * Modified clicks (cmd/ctrl/shift/middle) fall through untouched so "open in new tab" keeps working
  * -- preventDefault on those is the classic SPA regression.
  */
-export const ContentLink: React.FC<ContentLinkProps> = ({ href, onNavigate, className, children }) => (
+export const ContentLink: React.FC<ContentLinkProps> = ({ href, onNavigate, className, children, onClickTrack }) => (
   <a
     href={href}
     className={className}
     onClick={(e) => {
+      onClickTrack?.();
       if (!onNavigate) return;
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();

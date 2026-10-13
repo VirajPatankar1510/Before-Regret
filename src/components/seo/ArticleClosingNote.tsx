@@ -1,13 +1,15 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ContentLink } from '../home/ContentLink';
+import { reportCtaClick } from '../../utils/ctaClickBeacon';
 
 interface ArticleClosingNoteProps {
   onNavigate?: (path: string) => void;
 }
 
 // The free-report call to action at the foot of every guide. 2026-10-04: restyled to the
-// homepage's navy closing panel; the words are unchanged.
+// homepage's navy closing panel. 2026-10-14: the earthquake-risk line came out (the USGS seismic
+// section was removed from reports on 2026-10-10), and clicks are now counted (ctaClickBeacon.ts).
 export const ArticleClosingNote: React.FC<ArticleClosingNoteProps> = ({ onNavigate }) => {
   return (
     <div className="relative overflow-hidden rounded-3xl bg-home-navy text-white p-8 sm:p-12 space-y-6 shadow-xl">
@@ -17,13 +19,14 @@ export const ArticleClosingNote: React.FC<ArticleClosingNoteProps> = ({ onNaviga
           Get Your Free Property Report
         </h2>
         <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
-          Before Regret builds one report for any US address: the questions to ask the seller, what to inspect first for a home of its age and county, and earthquake risk for the exact location — with anything not yet independently verified clearly labeled, not guessed at.
+          Before Regret builds one report for any US address: the questions to ask the seller, what to inspect first for a home of its age and county, and what the neighborhood's public data shows — with anything not yet independently verified clearly labeled, not guessed at.
         </p>
       </div>
 
       <ContentLink
         href="/"
         onNavigate={onNavigate}
+        onClickTrack={() => reportCtaClick('guide_closing_report')}
         className="relative inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white text-home-navy font-bold text-sm sm:text-base rounded-xl hover:bg-home-stone transition-colors cursor-pointer shadow-lg"
       >
         <span>Check an address</span>

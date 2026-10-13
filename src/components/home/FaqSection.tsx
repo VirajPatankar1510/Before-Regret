@@ -20,7 +20,7 @@ import { ChevronDown, HelpCircle, ShieldAlert, CheckCircle2, FileText } from 'lu
 export const HOMEPAGE_DEFINITIONS: { q: string; a: string }[] = [
   {
     q: 'What is Before Regret?',
-    a: 'Before Regret is free property research for US home buyers. Enter any US address and you get the questions to ask the seller, what to inspect first for that home\'s age and county, and the earthquake risk for that exact address, with anything we haven\'t independently verified labeled as such.'
+    a: 'Before Regret is free property research for US home buyers. Enter any US address and you get the questions to ask the seller, what to inspect first for that home\'s age and county, and what public data shows about its neighborhood, with anything we haven\'t independently verified labeled as such.'
   },
   {
     q: 'Why is it called Before Regret?',

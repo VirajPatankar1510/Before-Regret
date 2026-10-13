@@ -41,7 +41,7 @@ const AD_KINDS = new Set(['guide', 'zip']);
 // lifetime of the process without ever falling back to storing something reversible.
 const IP_SALT = process.env.ADMIN_SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 
-function hashVisitor(req: Request): string {
+export function hashVisitor(req: Request): string {
   const forwarded = req.headers['x-forwarded-for'];
   const ip =
     (typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : '') ||

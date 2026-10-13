@@ -21,7 +21,6 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
   // in, then delivering something else, is the same overstatement the old hardcoded list made. So
   // the list is now exactly the report's sections, in the order they appear.
   const categories = [
-    'Earthquake risk for this address',
     'Neighborhood profile from the U.S. Census',
     'What to inspect first for a home of its age',
     'Questions to ask the seller',
@@ -83,7 +82,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
           </div>
 
           <p className="text-xs text-slate-400 pt-1">
-            Earthquake risk and the Census neighborhood profile are checked live for this address. The
+            The Census neighborhood profile is checked live for this address. The
             rest is guidance for a home of its age and area, with links to the records worth pulling
             yourself.
           </p>

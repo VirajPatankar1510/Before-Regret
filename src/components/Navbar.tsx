@@ -3,6 +3,7 @@ import { Search, User, Sparkles, ChevronDown, CheckCircle2, ShieldCheck, Menu, X
 import { Logo } from './Logo';
 import { useAuth } from '../context/AuthContext';
 import { AuthModal } from './AuthModal';
+import { reportCtaClick } from '../utils/ctaClickBeacon';
 
 interface NavbarProps {
   onNewSearch: () => void;
@@ -36,6 +37,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   // Back to the homepage (onNewSearch resets any report or guide and scrolls to the top), then
   // put the cursor in the address box once the hero has rendered.
   const goToAddressSearch = () => {
+    reportCtaClick('nav_free_report');
     onNewSearch();
     window.setTimeout(() => {
       const box = document.getElementById('address-search-box');

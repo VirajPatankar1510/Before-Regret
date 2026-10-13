@@ -59,7 +59,7 @@ export const AboutMethodology: React.FC<AboutMethodologyProps> = ({ onBackToHome
                 at all. Its first line is omitted because the h1 above says exactly that. */}
             <p className="text-sm text-slate-600 leading-relaxed">
               Enter any US address and you get the questions to ask the seller, what to inspect first for that
-              home's age and county, and the earthquake risk for that exact address. Anything we have not
+              home's age and county, and what public data shows about its neighborhood. Anything we have not
               independently verified is labeled that way, not guessed. Every report is free, with no sign-up.
             </p>
             <p className="text-sm text-slate-600 leading-relaxed">

@@ -36,7 +36,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               on this site, and §7 gained a stated 30-day retention period for the IP rate-limit
               records. No PRIVACY_VERSION constant to match: unlike the Terms, nothing records a
               per-user acceptance of this document, so the date is the whole of the provenance. */}
-          <span className="text-xs font-mono text-slate-500">Effective Date: October 5, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Effective Date: October 14, 2026</span>
         </div>
 
         {/* Content Pane */}
@@ -182,11 +182,6 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                   locatable US address before any report is produced, and looks up the neighborhood
                   figures for its census tract. <strong>The address is sent to this US government
                   service</strong>; nothing identifying you is.
-                </li>
-                <li>
-                  <strong>US Geological Survey</strong> — returns the earthquake design values for the
-                  property. <strong>The property's map coordinates are sent</strong>; nothing
-                  identifying you is.
                 </li>
                 <li>
                   <strong>Clerk</strong> — provides sign-in. Holds your email address, name and any

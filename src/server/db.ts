@@ -611,6 +611,22 @@ export async function ensureArticlesSchema(): Promise<void> {
     ON vendor_ad_clicks(ad_kind, purchase_id, click_day)
   `;
 
+  // Clicks on "get a report" calls to action, per page (src/server/ctaClicksApi.ts, 2026-10-14).
+  // Unique per page, CTA, visitor and day; the visitor is a salted hash, never an IP.
+  await sql`
+    CREATE TABLE IF NOT EXISTS cta_clicks (
+      id BIGSERIAL PRIMARY KEY,
+      page_path TEXT NOT NULL,
+      cta TEXT NOT NULL,
+      click_day DATE NOT NULL,
+      visitor_hash TEXT NOT NULL,
+      clicked_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_cta_clicks_unique ON cta_clicks(page_path, cta, click_day, visitor_hash)
+  `;
+
   // Advertiser-supplied licence / registration / certification number, added to all four ad tables
   // at once so an order and the purchase it becomes carry the same value. See
   // requiresLicenceNumber() in src/data/sponsoredVendors.ts for which trade categories must supply

@@ -126,7 +126,11 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
           <h1 className="mt-3 font-serif text-[2.1rem] leading-[1.1] sm:text-5xl sm:leading-[1.05] font-semibold text-home-ink tracking-[-0.01em] [text-wrap:balance]">
             {article.title}
           </h1>
-          {article.metaDescription && (
+          {/* The meta description, shown as a line under the title -- but only on pages WITHOUT a quick
+              answer (owner, 2026-10-14). The searcher has just read this exact sentence as Google's
+              snippet; above a quick answer it only pushed the answer down and made the page say the
+              same thing three times. It stays in the <meta> tag either way. */}
+          {article.metaDescription && !article.quickAnswer && (
             <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">{article.metaDescription}</p>
           )}
           <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-slate-500">

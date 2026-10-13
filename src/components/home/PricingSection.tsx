@@ -55,7 +55,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-600 shrink-0" />
-                <span>Earthquake risk for the exact address</span>
+                <span>Neighborhood figures from public data</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-blue-600 shrink-0" />

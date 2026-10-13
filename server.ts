@@ -30,6 +30,7 @@ import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerMyAdsRoutes } from "./src/server/myAdsApi.js";
 import { registerAdClickRoutes } from "./src/server/adClicksApi.js";
+import { registerCtaClickRoutes } from "./src/server/ctaClicksApi.js";
 import { sendReportEmail, isReportEmailConfigured } from "./src/server/reportEmailService.js";
 import { runAfterResponse } from "./src/server/afterResponse.js";
 import { registerTermsRoutes } from "./src/server/termsApi.js";
@@ -298,6 +299,7 @@ export async function createApp() {
   // Registered before express.static and the catch-all slug handler, same as the merged-guides
   // redirect: /out/ is a route, not a file, and must not fall through to static serving.
   registerAdClickRoutes(app);
+  registerCtaClickRoutes(app);
 
   // --- Consumer Terms acceptance ledger (Neon-backed) -----------------------------------------
   // Records that a signed-in consumer affirmatively accepted the current Terms revision, for the
