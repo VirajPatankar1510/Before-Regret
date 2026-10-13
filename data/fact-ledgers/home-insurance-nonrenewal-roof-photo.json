@@ -1,0 +1,79 @@
+{
+  "_about": "Owner-requested guide 2026-10-13, exact title, homeowner audience (owner chose 'New homeowner page' over merging into #312). #312 owns why images go wrong and the regulator bulletin survey; #329 owns cancellation after buying. Facts f1-f5 re-used from the #329 ledger (statutes read 2026-10-10).",
+  "slug": "home-insurance-nonrenewal-roof-photo",
+  "question": "My insurer is not renewing my home policy because of a roof photo. What can I do?",
+  "verdictConfirmed": "Act before the renewal date: get the reason and the image, answer it with your own dated evidence, ask for a physical inspection, use your state's hearing or complaint process, and line up replacement coverage so nothing lapses.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Texas Insurance Code 551.002: a written statement of reasons must state the precise incident, circumstance or risk factors and the source of information the insurer relied on.",
+      "quote": "The statement must: (1) state the precise incident, circumstance, or risk factors applicable to the applicant for insurance or the policyholder that violates any applicable guidelines; (2) state the source of information on which the insurer relied regarding the incident, circumstance, or risk factors",
+      "url": "https://statutes.capitol.texas.gov/Docs/IN/htm/IN.551.htm#551.002",
+      "readOn": "2026-10-10",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "Texas 551.105: unless written notice of nonrenewal is mailed not later than the 60th day before expiry, the insurer must renew at the insured's request.",
+      "quote": "Unless the insurer has mailed written notice of nonrenewal ... not later than the 60th day before the date on which the insurance policy expires, an insurer must renew an insurance policy, at the request of the insured",
+      "url": "https://statutes.capitol.texas.gov/Docs/IN/htm/IN.551.htm#551.105",
+      "readOn": "2026-10-10",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Florida 627.4133(2)(b): written notice of nonrenewal at least 120 days before it takes effect.",
+      "quote": "The insurer shall give the first-named insured written notice of nonrenewal, cancellation, or termination at least 120 days before the effective date of the nonrenewal, cancellation, or termination.",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2026/627.4133",
+      "readOn": "2026-10-10",
+      "method": "webfetch"
+    },
+    {
+      "id": "f4",
+      "claim": "Florida 627.7011(5): an insurer may not refuse to renew solely because of the age of a roof less than 15 years old.",
+      "quote": "(b) An insurer may not refuse to issue or refuse to renew a homeowner's policy insuring a residential structure with a roof that is less than 15 years old solely because of the age of the roof.",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2026/627.7011",
+      "readOn": "2026-10-10",
+      "method": "webfetch"
+    },
+    {
+      "id": "f5",
+      "claim": "12 CFR 1024.37: a servicer may not charge for force-placed insurance without a reasonable basis to believe the borrower failed to maintain hazard insurance; written notice at least 45 days before charging; must cancel and refund overlap within 15 days of evidence of coverage.",
+      "quote": "A servicer may not assess on a borrower a premium charge or fee related to force-placed insurance unless the servicer has a reasonable basis to believe that the borrower has failed to comply with the mortgage loan contract's requirement to maintain hazard insurance. ... at least 45 days before a servicer assesses ... within 15 days",
+      "url": "https://www.ecfr.gov/current/title-12/chapter-X/part-1024/subpart-C/section-1024.37",
+      "readOn": "2026-10-10",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "Pennsylvania Insurance Department Notice 2024-06 (54 Pa.B. 2908): cosmetic aerial images should not be the sole evidence for cancellation or nonrenewal; a physical inspection is prudent absent unequivocal and material damage; insureds should have the opportunity to challenge the imagery or correct confirmed roof deficiencies; insurers must give the legal and factual reason for policies in force 60 days or more.",
+      "quote": "should not be used as the sole evidence to support cancellation or nonrenewal actions ... it would be prudent for an insurer to conduct a physical inspection ... the opportunity to challenge aerial imagery results or correct confirmed roof deficiencies ... both the legal and factual reason permitted by section 1171.5(a)(9)",
+      "url": "https://www.pacodeandbulletin.gov/Display/pabull?file=/secure/pabulletin/data/vol54/54-21/735.html",
+      "readOn": "2026-10-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f7",
+      "claim": "Maine: the named insured may request a hearing when the insurer proposes not to renew a homeowners policy; the request must be received within 30 days of receiving the notice; the company must continue coverage until the hearing process ends; if the consumer wins the policy is reinstated or renewed.",
+      "quote": "may request a hearing when his or her insurance company proposes not to renew an existing homeowners ... policy ... The hearing request must be received by the Bureau within 30 days of receipt of the notice of cancellation or nonrenewal ... is required to continue your coverage from the date of your hearing request until the end of the hearing process.",
+      "url": "https://www.maine.gov/pfr/insurance/frequently-asked-questions/cancellation-nonrenewal-hearings",
+      "readOn": "2026-10-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f8",
+      "claim": "NAIC: you can file a complaint with your state department of insurance, including over a cancellation or nonrenewal you believe is unjustified; the DOI forwards it to the insurer, which must respond; keep a record of all communication.",
+      "quote": "file a complaint against the company with your state department of insurance (DOI) ... Cancellation or nonrenewal that you believe is unjustified ... Create a record of all communication with your insurer, including emails, letters, phone calls, dates, and times. ... Insurance regulators at the DOI will forward your complaint to the insurance company.",
+      "url": "https://content.naic.org/consumer/how-to-file-complaint",
+      "readOn": "2026-10-13",
+      "method": "webfetch"
+    }
+  ],
+  "cut": [
+    { "claim": "Maine Bulletin 483 telling insurers to hand over the images", "why": "only secondary summaries read; #312 covers the bulletins" },
+    { "claim": "Hearing rights in other states", "why": "only Maine read" },
+    { "claim": "How often appeals succeed", "why": "no data" },
+    { "claim": "Algae streaks are cosmetic", "why": "covered in #312 with its West Virginia source; linked, not restated" }
+  ],
+  "blockedSources": ["ncoil.org PA bulletin mirror (Cloudflare check, not worked around)", "media.pa.gov release (redirect)"]
+}

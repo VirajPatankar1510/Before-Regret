@@ -1,0 +1,25 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-10-13T06:58:00.004Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "aerial imagery insurance",
+    "roof nonrenewal",
+    "insurance nonrenewal roof"
+  ],
+  "keywords": [
+    {
+      "keyword": "aerial imagery insurance",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 37,
+      "pages": {
+        "https://www.beforeregret.com/guides/home-insurance-aerial-photos-roof/": 1
+      }
+    }
+  ]
+}

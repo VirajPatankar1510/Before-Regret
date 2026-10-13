@@ -134,6 +134,7 @@ function main() {
   const OWNER_LONG_TITLES = new Set<string>([
     '/guides/sewer-line-belly-found-inspection/', // owner 2026-10-13: "Exact everywhere" (85 chars)
     '/guides/buying-house-unpermitted-deck-before-closing/', // owner 2026-10-13: exact title (70 chars)
+    '/guides/home-insurance-nonrenewal-roof-photo/', // owner 2026-10-13: exact title (68 chars)
   ]);
   for (const f of walk(DIST).filter((p) => p.endsWith('index.html'))) {
     const html = fs.readFileSync(f, 'utf8');
