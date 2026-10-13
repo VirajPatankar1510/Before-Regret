@@ -54,9 +54,9 @@
     },
     {
       "id": "f7",
-      "claim": "ASTM D3309-96a is the specification for polybutylene hot- and cold-water distribution systems; ASTM lists it as a historical standard; its scope includes methods of marking.",
-      "quote": "Standard Historical ... Standard Specification for Polybutylene (PB) Plastic Hot- and Cold-Water Distribution Systems ... This specification covers requirements, test methods, and methods of marking for polybutylene plastic system components",
-      "url": "https://store.astm.org/d3309-96a.html",
+      "claim": "ASTM D3309 is the specification for polybutylene hot- and cold-water distribution systems; its scope includes methods of marking. The last edition, D3309-96a(2002), was withdrawn in 2010 with no replacement (the 1996 edition's page shows 'Historical' because the 2002 reapproval superseded it).",
+      "quote": "D3309-96a page: 'Standard Historical ... This specification covers requirements, test methods, and methods of marking for polybutylene plastic system components'. D3309-96a(2002) page: 'Standard Withdrawn, No replacement ... Last Updated: Dec 31, 2010 ... (Withdrawn 2010)'",
+      "url": "https://store.astm.org/d3309-96ar02.html ; https://store.astm.org/d3309-96a.html",
       "readOn": "2026-10-14",
       "method": "webfetch"
     },
@@ -101,10 +101,6 @@
     {
       "claim": "Polybutylene is stamped PB2110",
       "why": "only low-quality secondary pages; no manufacturer, standard or government source found"
-    },
-    {
-      "claim": "ASTM D3309 withdrawn 2010",
-      "why": "ASTM's own page says 'Historical' with no withdrawal date shown; catalog dates are secondary"
     },
     {
       "claim": "Installed in millions of homes [CPSC]",
