@@ -41,7 +41,7 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
 
             The "not verified by us" line is UNCONDITIONAL, and that is the point of this block's
             shape. It used to be nested inside the licenceNumber check, which meant the two cases
-            with no number -- the licence-exempt trade category (Chimney Sweep) and placements sold
+            with no number -- the licence-exempt trade categories (Chimney Sweep, Interior Designer) and placements sold
             before the field existed -- rendered a business name and a phone number with no
             disclosure of any kind on the card. The disclosure has to survive the absence of the
             number, so it lives outside the conditional. Do not re-nest it. */}

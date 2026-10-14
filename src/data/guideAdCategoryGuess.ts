@@ -26,6 +26,13 @@ const KEYWORD_RULES: Array<{ keywords: string[]; category: typeof TRADE_CATEGORI
   { keywords: ['moving', 'relocat'], category: 'Moving Company' },
   // Plumbing topics get their own trade now that 'Plumber' exists (2026-10-03). Sewer and cast iron
   // topics still match 'Sewer Scope' above, which runs first.
+  // 2026-10-14 trades. Water testing runs before Plumber and Well & Septic would catch "water" topics;
+  // the lead service line guide stays with Plumber (replacing the line is plumbing work).
+  { keywords: ['water test', 'water quality', 'hard water', 'softener', 'pfas', 'nitrate'], category: 'Water Testing & Treatment' },
+  { keywords: ['solar', 'south-facing', 'sunlight', 'sun by direction'], category: 'Solar Installer' },
+  { keywords: [' tree', 'trees', 'landscap', 'yard', 'grading', 'lawn'], category: 'Landscaping & Tree Service' },
+  { keywords: ['paint', 'flooring', 'hardwood', 'carpet'], category: 'Painter & Flooring' },
+  { keywords: ['interior design', 'decor', 'floor plan', 'layout'], category: 'Interior Designer' },
   { keywords: ['plumb', 'polybutylene', 'pipe', 'water heater', 'repipe', 'tpr valve', 'sump', 'service line', 'water line'], category: 'Plumber' },
   // Real Estate Agent (2026-10-13): guides about the transaction itself -- offers, sellers, closing,
   // contingencies. Checked after every trade above, so a defect guide that mentions closing still
@@ -69,6 +76,11 @@ const BUSINESS_PHRASE: Record<typeof TRADE_CATEGORIES[number], string> = {
   'Well & Septic Services': 'well & septic',
   'Moving Company': 'moving',
   'Real Estate Agent': 'real estate',
+  'Interior Designer': 'interior design',
+  'Painter & Flooring': 'painting or flooring',
+  'Landscaping & Tree Service': 'landscaping or tree service',
+  'Solar Installer': 'solar',
+  'Water Testing & Treatment': 'water testing or treatment',
 };
 
 export function guessBusinessPhraseFromTitle(title: string): string {

@@ -344,6 +344,11 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           </section>
         )}
 
+        {/* Interior Designer: a fixed box on every report in the designer's ZIPs (see
+            PropertyReport.interiorDesignerVendors in types.ts), after the records -- the point where the
+            report turns from checking the house to living in it. Renders nothing when unsold. */}
+        <SponsoredVendorCards vendors={report.interiorDesignerVendors} />
+
         <p className="print:hidden text-xs text-slate-500 leading-relaxed px-1">
           Want every public source behind this report, and which were checked live?{' '}
           <button

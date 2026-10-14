@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { ArrowRight, ChevronRight, CreditCard, MapPin, Newspaper, RefreshCw, ShieldCheck, Check, ClipboardList } from 'lucide-react';
-import { MAX_SLOTS_PER_ZIP_TRADE, TRADE_CATEGORIES } from '../data/sponsoredVendors';
+import { MAX_SLOTS_PER_ZIP_TRADE, TRADE_CATEGORIES, LICENCE_EXEMPT_CATEGORIES, canBuyReportAd } from '../data/sponsoredVendors';
 import { ContentLink } from './home/ContentLink';
 import { SponsoredVendorCard } from './SponsoredVendorCard';
 import { GuideAdVendorCard } from './GuideAdSlot';
@@ -57,7 +57,7 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Do I need to be licensed or verified to advertise?',
-    a: "No -- we don't check your credentials before your placement goes live. Every trade category except chimney sweeping requires a licence, registration, or certification number at checkout; it prints on your ad exactly as you type it, but we don't verify it with any licensing board. Every placement tells readers its details are advertiser-supplied and unverified, and that includes chimney listings, which carry that same notice with no number since that category doesn't require one. Your business name, trade category, and contact details work the same way: you enter them, confirm they're accurate with a checkbox at checkout, and that's the only check that happens.",
+    a: "No -- we don't check your credentials before your placement goes live. Every trade category except chimney sweeping and interior design requires a licence, registration, or certification number at checkout; it prints on your ad exactly as you type it, but we don't verify it with any licensing board. Every placement tells readers its details are advertiser-supplied and unverified, and that includes chimney sweep and interior designer listings, which carry that same notice with no number since those categories don't require one. Your business name, trade category, and contact details work the same way: you enter them, confirm they're accurate with a checkbox at checkout, and that's the only check that happens.",
   },
   {
     q: 'How many people will see my ad?',
@@ -371,12 +371,17 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
           <Eyebrow>Who can advertise</Eyebrow>
           <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Trades we list</h2>
           <p className="mt-4 max-w-2xl text-base text-slate-700 leading-relaxed">
-            Both ad types are open to businesses in these trades. Every trade except chimney sweeping
-            asks for a licence, registration or certification number at checkout.
+            Both ad types are open to businesses in these trades, except those marked Topic Ads only:
+            no report section covers them yet, so a Report Ad would have nowhere to show. Every trade
+            except {[...LICENCE_EXEMPT_CATEGORIES].map((c) => c.toLowerCase()).join(' and ')} asks for a
+            licence, registration or certification number at checkout.
           </p>
           <ul className="mt-8 flex flex-wrap gap-2.5">
             {TRADE_CATEGORIES.map((c) => (
-              <li key={c} className="rounded-full bg-white border border-home-linen px-4 py-2 text-sm font-semibold text-home-ink">{c}</li>
+              <li key={c} className="rounded-full bg-white border border-home-linen px-4 py-2 text-sm font-semibold text-home-ink">
+                {c}
+                {!canBuyReportAd(c) && <span className="ml-1.5 text-xs font-medium text-slate-500">· Topic Ads only</span>}
+              </li>
             ))}
           </ul>
         </div>

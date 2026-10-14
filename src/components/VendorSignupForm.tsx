@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle, Lock, X } from 'lucide-react';
-import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber, requiresBrokerageName, brokerageNameError } from '../data/sponsoredVendors';
+import { REPORT_AD_TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber, requiresBrokerageName, brokerageNameError } from '../data/sponsoredVendors';
 import { checkVendorWebsite, VENDOR_WEBSITE_RULE } from '../data/vendorWebsite';
 import { useAuth } from '../context/AuthContext';
 
@@ -262,7 +262,7 @@ export const VendorSignupForm: React.FC = () => {
           className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           <option value="">Select your business type...</option>
-          {TRADE_CATEGORIES.map((cat) => (
+          {REPORT_AD_TRADE_CATEGORIES.map((cat) => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>

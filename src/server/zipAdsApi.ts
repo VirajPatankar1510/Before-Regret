@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import zipcodes from 'zipcodes';
 import { withDb, isDbConfigured } from './db.js';
 import { isPayPalConfigured, createPayPalOrder, capturePayPalOrder } from './paypalService.js';
-import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber, requiresBrokerageName, brokerageNameError, composeAdvertiserName } from '../data/sponsoredVendors.js';
+import { canBuyReportAd, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber, requiresBrokerageName, brokerageNameError, composeAdvertiserName } from '../data/sponsoredVendors.js';
 import type { SponsoredVendor } from '../types.js';
 import { requireVerifiedUser } from './clerkAuth.js';
 import { TERMS_VERSION } from '../data/legalVersions.js';
@@ -118,7 +118,7 @@ export function registerZipAdsRoutes(app: Express) {
       res.status(400).json({ success: false, error: 'Enter a valid U.S. ZIP.' });
       return;
     }
-    if (!(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) {
+    if (!canBuyReportAd(tradeCategory)) {
       res.status(400).json({ success: false, error: 'tradeCategory must be one of the supported categories.' });
       return;
     }
@@ -158,7 +158,8 @@ export function registerZipAdsRoutes(app: Express) {
     let { businessName } = req.body || {};
     const errors: string[] = [];
     if (typeof businessName !== 'string' || !businessName.trim()) errors.push('Business name is required.');
-    if (typeof tradeCategory !== 'string' || !(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) errors.push('Please choose a valid trade category.');
+    // Only trades a Report Ad can render for (REPORT_AD_TRADE_CATEGORIES); the Topic-Ads-only trades are refused here.
+    if (typeof tradeCategory !== 'string' || !canBuyReportAd(tradeCategory)) errors.push('Please choose a valid trade category.');
     const zipList: string[] = Array.isArray(zipCodes) ? zipCodes.filter((z) => typeof z === 'string') : [];
     const uniqueZips = Array.from(new Set(zipList));
     if (uniqueZips.length !== ZIPS_PER_BUNDLE || !uniqueZips.every(isValidZip)) {

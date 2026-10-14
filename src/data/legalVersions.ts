@@ -53,4 +53,6 @@
 // 2026-10-05: consumer reports made free (owner decision). Rewrote 2 (services), 3.1 (reports are
 // free, daily generation limits) and 3.4 (no report purchases; earlier purchases stay under the
 // version in effect then). A substantive change to what a consumer is agreeing to, hence a new string.
-export const TERMS_VERSION = '2026-10-05.1';
+// 2026-10-14: 4.4 names Interior Designer as a second licence-exempt category beside Chimney Sweep
+// (owner decision). It changes which vendors must supply a number, so it gets its own string.
+export const TERMS_VERSION = '2026-10-14.1';

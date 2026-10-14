@@ -412,6 +412,11 @@ export interface PropertyReport {
   // questions to the seller and negotiate the answers. Empty or absent renders nothing.
   realEstateAgentVendors?: SponsoredVendor[];
 
+  // Fixed slot for Interior Designer vendors (2026-10-14, owner: "its own separate box"). Not tied to any
+  // finding; rendered after "Records still to pull", where the report turns from checking the house to
+  // living in it. Empty or absent renders nothing.
+  interiorDesignerVendors?: SponsoredVendor[];
+
   // Bottom Line Synthesis. Optional since 2026-10-05: no report generator writes it any more (see the
   // REMOVED note in server.ts's generateStructuredPropertyReport); older stored reports may have it.
   bottomLine?: {

@@ -3,7 +3,7 @@ import {
   Building2, ArrowLeft, Check, Sparkles, MapPin, Target,
   HelpCircle, Phone, ExternalLink, Megaphone, ChevronDown
 } from 'lucide-react';
-import { TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
+import { REPORT_AD_TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
 import { VendorSignupForm } from './VendorSignupForm';
 
 interface VendorsProps {
@@ -165,7 +165,7 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 text-xs font-bold text-slate-800">
-            {TRADE_CATEGORIES.map((cat, idx) => (
+            {REPORT_AD_TRADE_CATEGORIES.map((cat, idx) => (
               <div key={idx} className="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center flex items-center justify-center gap-1.5">
                 <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>{cat}</span>

@@ -49,6 +49,17 @@ export const TRADE_CATEGORIES = [
   // the agent's name -- see BROKERAGE_REQUIRED_CATEGORIES. In Report Ads the category has a fixed slot on
   // every report in the agent's ZIPs (PropertyReport.realEstateAgentVendors), like Moving Company.
   'Real Estate Agent',
+  // Added 2026-10-14 at the owner's request. Interior designers are not tied to any finding (like Moving
+  // Company and Real Estate Agent), so in Report Ads they get their own fixed box on every report in their
+  // ZIPs (PropertyReport.interiorDesignerVendors). No licence number: see LICENCE_EXEMPT_CATEGORIES.
+  'Interior Designer',
+  // Added 2026-10-14 at the owner's request, to sell beyond defect topics. TOPIC ADS ONLY for now: no
+  // report item maps to them yet, so a Report Ad would never render -- REPORT_AD_TRADE_CATEGORIES leaves
+  // them out until one does. Licence number required by the default rule below.
+  'Painter & Flooring',
+  'Landscaping & Tree Service',
+  'Solar Installer',
+  'Water Testing & Treatment',
 ] as const;
 
 // Trades for which a licence, registration, or certification number must be supplied at checkout
@@ -78,8 +89,13 @@ export const TRADE_CATEGORIES = [
 // NOT a legal opinion and not per-state accurate: this is a deliberately conservative default that
 // counsel should confirm against the specific states being sold into. Erring toward collecting a
 // number costs a vendor one form field; erring the other way is the exposure described above.
+//
+// Interior Designer (2026-10-14, owner decision) is exempt for the same reason: most states don't license
+// interior design, so most designers would have nothing honest to type. The site never calls any vendor
+// "licensed", so the ad makes no licensing claim either way. Not checked state by state.
 export const LICENCE_EXEMPT_CATEGORIES: ReadonlySet<string> = new Set<string>([
   'Chimney Sweep',
+  'Interior Designer',
 ]);
 
 export function requiresLicenceNumber(tradeCategory: string): boolean {
@@ -194,3 +210,28 @@ export const SELLER_QUESTION_TRADE_CATEGORY: Partial<Record<string, typeof TRADE
 // PropertyReport.movingCompanyVendors in types.ts and the render in PropertyReportView.tsx),
 // positioned once near the top of the report rather than competing for a topic-relevant spot it
 // doesn't have.
+
+// Trades with a fixed box on every report in the vendor's ZIPs, whatever the report finds (see the
+// movingCompanyVendors / realEstateAgentVendors / interiorDesignerVendors fields in types.ts).
+export const FIXED_REPORT_SLOT_CATEGORIES: ReadonlySet<string> = new Set<string>([
+  'Moving Company',
+  'Real Estate Agent',
+  'Interior Designer',
+]);
+
+// The trades a Report Ad can actually be shown for: a fixed box, or at least one report item mapped to the
+// trade above. A trade outside this list would pay for a ZIP ad that never renders, so the Report Ads
+// checkout offers only these and the server refuses the rest (2026-10-14). Derived, never hand-listed, so
+// mapping a new report item to a trade makes it sellable automatically.
+const MAPPED_REPORT_TRADES = new Set<string>([
+  ...Object.values(FINDING_TRADE_CATEGORY),
+  ...Object.values(PRIORITY_TRADE_CATEGORY),
+  ...Object.values(SELLER_QUESTION_TRADE_CATEGORY),
+].filter(Boolean) as string[]);
+export const REPORT_AD_TRADE_CATEGORIES: readonly string[] = TRADE_CATEGORIES.filter(
+  (c) => FIXED_REPORT_SLOT_CATEGORIES.has(c) || MAPPED_REPORT_TRADES.has(c)
+);
+
+export function canBuyReportAd(tradeCategory: string): boolean {
+  return REPORT_AD_TRADE_CATEGORIES.includes(tradeCategory);
+}
