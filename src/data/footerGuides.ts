@@ -33,23 +33,27 @@
 // -----------------------------------------------------------------------------------------------
 
 /**
- * Chosen 2026-09-21 from the 28-day page dimension. Each line records why, so the next person
- * editing this can tell a measured choice from a guess.
+ * Refreshed 2026-10-15 from the 28-day page dimension (owner request). "inbound" counts prose links
+ * from other published guides, not the footer or related-guides block.
+ *
+ * What the 2026-09-21 four did with the footer (28 days then -> 28 days to 2026-10-15): positions
+ * improved, impressions fell -- va-loan-require-termite-inspection 461 at 37.3 -> 128 at 19.3;
+ * check-building-permits-miami-dade-county-fl 377 at 30.8 -> 77 at 8.8; san-bernardino 493 at 8.7 ->
+ * 310 at 8.1; los-angeles 465 at 11.1 -> 304 at 9.0. VA termite, Miami-Dade and San Bernardino leave the
+ * footer; read all three on 2026-11-12 for any slide after losing ~70 inbound links each.
  */
 export const FOOTER_PRIORITY_SLUGS: readonly string[] = [
-  // 493 impressions, position 8.7, 5 inbound. The best-performing guide on the site and already on
-  // page one, so the distance left to run is short.
-  'check-building-permits-san-bernardino-county-ca',
-  // 465 impressions, position 11.1, 7 inbound. Sitting directly on the page-one boundary, which is
-  // where a position gained is worth the most.
+  // 950 impressions, 2 clicks, position 10.6, 3 inbound. The most-shown guide on the site, sitting on
+  // the page-one boundary, where a position gained is worth the most.
+  'open-ground-mean-electrical-inspection',
+  // 510 impressions, 12 clicks, position 5.5, 1 inbound. Already earns clicks on page one with a
+  // single prose link to its name: the biggest link gap among the top pages.
+  'splice-romex-knob-tube-wiring',
+  // 308 impressions, 1 click, position 6.0, 1 inbound. Page one, under-linked.
+  'negotiate-radon-mitigation-after-inspection',
+  // 304 impressions, 5 clicks, position 9.0, 1 inbound. Kept from the 2026-09-21 list: still on the
+  // page-one boundary with one prose link, and the only permit guide left in the footer.
   'check-building-permits-los-angeles-county-ca',
-  // 461 impressions, position 37.3, 5 inbound. Demand is proven and the position is poor, so this
-  // is the slot with the most headroom -- and the one most likely to show nothing, since a page at
-  // 37 does not reach page one on internal links alone.
-  'va-loan-require-termite-inspection',
-  // 377 impressions, position 30.8, 3 inbound. The worst link gap on the site: more impressions
-  // than all four previous footer guides combined, with three inbound links to its name.
-  'check-building-permits-miami-dade-county-fl',
 ];
 
 /**
