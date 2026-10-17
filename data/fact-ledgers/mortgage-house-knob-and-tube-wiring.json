@@ -1,0 +1,113 @@
+{
+  "_about": "New guide 2026-10-17 (write-article). Every number and rule in the body traces to an entry here.",
+  "slug": "mortgage-house-knob-and-tube-wiring",
+  "question": "Can you get a mortgage (FHA, VA, conventional) on a house with knob and tube wiring?",
+  "verdictConfirmed": "Usually yes: none of the three rulebooks names knob and tube; FHA and VA require visible frayed or exposed wiring to be repaired, FHA's appraiser also operates switches and outlets and may require an electrician, and Fannie Mae won't buy a loan on a house rated C6 (unsafe) until it is repaired to C5.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "HUD Handbook 4000.1 (FHA), transmittal issued August 13, 2025, pages last revised 08/13/2025, 1,871 pages: the word 'knob' and any 60-amp rule appear nowhere.",
+      "quote": "Transmittal: Handbook 4000.1 ... Issued: August 13, 2025 ... Last Revised: 08/13/2025 -- full-text search of all 1,871 pages: 'knob' 0 hits; '60 amp' 0 hits",
+      "url": "https://web.archive.org/web/20250930180250id_/https://www.hud.gov/sites/dfiles/OCHCO/documents/40001-hsgh-update16-5.pdf",
+      "readOn": "2026-10-17",
+      "method": "pdf"
+    },
+    {
+      "id": "f2",
+      "claim": "FHA appraiser, Electrical System: notify the lender if the system can't support typical functions; examine for visible frayed or exposed wires including garage and basement; report if amperage and panel size appear inadequate; operate a sample of switches, lighting fixtures and receptacles; not required to open the panel.",
+      "quote": "The Appraiser must notify the Mortgagee of the deficiency of MPR or MPS if the electrical system is not adequate to support the typical functions performed in the dwelling without disruption ... The Appraiser must examine the electrical system to ensure that there is no visible frayed wiring or exposed wires in the dwelling, including garage and basement areas, and report if the amperage and panel size appears inadequate for the Property. The Appraiser must operate a sample of switches, lighting fixtures, and receptacles ... The Appraiser is not required to insert any tool, probe or testing device inside the electrical panel",
+      "url": "HUD Handbook 4000.1 II.D.3, Utilities -- Mechanical Components, ii. Electrical System (PDF p. 854)",
+      "readOn": "2026-10-17",
+      "method": "pdf"
+    },
+    {
+      "id": "f3",
+      "claim": "FHA: if the appraiser can't tell whether the property meets MPR, an inspection by a qualified person may be required; listed conditions include faulty or defective electrical systems; appraisers may not recommend inspections only to limit liability. Mechanical systems that appear damaged or not functioning: condition the appraisal for repair or further inspection.",
+      "quote": "If the Appraiser cannot determine that a Property meets HUD's MPR or MPS, an inspection by a qualified individual or entity may be required. Conditions that require an inspection ... include ... faulty or defective mechanical systems (electrical, plumbing or heating/cooling) ... Appraisers may not recommend inspections only as a means of limiting liability. | If the systems appear to be damaged or do not appear to function properly, the Appraiser must condition the appraisal for repair or further inspection.",
+      "url": "HUD Handbook 4000.1 II.D.3 (PDF pp. 834, 853)",
+      "readOn": "2026-10-17",
+      "method": "pdf"
+    },
+    {
+      "id": "f4",
+      "claim": "FHA lender: when defective conditions exist and correction is not feasible, reject the property; approve only after all reported defects are corrected. MPR means safe, sound, and secure.",
+      "quote": "When defective conditions exist and correction is not feasible, the Mortgagee must reject the Property. The Mortgagee may only approve a Property after the Mortgagee confirms that all defects reported by the Appraiser have been corrected. | MPR refers to general requirements that all homes insured by FHA be safe, sound, and secure.",
+      "url": "HUD Handbook 4000.1 II.A.3.a and II.D.3 (PDF pp. 204, 832)",
+      "readOn": "2026-10-17",
+      "method": "pdf"
+    },
+    {
+      "id": "f5",
+      "claim": "FHA Limited 203(k): total rehabilitation costs may not exceed $75,000; eligible improvements include repairing/replacing electrical systems. Standard 203(k) consultant checklist item 28 Electrical: amp service must be upgraded to the greater of 100 amp or local code.",
+      "quote": "The total rehabilitation costs may not exceed $75,000. (1) Types of Improvements Eligible improvement types include ... repairing/replacing plumbing, heating, AC, and electrical systems | 28. Electrical ... Required Work Items: The amp service must be upgraded to the greater of 100 amp or local code.",
+      "url": "HUD Handbook 4000.1 II.A.8 (PDF pp. 426, 556)",
+      "readOn": "2026-10-17",
+      "method": "pdf"
+    },
+    {
+      "id": "f6",
+      "claim": "VA Lender's Handbook (VA Pamphlet 26-7) Chapter 12, Topic 14 Utilities (revised March 28, 2019): each living unit must have electricity for lighting and necessary equipment; the appraiser does not perform operational checks; any visible frayed or exposed electrical wires must be repaired. Topic 1: properties must meet MPRs before VA guarantees the loan.",
+      "quote": "a. Electricity Each living unit must have electricity for lighting and for necessary equipment. b. Appraiser Not Conducting Operational Checks Since the appraiser does not perform any operational checks of mechanical systems or appliances, the utilities are not required to be turned on ... c. Electrical Wires Any visible frayed or exposed electrical wires must be repaired. | Properties must meet these requirements prior to guaranty of the loan by VA. | Change Date March 28, 2019",
+      "url": "https://web.archive.org/web/20260206203259id_/https://www.benefits.va.gov/WARMS/docs/admin26/m26-07/M26_7_Ch12_MPRs_NEW.docx",
+      "readOn": "2026-10-17",
+      "method": "webfetch"
+    },
+    {
+      "id": "f7",
+      "claim": "VA Topic 44: after the Notice of Value, VA will consider waiving MPR repairs if the Veteran signs, the lender concurs and the property is habitable; should not waive MPRs that could result in safety issues.",
+      "quote": "VA will consider waiving MPR repairs if the following conditions are met: the request is signed by the Veteran, the lender concurs with the Veteran's request, and the property is habitable from the standpoint of safety, structural soundness, and sanitation. These requests should not allow for the Veteran to waive MPRs that could result in safety issues with the home.",
+      "url": "VA Pamphlet 26-7 Chapter 12, Topic 44 (same archived file)",
+      "readOn": "2026-10-17",
+      "method": "webfetch"
+    },
+    {
+      "id": "f8",
+      "claim": "VA Change 46 (transmittal 02/27/26, effective for appraisals ordered after May 1st, 2026) removes or condenses items in Topics 1, 23, 32 and 34 (radon); Topic 14 is untouched.",
+      "quote": "This change will become effective for all VA appraisals ordered after May 1st, 2026. Changes 1. Topic 1, Subtopics g and i ... 2. Topic 23, Subtopic b, Non-Vented Heater ... 3. Topic 32, Subtopic a ... 4. Topic 32, Subtopic b ... 5. Topic 34, Radon Gas, has been removed in its entirety.",
+      "url": "https://www.tenaco.com/wp-content/uploads/2026/03/VA-Pamphlet-26-7-Revised-Change-46-03-09-26.pdf (copy of the VA transmittal)",
+      "readOn": "2026-10-17",
+      "method": "pdf"
+    },
+    {
+      "id": "f9",
+      "claim": "Fannie Mae Selling Guide B4-1.3-06 (06/04/2025): loans on C6 properties are not eligible for sale; deficiencies must be repaired to at least C5 before sale; 'as is' allowed when conditions are minor and don't affect safety, soundness or structural integrity.",
+      "quote": "B4-1.3-06, Property Condition and Quality of Construction of the Improvements (06/04/2025) ... Loans secured by properties with a condition rating of C6 are not eligible for sale to Fannie Mae ... repaired with a resulting minimum condition rating of C5 prior to sale of the loan ... are minor and do not affect the safety, soundness, or structural integrity of the property",
+      "url": "https://selling-guide.fanniemae.com/sel/b4-1.3-06/property-condition-and-quality-construction-improvements",
+      "readOn": "2026-10-17",
+      "method": "webfetch"
+    },
+    {
+      "id": "f10",
+      "claim": "Our report engine flags knob and tube for houses built 1800 through 1955; electrician evaluation $150 – $350; partial to whole-home rewire $8,000 – $30,000+.",
+      "quote": "id: 'knob_and_tube', minYear: 1800, maxYear: 1955 ... Dedicated electrician evaluation $150 – $350 ... typicalRepairCost: 'Partial to whole-home rewire $8,000 – $30,000+'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES knob_and_tube)",
+      "readOn": "2026-10-17",
+      "method": "engine"
+    },
+    {
+      "id": "f11",
+      "claim": "Census ACS 2020-2024 B25034, 50 states + DC, 3,144 counties: 143.8 million homes; 23.2 million (16.2%) built before 1950 -- 16.9 million before 1940 and 6.4 million in the 1940s.",
+      "quote": "total 143775355; built1939OrEarlier 16880456 (11.7%); built1940to1949 6354040 (4.4%); pre-1950 23234496 (16.2%)",
+      "url": "docs/data/oldest-housing-raw.json (computed 2026-10-17)",
+      "readOn": "2026-10-17",
+      "method": "engine"
+    },
+    {
+      "id": "f12",
+      "claim": "Bing searches that showed this site (capture 2026-10-17-bing-queries): mortgage with knob and tube; do lenders care; are banks refusing mortgages; will FHA finance a home with knob and tube; FHA MPR electrical wiring requirements.",
+      "quote": "can you get a mortgage wioth knob and tube electrical in teh houde; do lenders care if there's knob and tube wiring; are banks refusing mortgages for homes with knob and tube wiring; will fha finance a home with knob and tube wiring; fha mpr safety hazards electrical wiring requirements",
+      "url": "data/keywords/2026-10-17-bing-queries.json",
+      "readOn": "2026-10-17",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    { "claim": "FHA accepts knob and tube with at least 60 amps", "why": "repeated on brokerage sites; the word 'knob' and any 60-amp rule appear nowhere in the 1,871-page handbook -- stated on the page as not found" },
+    { "claim": "Lenders require a bound insurance policy before funding", "why": "true in practice but not read at a primary source this session; left to guide #7, which covers insurance" },
+    { "claim": "Freddie Mac condition rules", "why": "not read" }
+  ],
+  "blockedSources": [
+    "hud.gov (Cloudflare bot check, 2026-10-17) -- read HUD's own PDF from the Internet Archive instead",
+    "benefits.va.gov / KnowVA (WARMS links redirect to KnowVA, which returned no Chapter 12) -- read VA's own file from the Internet Archive"
+  ]
+}
