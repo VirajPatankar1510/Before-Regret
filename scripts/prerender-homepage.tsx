@@ -18,6 +18,7 @@ import { CountyMapSection } from '../src/components/home/CountyMapSection';
 import { ResearchStatsSection } from '../src/components/home/ResearchStatsSection';
 import { BookPromoCard } from '../src/components/BookPromo';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
+import { pickFooterGuides } from '../src/data/footerGuides.js';
 import { isDbConfigured } from '../src/server/db.js';
 import { loadHomepageData } from '../src/server/homepageApi.js';
 import { HomeData, buildGuideClusters, pickResearchPages } from '../src/utils/homeContent.js';
@@ -127,9 +128,7 @@ function HomeStaticBody({ data }: { data: HomeData }) {
           at. See StaticFooterLinks.tsx for the full story -- this was a known, considered gap in
           the code ("no SEO cost") that real index-coverage data proved wrong. */}
       <StaticFooterLinks
-        guides={data.articles
-          .filter((a) => (a.articleType ?? 'guide') === 'guide')
-          .slice(0, 4)
+        guides={pickFooterGuides(data.articles)
           .map((a): FooterGuideSummary => ({ slug: a.slug, title: a.title }))}
       />
     </div>

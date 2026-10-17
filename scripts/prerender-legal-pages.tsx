@@ -11,6 +11,7 @@ import { RefundPolicy } from '../src/components/RefundPolicy';
 import { Disclaimer } from '../src/components/Disclaimer';
 import { Accessibility } from '../src/components/Accessibility';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
+import { pickFooterGuides } from '../src/data/footerGuides.js';
 import { withDb, isDbConfigured } from '../src/server/db.js';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 import type { PrerenderedRouteKey } from '../src/routeChunks.js';
@@ -338,11 +339,14 @@ async function run() {
   // /accessibility are indexable and were linking nowhere onward, and even the noindex four are
   // real pages a visitor (or an AI answer engine, which reads noindex pages fine) can land on and
   // get stuck with no path to the rest of the site.
-  const footerGuides: FooterGuideSummary[] = isDbConfigured()
+  let footerGuides: FooterGuideSummary[] = isDbConfigured()
     ? ((await withDb((sql) => sql`
-        SELECT slug, title FROM articles WHERE status = 'published' AND article_type = 'guide' ORDER BY published_at DESC LIMIT 4
+        SELECT slug, title FROM articles WHERE status = 'published' AND article_type = 'guide' ORDER BY published_at DESC
       `)) as unknown as FooterGuideSummary[])
     : [];
+  // The chosen four (src/data/footerGuides.ts), not the four newest -- the same pick as the guide pages and
+  // the hydrated Footer, so served and hydrated HTML agree (fixed 2026-10-16; this took the newest four).
+  footerGuides = pickFooterGuides(footerGuides);
 
   for (const page of PAGES) {
     const bodyHtml = renderToStaticMarkup(

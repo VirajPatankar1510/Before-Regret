@@ -29,6 +29,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { INDEXABLE_ROBOTS } from '../src/utils/headSeo.js';
 import { AdvertiseCompare, ADVERTISE_FAQ_ITEMS } from '../src/components/AdvertiseCompare';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
+import { pickFooterGuides } from '../src/data/footerGuides.js';
 import { withDb, isDbConfigured } from '../src/server/db.js';
 import { modulePreloadTags } from './lib/routeChunkPreload.js';
 
@@ -87,11 +88,14 @@ async function run() {
   // Same evergreen-guides selection every other prerender script uses for StaticFooterLinks, so a
   // visitor (or an AI answer engine reading the raw HTML) who lands here has a path to the rest of
   // the site rather than a dead end.
-  const footerGuides: FooterGuideSummary[] = isDbConfigured()
+  let footerGuides: FooterGuideSummary[] = isDbConfigured()
     ? ((await withDb((sql) => sql`
-        SELECT slug, title FROM articles WHERE status = 'published' AND article_type = 'guide' ORDER BY published_at DESC LIMIT 4
+        SELECT slug, title FROM articles WHERE status = 'published' AND article_type = 'guide' ORDER BY published_at DESC
       `)) as unknown as FooterGuideSummary[])
     : [];
+  // The chosen four (src/data/footerGuides.ts), not the four newest -- the same pick as the guide pages and
+  // the hydrated Footer, so served and hydrated HTML agree (fixed 2026-10-16; this took the newest four).
+  footerGuides = pickFooterGuides(footerGuides);
 
   const bodyHtml = renderToStaticMarkup(
     React.createElement(
