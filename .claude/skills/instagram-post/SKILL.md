@@ -1,6 +1,6 @@
 ---
 name: instagram-post
-description: Turn BeforeRegret's guides, research and diagrams into Instagram posts that a US homebuyer would actually send to their spouse -- human consequence first, fact second, every number traced back to a real source before it is written. Use whenever the user wants an Instagram post, reel, carousel, caption, hook, hashtags, image prompt, content calendar or series idea for @beforeregret.official, asks what to post, asks how to grow the account, or wants an article or research study turned into social content. Also use before posting anything to the account, including reusing an existing diagram or research chart. Do NOT use for LinkedIn posts, for writing guide articles (use write-guide), or for FAQs (use article-faqs).
+description: Turn BeforeRegret's guides, research and diagrams into Instagram posts that a US homebuyer would actually send to their spouse -- human consequence first, fact second, every number traced back to a real source before it is written. Use whenever the user wants an Instagram post, reel, carousel, caption, hook, hashtags, image prompt, content calendar or series idea for @check_before_regret, asks what to post, asks how to grow the account, or wants an article or research study turned into social content. Also use before posting anything to the account, including reusing an existing diagram or research chart. Do NOT use for LinkedIn posts, for writing guide articles (use write-guide), or for FAQs (use article-faqs).
 ---
 
 # Instagram for Before Regret
@@ -17,7 +17,7 @@ Optimise for: **qualified attention → saves → shares → profile visits → 
 
 ## Where the account actually is
 
-`@beforeregret.official` — **10.7K followers, zero posts** (as of 2026-09-20). Display name "Before Regret", website field points at beforeregret.com, linked to the Facebook page through Meta, and claimed in `sameAs` in `index.html`.
+`@check_before_regret` (renamed from @beforeregret.official on 2026-10-18) — **10.7K followers, zero posts** (as of 2026-09-20). Display name "Before Regret", website field points at beforeregret.com, linked to the Facebook page through Meta, and claimed in `sameAs` in `index.html`.
 
 That cold-start shapes the first month of work. An empty grid under a five-figure follower count reads as bought or abandoned, which is worse than no profile — so **early posts exist to make the account look real**, not to go viral. Ship a coherent first nine before optimising anything.
 
