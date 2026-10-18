@@ -20,6 +20,8 @@ interface NavbarProps {
 // in the primary nav.
 const MOBILE_NAV_LINKS: { href: string; label: string }[] = [
   { href: '/guides/', label: 'Guides' },
+  // Find a Pro (2026-10-18, owner): the free directory of local pros, for buyers.
+  { href: '/pros/', label: 'Find a Pro' },
   { href: '/about/', label: 'About & Methodology' },
   // Quiet door for trades (2026-10-06, owner): a business looking to advertise finds it here and in
   // the footer, and a buyer is never pitched -- no homepage banner, no "your ad here" placeholders.
@@ -125,6 +127,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 Guides
               </button>
+            )}
+            {onNavigate && (
+              // Find a Pro (2026-10-18): buyer-facing directory, a real href so it is crawlable.
+              <a
+                href="/pros/"
+                onClick={(e) => {
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                  e.preventDefault();
+                  onNavigate('/pros/');
+                }}
+                className="hidden sm:inline px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-blue-700 rounded-lg transition-colors cursor-pointer"
+              >
+                Find a Pro
+              </a>
             )}
             {onNavigate && (
               // md and up only: at sm the bar already carries Guides, the search button and Free Report.

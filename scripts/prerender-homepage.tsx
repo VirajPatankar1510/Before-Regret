@@ -10,6 +10,7 @@ import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
 import { HOMEPAGE_FAQS, HOMEPAGE_DEFINITIONS, HomepageDefinitions } from '../src/components/home/FaqSection';
 import { GuideCardsSection } from '../src/components/home/GuideCardsSection';
 import { WalkthroughToolSection } from '../src/components/home/WalkthroughToolSection';
+import { FindAProSection } from '../src/components/home/FindAProSection';
 import { HeroPanel } from '../src/components/home/HeroPanel';
 import { TrustStrip } from '../src/components/home/TrustStrip';
 import { HouseXraySection } from '../src/components/home/HouseXraySection';
@@ -85,6 +86,9 @@ function HomeStaticBody({ data }: { data: HomeData }) {
           county link renders as a plain crawlable <a href> -- the point of prerendering this: 100
           county pages get a direct inbound link from the domain's strongest page instead of only a
           third-hop path through the footer's /counties/ hub link. See CountyLinksSection.tsx. */}
+
+      {/* Find a Pro door (2026-10-18) -- same position in Hero.tsx and prerender-homepage.tsx. */}
+      <FindAProSection />
 
       {/* Same position as src/components/Hero.tsx: after the guide library, before the FAQ.
           Below the hero search and the pricing section on purpose -- the homepage's job is turning

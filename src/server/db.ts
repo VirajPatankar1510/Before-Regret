@@ -627,6 +627,36 @@ export async function ensureArticlesSchema(): Promise<void> {
     CREATE UNIQUE INDEX IF NOT EXISTS idx_cta_clicks_unique ON cta_clicks(page_path, cta, click_day, visitor_hash)
   `;
 
+  // Find a Pro: free business listings (src/server/proListingsApi.ts, 2026-10-18). Created by the
+  // business itself behind a verified Clerk sign-in, live as soon as it is saved. Shown ONLY in the
+  // /pros/ directory and on the listing's own page -- never in property reports, which carry paid
+  // Report Ads only (owner decision: free listings in reports would degrade paid vendors).
+  // zip_codes_json is a JSON array of the ZIPs the business serves; status 'removed' hides a listing.
+  await sql`
+    CREATE TABLE IF NOT EXISTS pro_listings (
+      id SERIAL PRIMARY KEY,
+      slug TEXT NOT NULL UNIQUE,
+      clerk_user_id TEXT NOT NULL,
+      contact_email TEXT NOT NULL,
+      business_name TEXT NOT NULL,
+      trade_category TEXT NOT NULL,
+      zip_codes_json TEXT NOT NULL,
+      city TEXT,
+      state TEXT,
+      phone TEXT NOT NULL,
+      website TEXT,
+      licence_number TEXT,
+      description TEXT,
+      status TEXT NOT NULL DEFAULT 'active',
+      terms_version TEXT NOT NULL,
+      terms_accepted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_pro_listings_user ON pro_listings(clerk_user_id)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_pro_listings_status_trade ON pro_listings(status, trade_category)`;
+
   // Advertiser-supplied licence / registration / certification number, added to all four ad tables
   // at once so an order and the purchase it becomes carry the same value. See
   // requiresLicenceNumber() in src/data/sponsoredVendors.ts for which trade categories must supply

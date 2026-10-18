@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { withDb, isDbConfigured } from '../server/db.js';
+import { fetchIndexableListings } from '../server/proListingsApi.js';
 
 /** First publication of /research/permit-pulse/, and the floor for its sitemap lastmod. */
 const PERMIT_PULSE_PUBLISHED = '2026-09-18';
@@ -91,6 +92,11 @@ export async function generateSitemapIndexXml(): Promise<string> {
   const sitemaps = [
     { loc: `${BASE_URL}/sitemaps/sitemap-pages.xml`, lastmod: today },
     { loc: `${BASE_URL}/sitemaps/sitemap-guides.xml`, lastmod: today },
+    // Find a Pro listings (2026-10-18). Always linked, even when empty (an empty urlset is valid), and
+    // DYNAMIC: scripts/generate-sitemap.ts deliberately never writes a static copy (DYNAMIC_SITEMAPS), so
+    // server.ts's /sitemaps/:sitemapName route answers it from the database and a new listing is in the
+    // sitemap the moment it is complete, not at the next deploy.
+    { loc: `${BASE_URL}/sitemaps/sitemap-pros.xml`, lastmod: today },
   ];
 
   if ((await countRecentNewsArticles()) > 0) {
@@ -227,6 +233,18 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       // /sample-report/ was removed 2026-10-05 (owner: reports are free, so a sample is no longer
       // needed). It 301s to the homepage in vercel.json and is no longer listed here.
     ];
+  } else if (cleanName === 'sitemap-pros') {
+    // Only COMPLETE listings (description of 80+ characters) -- the same rule as the page's robots tag
+    // in proListingsApi.ts, so the sitemap never lists a page that says noindex.
+    if (isDbConfigured()) {
+      try {
+        for (const l of await fetchIndexableListings()) {
+          entries.push({ loc: `${BASE_URL}/pros/${l.slug}/`, lastmod: l.lastmod, changefreq: 'monthly', priority: '0.5' });
+        }
+      } catch (err) {
+        console.error('[sitemap] failed to load Find a Pro listings:', err);
+      }
+    }
   } else if (cleanName === 'sitemap-guides' && isDbConfigured()) {
     try {
       // lastmod is GREATEST(published_at, updated_at), not published_at alone. It was published_at

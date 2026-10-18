@@ -47,6 +47,10 @@ const GuideAdsCheckoutSuccess = lazy(() => import('./components/GuideAdsCheckout
 const ZipAdsCheckoutSuccess = lazy(() => import('./components/ZipAdsCheckoutSuccess').then((m) => ({ default: m.ZipAdsCheckoutSuccess })));
 const AdvertiseCompare = lazy(() => import('./components/AdvertiseCompare').then((m) => ({ default: m.AdvertiseCompare })));
 const MyAdsPanel = lazy(() => import('./components/MyAdsPanel').then((m) => ({ default: m.MyAdsPanel })));
+// Find a Pro (2026-10-18): free business directory. Client-rendered and noindex for now.
+const FindAProHub = lazy(() => import('./components/FindAPro').then((m) => ({ default: m.FindAProHub })));
+const ProProfile = lazy(() => import('./components/FindAPro').then((m) => ({ default: m.ProProfile })));
+const ProListingJoin = lazy(() => import('./components/ProListingJoin').then((m) => ({ default: m.ProListingJoin })));
 const SeoAdminPanel = lazy(() => import('./components/seo/SeoAdminPanel').then((m) => ({ default: m.SeoAdminPanel })));
 const AdminGate = lazy(() => import('./components/admin/AdminGate').then((m) => ({ default: m.AdminGate })));
 const PaymentSuccess = lazy(() => import('./components/PaymentSuccess').then((m) => ({ default: m.PaymentSuccess })));
@@ -154,8 +158,9 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'walkthrough' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'reportUnavailable' | 'none';
+    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'pros' | 'proJoin' | 'proProfile' | 'walkthrough' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'reportUnavailable' | 'none';
     guideSlug?: string;
+    proSlug?: string;
     // 'reportUnavailable' only. A report permalink is the link people actually SHARE, so the two
     // reasons it can fail need different words: a generic "404 — Page Not Found" tells someone who
     // was sent a link that the site is broken, and tells someone hitting a transient database blip
@@ -199,6 +204,21 @@ export function App() {
       setPseoRoute({ type: 'myAds' });
       setCurrentStep('PSEO');
       return true;
+    }
+
+    // Find a Pro: /pros/ (directory), /pros/join/ (free listing), /pros/<slug>/ (a business's page).
+    if (path === '/pros/') {
+      setPseoRoute({ type: 'pros' });
+      setCurrentStep('PSEO');
+      return true;
+    }
+    if (path.startsWith('/pros/')) {
+      const parts = path.split('/').filter(Boolean);
+      if (parts.length === 2) {
+        setPseoRoute(parts[1] === 'join' ? { type: 'proJoin' } : { type: 'proProfile', proSlug: parts[1] });
+        setCurrentStep('PSEO');
+        return true;
+      }
     }
 
     if (path === '/topic-ads/success/' || path.startsWith('/topic-ads/success')) {
@@ -758,6 +778,23 @@ export function App() {
         canonicalUrl: 'https://www.beforeregret.com/topic-ads/success/',
         robotsDirective: 'noindex, nofollow'
       });
+    } else if (pseoRoute.type === 'proProfile') {
+      // Deliberately empty: a listing page sets its own head (src/components/FindAPro.tsx ProProfile),
+      // because only it knows whether the listing is complete and therefore open to Google. Setting
+      // noindex here would override the indexable tags server.ts wrote into the page.
+    } else if (pseoRoute.type === 'pros' || pseoRoute.type === 'proJoin') {
+      // The directory and the sign-up page stay noindex while Find a Pro is new -- see
+      // scripts/prerender-noindex-routes.tsx, which writes the matching raw-HTML shells.
+      const join = pseoRoute.type === 'proJoin';
+      const profile = false;
+      applyHeadSeo({
+        title: join ? 'List Your Business Free | Find a Pro | Before Regret' : 'Find a Pro | Before Regret',
+        description: join
+          ? 'Get your business listed free in Find a Pro, where home buyers look for local pros.'
+          : 'Find local home inspectors, contractors and specialists who serve the area you are buying in.',
+        canonicalUrl: `https://www.beforeregret.com/pros/${join ? 'join/' : profile ? `${pseoRoute.proSlug}/` : ''}`,
+        robotsDirective: 'noindex, nofollow'
+      });
     } else if (pseoRoute.type === 'myAds') {
       applyHeadSeo({
         title: 'My Placements | Before Regret',
@@ -1041,6 +1078,15 @@ export function App() {
             )}
             {pseoRoute.type === 'myAds' && (
               <MyAdsPanel onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'pros' && (
+              <FindAProHub onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'proJoin' && (
+              <ProListingJoin onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'proProfile' && pseoRoute.proSlug && (
+              <ProProfile slug={pseoRoute.proSlug} onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'admin' && (
               <AdminGate>

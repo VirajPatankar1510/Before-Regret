@@ -190,7 +190,9 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                     Sunlight by Room
                   </a>
                 </li>
+                <li><ContentLink href="/pros/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">Find a Pro</ContentLink></li>
                 <li><ContentLink href="/advertise/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">Advertise With Us</ContentLink></li>
+                <li><ContentLink href="/pros/join/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5">List Your Business Free</ContentLink></li>
                 {/* Vendors' sign-in door since the navbar's button stopped opening sign-in (2026-10-05). */}
                 <li><ContentLink href="/my-ads/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5">Manage My Ads</ContentLink></li>
                 <li><ContentLink href="/support/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5">Customer Support</ContentLink></li>

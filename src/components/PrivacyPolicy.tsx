@@ -36,7 +36,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               on this site, and §7 gained a stated 30-day retention period for the IP rate-limit
               records. No PRIVACY_VERSION constant to match: unlike the Terms, nothing records a
               per-user acceptance of this document, so the date is the whole of the provenance. */}
-          <span className="text-xs font-mono text-slate-500">Effective Date: October 14, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Effective Date: October 18, 2026</span>
         </div>
 
         {/* Content Pane */}
@@ -144,6 +144,9 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               <ul className="list-disc pl-5 space-y-1.5 text-xs text-slate-600">
                 <li>
                   <strong>Vendor Business Information:</strong> For vendors with an active placement, business contact details (company name, trade category, phone number, and logo) appear publicly within sponsored placements ("Need help verifying this?" sections) on free property reports in the vendor's selected zip codes. Vendor internal billing records are never disclosed publicly.
+                </li>
+                <li>
+                  <strong>Find a Pro Listings:</strong> A business that lists itself free in Find a Pro publishes, by its own choice, its business name, trade category, the zip codes it serves, phone number, website, licence number and description, in the Find a Pro directory and on the listing's own page. The account email used to sign in is never shown publicly. A business can remove its listing at any time from the Find a Pro sign-up page.
                 </li>
                 <li>
                   <strong>Consumer Data Privacy:</strong> Consumer search queries, IP addresses, and personal inquiry emails are <strong>NEVER sold, rented, monetized, or shared</strong> with third-party advertisers, market brokers, or commercial vendors.

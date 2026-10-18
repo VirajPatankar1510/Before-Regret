@@ -104,6 +104,22 @@ const ROUTES: NoindexRoute[] = [
     description: 'Manage your active Before Regret ad placements.',
     canonical: 'https://www.beforeregret.com/my-ads/',
   },
+  // Find a Pro (2026-10-18). Noindex while it is new: a directory with few listings would be thin
+  // pages to Google, and auto-generated area pages are the pattern behind the 2026-09-02 prune. The
+  // /pros/ shell is also what server.ts sends for every /pros/<slug>/ listing page. Mirrors the
+  // 'pros' / 'proJoin' / 'proProfile' branches in src/App.tsx.
+  {
+    dir: 'pros',
+    title: 'Find a Pro | Before Regret',
+    description: 'Find local home inspectors, contractors and specialists who serve the area you are buying in.',
+    canonical: 'https://www.beforeregret.com/pros/',
+  },
+  {
+    dir: 'pros/join',
+    title: 'List Your Business Free | Find a Pro | Before Regret',
+    description: 'Get your business listed free in Find a Pro, where home buyers look for local pros.',
+    canonical: 'https://www.beforeregret.com/pros/join/',
+  },
 ];
 
 function escapeHtmlAttr(value: string): string {

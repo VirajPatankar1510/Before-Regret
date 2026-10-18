@@ -28,7 +28,7 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
             <span>Return to Home</span>
           </button>
 
-          <span className="text-xs font-mono text-slate-500">Last Revised: October 14, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Last Revised: October 18, 2026</span>
         </div>
 
         {/* Content Pane */}
@@ -165,6 +165,9 @@ export const TermsConditions: React.FC<TermsConditionsProps> = ({ onBackToHome, 
 
                 <p>
                   <strong>4.5 No Lead Volume or Outcome Guarantee:</strong> Sponsored placements are promotional advertisements clearly labeled "Sponsored". Atmostellar makes <strong>no guarantee or representation</strong> regarding specific impression volumes, click-through rates, phone call volumes, lead generation numbers, client conversions, or revenue outcomes resulting from a sponsored placement.
+                </p>
+                <p>
+                  <strong>4.6 Free Find a Pro Listings:</strong> A business may list itself free of charge in the Find a Pro directory after signing in with a verified email address. A free listing shows the business name, trade category, the zip codes it serves, phone number, optional website, licence number and optional description, appears only in the Find a Pro directory and on the listing's own page, and is <strong>never shown inside property reports</strong>, which carry paid placements only. The warranties in 4.4 apply to free listings in full: the business must hold any licence and insurance its trade requires, and the licence number it enters is published exactly as entered and is <strong>not verified by Atmostellar</strong>. Atmostellar may edit the presentation of, decline, suspend or remove any free listing at any time, with or without notice, including for inaccurate details, an invalid licence number, misleading content or complaints. A free listing creates no right to placement, ranking position or traffic, and 4.5 applies to it as it does to sponsored placements.
                 </p>
               </div>
             </section>

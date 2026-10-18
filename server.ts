@@ -29,6 +29,7 @@ import { registerContentReportRoutes } from "./src/server/contentReportsApi.js";
 import { registerGuideAdsRoutes } from "./src/server/guideAdsApi.js";
 import { registerZipAdsRoutes, fetchActiveZipVendors } from "./src/server/zipAdsApi.js";
 import { registerMyAdsRoutes } from "./src/server/myAdsApi.js";
+import { registerProListingsRoutes, fetchListingForPage, renderListingShell } from "./src/server/proListingsApi.js";
 import { registerAdClickRoutes } from "./src/server/adClicksApi.js";
 import { registerCtaClickRoutes } from "./src/server/ctaClicksApi.js";
 import { sendReportEmail, isReportEmailConfigured } from "./src/server/reportEmailService.js";
@@ -74,6 +75,7 @@ const KNOWN_STATIC_ROUTE_PREFIXES = [
   '/accessibility',
   '/payment-success', '/payment-cancelled',
   '/admin/seo',
+  '/pros',
   '/guides/', '/counties/',
   '/insights/', '/report/', '/reports/',
 ];
@@ -289,6 +291,11 @@ export async function createApp() {
   // purchase, expiry, contact-detail edits, and (since click tracking landed) how many readers
   // actually acted on the placement. See src/server/myAdsApi.ts.
   registerMyAdsRoutes(app);
+
+  // --- Find a Pro: free business listings (src/server/proListingsApi.ts, 2026-10-18) -----------
+  // Directory and self-listing only. Never read by report generation: reports carry paid Report
+  // Ads only (owner decision -- free listings in reports would degrade paid vendors).
+  registerProListingsRoutes(app);
 
   // --- Vendor ad click measurement ------------------------------------------------------------
   // /out/:adKind/:purchaseId forwards a reader to the advertiser's site and counts the click on
@@ -1345,6 +1352,26 @@ export async function createApp() {
       } catch (err) {
         console.error('[guides] slug-existence check failed, serving 200:', err);
         sendShellWithStatus(res, 200);
+      }
+    });
+
+    // Find a Pro listing pages (2026-10-18). Built from the /pros/ shell (scripts/prerender-noindex-routes.tsx)
+    // with the listing's own title, description, canonical and content written in by renderListingShell, so a
+    // crawler reads the business, not the homepage. Robots follows the owner's rule: index a COMPLETE listing
+    // (description of 80+ characters), noindex the rest. 404 for a slug that isn't live, same soft-404
+    // reasoning as guides; fails open with the plain shell on a database error.
+    app.get(['/pros/:slug', '/pros/:slug/'], async (req, res) => {
+      const shellFile = path.join(distPath, req.params.slug === 'join' ? 'pros/join' : 'pros', 'index.html');
+      if (!fs.existsSync(shellFile)) return sendShellWithStatus(res, 200);
+      const shell = fs.readFileSync(shellFile, 'utf8');
+      if (req.params.slug === 'join' || !isDbConfigured()) return res.status(200).send(shell);
+      try {
+        const listing = await fetchListingForPage(req.params.slug);
+        if (!listing) return res.status(404).send(shell);
+        return res.status(200).send(renderListingShell(shell, listing));
+      } catch (err) {
+        console.error('[pros] listing page render failed, serving the plain shell:', err);
+        return res.status(200).send(shell);
       }
     });
 

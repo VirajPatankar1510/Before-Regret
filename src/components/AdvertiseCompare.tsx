@@ -200,6 +200,29 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
         </div>
       </section>
 
+      {/* Find a Pro free listing (2026-10-18): the no-cost first step, before the two paid options. Free
+          listings show only in the /pros/ directory, never in reports -- reports are the paid product. */}
+      <section className="px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14">
+        <div className="max-w-6xl mx-auto rounded-3xl bg-white border border-home-linen p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div>
+            <Eyebrow tone="text-home-moss">Start free</Eyebrow>
+            <h2 className="mt-2 font-serif text-2xl sm:text-3xl font-semibold tracking-tight">Get listed free in Find a Pro</h2>
+            <p className="mt-2 text-sm sm:text-base text-slate-700 leading-relaxed max-w-2xl">
+              Your business name, phone, website and the ZIP codes you serve, in the directory buyers search for local
+              pros, with a page of your own. Upgrade to a featured placement below whenever you want to be seen first.
+            </p>
+          </div>
+          <ContentLink
+            href="/pros/join/"
+            onNavigate={onNavigate}
+            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-home-navy hover:opacity-90 text-white text-sm font-bold rounded-xl shrink-0"
+          >
+            <span>Get listed free</span>
+            <ArrowRight className="w-4 h-4" aria-hidden="true" />
+          </ContentLink>
+        </div>
+      </section>
+
       {/* Report Ads -- the local product. */}
       <section id="report-ads" className="scroll-mt-24 py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">

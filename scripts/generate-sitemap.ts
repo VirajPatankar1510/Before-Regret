@@ -65,6 +65,10 @@ async function runSitemapGenerator() {
   }
 
   const childNames = Array.from(indexXml.matchAll(/\/sitemaps\/([\w-]+\.xml)/g)).map(m => m[1]);
+  // Children served live by server.ts from the database and never written to disk: a static copy would
+  // freeze at build time (Vercel serves a static file before the server route). Any stale copy on disk is
+  // removed by the cleanup loop below, because these are excluded from the write list.
+  const DYNAMIC_SITEMAPS = new Set(['sitemap-pros.xml']);
 
   // Generate and validate EVERYTHING before touching disk. Deliberately not interleaved with the
   // writes: a guard that fires halfway through leaves a directory that is part new and part old,
@@ -72,6 +76,7 @@ async function runSitemapGenerator() {
   // been generated and checked.
   const generated: Array<{ name: string; xml: string }> = [];
   for (const name of childNames) {
+    if (DYNAMIC_SITEMAPS.has(name)) continue;
     const xml = await generateChildSitemapXml(name);
     if (xml === null) continue; // legitimately absent (sitemap-news outside its freshness window)
     generated.push({ name, xml });
@@ -104,7 +109,7 @@ async function runSitemapGenerator() {
   // referencing it. Safe to do now: the preflight proved the database is reachable, so an omitted
   // child reflects real data rather than a failed query.
   for (const existing of fs.existsSync(sitemapsDir) ? fs.readdirSync(sitemapsDir) : []) {
-    if (!childNames.includes(existing)) {
+    if (!childNames.includes(existing) || DYNAMIC_SITEMAPS.has(existing)) {
       fs.unlinkSync(path.join(sitemapsDir, existing));
     }
   }

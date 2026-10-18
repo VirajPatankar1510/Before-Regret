@@ -9,6 +9,7 @@ import { FaqSection } from './home/FaqSection';
 import { ClosingCtaSection } from './home/ClosingCtaSection';
 import { GuideCardsSection } from './home/GuideCardsSection';
 import { WalkthroughToolSection } from './home/WalkthroughToolSection';
+import { FindAProSection } from './home/FindAProSection';
 import { HeroPanel } from './home/HeroPanel';
 import { TrustStrip } from './home/TrustStrip';
 import { HouseXraySection } from './home/HouseXraySection';
@@ -121,6 +122,9 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
           internal-linking fix for county pages stuck in "Discovered - not indexed" (see
           CountyLinksSection.tsx). Sits right after the guide library, before the FAQ, mirroring the
           exact position in scripts/prerender-homepage.tsx so the static and client renders match. */}
+
+      {/* Find a Pro door (2026-10-18) -- same position in Hero.tsx and prerender-homepage.tsx. */}
+      <FindAProSection />
 
       {/* 5c. OUR BOOK -- same position as scripts/prerender-homepage.tsx so the static and
           client renders match. Below the hero search and pricing on purpose: the homepage's job

@@ -55,4 +55,7 @@
 // version in effect then). A substantive change to what a consumer is agreeing to, hence a new string.
 // 2026-10-14: 4.4 names Interior Designer as a second licence-exempt category beside Chimney Sweep
 // (owner decision). It changes which vendors must supply a number, so it gets its own string.
-export const TERMS_VERSION = '2026-10-14.1';
+// 2026-10-18: added 4.6 (free Find a Pro listings: who may list, what is published, never shown in
+// reports, 4.4 warranties apply, removal at Atmostellar's discretion). New obligations for a new kind of
+// vendor, hence a new string.
+export const TERMS_VERSION = '2026-10-18.1';
