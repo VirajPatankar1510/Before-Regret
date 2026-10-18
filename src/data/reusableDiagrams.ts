@@ -34,6 +34,7 @@ export const REUSABLE_DIAGRAMS: ReadonlySet<string> = new Set([
   '/images/polybutylene-vs-pex-pipe-identification.webp',
   '/images/reverse-polarity-vs-correct-receptacle-wiring.webp',
   '/images/romex-spliced-to-knob-and-tube-junction-box.webp',
+  '/images/sewer-scope-four-findings-cutaway.webp',
   '/images/shared-well-and-y-shaped-driveway-responsibility.webp',
   '/images/single-strand-aluminum-vs-copper-wiring-identification.webp',
 ]);

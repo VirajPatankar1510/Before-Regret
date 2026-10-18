@@ -1,0 +1,111 @@
+{
+  "_about": "New guide 2026-10-18 (write-article, owner's exact title). Every number and rule in the body traces to an entry here. WERF = Sterling et al., Methods for Cost-Effective Rehabilitation of Private Lateral Sewers (Water Environment Research Foundation, 2006), hosted by MWRD of Greater Chicago.",
+  "slug": "sewer-scope-before-buying-house",
+  "question": "What can a sewer scope show a buyer, what can't it establish, and what should follow each finding?",
+  "verdictConfirmed": "A camera shows roots, cracks and broken sections, sags and scale it can see inside the pipe; it can miss fine cracks and inactive leaks, needs an access point and usually cleaning, and each finding needs a different follow-up.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Our engine flags homes built through 1973 for a sewer scope; scope $300 – $500; spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+; usually a separate service not in a general inspection.",
+      "quote": "id: 'sewer_cast_iron', minYear: 1800, maxYear: 1973 ... costToCheck: '$300 – $500 for a camera scope' ... typicalRepairCost: 'Spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+' ... This is usually a separate service — most general home inspections do not include it unless you ask.",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES sewer_cast_iron)",
+      "readOn": "2026-10-18",
+      "method": "engine"
+    },
+    {
+      "id": "f2",
+      "claim": "(WERF report, Sterling et al., 2006) Roots follow the outside of a sewer pipe until they find a joint to enter; laterals are often cracked or broken with roots pushing in through joints.",
+      "quote": "Laterals often pass close to trees ... roots can follow the outside of the sewer pipe until they find a joint to enter. | Lateral pipes are often found cracked or broken, with roots pushing their way into the pipes through joints and thus opening them further.",
+      "url": "https://mwrd.org/sites/default/files/documents/Cost-Effective_Rehabilitation_of_Private_Lateral_Sewers.pdf (WERF pp. 39-40 of PDF)",
+      "readOn": "2026-10-18",
+      "method": "pdf"
+    },
+    {
+      "id": "f3",
+      "claim": "Lateral CCTV identifies cracks, holes, out-of-shape pipes, collapsed pipes, defective joints (opened or misaligned); also roots, debris, obstructions and encrustation (dissolved salts deposited on pipe walls); also sags, bends, changes in material/diameter.",
+      "quote": "Lateral CCTV inspection identifies pipe defects such as cracks, holes, out-of-shape pipes, collapsed pipes or pipes with defective joints (opened or misaligned). | ... tree roots protruding into the laterals, debris and obstructions in the pipe, encrustation (dissolved salts deposited on the pipe walls) | Lateral CCTV Identifies location and size of active leaks and some inactive leaks (water stains) Also identifies change in pipe material/diameter along the lateral, sags, bends, etc.",
+      "url": "WERF Table 3-5 and section 3.4 (PDF pp. 103, 107-108)",
+      "readOn": "2026-10-18",
+      "method": "pdf"
+    },
+    {
+      "id": "f4",
+      "claim": "Fine cracks may not show during CCTV inspection but leak at higher groundwater levels.",
+      "quote": "The laterals may have fine cracks that do not show during the CCTV inspection but leak at higher groundwater levels during wet weather.",
+      "url": "WERF section 3.4 (PDF p. 106)",
+      "readOn": "2026-10-18",
+      "method": "pdf"
+    },
+    {
+      "id": "f5",
+      "claim": "CCTV detects active leaks, possibly non-active; pressure testing detects all (active and non-active) leaks; CCTV reliability moderate, dependent on operator experience; CCTV wants water level as low as possible, cleaning recommended for camera passing and defect identifying; push-type CCTV needs a cleanout; agencies usually combine methods.",
+      "quote": "Type of leaks detected ... CCTV: Active leaks, possibly non-active leaks; Pressure Testing: All (active and non-active leaks) ... Data reliability ... Moderate: Dependent on experience of operator. Leaks in laterals often less obvious than in mainlines. ... Water in the pipe before test ... Water level as low as possible ... Pipe cleaning ... Recommended: For camera passing, defect identifying. ... Cleanout required ... Yes (push-type CCTV systems) ... the agencies usually inspect the laterals with more than one method",
+      "url": "WERF Table 3-6 (PDF p. 104)",
+      "readOn": "2026-10-18",
+      "method": "pdf"
+    },
+    {
+      "id": "f6",
+      "claim": "Clear blockages before CCTV; a lateral with roots, grease or debris should be cleaned first. Salem, OR found cleaning necessary in about 90% of laterals before inspection.",
+      "quote": "It is critical that CCTV of the lateral be performed after any existing blockage in the pipe is cleared. If the lateral is infested with roots or has grease or debris, it should be first cleaned before attempting to CCTV. | ... cleaning (this was shown to be necessary in about 90% of laterals before inspection)",
+      "url": "WERF pp. 91, 95 of PDF",
+      "readOn": "2026-10-18",
+      "method": "pdf"
+    },
+    {
+      "id": "f7",
+      "claim": "Severely corroded pipes can be so reduced in diameter that conventional cleaning won't let the camera pass.",
+      "quote": "severely corroded pipes can be so much reduced in diameter that conventional cleaning is not sufficient to enable the camera to pass.",
+      "url": "WERF p. 77 of PDF",
+      "readOn": "2026-10-18",
+      "method": "pdf"
+    },
+    {
+      "id": "f8",
+      "claim": "Where there is no accessible cleanout or other entry point, CCTV cannot be used (GPR can locate the lateral from the surface).",
+      "quote": "suitable in situations where the CCTV cannot be used because there are no accessible cleanouts or any other points of entry into the lateral.",
+      "url": "WERF p. 80 of PDF",
+      "readOn": "2026-10-18",
+      "method": "pdf"
+    },
+    {
+      "id": "f9",
+      "claim": "CCTV results are documented in a written log of defects with their location and clock position, root intrusion, inflow/infiltration and connection condition; standard defect codes (NASSCO's PACP, from the UK's WRc standards) were used as the basis for laterals; in the 2005-era lateral code list, roots at a joint score 1 (fine), 3 (medium), 4 (root ball); a broken pipe with soil visible and a collapse score 5.",
+      "quote": "The results of CCTV inspection are documented in a written log of defects ... which contains information about defects and their location and clock position ... root intrusion ... | The Pipeline Assessment and Certification Program (PACP) codes developed by NASSCO ... based on the standards originally developed by the Water Research Centre (WRc) in the U.K. have been used as a basis for laterals. | RFJ O&M Roots Fine Joint 1 ... RMJ O&M Roots Medium Joint 3 ... RBJ O&M Roots Ball Joint 4 ... BSV Structural Broken Soil Visible 5 ... XP Structural Collapse Pipe Sewer 5",
+      "url": "WERF pp. 93, 108-109 of PDF (Table 3-11, PipeLogix list, 2005)",
+      "readOn": "2026-10-18",
+      "method": "pdf"
+    },
+    {
+      "id": "f10",
+      "claim": "San Mateo's lateral inspection form grades sags shallow (<30%) = 3, medium (30% - 50%) = 4, deep (> 50%) = 5; passing requires no grade 5 structural defect, no grade 4 or 5 operational defect and a sum of grades under thirteen (13); failed-lateral work options include spot repair, full replacement, jetting and root removal.",
+      "quote": "Sag – Shallow (<30%) = 3 ... Sag – Medium (30% - 50%) = 4 ... Sag – Deep (> 50%) = 5 | A sewer lateral inspection passing grade shall have no pipe with structural grade 5 defects and no operational grade 4 or 5 defects, and the sum of all defect grades shall be less than thirteen (13). | Spot Repair ... Cleaning – Jet to remove debris/deposits/blockage ... Cleaning – Root removal",
+      "url": "https://cityofsanmateo.org/DocumentCenter/View/82627/Sewer-Lateral-Inspection-Form",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    },
+    {
+      "id": "f11",
+      "claim": "Lining (CIPP) will not remove sags; pipe bursting follows the old alignment and doesn't remove significant sags; a soft zone under a sag can deepen it.",
+      "quote": "The CIPP will not remove sags or curves in the existing pipe. | Pipe bursting does not remove sags or curves in the existing pipe ... Significant sags cannot be removed. ... if there is a soft zone beneath the existing pipe in the sag area, the new pipe may be driven towards the soft zone and the sag deepened.",
+      "url": "https://mwrd.org/sites/default/files/documents/Cost-Effective_Rehabilitation_of_Private_Lateral_Sewers.pdf",
+      "readOn": "2026-10-13",
+      "method": "pdf"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "A camera cannot measure remaining pipe-wall thickness",
+      "why": "true of a video of the inside surface but no source read that states it; the page says only what the camera records"
+    },
+    {
+      "claim": "Current PACP code scores",
+      "why": "NASSCO's current manual is paid; the page cites the 2005-era list in the 2006 report and says so"
+    },
+    {
+      "claim": "Sewer scope search volumes",
+      "why": "first-party only: one Bing query; Bing market counts are relative"
+    }
+  ],
+  "blockedSources": []
+}

@@ -522,12 +522,180 @@ def romex_kt_splice() -> Image.Image:
     return img
 
 
+def sewer_scope_four() -> Image.Image:
+    """
+    Four conditions a sewer scope can show, on one cutaway lateral (guide sewer-scope-before-buying-house,
+    owner request 2026-10-18, revised the same day to the owner's technical spec). Longitudinal section:
+    house connection on the left, flow toward the street on the right.
+
+    From the WERF lateral report (Sterling et al., 2006): roots follow the outside of a pipe until they find
+    a joint to enter; lateral CCTV identifies cracks, holes, broken and collapsed pipe, sags, roots, deposits
+    and encrustation; severely corroded pipe can be narrowed so far the camera cannot pass; cleaning is
+    recommended before a camera inspection. The owner's spec: one continuous pipe, the camera inside it, roots
+    entering only through the joint, crack and break as separate examples, a belly whose walls both follow the
+    sag, deposits attached to the wall, and the footer in the owner's exact words. Nothing implies the camera
+    sees through walls or past opaque obstructions.
+    """
+    img = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(img)
+    f_title, f_tag, f_num, f_small = font(32, True), font(23, True), font(24, True), font(23)
+
+    SOIL, SOIL_EDGE = (231, 222, 205), (190, 172, 140)
+    WALL, WALL_EDGE = (148, 163, 184), (71, 85, 105)
+    BORE = (215, 225, 236)                       # the pipe interior: tinted, so it reads as inside a pipe
+    WATER, WATER_EDGE = (135, 166, 196), (71, 105, 140)
+    ROOT = (120, 83, 45)
+    DEPOSIT, DEPOSIT_EDGE = (150, 92, 54), (98, 56, 30)
+    DAMAGE = (153, 27, 27)
+    GRASS = (101, 163, 13)
+
+    d.text((60, 36), "4 THINGS A SEWER SCOPE CAN REVEAL", font=f_title, fill=INK)
+
+    # ground
+    d.rectangle([40, 230, 1560, 700], fill=SOIL)
+    d.line([40, 230, 1560, 230], fill=GRASS, width=6)
+    d.text((1520 - d.textlength("toward the street", font=f_small), 196), "toward the street", font=f_small, fill=MUTED)
+    d.polygon([(1534, 190), (1556, 205), (1534, 220)], fill=MUTED)
+
+    # house foundation wall on the left; the sewer pipe leaves through it
+    d.rectangle([40, 120, 110, 700], fill=(226, 232, 240), outline=LINE, width=3)
+    d.text((44, 94), "house", font=f_small, fill=MUTED)
+
+    CY, R, T = 480, 42, 16          # pipe centreline, inner radius, wall thickness
+    BELLY0, BELLY1, DEPTH = 900, 1170, 62
+
+    def centre_y(x):
+        if BELLY0 <= x <= BELLY1:
+            return CY + DEPTH * math.sin(math.pi * (x - BELLY0) / (BELLY1 - BELLY0))
+        return CY
+
+    xs = list(range(110, 1561, 3))
+    top_out = [(x, centre_y(x) - R - T) for x in xs]
+    top_in = [(x, centre_y(x) - R) for x in xs]
+    bot_in = [(x, centre_y(x) + R) for x in xs]
+    bot_out = [(x, centre_y(x) + R + T) for x in xs]
+
+    # cleanout riser: a branch off the crown up to a cap at the surface, same pipe colours
+    rx = 175
+    d.rectangle([rx - 24, 212, rx + 24, CY - R], fill=WALL, outline=WALL_EDGE, width=2)
+    d.rectangle([rx - 12, 226, rx + 12, CY - R + 4], fill=BORE)
+    d.rectangle([rx - 32, 204, rx + 32, 216], fill=WALL_EDGE)
+
+    # the one sewer pipe: walls and tinted interior, continuous through the belly
+    d.polygon(top_in + bot_in[::-1], fill=BORE)
+    d.polygon(top_out + top_in[::-1], fill=WALL)
+    d.polygon(bot_in + bot_out[::-1], fill=WALL)
+    for line in (top_out, bot_out):
+        d.line(line, fill=WALL_EDGE, width=2)
+    for line in (top_in, bot_in):
+        d.line(line, fill=WALL_EDGE, width=1)
+    d.rectangle([rx - 12, CY - R - T - 1, rx + 12, CY - R + 1], fill=BORE)   # the riser opens into the pipe
+
+    # 1. a joint where two pipe sections meet: a small open gap in the top wall only (the bottom wall shows just
+    # the joint line), so nothing suggests roots leaving through the underside of the pipe
+    jx = 470
+    d.rectangle([jx - 4, CY - R - T, jx + 4, CY - R], fill=SOIL)                 # the gap in the top wall
+    d.line([jx - 4, CY - R - T, jx - 4, CY - R], fill=WALL_EDGE, width=2)
+    d.line([jx + 4, CY - R - T, jx + 4, CY - R], fill=WALL_EDGE, width=2)
+    # roots from the tree spread through the soil; two of them reach the gap
+    tree_x = 330
+    d.rectangle([tree_x - 8, 150, tree_x + 8, 232], fill=ROOT)
+    d.ellipse([tree_x - 60, 70, tree_x + 60, 170], fill=(187, 247, 208), outline=(22, 163, 74), width=3)
+    for pts in ([(tree_x - 4, 232), (290, 300), (250, 350)],
+                [(tree_x + 2, 232), (340, 320), (330, 390)],
+                [(tree_x + 4, 232), (390, 300), (440, 360), (jx - 2, CY - R - T - 2)],
+                [(tree_x + 6, 232), (420, 280), (470, 330), (jx + 2, CY - R - T - 2)]):
+        d.line(pts, fill=ROOT, width=2, joint="curve")
+    # through the gap and a short way in: a few fine roots, staying in the upper part of the pipe
+    d.line([(jx, CY - R - T - 2), (jx, CY - R + 6)], fill=ROOT, width=3)
+    for ex, ey in ((jx - 22, CY - R + 24), (jx - 4, CY - R + 30), (jx + 16, CY - R + 26), (jx + 28, CY - R + 16)):
+        d.line([(jx, CY - R + 4), ((jx + ex) / 2, CY - R + 14), (ex, ey)], fill=ROOT, width=2, joint="curve")
+
+    # 2a. a crack: a hairline running through the crown wall, pipe otherwise intact
+    cx = 650
+    crack = [(cx - 34, CY - R - T + 1), (cx - 22, CY - R - 4), (cx - 10, CY - R - T + 4), (cx + 2, CY - R - 2), (cx + 14, CY - R - T + 2), (cx + 26, CY - R - 1)]
+    d.line(crack, fill=DAMAGE, width=4)
+    # 2b. a broken section: a piece of the crown missing, with an irregular edge and a little soil fallen in
+    bx = 800
+    hole = [(bx - 34, CY - R - T), (bx - 20, CY - R - T + 5), (bx - 4, CY - R - T), (bx + 14, CY - R - T + 4),
+            (bx + 34, CY - R - T), (bx + 28, CY - R + 1), (bx + 6, CY - R - 3), (bx - 12, CY - R + 1), (bx - 28, CY - R - 2)]
+    d.polygon(hole, fill=SOIL)
+    d.line(hole + [hole[0]], fill=DAMAGE, width=3)
+    d.polygon([(bx - 26, CY + R), (bx + 2, CY + R - 14), (bx + 30, CY + R)], fill=SOIL_EDGE)
+
+    # 3. the belly: a pool of wastewater at the lowest point only, entirely inside the pipe; the lower wall is
+    # redrawn over it so the wall stays continuous and crisp
+    floor_mid = CY + DEPTH + R
+    lvl = floor_mid - 34
+    seg = [(x, centre_y(x)) for x in range(BELLY0, BELLY1 + 1, 2) if centre_y(x) + R > lvl]
+    if len(seg) > 2:
+        d.polygon([(x, lvl) for x, _ in seg] + [(x, c + R) for x, c in seg][::-1], fill=WATER)
+        d.line([(seg[0][0], lvl), (seg[-1][0], lvl)], fill=WATER_EDGE, width=3)
+    d.polygon(bot_in + bot_out[::-1], fill=WALL)
+    d.line(bot_out, fill=WALL_EDGE, width=2)
+    d.line(bot_in, fill=WALL_EDGE, width=2)
+    d.line([jx, CY + R, jx, CY + R + T], fill=WALL_EDGE, width=2)            # the joint's line on the bottom wall
+
+    # 4. corrosion and scale: rough deposits attached to the inner wall, narrowing but not closing the bore
+    for sgn in (-1, 1):
+        rough = []
+        for x in range(1240, 1521, 5):
+            h = 9 + 4 * math.sin(x / 7.0) + 3 * math.sin(x / 3.1) + (4 if (x // 35) % 2 else 0)
+            rough.append((x, CY + sgn * (R - h)))
+        wall = [(x, CY + sgn * R) for x, _ in rough][::-1]
+        d.polygon(rough + wall, fill=DEPOSIT, outline=DEPOSIT_EDGE)
+
+    # the camera, inside the pipe, on its push cable down the cleanout, light pointing downstream
+    d.line([(rx, 120), (rx, CY - 6), (rx + 28, CY + 6)], fill=(30, 41, 59), width=5, joint="curve")
+    d.rounded_rectangle([rx + 24, CY - 1, rx + 70, CY + 21], radius=6, fill=(30, 41, 59))
+    d.ellipse([rx + 64, CY + 2, rx + 78, CY + 16], fill=(253, 224, 71))
+    d.polygon([(rx + 78, CY + 9), (rx + 170, CY - 22), (rx + 170, CY + 38)], fill=(254, 249, 195))
+    d.text((rx - 20, CY + R + T + 18), "camera", font=f_small, fill=INK)
+
+    # numbered labels with leaders to each defect
+    def marker(x, n, lines, targets, ty=262):
+        d.ellipse([x - 20, ty, x + 20, ty + 40], fill=INK)
+        centre(d, (x - 20, ty, x + 20, ty + 40), str(n), f_num, WHITE)
+        for i, line in enumerate(lines):
+            d.text((x - d.textlength(line, font=f_tag) / 2, ty + 48 + i * 28), line, font=f_tag, fill=INK)
+        top = ty + 48 + len(lines) * 28 + 4
+        for tx, tyy in targets:
+            d.line([(x, top), (tx, tyy)], fill=WALL_EDGE, width=2)
+            d.ellipse([tx - 4, tyy - 4, tx + 4, tyy + 4], fill=WALL_EDGE)
+
+    marker(570, 1, ["Tree roots", "at a joint"], [(jx + 10, CY - R - T - 6)])
+    marker(725, 2, ["Crack or", "broken section"], [(cx, CY - R - T - 8), (bx, CY - R - T - 8)])
+    marker(1035, 3, ["Belly where water", "can collect"], [(1035, centre_y(1035) - R - T - 8)])
+    marker(1380, 4, ["Corrosion or", "scale buildup"], [(1380, CY - R - T - 8)])
+
+    # footer, the owner's exact wording
+    d.line([60, 726, W - 60, 726], fill=(226, 232, 240), width=2)
+    def para(y, text, fill):
+        words, line, lines = text.split(), "", []
+        for w_ in words:
+            trial = (line + " " + w_).strip()
+            if d.textlength(trial, font=f_small) <= W - 120:
+                line = trial
+            else:
+                lines.append(line); line = w_
+        lines.append(line)
+        for i, l in enumerate(lines):
+            d.text((60, y + i * 32), l, font=f_small, fill=fill)
+        return y + len(lines) * 32
+    y = para(744, "A sewer camera records the visible interior of the pipe it can reach. Water, debris, roots and "
+                  "heavy scale can hide defects or prevent the camera from passing.", INK)
+    para(y + 10, "Next steps depend on the finding: cleaning and re-scoping, a plumber’s assessment, or "
+                 "additional testing may be appropriate.", MUTED)
+    return img
+
+
 DIAGRAMS = {
     "county-vs-city-permit-jurisdiction": jurisdiction,
     "single-strand-aluminum-vs-copper-wiring-identification": aluminum_vs_copper,
     "shared-well-and-y-shaped-driveway-responsibility": shared_well_driveway,
     "edison-base-fuse-over-fusing-risk": over_fusing,
     "romex-spliced-to-knob-and-tube-junction-box": romex_kt_splice,
+    "sewer-scope-four-findings-cutaway": sewer_scope_four,
 }
 
 # ONLY=<name> renders one diagram, so adding a new one never rewrites the files already published.

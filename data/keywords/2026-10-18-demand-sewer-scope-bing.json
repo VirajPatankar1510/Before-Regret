@@ -1,0 +1,50 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-10-18T07:11:29.481Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "sewer scope",
+    "sewer camera inspection",
+    "sewer scope inspection"
+  ],
+  "keywords": [
+    {
+      "keyword": "property was built in 1996 is a sewer scope a smart idea inspection",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "sewer scope",
+      "search_volume": 18,
+      "metric": "market",
+      "broad_impressions": 39,
+      "kind": "seed"
+    },
+    {
+      "keyword": "sewer camera inspection",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "sewer inspection camera",
+      "search_volume": 116,
+      "metric": "market",
+      "broad_impressions": 116,
+      "kind": "related"
+    },
+    {
+      "keyword": "sewer scope inspection",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}
