@@ -22,6 +22,7 @@ export const IMAGE_DIMENSIONS: Record<string, ImageDimensions> = {
   '/images/open-ground-vs-bootleg-ground-receptacle-wiring.webp': { width: 1600, height: 873 },
   '/images/polybutylene-vs-pex-pipe-identification.webp': { width: 1600, height: 995 },
   '/images/reverse-polarity-vs-correct-receptacle-wiring.webp': { width: 1600, height: 997 },
+  '/images/romex-spliced-to-knob-and-tube-junction-box.webp': { width: 1600, height: 900 },
   '/images/shared-well-and-y-shaped-driveway-responsibility.webp': { width: 1600, height: 900 },
   '/images/single-strand-aluminum-vs-copper-wiring-identification.webp': { width: 1600, height: 900 },
   '/images/fruitful-home-cover-lg.jpg': { width: 520, height: 832 },

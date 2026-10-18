@@ -17,6 +17,7 @@
 #
 # EVERY LABEL DRAWN HERE MUST ALSO EXIST AS TEXT ON THE PAGE. That is not a style rule: a crawler
 # that never renders the image has to lose nothing. The insertion scripts assert it separately.
+import math
 import os
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
@@ -352,17 +353,192 @@ def over_fusing() -> Image.Image:
     return img
 
 
+def romex_kt_splice() -> Image.Image:
+    """
+    Romex spliced to knob-and-tube: the flying splice inspectors find, beside a transition in an
+    accessible junction box (splice-romex-knob-tube-wiring; drawn 2026-10-18, corrected the same day
+    from the owner's review).
+
+    What it must NOT imply, after that review: that any generic connector makes a transition
+    compliant; that an unconnected ground wire is an acceptable final installation; or that GFCI
+    protection creates an equipment ground. The Romex ground is not drawn; the box is labelled
+    "Equipment grounding path not established by this splice" rather than inventing a path. Each
+    knob-and-tube conductor passes, in loom, through its own bushed opening (a collar in the box wall). The green panel's text is the
+    owner's exact wording. Code details depend on the edition a jurisdiction has adopted, so the
+    wording stays qualified.
+    """
+    img = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(img)
+    f_title, f_head, f_small, f_tag = font(32, True), font(34, True), font(23), font(22, True)
+
+    DANGER, DANGER_FILL, DANGER_EDGE = (185, 28, 28), (254, 242, 242), (252, 165, 165)
+    OK, OK_FILL, OK_EDGE = (21, 128, 61), (240, 253, 244), (134, 239, 172)
+    CLOTH = (87, 70, 52)          # varnished-cloth K&T conductor
+    PORCELAIN = (241, 245, 249)
+    HOT, NEUTRAL, COPPER = (30, 41, 59), (250, 250, 250), (194, 120, 62)
+    JACKET = (226, 232, 240)
+    TAPE = (39, 39, 42)
+    FLUFF = (253, 230, 138)
+    BOX = (203, 213, 225)
+    AMBER = (161, 98, 7)
+    BUSHING, WALL_EDGE = (226, 232, 240), (71, 85, 105)
+
+    d.text((60, 36), "ROMEX SPLICED TO KNOB-AND-TUBE: WHAT AN INSPECTOR LOOKS FOR", font=f_title, fill=INK)
+
+    def panel(x0, x1, fill, edge, title, colour):
+        d.rounded_rectangle([x0, 100, x1, 720], radius=18, fill=fill, outline=edge, width=3)
+        d.text((x0 + 32, 124), title, font=f_head, fill=colour)
+
+    def knob(cx, cy):
+        d.ellipse([cx - 22, cy - 22, cx + 22, cy + 22], fill=PORCELAIN, outline=LINE, width=3)
+        d.ellipse([cx - 7, cy - 7, cx + 7, cy + 7], fill=LINE)
+
+    def wire(points, colour, width=9, outline=None):
+        if outline:
+            d.line(points, fill=outline, width=width + 4, joint="curve")
+        d.line(points, fill=colour, width=width, joint="curve")
+
+    def wrap(text, f, room):
+        lines, cur = [], ""
+        for word in text.split():
+            trial = f"{cur} {word}".strip()
+            if d.textlength(trial, font=f) <= room:
+                cur = trial
+            else:
+                lines.append(cur)
+                cur = word
+        lines.append(cur)
+        return lines
+
+    def text_block(x, y_top, y_bottom, room, paras):
+        """paras: list of (text, bold, colour). Shrinks the type until the block fits, never below 20px."""
+        for size in range(26, 19, -1):
+            body, bold = font(size), font(size, True)
+            gap = int(size * 1.32)
+            laid = [(wrap(t, bold if b else body, room), b, c) for t, b, c in paras]
+            height = sum(len(ls) for ls, _, _ in laid) * gap + (len(laid) - 1) * int(size * 0.45)
+            if y_top + height <= y_bottom:
+                y = y_top
+                for ls, b, c in laid:
+                    for line in ls:
+                        d.text((x, y), line, font=bold if b else body, fill=c)
+                        y += gap
+                    y += int(size * 0.45)
+                return
+        raise SystemExit("ABORT: panel text does not fit at 20px")
+
+    # ---------------- left: flying splice ----------------
+    panel(40, 790, DANGER_FILL, DANGER_EDGE, "Flying splice", DANGER)
+    d.rectangle([70, 196, 760, 222], fill=(214, 196, 168), outline=(168, 140, 104), width=2)
+    for y, kx in ((262, 150), (322, 210)):
+        knob(kx, y)
+        wire([(70, y), (kx - 24, y)], CLOTH)
+        wire([(kx + 24, y), (380, y)], CLOTH)
+    for i, x in enumerate(range(80, 760, 46)):
+        r = 26 + (i % 3) * 5
+        d.ellipse([x - r, 416 - r, x + r, 416 + r], fill=FLUFF, outline=(234, 179, 8), width=2)
+    for y in (262, 322):
+        d.rounded_rectangle([372, y - 14, 452, y + 14], radius=7, fill=TAPE)
+        for k in range(4):
+            d.line([382 + k * 18, y - 14, 392 + k * 18, y + 14], fill=(82, 82, 91), width=3)
+    wire([(452, 262), (520, 262), (560, 300)], HOT, outline=LINE)
+    wire([(452, 322), (520, 322), (560, 300)], NEUTRAL, outline=LINE)
+    d.rounded_rectangle([556, 284, 760, 316], radius=14, fill=JACKET, outline=LINE, width=3)
+    d.text((372, 281), "electrical tape", font=f_tag, fill=DANGER)
+    d.text((600, 248), "Romex", font=f_tag, fill=INK)
+    d.text((72, 337), "knob-and-tube", font=f_tag, fill=CLOTH)
+    d.text((72, 456), "thermal insulation", font=f_tag, fill=AMBER)
+    text_block(72, 496, 704, 690, [
+        ("Twisted conductors covered only with electrical tape are not a substitute for an "
+         "approved junction box.", False, INK),
+        ("Splices must be enclosed and accessible as required. Exposed live copper is a "
+         "potential hazard.", False, INK),
+        ("Concealed knob-and-tube conductors generally must not be surrounded by thermal "
+         "insulation, subject to code provisions and exceptions.", False, MUTED),
+    ])
+
+    # ---------------- right: accessible junction box ----------------
+    panel(810, 1560, OK_FILL, OK_EDGE, "Accessible junction box", OK)
+    bx0, by0, bx1, by1 = 1060, 206, 1330, 420
+    d.rounded_rectangle([bx0, by0, bx1, by1], radius=10, fill=WHITE, outline=BOX, width=6)
+    # knob-and-tube conductors: each in its own loom, through its own bushed opening in the box wall
+    for y, kx in ((262, 880), (352, 940)):
+        knob(kx, y)
+        wire([(830, y), (kx - 24, y)], CLOTH)
+        wire([(kx + 24, y), (bx0 - 70, y)], CLOTH)
+        # loom sleeves the conductor up to the box and through its own bushed opening
+        d.rounded_rectangle([bx0 - 76, y - 11, bx0 + 30, y + 11], radius=10, fill=(148, 163, 184), outline=(100, 116, 139), width=2)
+        for k in range(4):
+            d.line([bx0 - 66 + k * 15, y - 11, bx0 - 66 + k * 15, y + 11], fill=(100, 116, 139), width=2)
+        # the bushing: a collar seated in the box wall around this one conductor, drawn over the loom so the
+        # conductor visibly passes through it; one collar per conductor, nothing spliced at the wall
+        d.rounded_rectangle([bx0 - 13, y - 21, bx0 + 13, y + 21], radius=8, fill=BUSHING, outline=WALL_EDGE, width=3)
+        d.rounded_rectangle([bx0 - 13, y - 11, bx0 + 13, y + 11], radius=4, fill=(148, 163, 184))
+        d.line([bx0 - 13, y - 11, bx0 + 13, y - 11], fill=WALL_EDGE, width=2)
+        d.line([bx0 - 13, y + 11, bx0 + 13, y + 11], fill=WALL_EDGE, width=2)
+        wire([(bx0 + 30, y), (bx0 + 92, y)], CLOTH)
+    # splice connections, kept inside the box
+    for y in (262, 352):
+        d.polygon([(bx0 + 92, y - 22), (bx0 + 150, y - 14), (bx0 + 150, y + 14), (bx0 + 92, y + 22)], fill=(250, 204, 21), outline=AMBER)
+    wire([(bx0 + 150, 262), (bx1 - 46, 262), (bx1 - 30, 307)], HOT, outline=LINE)
+    wire([(bx0 + 150, 352), (bx1 - 46, 352), (bx1 - 30, 307)], NEUTRAL, outline=LINE)
+    # Romex enters through its own cable fitting
+    d.rectangle([bx1 - 12, 289, bx1 + 14, 325], fill=(148, 163, 184), outline=(71, 85, 105), width=2)
+    d.rounded_rectangle([bx1 + 14, 291, 1540, 323], radius=14, fill=JACKET, outline=LINE, width=3)
+    # The Romex equipment-grounding conductor is NOT drawn (owner's review, 2026-10-18): connecting it to a
+    # knob-and-tube conductor would be wrong, a dangling one reads as an acceptable finish, and inventing a
+    # path is worse. The label states the fact instead.
+    lab = "Equipment grounding path not established by this splice"
+    d.text(((bx0 + bx1) / 2 - d.textlength(lab, font=f_tag) / 2, 432), lab, font=f_tag, fill=DANGER)
+    # labels
+    d.text((bx0 - 104, 216), "loom", font=f_tag, fill=INK)
+    d.text((bx0 + 86, by0 - 34), "mechanical connectors", font=f_tag, fill=AMBER)
+    d.text((1400, 257), "Romex", font=f_tag, fill=INK)
+    d.text((834, 372), "knob-and-tube", font=f_tag, fill=CLOTH)
+    f_call = font(20, True)
+    d.text((834, 285), "own bushed hole", font=f_call, fill=INK)
+    d.text((834, 308), "for each conductor", font=f_call, fill=INK)
+    tip_x = 834 + d.textlength("for each conductor", font=f_call) + 10
+    for ty in (262 + 16, 352 - 16):     # lower edge of the upper collar, upper edge of the lower collar
+        ex, ey = bx0 - 16, ty
+        d.line([tip_x, 307, ex, ey], fill=WALL_EDGE, width=2)
+        # arrowhead along the pointer's direction
+        ang = math.atan2(ey - 307, ex - tip_x)
+        a1, a2 = ang + math.radians(150), ang - math.radians(150)
+        d.polygon([(ex, ey), (ex + 11 * math.cos(a1), ey + 11 * math.sin(a1)), (ex + 11 * math.cos(a2), ey + 11 * math.sin(a2))], fill=WALL_EDGE)
+    text_block(842, 476, 706, 700, [
+        ("Grounding must be verified", True, INK),
+        ("A ground wire in Romex does not guarantee a functioning equipment ground.", False, INK),
+        ("The grounding conductor must connect to a valid grounding path where required.", False, INK),
+        ("GFCI protection can provide shock protection on certain ungrounded circuits, but it does not "
+         "create an equipment ground. Applicable receptacle labeling requirements still apply.", False, MUTED),
+    ])
+
+    d.line([60, 752, W - 60, 752], fill=(226, 232, 240), width=2)
+    d.text((60, 778), "A three-prong outlet on this circuit is not grounded just because the cable has a ground wire.",
+           font=f_small, fill=INK)
+    d.text((60, 818), "A licensed electrician should evaluate these connections before your inspection contingency expires.",
+           font=f_small, fill=MUTED)
+    return img
+
+
 DIAGRAMS = {
     "county-vs-city-permit-jurisdiction": jurisdiction,
     "single-strand-aluminum-vs-copper-wiring-identification": aluminum_vs_copper,
     "shared-well-and-y-shaped-driveway-responsibility": shared_well_driveway,
     "edison-base-fuse-over-fusing-risk": over_fusing,
+    "romex-spliced-to-knob-and-tube-junction-box": romex_kt_splice,
 }
+
+# ONLY=<name> renders one diagram, so adding a new one never rewrites the files already published.
+ONLY = os.environ.get("ONLY")
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     for name, fn in DIAGRAMS.items():
+        if ONLY and name != ONLY:
+            continue
         img = fn()
         if img.size != (W, H):
             raise SystemExit(f"ABORT: {name} rendered {img.size}, expected {(W, H)}")

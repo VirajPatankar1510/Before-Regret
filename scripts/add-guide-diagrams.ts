@@ -48,6 +48,8 @@ interface Placement {
 }
 
 const PLACEMENTS: Placement[] = [
+  // splice-romex-knob-tube-wiring's diagram is placed by scripts/fix-romex-grounding-and-diagram.ts, together
+  // with the text corrections its labels depend on (2026-10-18).
   {
     slug: 'get-home-insurance-aluminum-wiring',
     image: '/images/single-strand-aluminum-vs-copper-wiring-identification.webp',
