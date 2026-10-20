@@ -1,0 +1,86 @@
+{
+  "_about": "Rewrite of guide #13 (2026-10-19, write-article). Every number and rule in the new body traces to an entry here.",
+  "slug": "get-clue-report-before-buying-house",
+  "question": "Can a buyer get a CLUE report on a house before buying it, and how?",
+  "verdictConfirmed": "No, a buyer can't order it; the current owner can, free once every 12 months, and should be asked for both the LexisNexis C.L.U.E. report and the Verisk A-PLUS report.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Consumer reporting agencies that compile insurance-claims files nationwide are 'nationwide specialty consumer reporting agencies' (15 U.S.C. 1681a(x)(5)) and must make file disclosures once during any 12-month period on request and without charge (15 U.S.C. 1681j(a)(1)(A)).",
+      "quote": "The term 'nationwide specialty consumer reporting agency' means a consumer reporting agency that compiles and maintains files on consumers on a nationwide basis relating to- ... (5) insurance claims. | All consumer reporting agencies described in subsections (p) and (w) shall make all disclosures pursuant to section 1681g of this title once during any 12-month period upon request of the consumer and without charge to the consumer.",
+      "url": "https://www.law.cornell.edu/uscode/text/15/1681j ; https://www.law.cornell.edu/uscode/text/15/1681a",
+      "readOn": "2026-10-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "claim": "CFPB listing for LexisNexis C.L.U.E.: seven years of home insurance and personal property claims; one free report every 12 months on request; consumer.risk.lexisnexis.com; 866-897-8126.",
+      "quote": "seven years of home insurance and personal property claims ... This company will provide one free report every 12 months if you request it. ... consumer.risk.lexisnexis.com ... 866-897-8126",
+      "url": "https://www.consumerfinance.gov/consumer-tools/credit-reports-and-scores/consumer-reporting-companies/companies-list/comprehensive-loss-underwriting-exchange/",
+      "readOn": "2026-10-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "f3",
+      "claim": "CFPB listing for Verisk A-PLUS Property: insurance claims and loss history for homes, auto or personal property; one free report every 12 months on request; fcra.verisk.com; 800-627-3487 (Option 2) or 800-709-8842. The listing states no number of years of history.",
+      "quote": "Collects and reports insurance claims and loss history associated with homes, auto or personal property. ... The company will provide one free report every 12 months if you request it. ... 800-627-3487 (Option 2) or 800-709-8842",
+      "url": "https://consumerfinance.gov/consumer-tools/credit-reports-and-scores/consumer-reporting-companies/companies-list/a-plus-property-verisk",
+      "readOn": "2026-10-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "f4",
+      "claim": "Connecticut Insurance Department: C.L.U.E. reports can be accessed only by the owner, insurer or lender; a buyer can't order one but can ask the current owner to; up to 7 years of claims; insurers instructed not to report inquiries about possible coverage, but a claim filed and denied without payment may appear; no laws specifically govern the use of a prior owner's loss history; errors: contact LexisNexis, results within 30 days, personal statement option; lists 1-866-312-8076. If a company can show a relationship between the prior owner's loss and the probability of a future loss to the home, it may use the information. A claim filed and then paid nothing (below the deductible, not covered) may still appear; an inquiry should not.",
+      "quote": "C.L.U.E. reports can be accessed only by the owner, insurer, or lender for the property. ... you can request that the current owner of the property order a C.L.U.E. report. ... The database contains up to 7 years of personal property claims history. ... Insurers have been instructed by C.L.U.E. not to report inquiries about possible coverage. ... this information would be recorded by the company and may appear on a C.L.U.E. report ... There are no laws that specifically govern the use of the prior owner's loss history ... notify you of the results within 30 days ... you can submit a personal statement ... 1-866-312-8076 ... If a company can show a relationship between the prior owner's loss and the probability of a future loss to the home, they may use the information. ... If the consumer filed an actual claim and the insurer made no loss payment on this claim, this information would be recorded by the company and may appear on a C.L.U.E. report.",
+      "url": "https://portal.ct.gov/cid/knowledge-base/articles/clue-faqs",
+      "readOn": "2026-10-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "f5",
+      "claim": "Utah Insurance Department: under the federal FACT Act, C.L.U.E. reports can only be accessed by the owner, insurer or lender; the buyer can ask the current owner; states up to 5 years; if the insurer does not respond to a dispute within 30 days, LexisNexis removes the information; some agents with company authority can withdraw data.",
+      "quote": "No. Under the federal FACT Act, C.L.U.E. reports can only be accessed by the owner, insurer or lender for the property. ... The database contains up to 5 years of personal property claims history. ... If the company does not respond within 30 days, LexisNexis will remove the information from the database. ... some insurance agents, with the authority of the company they represent, can withdraw data.",
+      "url": "https://insurance.utah.gov/consumers/clue/",
+      "readOn": "2026-10-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "f6",
+      "claim": "LexisNexis C.L.U.E. Property: claims data provided by more than 90% of insurers that write homeowners coverage; reports show date of loss, cause of loss, amounts paid.",
+      "quote": "Access reports based on claims data provided by more than 90% of insurers that write homeowners coverage. ... Property loss history reports provide granular information on date of loss, cause of loss, amounts paid and much more.",
+      "url": "https://risk.lexisnexis.com/products/clue-property",
+      "readOn": "2026-10-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "f7",
+      "claim": "Bing searches that showed this site about CLUE reports (capture 2026-10-17): how to get a clue report for a home; clue report for a property; clue report house; order a clue report; clue report for home buyers.",
+      "quote": "how to get a clue report for a home (10 impr, pos 6.1); clue report for a property (6, pos 7); clue report house (2, 1 click); order a clue report; clue report for home buyers (1 click)",
+      "url": "data/keywords/2026-10-17-bing-queries.json",
+      "readOn": "2026-10-19",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "A CLUE report lists the insurer, policy details and claim status (open/closed)",
+      "why": "not in the sources read; kept to date, cause/type and amount paid"
+    },
+    {
+      "claim": "A NAR contract clause for CLUE reports",
+      "why": "no primary source read; the page says ask your agent to put the request in writing"
+    },
+    {
+      "claim": "Whether flood (NFIP) claims appear on CLUE",
+      "why": "not verified"
+    },
+    {
+      "claim": "Wisconsin OCI PI-207 guidance",
+      "why": "oci.wi.gov did not resolve (DNS) on 2026-10-19"
+    }
+  ],
+  "blockedSources": [
+    "tn.gov (403 to automated requests) -- not worked around",
+    "oci.wi.gov (did not resolve)"
+  ]
+}
