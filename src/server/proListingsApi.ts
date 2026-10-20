@@ -23,9 +23,50 @@ import { TRADE_CATEGORIES, requiresLicenceNumber, requiresBrokerageName, brokera
 // our own, which would go out from the GoDaddy mailbox and land in spam.
 
 const MAX_ZIPS = 5;
-const MAX_LISTINGS_PER_USER = 3;
+// One free listing per business (owner, 2026-10-20). An account holds one, and a second account cannot
+// list the same phone or licence number again -- a business with more trades picks its main one.
+const MAX_LISTINGS_PER_USER = 1;
+const phoneKey = (p: string) => p.replace(/\D/g, '').slice(-10);
+const licenceKey = (l: string) => l.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+/** A real US number: 10 digits (or 11 with a leading 1), area code and exchange not starting 0 or 1. Returned
+ *  as (555) 555-5555 so every listing reads the same and the duplicate check compares like with like. */
+export function normaliseUsPhone(raw: string): string | null {
+  let d = raw.replace(/\D/g, '');
+  if (d.length === 11 && d.startsWith('1')) d = d.slice(1);
+  if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(d)) return null;
+  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+}
+
+/** The account's own verified email from Clerk -- never the address the browser sends. Null if it has none. */
+async function verifiedClerkEmail(userId: string): Promise<string | null> {
+  try {
+    const { createClerkClient } = await import('@clerk/backend');
+    const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY as string });
+    const user = await clerk.users.getUser(userId);
+    const primary = user.emailAddresses.find((e: any) => e.id === user.primaryEmailAddressId) || user.emailAddresses[0];
+    return primary && primary.verification?.status === 'verified' ? primary.emailAddress : null;
+  } catch (err) {
+    console.error('[pros] Clerk email lookup failed:', err);
+    return null;
+  }
+}
+
+/** Another business already listed with this phone (or this licence number in the same state)? One free listing
+ *  per business. Brokerage trades skip the phone match: agents at one brokerage can share an office line. */
+async function findDuplicate(userId: string, tradeCategory: string, phone: string, licence: string | null, state: string | null, exceptId = 0): Promise<boolean> {
+  const others = (await withDb((sql) => sql`
+    SELECT phone, licence_number, state FROM pro_listings
+    WHERE status = 'active' AND clerk_user_id <> ${userId} AND id <> ${exceptId}`)) as unknown as Array<{ phone: string; licence_number: string | null; state: string | null }>;
+  const myPhone = phoneKey(phone), myLicence = licence ? licenceKey(licence) : '';
+  const checkPhone = !requiresBrokerageName(tradeCategory);
+  return others.some((o) => (checkPhone && phoneKey(o.phone) === myPhone)
+    || (myLicence.length >= 3 && !!o.licence_number && licenceKey(o.licence_number) === myLicence && o.state === state));
+}
+const DUPLICATE_MESSAGE = 'That phone or licence number is already on a Find a Pro listing. Each business can have one free listing -- if it is yours, write to hello@beforeregret.com.';
 const MAX_DESCRIPTION = 300;
 const NEARBY_MILES = 20;
+const MAX_ZIP_SPREAD_MILES = 100;
 // A listing page opens to Google only once it is "complete" (owner decision, 2026-10-18): a description
 // of at least this many characters. Thin name-and-phone pages stay noindex -- a directory of those is
 // the pattern behind the 2026-09-02 prune. The join form tells the business the rule.
@@ -92,14 +133,17 @@ function validateFields(body: any, tradeCategory: string) {
   const zips = Array.from(new Set(zipList));
   if (zips.length < 1 || zips.length > MAX_ZIPS || !zips.every(isValidZip)) {
     errors.push(`Add between 1 and ${MAX_ZIPS} real U.S. ZIP codes you serve.`);
+  } else if (zips.some((z) => (zipcodes.distance(zips[0], z) ?? 0) > MAX_ZIP_SPREAD_MILES)) {
+    // A free listing is for a local business: five ZIPs across the country would undercut paid ZIP placements.
+    errors.push(`Your ZIP codes should all be within ${MAX_ZIP_SPREAD_MILES} miles of each other.`);
   }
-  const phone = typeof body.phone === 'string' ? body.phone.trim() : '';
-  if (phone.length < 7 || phone.length > 30) errors.push('A valid phone number is required.');
+  const phone = normaliseUsPhone(typeof body.phone === 'string' ? body.phone : '') ?? '';
+  if (!phone) errors.push('Enter a 10-digit U.S. phone number buyers can call, with no extension.');
   const site = checkVendorWebsite(body.website);
   if (!site.ok) errors.push(site.error || 'That website address is not accepted.');
   const licence = typeof body.licenceNumber === 'string' ? body.licenceNumber.trim() : '';
   if (requiresLicenceNumber(tradeCategory)) {
-    if (licence.length < 3) errors.push('A licence, registration, or certification number is required for this trade.');
+    if (licence.length < 3 || !/\d/.test(licence)) errors.push('A licence, registration, or certification number is required for this trade.');
     else if (licence.length > 60) errors.push('That licence number looks too long -- please enter just the number.');
   }
   const description = typeof body.description === 'string' ? body.description.trim().replace(/\s+/g, ' ') : '';
@@ -161,6 +205,18 @@ export function registerProListingsRoutes(app: Express) {
     }
   });
 
+  // --- Public: checks one ZIP as the business adds it, so the 100-mile rule shows at once, not after sign-in ---
+  app.get('/api/pros/zip-check', (req: Request, res: Response) => {
+    const zip = typeof req.query.zip === 'string' ? req.query.zip.trim() : '';
+    const near = typeof req.query.near === 'string' ? req.query.near.trim() : '';
+    if (!isValidZip(zip)) return res.json({ ok: false, error: `${zip || 'That'} isn't a U.S. ZIP code we recognise.` });
+    if (near && isValidZip(near) && (zipcodes.distance(near, zip) ?? 0) > MAX_ZIP_SPREAD_MILES) {
+      return res.json({ ok: false, error: `ZIP ${zip} is more than ${MAX_ZIP_SPREAD_MILES} miles from ${near}. Your ZIP codes should all be within ${MAX_ZIP_SPREAD_MILES} miles of each other.` });
+    }
+    const place = zipcodes.lookup(zip);
+    res.json({ ok: true, place: place ? `${place.city}, ${place.state}` : null });
+  });
+
   // --- Public: one listing's page ---
   app.get('/api/pros/listing/:slug', async (req: Request, res: Response) => {
     if (!isDbConfigured()) return unavailable(res);
@@ -197,8 +253,7 @@ export function registerProListingsRoutes(app: Express) {
     if (!(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) errors.push('Choose your business type.');
     let businessName = typeof body.businessName === 'string' ? body.businessName.trim().replace(/\s+/g, ' ') : '';
     if (businessName.length < 2 || businessName.length > 80) errors.push('Enter your business name (2 to 80 characters).');
-    const contactEmail = typeof body.contactEmail === 'string' ? body.contactEmail.trim() : '';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) errors.push('A valid contact email is required.');
+    else if (/https?:|www\.|\.(com|net|org|biz|info|co|us)\b|\d{3}\D?\d{3}\D?\d{4}/i.test(businessName)) errors.push('Enter just the business name -- no web addresses or phone numbers.');
     if (body.attestedAccurate !== true) errors.push('Confirm your details and accept the Terms of Service to list your business.');
     if (requiresBrokerageName(tradeCategory)) {
       const brokerageErr = brokerageNameError(body.brokerageName);
@@ -211,10 +266,18 @@ export function registerProListingsRoutes(app: Express) {
 
     try {
       const userId = req.verifiedUserId as string;
+      // The listing goes live only from an account whose email Clerk has verified (owner decision 2026-10-18).
+      const contactEmail = await verifiedClerkEmail(userId);
+      if (!contactEmail) {
+        return res.status(400).json({ success: false, errors: ['Please confirm your email address with the sign-in service, then try again.'] });
+      }
       const existing = await withDb((sql) => sql`
         SELECT count(*)::int AS n FROM pro_listings WHERE clerk_user_id = ${userId} AND status = 'active'`);
       if (((existing as unknown as Array<{ n: number }>)[0]?.n ?? 0) >= MAX_LISTINGS_PER_USER) {
-        return res.status(400).json({ success: false, errors: [`An account can hold up to ${MAX_LISTINGS_PER_USER} free listings. Remove one to add another.`] });
+        return res.status(400).json({ success: false, errors: ['Each business can have one free listing, and this account already has one. Remove it to list a different business.'] });
+      }
+      if (await findDuplicate(userId, tradeCategory, clean.phone, clean.licence, clean.state)) {
+        return res.status(400).json({ success: false, errors: [DUPLICATE_MESSAGE] });
       }
       const base = slugify(`${businessName.split(' · ')[0]} ${clean.city || ''} ${clean.state || ''}`) || 'pro';
       let slug = base;
@@ -232,7 +295,11 @@ export function registerProListingsRoutes(app: Express) {
       const listing = toPublic((rows as unknown as Row[])[0]);
       if (listing.indexable) await pingIndexNow(listing.slug);
       res.json({ success: true, listing });
-    } catch (err) {
+    } catch (err: any) {
+      // Two saves racing past the count check meet the one-active-listing-per-account unique index (db.ts).
+      if (err?.code === '23505' || /idx_pro_listings_one_per_user/.test(String(err?.message))) {
+        return res.status(400).json({ success: false, errors: ['Each business can have one free listing, and this account already has one.'] });
+      }
       console.error('[pros] create failed:', err);
       res.status(500).json({ success: false, errors: ['Could not save your listing. Please try again.'] });
     }
@@ -248,6 +315,9 @@ export function registerProListingsRoutes(app: Express) {
       if (!row) return res.status(404).json({ success: false, errors: ['Listing not found.'] });
       const { errors, clean } = validateFields(req.body || {}, row.trade_category);
       if (errors.length) return res.status(400).json({ success: false, errors });
+      if (await findDuplicate(row.clerk_user_id, row.trade_category, clean.phone, clean.licence, clean.state, row.id)) {
+        return res.status(400).json({ success: false, errors: [DUPLICATE_MESSAGE] });
+      }
       const updated = await withDb((sql) => sql`
         UPDATE pro_listings SET zip_codes_json = ${JSON.stringify(clean.zips)}, city = ${clean.city}, state = ${clean.state},
           phone = ${clean.phone}, website = ${clean.website}, licence_number = ${clean.licence}, description = ${clean.description},

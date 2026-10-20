@@ -49,6 +49,8 @@ const Disclosure: React.FC = () => (
   <p className="text-[11px] text-slate-500 leading-relaxed">
     Listings are created by the businesses themselves. Details are supplied by the business and not verified by
     Before Regret -- <a href="/disclaimer/" className="underline hover:text-slate-700">check any licence yourself</a> before you hire.
+    Wrong details, or a listing for your business that you didn't make? Write to{' '}
+    <a href="mailto:hello@beforeregret.com" className="underline hover:text-slate-700">hello@beforeregret.com</a>.
   </p>
 );
 
@@ -64,11 +66,11 @@ export const ProListingCard: React.FC<{ listing: ProListing; onNavigate: (p: str
         </div>
         <div className="min-w-0">
           <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">{listing.tradeCategory}</div>
-          <ContentLink href={`/pros/${listing.slug}/`} onNavigate={onNavigate} className="text-base font-bold text-slate-900 hover:text-blue-700">
+          <ContentLink href={`/pros/${listing.slug}/`} onNavigate={onNavigate} className="block text-base font-bold text-slate-900 hover:text-blue-700">
             {listing.businessName}
           </ContentLink>
           {area(listing) && (
-            <div className="mt-0.5 text-xs text-slate-500 inline-flex items-center gap-1"><MapPin className="w-3 h-3" aria-hidden="true" />Serves {area(listing)}</div>
+            <div className="mt-0.5 text-xs text-slate-500 flex items-center gap-1"><MapPin className="w-3 h-3" aria-hidden="true" />Serves {area(listing)}</div>
           )}
           {listing.licenceNumber && <div className="text-[10px] text-slate-500 mt-0.5 font-mono">Licence #{listing.licenceNumber}</div>}
         </div>

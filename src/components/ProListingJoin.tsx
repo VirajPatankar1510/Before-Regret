@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronRight, Loader2, Lock, CheckCircle2, AlertCircle, X, ArrowRight, Trash2 } from 'lucide-react';
+import { ChevronRight, Loader2, Lock, CheckCircle2, AlertCircle, X, ArrowRight, Trash2, Pencil } from 'lucide-react';
 import { TRADE_CATEGORIES, requiresLicenceNumber, requiresBrokerageName, brokerageNameError } from '../data/sponsoredVendors';
 import { checkVendorWebsite, VENDOR_WEBSITE_RULE } from '../data/vendorWebsite';
 import { useAuth } from '../context/AuthContext';
@@ -36,6 +36,14 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
   const [saving, setSaving] = useState(false);
   const [created, setCreated] = useState<ProListing | null>(null);
   const [mine, setMine] = useState<Mine[] | null>(null);
+  // The listing being edited (phone, website, ZIPs, licence, description). Name and trade stay fixed: a new name
+  // would mean a new page address, and switching trade would be a way into another category.
+  const [editing, setEditing] = useState<Mine | null>(null);
+  const [savedNote, setSavedNote] = useState('');
+  const [checkingZip, setCheckingZip] = useState(false);
+  // Shown under the ZIP box itself -- on a phone the form's error list is a long scroll away.
+  const [zipError, setZipError] = useState('');
+  const activeTrade = editing ? editing.tradeCategory : tradeCategory;
 
   // Restore what the business typed before signing in (the sign-in redirect reloads the page).
   useEffect(() => {
@@ -61,13 +69,26 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
   };
   useEffect(() => { if (user) loadMine(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [user]);
 
-  const addZip = () => {
+  const addZip = async () => {
     const z = zipInput.trim();
-    if (!/^\d{5}$/.test(z)) return setErrors(['Enter a 5-digit ZIP code.']);
-    if (zips.includes(z)) return setErrors(['You already added that ZIP code.']);
-    if (zips.length >= MAX_ZIPS) return setErrors([`You can list up to ${MAX_ZIPS} ZIP codes.`]);
-    setErrors([]); setZips([...zips, z]); setZipInput('');
+    if (!/^\d{5}$/.test(z)) return setZipError('Enter a 5-digit ZIP code.');
+    if (zips.includes(z)) return setZipError('You already added that ZIP code.');
+    if (zips.length >= MAX_ZIPS) return setZipError(`You can list up to ${MAX_ZIPS} ZIP codes.`);
+    setCheckingZip(true);
+    try {
+      const res = await fetch(`/api/pros/zip-check?zip=${z}${zips[0] ? `&near=${zips[0]}` : ''}`);
+      const data = await res.json();
+      if (data && data.ok === false) return setZipError(data.error);
+    } catch { /* offline: the server checks again on save */ } finally { setCheckingZip(false); }
+    setZipError(''); setZips([...zips, z]); setZipInput('');
   };
+
+  const startEdit = (l: Mine) => {
+    setEditing(l); setCreated(null); setErrors([]); setSavedNote(''); setZipInput(''); setZipError('');
+    setZips(l.zipCodes); setPhone(l.phone); setWebsite(l.website || ''); setLicenceNumber(l.licenceNumber || ''); setDescription(l.description || '');
+    window.scrollTo(0, 0);
+  };
+  const cancelEdit = () => { setEditing(null); setErrors([]); };
 
   const signIn = () => {
     sessionStorage.setItem(STASH_KEY, JSON.stringify({ businessName, tradeCategory, zips, phone, website, licenceNumber, brokerageName, description }));
@@ -77,20 +98,41 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs: string[] = [];
-    if (businessName.trim().length < 2) errs.push('Enter your business name.');
-    if (!tradeCategory) errs.push('Choose your business type.');
+    if (!editing && businessName.trim().length < 2) errs.push('Enter your business name.');
+    if (!editing && !tradeCategory) errs.push('Choose your business type.');
     if (zips.length < 1) errs.push('Add at least one ZIP code you serve.');
-    if (phone.trim().length < 7) errs.push('Enter a phone number buyers can call.');
-    if (tradeCategory && requiresLicenceNumber(tradeCategory) && licenceNumber.trim().length < 3) errs.push(`A licence, registration, or certification number is required for ${tradeCategory}.`);
-    if (tradeCategory && requiresBrokerageName(tradeCategory)) { const b = brokerageNameError(brokerageName); if (b) errs.push(b); }
+    { let d = phone.replace(/\D/g, ''); if (d.length === 11 && d.startsWith('1')) d = d.slice(1); if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(d)) errs.push('Enter a 10-digit U.S. phone number buyers can call, with no extension.'); }
+    if (activeTrade && requiresLicenceNumber(activeTrade) && (licenceNumber.trim().length < 3 || !/\d/.test(licenceNumber))) errs.push(`A licence, registration, or certification number is required for ${activeTrade}.`);
+    if (!editing && tradeCategory && requiresBrokerageName(tradeCategory)) { const b = brokerageNameError(brokerageName); if (b) errs.push(b); }
     const site = checkVendorWebsite(website);
     if (!site.ok) errs.push(site.error || VENDOR_WEBSITE_RULE);
-    if (!attested) errs.push('Tick the confirmation box to accept the Terms of Service.');
+    if (!editing && !attested) errs.push('Tick the confirmation box to accept the Terms of Service.');
     if (errs.length) return setErrors(errs);
     if (!user) return setErrors(['Please sign in first.']);
     setSaving(true); setErrors([]);
     const token = await getToken();
     if (!token) { setSaving(false); return setErrors(['Your session has expired -- please sign in again.']); }
+    if (editing) {
+      try {
+        const res = await fetch(`/api/pros/${editing.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            zipCodes: zips, phone: phone.trim(), website: website.trim() || undefined,
+            licenceNumber: licenceNumber.trim() || undefined, description: description.trim() || undefined,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) { setErrors(data?.errors || [data?.error || 'Could not save your changes.']); return; }
+        setEditing(null); setSavedNote('Changes saved -- your listing is updated.');
+        loadMine();
+      } catch {
+        setErrors(['Could not reach the server. Please try again.']);
+      } finally {
+        setSaving(false);
+      }
+      return;
+    }
     try {
       const res = await fetch('/api/pros', {
         method: 'POST',
@@ -114,7 +156,8 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
   };
 
   const remove = async (id: number) => {
-    if (!window.confirm('Remove this listing from Find a Pro?')) return;
+    if (!window.confirm('Remove this listing from Find a Pro? Its page will stop working.')) return;
+    setEditing(null); setSavedNote('');
     const token = await getToken();
     if (!token) return;
     await fetch(`/api/pros/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
@@ -144,7 +187,7 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
             listing shows your business name, phone, website and the ZIP codes you serve, and gives you a page of your own.
           </p>
           <ul className="space-y-2 text-sm text-slate-700">
-            {['Free, with no time limit', 'Live as soon as you save it', 'Remove it any time'].map((t) => (
+            {['Free, with no time limit', 'Live as soon as you save it', 'One free listing per business', 'Remove it any time'].map((t) => (
               <li key={t} className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-home-moss mt-0.5 shrink-0" />{t}</li>
             ))}
           </ul>
@@ -165,23 +208,43 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
                 <span>View your listing</span><ArrowRight className="w-4 h-4" />
               </ContentLink>
             </div>
+          ) : !editing && mine && mine.length > 0 ? (
+            <div className="space-y-2">
+              <h2 className="font-serif text-2xl font-semibold">You already have a listing</h2>
+              <p className="text-sm text-slate-600">Each business can have one free listing. You can edit it below, or remove it to list a different business.</p>
+              {savedNote && <p className="text-sm font-semibold text-emerald-700 inline-flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" />{savedNote}</p>}
+            </div>
           ) : (
             <form onSubmit={submit} className="space-y-3">
-              <h2 className="font-serif text-2xl font-semibold">Your listing</h2>
-              <input className={input} placeholder="Business name" value={businessName} onChange={(e) => setBusinessName(e.target.value)} maxLength={80} />
-              <select className={input} value={tradeCategory} onChange={(e) => setTradeCategory(e.target.value)} aria-label="Business type">
-                <option value="">Select your business type...</option>
-                {TRADE_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
+              <h2 className="font-serif text-2xl font-semibold">{editing ? 'Edit your listing' : 'Your listing'}</h2>
+              {editing ? (
+                <div className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm">
+                  <div className="font-bold text-slate-900">{editing.businessName}</div>
+                  <div className="text-xs text-slate-500">{editing.tradeCategory} -- the name and business type can&apos;t be changed. To change them, remove this listing and list again.</div>
+                </div>
+              ) : (
+                <>
+                  <input className={input} placeholder="Business name" value={businessName} onChange={(e) => setBusinessName(e.target.value)} maxLength={80} />
+                  <select className={input} value={tradeCategory} onChange={(e) => setTradeCategory(e.target.value)} aria-label="Business type">
+                    <option value="">Select your business type...</option>
+                    {TRADE_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </>
+              )}
               <div className="space-y-2">
                 <div className="flex gap-2">
                   <input
-                    className={input} inputMode="numeric" placeholder={`ZIP codes you serve (up to ${MAX_ZIPS})`} value={zipInput}
-                    onChange={(e) => setZipInput(e.target.value.replace(/\D/g, '').slice(0, 5))}
+                    className={input} inputMode="numeric" placeholder="ZIP code you serve" aria-label="ZIP code you serve" value={zipInput}
+                    onChange={(e) => { setZipInput(e.target.value.replace(/\D/g, '').slice(0, 5)); setZipError(''); }}
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addZip(); } }}
                   />
-                  <button type="button" onClick={addZip} className="px-4 py-3 bg-slate-900 text-white text-sm font-bold rounded-xl shrink-0">Add</button>
+                  <button type="button" onClick={addZip} disabled={checkingZip} className="px-4 py-3 bg-slate-900 text-white text-sm font-bold rounded-xl shrink-0 disabled:opacity-60">
+                    {checkingZip ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Add'}
+                  </button>
                 </div>
+                {zipError
+                  ? <p role="alert" className="text-xs text-red-600 font-medium px-1 flex items-start gap-1.5"><AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />{zipError}</p>
+                  : <p className="text-[11px] text-slate-500 px-1">Up to {MAX_ZIPS} ZIP codes, all within 100 miles of each other.</p>}
                 {zips.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {zips.map((z) => (
@@ -196,14 +259,14 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
               <input className={input} type="tel" placeholder="Phone buyers will call" value={phone} onChange={(e) => setPhone(e.target.value)} />
               <input className={input} type="url" placeholder="Website (optional)" value={website} onChange={(e) => setWebsite(e.target.value)} />
               <p className="text-[11px] text-slate-500 -mt-1">{VENDOR_WEBSITE_RULE}</p>
-              {tradeCategory && requiresBrokerageName(tradeCategory) && (
+              {!editing && tradeCategory && requiresBrokerageName(tradeCategory) && (
                 <input className={input} placeholder="Brokerage name (shown next to your name)" value={brokerageName} onChange={(e) => setBrokerageName(e.target.value)} maxLength={80} />
               )}
-              {tradeCategory && requiresLicenceNumber(tradeCategory) && (
+              {activeTrade && requiresLicenceNumber(activeTrade) && (
                 <div className="space-y-1">
                   <input className={input} placeholder="State licence / registration number" value={licenceNumber} onChange={(e) => setLicenceNumber(e.target.value)} maxLength={60} />
                   <p className="text-[11px] text-slate-500 leading-relaxed px-1">
-                    Required for {tradeCategory}. It <strong>appears on your listing</strong> exactly as you type it. You are confirming it is
+                    Required for {activeTrade}. It <strong>appears on your listing</strong> exactly as you type it. You are confirming it is
                     current, valid for this trade and held by this business -- a false or expired number means removal (Terms 4.4).
                   </p>
                 </div>
@@ -228,7 +291,15 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
                   </button>
                 </div>
               )}
-              {!authLoading && user && (
+              {!authLoading && user && editing && (
+                <div className="flex gap-2">
+                  <button type="submit" disabled={saving} className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl disabled:opacity-60">
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}<span>{saving ? 'Saving…' : 'Save changes'}</span>
+                  </button>
+                  <button type="button" onClick={cancelEdit} className="px-5 py-3.5 border border-slate-300 text-slate-700 text-sm font-bold rounded-xl">Cancel</button>
+                </div>
+              )}
+              {!authLoading && user && !editing && (
                 <>
                   <p className="text-xs text-slate-500 text-right">Signed in as <span className="font-semibold text-slate-700">{user.email || user.displayName}</span></p>
                   <label className="flex items-start gap-2.5 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 cursor-pointer">
@@ -255,13 +326,21 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
 
           {mine && mine.length > 0 && (
             <div className="border-t border-slate-200 pt-5 space-y-2">
-              <h3 className="text-sm font-bold text-home-ink">Your listings</h3>
+              <h3 className="text-sm font-bold text-home-ink">Your listing</h3>
               {mine.map((l) => (
                 <div key={l.id} className="flex items-center justify-between gap-3 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm">
-                  <ContentLink href={`/pros/${l.slug}/`} onNavigate={onNavigate} className="font-semibold text-blue-700 hover:underline truncate">{l.businessName}</ContentLink>
-                  <button type="button" onClick={() => remove(l.id)} className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-red-600">
-                    <Trash2 className="w-3.5 h-3.5" />Remove
-                  </button>
+                  <div className="min-w-0">
+                    <ContentLink href={`/pros/${l.slug}/`} onNavigate={onNavigate} className="block font-semibold text-blue-700 hover:underline truncate">{l.businessName}</ContentLink>
+                    <div className="text-[11px] text-slate-500">{l.indexable ? 'Complete -- your page can appear in Google search.' : 'Add a description of 80+ characters so your page can appear in Google search.'}</div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <button type="button" onClick={() => startEdit(l)} className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700">
+                      <Pencil className="w-3.5 h-3.5" />Edit
+                    </button>
+                    <button type="button" onClick={() => remove(l.id)} className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-red-600">
+                      <Trash2 className="w-3.5 h-3.5" />Remove
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

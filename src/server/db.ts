@@ -655,6 +655,8 @@ export async function ensureArticlesSchema(): Promise<void> {
     )
   `;
   await sql`CREATE INDEX IF NOT EXISTS idx_pro_listings_user ON pro_listings(clerk_user_id)`;
+  // One free listing per business (owner, 2026-10-20): the API checks first; this stops two racing saves.
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_pro_listings_one_per_user ON pro_listings(clerk_user_id) WHERE status = 'active'`;
   await sql`CREATE INDEX IF NOT EXISTS idx_pro_listings_status_trade ON pro_listings(status, trade_category)`;
 
   // Advertiser-supplied licence / registration / certification number, added to all four ad tables
