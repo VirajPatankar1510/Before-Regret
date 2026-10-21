@@ -6,6 +6,7 @@ import { classifyGuideTopic, GUIDE_CLUSTER_META } from '../../utils/homeContent'
 import { ArticleClosingNote } from './ArticleClosingNote';
 import { BookPromoCard, BookPromoSkyscraper } from '../BookPromo';
 import { ContentLink } from '../home/ContentLink';
+import { CountyDataSection } from './CountyDataSection';
 import { GUIDE_AD_SLOT_PLACEHOLDER } from '../GuideAdSlot';
 import type { GuideSummary } from '../../utils/relatedGuides';
 
@@ -191,6 +192,9 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
           <article className="rounded-3xl bg-white border border-home-linen shadow-sm px-5 py-7 sm:px-10 sm:py-10 text-base sm:text-[17px]">
             {renderArticleMarkdown(article.bodyMarkdown, { pageUrl: canonicalUrl })}
           </article>
+
+          {/* County figures, on the county permit guides only (CountyDataSection.tsx for the rules). */}
+          <CountyDataSection slug={article.slug} onNavigate={onNavigate} />
 
           {/* The book on phones and tablets; desktop carries it in the right rail instead. */}
           <BookPromoCard className="lg:hidden" />

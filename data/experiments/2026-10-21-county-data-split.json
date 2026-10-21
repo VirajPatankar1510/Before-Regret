@@ -1,0 +1,147 @@
+{
+  "experiment": "County data section on county permit guides (P4 option A)",
+  "started": "2026-10-21",
+  "readOn": "2026-11-25",
+  "owner": "approved split test 2026-10-21",
+  "method": "Google Search Console page dimension, 28 days ending 2026-10-21 (includes 2-3 day lag). Groups balanced by alternating down the list sorted by impressions.",
+  "metric": "Change in impressions per page and average position vs each group's own baseline, same 28-day window length, read 2026-11-25. Clicks too sparse to decide on.",
+  "decisionRule": "Treatment >= control: roll out to the 11 control guides. Treatment drops >20% more than control: remove the section and investigate. Tie: roll out (useful to readers, low risk).",
+  "treatment": {
+    "pages": [
+      {
+        "slug": "check-building-permits-riverside-county-ca",
+        "impressions": 273,
+        "clicks": 2,
+        "position": 8.608058608058608
+      },
+      {
+        "slug": "check-building-permits-philadelphia-county-pa",
+        "impressions": 246,
+        "clicks": 2,
+        "position": 7.191056910569106
+      },
+      {
+        "slug": "check-building-permits-los-angeles-county-ca",
+        "impressions": 155,
+        "clicks": 2,
+        "position": 9.245161290322581
+      },
+      {
+        "slug": "check-building-permits-orange-county-ca",
+        "impressions": 154,
+        "clicks": 8,
+        "position": 7.097402597402597
+      },
+      {
+        "slug": "check-building-permits-queens-ny",
+        "impressions": 116,
+        "clicks": 1,
+        "position": 9.28448275862069
+      },
+      {
+        "slug": "check-building-permits-miami-dade-county-fl",
+        "impressions": 81,
+        "clicks": 0,
+        "position": 8.567901234567902
+      },
+      {
+        "slug": "check-building-permits-cook-county-il",
+        "impressions": 25,
+        "clicks": 1,
+        "position": 33.2
+      },
+      {
+        "slug": "check-building-permits-middlesex-county-ma",
+        "impressions": 21,
+        "clicks": 2,
+        "position": 4.761904761904762
+      },
+      {
+        "slug": "check-building-permits-santa-clara-county-ca",
+        "impressions": 0,
+        "clicks": 0,
+        "position": null
+      },
+      {
+        "slug": "check-building-permits-sacramento-county-ca",
+        "impressions": 0,
+        "clicks": 0,
+        "position": null
+      }
+    ],
+    "impressions": 1071,
+    "clicks": 18
+  },
+  "control": {
+    "pages": [
+      {
+        "slug": "check-building-permits-san-bernardino-county-ca",
+        "impressions": 319,
+        "clicks": 1,
+        "position": 8.037617554858933
+      },
+      {
+        "slug": "check-building-permits-maricopa-county-az",
+        "impressions": 161,
+        "clicks": 3,
+        "position": 6.77639751552795
+      },
+      {
+        "slug": "check-building-permits-dallas-county-tx",
+        "impressions": 156,
+        "clicks": 2,
+        "position": 10.038461538461538
+      },
+      {
+        "slug": "check-building-permits-tarrant-county-tx",
+        "impressions": 149,
+        "clicks": 0,
+        "position": 7.496644295302014
+      },
+      {
+        "slug": "check-building-permits-san-diego-county-ca",
+        "impressions": 124,
+        "clicks": 3,
+        "position": 7.532258064516129
+      },
+      {
+        "slug": "check-building-permits-hillsborough-county-fl",
+        "impressions": 50,
+        "clicks": 0,
+        "position": 39.68
+      },
+      {
+        "slug": "check-building-permits-bronx-ny",
+        "impressions": 33,
+        "clicks": 0,
+        "position": 7.363636363636363
+      },
+      {
+        "slug": "check-building-permits-clark-county-nv",
+        "impressions": 8,
+        "clicks": 0,
+        "position": 5
+      },
+      {
+        "slug": "check-building-permits-manhattan-ny",
+        "impressions": 6,
+        "clicks": 0,
+        "position": 7.833333333333333
+      },
+      {
+        "slug": "check-building-permits-broward-county-fl",
+        "impressions": 0,
+        "clicks": 0,
+        "position": null
+      },
+      {
+        "slug": "check-building-permits-brooklyn-ny",
+        "impressions": 0,
+        "clicks": 0,
+        "position": null
+      }
+    ],
+    "impressions": 1006,
+    "clicks": 9
+  }
+}
