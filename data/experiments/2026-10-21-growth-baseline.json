@@ -1,0 +1,147 @@
+{
+  "generatedAt": "2026-10-21T07:17:00.818Z",
+  "script": "scripts/growth-baseline.ts",
+  "google": {
+    "source": "Search Console page dimension",
+    "days": 28,
+    "endingOn": "2026-10-21",
+    "note": "includes the 2-3 day reporting lag",
+    "totals": {
+      "impressions": 10000,
+      "clicks": 93,
+      "urlsShown": 120
+    },
+    "byKind": {
+      "county-permit-guide": {
+        "pagesShown": 17,
+        "published": 21,
+        "impressions": 2001,
+        "clicks": 25,
+        "imprPerPublishedPage": 95
+      },
+      "other-guide": {
+        "pagesShown": 73,
+        "published": 79,
+        "impressions": 7045,
+        "clicks": 54,
+        "imprPerPublishedPage": 89
+      },
+      "unpublished-guide-url": {
+        "pagesShown": 12,
+        "published": 0,
+        "impressions": 426,
+        "clicks": 9,
+        "imprPerPublishedPage": null
+      },
+      "research": {
+        "pagesShown": 8,
+        "published": 9,
+        "impressions": 123,
+        "clicks": 1,
+        "imprPerPublishedPage": 14
+      },
+      "homepage": {
+        "pagesShown": 1,
+        "published": 1,
+        "impressions": 18,
+        "clicks": 3,
+        "imprPerPublishedPage": 18
+      },
+      "other": {
+        "pagesShown": 9,
+        "published": 0,
+        "impressions": 387,
+        "clicks": 1,
+        "imprPerPublishedPage": null
+      }
+    },
+    "unpublishedGuideUrlsShown": [
+      {
+        "url": "/guides/knob-tube-fuse-box-look-like/",
+        "impressions": 154,
+        "clicks": 2
+      },
+      {
+        "url": "/guides/happens-if-seller-didn-t-disclose-past-insurance-claim/",
+        "impressions": 135,
+        "clicks": 3
+      },
+      {
+        "url": "/guides/home-inspection-cover-retaining-walls/",
+        "impressions": 70,
+        "clicks": 4
+      },
+      {
+        "url": "/guides/get-homeowners-insurance-wood-burning-fireplace-no-chimney-c/",
+        "impressions": 22,
+        "clicks": 0
+      },
+      {
+        "url": "/guides/polybutylene-pipes-always-leak/",
+        "impressions": 21,
+        "clicks": 0
+      },
+      {
+        "url": "/guides/buyers-remorse-after-buying-a-house/",
+        "impressions": 9,
+        "clicks": 0
+      },
+      {
+        "url": "/guides/check-building-permit-history-by-address-any-us-county/",
+        "impressions": 9,
+        "clicks": 0
+      },
+      {
+        "url": "/guides/needs-be-done-before-home-inspection/",
+        "impressions": 2,
+        "clicks": 0
+      },
+      {
+        "url": "/guides/emotional-cheating-vs-close-friendship-boundaries",
+        "impressions": 1,
+        "clicks": 0
+      },
+      {
+        "url": "/guides/home-inspectors-wish-buyers-knew-before-closing/",
+        "impressions": 1,
+        "clicks": 0
+      },
+      {
+        "url": "/guides/long-distance-deadlock-closing-the-gap",
+        "impressions": 1,
+        "clicks": 0
+      },
+      {
+        "url": "/guides/red-flag-evaluation-boundary-matrix",
+        "impressions": 1,
+        "clicks": 0
+      }
+    ]
+  },
+  "bing": {
+    "source": "data/keywords/2026-10-21-bing-queries.json",
+    "queries": 413,
+    "impressions": 642,
+    "clicks": 57,
+    "note": "relative only"
+  },
+  "ctaClicks": {
+    "days": 28,
+    "unit": "unique visitor-days",
+    "byCta": [
+      {
+        "cta": "guide_closing_report",
+        "n": 1
+      },
+      {
+        "cta": "nav_free_report",
+        "n": 1
+      }
+    ],
+    "total": 2
+  },
+  "backlinks": {
+    "source": "data/backlinks/ledger.json",
+    "earned": 1
+  }
+}

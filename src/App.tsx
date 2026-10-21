@@ -806,7 +806,8 @@ export function App() {
       applyHeadSeo({
         title: `Property Insights | ${report?.propertyInfo?.address || 'Subject Property'}`,
         description: 'Private multi-hazard public record research synthesis for subject property.',
-        canonicalUrl: `https://www.beforeregret.com/report/${report?.id || 'private'}`,
+        // Self-referencing, never /report/<id> (that 301s here). The server sends the noindex header too.
+        canonicalUrl: report?.id ? `https://www.beforeregret.com/insights/${report.id}` : 'https://www.beforeregret.com/',
         robotsDirective: 'noindex, nofollow'
       });
     } else if (pseoRoute.type === 'admin') {

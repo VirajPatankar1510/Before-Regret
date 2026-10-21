@@ -1397,6 +1397,56 @@ export async function createApp() {
       }
     });
 
+    // Report permalinks, /insights/<id> (P1 of docs/plans/growth-execution-plan-2026-10.md, 2026-10-21).
+    // Before this, the generic catch-all below served these with the HOMEPAGE head: "index, follow",
+    // canonical "/", and a 200 even for an id that never existed. The report's own noindex arrived only
+    // after JavaScript ran, and a link pasted into a message previewed as the homepage. Now:
+    //   - every response carries X-Robots-Tag: noindex, nofollow, and the robots meta says the same;
+    //   - an id that doesn't exist is a real 404;
+    //   - a real report gets a link preview built ONLY from area facts (era, county, state). Never the
+    //     street address, ZIP or report id: a preview shows in group chats and forums, and would reveal
+    //     the house someone is buying. The report is area-based, and so is its preview.
+    // A database error fails open (200, still noindex) rather than 404-ing a real report.
+    const reportShell = (report: any | null) => {
+      const shellPath = path.join(distPath, 'shell.html');
+      const target = fs.existsSync(shellPath) ? shellPath : path.join(distPath, 'index.html');
+      let html = fs.readFileSync(target, 'utf8')
+        .replace(/<meta name="robots" content="[^"]*"\s*\/?>/, '<meta name="robots" content="noindex, nofollow" />')
+        .replace(/\s*<link rel="canonical" href="[^"]*"\s*\/?>/, '')
+        .replace(/\s*<meta property="og:url" content="[^"]*"\s*\/?>/, '');
+      if (!report) return html;
+      const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      const info = report.propertyInfo || {};
+      const county = typeof info.county === 'string' ? info.county.trim() : '';
+      const state = typeof info.state === 'string' ? info.state.trim() : '';
+      const era = typeof report.inspectionPriorities?.eraLabel === 'string' ? report.inspectionPriorities.eraLabel.trim() : '';
+      const where = [county, state].filter(Boolean).join(', ');
+      const title = `Home-buying checklist${era ? `: ${era}` : ''}${where ? ` in ${where}` : ''} | Before Regret`;
+      const desc = `What to check, ask and verify before buying a home${where ? ` in ${where}` : ''} -- built from public records for the area, free.`;
+      return html
+        .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
+        .replace(/<meta name="description" content="[^"]*"/, `<meta name="description" content="${esc(desc)}"`)
+        .replace(/<meta property="og:title" content="[^"]*"/, `<meta property="og:title" content="${esc(title)}"`)
+        .replace(/<meta property="og:description" content="[^"]*"/, `<meta property="og:description" content="${esc(desc)}"`)
+        .replace(/<meta name="twitter:title" content="[^"]*"/, `<meta name="twitter:title" content="${esc(title)}"`)
+        .replace(/<meta name="twitter:description" content="[^"]*"/, `<meta name="twitter:description" content="${esc(desc)}"`);
+    };
+    app.get(['/insights/:reportId', '/insights/:reportId/'], async (req, res) => {
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+      const { reportId } = req.params;
+      let report: any = reportsStore.get(reportId) ?? null;
+      if (!report && isDbConfigured()) {
+        try {
+          report = await getGeneratedReportBody(reportId);
+        } catch (err) {
+          console.error(`[insights] page lookup failed for ${reportId}, serving the noindex shell:`, err);
+          return res.status(200).send(reportShell(null));
+        }
+        if (!report) return res.status(404).send(reportShell(null));
+      }
+      res.status(200).send(reportShell(report));
+    });
+
     // Same soft-404 bug as the two handlers above, generalized: any path that isn't a real static
     // asset, a prerendered page, a guide/county slug (both already checked above), or one of the
     // SPA's own known client-only routes used to fall all the way through here and get an
