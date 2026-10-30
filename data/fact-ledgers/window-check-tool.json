@@ -1,0 +1,117 @@
+{
+  "_about": "Window Check tool (planned 2026-10-22, owner: universal, not location-based, shareable by a window company with its customers; first sponsor offer: Ecoline Windows). Every 'what this sign means' line and every formula in the tool traces to an entry here.",
+  "slug": "tools/window-check",
+  "question": "What are my windows telling me -- fog, condensation, drafts, rot -- and what should I do or ask about it?",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "NRCan: condensation forms in colder weather when moist indoor air meets cooler surfaces; risk rises as it gets colder and/or indoor humidity rises. On windows it can form on the glass, on frames and sashes, near weather seals, and between the panes if the seal is broken -- in which case the insulating glass unit should be replaced.",
+      "quote": "Condensation will often occur during colder weather when the moist air inside the home comes into contact with cooler surfaces. ... The risk of condensation increases as the weather gets colder and/or the inside humidity rises. ... between the glass panes if the seal is broken (replace the insulating glass unit).",
+      "url": "https://natural-resources.canada.ca/energy-efficiency/product-energy-ratings/condensation",
+      "readOn": "2026-10-22",
+      "pageModified": "2025-01-16",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "NRCan: low-e coatings on high-performance windows can lead to condensation on the OUTSIDE surface of the glass around sunrise after a cool, calm, humid night; risk is higher if the low-e coating is on the room-side surface.",
+      "quote": "if the night has been cool and calm and the air is humid, condensation may form on the outside surface of the glass around sunrise. Also, there is a higher risk of condensation if the low-e coating has been applied to the room-side surface of the glass.",
+      "url": "https://natural-resources.canada.ca/energy-efficiency/product-energy-ratings/condensation",
+      "readOn": "2026-10-22",
+      "pageModified": "2025-01-16",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "NRCan: air flow across the glass keeps it warmer; deep sills, closed drapes and blinds, and furniture can block air movement and let cool air pool near a window, leading to condensation. Run the HRV if there is one.",
+      "quote": "Deep window sills, closed drapes and blinds, and even nearby furniture can block air movement and allow cool air to pool near a window, which can lead to condensation on the glass. ... Make sure your Heat Recovery Ventilator (HRV) is on if you have one.",
+      "url": "https://natural-resources.canada.ca/energy-efficiency/product-energy-ratings/condensation",
+      "readOn": "2026-10-22",
+      "pageModified": "2025-01-16",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "NRCan Keeping the Heat In 8.1.7: interior condensation and frost are common complaints; many homeowners buy new windows and find it gets worse, because the old leaky windows lowered humidity and the new ones seal the house more tightly. Solutions: reduce indoor humidity and improve ventilation, or raise the glass surface temperature with more efficient windows; triple glazing helps edge fogging/freezing in extreme climates.",
+      "quote": "Many homeowners buy new windows only to find that the problem becomes worse because the old, leaky windows actually helped to reduce humidity. The new windows seal the house more tightly, causing a rise in humidity. Some solutions are to reduce humidity levels in the house and improve the house ventilation.",
+      "url": "https://natural-resources.canada.ca/energy-efficiency/home-energy-efficiency/keeping-heat-section-8-upgrading-windows-exterior-doors",
+      "readOn": "2026-10-22",
+      "pageModified": "2025-01-14",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "NRCan 8.1.7: condensation between panes of NON-sealed units or storm windows means moist house air leaked past the inner pane; common on upper storeys (stack effect); fix by weatherstripping the inner sash and keeping storm-window weep holes open. Condensation inside a SEALED double-glazed unit means the seal is broken: best corrected by replacing the glazing unit; check the warranty; refurbishing is considered a temporary fix that won't restore original efficiency.",
+      "quote": "When condensation forms between panes on non-sealed glazing units or storm windows, moist house air has leaked past the inner pane ... weatherstrip the inner sash ... make sure that the weep holes on the storm windows ... are open to the outside. If condensation occurs inside a sealed double-glazed unit, due to the seal being broken, the problem is best corrected by replacing the glazing unit. Check to see if the window is still under warranty. Although some specialty companies can refurbish sealed glazing units that have failed, this is considered a temporary fix",
+      "url": "https://natural-resources.canada.ca/energy-efficiency/home-energy-efficiency/keeping-heat-section-8-upgrading-windows-exterior-doors",
+      "readOn": "2026-10-22",
+      "pageModified": "2025-01-14",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "NRCan 8.1.6 Taking stock: check each window for rot, mold and/or staining on or around it, the condition of the glass, putty and paint, weatherstripping, and hardware operation; some need only air sealing, others major upgrading or replacement; check for air leakage around the frame and at movable joints. 8.1.5: if glazing is single-pane or in poor condition, a new sealed glazing insert is an option; if the frame is in poor condition it may be time to replace the unit. 8.1: windows can be repaired by servicing hardware, retrofitted with caulking and weatherstripping, or replaced.",
+      "quote": "Check each window for signs of damage: rot, mold and/or staining on or around the window, the condition of the glass, putty and paint, weatherstripping and the operation and condition of the hardware. Some windows may need only minor air sealing work, while others require major upgrading or even replacement. ... if the glazing is only a single pane of glass or is in poor condition, you can buy a new sealed glazing window insert. If the frame is in poor condition, it may be time to replace the unit.",
+      "url": "https://natural-resources.canada.ca/energy-efficiency/home-energy-efficiency/keeping-heat-section-8-upgrading-windows-exterior-doors",
+      "readOn": "2026-10-22",
+      "pageModified": "2025-01-14",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "NRCan 8.1.10: weatherstripping seals sash to frame; worn built-in weatherstripping can be matched by taking a sample to the manufacturer or supplier. Technical note: building codes require every bedroom to have at least one window that opens from the inside for emergency escape -- mind this before sealing windows shut.",
+      "quote": "For newer windows with built-in weatherstripping that has lost its effectiveness over time, pry out a sample and take it to the window manufacturer or supplier for replacement with the same type. ... Building codes require that every bedroom have at least one window that opens from the inside to allow escape in case of emergency. Be mindful of this requirement before deciding to seal shut certain windows.",
+      "url": "https://natural-resources.canada.ca/energy-efficiency/home-energy-efficiency/keeping-heat-section-8-upgrading-windows-exterior-doors",
+      "readOn": "2026-10-22",
+      "pageModified": "2025-01-14",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "claim": "NRCan humidity: dampness, mould on walls and heavy condensation on windows are signs of too much moisture. To reduce it: set a furnace humidifier lower; vent the clothes dryer outside; exhaust fans in bathrooms and kitchens venting outside; consider an HRV; lids on pots, shorter showers, store wood outdoors.",
+      "quote": "Dampness, mould growth on walls and heavy condensation on windows are signs of too much moisture. ... If your furnace has a humidifier, set it lower to reduce humidity levels. ... Ensure that your clothes dryer vents outside. Install exhaust fans in bathrooms and kitchens, and make sure the fans vent directly to the outside. Consider installing a heat recovery ventilator",
+      "url": "https://natural-resources.canada.ca/energy-efficiency/energy-star/products/list-certified-products/humidity-levels-cooling-ventilating-equipment",
+      "readOn": "2026-10-22",
+      "pageModified": "2025-03-21",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "claim": "US DOE: caulk is for cracks and openings between stationary components such as around window frames; weatherstripping seals components that move, such as operable windows.",
+      "quote": "Caulk is generally used for cracks and openings between stationary house components such as around door and window frames. Weatherstripping is used to seal components that move, such as doors and operable windows.",
+      "url": "https://www.energy.gov/cmei/buildings/articles/energy-efficient-home-improvement-credit-insulation-and-air-sealing",
+      "readOn": "2026-10-22",
+      "method": "browser"
+    },
+    {
+      "id": "f10",
+      "claim": "NWS El Paso Weather Calculator: saturated vapor pressure es (mb) = 6.11 x 10^(7.5T/(237.3+T)), T in deg C; dewpoint Td (deg C) = 237.3 ln(es x rh / 611) / (7.5 ln 10 - ln(es x rh / 611)). Check: 21 C at 50% RH gives Td of about 10.2 C.",
+      "quote": "es = 6.11 x 10^(7.5 x T / (237.3 + T)) ... Td = 237.3 ln(es x rh / 611) / (7.5 ln 10 - ln(es x rh / 611)) ... The dewpoint temperature will be in units of degrees Celsius",
+      "url": "https://www.weather.gov/media/epz/wxcalc/vaporPressure.pdf ; https://www.weather.gov/media/epz/wxcalc/wetBulbTdFromRh.pdf",
+      "readOn": "2026-10-22",
+      "method": "pdf"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Canadian NBC egress/daylight requirements",
+      "why": "NBC full text needs an NRC account (no account creation); municipal PDFs (Ottawa, Calgary) did not download. The tool is universal and does not grade code compliance."
+    },
+    {
+      "claim": "US IRC R310/R303 numbers in the tool",
+      "why": "verified 2026-10-22 but the owner wants a tool applicable to anyone; kept for our guides, not the tool"
+    },
+    {
+      "claim": "Energy savings % or replacement costs",
+      "why": "location- and price-dependent; would require invented numbers"
+    },
+    {
+      "claim": "DOE incense smoke test for leaks",
+      "why": "seen only in a search snippet; not on the DOE page read 2026-10-22"
+    }
+  ],
+  "blockedSources": [
+    "NRC National Building Code 2020 PDF (account required)",
+    "documents.ottawa.ca and calgary.ca egress PDFs (download failed)"
+  ]
+}

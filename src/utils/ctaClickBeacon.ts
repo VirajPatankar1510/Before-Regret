@@ -7,6 +7,15 @@
 // no personal data.
 export type CtaId = 'guide_closing_report' | 'nav_free_report';
 
+/** Inspection Report Decoder usage events -- private, for us only (src/server/ctaClicksApi.ts). */
+export type DecoderEvent =
+  | 'decoder_view' | 'decoder_view_shared' | 'decoder_scan_found' | 'decoder_scan_none'
+  | 'decoder_share' | 'decoder_print' | 'decoder_guide_click' | `decoder_open:${string}`;
+
+export function reportDecoderEvent(event: DecoderEvent): void {
+  reportCtaClick(event as unknown as CtaId);
+}
+
 export function reportCtaClick(cta: CtaId): void {
   try {
     if (typeof navigator === 'undefined' || typeof navigator.sendBeacon !== 'function') return;

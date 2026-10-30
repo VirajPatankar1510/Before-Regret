@@ -76,6 +76,8 @@ const KNOWN_STATIC_ROUTE_PREFIXES = [
   '/payment-success', '/payment-cancelled',
   '/admin/seo',
   '/pros',
+  // Exact tool paths, not a bare '/tools/' prefix: there is no /tools/ index page, so it must stay a 404.
+  '/tools/inspection-decoder',
   '/guides/', '/counties/',
   '/insights/', '/report/', '/reports/',
 ];

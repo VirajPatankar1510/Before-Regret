@@ -36,6 +36,11 @@
       "permanent": true
     },
     {
+      "source": "/tools/:slug([^/.]+)",
+      "destination": "/tools/:slug/",
+      "permanent": true
+    },
+    {
       "source": "/guides/:slug([^/.]+)",
       "destination": "/guides/:slug/",
       "permanent": true

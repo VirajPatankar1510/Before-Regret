@@ -51,6 +51,8 @@ const MyAdsPanel = lazy(() => import('./components/MyAdsPanel').then((m) => ({ d
 const FindAProHub = lazy(() => import('./components/FindAPro').then((m) => ({ default: m.FindAProHub })));
 const ProProfile = lazy(() => import('./components/FindAPro').then((m) => ({ default: m.ProProfile })));
 const ProListingJoin = lazy(() => import('./components/ProListingJoin').then((m) => ({ default: m.ProListingJoin })));
+// Inspection Report Decoder (2026-10-30): an in-browser tool, no AI or outside API. Noindex while it's a preview.
+const InspectionDecoder = lazy(() => import('./components/InspectionDecoder').then((m) => ({ default: m.InspectionDecoder })));
 const SeoAdminPanel = lazy(() => import('./components/seo/SeoAdminPanel').then((m) => ({ default: m.SeoAdminPanel })));
 const AdminGate = lazy(() => import('./components/admin/AdminGate').then((m) => ({ default: m.AdminGate })));
 const PaymentSuccess = lazy(() => import('./components/PaymentSuccess').then((m) => ({ default: m.PaymentSuccess })));
@@ -158,7 +160,7 @@ export function App() {
 
   // Active PSEO / Legal Route State
   const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'pros' | 'proJoin' | 'proProfile' | 'walkthrough' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'reportUnavailable' | 'none';
+    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'pros' | 'proJoin' | 'proProfile' | 'inspectionDecoder' | 'walkthrough' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'reportUnavailable' | 'none';
     guideSlug?: string;
     proSlug?: string;
     // 'reportUnavailable' only. A report permalink is the link people actually SHARE, so the two
@@ -219,6 +221,12 @@ export function App() {
         setCurrentStep('PSEO');
         return true;
       }
+    }
+
+    if (path === '/tools/inspection-decoder/' || path === '/tools/inspection-decoder') {
+      setPseoRoute({ type: 'inspectionDecoder' });
+      setCurrentStep('PSEO');
+      return true;
     }
 
     if (path === '/topic-ads/success/' || path.startsWith('/topic-ads/success')) {
@@ -782,6 +790,14 @@ export function App() {
       // Deliberately empty: a listing page sets its own head (src/components/FindAPro.tsx ProProfile),
       // because only it knows whether the listing is complete and therefore open to Google. Setting
       // noindex here would override the indexable tags server.ts wrote into the page.
+    } else if (pseoRoute.type === 'inspectionDecoder') {
+      // Preview: noindex until every entry has a fact-ledger line (src/data/inspectionDecoderTerms.ts).
+      applyHeadSeo({
+        title: 'Inspection Report Decoder | Before Regret',
+        description: 'Pick or paste a term from your home inspection report to see what it means, how serious it usually is, and what to ask.',
+        canonicalUrl: 'https://www.beforeregret.com/tools/inspection-decoder/',
+        robotsDirective: 'noindex, nofollow',
+      });
     } else if (pseoRoute.type === 'pros' || pseoRoute.type === 'proJoin') {
       // The directory and the sign-up page stay noindex while Find a Pro is new -- see
       // scripts/prerender-noindex-routes.tsx, which writes the matching raw-HTML shells.
@@ -1085,6 +1101,9 @@ export function App() {
             )}
             {pseoRoute.type === 'proJoin' && (
               <ProListingJoin onNavigate={handleNavigate} />
+            )}
+            {pseoRoute.type === 'inspectionDecoder' && (
+              <InspectionDecoder onNavigate={handleNavigate} />
             )}
             {pseoRoute.type === 'proProfile' && pseoRoute.proSlug && (
               <ProProfile slug={pseoRoute.proSlug} onNavigate={handleNavigate} />
