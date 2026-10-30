@@ -78,7 +78,7 @@ export const JS_SCRIPT = `<script>
 // that forgets to include them fails its own build rather than this file's.
 export function embedDocument(studyUrl: string, studyTitle: string, markup: string, data: string): string {
   return `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

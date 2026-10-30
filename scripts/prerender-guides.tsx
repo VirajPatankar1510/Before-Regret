@@ -138,6 +138,9 @@ function buildJsonLd(article: Article, canonicalUrl: string): Record<string, any
       '@type': article.articleType === 'news' ? 'NewsArticle' : 'Article',
       headline: article.title,
       description: article.metaDescription,
+      // Same language tag as the research and sunlight pages (prerender-research.tsx). Google reads a page's language
+      // from its visible text, so this is for consistency across our structured data, not a ranking lever (2026-10-30).
+      inLanguage: 'en-US',
       // The article's own first diagram where it has one -- see src/utils/articleImage.ts.
       image: resolveArticleSchemaImage(article.bodyMarkdown, canonicalUrl),
       datePublished: article.publishedAt,

@@ -88,7 +88,7 @@ function run(): void {
   ];
 
   const html = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -99,6 +99,7 @@ function run(): void {
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="${escapeHtmlAttr(URL_)}">
   <meta property="og:title" content="${escapeHtmlAttr(TITLE)}">
   <meta property="og:description" content="${escapeHtmlAttr(DESC)}">

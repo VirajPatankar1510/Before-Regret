@@ -406,7 +406,7 @@ if (!html.includes('<div class="cite">')) throw new Error('ABORT: no .cite block
 if (!html.includes('<div class="wrap">')) throw new Error('ABORT: prerender-research.tsx slices at <div class="wrap">');
 
 const embed = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

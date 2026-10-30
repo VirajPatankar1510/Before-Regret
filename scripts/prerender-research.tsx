@@ -432,7 +432,7 @@ ${newsroomBlock({ title: 'Risk Without Price', url: `${escapeHtmlAttr(CANONICAL_
   const bodyMarkup = bodyMarkupKicker.slice(0, rwpKitEnd) + rwpKit + bodyMarkupKicker.slice(rwpKitEnd);
 
   const html = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -443,6 +443,7 @@ ${newsroomBlock({ title: 'Risk Without Price', url: `${escapeHtmlAttr(CANONICAL_
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="${escapeHtmlAttr(CANONICAL_URL)}">
   <meta property="og:title" content="${escapeHtmlAttr(TITLE)}">
   <meta property="og:description" content="${escapeHtmlAttr(DESCRIPTION)}">
@@ -503,7 +504,7 @@ ${ANALYTICS_BEACON}
   const rootVars = source.slice(source.indexOf(':root{'), source.indexOf('*{box-sizing:border-box}'));
 
   const embedHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -678,7 +679,7 @@ ${newsroomBlock({ title: 'Risk Without Cover', url: `${escapeHtmlAttr(COVER_URL)
     ];
 
     const coverHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -689,6 +690,7 @@ ${newsroomBlock({ title: 'Risk Without Cover', url: `${escapeHtmlAttr(COVER_URL)
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="${escapeHtmlAttr(COVER_URL)}">
   <meta property="og:title" content="${escapeHtmlAttr(COVER_TITLE)}">
   <meta property="og:description" content="${escapeHtmlAttr(COVER_DESC)}">
@@ -750,7 +752,7 @@ ${ANALYTICS_BEACON}
       'still have most of its exposed homes uncovered.</p>';
 
     const coverEmbedHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -934,7 +936,7 @@ ${newsroomBlock({ title: 'Outside the Zone', url: `${escapeHtmlAttr(ZONE_URL)}`,
     ];
 
     const zoneHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -945,6 +947,7 @@ ${newsroomBlock({ title: 'Outside the Zone', url: `${escapeHtmlAttr(ZONE_URL)}`,
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="${escapeHtmlAttr(ZONE_URL)}">
   <meta property="og:title" content="${escapeHtmlAttr(ZONE_TITLE)}">
   <meta property="og:description" content="${escapeHtmlAttr(ZONE_DESC)}">
@@ -1004,7 +1007,7 @@ ${ANALYTICS_BEACON}
     }
 
     const zoneEmbedHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1180,7 +1183,7 @@ ${newsroomBlock({ title: 'High-Hazard Dams by County', url: `${escapeHtmlAttr(DA
     ];
 
     const damHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1191,6 +1194,7 @@ ${newsroomBlock({ title: 'High-Hazard Dams by County', url: `${escapeHtmlAttr(DA
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="${escapeHtmlAttr(DAM_URL)}">
   <meta property="og:title" content="${escapeHtmlAttr(DAM_TITLE)}">
   <meta property="og:description" content="${escapeHtmlAttr(DAM_DESC)}">
@@ -1259,7 +1263,7 @@ ${ANALYTICS_BEACON}
     }
 
     const damEmbedHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1581,7 +1585,7 @@ ${dJsScript}
     ];
 
     const algHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1592,6 +1596,7 @@ ${dJsScript}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="${escapeHtmlAttr(ALG_URL)}">
   <meta property="og:title" content="${escapeHtmlAttr(ALG_TITLE)}">
   <meta property="og:description" content="${escapeHtmlAttr(ALG_DESC)}">
@@ -1737,7 +1742,7 @@ ${ANALYTICS_BEACON}
     ];
 
     const ntxHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1748,6 +1753,7 @@ ${ANALYTICS_BEACON}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="${escapeHtmlAttr(NTX_URL)}">
   <meta property="og:title" content="${escapeHtmlAttr(NTX_TITLE)}">
   <meta property="og:description" content="${escapeHtmlAttr(NTX_DESC)}">
@@ -1874,7 +1880,7 @@ ${ANALYTICS_BEACON}
     ];
 
     const rrHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1885,6 +1891,7 @@ ${ANALYTICS_BEACON}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="${escapeHtmlAttr(RR_URL)}">
   <meta property="og:title" content="${escapeHtmlAttr(RR_TITLE)}">
   <meta property="og:description" content="${escapeHtmlAttr(RR_DESC)}">
@@ -2021,7 +2028,7 @@ ${ANALYTICS_BEACON}
     }
 
     const ohHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -2032,6 +2039,7 @@ ${ANALYTICS_BEACON}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="${escapeHtmlAttr(OH_URL)}">
   <meta property="og:title" content="${escapeHtmlAttr(OH_TITLE)}">
   <meta property="og:description" content="${escapeHtmlAttr(OH_DESC)}">
@@ -2188,7 +2196,7 @@ ${ANALYTICS_BEACON}
     ];
 
     const ppHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -2199,6 +2207,7 @@ ${ANALYTICS_BEACON}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="${escapeHtmlAttr(PP_URL)}">
   <meta property="og:title" content="${escapeHtmlAttr(PP_TITLE)}">
   <meta property="og:description" content="${escapeHtmlAttr(PP_DESC)}">
@@ -2410,7 +2419,7 @@ ${ANALYTICS_BEACON}
   ];
 
   const indexHtml = `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -2421,6 +2430,7 @@ ${ANALYTICS_BEACON}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="${escapeHtmlAttr(INDEX_URL)}">
   <meta property="og:title" content="Research &mdash; Before Regret">
   <meta property="og:image" content="${escapeHtmlAttr(OG_IMAGE)}">
