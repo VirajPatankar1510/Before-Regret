@@ -70,6 +70,11 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   // a mobile home's wiring or insurance is first a guide for that buyer. Verified to reclassify zero
   // existing guides when it was added.
   ['manufactured-housing', /mobile[- ]home|manufactured[- ]home|manufactured[- ]housing/],
+  // Seasonal home maintenance for new owners. Added 2026-10-30 with the first guide on it (the fall maintenance
+  // checklist, an experiment from the owner's outside content report). Checked before the system buckets on
+  // purpose: a maintenance checklist that mentions furnaces and gutters is first a maintenance guide. Verified to
+  // reclassify zero existing guides when added.
+  ['maintenance', /maintenance[- ]checklist|home[- ]maintenance/],
   // Stucco and EIFS. Added 2026-10-12 for the first sponsored topic cluster (marketing/cluster-plan.md):
   // a stucco specialist sponsors these pages, so they must not sit in one bucket with roof-insurance
   // guides. Checked before roofing-exterior, which still lists the same words but no longer wins for

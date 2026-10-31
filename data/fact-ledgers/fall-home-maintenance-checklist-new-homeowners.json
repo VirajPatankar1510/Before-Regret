@@ -1,0 +1,111 @@
+{
+  "_about": "New guide (2026-10-30, write-article; owner chose the 'fall home maintenance checklist' experiment from the outside content report). Every task and number in the body traces to an entry here.",
+  "slug": "fall-home-maintenance-checklist-new-homeowners",
+  "question": "I just bought a house. What should I do to get it ready for its first fall and winter with me as the owner?",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "ENERGY STAR maintenance checklist: inspect, clean or change HVAC air filters once a month; have a contractor do annual pre-season check-ups -- cooling in spring, heating in fall; check thermostat settings; heating check includes gas or oil connections, gas pressure, burner combustion and heat exchanger; check the condensate drain.",
+      "quote": "Inspect, clean, or change air filters once a month in your central air conditioner, furnace, and/or heat pump. ... it's best to check the cooling system in the spring and the heating system in the fall. ... Check all gas (or oil) connections, gas pressure, burner combustion and heat exchanger",
+      "url": "https://www.energystar.gov/saveathome/heating-cooling/maintenance-checklist",
+      "readOn": "2026-10-30",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "claim": "US Fire Administration: test smoke alarms monthly; replace the whole alarm every 10 years (10 years from the manufacture date); replace batteries (or the backup battery on hardwired alarms) at least once a year; put alarms inside and outside each sleeping area and on every level. Page last reviewed Oct. 13, 2026.",
+      "quote": "Test the alarm monthly. ... Replace the entire smoke alarm every 10 years. ... Replace the batteries at least once every year. ... Put smoke alarms inside and outside each bedroom and sleeping area. Put alarms on every level of the home.",
+      "url": "https://www.usfa.fema.gov/prevention/home-fires/prepare-for-fire/smoke-alarms/",
+      "readOn": "2026-10-30",
+      "method": "webfetch"
+    },
+    {
+      "id": "f3",
+      "claim": "CPSC: install battery-operated CO alarms or CO alarms with battery backup on every level of the home and outside sleeping areas; check the batteries regularly; never use portable generators inside homes or garages, even with doors and windows open; use generators outside only, at least 20 feet away from homes with exhaust facing away.",
+      "quote": "Install battery-operated CO alarms or CO alarms with battery backup on every level of the home and outside sleeping areas. ... Never use portable generators inside homes or garages, even if doors and windows are open. Use generators outside only, at least 20 feet away from homes with exhaust facing away.",
+      "url": "https://www.cpsc.gov/Safety-Education/Safety-Education-Centers/Carbon-Monoxide-Information-Center",
+      "readOn": "2026-10-30",
+      "method": "webfetch"
+    },
+    {
+      "id": "f4",
+      "claim": "NFPA Heating Safety tip sheet: have heating equipment and chimneys cleaned and inspected every year by a qualified professional; keep anything that can burn at least three feet (one metre) from heating equipment; test smoke alarms at least once a month; install and maintain CO alarms; half of home heating fires are reported in December, January and February.",
+      "quote": "Have heating equipment and chimneys cleaned and inspected every year by a qualified professional. ... Keep anything that can burn at least three-feet (one metre) away from heating equipment ... Test smoke alarms at least once a month. ... Half of home heating fires are reported during the months of December, January, and February.",
+      "url": "https://www.nfpa.org/-/media/project/storefront/catalog/files/safety-tip-sheets/heatingsafetytips.pdf",
+      "readOn": "2026-10-30",
+      "method": "pdf"
+    },
+    {
+      "id": "f5",
+      "claim": "USFA: failure to clean (31%) was the leading factor contributing to the ignition of clothes dryer fires in homes from 2018-2020 (NFIRS). USFA dryer flyer: clean the lint filter before and after each cycle; clean the back of the dryer where lint builds up; check the venting behind the dryer is not damaged, crushed or restricted; make sure the outdoor vent covering opens when the dryer runs.",
+      "quote": "Failure to clean (31%) was the leading factor contributing to the ignition of clothes dryer fires in homes from 2018-2020. ... Clean the lint filter before and after each cycle. ... Check the venting system behind the dryer to make sure that it is not damaged, crushed or restricted. Make sure that the outdoor vent covering opens when the dryer is operating.",
+      "url": "https://www.usfa.fema.gov/prevention/home-fires/prevent-fires/appliance-and-electrical/ ; https://www.usfa.fema.gov/downloads/pdf/publications/clothes_dryer_fire_safety_flyer.pdf",
+      "readOn": "2026-10-30",
+      "method": "webfetch+pdf"
+    },
+    {
+      "id": "f6",
+      "claim": "American Red Cross: pipes that freeze most often are outdoor hose bibs, pool and sprinkler lines, supply pipes in unheated areas (basements, crawl spaces, attics, garages, kitchen cabinets) and pipes against poorly insulated exterior walls. Before cold weather: remove, drain and store outdoor hoses; close inside valves supplying outdoor hose bibs, open the outside hose bibs to drain and keep them open; add insulation to attics, basements and crawl spaces; insulate hot and cold pipes in unheated areas. Keep garage doors closed if supply lines run there. If going away in cold weather, leave the heat on, set no lower than 55 F.",
+      "quote": "Remove, drain, and store hoses used outdoors. Close inside valves supplying outdoor hose bibs. Open the outside hose bibs to allow water to drain. Keep the outside valve open ... If you will be going away during cold weather, leave the heat on in your home, set to a temperature no lower than 55° F.",
+      "url": "https://www.redcross.org/get-help/how-to-prepare-for-emergencies/types-of-emergencies/winter-storm/frozen-pipes.html",
+      "readOn": "2026-10-30",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "US DOE (winter tips, Dec 2022, updated Dec 2023): reverse the ceiling fan motor so it rotates clockwise at a low speed; the fan won't change the room temperature but helps keep you warm; seal and weatherize windows. DOE air sealing: caulk for cracks between stationary parts such as around window frames, weatherstripping for moving parts such as operable windows.",
+      "quote": "reverse the motor in the ceiling fan so it rotates clockwise at a low speed. The ceiling fan won't change the temperature in the room, but it will help keep you warm. ... Caulk is generally used for cracks and openings between stationary house components such as around door and window frames. Weatherstripping is used to seal components that move, such as doors and operable windows.",
+      "url": "https://www.energy.gov/articles/5-tips-help-you-save-energy-bills-winter ; https://www.energy.gov/cmei/buildings/articles/energy-efficient-home-improvement-credit-insulation-and-air-sealing",
+      "readOn": "2026-10-30",
+      "method": "webfetch+browser"
+    },
+    {
+      "id": "f8",
+      "claim": "Natural Resources Canada: condensation risk rises as it gets colder and/or indoor humidity rises; moisture between the panes of a sealed unit means the seal is broken (replace the glazing unit; check the warranty); many homeowners find condensation gets worse after new windows because the old leaky ones lowered humidity; to reduce moisture set a furnace humidifier lower, vent the dryer outside, use bathroom and kitchen exhaust fans venting outside; keep water away from the foundation -- grading sloping away and eaves troughs diverting water.",
+      "quote": "The risk of condensation increases as the weather gets colder and/or the inside humidity rises. ... between the glass panes if the seal is broken (replace the insulating glass unit). ... Many homeowners buy new windows only to find that the problem becomes worse because the old, leaky windows actually helped to reduce humidity. ... If your furnace has a humidifier, set it lower ... Make sure the grading slopes away from your house so water does not flow towards the foundation. Ensure eaves troughs adequately divert water away from your home.",
+      "url": "https://natural-resources.canada.ca/energy-efficiency/product-energy-ratings/condensation ; https://natural-resources.canada.ca/energy-efficiency/home-energy-efficiency/keeping-heat-section-8-upgrading-windows-exterior-doors ; https://natural-resources.canada.ca/energy-efficiency/energy-star/products/list-certified-products/humidity-levels-cooling-ventilating-equipment",
+      "readOn": "2026-10-22",
+      "method": "browser",
+      "note": "verified 2026-10-22 for data/fact-ledgers/window-check-tool.json"
+    },
+    {
+      "id": "f9",
+      "claim": "Bing (our capture 2026-10-30, thin sample, relative only): 'home maintenance checklist' and 'fall home maintenance checklist' show searches; 'after closing checklist', 'new homeowner checklist', 'first year homeowner', 'things to do after buying a house', 'winterize new home' show none. This site was shown for none of them.",
+      "quote": "home maintenance checklist exact 505; fall home maintenance checklist exact 79; others 0",
+      "url": "data/keywords/2026-10-30-demand-after-closing-checklist-bing.json",
+      "readOn": "2026-10-30",
+      "method": "engine"
+    },
+    {
+      "id": "f10",
+      "claim": "NFPA 211, Standard on Chimneys, Fireplaces, Vents, and Solid Fuel-Burning Appliances, as quoted by the Chimney Safety Institute of America: chimneys, fireplaces and vents shall be inspected at least once a year for soundness, freedom from deposits and correct clearances. CSIA advises annual inspection of all chimneys, gas furnaces included, since debris such as bird nests can block them.",
+      "quote": "NFPA 211: Standard on Chimneys, Fireplaces, Vents, and Solid Fuel-Burning Appliances ... Chimneys, fireplaces, and vents shall be inspected at least once a year for soundness, freedom from deposits, and correct clearances. ... schedule annual inspections for all your chimneys – gas furnaces included.",
+      "url": "https://www.csia.org/homeowner-resources",
+      "readOn": "2026-10-31",
+      "method": "webfetch",
+      "note": "NFPA's own text needs an NFPA account (not created); quoted via CSIA, the chimney industry body"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Radon testing is best done in winter / closed-house season",
+      "why": "EPA citizen's guide URL returned 404; not re-read"
+    },
+    {
+      "claim": "Flush the water heater on a schedule",
+      "why": "no primary source read this session"
+    },
+    {
+      "claim": "Clean gutters twice a year / roof inspection schedule",
+      "why": "no primary source; kept to NRCan's 'eaves troughs divert water'"
+    },
+    {
+      "claim": "Any cost or energy-savings figure",
+      "why": "not verified"
+    }
+  ],
+  "blockedSources": [
+    "redcross.org (403 to automated fetch -- read in the browser instead)",
+    "epa.gov radon citizen's guide (404 at the URL tried)"
+  ]
+}
