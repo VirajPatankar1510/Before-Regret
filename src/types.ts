@@ -62,7 +62,7 @@ export interface CanonicalFinding {
   // fuller. Each finding now carries its own real, correct link instead.
   sourceUrl?: string;
   // Set server-side when real, paying vendors match this finding's trade category for this ZIP
-  // (see FINDING_TRADE_CATEGORY in sponsoredVendors.ts). Up to MAX_SLOTS_PER_ZIP_TRADE (2), not
+  // (see FINDING_TRADE_CATEGORY in sponsoredVendors.ts). Up to MAX_SLOTS_PER_ZIP_TRADE (1 since 2026-11-01; was 2), not
   // just the single earliest buyer -- the second vendor for a (zip, trade) pair used to pay the
   // same $29 as the first and never appear anywhere, silently, for as long as the first stayed
   // active. Attached at most once per trade category per report, at whichever finding or

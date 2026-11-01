@@ -33,8 +33,10 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
     a: 'Yes, once. From My Placements you can change your phone, website and licence number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold.',
   },
   {
-    q: `Why only ${MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP and trade?`,
-    a: "Keeps each slot meaningful instead of turning into a directory -- first come, first served, and a slot only opens up once someone's window expires or they're removed.",
+    q: MAX_SLOTS_PER_ZIP_TRADE === 1 ? 'Why only one business per ZIP and trade?' : `Why only ${MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP and trade?`,
+    a: MAX_SLOTS_PER_ZIP_TRADE === 1
+      ? "So the business shown is the only one in its trade for that ZIP, instead of one of a list. First come, first served: a ZIP opens up again once the current window expires or the listing is removed."
+      : "Keeps each slot meaningful instead of turning into a directory -- first come, first served, and a slot only opens up once someone's window expires or they're removed.",
   },
 ];
 

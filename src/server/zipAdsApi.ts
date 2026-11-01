@@ -340,7 +340,7 @@ export function registerZipAdsRoutes(app: Express) {
           // being set and that UPDATE below would still reach this loop. Unlike guide ads' single
           // WHERE NOT EXISTS (safe there only because guide ads sell exactly 1 slot per position,
           // so "exists" and "at capacity" are the same test), zip ads sell up to
-          // MAX_SLOTS_PER_ZIP_TRADE (2) per pair, so a bare COUNT(*) < cap check doesn't block a
+          // MAX_SLOTS_PER_ZIP_TRADE (1 since 2026-11-01) per pair, so a bare COUNT(*) < cap check doesn't block a
           // second insert from this SAME order once it's already granted this ZIP once -- capacity
           // has room for a legitimate second vendor. Checking "did this order already grant this
           // ZIP" first, before touching capacity at all, is what actually makes a retry a no-op

@@ -2,7 +2,14 @@
 // Single source of truth -- Vendors.tsx, zipAdsApi.ts, and the checkout UI all reference this
 // rather than hardcoding the number separately, so they can never quietly drift out of sync
 // (the pre-existing landing page copy claimed "3 vendors per category" before this was wired up).
-export const MAX_SLOTS_PER_ZIP_TRADE = 2;
+// One business per (ZIP, trade): exclusive (owner, 2026-11-01 -- was 2). Pitches promise "the only electrician
+// shown in your ZIP codes", so the system must make it true. No Report Ad had ever been sold, so no buyer was affected.
+export const MAX_SLOTS_PER_ZIP_TRADE = 1;
+
+/** Reader-facing wording for the cap, so pages never say "Up to 1 businesses". */
+export function slotsPerZipPhrase(): string {
+  return MAX_SLOTS_PER_ZIP_TRADE === 1 ? 'One business per ZIP code and trade' : `Up to ${MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP code and trade`;
+}
 
 // Shared between the checkout form's dropdown and the server-side validation on submission, so
 // the two can't silently diverge (a category typed on one side but not recognized on the other).

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { ArrowRight, ChevronRight, CreditCard, MapPin, Newspaper, RefreshCw, ShieldCheck, Check, ClipboardList } from 'lucide-react';
-import { MAX_SLOTS_PER_ZIP_TRADE, TRADE_CATEGORIES, LICENCE_EXEMPT_CATEGORIES, canBuyReportAd } from '../data/sponsoredVendors';
+import { MAX_SLOTS_PER_ZIP_TRADE, TRADE_CATEGORIES, LICENCE_EXEMPT_CATEGORIES, canBuyReportAd, slotsPerZipPhrase } from '../data/sponsoredVendors';
 import { ContentLink } from './home/ContentLink';
 import { SponsoredVendorCard } from './SponsoredVendorCard';
 import { GuideAdVendorCard } from './GuideAdSlot';
@@ -53,7 +53,7 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Where exactly does a Report Ad appear?',
-    a: `Beside the item in the report that matches your trade. A plumber's listing, for example, sits beside the report's water supply pipe checks, and those checks appear on reports for houses built ${PLUMBER_ERAS}, so that is where a plumber is shown. Moving companies are the exception: their listing has a fixed spot right below the address, on reports for addresses in their ZIP codes. Up to ${MAX_SLOTS_PER_ZIP_TRADE} businesses can hold the same ZIP code and trade at once.`,
+    a: `Beside the item in the report that matches your trade. A plumber's listing, for example, sits beside the report's water supply pipe checks, and those checks appear on reports for houses built ${PLUMBER_ERAS}, so that is where a plumber is shown. Moving companies are the exception: their listing has a fixed spot right below the address, on reports for addresses in their ZIP codes. ${MAX_SLOTS_PER_ZIP_TRADE === 1 ? 'Only one business per trade is shown in each ZIP code, first come, first served.' : `Up to ${MAX_SLOTS_PER_ZIP_TRADE} businesses can hold the same ZIP code and trade at once.`}`,
   },
   {
     q: 'Do I need to be licensed or verified to advertise?',
@@ -92,7 +92,7 @@ const COMPARE_ROWS: Array<[string, string, string]> = [
   ['Where it appears', 'Inside the property report for an address in your ZIP codes', 'On the article you choose, under its quick answer'],
   ['Targeting', 'ZIP code and trade', 'The article; no location targeting'],
   ['Price', '$29 for 3 ZIP codes', '$7.99 per article'],
-  ['Spots', `Up to ${MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP code and trade`, 'One advertiser per article'],
+  ['Spots', slotsPerZipPhrase(), 'One advertiser per article'],
   ['Duration', '30 days, no auto-renewal', '30 days, no auto-renewal'],
 ];
 
@@ -238,7 +238,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             </div>
             <ul className="mt-6 space-y-3 text-[15px] text-slate-700 leading-relaxed">
               <Bullet>Choose any 3 US ZIP codes and one trade per bundle.</Bullet>
-              <Bullet>Up to {MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP code and trade, first come, first served.</Bullet>
+              <Bullet>{slotsPerZipPhrase()}, first come, first served.</Bullet>
               <Bullet>Shown beside the report item for your trade, so placement depends on what the report covers for that house.</Bullet>
               <Bullet>Your licence number prints on the listing, with a line telling readers it is advertiser-supplied.</Bullet>
             </ul>
