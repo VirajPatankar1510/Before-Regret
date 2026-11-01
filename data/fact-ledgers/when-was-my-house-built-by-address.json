@@ -1,0 +1,121 @@
+{
+  "_about": "New guide (2026-11-01, write-article; owner: 'write the next article'). Topic picked from first-party demand: topic-demand 2026-11-01 tier 2 (Bing records 'when was my house built' and 'when was my house built by address'; this site shown for neither) and the 'records by address' line. Every number and rule in the body traces to an entry here.",
+  "slug": "when-was-my-house-built-by-address",
+  "question": "How do I find out when a house was built, from its address, and which date should I trust?",
+  "verdictConfirmed": "The county assessor's or property appraiser's parcel record gives a Year Built for each building, but counties define it differently (completion vs permit start) and an Effective Year Built is not the construction year; the building permit is the tie-breaker, and for the federal lead-paint disclosure EPA and HUD count the permit date (before January 1, 1978).",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "40 CFR 745.103: target housing is any housing constructed prior to 1978, except housing for the elderly or persons with disabilities (unless a child under 6 resides or is expected to reside there) or any 0-bedroom dwelling.",
+      "quote": "Target housing means any housing constructed prior to 1978, except housing for the elderly or persons with disabilities (unless any child who is less than 6 years of age resides or is expected to reside in such housing) or any 0-bedroom dwelling.",
+      "url": "https://www.law.cornell.edu/cfr/text/40/745.103",
+      "readOn": "2026-11-01",
+      "method": "webfetch",
+      "note": "ecfr.gov redirected the automated fetch to unblock.federalregister.gov; read the same regulation text at Cornell LII"
+    },
+    {
+      "id": "f2",
+      "claim": "40 CFR 745.107(a): before a purchaser is obligated under a contract for target housing, the seller must provide an EPA-approved lead hazard information pamphlet, disclose any known lead-based paint and hazards, and provide any records or reports available to the seller. The section does not require the seller to test.",
+      "quote": "shall provide the purchaser or lessee with an EPA-approved lead hazard information pamphlet ... shall disclose to the purchaser or lessee the presence of any known lead-based paint and/or lead-based paint hazards ... shall provide the purchaser or lessee with any records or reports available to the seller or lessor",
+      "url": "https://www.law.cornell.edu/cfr/text/40/745.107",
+      "readOn": "2026-11-01",
+      "method": "webfetch"
+    },
+    {
+      "id": "f3",
+      "claim": "40 CFR 745.110: the seller must give the purchaser a 10-day period to conduct a lead risk assessment or inspection, unless the parties agree in writing on a different period; the purchaser may waive it in writing.",
+      "quote": "the seller shall permit the purchaser a 10-day period (unless the parties mutually agree, in writing, upon a different period of time) to conduct a risk assessment or inspection for the presence of lead-based paint and/or lead-based paint hazards ... a purchaser may waive the opportunity to conduct the risk assessment or inspection by so indicating in writing.",
+      "url": "https://www.law.cornell.edu/cfr/text/40/745.110",
+      "readOn": "2026-11-01",
+      "method": "webfetch"
+    },
+    {
+      "id": "f4",
+      "claim": "EPA and HUD Interpretive Guidance for the Real Estate Community (August 20, 1996), question 6: housing constructed before 1978 means housing for which a construction permit was obtained before January 1, 1978, or, if no permit was obtained, housing in which construction was started before January 1, 1978. The question asked was about a house started in 1977 and completed in 1978.",
+      "quote": "6. Q: Target housing is housing built before 1978. Does this include or exclude housing that was started in 1977, but not completed until 1978? A: EPA and HUD consider \"housing constructed before 1978\" to mean housing for which a construction permit was obtained (or if no permit was obtained, housing in which construction was started) before January 1, 1978.",
+      "url": "https://www.epa.gov/sites/default/files/documents/1018fin.pdf",
+      "readOn": "2026-11-01",
+      "method": "pdf",
+      "note": "linked from https://www.epa.gov/lead/interpretive-guidance-real-estate-community-requirements-disclosure-information-concerning (last updated September 17, 2026); text read from EPA's archived copy of the same PDF"
+    },
+    {
+      "id": "f5",
+      "claim": "Sarasota County (Florida) Property Appraiser glossary: Actual Year Built is the year an improvement is completed; Year Built is the year a structure was completed for assessment purposes as determined by a deputy of the office; Effective Year Built (aka Effective Age) is an appraisal judgment reflecting the condition and utility of a structure as of January 1.",
+      "quote": "Actual Year Built: The year an improvement is completed. ... Year Built: The year a structure was completed for assessment purposes as determined by a Deputy of the Property Appraiser's Office. ... Effective Year Built: An Appraisal judgment which reflects the condition and utility of a structure as of January 1st ... Aka Effective Age.",
+      "url": "https://www.sarasotapropertyappraiser.gov/glossary/",
+      "readOn": "2026-11-01",
+      "method": "webfetch"
+    },
+    {
+      "id": "f6",
+      "claim": "Gunnison County (Colorado) assessor, Data Definitions for Building Attributes: Original Year Built is the year the construction permit was initiated; Effective Year Built is the same as Original Year Built until there are significant updates or remodels that extend the life of the structure.",
+      "quote": "ORIGINAL YEAR BUILT This field represents the year the construction permit was initiated. EFFECTIVE YEAR BUILT This field is the same as the Original Year Built until there are significant updates or remodels that extend the life of the structure.",
+      "url": "https://www.gunnisoncounty.org/DocumentCenter/View/16836/Data-Definitions-for-Building-Attributes-file",
+      "readOn": "2026-11-01",
+      "method": "pdf"
+    },
+    {
+      "id": "f7",
+      "claim": "Our observation, 2026-11-01: Sarasota County Property Appraiser record for 2000 Main St, Sarasota (parcel 2027010080, owner Sarasota County, use 8600 county government administration -- no private owner). The Buildings table lists 6 buildings on the one parcel, each with its own Year Built and Eff Yr Built. Building 1 (2000 Main St): Year Built 1926, Eff Yr Built 2001. Building 2: 1975 / 1990. Building 3: 1987 / 1993. Building 4: 1987 / 1987.",
+      "quote": "2000 MAIN ST SARASOTA, FL, 34237 | 1 | ... | 1926 | 2001 ... 2020 MAIN ST | 2 | ... | 1975 | 1990 ... | 3 | ... | 1987 | 1993 ... 2071 RINGLING BLVD | 4 | ... | 1987 | 1987 ... | 5 | 1997 | 1997 ... | 6 | 2002 | 2002",
+      "url": "https://www.sarasotapropertyappraiser.gov/propertysearch/parcel/details/2027010080",
+      "readOn": "2026-11-01",
+      "method": "browser",
+      "note": "screenshot saved as public/images/assessor-year-built-vs-effective-year-built.webp (Buildings table only; no personal data -- the owner is the county)"
+    },
+    {
+      "id": "f8",
+      "claim": "Census ACS 2024 subject definitions: year structure built refers to when the building was first constructed, not when it was remodeled, added to, or converted; the data are more susceptible to errors of response and non-reporting than many other questions because respondents rely on memory or on estimates by long-time neighbours.",
+      "quote": "Year structure built refers to when the building was first constructed, not when it was remodeled, added to, or converted. ... Data on year structure built are more susceptible to errors of response and non-reporting than data for many other questions because respondents must rely on their memory or on estimates by people who have lived in the neighborhood a long time.",
+      "url": "https://www2.census.gov/programs-surveys/acs/tech_docs/subject_definitions/2024_ACSSubjectDefinitions.pdf",
+      "readOn": "2026-11-01",
+      "method": "pdf"
+    },
+    {
+      "id": "f9",
+      "claim": "Our tally of Census ACS 2020-2024 table B25034 across 3,144 counties of the 50 states and DC (Puerto Rico excluded): 143,775,355 housing units; 49.7% built before 1980; 14.2% built 1970 to 1979; 25.6% before 1960; 11.7% before 1940. Census median year built (B25035): United States 1980; oldest state median District of Columbia 1958, then New York 1959; newest Nevada 1996.",
+      "quote": "computed 2026-11-01 from docs/data/oldest-housing-raw.json: counties 3144, total 143775355, before1980 49.7%, 1970s 14.2%, before1960 25.6%, before1940 11.7%; medianYearBuilt us 1980, District of Columbia 1958, New York 1959, Nevada 1996",
+      "url": "docs/data/oldest-housing-raw.json",
+      "readOn": "2026-11-01",
+      "method": "engine"
+    },
+    {
+      "id": "f10",
+      "claim": "Our report engine's year windows (src/engine/inspectionPriorities.ts PRIORITY_RULES, read at run time by the publish script): lead-paint disclosure 1800-1977; knob-and-tube 1800-1955; aluminum branch wiring 1965-1973; electrical panel brand 1950-1989; cast iron sewer 1800-1973; galvanized supply 1800-1969; polybutylene 1978-1996; asbestos (if renovating) 1800-1985; EIFS 1990-2005; roof age and HVAC/water heater age: homes 12 or more years old. Year built in a report is what the user enters; the engine has no assessor connection.",
+      "quote": "lead_paint_disclosure minYear 1800 maxYear 1977; knob_and_tube 1800-1955; electrical_aluminum_wiring 1965-1973; electrical_panel_brand 1950-1989; sewer_cast_iron 1800-1973; galvanized_supply 1800-1969; polybutylene_supply 1978-1996; asbestos_materials 1800-1985; eifs_stucco 1990-2005; roof_age / hvac_age maxYear CURRENT_YEAR - 12. 'Year built is USER-SUPPLIED ... BeforeRegret has no assessor connection to verify it against.'",
+      "url": "src/engine/inspectionPriorities.ts",
+      "readOn": "2026-11-01",
+      "method": "engine"
+    },
+    {
+      "id": "f11",
+      "claim": "Bing (our capture 2026-11-01, thin sample, relative only) records searches for 'when was my house built' and 'when was my house built by address'; this site was shown for neither on Google or Bing.",
+      "quote": "exact 201 broad 315 when was my house built; exact 103 when was my house built by address; ALREADY SHOWN ON THIS SITE: none",
+      "url": "data/keywords/2026-11-01-demand-when-was-my-house-built-bing.json",
+      "readOn": "2026-11-01",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Sanborn fire insurance maps (Library of Congress) can date an old building's footprint",
+      "why": "loc.gov served a Cloudflare bot check in the browser; not worked around, not read"
+    },
+    {
+      "claim": "Where listing sites get their year-built figure",
+      "why": "no primary source read"
+    },
+    {
+      "claim": "That some assessors use a placeholder year for very old houses",
+      "why": "no source found"
+    },
+    {
+      "claim": "State seller-disclosure forms asking for year built",
+      "why": "varies by state; no form read this session"
+    }
+  ],
+  "blockedSources": [
+    "ecfr.gov (redirects automated fetches to unblock.federalregister.gov; same regulation read at law.cornell.edu)",
+    "loc.gov (Cloudflare bot check)"
+  ]
+}

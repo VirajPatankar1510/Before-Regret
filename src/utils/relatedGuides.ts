@@ -75,6 +75,11 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   // purpose: a maintenance checklist that mentions furnaces and gutters is first a maintenance guide. Verified to
   // reclassify zero existing guides when added.
   ['maintenance', /maintenance[- ]checklist|home[- ]maintenance/],
+  // How old a house is and where its year built is recorded. Added 2026-11-01 with the first guide on it ("when was
+  // my house built", a records-by-address guide). Checked before the system buckets: a guide about reading the year
+  // built mentions wiring and pipes by era but is first about the year. Verified to reclassify zero existing guides
+  // when added (the housing-stock ranking guide matches nothing today and is deliberately left where it is).
+  ['house-age', /when[- ]was[- ]\w+[- ]house[- ]built|year[- ]built/],
   // Stucco and EIFS. Added 2026-10-12 for the first sponsored topic cluster (marketing/cluster-plan.md):
   // a stucco specialist sponsors these pages, so they must not sit in one bucket with roof-insurance
   // guides. Checked before roofing-exterior, which still lists the same words but no longer wins for

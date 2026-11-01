@@ -2,6 +2,7 @@
 //
 //   npx tsx scripts/assert-article-quality.ts
 //   npx tsx scripts/assert-article-quality.ts --seed     # re-baseline the grandfather list
+//   npx tsx scripts/assert-article-quality.ts --draft guides/<slug>.md   # include an unpublished guide
 //
 // -----------------------------------------------------------------------------------------------
 // WHY THIS IS NOT IN THE BUILD CHAIN.
@@ -242,6 +243,24 @@ async function main() {
     }
   }
   if (!rows) throw new Error('ABORT: database unreachable after 4 attempts');
+
+  // --draft guides/<slug>.md adds an unpublished guide to the run, so the gate can pass BEFORE the publish
+  // script writes it. Added 2026-11-01: the fall checklist (#340) only met this gate after it was inserted, and
+  // needed a guarded fix to pass the reproducibility rule.
+  const draftArg = process.argv.indexOf('--draft');
+  if (draftArg > -1) {
+    const file = path.resolve(ROOT, process.argv[draftArg + 1] ?? '');
+    const raw = fs.readFileSync(file, 'utf8');
+    const front = raw.match(/^---\n([\s\S]*?)\n---\n/);
+    if (!front) throw new Error(`ABORT: ${file} has no front matter`);
+    const quick = (front[1].match(/^quick:[ \t]*(.*)$/m)?.[1] ?? '').trim();
+    const rest = raw.slice(front[0].length);
+    const title = rest.match(/^#\s+(.*)$/m)?.[1].trim() ?? '';
+    const slug = path.basename(file, '.md');
+    rows = rows.filter((r) => r.slug !== slug);
+    rows.push({ slug, title, quick_answer: quick, body_markdown: rest.replace(/^#\s.*\n+/, '').trim() } as Row);
+    console.log(`  + draft ${slug}`);
+  }
 
   const failsRule2 = (r: Row) => !COST.test(r.body_markdown) && !NUMBERED_STANDARD.test(r.body_markdown) && !NUMBERED_LAW.test(r.body_markdown);
   const failsRule5 = (r: Row) => isDefinitionEcho(String(r.title));
