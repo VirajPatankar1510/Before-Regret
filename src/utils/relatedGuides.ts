@@ -101,7 +101,9 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   // no slug or title already published, so it moves nothing out of another cluster.
   ['orientation', /\bfacing\b|orientation|sunlight|\bsun\b.*\b(side|direction|window)/],
   ['insurance', /insur|clue[- ]report|carrier|\bpolicy\b|premium|uninsurable|4[- ]point/],
-  ['transaction', /contingen|escrow|closing|\bseller\b|negotiat|apprais|walk[- ]away|\bhoa\b|earnest|disclosure|inspector|property[- ]tax|assessment/],
+  // 'skip the home inspection' added 2026-11-02 with the guide of that title: a decision in the buying process, and no
+  // other bucket takes it. Verified to reclassify zero existing guides.
+  ['transaction', /skip[- ](the[- ])?home[- ]inspection|contingen|escrow|closing|\bseller\b|negotiat|apprais|walk[- ]away|\bhoa\b|earnest|disclosure|inspector|property[- ]tax|assessment/],
 ];
 
 /** The topic bucket a guide belongs to, or null when nothing matches. Exported for testing. */

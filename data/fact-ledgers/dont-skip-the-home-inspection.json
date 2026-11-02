@@ -1,0 +1,85 @@
+{
+  "_about": "New guide (2026-11-02, write-article), #1 of docs/plans/report-4-articles-2026-11.md. Owner's exact title. The outside report's stats (Green Residential, '$300-$500 inspection') were NOT used: unverified. Every number in the body traces to an entry here.",
+  "slug": "dont-skip-the-home-inspection",
+  "question": "Should I skip the home inspection, and what do buyers who did say afterwards?",
+  "verdictConfirmed": "Skipping is a regret a minority of recent buyers report (8% overall, 12% of Gen Z buyers, Realtor.com Feb 2025), and the more common regrets -- more maintenance than expected, condition not as expected -- are what an inspection previews; an appraisal is not an inspection (HUD), and a standard inspection itself excludes several checks (ASHI SOP), so the real advice is inspect and know the add-ons.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Realtor.com survey (press release Nov. 20, 2025; MarketVision Research; 1,267 U.S. respondents who bought in the past 12 months; fieldwork February 2025). All buyers: 'I wish I had done an inspection(s)' 8% (Gen Z 12%, Millennials 9%, Gen X 6%, Boomers 4%); 'There is more home maintenance than anticipated' 16% (top item); 'The home was not in the condition I expected' 9%; 'I wish I had asked for buyer contingencies' 8%; no regrets 37%.",
+      "quote": "I wish I had done an inspection(s): All Buyers 8%, Gen Z 12%, Millennials 9%, Gen X 6%, Boomers 4% ... There is more home maintenance than anticipated (e.g., money, time, etc.): 16% ... The home was not in the condition I expected: 9% ... I wish I had asked for buyer contingencies: 8% ... None of the above - I did not have any regrets: 37% ... The research was conducted by MarketVision Research among 1,267 U.S. respondents ... The fieldwork was conducted in February 2025.",
+      "url": "https://www.prnewswire.com/news-releases/realtorcom-as-market-cools-buyer-regret-does-too-302621210.html",
+      "readOn": "2026-11-02",
+      "method": "webfetch",
+      "note": "Realtor.com's own release on PR Newswire, AUSTIN, Texas, Nov. 20, 2025"
+    },
+    {
+      "id": "f2",
+      "claim": "HUD-92564-CN 'For Your Protection: Get a Home Inspection' (02/09/2023): a home inspection only occurs if you arrange it; FHA does not perform home inspections; an appraisal estimates value for the lender and does not replace a home inspection; FHA does not guarantee value or condition; if you find problems after closing FHA cannot give or lend you money for repairs or buy the home back; requesting an inspection early may let you make the contract contingent on its results; to choose an inspector ask for their Standards of Practice or a sample report, and for references from friends, real estate professionals, local licensing authorities and organizations that qualify and test inspectors; EPA and the Surgeon General recommend all houses be tested for radon.",
+      "quote": "A home inspection will only occur if you arrange for one; FHA does not perform home inspections. ... If you request an inspection early in the process, you may be able to make your purchase contract contingent on its results. ... ask the prospective inspector for their Standards of Practice (SOP) or for a sample home inspection report. ... ask for references from friends, real estate professionals, local licensing authorities and organizations that qualify and test home inspectors. Appraisals are NOT Home Inspections! An appraisal is required to estimate the home's value for your lender and does not replace a home inspection. FHA does not guarantee the value or condition of your new home. If you find problems with your home after closing, FHA cannot give or lend you money for repairs, and FHA cannot buy the home back from you. ... The Environmental Protection Agency and the Surgeon General recommend that all houses be tested for radon. HUD-92564-CN (02/09/2023)",
+      "url": "https://www.hud.gov/sites/dfiles/OCHCO/documents/92564-CN.pdf",
+      "readOn": "2026-11-02",
+      "method": "pdf",
+      "note": "hud.gov served an HTML page to the automated download; read via the Internet Archive copy of the same URL (web.archive.org/web/2026id_/...)"
+    },
+    {
+      "id": "f3",
+      "claim": "ASHI Standard of Practice for Home Inspections, effective March 1, 2014 (the version ASHI's site calls current; a revision approved January 2026 has no implementation date yet). 13.2.A: the inspector is NOT required to determine (1) condition of systems not readily accessible, (2) remaining life expectancy, (5) methods, materials and costs of corrections, (8) code compliance, (11) the presence of wood destroying organisms, molds, (12) environmental hazards including radioactive substances and contaminants in building materials, soil, water and air. 13.2.E.1: not required to inspect underground items. 6.2.A: not required to inspect wells, well pumps (3) or septic and other sewage disposal systems (7); 6.2.B: not required to determine whether water supply and sewage disposal are public or private (1), or water quality (2). 12.2.A.1: not required to inspect interiors of flues and chimneys that are not readily accessible. Cited in the article as 13.2.A.11 (wood destroying organisms, molds) and 13.2.A.12 (environmental hazards).",
+      "quote": "13.2 General exclusions A. The inspector is NOT required to determine: 1. the condition of systems and components that are not readily accessible. 2. the remaining life expectancy of systems and components. ... 5. methods, materials, and costs of corrections. ... 8. compliance of systems and components with past and present requirements and guidelines (codes, regulations, laws, ordinances ...). ... 11. the presence of plants, animals, and other life forms and substances that may be hazardous or harmful to humans including, but not limited to, wood destroying organisms, molds and mold-like substances. 12. the presence of environmental hazards including, but not limited to, allergens, toxins, carcinogens, electro-magnetic radiation, noise, radioactive substances, and contaminants in building materials, soil, water, and air. ... E. The inspector is NOT required to inspect: 1. underground items ... 6.2 The inspector is NOT required to: A. inspect: ... 3. wells, well pumps, and water storage related equipment. ... 7. septic and other sewage disposal systems. B. determine: 1. whether water supply and sewage disposal are public or private. 2. water quality. ... 12.2 The inspector is NOT required to: A. inspect: 1. interiors of vent systems, flues, and chimneys that are not readily accessible.",
+      "url": "https://www.homeinspector.org/wp-content/uploads/2024/06/standards_updated3-4-2015.pdf",
+      "readOn": "2026-11-02",
+      "method": "pdf",
+      "note": "linked from https://www.homeinspector.org/?p=346, which says the proposed SOP vote closed January 8, 2026 and the posted standard stays current until an implementation date is announced"
+    },
+    {
+      "id": "f4",
+      "claim": "40 CFR 745.110: for pre-1978 target housing the seller must allow a 10-day period for a lead inspection or risk assessment unless the parties agree in writing to a different period; the purchaser may waive it in writing.",
+      "quote": "the seller shall permit the purchaser a 10-day period (unless the parties mutually agree, in writing, upon a different period of time) to conduct a risk assessment or inspection ... a purchaser may waive the opportunity to conduct the risk assessment or inspection by so indicating in writing.",
+      "url": "https://www.law.cornell.edu/cfr/text/40/745.110",
+      "readOn": "2026-11-01",
+      "method": "webfetch",
+      "note": "same reading as data/fact-ledgers/when-was-my-house-built-by-address.json f3"
+    },
+    {
+      "id": "f5",
+      "claim": "Our report engine's check costs and repair ranges (src/engine/inspectionPriorities.ts PRIORITY_RULES, asserted by the publish script at run time): sewer_cast_iron check '$300 – $500 for a camera scope', repair 'Spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+'; termite_wdi_inspection check '$75 – $150 for a standalone WDI report', repair 'Treatment $1,200 – $5,000 depending on method; structural repair if damage is present $1,000 – $9,000+'; radon_test check '$150 – $300', repair 'Mitigation system $800 – $2,500'; chimney_level2 check '$250 – $600 for a Level 2 inspection with a video flue scan', repair 'Flue liner replacement $1,500 – $5,000'; eifs_stucco check '$400 – $800 for a moisture survey', repair 'extensive sheathing replacement can exceed $10,000'; roof_age repair 'Full replacement $8,000 – $25,000+'; hvac_age repair 'HVAC replacement $6,000 – $15,000; water heater replacement $1,200 – $3,000'; electrical_panel_brand repair 'Panel replacement $1,500 – $4,000'; galvanized_supply / polybutylene_supply repair 'Whole-home repipe $4,000 – $15,000'. Level 2 chimney inspection on sale or transfer is from NFPA 211.",
+      "quote": "$300 – $500 | $1,500 – $5,000 | $4,000 – $15,000+ | $75 – $150 | $1,200 – $5,000 | $1,000 – $9,000+ | $150 – $300 | $800 – $2,500 | $250 – $600 | $400 – $800 | $10,000 | $8,000 – $25,000+ | $6,000 – $15,000 | $1,200 – $3,000 | $1,500 – $4,000 | $4,000 – $15,000 | NFPA 211",
+      "url": "src/engine/inspectionPriorities.ts",
+      "readOn": "2026-11-02",
+      "method": "engine"
+    },
+    {
+      "id": "f6",
+      "claim": "Demand: tier 3 -- no Google or Bing signal for 'skip home inspection', 'waive home inspection', 'home inspection regret', 'is a home inspection worth it' (our capture 2026-11-02). Written as an experiment from the owner's report list.",
+      "quote": "STRONGEST EVIDENCE: tier 3 -- no first-party signal.",
+      "url": "data/keywords/2026-11-02-demand-skip-home-inspection-bing.json",
+      "readOn": "2026-11-02",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Green Residential: most homeowners who skip an inspection regret it",
+      "why": "secondary marketing claim in the outside report; no survey found behind it"
+    },
+    {
+      "claim": "A home inspection costs $300-$500",
+      "why": "the outside report's figure; not in our engine and no primary source read"
+    },
+    {
+      "claim": "Angi: 1 in 4 waived the inspection, 20% called it a terrible mistake",
+      "why": "only syndicated summaries found, survey date unconfirmed"
+    },
+    {
+      "claim": "Zillow 2025: about 1 in 7 did no inspections",
+      "why": "not read at Zillow's own page"
+    },
+    {
+      "claim": "State home-inspector licensing and state standards of practice",
+      "why": "vary by state; none read this session"
+    }
+  ],
+  "blockedSources": [
+    "hud.gov (served HTML to the automated PDF download; read via the Internet Archive copy)"
+  ]
+}

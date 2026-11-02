@@ -1,0 +1,28 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-11-02T06:09:08.041Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "knob and tube replacement cost",
+    "two prong outlets",
+    "cloth wiring",
+    "60 amp service",
+    "ungrounded outlets",
+    "rewire old house"
+  ],
+  "keywords": [
+    {
+      "keyword": "knob and tube vs cloth wiring",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 3,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    }
+  ]
+}
