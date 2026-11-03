@@ -135,6 +135,7 @@ function main() {
     '/guides/sewer-line-belly-found-inspection/', // owner 2026-10-13: "Exact everywhere" (85 chars)
     '/guides/buying-house-unpermitted-deck-before-closing/', // owner 2026-10-13: exact title (70 chars)
     '/guides/home-insurance-nonrenewal-roof-photo/', // owner 2026-10-13: exact title (68 chars)
+    '/guides/city-utilities-vs-septic-water-sewer-costs/', // owner 2026-11-02: kept the report's exact title (67 chars)
   ]);
   for (const f of walk(DIST).filter((p) => p.endsWith('index.html'))) {
     const html = fs.readFileSync(f, 'utf8');

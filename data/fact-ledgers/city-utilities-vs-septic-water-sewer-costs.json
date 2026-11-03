@@ -1,0 +1,105 @@
+{
+  "_about": "New guide (2026-11-03, write-article), #2 of docs/plans/report-4-articles-2026-11.md. Owner's exact title (67 chars, kept by the owner). The outside report's RE/MAX quote was not used. Every number in the body traces to an entry here.",
+  "slug": "city-utilities-vs-septic-water-sewer-costs",
+  "question": "How do I find out whether a house is on city sewer and water or on septic and a well, and what does each cost me?",
+  "verdictConfirmed": "Many people don't know (Census: in Florida, half of homes recorded as septic were reported as sewer by residents); check the utility bill, records and the ground before the offer, because a standard inspection doesn't have to determine it (ASHI 6.2.B) and septic carries pumping/inspection cycles while sewer carries a monthly charge -- and in Florida, a working septic system must connect within 365 days of notice that sewer is available.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Census Bureau working paper SEHSD FY 2023-30 (Patrick Madamba, September 2023) compared American Housing Survey answers in Florida (2015-2021) with Florida's administrative records (FLWMI). Combined agreement was about 85%. In 2021 the AHS put public sewer at 89.4% of housing units vs 76.0% in the admin data. Among units whose admin records indicate septic, 46.0% to 59.6% self-reported sewer (owners 36.0% to 50.9%; renters up to 80.2% in 2021).",
+      "quote": "The combined sewage disposal agreement rates (sewer-sewer agreement + septic-septic agreement) appear to be stable at around 85% ... in 2021, the sewer prevalence rate in the AHS was 89.4% (SE 2.0%), which was significantly higher than that of the admin data at 76.0% (SE 1.8%) ... Focusing on the set of housing units whose admin records indicate septic, the mismatch rates range from 46.0% (SE 4.9%) to 59.6% (SE 6.1%) for all housing units. Renter-occupied units ... as high as 80.2% (SE 7.4%) in 2021. These are much higher than the corresponding mismatch rates in the owner-occupied group, which range from 36.0% (SE 4.5%) to 50.9% (SE 5.7%).",
+      "url": "https://www.census.gov/content/dam/Census/library/working-papers/2023/demo/SEHSD-wp2023-30.pdf",
+      "readOn": "2026-11-03",
+      "method": "pdf"
+    },
+    {
+      "id": "f2",
+      "claim": "EPA septic FAQ (last updated March 11, 2026): deed, building permit and design plans will likely show whether there is a septic system; a septic home shows a $0.00 charge for wastewater or sewer services on the utility bill (or may get no bill); a water line with no meter usually indicates a private well; if neighbors all have septic, your home likely does too; rural homes are likely on septic; to find the tank, follow the plumbing outlet and look for an access riser (black or green disc) or probe, usually about 10 feet from the building; EPA has no national database of septic systems; in many states a septic system must be inspected with the transfer of real estate.",
+      "quote": "will likely contain information about the presence (or lack) of a septic system ... If you have a septic system, you will see a $0.00 charge for wastewater or sewer services on your utility bill ... If the water line into your home does not have a meter attached to it, that usually indicates you have a private well ... If they all have septic systems, your home likely does too ... might find an access riser (black or green disc) or probe for the top of the septic tank ... EPA does not have a database of septic systems throughout the U.S. ... In many states, a septic system must be inspected with the transfer of real estate.",
+      "url": "https://www.epa.gov/septic/frequent-questions-septic-systems",
+      "readOn": "2026-11-03",
+      "method": "webfetch",
+      "note": "the tank 'usually about 10 feet' distance is EPA's"
+    },
+    {
+      "id": "f3",
+      "claim": "EPA How to Care for Your Septic System (last updated August 17, 2026): the average household septic system should be inspected at least every three years by a septic service professional; household septic tanks are typically pumped every three to five years.",
+      "quote": "The average household septic system should be inspected at least every three years by a septic service professional. Household septic tanks are typically pumped every three to five years.",
+      "url": "https://www.epa.gov/septic/how-care-your-septic-system",
+      "readOn": "2026-11-03",
+      "method": "webfetch"
+    },
+    {
+      "id": "f4",
+      "claim": "ASHI Standard of Practice for Home Inspections (effective March 1, 2014), 6.2: the inspector is NOT required to inspect septic and other sewage disposal systems or wells, nor to determine whether water supply and sewage disposal are public or private (6.2.B).",
+      "quote": "6.2 The inspector is NOT required to: A. inspect: ... 3. wells, well pumps, and water storage related equipment. ... 7. septic and other sewage disposal systems. B. determine: 1. whether water supply and sewage disposal are public or private.",
+      "url": "https://www.homeinspector.org/wp-content/uploads/2024/06/standards_updated3-4-2015.pdf",
+      "readOn": "2026-11-02",
+      "method": "pdf",
+      "note": "same reading as data/fact-ledgers/dont-skip-the-home-inspection.json f3"
+    },
+    {
+      "id": "f5",
+      "claim": "Our tally (scripts/fetch-flwmi-wastewater-stats.ts, run 2026-11-03) of the Florida Department of Health's Florida Water Management Inventory, built residential parcels (LANDUSE='RES' AND BLT_STATUS='BLT'): 7,269,907 parcels. Wastewater: Known Central Sewer 4,119,535 (56.7%); Likely Central Sewer 601,198 (8.3%); Somewhat Likely Central Sewer 143,380 (2.0%); Known Onsite Septic 792,971 (10.9%); Likely Onsite Septic 820,300 (11.3%); Somewhat Likely Onsite Septic 93,536 (1.3%); Unknown 695,278 (9.6%). Septic total 1,706,807 = 23.5%; sewer total 4,864,113 = 66.9%. Of septic labels, 46.5% Known, 53.5% Likely or Somewhat Likely. Private well labels: 635,687 = 8.7%. Wastewater label last updated 2016 or earlier for 4,081,688 parcels = 56.1%; labels range from 2009 to 2024. Grouped for the article: Likely or Somewhat Likely Central Sewer 744,578 = 10.2%; Likely or Somewhat Likely Onsite Septic 913,836 = 12.6%; Undetermined 3,692 = 0.1%.",
+      "quote": "septicParcels 1706807, septicSharePct 23.5, sewerSharePct 66.9, unknownSharePct 9.6, septicKnownSharePct 46.5, septicInferredSharePct 53.5, wellParcels 635687, wellSharePct 8.7; total 7269907; WW_UPD 2009 1092586, 2014 407814, 2015 454932, 2016 2126356 ... 2024 389657",
+      "url": "docs/data/flwmi-wastewater-stats.json",
+      "readOn": "2026-11-03",
+      "method": "engine"
+    },
+    {
+      "id": "f6",
+      "claim": "Our lookup, 2026-11-03: the FLWMI record for parcel 2027010080 (2000 Main St, Sarasota; county-owned government parcel, the same one in our year-built guide) labels wastewater 'Somewhat Likely Central Sewer' (updated 2016, source other government) and drinking water 'Known Public Water' (updated 2016, source utility).",
+      "quote": "{'CO_NO': '68', 'LANDUSE': 'GOV', 'PARCELNO': '2027010080', 'PHY_ADD1': '2000 MAIN ST', 'PHY_CITY': 'SARASOTA', 'WW': 'SWLSewer', 'WW_UPD': '2016', 'WW_SRC_TYP': 'Other-Gov', 'DW': 'KnownPublic', 'DW_UPD': '2016', 'DW_SRC_TYP': 'Utility'}",
+      "url": "https://maps.floridahealth.gov/server/rest/services/FLWMI/FLWMI_Wastewater/FeatureServer/0",
+      "readOn": "2026-11-03",
+      "method": "engine"
+    },
+    {
+      "id": "f7",
+      "claim": "Florida DOH FLWMI page: the goal is an up-to-date centralized geographic data map for developed properties with a drinking water source (public water or private domestic well) and wastewater method (central sewer or onsite septic); there are gaps where information was lacking and several public water and sewer providers did not submit data; maps and data are available for download.",
+      "quote": "Goal is to provide an up-to-date centralized geographic data map for developed properties with a drinking water source ... there are gaps in the data from a lack of available information ... several public water and sewer providers did not submit data ... All completed maps and data are available on an FTP site.",
+      "url": "https://www.floridahealth.gov/community-environmental-public-health/environmental-public-health/water-quality/drinking-water/flwmi/",
+      "readOn": "2026-11-03",
+      "method": "webfetch"
+    },
+    {
+      "id": "f8",
+      "claim": "Florida Statutes § 381.00655(1)(a) (2026): the owner of a properly functioning onsite sewage system (excluding approved graywater systems) must connect to an available publicly owned or investor-owned sewerage system within 365 days after written notification that it is available; the sewer system must give notice no less than 1 year before anticipated availability; the owner may prepay the amortized value of required connection charges in equal monthly installments over a period not to exceed 2 years from the initial notification.",
+      "quote": "The owner of a properly functioning onsite sewage treatment and disposal system, excluding an approved onsite graywater system, must connect the system or the building's plumbing to an available publicly owned or investor-owned sewerage system within 365 days after written notification ... No less than 1 year prior to the date the sewerage system will become available, the publicly owned or investor-owned sewerage system shall notify the affected owner ... The owner shall have the option of prepaying the amortized value of required connection charges in equal monthly installments over a period not to exceed 2 years from the date of the initial notification of anticipated availability.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0300-0399/0381/Sections/0381.00655.html",
+      "readOn": "2026-11-03",
+      "method": "webfetch"
+    },
+    {
+      "id": "f9",
+      "claim": "Demand: tier 3 -- no Google or Bing signal for 'septic or city sewer', 'how to tell if house has septic', 'septic vs sewer', 'is my house on septic' (our capture 2026-11-03). Written as an experiment from the owner's list.",
+      "quote": "STRONGEST EVIDENCE: tier 3 -- no first-party signal.",
+      "url": "data/keywords/2026-11-03-demand-septic-or-city-sewer-bing.json",
+      "readOn": "2026-11-03",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "RE/MAX quote about being surprised when the septic tank needs pumping",
+      "why": "from the outside report; not needed and not read at source"
+    },
+    {
+      "claim": "Typical cost of septic pumping, inspection or a sewer connection",
+      "why": "not in our engine; no primary price source read"
+    },
+    {
+      "claim": "National share of homes on septic (AHS ~20 million households)",
+      "why": "only a secondary presentation found; AHS national table not read this session"
+    },
+    {
+      "claim": "Who owns and repairs the sewer lateral on a sewer-connected house",
+      "why": "varies by city; not verified"
+    },
+    {
+      "claim": "A public, address-search FLWMI web map",
+      "why": "FDOH page links only downloads; the map service exists but no consumer search page was confirmed"
+    }
+  ],
+  "blockedSources": []
+}

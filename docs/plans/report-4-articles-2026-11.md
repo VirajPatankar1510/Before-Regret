@@ -9,7 +9,7 @@ write-article skill (five questions, fact ledger, our own data, "How we checked 
 | # | Exact title | Chars | Overlap with live guides | Plan |
 |---|---|---|---|---|
 | 1 | Don't Skip the Home Inspection: Buyers' Biggest Regret | 55 | none live (#166, #301, #306 removed) | **live 2026-11-02 (#342)**, READ 2026-12-07 |
-| 2 | City Utilities vs Septic: Don't Be Surprised by Water & Sewer Costs | 67 | #197 covers whether an inspection includes the septic; this one is how to tell which a house has | write; owner chose to keep the exact title (2026-11-02) -> add to OWNER_LONG_TITLES |
+| 2 | City Utilities vs Septic: Don't Be Surprised by Water & Sewer Costs | 67 | #197 covers whether an inspection includes the septic; this one is how to tell which a house has | **live 2026-11-03 (#343)**, READ 2026-12-08; long title allowlisted |
 | 3 | Final Walkthrough Checklist: What to Do Before Closing | 54 | none | write |
 | 4 | Radon Testing: A Must for Homebuyers | 36 | #25 is negotiating mitigation after a result; this is testing | write |
 | 5 | Well Water Testing: Protect Your Health When Buying a Home | 58 | #206 is shared-well responsibility | write |

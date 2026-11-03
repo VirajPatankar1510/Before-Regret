@@ -1,0 +1,54 @@
+{
+  "source": "Florida Department of Health, Florida Water Management Inventory (FLWMI), wastewater layer",
+  "endpoint": "https://maps.floridahealth.gov/server/rest/services/FLWMI/FLWMI_Wastewater/FeatureServer/0/query",
+  "filter": "LANDUSE='RES' AND BLT_STATUS='BLT'",
+  "fetchedAt": "2026-11-03T07:15:34.153Z",
+  "builtResidentialParcels": 7269907,
+  "wastewater": {
+    "KnownSeptic": 792971,
+    "KnownSewer": 4119535,
+    "LikelySeptic": 820300,
+    "LikelySewer": 601198,
+    "NA": 17,
+    "SWLSeptic": 93536,
+    "SWLSewer": 143380,
+    "UNDT": 3692,
+    "UNK": 695278
+  },
+  "drinkingWater": {
+    "KnownPublic": 4465218,
+    "KnownWell": 364919,
+    "LikelyPublic": 682948,
+    "LikelyWell": 256582,
+    "NA": 491,
+    "SWLPublic": 460966,
+    "SWLWell": 14186,
+    "UNDT": 15241,
+    "UNK": 1009356
+  },
+  "wastewaterLabelYear": {
+    "2009": 1092586,
+    "2014": 407814,
+    "2015": 454932,
+    "2016": 2126356,
+    "2017": 616337,
+    "2018": 194512,
+    "2019": 101,
+    "2020": 333720,
+    "2021": 214507,
+    "2022": 745544,
+    "2023": 693841,
+    "2024": 389657
+  },
+  "derived": {
+    "septicParcels": 1706807,
+    "septicSharePct": 23.5,
+    "sewerParcels": 4864113,
+    "sewerSharePct": 66.9,
+    "unknownSharePct": 9.6,
+    "septicKnownSharePct": 46.5,
+    "septicInferredSharePct": 53.5,
+    "wellParcels": 635687,
+    "wellSharePct": 8.7
+  }
+}

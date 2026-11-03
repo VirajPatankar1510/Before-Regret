@@ -1,0 +1,15 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-11-03T06:59:31.583Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "septic or city sewer",
+    "how to tell if house has septic",
+    "septic vs sewer",
+    "is my house on septic"
+  ],
+  "keywords": []
+}
