@@ -1,0 +1,14 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-11-03T12:19:35.270Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "final walkthrough checklist",
+    "final walk through",
+    "walkthrough before closing"
+  ],
+  "keywords": []
+}

@@ -1,0 +1,83 @@
+{
+  "_about": "New guide (2026-11-03, write-article), #3 of docs/plans/report-4-articles-2026-11.md. Owner's exact title. The report's Rocket Mortgage quotes were not used. First-party: Texas's state-promulgated resale contract (TREC No. 20-19, 05-04-2026) read line by line and turned into a walk-through table.",
+  "slug": "final-walkthrough-checklist-before-closing",
+  "question": "What should I check at the final walk-through, and what can I do if something is wrong?",
+  "verdictConfirmed": "Do it before you sign (CFPB); check against what your contract actually promises -- agreed repairs with documentation, conveyed fixtures and accessories, condition, utilities on, smart-device access -- and know the remedies (Texas: extend closing up to 5 days for unfinished repairs; casualty loss options) and that a walk-through credit means a corrected Closing Disclosure without restarting the three-day clock unless APR/product/prepayment change.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "CFPB 'Close the deal' page (last modified Aug. 21, 2025): before you sign any papers, do a final walk-through of the home; make sure everything you and the seller agreed would be repaired has been repaired.",
+      "quote": "Before you sign any papers, do a final walk-through of the home ... Make sure everything that you and the seller agreed would be repaired has been repaired",
+      "url": "https://www.consumerfinance.gov/owning-a-home/close/close-the-deal/",
+      "readOn": "2026-11-03",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "claim": "TREC No. 20-19, One to Four Family Residential Contract (Resale), form date 05-04-2026, paragraph 7A: Seller shall permit Buyer and Buyer's agents access to the Property at reasonable times; Seller at Seller's expense shall immediately cause existing utilities to be turned on and keep them on during the time the contract is in effect. The word 'walk-through' does not appear anywhere in the 12-page form.",
+      "quote": "ACCESS, INSPECTIONS AND UTILITIES: Seller shall permit Buyer and Buyer's agents access to the Property at reasonable times. ... Seller at Seller's expense shall immediately cause existing utilities to be turned on and shall keep the utilities on during the time this contract is in effect.",
+      "url": "https://www.trec.texas.gov/sites/default/files/pdf-forms/20-19.pdf",
+      "readOn": "2026-11-03",
+      "method": "pdf",
+      "note": "trec.texas.gov did not load from our network; read via the Internet Archive capture of 2026-10-21 (web.archive.org/web/20261021030853id_/...). Full-text search of the form for 'walk' found nothing."
+    },
+    {
+      "id": "f3",
+      "claim": "TREC 20-19 paragraph 7F: unless otherwise agreed in writing, Seller completes all agreed repairs and treatments before the Closing Date and obtains any required permits; work by licensed persons (or, where no license is required, persons commercially engaged in the trade); Seller provides documentation from the repair person(s) showing the scope of work and payment, and arranges transfer of transferable warranties at closing; if repairs are not completed, Buyer may exercise remedies under Paragraph 15 or extend the Closing Date up to 5 days.",
+      "quote": "Unless otherwise agreed in writing, Seller shall complete all agreed repairs and treatments prior to the Closing Date and obtain any required permits. The repairs and treatments must be performed by persons who are licensed ... Seller shall: (i) provide Buyer with copies of documentation from the repair person(s) showing the scope of work and payment for the work completed; and (ii) at Seller's expense, arrange for the transfer of any transferable warranties ... If Seller fails to complete any agreed repairs and treatments prior to the Closing Date, Buyer may exercise remedies under Paragraph 15 or extend the Closing Date up to 5 days if necessary for Seller to complete the repairs and treatments.",
+      "url": "https://www.trec.texas.gov/sites/default/files/pdf-forms/20-19.pdf",
+      "readOn": "2026-11-03",
+      "method": "pdf"
+    },
+    {
+      "id": "f4",
+      "claim": "TREC 20-19 paragraph 2B and 2C: improvements conveyed include equipment and appliances, ceiling fans, mail boxes, TV mounts and brackets, heating and air-conditioning units, security and fire detection equipment, lighting fixtures, water softener, garage door openers, landscaping, generators; accessories include window AC units, stove, curtains and rods, blinds, door keys, mailbox keys, pool equipment, and controls for garage doors and entry gates (including transferable software rights). 2D: excluded items must be removed before delivery of possession.",
+      "quote": "all equipment and appliances, valances, screens, shutters, awnings, wall-to-wall carpeting, mirrors, ceiling fans, attic fans, mail boxes, television antennas, mounts and brackets for televisions and speakers, heating and air-conditioning units, security and fire detection equipment, wiring, plumbing and lighting fixtures, chandeliers, water softener system, kitchen equipment, garage door openers ... C. ACCESSORIES: ... window air conditioning units, stove, fireplace screens, curtains and rods, blinds ... door keys, mailbox keys ... and controls for: (i) garage doors, (ii) entry gates ... D. EXCLUSIONS: The following improvements and accessories will be retained by Seller and must be removed prior to delivery of possession",
+      "url": "https://www.trec.texas.gov/sites/default/files/pdf-forms/20-19.pdf",
+      "readOn": "2026-11-03",
+      "method": "pdf"
+    },
+    {
+      "id": "f5",
+      "claim": "TREC 20-19 paragraph 10A: Seller delivers possession in its present or required condition, ordinary wear and tear excepted. 10B Smart Devices: at delivery of possession Seller gives written information with all access codes, usernames, passwords and applications Buyer needs, and terminates and removes all access from Seller's personal devices.",
+      "quote": "Seller shall deliver to Buyer possession of the Property in its present or required condition, ordinary wear and tear excepted ... At the time Seller delivers possession of the Property to Buyer, Seller shall: (1) deliver to Buyer written information containing all access codes, usernames, passwords, and applications Buyer will need to access, operate, manage, and control the Smart Devices; and (2) terminate and remove all access and connections to the improvements and accessories from any of Seller's personal devices",
+      "url": "https://www.trec.texas.gov/sites/default/files/pdf-forms/20-19.pdf",
+      "readOn": "2026-11-03",
+      "method": "pdf"
+    },
+    {
+      "id": "f6",
+      "claim": "TREC 20-19 paragraph 14 Casualty Loss: if the Property is damaged by fire or other casualty after the Effective Date, Seller restores it by the Closing Date; if Seller fails due to factors beyond Seller's control, Buyer may terminate with earnest money refunded, extend up to 15 days, or accept the property damaged with an assignment of insurance proceeds (if the carrier permits) and a credit for the deductible.",
+      "quote": "If any part of the Property is damaged or destroyed by fire or other casualty after the Effective Date of this contract, Seller shall restore the Property to its previous condition as soon as reasonably possible, but in any event by the Closing Date. If Seller fails to do so due to factors beyond Seller's control, Buyer may (a) terminate this contract and the earnest money will be refunded to Buyer (b) extend the time for performance up to 15 days ... or (c) accept the Property in its damaged condition with an assignment of insurance proceeds, if permitted by Seller's insurance carrier, and receive credit from Seller at closing in the amount of the deductible",
+      "url": "https://www.trec.texas.gov/sites/default/files/pdf-forms/20-19.pdf",
+      "readOn": "2026-11-03",
+      "method": "pdf"
+    },
+    {
+      "id": "f7",
+      "claim": "12 CFR 1026.19(f)(1)(ii)(A): the consumer must receive the Closing Disclosure no later than three business days before consummation. 1026.19(f)(2)(i): if disclosures become inaccurate before consummation, the creditor provides corrected disclosures received at or before consummation. 1026.19(f)(2)(ii): a new three-business-day wait applies only when the APR becomes inaccurate, the loan product changes, or a prepayment penalty is added.",
+      "quote": "no later than three business days before consummation ... if the disclosures provided under paragraph (f)(1)(i) of this section become inaccurate before consummation, the creditor shall provide corrected disclosures reflecting any changed terms to the consumer so that the consumer receives the corrected disclosures at or before consummation ... (f)(2)(ii): APR becomes inaccurate; loan product change; prepayment penalty added",
+      "url": "https://www.law.cornell.edu/cfr/text/12/1026.19",
+      "readOn": "2026-11-03",
+      "method": "webfetch"
+    },
+    {
+      "id": "f8",
+      "claim": "Demand: tier 3 -- no Google or Bing signal for 'final walkthrough checklist', 'final walk through', 'walkthrough before closing' (our capture 2026-11-03). Experiment from the owner's list.",
+      "quote": "STRONGEST EVIDENCE: tier 3 -- no first-party signal.",
+      "url": "data/keywords/2026-11-03-demand-final-walkthrough-checklist-bing.json",
+      "readOn": "2026-11-03",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    { "claim": "Rocket Mortgage's walk-through checklist quotes", "why": "from the outside report; secondary lender blog, not needed" },
+    { "claim": "Walk-through is usually 24 hours / the day before closing", "why": "industry convention only; no primary source" },
+    { "claim": "CFPB mortgage closing checklist PDF contents", "why": "files.consumerfinance.gov returned an HTML page to the download; not read" },
+    { "claim": "Other states' contract walk-through clauses (e.g. California C.A.R. forms)", "why": "proprietary or not read" }
+  ],
+  "blockedSources": [
+    "trec.texas.gov (did not load from our network; read via Internet Archive)",
+    "files.consumerfinance.gov PDF (served HTML to the automated download)"
+  ]
+}
