@@ -1,0 +1,44 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-04T07:08:52.889Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "service line coverage",
+    "sewer line insurance",
+    "water line insurance",
+    "does homeowners insurance cover sewer line"
+  ],
+  "keywords": [
+    {
+      "keyword": "service line coverage",
+      "search_volume": 634,
+      "metric": "market",
+      "broad_impressions": 723,
+      "kind": "seed"
+    },
+    {
+      "keyword": "sewer line insurance",
+      "search_volume": 67,
+      "metric": "market",
+      "broad_impressions": 67,
+      "kind": "seed"
+    },
+    {
+      "keyword": "water line insurance",
+      "search_volume": 225,
+      "metric": "market",
+      "broad_impressions": 225,
+      "kind": "seed"
+    },
+    {
+      "keyword": "does homeowners insurance cover sewer line",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

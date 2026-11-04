@@ -1,0 +1,260 @@
+{
+  "source": "bing",
+  "endpoint": "Bing Webmaster Tools > AI Performance > Topic Portfolio (beta) > Top opportunity queries, CSV export by the owner",
+  "note": "Queries where Bing's AI answers cite other sites but not this one. 'Citation Range' is Bing's band of citation activity for the query, NOT a search volume -- never quote it as market size.",
+  "captured_at": "2026-11-04",
+  "site_url": "https://www.beforeregret.com",
+  "source_file": "www.beforeregret.com_AITopicsTopOpportunityQueries_11_4_2026.csv",
+  "keywords": [
+    {
+      "keyword": "service line coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "1K-5K"
+    },
+    {
+      "keyword": "drainpipe",
+      "topic": "Plumbing",
+      "citation_range": "1K-5K"
+    },
+    {
+      "keyword": "homeowners insurance in florida",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "1K-5K"
+    },
+    {
+      "keyword": "loss of use coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "1K-5K"
+    },
+    {
+      "keyword": "ho6 insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "1K-5K"
+    },
+    {
+      "keyword": "mobile home insurance companies",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "1K-5K"
+    },
+    {
+      "keyword": "contents insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "1K-5K"
+    },
+    {
+      "keyword": "home insurance policy",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "loss of use",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "fire insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "home insurance companies",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "service line coverage home insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "ho4 insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "renters insurance explained",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "mobile home insurance coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "mobile home insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "personal property insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "home insurance mold damage coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "fire insurance policy",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "what is homeowners insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "500-1K"
+    },
+    {
+      "keyword": "dp3 policy",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "fair plan homeowners insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "insurance for contents",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "manufactured home insurance basics explained",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "home insurance mold coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "homeowners insurance basics explained",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "how much is home insurance per month",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "homeowners insurance for manufactured homes",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "manufactured home insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "manufactured home insurance coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "homeowners insurance mold damage coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "home insurance mold remediation coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "manufactured home insurance florida",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "what to do with a burst pipe now",
+      "topic": "Plumbing",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "mobile home insurance texas",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "homeowners insurance water damage coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "florida mobile home insurance companies",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "mobile home owners insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "benefits of bundling home and auto insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "insurance home owners",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "loss of rents coverage explained",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "how much is home owners insurance per month",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "second home insurance coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "mobile homes insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "home insurance meaning",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "contents only insurance",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "water pipe insurance for homeowners",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "insurance for my home",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "101-500"
+    },
+    {
+      "keyword": "water damage coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "51-100"
+    },
+    {
+      "keyword": "contents insurance coverage",
+      "topic": "Home & Renters Insurance",
+      "citation_range": "51-100"
+    }
+  ]
+}

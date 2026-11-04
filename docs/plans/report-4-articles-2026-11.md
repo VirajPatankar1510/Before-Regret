@@ -6,30 +6,48 @@ write-article skill (five questions, fact ledger, our own data, "How we checked 
 
 ## Order and status
 
-Reordered 2026-11-03 (owner: "yes, update the plan"). The open-ground fix moves up to fourth, and two electrical
-"what happens next" titles are added at the end. The reason is in the next section.
+**Revised 2026-11-04** (owner: "add to plan and revise the plan"). The order now follows evidence:
+1. titles with first-party demand (Bing's AI opportunity list, or Search Console queries we already show for) first;
+2. then the electrical consequence titles (our click pattern);
+3. then the report's remaining titles, which have no demand signal yet.
 
-| Order | Title | Chars | Overlap with live guides | Plan |
+Earlier revision, 2026-11-03: the open-ground fix moved up, and two electrical titles were added.
+
+| Order | Title | Evidence | Overlap with live guides | Plan |
 |---|---|---|---|---|
-| 1 | Don't Skip the Home Inspection: Buyers' Biggest Regret | 55 | none live (#166, #301, #306 removed) | **live 2026-11-02 (#342)**, READ 2026-12-07 |
-| 2 | City Utilities vs Septic: Don't Be Surprised by Water & Sewer Costs | 67 | #197 covers whether an inspection includes the septic; this one is how to tell which a house has | **live 2026-11-03 (#343)**, READ 2026-12-08; long title allowlisted |
-| 3 | Final Walkthrough Checklist: What to Do Before Closing | 54 | none | **live 2026-11-03 (#344)**, READ 2026-12-08 |
-| 4 | How to Fix an Open Ground Outlet | 32 | #235 explains the term; this one is the fix. Link both ways (the link from #235 needs owner OK) | **next** (our pick; moved up 2026-11-03) |
-| 5 | Radon Testing: A Must for Homebuyers | 36 | #25 is negotiating mitigation after a result; this is testing | write |
-| 6 | Well Water Testing: Protect Your Health When Buying a Home | 58 | #206 is shared-well responsibility | write |
-| 7 | Why an Appraisal Contingency is Crucial in Home Buying | 55 | none live | write |
-| 8 | Home HVAC Inspection Checklist: What Buyers Need to Know | 57 | #176 is system age; keep this to the checklist and link #176 for age | write |
-| 9 | Foundation Inspections: Key to Avoid Costly Repairs | 51 | #190 (when a crack needs an engineer), #187, #191 | write, angle: what each kind of foundation inspection covers; link #190 |
-| 10 | What It Costs to Replace Knob-and-Tube Wiring | 45 | check #7, #288, #338 for cost sections before writing | write (our pick); costs from PRIORITY_RULES |
-| 11 | Can You Get Home Insurance With a Federal Pacific Panel? | 56 | #50 says only what the panel is; #321 covers identifying it. Insurance angle not covered | write (added 2026-11-03). Never name an insurer beside an underwriting verb |
-| 12 | Can You Get a Mortgage on a House With a Fuse Box? | 50 | #76 is fuse-box insurance; #338 is the knob-and-tube mortgage guide. Reuse its HUD/VA research | write (added 2026-11-03) |
-| -- | Termite Inspection: Why It's Critical for Homebuyers | 52 | duplicate of #181, #182, #284, #177 | **skipped** (owner, 2026-11-02) |
+| 1 | Don't Skip the Home Inspection: Buyers' Biggest Regret | none (experiment) | none live | **live 2026-11-02 (#342)**, READ 2026-12-07 |
+| 2 | City Utilities vs Septic: Don't Be Surprised by Water & Sewer Costs | none (experiment) | #197 covers whether an inspection includes the septic | **live 2026-11-03 (#343)**, READ 2026-12-08; long title allowlisted |
+| 3 | Final Walkthrough Checklist: What to Do Before Closing | none (experiment) | none | **live 2026-11-03 (#344)**, READ 2026-12-08 |
+| -- | How to Fix an Open Ground Outlet | GSC: "open ground solutions", outlet-tester queries | **duplicate**: #235 already has a section "How to Fix an Open Ground Outlet: Code-Compliant Options" (rewire, GFCI, two-prong) plus bootleg grounds | **skipped** (owner, 2026-11-04). Verified for any later #235 update: NC OSFM interpretation of 406.4(D)(2)(b)/(c) labels (2018-02-19, 2014 code); Klein RT105 "Conditions NOT indicated" incl. reversal of grounded and grounding conductors |
+| 5 | Does Home Insurance Cover Your Water or Sewer Line? | Bing AI opportunity: "service line coverage" (1K–5K band), "service line coverage home insurance" (500–1K), "water pipe insurance for homeowners" (101–500) | none. Links to #339 sewer scope, #317 lead line, #343 septic, #300 cast iron | **live 2026-11-04 (#345)**, READ 2026-12-09 |
+| 6 | Does Homeowners Insurance Cover Mold? | Bing AI opportunity: 6 mold-coverage queries (500–1K and 101–500 bands) | #99 is whether an inspection checks for mold; no insurance page | **next** |
+| 7 | Burst Pipe? What to Do Right Now, and What Insurance Covers | Bing AI opportunity: "what to do with a burst pipe now" (Plumbing, 101–500), "homeowners insurance water damage coverage" (101–500), "water damage coverage" (51–100) | #231 is sump-pump coverage; #340 has Red Cross frozen-pipe prevention | write (added 2026-11-04). Plumbers are an ad audience |
+| 8 | Can You Get Home Insurance With a Federal Pacific Panel? | click pattern (insurance + defect pages: 1.5–2.4% CTR); Bing sees us as an insurance site (48 of 50 opportunity queries) | #50 says only what the panel is; #321 covers identifying it | write (moved up 2026-11-04). Never name an insurer beside an underwriting verb |
+| 9 | Can You Get a Mortgage on a House With a Fuse Box? | click pattern (#338 K&T mortgage: 1.11%) | #76 is fuse-box insurance; reuse #338's HUD/VA research | write |
+| 10 | What It Costs to Replace Knob-and-Tube Wiring | GSC tier 1 weak (1 impression); engine cost range | check #7, #288, #338 for cost sections first | write; costs from PRIORITY_RULES |
+| 11 | Radon Testing: A Must for Homebuyers | none yet | #25 is negotiating mitigation after a result | write (owner's exact title) |
+| 12 | Well Water Testing: Protect Your Health When Buying a Home | none yet | #206 is shared-well responsibility | write (owner's exact title) |
+| 13 | Why an Appraisal Contingency is Crucial in Home Buying | none yet | none live | write (owner's exact title) |
+| 14 | Home HVAC Inspection Checklist: What Buyers Need to Know | none yet | #176 is system age | write (owner's exact title) |
+| 15 | Foundation Inspections: Key to Avoid Costly Repairs | none yet | #190, #187, #191 | write (owner's exact title); angle: what each kind of foundation inspection covers |
+| -- | Mobile home insurance (title to be set) | Bing AI opportunity: about 12 manufactured/mobile home insurance queries, incl. Florida and Texas | #316 mobile-home buying guide | **held** until the mobile-home experiment read on 2026-11-13. If #316 is shown for a manufactured-home search, write it |
+| -- | Termite Inspection: Why It's Critical for Homebuyers | -- | duplicate of #181, #182, #284, #177 | **skipped** (owner, 2026-11-02) |
+| -- | Generic insurance definitions from the Bing list (HO-4, HO-6, DP3, loss of use, contents, fire insurance, "what is homeowners insurance", company lists, cost per month, bundling, Florida homeowners insurance) | -- | -- | **skipped**: definition pages get about 0.2% CTR here, insurers dominate those results, and company lists would mean naming insurers |
 
-Titles 1–3 and 5–9 are the owner's exact titles. Titles 4 and 10–12 are ours (owner OK 2026-11-02 and 2026-11-03), so
-they may still be tuned before drafting. Titles 11 and 12 are questions, so they get a quick answer (verdict first,
-120–450 chars).
+Titles 11–15 are the owner's exact titles (word for word). Titles 4–10 are ours (owner OK 2026-11-02, 11-03, 11-04)
+and may be tuned before drafting. Every title ending in "?" gets a quick answer (verdict first, 120–450 chars).
 
-Pace: one at a time, about three a week, so the remaining ten take roughly three and a half weeks.
+Pace: one at a time, about three a week, so the remaining eleven take roughly four weeks (to about 2026-12-01). #6 is next.
+
+## Bing AI opportunity list (2026-11-04)
+
+Owner export: Bing Webmaster Tools → AI Performance → Topic Portfolio (beta). Saved as
+`data/keywords/2026-11-04-bing-ai-opportunity-queries.json`. It lists queries where Bing's AI answers cite other sites
+but not this one. "Citation Range" is Bing's band of citation activity, **not search volume**, so it is used only to
+rank queries against each other and is never quoted in an article.
+
+**Measure:** re-export monthly, first on 2026-12-04, and check whether articles 5–7 have moved their queries out of the
+opportunity list (meaning we are now cited) or started appearing in the AI Performance citations report.
 
 ## Why the electrical titles (Search Console, 90 days to 2026-11-01)
 

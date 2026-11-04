@@ -1,0 +1,98 @@
+{
+  "_about": "New guide (2026-11-04, write-article), #5 of docs/plans/report-4-articles-2026-11.md. Evidence: Bing AI opportunity export 2026-11-04 ('service line coverage' 1K-5K band) and topic-demand tier 2 (Bing records 'service line coverage', 'water line insurance', 'sewer line insurance'). No insurer is named beside an underwriting verb.",
+  "slug": "home-insurance-water-sewer-service-line",
+  "question": "Does homeowners insurance pay to fix the water or sewer line between my house and the street?",
+  "verdictConfirmed": "Usually not under the standard policy: the line is the owner's to maintain (city rules) and a homeowners policy is not a maintenance contract (NAIC); an optional add-on for buried lines exists, and its form decides which causes, which lines and what limit -- one insurer's published FAQ covers wear and tear, roots and freezing but not blockage, sewer backup or foundation movement.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "NAIC, A Consumer's Guide to Home Insurance (2022): a homeowners policy isn't a maintenance contract; it insures against damage from perils such as fire, wind and hail and doesn't pay to repair items that simply wear out; you're responsible for upkeep. You might be able to buy endorsements to cover damage caused by mold or by sewer or drain backups and sump pump overflow, since most homeowners policies offer limited or no coverage for these.",
+      "quote": "A homeowners policy isn't a maintenance contract; it insures against damage from perils such as fire, wind and hail. It doesn't pay to repair items that simply wear out, like rotted porch railings. You're responsible for the upkeep of your home ... You might be able to buy endorsements to cover damage caused by mold or by sewer or drain backups and sump pump overflow since most homeowners policies offer limited or no coverage for these types of events.",
+      "url": "https://content.naic.org/sites/default/files/publication-hoi-pp-consumer-homeowners.pdf",
+      "readOn": "2026-11-04",
+      "method": "pdf",
+      "note": "content.naic.org served HTML to the download; read via Internet Archive capture 2026-09-10"
+    },
+    {
+      "id": "f2",
+      "claim": "One insurer's published FAQ for its underground utility line endorsement (dated 7/3/2018; insurer not named in the article): covers failure of an underground utility line caused by freeze, wear and tear, collapse (not earth movement), deterioration, trees/plants/roots, digging/burrowing, animals; lines covered include electrical, TV, internet, telephone, heating, water, waste disposal and drainage; not covered: blockage or low pressure (no direct damage), overflow including sewage/drain/sump backup, flood, earth movement, foundation shifting, cleanup of sewage or pollutants, extra cost of better-quality replacement; up to $25,000 limit; the policy (Section I) deductible applies; no age limitation on lines; law-or-ordinance relocation covered within the limit; premium $35 per year.",
+      "quote": "Freeze; Wear and tear; Collapse (but not including earth movement ...); Deterioration; Trees, plants and shrubs including their roots; Digging, burrowing or excavating; Animals ... Blockage or low pressure of an underground utility line is not covered as there is no direct damage ... Overflow of Water (including Sewage, Drain, or Sump backup ... This endorsement provides up to $25,000 ... Is there coverage if the foundation of a home shifts and damages the underground utility line? Coverage would not apply ... Is there an age limitation on service lines covered? No.",
+      "url": "https://www.pennnationalinsurance.com/globalassets/documents/faq_undergroundutility.pdf",
+      "readOn": "2026-11-04",
+      "method": "pdf",
+      "note": "used in the article only as 'one insurer's published FAQ'; terms vary by insurer and state"
+    },
+    {
+      "id": "f3",
+      "claim": "Philadelphia Water Department, 'From Street to Sink: Water System Responsibility' (03/2026): once water leaves the City-owned main it is the customer's responsibility, including the ferrule, water service pipe, curb stop, curb stop box, water supply pipe and supply valves; the meter is owned by PWD but the owner must keep it accessible and protected; the owner is solely responsible for the main house drain, curb trap, vent, lateral (house drain to public sewer) and slant (connection to the sewer); PWD is responsible for the water main and the public sewer; owners with defective lines are served a Notice of Defect and must repair within the stated period.",
+      "quote": "Once drinking water leaves the City-owned water main in the street, it becomes the customer's responsibility ... Ferrule (J): Connection valve to the water main. Water Service Pipe (K) ... Curb Stop (M) ... Lateral (D): Piping connecting house drain to public sewer. Slant (E): ... The connection between the sewer and the lateral. Customers that do not have fully operational lines will be served a Notice of Defect (NOD) and are required to repair defects and come into compliance within the period stated on the NOD.",
+      "url": "https://water.phila.gov/wp-content/uploads/files/customer-responsibility-diagram.pdf",
+      "readOn": "2026-11-04",
+      "method": "pdf"
+    },
+    {
+      "id": "f4",
+      "claim": "City of San Diego sewer lateral fact sheet: the entire sewer lateral, from the building to its connection with the City sewer main under the street, is private property and the owner's to maintain (roots, grease, debris); if all sewer service is lost from a total blockage or break in the section of lateral within the City's right-of-way, the City may correct it at no expense after the plumber files a free report, but not if the problem is inside the property line, if access is blocked by a private structure, or (billed to the owner) if caused by lack of routine maintenance; the City will under no circumstances dig on private property. The fact sheet also says drainage problems are commonly caused by obstruction or blockage in the lateral, and roots, grease and debris in a lateral are the owner's responsibility.",
+      "quote": "The entire length of the sewer lateral, extending from your home or building to its point of connection with the City sewer main underneath the street, is your private property ... If you have lost all sewer facilities ... as a result of a total blockage or pipe break located in the section of lateral within the City's right-of-way (street), the City may correct the problem at no expense to you ... If City crews find the problem was caused by the lack of routine maintenance of the sewer lateral (e.g. clearing roots or grease), the property owner will be billed ... The City will under no circumstances dig on private property. ... Drainage problems are commonly caused by obstruction or blockage in the lateral ... Roots, cooking grease and debris problems in a sewer lateral are the responsibility of the property owner.",
+      "url": "https://www.sandiego.gov/sites/default/files/legacy/mwwd/pdf/sewerlateral.pdf",
+      "readOn": "2026-11-04",
+      "method": "pdf"
+    },
+    {
+      "id": "f5",
+      "claim": "City of Torrance (CA) Sewer Lateral Policy page: property owners are responsible for maintaining and repairing their sewer lateral, including the entire pipe on private property and the connection to the public sewer main; work in the public right-of-way (property line to sewer main) needs a Construction & Excavation Permit.",
+      "quote": "Property owners are responsible for maintaining and repairing their sewer lateral ... The entire pipe on private property ... The connection point to the City sewer ... public right-of-way (property line to sewer main)",
+      "url": "https://www.torranceca.gov/City-Services/Utilities-Sanitation/Utilities-Sanitation-Services/Sewer-and-Wastewater/Sewer-Lateral-Policy",
+      "readOn": "2026-11-04",
+      "method": "webfetch"
+    },
+    {
+      "id": "f6",
+      "claim": "City of Orem (UT) service line page: state law requires cities to notify homeowners about public vs private ownership of water and sewer lines; homeowners are responsible for their lateral sewer and water line repairs; many residents wrongly believed the city was responsible; the city's optional protection program is a contract with a private company, not the city.",
+      "quote": "State law requires cities to notify homeowners in their community about public vs. private ownership ... responsible for their lateral sewer and water line repairs",
+      "url": "https://orem.gov/serviceline/",
+      "readOn": "2026-11-04",
+      "method": "webfetch"
+    },
+    {
+      "id": "f7",
+      "claim": "Our report engine (src/engine/inspectionPriorities.ts, sewer_cast_iron, read at run time by the publish script): sewer camera scope '$300 – $500 for a camera scope'; repair 'Spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+'. Water supply repipe (galvanized_supply) 'Whole-home repipe $4,000 – $15,000' is inside the house and not used here.",
+      "quote": "$300 – $500 | $1,500 – $5,000 | $4,000 – $15,000+",
+      "url": "src/engine/inspectionPriorities.ts",
+      "readOn": "2026-11-04",
+      "method": "engine"
+    },
+    {
+      "id": "f8",
+      "claim": "Demand (ours): Bing AI Topic Portfolio export 2026-11-04 lists 'service line coverage' (1K-5K citation band), 'service line coverage home insurance' (500-1K) and 'water pipe insurance for homeowners' (101-500) as queries where other sites are cited and ours is not; topic-demand 2026-11-04 tier 2: Bing records 'service line coverage', 'water line insurance' and 'sewer line insurance'. Bands are not search volumes.",
+      "quote": "service line coverage, Home & Renters Insurance, 1K-5K; service line coverage home insurance, 500-1K; water pipe insurance for homeowners, 101-500",
+      "url": "data/keywords/2026-11-04-bing-ai-opportunity-queries.json",
+      "readOn": "2026-11-04",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Maryland Insurance Administration's buried utility lines page",
+      "why": "403 from our network, no archive copy"
+    },
+    {
+      "claim": "Los Angeles Sanitation lateral rules",
+      "why": "Akamai access denied"
+    },
+    {
+      "claim": "Typical endorsement price across insurers",
+      "why": "only one insurer's 2018 FAQ read; not generalised"
+    },
+    {
+      "claim": "Whether utility-marketed service line warranties are insurance",
+      "why": "regulated differently by state; no regulator page read"
+    }
+  ],
+  "blockedSources": [
+    "insurance.maryland.gov (403)",
+    "sanitation.lacity.gov (Akamai access denied)",
+    "cityofhenderson.com (403)",
+    "content.naic.org (HTML to download; read via Internet Archive)"
+  ]
+}

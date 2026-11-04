@@ -1,0 +1,15 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-11-04T07:08:52.889Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "service line coverage",
+    "sewer line insurance",
+    "water line insurance",
+    "does homeowners insurance cover sewer line"
+  ],
+  "keywords": []
+}
