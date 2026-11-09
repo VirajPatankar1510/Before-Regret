@@ -6,6 +6,8 @@ write-article skill (five questions, fact ledger, our own data, "How we checked 
 
 ## Order and status
 
+**Top priority added 2026-11-09** (owner): T1–T3, the "AI gap" topics (questions where AI answers lean on contradictory blogs and no verified, dated, state-by-state or city-by-city table exists), go before #7.
+
 **Revised 2026-11-04** (owner: "add to plan and revise the plan"). The order now follows evidence:
 1. titles with first-party demand (Bing's AI opportunity list, or Search Console queries we already show for) first;
 2. then the electrical consequence titles (our click pattern);
@@ -21,6 +23,9 @@ Earlier revision, 2026-11-03: the open-ground fix moved up, and two electrical t
 | -- | How to Fix an Open Ground Outlet | GSC: "open ground solutions", outlet-tester queries | **duplicate**: #235 already has a section "How to Fix an Open Ground Outlet: Code-Compliant Options" (rewire, GFCI, two-prong) plus bootleg grounds | **skipped** (owner, 2026-11-04). Verified for any later #235 update: NC OSFM interpretation of 406.4(D)(2)(b)/(c) labels (2018-02-19, 2014 code); Klein RT105 "Conditions NOT indicated" incl. reversal of grounded and grounding conductors |
 | 5 | Does Home Insurance Cover Your Water or Sewer Line? | Bing AI opportunity: "service line coverage" (1K–5K band), "service line coverage home insurance" (500–1K), "water pipe insurance for homeowners" (101–500) | none. Links to #339 sewer scope, #317 lead line, #343 septic, #300 cast iron | **live 2026-11-04 (#345)**, READ 2026-12-09 |
 | 6 | Does Homeowners Insurance Cover Mold? | Bing AI opportunity: 6 mold-coverage queries (500–1K and 101–500 bands) | #99 is whether an inspection checks for mold; no insurance page | **live 2026-11-09 (#346)**, READ 2026-12-14 |
+| **T1** | Sewer Lateral Inspection at Sale: Which Cities Require It (working title) | Gap research 2026-11-09: realtor blogs contradict each other (Oakland/EBMUD; Portland, Milwaukee, Berkeley unsourced); Bing tier 2 "sewer lateral" | extends #345's four-city ownership table; links #339, #335 | **live 2026-11-09 (#347)** as "Which Cities Require a Sewer Lateral Inspection at Sale?", READ 2026-12-14, re-check rules by 2027-05-09 |
+| **T2** | Which States Require a Septic Inspection When You Sell a House? (working title) | Gap: blogs conflict on MN/IN/OH/AZ/CT/ME; EPA says only "many states"; Bing tier 2 "septic inspection" | #343, #197 | **next**. State-by-state from statutes/agency rules; unverified states marked, never guessed |
+| **T3** | Can Your Insurer Drop You Over Roof Age? The Rules by State (working title) | Gap: only FL 627.7011(5) and a TX rule documented; sources say no list exists; Bing sees us as an insurance site | #307, #312, #329, #337 | top priority, after T2. State law only, never insurer names |
 | 7 | Burst Pipe? What to Do Right Now, and What Insurance Covers | Bing AI opportunity: "what to do with a burst pipe now" (Plumbing, 101–500), "homeowners insurance water damage coverage" (101–500), "water damage coverage" (51–100) | #231 is sump-pump coverage; #340 has Red Cross frozen-pipe prevention | **next** |
 | 8 | Can You Get Home Insurance With a Federal Pacific Panel? | click pattern (insurance + defect pages: 1.5–2.4% CTR); Bing sees us as an insurance site (48 of 50 opportunity queries) | #50 says only what the panel is; #321 covers identifying it | write (moved up 2026-11-04). Never name an insurer beside an underwriting verb |
 | 9 | Can You Get a Mortgage on a House With a Fuse Box? | click pattern (#338 K&T mortgage: 1.11%) | #76 is fuse-box insurance; reuse #338's HUD/VA research | write |
@@ -37,7 +42,7 @@ Earlier revision, 2026-11-03: the open-ground fix moved up, and two electrical t
 Titles 11–15 are the owner's exact titles (word for word). Titles 4–10 are ours (owner OK 2026-11-02, 11-03, 11-04)
 and may be tuned before drafting. Every title ending in "?" gets a quick answer (verdict first, 120–450 chars).
 
-Pace: one at a time, about three a week, so the remaining eleven take roughly four weeks (to about 2026-12-01). #7 is next.
+Pace: one at a time, about three a week, so the remaining eleven take roughly four weeks (to about 2026-12-01). T2 (septic by state) is next, then T3, then #7.
 
 ## Bing AI opportunity list (2026-11-04)
 

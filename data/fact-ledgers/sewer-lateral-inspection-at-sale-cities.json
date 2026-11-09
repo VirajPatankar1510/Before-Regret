@@ -1,0 +1,104 @@
+{
+  "_about": "New guide (2026-11-09, write-article), T1 of docs/plans/report-4-articles-2026-11.md: an 'AI gap' topic. Realtor/contractor blogs contradict each other on which cities require a sewer lateral inspection at sale (one says EBMUD has no point-of-sale rule; EBMUD's own pages say it does). This ledger is built only from each agency's own pages, dated. Places whose official sites blocked us and have no archive copy are listed as unverified, never guessed.",
+  "slug": "sewer-lateral-inspection-at-sale-cities",
+  "question": "Which cities require a sewer lateral inspection or certificate before a house can be sold, and what does each require?",
+  "verdictConfirmed": "In the places we verified (EBMUD's eight East Bay communities, Berkeley, San Mateo, South San Francisco, Burlingame and Morgan Hill), a sale triggers a lateral inspection or certificate, but the test, exemptions, validity and extension terms differ: EBMUD and Burlingame require a witnessed pressure/air or water test (video not accepted in Burlingame), South San Francisco reviews a CCTV video.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "EBMUD Private Sewer Lateral pages: a Compliance Certificate is issued when a private sewer lateral is shown to be leak-free; it is required to close escrow, for building or remodeling in excess of $100,000, and when changing water meter size; triggering events include buying or selling a property (transferring title); if a certificate can't be obtained before transferring title, a Time Extension Certificate allows 180 days from issue for PSL work, with a $4,500 refundable deposit. FAQ: the program applies to all residential, commercial and industrial properties, including bank-owned properties and short sales, in Alameda, Albany, Emeryville, Oakland, Piedmont, El Cerrito, Kensington and the Richmond Annex; the owner is responsible for the entire lateral to the public main except in Alameda and Albany (upper lateral only); EBMUD witnesses an air or water pressure verification test and does not review CCTV footage in lieu of it; in a sale, the buyer and seller negotiate who obtains the certificate.",
+      "quote": "Required to close escrow ... Building or remodeling in excess of $100,000 ... Changing water meter size ... Buying or selling a property (transferring title) ... a time extension certificate (TEC) which will allow 180 days from the TEC issue date for PSL work to be completed ... the $4,500 refundable deposit ... The Program applies to all residential, commercial, and industrial properties, including bank-owned properties and short sales. Cities include Alameda, Albany, Emeryville, Oakland, Piedmont, El Cerrito, Kensington or the Richmond Annex. ... with the exception of Alameda and Albany where the responsibility ends at the property line or curbside cleanout (i.e. upper lateral only) ... EBMUD does not review CCTV footage in lieu of the required EBMUD witnessed pressure verification test ... In a property sale transaction, it is up to the buyer and seller to negotiate responsibility for obtaining the Compliance Certificate.",
+      "url": "https://www.ebmud.com/wastewater/private-sewer-laterals",
+      "readOn": "2026-11-09",
+      "method": "webfetch",
+      "note": "FAQ read at https://www.ebmud.com/unpublished/test-pages/private-sewer-lateral-psl-program/frequently-asked-questions (EBMUD's own domain)"
+    },
+    {
+      "id": "f2",
+      "claim": "City of Berkeley Private Sewer Lateral Program Compliance Guide (Rev. 7/31/2024; program established October 1, 2006, amended ordinance BMC Chapter 17.24 effective November 3, 2014): all property owners, including condominiums and developments with shared laterals, must obtain a Sewer Lateral Certificate by close of escrow for the transfer or sale of property (with some exceptions) unless a 6-month extension is granted before closing, or when obtaining a building permit valued over $60,000; the extension requires a $4,500 deposit or a contract with a licensed plumbing contractor; the City issues a certificate on evidence the lateral is less than 20 years old or a permit for complete replacement within the last 20 years.",
+      "quote": "By close of escrow for the transfer or sale of property (with some exceptions), unless a 6-month extension is granted prior to closing; OR 2. When obtaining a Building Permit for construction or remodel valued over $60,000 ... submit it with a $4,500 deposit ... Evidence that your sewer lateral is less than 20 years old; or A copy of a plumbing or PSL permit for complete replacement of your sewer lateral performed within the last 20 years.",
+      "url": "https://berkeleyca.gov/sites/default/files/2022-02/PSL-ComplianceGuide.pdf",
+      "readOn": "2026-11-09",
+      "method": "pdf"
+    },
+    {
+      "id": "f3",
+      "claim": "San Mateo Municipal Code § 7.38.432 (Ord. No. 2021-26; Ord. No. 2020-1): the owner is responsible for the private lateral from the building to the public main including the wye connection; inspection and testing is required upon the sale of real property served by a private sewer lateral, before certain building permits, and other events; no inspection is required if the lateral was inspected within the 5 years before the event with no repairs or completed partial repairs, or completely replaced within 25 years as shown by a City plumbing permit, or on another Director-approved exemption.",
+      "quote": "(1) When required. (A) Upon the sale of real property served by a private sewer lateral. ... (2) Exemptions. No inspection and testing of a sewer lateral shall be required if: (A) The sewer lateral has been inspected within the 5 years immediately preceding one of the events listed above, and the results of such inspection showed that either no repairs were required, or only partial repairs were required, and those repairs were in fact completed; or (B) The sewer lateral has been completely replaced within the 25 years, as evidenced by a plumbing permit issued by the City",
+      "url": "https://law.cityofsanmateo.org/us/ca/cities/san-mateo/code/7.38.432",
+      "readOn": "2026-11-09",
+      "method": "webfetch"
+    },
+    {
+      "id": "f4",
+      "claim": "City of South San Francisco, Sewer Lateral Point of Sale Ordinance Fact Sheet: properties transferred due to a sale must have a sewer lateral inspection; listing agreements in contracts as of June 21, 2022 must obtain a certificate of compliance before transfer of title, at the owner's expense; certificate valid 10 years if no or partial repairs, 25 years if the entire lateral was replaced; exempt: a property with an active certificate, properties served by the Westborough Water District, multi-unit residential buildings sharing a lateral; HOAs must follow the ordinance unless exempt; a 180-day time extension requires a $10,500 deposit; a CCTV video by any licensed contractor is submitted to the city for assessment.",
+      "quote": "SSF requires properties transferred due to a sale, to have a sewer lateral inspection performed ... All listing agreements in contracts as of June 21, 2022 must obtain a sewer lateral certificate of compliance prior to the transfer of the property title ... valid for 10 years ... valid for 25 years ... Properties served by the Westborough Water District ... Multi-unit residential buildings which share a sewer lateral ... a deposit of $10,500 ... A Closed Circuit Television (CCTV) video performed by any licensed contractor is required to be submitted to the city",
+      "url": "https://southsanfranciscoca.prelive.opencities.com/files/assets/public/v/1/public-works/documents/sewer-lateral-ordinance-fact-sheet.pdf",
+      "readOn": "2026-11-09",
+      "method": "pdf",
+      "note": "the city's own document host; the ssf.net copy returned 403 to our network"
+    },
+    {
+      "id": "f5",
+      "claim": "City of Burlingame Sewer Lateral Test Ordinance page (Internet Archive capture 2024-05-15; Municipal Code Chapter 15.12, Ord. 1329 (1986), Ord. 1623 (2000)): whenever property with buildings constructed more than 25 years before the transfer is transferred, the lateral must be tested for infiltration and repairs completed and approved before transfer of title; video inspection is not accepted; the test must be witnessed by a City representative (water exfiltration or air test; air test in hillside areas); a passing lateral is certified for 10 years; a complete replacement from building to City cleanout is effective for 25 years; one free retest if the first test fails; exceptions in section 15.12.110. Chapter 15.12 declares leaking laterals and other sources of storm runoff or similar waters entering the sanitary system a public nuisance.",
+      "quote": "Per City of Burlingame Municipal Code, Chapter 15.12, all sewer laterals or sewer cleanouts which contain leaks or breaks, uncapped sewer cleanouts, sump pumps, downspouts or yard drains which discharge into the sewer system, and all other sources of accidental, negligent or intended introduction of storm runoff or similar waters into the sanitary system are declared to be a public nuisance ... Whenever any property is to be transferred to or vested in any other person or entity and that property includes any buildings or structures constructed more than twenty-five (25) years prior to the date of transfer or vesting, the sewer lateral(s) to that property shall be tested for infiltration ... All repair or replacement work shall be completed and approved by the city prior to transfer of title (Ord. 1623 § 2, (2000)) ... Video inspection is not accepted at this time. ... The test must be witnessed by a City representative ... This certification shall be effective for ten (10) years ... There is one free retest allowed ... A complete replacement from building to City cleanout is effective for 25 years.",
+      "url": "https://www.burlingame.org/departments/public_works/sewer_lateral_test_ordinance_1329.php",
+      "readOn": "2026-11-09",
+      "method": "archive",
+      "note": "burlingame.org refused our network; read via web.archive.org capture 20240515201325"
+    },
+    {
+      "id": "f6",
+      "claim": "City of Morgan Hill 'Utility Inspections at Property Sale' (Internet Archive capture 2026-01-29): the seller must complete private sewer lateral and plumbing fixture inspections before sale; PSL inspections only by a Qualified Contractor (California C-36 licence, Morgan Hill business license, NASSCO certification); the PSL ordinance applies to properties more than 15 years old, and from 2026 a property built in 2011 or later is exempt, updated each year; if the inspection fails, the seller may transfer the responsibility to repair to the buyer by a notarized Transfer of Responsibility form, if both agree.",
+      "quote": "The seller of a property is required to complete the utility inspections prior to property sale ... The Private Sewer Lateral Ordinance applies to all properties that are more than 15 years old ... starting in 2026, any property constructed in 2011 or later will not be required to complete the inspection ... the seller may transfer the responsibility to repair the private sewer lateral or replace the plumbing fixtures to the buyer. This must be agreed to by both parties ... Seller and Buyer complete and notarize a Transfer of Responsibility Form",
+      "url": "https://www.morganhill.ca.gov/2302/Utility-Inspections-at-Property-Sale",
+      "readOn": "2026-11-09",
+      "method": "archive",
+      "note": "morganhill.ca.gov refused our network; read via web.archive.org capture 20260129201858"
+    },
+    {
+      "id": "f7",
+      "claim": "Unverified places: Hillsborough, Pacifica, San Bruno and Millbrae are named by realtor and contractor blogs as point-of-sale cities, but each city's own website refused our network and no Internet Archive copy was found; we list them as reported, not verified.",
+      "quote": "cityofpacifica.org 403; sanbruno.ca.gov, hillsborough.net, ci.millbrae.ca.us no response; wayback: none for the pages tried",
+      "url": "data/fact-ledgers/sewer-lateral-inspection-at-sale-cities.json",
+      "readOn": "2026-11-09",
+      "method": "observation"
+    },
+    {
+      "id": "f8",
+      "claim": "Our report engine (src/engine/inspectionPriorities.ts, sewer_cast_iron): camera scope '$300 – $500 for a camera scope'; repair 'Spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+'.",
+      "quote": "$300 – $500 | $1,500 – $5,000 | $4,000 – $15,000+",
+      "url": "src/engine/inspectionPriorities.ts",
+      "readOn": "2026-11-09",
+      "method": "engine"
+    },
+    {
+      "id": "f9",
+      "claim": "Demand (ours): topic-demand 2026-11-09 tier 2: Bing records searches for 'sewer lateral'. Gap research 2026-11-09: published blogs contradict each other on EBMUD and list Portland, Milwaukee and Berkeley without sources.",
+      "quote": "exact 187 broad 210 sewer lateral",
+      "url": "data/keywords/2026-11-09-demand-roof-age-insurance-bing.json",
+      "readOn": "2026-11-09",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Hillsborough, Pacifica, San Bruno, Millbrae details (ordinance numbers, dates)",
+      "why": "official sites blocked, no archive copy; blog-only"
+    },
+    {
+      "claim": "Cities outside California with point-of-sale lateral rules",
+      "why": "not researched to primary sources this round"
+    },
+    {
+      "claim": "Certificate validity in the EBMUD area",
+      "why": "not stated on the pages read"
+    }
+  ],
+  "blockedSources": [
+    "burlingame.org, morganhill.ca.gov (refused; read via Internet Archive)",
+    "cityofpacifica.org, sanbruno.ca.gov, hillsborough.net, ci.millbrae.ca.us (refused, no archive)",
+    "eastbaypsl.com, emeryville.org ordinance PDF, berkeley.municipal.codes, ecode360 (bot check / refused)",
+    "ssf.net (403; city document host copy read instead)"
+  ]
+}
