@@ -69,6 +69,9 @@ export const LEGACY_GONE_PATHS: readonly string[] = [
   '/guides/stonewalling-silent-treatment-emotional-punishment',
   '/flags',
   '/expert', '/stories', '/city',
+  // 2026-11-09, owner: Search Console's "Page with redirect" report listed it (last crawled 2026-07-16). It
+  // was answering 404 after the trailing-slash redirect, the same pattern as the relationship guides above.
+  '/guides/ultimatum-protocol-why-marriage-deadlocks-fail',
 ];
 
 /**
