@@ -20,8 +20,8 @@ Earlier revision, 2026-11-03: the open-ground fix moved up, and two electrical t
 | 3 | Final Walkthrough Checklist: What to Do Before Closing | none (experiment) | none | **live 2026-11-03 (#344)**, READ 2026-12-08 |
 | -- | How to Fix an Open Ground Outlet | GSC: "open ground solutions", outlet-tester queries | **duplicate**: #235 already has a section "How to Fix an Open Ground Outlet: Code-Compliant Options" (rewire, GFCI, two-prong) plus bootleg grounds | **skipped** (owner, 2026-11-04). Verified for any later #235 update: NC OSFM interpretation of 406.4(D)(2)(b)/(c) labels (2018-02-19, 2014 code); Klein RT105 "Conditions NOT indicated" incl. reversal of grounded and grounding conductors |
 | 5 | Does Home Insurance Cover Your Water or Sewer Line? | Bing AI opportunity: "service line coverage" (1K–5K band), "service line coverage home insurance" (500–1K), "water pipe insurance for homeowners" (101–500) | none. Links to #339 sewer scope, #317 lead line, #343 septic, #300 cast iron | **live 2026-11-04 (#345)**, READ 2026-12-09 |
-| 6 | Does Homeowners Insurance Cover Mold? | Bing AI opportunity: 6 mold-coverage queries (500–1K and 101–500 bands) | #99 is whether an inspection checks for mold; no insurance page | **next** |
-| 7 | Burst Pipe? What to Do Right Now, and What Insurance Covers | Bing AI opportunity: "what to do with a burst pipe now" (Plumbing, 101–500), "homeowners insurance water damage coverage" (101–500), "water damage coverage" (51–100) | #231 is sump-pump coverage; #340 has Red Cross frozen-pipe prevention | write (added 2026-11-04). Plumbers are an ad audience |
+| 6 | Does Homeowners Insurance Cover Mold? | Bing AI opportunity: 6 mold-coverage queries (500–1K and 101–500 bands) | #99 is whether an inspection checks for mold; no insurance page | **live 2026-11-09 (#346)**, READ 2026-12-14 |
+| 7 | Burst Pipe? What to Do Right Now, and What Insurance Covers | Bing AI opportunity: "what to do with a burst pipe now" (Plumbing, 101–500), "homeowners insurance water damage coverage" (101–500), "water damage coverage" (51–100) | #231 is sump-pump coverage; #340 has Red Cross frozen-pipe prevention | **next** |
 | 8 | Can You Get Home Insurance With a Federal Pacific Panel? | click pattern (insurance + defect pages: 1.5–2.4% CTR); Bing sees us as an insurance site (48 of 50 opportunity queries) | #50 says only what the panel is; #321 covers identifying it | write (moved up 2026-11-04). Never name an insurer beside an underwriting verb |
 | 9 | Can You Get a Mortgage on a House With a Fuse Box? | click pattern (#338 K&T mortgage: 1.11%) | #76 is fuse-box insurance; reuse #338's HUD/VA research | write |
 | 10 | What It Costs to Replace Knob-and-Tube Wiring | GSC tier 1 weak (1 impression); engine cost range | check #7, #288, #338 for cost sections first | write; costs from PRIORITY_RULES |
@@ -37,7 +37,7 @@ Earlier revision, 2026-11-03: the open-ground fix moved up, and two electrical t
 Titles 11–15 are the owner's exact titles (word for word). Titles 4–10 are ours (owner OK 2026-11-02, 11-03, 11-04)
 and may be tuned before drafting. Every title ending in "?" gets a quick answer (verdict first, 120–450 chars).
 
-Pace: one at a time, about three a week, so the remaining eleven take roughly four weeks (to about 2026-12-01). #6 is next.
+Pace: one at a time, about three a week, so the remaining eleven take roughly four weeks (to about 2026-12-01). #7 is next.
 
 ## Bing AI opportunity list (2026-11-04)
 

@@ -1,0 +1,66 @@
+{
+  "_about": "New guide (2026-11-09, write-article), #6 of docs/plans/report-4-articles-2026-11.md. Evidence: Bing AI opportunity export 2026-11-04 (six mold-coverage queries) and topic-demand tier 2 ('does homeowners insurance cover mold'). No insurer is named.",
+  "slug": "homeowners-insurance-cover-mold",
+  "question": "Does homeowners insurance cover mold, and what should a buyer of a house that had mold ask for?",
+  "verdictConfirmed": "It can: mold on property damaged by a sudden, accidental covered water loss is generally covered; mold from gradual leaks, seepage or flood is not; cleanup and testing are often limited and may be an add-on (TDI, NAIC). In Texas a seller must hand over mold remediation certificates from the past five years, and a certificate showing the cause was fixed limits how insurers can use past mold damage.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Texas Department of Insurance, 'When are water damage and mold covered by insurance?' (last updated 4/24/2025): most homeowner and renters policies cover sudden and accidental water damage (burst pipe, toilet overflow, broken washer hose); if mold develops on a damaged item it would be covered; policies usually won't cover gradual leaks; most home policies don't cover water damage from gradual leaks or seepage, including mold; mold from a flood is not covered because home policies don't cover floods; most home policies don't include mold cleanup and testing after a damaged item is removed; your insurance company may let you add coverage for cleanup caused by a covered loss; mold can start growing within a day after a leak; you usually must report hidden water damage within days after you first see it; for a mold removal claim use a state-licensed mold professional, expect an inspection showing the mold was removed and the cause fixed, and a certificate that the mold was removed.",
+      "quote": "Most homeowner and renters policies cover sudden and accidental water damage. Examples would include a burst pipe, toilet overflow, or broken washer hose. If mold develops on a damaged item, it would be covered. Policies usually won't cover damage from gradual leaks. ... Most home policies don't cover water damage from gradual leaks or seepage, and that includes damage from mold. Mold from a flood would not be covered because home policies don't cover floods. ... Most home policies don't include mold cleanup and testing after a damaged item is removed. Your insurance company may let you add coverage for cleanup caused by a covered loss. ... Mold can start growing within a day after a leak. ... You usually must report water damage that was hidden from view within days after you first see it. ... Make sure the mold professional has a state license. You'll need an inspection to show that mold was removed and that you fixed the problem that caused it. Mold professionals must provide a certificate that the mold was removed.",
+      "url": "https://www.tdi.texas.gov/tips/when-are-water-damage-and-mold-covered-by-insurance.html",
+      "readOn": "2026-11-09",
+      "method": "webfetch",
+      "note": "read at agate.tdi.texas.gov (same TDI page)"
+    },
+    {
+      "id": "f2",
+      "claim": "NAIC, A Consumer's Guide to Home Insurance (2022): a homeowners policy isn't a maintenance contract and doesn't pay to repair items that simply wear out; you might be able to buy endorsements to cover damage caused by mold since most homeowners policies offer limited or no coverage for it; it suggests asking 'What types of water damage are not covered? Is mold damage covered?'",
+      "quote": "A homeowners policy isn't a maintenance contract ... You might be able to buy endorsements to cover damage caused by mold or by sewer or drain backups and sump pump overflow since most homeowners policies offer limited or no coverage for these types of events. ... What types of water damage are not covered? Is mold damage covered?",
+      "url": "https://content.naic.org/sites/default/files/publication-hoi-pp-consumer-homeowners.pdf",
+      "readOn": "2026-11-04",
+      "method": "pdf",
+      "note": "read via Internet Archive capture 2026-09-10"
+    },
+    {
+      "id": "f3",
+      "claim": "Texas Occupations Code § 1958.154: not later than the 10th day after completing mold remediation, the license holder provides a certificate of mold remediation to the property owner; it includes a mold assessment license holder's statement that the identified contamination has been remediated, and must indicate if the underlying cause has been remediated so it is reasonably certain mold will not return from that cause; (b) if a property owner sells property, the owner shall provide to the buyer a copy of each certificate issued for the property during the five years preceding the sale. § 1958.155: a license holder may not perform both mold assessment and mold remediation on the same project.",
+      "quote": "Not later than the 10th day after the date on which a license holder completes mold remediation at a property, the license holder shall provide a certificate of mold remediation to the property owner ... If the mold assessment license holder determines that the underlying cause of the mold has been remediated so that it is reasonably certain that the mold will not return from that remediated cause, the mold assessment license holder shall indicate on the certificate that the underlying cause of the mold has been remediated. (b) If a property owner sells property, the property owner shall provide to the buyer a copy of each certificate issued for the property under this section during the five years preceding the date the property owner sells the property. ... Sec. 1958.155 ... (a) A license holder may not perform both mold assessment and mold remediation on the same project.",
+      "url": "https://statutes.capitol.texas.gov/Docs/OC/htm/OC.1958.htm",
+      "readOn": "2026-11-09",
+      "method": "browser",
+      "note": "statutes current through the 89th 2nd Called Legislative Session, 2025"
+    },
+    {
+      "id": "f4",
+      "claim": "Texas Insurance Code § 544.303: an insurer may not make an underwriting decision regarding a residential property insurance policy based on previous mold damage or a claim for mold damage if the property has had mold damage, remediation was performed, and the property was remediated as evidenced by a certificate under Occupations Code § 1958.154 that establishes with reasonable certainty the underlying cause was remediated, or was inspected by an independent assessor or adjustor who found no evidence of mold damage. § 544.301 excludes surplus lines insurers, the Texas Windstorm Insurance Association and the FAIR Plan Association from 'insurer'.",
+      "quote": "An insurer may not make an underwriting decision regarding a residential property insurance policy based on previous mold damage or a claim for mold damage if: (1) the applicant for insurance coverage has property eligible for coverage ...; (2) the property has had mold damage; (3) mold remediation has been performed on the property; and (4) the property was: (A) remediated, as evidenced by a certificate of mold remediation issued to the property owner under Section 1958.154, Occupations Code, that establishes with reasonable certainty that the underlying cause of the mold at the property has been remediated; or (B) inspected by an independent assessor or adjustor who determined, based on the inspection, that the property does not contain evidence of mold damage. ... The term does not include: (A) an eligible surplus lines insurer ...; (B) the Texas Windstorm Insurance Association ...; or (C) the FAIR Plan Association",
+      "url": "https://statutes.capitol.texas.gov/Docs/IN/htm/IN.544.htm",
+      "readOn": "2026-11-09",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "EPA, A Brief Guide to Mold, Moisture and Your Home (last updated February 18, 2026): the key to mold control is moisture control; dry water-damaged areas and items within 24-48 hours to prevent mold growth; if the moldy area is less than about 10 square feet, most people can handle the job themselves; larger areas or heavy water damage call for EPA's professional remediation guidance.",
+      "quote": "The key to mold control is moisture control ... within 24-48 hours ... less than about 10 square feet",
+      "url": "https://www.epa.gov/mold/brief-guide-mold-moisture-and-your-home",
+      "readOn": "2026-11-09",
+      "method": "webfetch"
+    },
+    {
+      "id": "f6",
+      "claim": "Demand (ours): Bing AI Topic Portfolio export 2026-11-04 lists 'home insurance mold damage coverage' (500-1K band), 'home insurance mold coverage', 'homeowners insurance mold damage coverage', 'home insurance mold remediation coverage' (101-500) as queries where other sites are cited and ours is not; topic-demand 2026-11-09 tier 2: Bing records 'does homeowners insurance cover mold'. Bands are not search volumes.",
+      "quote": "home insurance mold damage coverage, 500-1K; home insurance mold coverage, 101-500; homeowners insurance mold damage coverage, 101-500; home insurance mold remediation coverage, 101-500",
+      "url": "data/keywords/2026-11-04-bing-ai-opportunity-queries.json",
+      "readOn": "2026-11-09",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    { "claim": "Typical mold sub-limits or endorsement prices", "why": "vary by insurer and state; no regulator figure read" },
+    { "claim": "The 2001-2002 Texas mold claims history and Fiess court case", "why": "historical; not needed and only secondary summaries read" },
+    { "claim": "Mold claims appear on CLUE reports", "why": "not verified at a primary source this session" },
+    { "claim": "Other states' mold remediation certificate laws", "why": "not read; Texas only" }
+  ],
+  "blockedSources": []
+}
