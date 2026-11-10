@@ -1,0 +1,309 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-10T15:48:03.623Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "standards of practice",
+    "home inspector license",
+    "inspector exam",
+    "npma 33",
+    "wdi report",
+    "radon license",
+    "inspector should",
+    "contractor license lookup",
+    "report comment",
+    "level 2 chimney"
+  ],
+  "keywords": [
+    {
+      "keyword": "the home inspector _____ required to enter all crawl spaces, according to the internachi® home inspection standards of practice. is is not",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 8
+    },
+    {
+      "keyword": "standards of practice",
+      "search_volume": 99,
+      "metric": "market",
+      "broad_impressions": 1337,
+      "kind": "seed"
+    },
+    {
+      "keyword": "ana standards of practice",
+      "search_volume": 385,
+      "metric": "market",
+      "broad_impressions": 385,
+      "kind": "related"
+    },
+    {
+      "keyword": "ana scope and standards of practice",
+      "search_volume": 364,
+      "metric": "market",
+      "broad_impressions": 364,
+      "kind": "related"
+    },
+    {
+      "keyword": "actuarial standards of practice",
+      "search_volume": 180,
+      "metric": "market",
+      "broad_impressions": 180,
+      "kind": "related"
+    },
+    {
+      "keyword": "nursing standards of practice",
+      "search_volume": 161,
+      "metric": "market",
+      "broad_impressions": 161,
+      "kind": "related"
+    },
+    {
+      "keyword": "infusion therapy standards of practice",
+      "search_volume": 48,
+      "metric": "market",
+      "broad_impressions": 48,
+      "kind": "related"
+    },
+    {
+      "keyword": "standards of mathematical practice",
+      "search_volume": 22,
+      "metric": "market",
+      "broad_impressions": 22,
+      "kind": "related"
+    },
+    {
+      "keyword": "code of ethics and standards of practice",
+      "search_volume": 19,
+      "metric": "market",
+      "broad_impressions": 19,
+      "kind": "related"
+    },
+    {
+      "keyword": "home inspector license",
+      "search_volume": 20,
+      "metric": "market",
+      "broad_impressions": 20,
+      "kind": "seed"
+    },
+    {
+      "keyword": "inspector exam",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 6,
+      "kind": "seed"
+    },
+    {
+      "keyword": "npma 33",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "wdi report",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "radon license",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "inspector should",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "contractor license lookup",
+      "search_volume": 4975,
+      "metric": "market",
+      "broad_impressions": 18512,
+      "kind": "seed"
+    },
+    {
+      "keyword": "ca contractor license lookup",
+      "search_volume": 2464,
+      "metric": "market",
+      "broad_impressions": 2464,
+      "kind": "related"
+    },
+    {
+      "keyword": "california contractor license lookup",
+      "search_volume": 1432,
+      "metric": "market",
+      "broad_impressions": 1638,
+      "kind": "related"
+    },
+    {
+      "keyword": "oregon contractor license lookup",
+      "search_volume": 941,
+      "metric": "market",
+      "broad_impressions": 941,
+      "kind": "related"
+    },
+    {
+      "keyword": "arizona contractor license lookup",
+      "search_volume": 924,
+      "metric": "market",
+      "broad_impressions": 924,
+      "kind": "related"
+    },
+    {
+      "keyword": "nc general contractor license lookup",
+      "search_volume": 910,
+      "metric": "market",
+      "broad_impressions": 910,
+      "kind": "related"
+    },
+    {
+      "keyword": "utah contractor license lookup",
+      "search_volume": 595,
+      "metric": "market",
+      "broad_impressions": 595,
+      "kind": "related"
+    },
+    {
+      "keyword": "texas contractor license lookup",
+      "search_volume": 426,
+      "metric": "market",
+      "broad_impressions": 426,
+      "kind": "related"
+    },
+    {
+      "keyword": "tennessee contractor license lookup",
+      "search_volume": 399,
+      "metric": "market",
+      "broad_impressions": 399,
+      "kind": "related"
+    },
+    {
+      "keyword": "new mexico contractor license lookup",
+      "search_volume": 380,
+      "metric": "market",
+      "broad_impressions": 380,
+      "kind": "related"
+    },
+    {
+      "keyword": "washington contractor license lookup",
+      "search_volume": 371,
+      "metric": "market",
+      "broad_impressions": 371,
+      "kind": "related"
+    },
+    {
+      "keyword": "virginia contractor license lookup",
+      "search_volume": 355,
+      "metric": "market",
+      "broad_impressions": 397,
+      "kind": "related"
+    },
+    {
+      "keyword": "pa contractor license lookup",
+      "search_volume": 327,
+      "metric": "market",
+      "broad_impressions": 327,
+      "kind": "related"
+    },
+    {
+      "keyword": "north carolina contractor license lookup",
+      "search_volume": 289,
+      "metric": "market",
+      "broad_impressions": 289,
+      "kind": "related"
+    },
+    {
+      "keyword": "georgia contractor license lookup",
+      "search_volume": 289,
+      "metric": "market",
+      "broad_impressions": 289,
+      "kind": "related"
+    },
+    {
+      "keyword": "nj contractor license lookup",
+      "search_volume": 266,
+      "metric": "market",
+      "broad_impressions": 266,
+      "kind": "related"
+    },
+    {
+      "keyword": "fl contractor license lookup",
+      "search_volume": 263,
+      "metric": "market",
+      "broad_impressions": 263,
+      "kind": "related"
+    },
+    {
+      "keyword": "washington state contractor license lookup",
+      "search_volume": 251,
+      "metric": "market",
+      "broad_impressions": 251,
+      "kind": "related"
+    },
+    {
+      "keyword": "wa state contractor license lookup",
+      "search_volume": 211,
+      "metric": "market",
+      "broad_impressions": 211,
+      "kind": "related"
+    },
+    {
+      "keyword": "sc contractor license lookup",
+      "search_volume": 152,
+      "metric": "market",
+      "broad_impressions": 152,
+      "kind": "related"
+    },
+    {
+      "keyword": "general contractor license lookup",
+      "search_volume": 95,
+      "metric": "market",
+      "broad_impressions": 1005,
+      "kind": "related"
+    },
+    {
+      "keyword": "tn contractor license lookup",
+      "search_volume": 63,
+      "metric": "market",
+      "broad_impressions": 63,
+      "kind": "related"
+    },
+    {
+      "keyword": "pennsylvania contractor license lookup",
+      "search_volume": 46,
+      "metric": "market",
+      "broad_impressions": 46,
+      "kind": "related"
+    },
+    {
+      "keyword": "wi state contractor license lookup",
+      "search_volume": 20,
+      "metric": "market",
+      "broad_impressions": 20,
+      "kind": "related"
+    },
+    {
+      "keyword": "report comment",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "level 2 chimney",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

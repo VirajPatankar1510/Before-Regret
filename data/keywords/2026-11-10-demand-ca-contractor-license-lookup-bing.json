@@ -1,0 +1,86 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-10T16:00:12.233Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "ca contractor license lookup",
+    "california contractor license",
+    "cslb license check",
+    "verify contractor license"
+  ],
+  "keywords": [
+    {
+      "keyword": "ca contractor license lookup",
+      "search_volume": 2464,
+      "metric": "market",
+      "broad_impressions": 2464,
+      "kind": "seed"
+    },
+    {
+      "keyword": "california contractor license",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 1707,
+      "kind": "seed"
+    },
+    {
+      "keyword": "california contractor license lookup",
+      "search_volume": 1432,
+      "metric": "market",
+      "broad_impressions": 1638,
+      "kind": "related"
+    },
+    {
+      "keyword": "cslb license check",
+      "search_volume": 1320,
+      "metric": "market",
+      "broad_impressions": 1357,
+      "kind": "seed"
+    },
+    {
+      "keyword": "cslb check license",
+      "search_volume": 21005,
+      "metric": "market",
+      "broad_impressions": 21048,
+      "kind": "related"
+    },
+    {
+      "keyword": "cslb.ca.gov check license",
+      "search_volume": 712,
+      "metric": "market",
+      "broad_impressions": 712,
+      "kind": "related"
+    },
+    {
+      "keyword": "www.cslb.ca.gov license check",
+      "search_volume": 508,
+      "metric": "market",
+      "broad_impressions": 508,
+      "kind": "related"
+    },
+    {
+      "keyword": "check a license cslb",
+      "search_volume": 474,
+      "metric": "market",
+      "broad_impressions": 474,
+      "kind": "related"
+    },
+    {
+      "keyword": "cslb check a license",
+      "search_volume": 145,
+      "metric": "market",
+      "broad_impressions": 145,
+      "kind": "related"
+    },
+    {
+      "keyword": "verify contractor license",
+      "search_volume": 242,
+      "metric": "market",
+      "broad_impressions": 242,
+      "kind": "seed"
+    }
+  ]
+}

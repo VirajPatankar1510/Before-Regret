@@ -1,0 +1,208 @@
+{
+  "slug": "cslb-license-check-california-contractor",
+  "question": "How do I check a California contractor's licence on the CSLB site, and what does the record actually tell me?",
+  "verdictConfirmed": "Search CSLB's Check A License by the licence number, then read the whole record: status is only the first line. Classification, bond, workers' compensation and the limits of complaint disclosure all change what a clean record means.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "CSLB's Check A License tool looks up a contractor licence or a Home Improvement Salesperson (HIS) registration, including complaint disclosure; it searches by licence number, business name or personnel name.",
+      "quote": "Look up a contractor license or Home Improvement Salesperson (HIS) registration to verify information, including complaint disclosure.",
+      "url": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/CheckLicense.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "A California licence number has no letters and is up to 8 digits; the database is down for maintenance from Sunday 8 p.m. to Monday 6 a.m.",
+      "quote": "A California contractor license number doesn't contain alphabetic characters. Each contractor's plastic pocket license will show the respective license number. Begin entry of your license number at the left position and don't exceed 8 digits in the license number. Please note: Our database is unavailable Sundays at 8 p.m. through Monday at 6 a.m. due to scheduled maintenance.",
+      "url": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/CheckLicense.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Name search tips: type only the first 10 to 15 letters, leave off a leading The or A, no commas or periods, last name first for a person's name; results come 50 names at a time.",
+      "quote": "Type only the first 10 to 15 letters of the business name. If you do not find the license, type the business name again with 1 or 2 fewer characters. If the business name begins with \"The\" or \"A\", do not type this initially. Commas and periods are not used in the business name, but apostrophes are. If you cannot find the license by using the business name, and it contains a first and last name, type the last name first. This search will return up to 50 names.",
+      "url": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/CheckLicense.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "OUR OBSERVATION: a business-name search is a prefix list. Searching a well-known business name returned current names, DBAs and previous names together, the same legal name on two licence numbers (one Active, one Expired), several Cancelled and Expired licences under similar names, and then unrelated businesses whose names start the same way.",
+      "quote": "Observed result rows (name type / status), 2026-11-10: Name Type Previous ... Status Cancelled; Name Type DBA ... Status Expired; Name Type Name ... Status Active; Name Type Name ... Status Expired (same legal name, different licence number); followed by unrelated names beginning with the same letters.",
+      "url": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/CheckLicense.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "OUR OBSERVATION: opening a licence-detail address directly (LicenseDetail.aspx?LicNum=...) in a new visit sent us back to the search form; the record opened only after searching. Same for the public complaint definitions page.",
+      "quote": "Navigated to /OnlineServices/CheckLicenseII/LicenseDetail.aspx?LicNum=<number> and /PublicComplaintDisclosure.aspx directly: both landed on CheckLicense.aspx (the search form). After a licence-number search the detail page loaded.",
+      "url": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/LicenseDetail.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "OUR OBSERVATION: what an active corporate record shows, top to bottom: business name and DBA, address and phone of record, entity type, issue and expire dates; a status line; 'All information below should be reviewed'; Additional Status; a Complaint Disclosure link; Classifications; Bonding Information (contractor's bond and bond of qualifying individual, with amounts and effective dates); Workers' Compensation (insurer, policy dates, classification codes, with a note that the board does not verify the codes); Miscellaneous Information; and a note that personnel are listed on other licenses. Classifications are listed by code, e.g. C10 electrical, C36 plumbing, C39 roofing, B general building.",
+      "quote": "Business Information ... Entity Corporation Issue Date ... Expire Date ... License Status This license is current and active. All information below should be reviewed. Additional Status ... Click here for Complaint Disclosure information. Classifications C-2 - INSULATION AND ACOUSTICAL C39 - ROOFING C17 - GLAZING C36 - PLUMBING C10 - ELECTRICAL ... B - GENERAL BUILDING Bonding Information Contractor's Bond ... Bond Amount: $25,000 ... Bond of Qualifying Individual ... in the amount of $25,000 ... Workers' Compensation This license has workers compensation insurance with ... Workers' compensation classification code(s) ... The board does not verify or investigate the accuracy of classification codes displayed. Miscellaneous Information ... Personnel listed on this license (current or disassociated) are listed on other licenses.",
+      "url": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/LicenseDetail.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "OUR OBSERVATION: the record's Additional Status can say the licence has a blanket performance and payment bond under B&P 7159.5(a)(8), which exempts it from the 10% or $1,000 down-payment limit.",
+      "quote": "License has a Blanket Performance and Payment Bond on file pursuant to Business and Professions Code Section 7159.5 (a)(8). This bond allows the contractor to be exempt from certain home improvement contract requirements, including the limitation on down payments of 10% or $1,000. Please contact CSLB for more information.",
+      "url": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/LicenseDetail.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "claim": "The record's own disclaimer: complaint disclosure is restricted by B&P 7124.6; only construction-related civil judgments reported to CSLB are disclosed (7071.17); arbitrations are not listed unless the contractor fails to comply; there may be a data-entry lag.",
+      "quote": "CSLB complaint disclosure is restricted by law (B&P 7124.6) ... Only construction related civil judgments reported to CSLB are disclosed (B&P 7071.17). Arbitrations are not listed unless the contractor fails to comply with the terms. Due to workload, there may be relevant information that has not yet been entered into the board's license database.",
+      "url": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/LicenseDetail.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "claim": "B&P 7124.6: complaints are disclosed only once referred for accusation, or referred for investigation of a probable violation serious enough for suspension, revocation or prosecution; a complaint resolved in the contractor's favour is not disclosed; a letter of admonishment shows for one or two years; citations show for five years after compliance; accusations ending in suspension or stayed revocation show for seven years after settlement; revocations that are not stayed show indefinitely.",
+      "quote": "(a) The registrar shall make available to members of the public the date, nature, and status of all complaints on file against a licensee that do either of the following: (1) Have been referred for accusation. (2) Have been referred for investigation after a determination by board enforcement staff that a probable violation has occurred ... (c) (1) A complaint resolved in favor of the contractor shall not be subject to disclosure. (2) ... A letter of admonishment issued to a licensee shall be disclosed for a period of either one year or two years ... (e)(1)(A) Citations shall be disclosed from the date of issuance and for five years after the date of compliance ... (2) Accusations that result in suspension, stayed suspension, or stayed revocation of the contractor's license shall be disclosed from the date the accusation is filed and for seven years after the accusation has been settled ... (3) All revocations that are not stayed shall be disclosed indefinitely from the effective date of the revocation.",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=7124.6",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f10",
+      "claim": "CSLB's own definitions page says a letter of admonishment is disclosable for one year, while the statute says one or two years.",
+      "quote": "Letter of Admonishment: For minor violations of contractors' state license law and which may require prompt corrective action; publicly disclosable for one year. Not considered formal discipline.",
+      "url": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/PublicComplaintDisclosure.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f11",
+      "claim": "B&P 7030.5: a licensee must put the licence number in all construction contracts, subcontracts and calls for bid, and advertising.",
+      "quote": "Every person licensed pursuant to this chapter shall include his license number in: (a) all construction contracts; (b) subcontracts and calls for bid; and (c) all forms of advertising, as prescribed by the registrar of contractors, used by such a person.",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=7030.5",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f12",
+      "claim": "B&P 7048 (as amended by AB 1170, effective January 1, 2026): no licence is needed for a project under $1,000 in total for labour and materials that needs no building permit; not if the job is split to evade, not if the person advertises as a contractor, and not if they employ someone to help.",
+      "quote": "(a) This chapter does not apply to a work or operation on one undertaking or project by one or more contracts if the aggregate contract price for labor, materials, and all other items is less than one thousand dollars ($1,000), that work or operation being considered of casual, minor, or inconsequential nature, and the work or operation does not require a building permit. (b) This section does not apply in a case wherein ... a division of the operation is made in contracts of amounts less than one thousand dollars ($1,000) for the purpose of evasion of this chapter or otherwise. (c) This section does not apply to a person who does either of the following: (1) Advertises or puts out a sign or card or other device that might indicate to the public that the person is a contractor ... (2) Employs another person to perform, or assist in performing, the work or operation. (Amended by Stats. 2025, Ch. 67, Sec. 12. (AB 1170) Effective January 1, 2026.)",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=7048",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f13",
+      "claim": "B&P 7031: an unlicensed contractor cannot sue to collect for work that needs a licence, and the person who used one can sue to recover all compensation paid.",
+      "quote": "(a) ... no person engaged in the business or acting in the capacity of a contractor, may bring or maintain any action, or recover in law or equity in any action, in any court of this state for the collection of compensation for the performance of any act or contract where a license is required by this chapter without alleging that they were a duly licensed contractor at all times during the performance of that act or contract ... (b) ... a person who utilizes the services of an unlicensed contractor may bring an action in any court of competent jurisdiction in this state to recover all compensation paid to the unlicensed contractor for performance of any act or contract.",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=7031",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f14",
+      "claim": "B&P 7071.6 and 7071.5: every licensee keeps a $25,000 contractor's bond; claims other than those of the 7071.5(a) beneficiaries (a homeowner contracting for home improvement on their own family residence) are capped at $7,500 in total, and the amount above $7,500 is reserved for those homeowners.",
+      "quote": "7071.6 (a) ... file or have on file a contractor's bond in the sum of twenty-five thousand dollars ($25,000). (b) Excluding the claims brought by the beneficiaries specified in subdivision (a) of Section 7071.5, the aggregate liability of a surety on claims brought against a bond required by this section shall not exceed the sum of seven thousand five hundred dollars ($7,500). The bond proceeds in excess of seven thousand five hundred dollars ($7,500) shall be reserved exclusively for the claims of the beneficiaries specified in subdivision (a) of Section 7071.5. 7071.5 ... (a) A homeowner contracting for home improvement upon the homeowner's personal family residence damaged as a result of a violation of this chapter by the licensee.",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=7071.6",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f15",
+      "claim": "CSLB: the $25,000 licence bond covers any project but is often not enough for multiple complaints or for a project worth more than the bond; bonds do not assure integrity or competency.",
+      "quote": "Licensed contractors are required to have a contractor license bond of $25,000. This bond covers any project the contractor agrees to perform. Be aware: this bond is often not enough to cover multiple complaints made against it or your project if it's worth more than the value of the bond. ... Bonds do not assure the financial or professional integrity or competency of a contractor.",
+      "url": "https://www.cslb.ca.gov/Consumers/Hire_A_Contractor/Finding_The_Right_Contractor.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f16",
+      "claim": "CSLB: a contractor with employees must carry workers' compensation; C-8 concrete, C-20 HVAC, C-22 asbestos abatement, C-39 roofing and C-61/D-49 tree service contractors must carry it whether or not they have employees; general liability is not required; the contract must give information on both.",
+      "quote": "In California, if a contractor has employees, they are required to carry workers' compensation insurance. ... If a worker is injured working on your property and the contractor doesn't have insurance, you could be financially liable to pay for injuries and rehabilitation. ... Commercial general liability insurance is not required ... A licensed contractor must provide you with information regarding both types of insurance in your written contract. ALERT All active C-8 Concrete contractors, C-20 Warm-Air Heating, Ventilating and Air-Conditioning contractors, C-22 Asbestos Abatement contractors, C-39 Roofing contractors, and/or C-61/D-49 Tree Service contractors (whether or not they have employees) must carry workers' compensation insurance or have a valid Certification of Self-Insurance on file with CSLB. This information is indicated when you review the status of a contractor's license.",
+      "url": "https://www.cslb.ca.gov/Consumers/Hire_A_Contractor/Finding_The_Right_Contractor.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f17",
+      "claim": "B&P 7057: a B general building contractor may not take a prime contract for a project involving trades other than framing or carpentry unless it needs at least two unrelated trades, or the contractor holds that classification or subcontracts to a properly licensed contractor.",
+      "quote": "However, a general building contractor shall not take a prime contract for any project involving trades other than framing or carpentry unless the prime contract requires at least two unrelated building trades or crafts other than framing or carpentry, or unless the general building contractor holds the appropriate license classification or subcontracts with an appropriately licensed contractor to perform the work.",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=7057",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f18",
+      "claim": "B&P 7159.5: on a home improvement contract the down payment may not exceed $1,000 or 10 percent of the contract amount, whichever is less; apart from it, no payment ahead of the work done or materials delivered; on request, a lien release after each payment; a contractor with a performance and payment bond (or equivalent) is exempt from the down-payment and progress-payment limits.",
+      "quote": "(3) If a downpayment will be charged, the downpayment shall not exceed one thousand dollars ($1,000) or 10 percent of the contract amount, whichever amount is less. ... (5) Except for a downpayment, the contractor shall neither request nor accept payment that exceeds the value of the work performed or material delivered. (6) Upon any payment ... the contractor shall, if requested, obtain and furnish to the person a full and unconditional release from any potential lien claimant claim or mechanics lien ... (8) A contractor furnishing a performance and payment bond, lien and completion bond, or a bond equivalent or joint control approved by the registrar covering full performance and payment is exempt from paragraphs (3), (4), and (5)",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=7159.5",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f19",
+      "claim": "B&P 7153: selling home improvement work for a contractor without a current Home Improvement Salesperson registration is a misdemeanor.",
+      "quote": "(a) It is a misdemeanor for any person to engage in the occupation of salesperson for one or more home improvement contractors within this state without having, at the time of the sales transaction, a current and valid home improvement salesperson registration issued by the registrar.",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=7153",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f20",
+      "claim": "CSLB offers a list of licensed contractors by city or ZIP code, and a page to find out how to change licence information.",
+      "quote": "Trying to hire a licensed contractor and don't know where to start? Click here to create a list of licensed contractors by City or ZIP code. ... Is this your license? Does any of the information need to be corrected/updated? Find out how to make changes to your license info",
+      "url": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/CheckLicense.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f22",
+      "claim": "CSLB's consumer page 'How do I find the right licensed contractor?' advises checking for a current business address and phone, and says the address of record shows on the license lookup.",
+      "quote": "How do I find the right licensed contractor? ... Make sure your contractor has a current business address and telephone number. A contractor who operates a business from the back of a pickup truck with a cellphone may be difficult to find if a job needs to be fixed after the last bill is paid. You can find a licensed contractor's \"address of record\" when you look up the license status.",
+      "url": "https://www.cslb.ca.gov/Consumers/Hire_A_Contractor/Finding_The_Right_Contractor.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    },
+    {
+      "id": "f21",
+      "claim": "Read date for every source and the walk-through: 10 November 2026.",
+      "quote": "All pages above opened in the in-app browser on 2026-11-10 (10 November 2026).",
+      "url": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/CheckLicense.aspx",
+      "readOn": "2026-11-10",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Workers' compensation exemption wording on a record",
+      "why": "we only opened one corporate record (which had a policy); did not open individuals' records to find an exemption example, to avoid handling personal data"
+    },
+    {
+      "claim": "Naming the business whose record we opened",
+      "why": "not needed; the screenshot is cropped to status and additional status only, with no names, insurers or personnel"
+    },
+    {
+      "claim": "Insurer and surety names shown on records",
+      "why": "never name an insurer beside coverage claims; they add nothing for the reader"
+    },
+    {
+      "claim": "How long CSLB takes to enter new actions",
+      "why": "the record only says 'due to workload, there may be relevant information that has not yet been entered'; no figure published"
+    },
+    {
+      "claim": "Penalties for unlicensed contracting under 7028 and 7159.5(b) fines",
+      "why": "not the reader's decision at the lookup; kept the page to what the buyer can use"
+    }
+  ],
+  "blockedSources": [
+    "leginfo.legislature.ca.gov refuses scripted requests (403); read in the in-app browser instead"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-11-10T15:48:39.752Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "become a home inspector",
+    "home inspection business",
+    "home inspector insurance",
+    "radon certification",
+    "sewer scope certification",
+    "verify contractor license",
+    "contractor license check",
+    "plumber license lookup",
+    "electrician license lookup"
+  ],
+  "keywords": []
+}

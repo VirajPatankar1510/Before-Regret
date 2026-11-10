@@ -1,0 +1,98 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-10T15:48:39.752Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "become a home inspector",
+    "home inspection business",
+    "home inspector insurance",
+    "radon certification",
+    "sewer scope certification",
+    "verify contractor license",
+    "contractor license check",
+    "plumber license lookup",
+    "electrician license lookup"
+  ],
+  "keywords": [
+    {
+      "keyword": "become a home inspector",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 442,
+      "kind": "seed"
+    },
+    {
+      "keyword": "how to become a home inspector",
+      "search_volume": 442,
+      "metric": "market",
+      "broad_impressions": 442,
+      "kind": "related"
+    },
+    {
+      "keyword": "home inspection business",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "home inspector insurance",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "radon certification",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "sewer scope certification",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "verify contractor license",
+      "search_volume": 242,
+      "metric": "market",
+      "broad_impressions": 242,
+      "kind": "seed"
+    },
+    {
+      "keyword": "contractor license check",
+      "search_volume": 306,
+      "metric": "market",
+      "broad_impressions": 306,
+      "kind": "seed"
+    },
+    {
+      "keyword": "plumber license lookup",
+      "search_volume": 14,
+      "metric": "market",
+      "broad_impressions": 34,
+      "kind": "seed"
+    },
+    {
+      "keyword": "electrician license lookup",
+      "search_volume": 227,
+      "metric": "market",
+      "broad_impressions": 347,
+      "kind": "seed"
+    },
+    {
+      "keyword": "texas electrician license lookup",
+      "search_volume": 120,
+      "metric": "market",
+      "broad_impressions": 120,
+      "kind": "related"
+    }
+  ]
+}

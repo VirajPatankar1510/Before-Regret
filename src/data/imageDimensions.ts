@@ -13,7 +13,9 @@
 export interface ImageDimensions { width: number; height: number }
 
 export const IMAGE_DIMENSIONS: Record<string, ImageDimensions> = {
+  '/images/assessor-year-built-vs-effective-year-built.webp': { width: 727, height: 194 },
   '/images/county-vs-city-permit-jurisdiction.webp': { width: 1600, height: 900 },
+  '/images/cslb-license-record-status-section.webp': { width: 800, height: 792 },
   '/images/edison-base-fuse-over-fusing-risk.webp': { width: 1600, height: 900 },
   '/images/eifs-vs-traditional-stucco-wall-cross-section.webp': { width: 1600, height: 995 },
   '/images/fruitful-home-cover-lg.webp': { width: 520, height: 832 },
