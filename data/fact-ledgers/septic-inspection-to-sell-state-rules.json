@@ -1,0 +1,110 @@
+{
+  "_about": "New guide (2026-11-10, write-article), T2 of docs/plans/report-4-articles-2026-11.md: an 'AI gap' topic. Online lists of which states require a septic inspection at sale contradict each other (MN, IN, OH, AZ, CT, ME), and the EPA says only 'many states'. This ledger holds only states whose own statute or regulation we read; blocked states are listed as reported, not verified. It does NOT claim the other states have no rule.",
+  "slug": "septic-inspection-to-sell-state-rules",
+  "question": "Do I need a septic inspection to sell (or buy) a house, and which states require one?",
+  "verdictConfirmed": "It depends on the state: Massachusetts, Iowa and Arizona require an inspection tied to the sale; Maine requires the buyer to inspect shoreland systems; Rhode Island requires cesspools to be replaced within 12 months of a sale; Minnesota requires a written septic disclosure before the sale agreement. Delaware and New Hampshire have reported rules we could not read.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Massachusetts, 310 CMR 15.301(1) (Title 5): a system shall be inspected at or within two years before transfer of title; an inspection up to three years before may be used with records showing pumping at least once a year; if weather prevents inspection at transfer, it may be done as soon as weather permits but no later than six months after, with written notice to the buyer; a copy of the complete report goes to the buyer; refinancing and adding/removing a spouse are not transfers (15.301(2)); inspections by a currently approved System Inspector (15.301(10)). 310 CMR 15.305(1): a failing system must be upgraded within two years of discovery unless a shorter period is set or an enforceable schedule allows continued use.",
+      "quote": "a system shall be inspected at or within two years prior to the time of transfer of title to the facility served by the system. An inspection conducted up to three years before the time of transfer may be used if the inspection report is accompanied by system pumping records demonstrating that the system has been pumped at least once a year during that time. If weather conditions preclude inspection at the time of transfer, the inspection may be completed as soon as weather permits, but in no event later than six months after the transfer ... A copy of the complete inspection report shall be submitted to the buyer ... (b) refinancing a mortgage or similar instrument ... All inspections required by 310 CMR 15.301 shall be conducted by a currently approved System Inspector. ... 15.305(1) ... the owner or operator shall upgrade the system within two years of discovery",
+      "url": "https://www.law.cornell.edu/regulations/massachusetts/310-CMR-15-301",
+      "readOn": "2026-11-10",
+      "method": "webfetch",
+      "note": "mass.gov returned 403; regulation text read at Cornell LII (310 CMR 15.301 and 15.305)"
+    },
+    {
+      "id": "f2",
+      "claim": "Iowa Code § 455B.172(11) (2026 Iowa Code, legis.iowa.gov): if a building is served by a private sewage disposal system it shall be inspected prior to any transfer of ownership, including seller-financed contracts; the county recorder shall not record a deed until a certified inspector's report is provided, or (if weather prevents inspection) the buyer has executed a binding acknowledgment with the county board of health to inspect at the earliest practicable time and be responsible for required modifications; applies to property with one to four dwelling units; exemptions include court-ordered and foreclosure-related transfers, transfers between spouses or to lineal relatives, intent to demolish, a system installed not more than two years before, and consideration of five hundred dollars or less; at inspection the tank is pumped or evidence of pumping within three years provided; a failing system must be renovated to current standards by the seller or, by agreement, the buyer; only a DNR-certified inspector may do a time-of-transfer inspection. A system properly treating wastewater and not creating an unsanitary condition is not required to meet current construction standards.",
+      "quote": "the sewage disposal system serving the building shall be inspected prior to any transfer of ownership of the building ... The county recorder shall not record a deed or any other property transfer or conveyance document until either a certified inspector's report is provided ... or ... the buyer has executed and submitted a binding acknowledgment with the county board of health ... if the property includes at least one but not more than four dwelling units ... (8) A transfer of property with a system that was installed not more than two years prior to the date of the transfer ... (11) A transfer for which consideration is five hundred dollars or less ... properly pumped out within three years prior to the inspection ... shall be renovated to meet current construction standards ... either by the seller or, by agreement ... by the buyer ... Only a certified inspector may conduct a time-of-transfer inspection. ... If the private sewage disposal system is properly treating the wastewater and not creating an unsanitary condition in the environment at the time of inspection, the system is not required to meet current construction standards.",
+      "url": "https://www.legis.iowa.gov/docs/code/455B.172.pdf",
+      "readOn": "2026-11-10",
+      "method": "pdf"
+    },
+    {
+      "id": "f3",
+      "claim": "Arizona Admin. Code R18-9-A316: within six months before the date of property transfer, the person transferring a property served by an on-site wastewater treatment facility shall retain a qualified inspector (e.g., Arizona-registered engineer or sanitarian, licensed contractor in listed categories, licensed pumper, certified operator) to perform a transfer of ownership inspection; the inspector completes a Report of Inspection on a Department-approved form, signs it and provides it to the person transferring the property; the report addresses condition and deficiencies and states whether tanks were pumped. Conforming satisfies the Notice of Transfer requirement under R18-9-A304.",
+      "quote": "Within six months before the date of property transfer, the person who is transferring a property served by an on-site wastewater treatment facility shall retain an inspector to perform a transfer of ownership inspection ... The inspector shall complete a Report of Inspection on a form approved by the Department, sign it, and provide it to the person transferring the property.",
+      "url": "https://www.law.cornell.edu/regulations/arizona/Ariz-Admin-Code-SS-R18-9-A316",
+      "readOn": "2026-11-10",
+      "method": "webfetch",
+      "note": "azdeq.gov returned 403; rule text read at Cornell LII"
+    },
+    {
+      "id": "f4",
+      "claim": "Maine, 30-A M.R.S. § 4216 (Revisor data extracted 10/05/2026): for property with a subsurface wastewater system in a shoreland area (Title 38 § 435), the transferor gives a written statement whether the system malfunctioned in the 180 days before transfer; the purchaser shall, before purchase, have the system inspected by a department-certified person, or within 9 months after transfer if weather prevents it; a malfunctioning system must be repaired or replaced within one year after transfer; no inspection if the system was installed within 3 years before closing, if the seller provides a certified inspection report from within 3 years, or if the purchaser certifies to the local plumbing inspector they will replace the system within one year.",
+      "quote": "shall provide the transferee with a written statement by the transferor as to whether the system has malfunctioned during the 180 days preceding the date of transfer ... A person purchasing property on which a subsurface waste water disposal system is located within a shoreland area ... shall prior to purchase have the system inspected by a person certified by the department except that if it is impossible due to weather conditions ... the inspection must be performed within 9 months after transfer of the property. If the inspection finds that the system is malfunctioning, the system must be repaired or replaced within one year after transfer of the property ... installed ... within 3 years prior to the closing date ... a written inspection report ... performed within 3 years prior to the date of the transfer ... the purchaser certifies to the local plumbing inspector that the purchaser will replace the subsurface waste water disposal system within one year",
+      "url": "https://legislature.maine.gov/statutes/30-A/title30-Asec4216.html",
+      "readOn": "2026-11-10",
+      "method": "webfetch"
+    },
+    {
+      "id": "f5",
+      "claim": "Rhode Island Gen. Laws § 23-19.15-12 (Cesspool Act; P.L. 2015): any cesspool serving a building subject to sale or transfer shall be removed and replaced with an OWTS, or the building connected to public sewer, within twelve (12) months of the date of sale or transfer; if the manner of wastewater disposal is unknown, a system inspector shall inspect before the sale to determine whether a cesspool is present; contracts for property that is or may be served by a cesspool must allow the buyer a ten-day (10) inspection period unless the parties agree otherwise.",
+      "quote": "Any cesspool found to be serving a building or use subject to sale or transfer shall be removed and replaced with an OWTS or the building served by the cesspool shall be connected to a public sewer system within twelve (12) months of the date of sale or transfer. (b) Should the manner of wastewater disposal be unknown, an inspection shall be conducted to determine if a cesspool is present on the property. This inspection shall be done by a system inspector prior to the time of sale or transfer. (c) ... potential purchasers be permitted a ten-day (10) period, unless the parties mutually agree upon a different period of time, to conduct an inspection",
+      "url": "https://webserver.rilegislature.gov/Statutes/TITLE23/23-19.15/23-19.15-12.htm",
+      "readOn": "2026-11-10",
+      "method": "archive",
+      "note": "official page returned nothing to our network; read via Internet Archive capture 20250328053340"
+    },
+    {
+      "id": "f6",
+      "claim": "Minnesota Statutes § 115.55, subd. 6: before signing an agreement to sell or transfer real property, the seller must disclose in writing how sewage is managed; if not sent to a permitted facility, the disclosure includes a description, the county, a map of the system, any known abandoned system, what the seller knows about compliance status and any straight-pipe system, and a copy of any previous inspection report in the seller's possession; a seller who knowingly fails to disclose is liable to the buyer for costs to bring the system into compliance and reasonable attorney fees, unless agreed otherwise in writing before closing. (The subdivision we read requires disclosure, not an inspection.)",
+      "quote": "Before signing an agreement to sell or transfer real property, the seller or transferor must disclose in writing to the buyer or transferee information on how sewage generated at the property is managed ... A seller or transferor who has in their possession a previous inspection report ... shall attach a copy ... a seller or transferor who fails to disclose the existence or known status of a subsurface sewage treatment system at the time of sale ... is liable to the buyer or transferee for costs relating to bringing the system into compliance ... and for reasonable attorney fees",
+      "url": "https://www.revisor.mn.gov/statutes/cite/115.55",
+      "readOn": "2026-11-10",
+      "method": "webfetch"
+    },
+    {
+      "id": "f7",
+      "claim": "Reported, not verified: Delaware (a state news release, per search results, says regulations effective January 11, 2014 require inspection of septic systems before property transfers; the release, the regulation site and their archive copies refused our network). New Hampshire (RSA 485-A:39 was reported changed in 2024 so the buyer arranges a septic evaluation for shoreland property; the NH statute site blocked us and the only archive copy predates the change).",
+      "quote": "news.delaware.gov and regulations.delaware.gov: Request Rejected; gc.nh.gov and gencourt.state.nh.us: Error 403 Web Page Blocked; wayback copy of 485-A:39 dated 2023-02-02 (pre-change)",
+      "url": "data/fact-ledgers/septic-inspection-to-sell-state-rules.json",
+      "readOn": "2026-11-10",
+      "method": "observation"
+    },
+    {
+      "id": "f8",
+      "claim": "EPA septic FAQ (last updated March 11, 2026): in many states, a septic system must be inspected with the transfer of real estate; EPA has no national database of septic systems.",
+      "quote": "In many states, a septic system must be inspected with the transfer of real estate. ... EPA does not have a database of septic systems throughout the U.S.",
+      "url": "https://www.epa.gov/septic/frequent-questions-septic-systems",
+      "readOn": "2026-11-03",
+      "method": "webfetch",
+      "note": "same reading as data/fact-ledgers/city-utilities-vs-septic-water-sewer-costs.json f2"
+    },
+    {
+      "id": "f9",
+      "claim": "Demand (ours): topic-demand 2026-11-09 tier 2: Bing records searches for 'septic inspection'. Gap research 2026-11-09: published lists contradict each other on Minnesota, Indiana, Ohio and others.",
+      "quote": "exact 76 broad 76 septic inspection",
+      "url": "data/keywords/2026-11-09-demand-roof-age-insurance-bing.json",
+      "readOn": "2026-11-10",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Connecticut, Indiana, Ohio, Wisconsin, New Jersey, Michigan county rules",
+      "why": "not read at a primary source this round"
+    },
+    {
+      "claim": "A 2026 Rhode Island bill (H 7635) adding a purchase-contract certification",
+      "why": "passage not confirmed"
+    },
+    {
+      "claim": "That states not in the table have no requirement",
+      "why": "not established; we only read the states listed"
+    },
+    {
+      "claim": "Septic inspection prices",
+      "why": "not in our engine; no primary price source"
+    }
+  ],
+  "blockedSources": [
+    "mass.gov (403; read 310 CMR at Cornell LII)",
+    "azdeq.gov (403; read the rule at Cornell LII)",
+    "pca.state.mn.us (Radware bot check)",
+    "regulations.delaware.gov, news.delaware.gov (rejected, including archive copies)",
+    "gc.nh.gov / gencourt.state.nh.us (403; archive copy predates the 2024 change)",
+    "webserver.rilegislature.gov (no response; read via Internet Archive)"
+  ]
+}
