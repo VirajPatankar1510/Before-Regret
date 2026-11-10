@@ -83,6 +83,16 @@ const BUSINESS_PHRASE: Record<typeof TRADE_CATEGORIES[number], string> = {
   'Water Testing & Treatment': 'water testing or treatment',
 };
 
+/** The same natural phrase for a known category ("electrical", "home inspection"). */
+export function businessPhraseFor(category: typeof TRADE_CATEGORIES[number]): string {
+  return BUSINESS_PHRASE[category];
+}
+
+/** The free Find a Pro sign-up page with the business type already chosen (ProListingJoin reads ?trade=). */
+export function findAProJoinHref(category: typeof TRADE_CATEGORIES[number]): string {
+  return `/pros/join/?trade=${encodeURIComponent(category)}`;
+}
+
 export function guessBusinessPhraseFromTitle(title: string): string {
   return BUSINESS_PHRASE[guessTradeCategoryFromTitle(title)];
 }

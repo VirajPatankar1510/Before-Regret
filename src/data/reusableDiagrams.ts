@@ -21,6 +21,8 @@
 // A CC licence cannot be revoked for copies already made under it. Removing a diagram from this
 // list stops offering it; it does not withdraw it from anyone who already took it.
 
+import type { TRADE_CATEGORIES } from './sponsoredVendors.js';
+
 export const DIAGRAM_LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/';
 export const DIAGRAM_LICENSE_NAME = 'CC BY 4.0';
 export const DIAGRAM_CREDIT = 'Before Regret';
@@ -38,6 +40,23 @@ export const REUSABLE_DIAGRAMS: ReadonlySet<string> = new Set([
   '/images/shared-well-and-y-shaped-driveway-responsibility.webp',
   '/images/single-strand-aluminum-vs-copper-wiring-identification.webp',
 ]);
+
+// The trade most likely to open a diagram's reuse panel -- the panel is for "an inspector, a trade writing its own
+// blog" (renderArticleMarkdown.tsx), so it also carries a one-line invitation to list free in Find a Pro, worded
+// for that trade (owner, 2026-11-10). A diagram missing here simply shows no invitation.
+export const DIAGRAM_TRADE: Readonly<Record<string, typeof TRADE_CATEGORIES[number]>> = {
+  '/images/county-vs-city-permit-jurisdiction.webp': 'General Contractor',
+  '/images/edison-base-fuse-over-fusing-risk.webp': 'Electrician',
+  '/images/eifs-vs-traditional-stucco-wall-cross-section.webp': 'Stucco & EIFS',
+  '/images/knob-and-tube-vs-modern-sheathed-cable.webp': 'Electrician',
+  '/images/open-ground-vs-bootleg-ground-receptacle-wiring.webp': 'Electrician',
+  '/images/polybutylene-vs-pex-pipe-identification.webp': 'Plumber',
+  '/images/reverse-polarity-vs-correct-receptacle-wiring.webp': 'Electrician',
+  '/images/romex-spliced-to-knob-and-tube-junction-box.webp': 'Electrician',
+  '/images/sewer-scope-four-findings-cutaway.webp': 'Sewer Scope',
+  '/images/shared-well-and-y-shaped-driveway-responsibility.webp': 'Well & Septic Services',
+  '/images/single-strand-aluminum-vs-copper-wiring-identification.webp': 'Electrician',
+};
 
 /** Fragment id for a diagram's reuse panel -- also the target of the schema's acquireLicensePage,
  *  so it must be derived the same way in both places. */

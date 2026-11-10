@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronRight, Loader2, Lock, CheckCircle2, AlertCircle, X, ArrowRight, Trash2, Pencil } from 'lucide-react';
+import { ChevronRight, Loader2, Lock, CheckCircle2, AlertCircle, X, ArrowRight, Trash2, Pencil, Link2, Check } from 'lucide-react';
 import { TRADE_CATEGORIES, requiresLicenceNumber, requiresBrokerageName, brokerageNameError } from '../data/sponsoredVendors';
 import { checkVendorWebsite, VENDOR_WEBSITE_RULE } from '../data/vendorWebsite';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +17,36 @@ const STASH_KEY = 'br_pending_pro_listing';
 interface Props { onNavigate: (path: string) => void }
 
 type Mine = ProListing & { id: number };
+
+const decoderLink = (token: string) => `https://www.beforeregret.com/tools/inspection-decoder/?via=${token}`;
+
+/** The business's own Inspection Decoder link (owner, 2026-11-10: free with every listing). Opens with "Shared by"
+ *  and their name, phone and website, for them to send to clients. A readonly field plus a copy button, so it can be
+ *  copied by hand where the clipboard API is blocked. */
+const DecoderShareLink: React.FC<{ token: string }> = ({ token }) => {
+  const [copied, setCopied] = useState(false);
+  const url = decoderLink(token);
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* select the field instead */ }
+  };
+  return (
+    <div className="rounded-2xl border border-home-linen bg-home-stone/50 p-4 text-left space-y-2">
+      <div className="text-sm font-bold text-home-ink">Your Inspection Report Decoder link</div>
+      <p className="text-xs text-slate-600 leading-relaxed">
+        Send it to clients with an inspection report. It opens our plain-English decoder with &ldquo;Shared by&rdquo; and your
+        business name, phone and website at the top.{' '}
+        <a href={url} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">See how it looks</a>
+      </p>
+      <div className="flex gap-2">
+        <input readOnly value={url} onFocus={(e) => e.currentTarget.select()} aria-label="Your Inspection Report Decoder link"
+          className="min-w-0 flex-1 px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-mono text-slate-700" />
+        <button type="button" onClick={copy} className="inline-flex items-center gap-1.5 px-3 py-2 bg-home-navy text-white text-xs font-bold rounded-lg shrink-0">
+          {copied ? <Check className="w-3.5 h-3.5" aria-hidden="true" /> : <Link2 className="w-3.5 h-3.5" aria-hidden="true" />}{copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
   const { user, loading: authLoading, triggerClerkSignIn, getToken, requestClerkLoad } = useAuth();
@@ -48,7 +78,12 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
   // Restore what the business typed before signing in (the sign-in redirect reloads the page).
   useEffect(() => {
     const raw = sessionStorage.getItem(STASH_KEY);
-    if (!raw) return;
+    if (!raw) {
+      // Arriving from a "list your business free" line on a guide or diagram: the business type is already known.
+      const t = new URLSearchParams(window.location.search).get('trade');
+      if (t && (TRADE_CATEGORIES as readonly string[]).includes(t)) setTradeCategory(t);
+      return;
+    }
     sessionStorage.removeItem(STASH_KEY);
     try {
       const s = JSON.parse(raw);
@@ -187,7 +222,7 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
             listing shows your business name, phone, website and the ZIP codes you serve, and gives you a page of your own.
           </p>
           <ul className="space-y-2 text-sm text-slate-700">
-            {['Free, with no time limit', 'Live as soon as you save it', 'One free listing per business', 'Remove it any time'].map((t) => (
+            {['Free, with no time limit', 'Live as soon as you save it', 'Your own Inspection Report Decoder link to send clients', 'One free listing per business', 'Remove it any time'].map((t) => (
               <li key={t} className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-home-moss mt-0.5 shrink-0" />{t}</li>
             ))}
           </ul>
@@ -207,6 +242,7 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
               <ContentLink href={`/pros/${created.slug}/`} onNavigate={onNavigate} className="inline-flex items-center gap-2 px-5 py-3 bg-home-navy text-white text-sm font-bold rounded-xl">
                 <span>View your listing</span><ArrowRight className="w-4 h-4" />
               </ContentLink>
+              {created.shareToken && <DecoderShareLink token={created.shareToken} />}
             </div>
           ) : !editing && mine && mine.length > 0 ? (
             <div className="space-y-2">
@@ -343,6 +379,7 @@ export const ProListingJoin: React.FC<Props> = ({ onNavigate }) => {
                   </div>
                 </div>
               ))}
+              {mine[0]?.shareToken && <DecoderShareLink token={mine[0].shareToken} />}
             </div>
           )}
         </div>

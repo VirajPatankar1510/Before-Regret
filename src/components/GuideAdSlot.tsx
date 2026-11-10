@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Phone, Globe, Wrench } from 'lucide-react';
-import { guessBusinessPhraseFromTitle } from '../data/guideAdCategoryGuess';
+import { guessBusinessPhraseFromTitle, guessTradeCategoryFromTitle, findAProJoinHref } from '../data/guideAdCategoryGuess';
 import { reportAdClick } from '../utils/adClickBeacon';
+import { reportCtaClick } from '../utils/ctaClickBeacon';
 
 interface GuideAdSlotProps {
   articleId: number;
   guideTitle: string;
 }
 
-/** The slot's resting height before it knows what to show -- measured from the unsold card, 124px
- *  on phones and 80px from sm: up. Used for the loading state here and for the static stand-in in
- *  GuideArticleLayout, so neither the static page nor the first live render jumps. */
-export const GUIDE_AD_SLOT_PLACEHOLDER = 'h-[124px] sm:h-20';
+/** The slot's resting height before it knows what to show -- measured from the unsold card, 148px
+ *  on phones and 104px from sm: up (was 124/80; the Find a Pro line added 2026-11-10 is 24px: a 16px
+ *  line plus mt-2). Used for the loading state here and for the static stand-in in GuideArticleLayout,
+ *  so neither the static page nor the first live render jumps. */
+export const GUIDE_AD_SLOT_PLACEHOLDER = 'h-[148px] sm:h-[104px]';
 
 export interface ActiveVendor {
   // Identifies which placement a click belongs to. Optional so a cached response from before click
@@ -156,6 +158,18 @@ export const GuideAdSlot: React.FC<GuideAdSlotProps> = ({ articleId, guideTitle 
           </div>
         </div>
       </a>
+      {/* The free first step for a local business (owner, 2026-11-10). A separate link, not nested in the one
+          above: an <a> inside an <a> is invalid and browsers split it apart. Clicks are counted privately. */}
+      <div className="text-xs text-slate-600 mt-2 pl-12">
+        Or{' '}
+        <a
+          href={findAProJoinHref(guessTradeCategoryFromTitle(guideTitle))}
+          onClick={() => reportCtaClick('findapro_invite_slot')}
+          className="font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+        >
+          list your business free in Find a Pro
+        </a>
+      </div>
     </div>
   );
 };

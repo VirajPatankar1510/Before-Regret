@@ -5,12 +5,12 @@
 // Same rules as adClickBeacon.ts: a beacon, so the request survives the navigation the click starts;
 // best effort, never throws into the click handler. Only the page path is sent -- no query string,
 // no personal data.
-export type CtaId = 'guide_closing_report' | 'nav_free_report';
+export type CtaId = 'guide_closing_report' | 'nav_free_report' | 'findapro_invite_diagram' | 'findapro_invite_slot';
 
 /** Inspection Report Decoder usage events -- private, for us only (src/server/ctaClicksApi.ts). */
 export type DecoderEvent =
   | 'decoder_view' | 'decoder_view_shared' | 'decoder_scan_found' | 'decoder_scan_none'
-  | 'decoder_share' | 'decoder_print' | 'decoder_guide_click' | `decoder_open:${string}`;
+  | 'decoder_share' | 'decoder_print' | 'decoder_guide_click' | 'decoder_view_via' | 'decoder_get_own_link' | `decoder_open:${string}`;
 
 export function reportDecoderEvent(event: DecoderEvent): void {
   reportCtaClick(event as unknown as CtaId);

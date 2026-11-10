@@ -658,6 +658,11 @@ export async function ensureArticlesSchema(): Promise<void> {
   // One free listing per business (owner, 2026-10-20): the API checks first; this stops two racing saves.
   await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_pro_listings_one_per_user ON pro_listings(clerk_user_id) WHERE status = 'active'`;
   await sql`CREATE INDEX IF NOT EXISTS idx_pro_listings_status_trade ON pro_listings(status, trade_category)`;
+  // Inspection Report Decoder "Shared by" link (owner, 2026-11-10: free for every listed business). An unguessable
+  // token, shown only to the signed-in owner of the listing, so nobody can make a link that appears to come from a
+  // business that never shared it. Resolved by GET /api/pros/shared-by/:token, active listings only.
+  await sql`ALTER TABLE pro_listings ADD COLUMN IF NOT EXISTS share_token TEXT`;
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_pro_listings_share_token ON pro_listings(share_token) WHERE share_token IS NOT NULL`;
 
   // Advertiser-supplied licence / registration / certification number, added to all four ad tables
   // at once so an order and the purchase it becomes carry the same value. See

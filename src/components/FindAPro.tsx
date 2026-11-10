@@ -25,6 +25,8 @@ export interface ProListing {
   listedSince: string;
   /** Complete listing (80+ character description): open to Google. Otherwise noindex. */
   indexable?: boolean;
+  /** Only in the owner's own responses (create, /mine): the private Inspection Decoder "Shared by" link token. */
+  shareToken?: string | null;
 }
 
 interface Props { onNavigate: (path: string) => void }

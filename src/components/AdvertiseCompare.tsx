@@ -209,7 +209,8 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <h2 className="mt-2 font-serif text-2xl sm:text-3xl font-semibold tracking-tight">Get listed free in Find a Pro</h2>
             <p className="mt-2 text-sm sm:text-base text-slate-700 leading-relaxed max-w-2xl">
               Your business name, phone, website and the ZIP codes you serve, in the directory buyers search for local
-              pros, with a page of your own. Upgrade to a featured placement below whenever you want to be seen first.
+              pros, with a page of your own and your own link to our Inspection Report Decoder to send clients. Upgrade
+              to a featured placement below whenever you want to be seen first.
             </p>
           </div>
           <ContentLink

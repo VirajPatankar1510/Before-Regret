@@ -1,5 +1,6 @@
 import type { Express, Request, Response } from 'express';
 import zipcodes from 'zipcodes';
+import { randomBytes } from 'node:crypto';
 import { withDb, isDbConfigured } from './db.js';
 import { requireVerifiedUser } from './clerkAuth.js';
 import { TERMS_VERSION } from '../data/legalVersions.js';
@@ -100,8 +101,12 @@ export interface PublicProListing {
 type Row = {
   id: number; slug: string; clerk_user_id: string; business_name: string; trade_category: string; zip_codes_json: string;
   city: string | null; state: string | null; phone: string; website: string | null; licence_number: string | null;
-  description: string | null; status: string; created_at: string;
+  description: string | null; status: string; created_at: string; share_token: string | null;
 };
+
+/** The listing owner's private Inspection Decoder link token (see db.ts). 12 URL-safe characters, unguessable. */
+const newShareToken = () => randomBytes(9).toString('base64url');
+export const SHARE_TOKEN_RE = /^[A-Za-z0-9_-]{12}$/;
 
 function isIndexable(r: Pick<Row, 'description' | 'status'>): boolean {
   return r.status === 'active' && (r.description ?? '').trim().length >= INDEXABLE_MIN_DESCRIPTION;
@@ -237,10 +242,39 @@ export function registerProListingsRoutes(app: Express) {
     try {
       const rows = await withDb((sql) => sql`
         SELECT * FROM pro_listings WHERE clerk_user_id = ${req.verifiedUserId as string} AND status = 'active' ORDER BY created_at ASC`);
-      res.json({ success: true, listings: (rows as unknown as Row[]).map((r) => ({ id: r.id, ...toPublic(r) })) });
+      const mine = rows as unknown as Row[];
+      // Listings made before the Decoder link existed get their token the first time the owner looks.
+      for (const r of mine) {
+        if (r.share_token) continue;
+        const t = newShareToken();
+        await withDb((sql) => sql`UPDATE pro_listings SET share_token = ${t} WHERE id = ${r.id} AND share_token IS NULL`);
+        r.share_token = t;
+      }
+      res.json({ success: true, listings: mine.map((r) => ({ id: r.id, ...toPublic(r), shareToken: r.share_token })) });
     } catch (err) {
       console.error('[pros] mine failed:', err);
       res.status(500).json({ success: false, error: 'Could not load your listings.' });
+    }
+  });
+
+  // --- Public: who shared an Inspection Decoder link (?via=<token>). Active listings only; a removed listing's
+  // links stop showing its name. Returns only what the listing page already shows publicly.
+  app.get('/api/pros/shared-by/:token', async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return unavailable(res);
+    const token = String(req.params.token || '');
+    if (!SHARE_TOKEN_RE.test(token)) return res.status(404).json({ success: false });
+    try {
+      const rows = await withDb((sql) => sql`SELECT * FROM pro_listings WHERE share_token = ${token} AND status = 'active' LIMIT 1`);
+      const row = (rows as unknown as Row[])[0];
+      if (!row) return res.status(404).json({ success: false });
+      res.setHeader('Cache-Control', 'public, max-age=300');
+      res.json({
+        success: true,
+        sharer: { slug: row.slug, businessName: row.business_name, tradeCategory: row.trade_category, phone: row.phone, website: row.website },
+      });
+    } catch (err) {
+      console.error('[pros] shared-by lookup failed:', err);
+      res.status(500).json({ success: false });
     }
   });
 
@@ -288,13 +322,16 @@ export function registerProListingsRoutes(app: Express) {
       }
       const rows = await withDb((sql) => sql`
         INSERT INTO pro_listings (slug, clerk_user_id, contact_email, business_name, trade_category, zip_codes_json, city, state,
-                                  phone, website, licence_number, description, terms_version)
+                                  phone, website, licence_number, description, terms_version, share_token)
         VALUES (${slug}, ${userId}, ${contactEmail}, ${businessName}, ${tradeCategory}, ${JSON.stringify(clean.zips)},
-                ${clean.city}, ${clean.state}, ${clean.phone}, ${clean.website}, ${clean.licence}, ${clean.description}, ${TERMS_VERSION})
+                ${clean.city}, ${clean.state}, ${clean.phone}, ${clean.website}, ${clean.licence}, ${clean.description}, ${TERMS_VERSION},
+                ${newShareToken()})
         RETURNING *`);
-      const listing = toPublic((rows as unknown as Row[])[0]);
+      const created = (rows as unknown as Row[])[0];
+      const listing = toPublic(created);
       if (listing.indexable) await pingIndexNow(listing.slug);
-      res.json({ success: true, listing });
+      // shareToken goes only to the owner (this response and /mine), never into the public listing.
+      res.json({ success: true, listing: { ...listing, shareToken: created.share_token } });
     } catch (err: any) {
       // Two saves racing past the count check meet the one-active-listing-per-account unique index (db.ts).
       if (err?.code === '23505' || /idx_pro_listings_one_per_user/.test(String(err?.message))) {

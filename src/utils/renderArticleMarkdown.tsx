@@ -6,7 +6,10 @@ import {
   DIAGRAM_LICENSE_NAME,
   DIAGRAM_LICENSE_URL,
   diagramAnchorId,
+  DIAGRAM_TRADE,
 } from '../data/reusableDiagrams';
+import { businessPhraseFor, findAProJoinHref } from '../data/guideAdCategoryGuess';
+import { reportCtaClick } from './ctaClickBeacon';
 import { IMAGE_DIMENSIONS } from '../data/imageDimensions';
 
 const SITE_ORIGIN = 'https://www.beforeregret.com';
@@ -65,6 +68,21 @@ function DiagramReusePanel({ src, alt, pageUrl }: { src: string; alt: string; pa
           </a>{' '}
           and credit it as “Diagram: {DIAGRAM_CREDIT}” with a link to this page.
         </p>
+        {/* The people who open this panel are mostly trades (see the comment above), so it is where a free
+            Find a Pro listing is offered to them (owner, 2026-11-10). Clicks are counted privately. */}
+        {DIAGRAM_TRADE[src] && (
+          <p className="pt-2 border-t border-slate-200">
+            In the {businessPhraseFor(DIAGRAM_TRADE[src])} business?{' '}
+            <a
+              href={findAProJoinHref(DIAGRAM_TRADE[src])}
+              onClick={() => reportCtaClick('findapro_invite_diagram')}
+              className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+            >
+              List your business free in Find a Pro
+            </a>
+            , where home buyers look for local pros.
+          </p>
+        )}
       </div>
     </details>
   );
