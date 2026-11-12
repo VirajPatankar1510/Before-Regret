@@ -15,6 +15,8 @@ const CTAS = new Set([
   'guide_closing_report', 'nav_free_report',
   // Find a Pro sign-up lines (owner, 2026-11-10): under the reusable diagrams, and in a guide's empty sponsor box.
   'findapro_invite_diagram', 'findapro_invite_slot',
+  // Add-On Finder pitch demo (public/tools/add-on-finder/, 2026-11-12): did inspectors open it, and which view.
+  'addon_demo_view_inspector', 'addon_demo_view_client',
 ]);
 
 // Inspection Report Decoder usage (owner, 2026-10-30: "only for us" -- never displayed on the site). Same table, same
