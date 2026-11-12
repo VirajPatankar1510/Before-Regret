@@ -1,0 +1,51 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-12T14:18:09.352Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "open permit",
+    "open permits",
+    "expired permit",
+    "close out permit"
+  ],
+  "keywords": [
+    {
+      "keyword": "miami dade open permit search",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 8
+    },
+    {
+      "keyword": "open permit",
+      "search_volume": 2,
+      "metric": "market",
+      "broad_impressions": 2,
+      "kind": "seed"
+    },
+    {
+      "keyword": "open permits",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "expired permit",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "close out permit",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

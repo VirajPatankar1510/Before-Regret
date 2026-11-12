@@ -1,0 +1,36 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-11-12T14:18:09.352Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "open permit",
+    "open permits",
+    "expired permit",
+    "close out permit"
+  ],
+  "keywords": [
+    {
+      "keyword": "how to check for open permits on a home in coral gables",
+      "search_volume": 19,
+      "impressions": 19,
+      "clicks": 0,
+      "position": 44.6,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-miami-dade-county-fl/": 19
+      }
+    },
+    {
+      "keyword": "how to find open permits on a house",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 11,
+      "pages": {
+        "https://www.beforeregret.com/guides/look-up-building-permits-by-address": 1
+      }
+    }
+  ]
+}

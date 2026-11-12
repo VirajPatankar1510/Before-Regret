@@ -1,0 +1,121 @@
+{
+  "slug": "resolve-open-building-permits-before-closing",
+  "question": "The house I'm buying has an open or expired building permit. Who has to close it, what happens if it isn't closed before I buy, and does title insurance help?",
+  "verdictConfirmed": "Before closing, the seller is the owner of record and the person most departments let act, so make closing the permit the seller's job in writing. What happens after you buy depends on the place: Florida shields a buyer from penalties for a prior owner's unclosed permit, Austin makes the current owner responsible, Portland lets a lapsed permit be revived only for a limited time. The 2021 ALTA homeowner's title policy covers forced fixes for work built without a permit, with a deductible and cap, but not what you knew and didn't disclose.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Florida Statutes § 553.79(16)(a): a property owner, whether or not they were the applicant, may close a permit by keeping the original contractor or hiring a different licensed contractor, who is not liable for the original contractor's defects; or by acting as owner-builder. 'Close' means the permit's requirements are satisfied.",
+      "quote": "(16)(a) A property owner, regardless of whether the property owner is the one listed on the application for the building permit, may close a building permit by complying with the following requirements: 1. The property owner may retain the original contractor listed on the permit or hire a different contractor appropriately licensed in this state to perform the work necessary to satisfy the conditions of the permit and to obtain any necessary inspections in order to close the permit. If a contractor other than the original contractor listed on the permit is hired by the property owner to close the permit, such contractor is not liable for any defects in the work performed by the original contractor and is only liable for the work that he or she performs. 2. The property owner may assume the role of an owner-builder, in accordance with ss. 489.103 (7) and 489.503 (6). 3. For purposes of this section, the term \"close\" means that the requirements of the permit have been satisfied.",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2026/553.79",
+      "readOn": "2026-11-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "claim": "Florida Statutes § 553.79(16)(b)-(c): an expired permit whose work is substantially complete may be closed without a new permit, under the code in effect when the application was received; and the department may close a permit 6 years after issuance without a final inspection if it finds no apparent safety hazards.",
+      "quote": "(b) If a building permit is expired and its requirements have been substantially completed, as determined by the local enforcement agency, the permit may be closed without having to obtain a new building permit, and the work required to close the permit may be done pursuant to the building code in effect at the time the local enforcement agency received the application for the permit ... (c) A local enforcement agency may close a building permit 6 years after the issuance of the permit, even in the absence of a final inspection, if the local enforcement agency determines that no apparent safety hazards exist.",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2026/553.79",
+      "readOn": "2026-11-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f3",
+      "claim": "Florida Statutes § 553.79(17)(a): a department may not deny a permit to, cite, or fine an arm's-length purchaser for value solely because a previous owner's permit was not closed; it keeps its remedies against the owner and contractor listed on the permit.",
+      "quote": "(17)(a) A local enforcement agency may not deny issuance of a building permit to; issue a notice of violation to; or fine, penalize, sanction, or assess fees against an arms-length purchaser of a property for value solely because a building permit applied for by a previous owner of the property was not closed. The local enforcement agency shall maintain all rights and remedies against the property owner and contractor listed on the permit.",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2026/553.79",
+      "readOn": "2026-11-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f4",
+      "claim": "City of Austin: the property owner is responsible for expired permits even if they did not own the property when the permit was issued; an expired permit may need resolving before new permits are issued; the owner, general contractor or trade contractor on the permit can request reactivation, for a fee; the reactivation application must be signed by the permit holder or the property owner as listed in the county appraisal district's registry.",
+      "quote": "Reactivate an Expired Permit The property owner is responsible for any expired permits on the property even if they did not own the property at the time the permit was issued. An expired permit may need to be resolved before issuing any new permits. The property owner, general contractor, or trade contractor listed on the permit can request the reactivation of the expired permit. Fees are required for the reactivation request ... The application must be signed by the permit holder or property owner as listed in the appropriate county appraisal district's registry.",
+      "url": "https://www.austintexas.gov/development-services/modify-permit",
+      "readOn": "2026-11-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f5",
+      "claim": "City of Austin: the owner or a listed contractor can add or remove a contractor on a permit; a new contractor can then repurchase the permit.",
+      "quote": "Active or expired building, mechanical, electrical, and plumbing permits can be modified by the property owner or the contractor listed on the permit. ... Once staff confirms the previous contractor has been removed from the permit, the new contractor can repurchase the permit",
+      "url": "https://www.austintexas.gov/development-services/modify-permit",
+      "readOn": "2026-11-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f6",
+      "claim": "Portland Bureau of Development Services program guide (revised March 15, 2019): an issued permit expires after 180 days with no inspection approvals; an expired permit may be reactivated within 180 days of expiration, only for the original scope; after that it is Void, and the project must be resubmitted, designed to current code, with new fees at current rates.",
+      "quote": "7. Expired: Permit has reached Issued or later status and there has been no activity for 180 days. Expired permits may be reactivated within 180 days of expiration. 8. Void: ... the application has been in Expired or Abandoned status for 180 days and has not been reactivated. If not reactivated, re- submittal of the project is required, and must be designed to current code(s). New fees will be assessed at the current rates. ... Permits shall expire if: 1. No inspection approvals have been granted in180 days ... Permits may only be reactivated for the originally permitted scope of work. If the scope of work has changed, a new permit must be obtained. ... Revised: March 15, 2019",
+      "url": "https://www.portland.gov/ppd/documents/permit-extension-abandonment-expiration-and-reactivation-program-guide/download",
+      "readOn": "2026-11-12",
+      "method": "pdf"
+    },
+    {
+      "id": "f7",
+      "claim": "Portland's guide warns that the Cancelled status has historically also been used for expired or void permits, so a permit not cancelled at the applicant's request may in fact be abandoned, expired or void.",
+      "quote": "10.Cancelled: The permit has been discontinued at the request of the owner or the owner's representative. However, Cancelled status has also historically been used to indicate an Expired or Void permit. Therefore, a permit that is NOT cancelled at the request of the applicant may be considered de facto Abandoned, Expired, or Void depending on the prior status and time passed since the cancellation.",
+      "url": "https://www.portland.gov/ppd/documents/permit-extension-abandonment-expiration-and-reactivation-program-guide/download",
+      "readOn": "2026-11-12",
+      "method": "pdf"
+    },
+    {
+      "id": "f8",
+      "claim": "Township of Wyckoff, NJ tax assessor: not getting a permit does not prevent an assessment; the assessor values the entire property at each reassessment.",
+      "quote": "The Assessor must value the entire property each time it is re-assessed. Not getting a permit for work done in your home does not prevent an assessment.",
+      "url": "https://www.wyckoffnj.gov/tax-assessor/faq/what-if-permit-doesnt-list-everything-i-have-done-it-or-what-if-i-dont-take-out",
+      "readOn": "2026-11-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "f9",
+      "claim": "ALTA Homeowner's Policy of Title Insurance (07/01/2021), Covered Risk 18: you are ordered to remove or remedy part of your existing structures (other than boundary walls or fences) because it was built without obtaining a building permit; subject to Your Deductible Amount and Our Maximum Dollar Limit of Liability in Schedule A.",
+      "quote": "18. You are ordered by a State or Municipal authority to remove or remedy any portion of Your existing structures—other than boundary walls or fences—because any portion of Your existing structures was built without obtaining a building permit from the proper Municipal authority. The Amount of Insurance for Covered Risk 18 is subject to Your Deductible Amount and Our Maximum Dollar Limit of Liability shown in Schedule A.",
+      "url": "https://www.tghawaii.com/wp-content/uploads/Chicago-ALTA-Homeowners-Policy-SAMPLE.pdf",
+      "readOn": "2026-11-12",
+      "method": "pdf"
+    },
+    {
+      "id": "f10",
+      "claim": "The same policy covers you only for an existing one-to-four family residence with natural persons (or estate planning entities) as insured.",
+      "quote": "This policy covers You only if the Land is improved with an existing one-to-four family residence and each party named in Item 1 of Schedule A is a Natural Person or Estate Planning Entity.",
+      "url": "https://www.tghawaii.com/wp-content/uploads/Chicago-ALTA-Homeowners-Policy-SAMPLE.pdf",
+      "readOn": "2026-11-12",
+      "method": "pdf"
+    },
+    {
+      "id": "f11",
+      "claim": "Exclusions: 1.a excludes building and zoning laws and permits, but does not limit Covered Risk 18; 3.b excludes matters known to you, not recorded and not disclosed in writing to the insurer before you became insured; 5 excludes failure of structures to be built to applicable building codes.",
+      "quote": "1. a. any law, ordinance, permit, or governmental regulation (including those relating to building and zoning) that restricts, regulates, prohibits, or relates to: ... ii. the character, dimensions, or location of any improvement on the Land ... Exclusion 1 does not modify or limit the coverage provided under Covered Risk 8.a., 14, 15, 16, 18, 19, 20, 23, or 27. ... 3. Any defect, lien, encumbrance, adverse claim, or other matter: ... b. not Known to Us, not recorded in the Public Records at the Date of Policy, but Known to You and not disclosed in writing to Us by You prior to the date You became an Insured under this policy ... 5. The failure of Your existing structures, or any portion of Your existing structures, to have been constructed before, on, or after the Date of Policy in accordance with applicable building codes.",
+      "url": "https://www.tghawaii.com/wp-content/uploads/Chicago-ALTA-Homeowners-Policy-SAMPLE.pdf",
+      "readOn": "2026-11-12",
+      "method": "pdf"
+    },
+    {
+      "id": "f12",
+      "claim": "OUR SEARCH DATA (first-party): a query that brought our Miami-Dade permit guide up in Google: 'how to check for open permits on a home in coral gables' (topic-demand capture 2026-11-12).",
+      "quote": "how to check for open permits on a home in coral gables -> /guides/check-building-permits-miami-dade-county-fl/ (data/keywords/2026-11-12-demand-open-permit-gsc.json)",
+      "url": "data/keywords/2026-11-12-demand-open-permit-gsc.json",
+      "readOn": "2026-11-12",
+      "method": "engine"
+    },
+    {
+      "id": "f13",
+      "claim": "Read date for every source: 12 November 2026.",
+      "quote": "All sources above opened on 2026-11-12 (12 November 2026).",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2026/553.79",
+      "readOn": "2026-11-12",
+      "method": "webfetch"
+    }
+  ],
+  "cut": [
+    { "claim": "Municipalities never hold the previous owner accountable; the burden transfers entirely with the deed", "why": "contradicted in Florida, where § 553.79(17)(a) keeps remedies against the prior owner and contractor and shields the buyer; true-ish in Austin. Stated per place instead" },
+    { "claim": "Standard title insurance explicitly excludes all unpermitted-work losses", "why": "the 2021 ALTA homeowner's policy covers a forced fix of work built without a permit (CR 18), subject to deductible and cap; the standard owner's policy text was not read, so the page speaks only of the homeowner's policy" },
+    { "claim": "Specific deductible and cap amounts for Covered Risk 18", "why": "set by each insurer in Schedule A; only secondary charts found" },
+    { "claim": "Tax appraisers capture additions by aerial flyovers", "why": "no primary source read for that method; kept to the assessor statement that a permit is not required for an assessment" },
+    { "claim": "Model code IRC R105.5 180-day expiration", "why": "ICC text not opened at source; Portland's own guide used instead" },
+    { "claim": "Escrow holdback as a standard remedy", "why": "no primary source; mentioned only as something to ask your agent or attorney about" },
+    { "claim": "Louisville, CO refuses to reactivate expired permits", "why": "the city document returned 404 when opened" }
+  ],
+  "blockedSources": ["sierracounty.ca.gov (not approved for browser access; skipped)", "placer.ca.gov FAQ (403)", "dor.wa.gov special notice (404)"]
+}
