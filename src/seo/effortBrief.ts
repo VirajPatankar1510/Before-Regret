@@ -135,12 +135,22 @@ const trigrams = (t: string) => {
  * machine phrasing, an opening paragraph that repeats the quick answer, and a page with no visible
  * evidence of work (a "How we checked this" style section, or an image we made).
  */
+/** Internal SEO notes that leaked into a reader-facing page. Owner, 2026-11-13, on #345: a "Why this page: Bing's AI
+ *  Performance report for our site listed ..." line "is internal SEO strategy, not information for a homebuyer" and
+ *  makes the page read as written to capture an AI citation. Found the same day in #346, #347 and #13. Narrow on
+ *  purpose: it matches the phrasings that shipped plus the dashboard names that have no business on a guide page. Our
+ *  own observations of an official portal or a statute are still welcome in "How we checked this"; why WE chose the
+ *  topic is not. Also run library-wide by scripts/assert-article-quality.ts (body, quick answer and FAQs). */
+export const INTERNAL_SEO_NOTE = /\*\*(why this page|what people asked us)\b|AI Performance report|cite other sites but not ours|our site (listed|wasn'?t answering)|\b(Bing|Google) (records searches|searches that bring)|\bSearch Console\b|\bBing Webmaster\b|\bIndexNow\b|\bsearch volume\b|\bAI citations?\b/i;
+
 export function assertHumanDraft(slug: string, body: string, quickAnswer: string): void {
   const problems: string[] = [];
   for (const [re, label] of AI_TELLS) {
     const m = body.match(re) ?? quickAnswer.match(re);
     if (m) problems.push(`AI tell ${label}: "…${m[0]}…"`);
   }
+  const leak = body.match(INTERNAL_SEO_NOTE) ?? quickAnswer.match(INTERNAL_SEO_NOTE);
+  if (leak) problems.push(`internal SEO note on a reader page: "…${leak[0]}…" (say what we checked, not why we picked the topic)`);
   // The first paragraph must move the reader forward, not say the quick answer again (owner 2026-10-14).
   const firstPara = body.split(/\n\s*\n/).find((p) => p.trim() && !p.trim().startsWith('#') && !p.trim().startsWith('!')) ?? '';
   if (quickAnswer.trim()) {

@@ -31,6 +31,7 @@ import { fileURLToPath } from 'node:url';
 import './lib/neon-curl.js';
 import { withDb } from '../src/server/db.js';
 import { guideTopic } from '../src/utils/relatedGuides.js';
+import { INTERNAL_SEO_NOTE } from '../src/seo/effortBrief.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const GRANDFATHER = path.join(ROOT, 'data', 'quality-grandfathered.json');
@@ -235,7 +236,7 @@ async function main() {
   for (let a = 1; a <= 4 && !rows; a++) {
     try {
       rows = (await withDb((sql) => sql`
-        SELECT slug, title, quick_answer, body_markdown FROM articles WHERE status = 'published'
+        SELECT slug, title, quick_answer, body_markdown, faq_json::text AS faq_text FROM articles WHERE status = 'published'
       `)) as unknown as Row[];
     } catch (e) {
       console.error(`  neon attempt ${a}: ${(e as Error).message.slice(0, 60)}`);
@@ -318,6 +319,11 @@ async function main() {
       if (grandfatheredTldr.has(r.slug)) warn.push(`${msg} (grandfathered)`);
       else hard.push(msg);
     }
+
+    // Internal SEO notes on a reader page (owner, 2026-11-13; see INTERNAL_SEO_NOTE). Body, TL;DR and FAQs: FAQs ship
+    // as JSON-LD and are what answer engines quote. No grandfathering.
+    const leak = `${r.body_markdown}\n${r.quick_answer ?? ''}\n${(r as any).faq_text ?? ''}`.match(INTERNAL_SEO_NOTE);
+    if (leak) hard.push(`[internal-note] ${r.slug}: "${leak[0]}" -- internal SEO reasoning on a reader page`);
 
     // Rule 7: AI-cliché vocabulary. Grandfathered per SLUG rather than per phrase: these are
     // cheap word-level edits, so the list should empty fast, and a per-phrase list would grow
