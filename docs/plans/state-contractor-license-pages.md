@@ -54,7 +54,7 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 34 | North Dakota | north-dakota-contractor-license-lookup | TODO | | | | | | |
 | 35 | Ohio | ohio-contractor-license-lookup | TODO | | | | | | |
 | 36 | Oklahoma | oklahoma-contractor-license-lookup | TODO | | | | | | |
-| 37 | Oregon | oregon-contractor-license-lookup | REVIEW | Group 1 | tier 2 (2026-11-13-demand-oregon-contractor-license) | 28 | 1.9% (vs CA) | 5 weeks after live | Portal walked 2026-11-13; ORS 701 site blocked, only CCB-cited ORS used; image JPEG (no webp encoder) |
+| 37 | Oregon | oregon-contractor-license-lookup | LIVE #353 (2026-11-13) | Group 1 | tier 2 (2026-11-13-demand-oregon-contractor-license) | 28 | 1.9% (vs CA) | 2026-12-18 | Portal walked 2026-11-13; ORS 701 site blocked, only CCB-cited ORS used; image JPEG (no webp encoder) |
 | 38 | Pennsylvania | pennsylvania-contractor-license-lookup | TODO | | | | | | |
 | 39 | Rhode Island | rhode-island-contractor-license-lookup | TODO | | | | | | |
 | 40 | South Carolina | south-carolina-contractor-license-lookup | TODO | | | | | | |
@@ -76,3 +76,4 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 2026-11-13 | Phase 1 survey started: 26 states have a first verified row; 7 blocked; 17 to retry in the browser | Survey data: `data/state-license-survey.json` |
 | 2026-11-13 | Phase 1 first pass done: all 50 rows filled or BLOCKED (2 verified, 36 partial, 12 BLOCKED; SC and KS have rows but blocked lookups) | Blocked list sent to owner for screenshots. Partial rows still need lookup URL (10) or statute section (26); those are filled during each state's Phase 2 research, not guessed now. "No statewide GC license" claims (type B/D) each still need an official source before a page states them. |
 | 2026-11-13 | Oregon: Phase 2 research and draft done, checker + publish dry run + quality gate pass; sent to owner for review | Checker and quality gate now accept ORS/RCW/NRS citations (state convention has no §). |
+| 2026-11-13 | Oregon published as #353 (commit 94dc36d): FAQs verified live, IndexNow 200, in sitemap | No inbound-link anchor in the library yet; the hub will link it. READ 2026-12-18. |
