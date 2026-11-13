@@ -1,0 +1,79 @@
+{
+  "slug": "option-period-negotiating-home-repairs",
+  "question": "My inspection report is long and my option period is short. What do I ask the seller for, and should it be a repair, a credit or a lower price?",
+  "verdictConfirmed": "Ask for few items, in the form that actually reaches you: a seller credit can only pay closing costs and prepaids, never more than your closing costs, and is capped by loan-to-value on conventional loans; a price cut has no such cap but gives no cash; a seller repair needs written terms. Credits are not automatically better.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Fannie Mae Selling Guide B3-4.1-02 (05/07/2025): interested parties include the seller; IPCs cannot be used for the down payment, reserves or minimum borrower contribution.",
+      "quote": "B3-4.1-02, Interested Party Contributions (IPCs) (05/07/2025) ... Interested parties to a transaction include, but are not limited to: the property seller, the builder or developer, the real estate agent or broker ... Fannie Mae does not permit IPCs to be used to make the borrower's down payment, meet financial reserve requirements, or meet minimum borrower contribution requirements.",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-4.1-02/interested-party-contributions-ipcs",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "claim": "Financing concessions (seller credits) may go only toward borrower closing costs including prepaids, or HOA assessments after settlement (up to 12 months), and must not exceed the borrower's closing costs; any excess is a sales concession.",
+      "quote": "Financing concessions are acceptable when they are contributed towards: Borrower closing costs, including prepaids; or Borrower homeowners' association (HOA) assessments covering any period after the settlement date (limited to no more than 12 months). ... financing concessions must be equal to or less than the sum of the borrower's closing costs. Any amount exceeding the borrower's closing costs must be treated as a sales concession.",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-4.1-02/interested-party-contributions-ipcs",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f3",
+      "claim": "Maximum financing concessions, calculated on the lower of sales price or appraised value: principal residence or second home, LTV/CLTV greater than 90%: 3%; 75.01%-90%: 6%; 75% or less: 9%; investment property: 2%. Customary seller-paid fees by local custom are not subject to the limits.",
+      "quote": "The table below provides maximum financing concessions, which are calculated using the lower of the sales price or appraised value (not the loan amount) of the subject transaction. Typical fees and/or closing costs paid by a seller in accordance with local custom, known as common and customary fees or costs, are not subject to Fannie Mae maximum financing concessions. ... Principal residence or second home Greater than 90% 3% 75.01% – 90% 6% 75% or less 9% Investment property All CLTV ratios 2%",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-4.1-02/interested-party-contributions-ipcs",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f4",
+      "claim": "Sales concessions (including financing concessions over the limit) must be deducted from the sales price, and the lower of the reduced price or appraised value is used for the LTV.",
+      "quote": "Sales concessions must be deducted from the property's sales price and the lower of the reduced sales price or appraised value must be used to calculate LTV/CLTV ratios for underwriting and eligibility purposes.",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-4.1-02/interested-party-contributions-ipcs",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f5",
+      "claim": "Undisclosed IPCs (contributions given outside closing and not on the settlement statement) make the loan ineligible for sale to Fannie Mae.",
+      "quote": "Mortgages with undisclosed IPCs are not eligible for sale to Fannie Mae. Examples of these types of contributions include, but are not limited to moving expenses, payment of various fees on the borrower's behalf, \"silent\" second mortgages held by the property seller, and other contributions that are given to the borrower outside of closing and are not disclosed on the settlement statement.",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-4.1-02/interested-party-contributions-ipcs",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f6",
+      "claim": "OUR ENGINE (first-party, read at run time by the publish script): typical repair ranges and which checks a general inspection usually leaves out.",
+      "quote": "sewer_cast_iron: Spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+; most general home inspections do not include it unless you ask | roof_age: Full replacement $8,000 – $25,000+ | hvac_age: HVAC replacement $6,000 – $15,000; water heater replacement $1,200 – $3,000 | electrical_panel_brand: Panel replacement $1,500 – $4,000 | termite_wdi_inspection: Most general home inspections do not include one unless you ask | chimney_level2: a separate engagement from your general home inspection",
+      "url": "src/engine/inspectionPriorities.ts",
+      "readOn": "2026-11-13",
+      "method": "engine"
+    },
+    {
+      "id": "f7",
+      "claim": "OUR CALCULATION: for a $300,000 principal residence bought with 5% down (95% LTV), the conventional cap is 3% of $300,000 = $9,000, and the credit can't exceed the buyer's actual closing costs. With 20% down (80% LTV) the cap is 6% = $18,000.",
+      "quote": "300,000 x 3% = 9,000 (LTV 95% > 90%); 300,000 x 6% = 18,000 (LTV 80% within 75.01%-90%). Computed 2026-11-13 from f3.",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-4.1-02/interested-party-contributions-ipcs",
+      "readOn": "2026-11-13",
+      "method": "engine"
+    },
+    {
+      "id": "f8",
+      "claim": "Read date for every source: 13 November 2026.",
+      "quote": "All sources opened on 2026-11-13 (13 November 2026).",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-4.1-02/interested-party-contributions-ipcs",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    }
+  ],
+  "cut": [
+    { "claim": "Option periods typically last seven to ten days", "why": "the number of days is whatever the contract says; no primary source gives a typical length" },
+    { "claim": "Elite inspectors are booked weeks in advance", "why": "no source; replaced with what our engine shows a general inspection leaves out" },
+    { "claim": "FHA 6% and VA 4% concession caps", "why": "hud.gov returned a Cloudflare block and the archive copy was rate-limited; VA Lender's Handbook not opened. Left as 'ask your lender' with no numbers" },
+    { "claim": "Credits are always better than repairs", "why": "contradicted by the Fannie Mae limits (credits only cover closing costs, capped); presented as a trade-off" },
+    { "claim": "'Big Three' contingency definitions", "why": "walk-away mechanics covered by when-reasonable-walk-away-after-inspection (#171); TREC contract text not reachable to verify how Texas splits financing and appraisal" }
+  ],
+  "blockedSources": ["hud.gov (Cloudflare block; not worked around)", "trec.texas.gov (connection timed out from our location; archive copy pending)"]
+}

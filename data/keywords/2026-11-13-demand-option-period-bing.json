@@ -1,0 +1,65 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-13T04:17:45.970Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "option period",
+    "repair credit",
+    "seller credit",
+    "repair request"
+  ],
+  "keywords": [
+    {
+      "keyword": "option period",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "repair credit",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 21,
+      "kind": "seed"
+    },
+    {
+      "keyword": "credit repair cloud",
+      "search_volume": 3788,
+      "metric": "market",
+      "broad_impressions": 4348,
+      "kind": "related"
+    },
+    {
+      "keyword": "credit repair",
+      "search_volume": 1827,
+      "metric": "market",
+      "broad_impressions": 9166,
+      "kind": "related"
+    },
+    {
+      "keyword": "seller credit",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "repair request",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 99,
+      "kind": "seed"
+    },
+    {
+      "keyword": "duke energy street light repair request",
+      "search_volume": 99,
+      "metric": "market",
+      "broad_impressions": 99,
+      "kind": "related"
+    }
+  ]
+}
