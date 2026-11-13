@@ -64,7 +64,7 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 44 | Utah | utah-contractor-license-lookup | TODO | | | | | | |
 | 45 | Vermont | vermont-contractor-license-lookup | TODO | | | | | | |
 | 46 | Virginia | virginia-contractor-license-lookup | TODO | | | | | | |
-| 47 | Washington | washington-contractor-license-lookup | TODO | | | | | | |
+| 47 | Washington | washington-contractor-license-lookup | LIVE #354 (2026-11-13) | Group 1 | tier 2 (2026-11-13-demand-washington-contractor-license) | 22 | 3.1% (vs OR) | 2026-12-18 | Verify walked 2026-11-13; RCW 18.27 read in full; image JPEG |
 | 48 | West Virginia | west-virginia-contractor-license-lookup | TODO | | | | | | |
 | 49 | Wisconsin | wisconsin-contractor-license-lookup | TODO | | | | | | |
 | 50 | Wyoming | wyoming-contractor-license-lookup | TODO | | | | | | |
@@ -77,3 +77,5 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 2026-11-13 | Phase 1 first pass done: all 50 rows filled or BLOCKED (2 verified, 36 partial, 12 BLOCKED; SC and KS have rows but blocked lookups) | Blocked list sent to owner for screenshots. Partial rows still need lookup URL (10) or statute section (26); those are filled during each state's Phase 2 research, not guessed now. "No statewide GC license" claims (type B/D) each still need an official source before a page states them. |
 | 2026-11-13 | Oregon: Phase 2 research and draft done, checker + publish dry run + quality gate pass; sent to owner for review | Checker and quality gate now accept ORS/RCW/NRS citations (state convention has no §). |
 | 2026-11-13 | Oregon published as #353 (commit 94dc36d): FAQs verified live, IndexNow 200, in sitemap | No inbound-link anchor in the library yet; the hub will link it. READ 2026-12-18. |
+| 2026-11-13 | Washington: Phase 2 research and draft done, all checks pass; sent to owner for review | |
+| 2026-11-13 | Washington published as #354 | READ 2026-12-18. |

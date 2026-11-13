@@ -656,10 +656,10 @@
       "typeQuote": "L&I regulates 63 specialties that each require contractor registration.",
       "sourceUrl": "https://lni.wa.gov/licensing-permits/contractors/register-as-a-contractor/",
       "lookupUrl": "https://secure.lni.wa.gov/verify/",
-      "law": null,
+      "law": "RCW chapter 18.27",
       "checkedOn": "2026-11-13",
-      "status": "partial",
-      "notes": "Registration plus bond; electrical, plumbing etc. have extra licensing. Statute TBD."
+      "status": "verified",
+      "notes": "Phase 2 done; ledger data/fact-ledgers/state-license/washington.json."
     },
     {
       "state": "West Virginia",

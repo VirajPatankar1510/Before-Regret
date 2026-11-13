@@ -31,5 +31,6 @@ export const IMAGE_DIMENSIONS: Record<string, ImageDimensions> = {
   '/images/fruitful-home-cover-lg.jpg': { width: 520, height: 832 },
   '/images/fruitful-home-cover.jpg': { width: 300, height: 480 },
   '/images/oregon-ccb-record-history-sections.jpg': { width: 584, height: 152 },
+  '/images/washington-lni-record-six-year-history.jpg': { width: 760, height: 210 },
   '/hero-bg.jpg': { width: 1895, height: 830 },
 };

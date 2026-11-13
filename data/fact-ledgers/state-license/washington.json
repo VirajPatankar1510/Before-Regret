@@ -1,0 +1,267 @@
+{
+  "state": "Washington",
+  "stateAbbrev": "WA",
+  "slug": "washington-contractor-license-lookup",
+  "type": "C",
+  "officialLookupUrl": "https://secure.lni.wa.gov/verify/",
+  "licensingBodies": [
+    {
+      "name": "Department of Labor & Industries (L&I)",
+      "licenses": "construction contractor registration (general and specialty), plus electrical and plumbing licenses in the same Verify tool",
+      "lookupUrl": "https://secure.lni.wa.gov/verify/"
+    }
+  ],
+  "demand": {
+    "capture": "2026-11-13-demand-washington-contractor-license-bing",
+    "tier": "2",
+    "relatedQueries": [
+      "l&i contractor lookup",
+      "l and i contractor lookup",
+      "washington contractor license lookup",
+      "verify a contractor washington",
+      "washington state contractor license lookup",
+      "wa state contractor license lookup"
+    ],
+    "note": "The searcher's word is 'L&I'. Related queries are lookup and navigation only; extra topics chosen for a homeowner or buyer reading the record."
+  },
+  "portalWalk": {
+    "date": "2026-11-13",
+    "searchedBy": [
+      "business name (a large commercial general contractor, not named on the page)"
+    ],
+    "quirks": [
+      "A two-word name search returned 1018 results: construction companies, individual electricians and plumber trainees, and unrelated businesses.",
+      "Filters narrow it: only construction companies and tradespeople, Electrical, Plumbing, Active license/registration, and 'Any violations?' (workplace safety or health; license violations).",
+      "License numbers mix letters from the business name with digits and a star, for example a pattern like NAMEXX*123AB; search by that number, not the name.",
+      "The detail page has its own web address carrying the UBI and license number, so it can be saved or shared.",
+      "The record we opened listed two bonds, both 'Until Canceled': an older smaller one from 2002 and a larger one from 2025."
+    ],
+    "recordSections": [
+      "Owner or tradesperson, principals, doing-business-as names, address, county, WA UBI No., business type",
+      "Registration: type, status with 'Meets current requirements', license specialties with 'What can they do?', license number, effective and expiration dates",
+      "Past and related licenses; Report this contractor",
+      "Bond: company, amount, received, effective and expiration dates",
+      "Insurance: company, amount, dates; insurance history",
+      "Savings; Lawsuits against the bond or savings; L&I tax debts; License violations (each for the previous 6 year period)",
+      "Workers' comp accounts",
+      "Public works requirements, strikes, debarments",
+      "Workplace safety and health inspections by date and site"
+    ],
+    "screenshot": "public/images/washington-lni-record-six-year-history.jpg (the four 6-year history lines only; no business, person, number or insurer shown). JPEG: no WebP encoder on this machine."
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "topic": "who-is-licensed",
+      "claim": "Washington registers contractors through L&I rather than testing them; L&I regulates 63 specialties that each need registration.",
+      "quote": "L&I regulates 63 specialties that each require contractor registration.",
+      "url": "https://lni.wa.gov/licensing-permits/contractors/register-as-a-contractor/",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "topic": "lookup",
+      "claim": "The Verify tool searches by name, contractor/tradesperson license, workers' comp account or WA UBI number.",
+      "quote": "Verify a Contractor, Tradesperson or Business Search by … Name Contractor/tradesperson license Workers' comp account WA UBI No.",
+      "url": "https://secure.lni.wa.gov/verify/",
+      "readOn": "2026-11-13",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "topic": "lookup",
+      "claim": "The record's history lines each cover the previous 6 years: bond or savings lawsuits, L&I tax debts and license violations; tax debts held by other agencies may not show.",
+      "quote": "Lawsuits against the bond or savings No lawsuits against the bond or savings accounts during the previous 6 year period. L&I Tax debts No L&I tax debts are recorded for this contractor license during the previous 6 year period, but some debts may be recorded by other agencies. License Violations No license violations during the previous 6 year period.",
+      "url": "https://secure.lni.wa.gov/verify/",
+      "readOn": "2026-11-13",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "topic": "lookup",
+      "claim": "The registration block shows the status with 'Meets current requirements', the specialties with a 'What can they do?' link, and effective and expiration dates.",
+      "quote": "Construction Contractor Active Meets current requirements. License specialties GENERAL What can they do? License no. Effective — expiration",
+      "url": "https://secure.lni.wa.gov/verify/",
+      "readOn": "2026-11-13",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "topic": "lookup",
+      "claim": "The record also lists workplace safety and health inspections by date and site, and asks you to check workers' comp if the business has employees.",
+      "quote": "Do you know if the business has employees? If so, verify the business is up-to-date on workers’ comp premiums. Check for any past safety and health violations found on jobsites this business was responsible for.",
+      "url": "https://secure.lni.wa.gov/verify/",
+      "readOn": "2026-11-13",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "topic": "bond-insurance",
+      "claim": "Bond: $30,000 for a general contractor, $15,000 for a specialty contractor; a lapsed bond suspends the registration automatically.",
+      "quote": "in the sum of $30,000 if the applicant is a general contractor or $15,000 if the applicant is a specialty contractor. A cancellation or revocation of the bond or withdrawal of the surety from the bond automatically suspends the registration issued to the contractor",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f7",
+      "topic": "bond-insurance",
+      "claim": "A contractor registered as of June 30, 2024 stays compliant until its next renewal, which is why an older, smaller bond can still be on file.",
+      "quote": "Any contractor registered as of June 30, 2024, who maintains that registration in accordance with this chapter is in compliance with this chapter until the next renewal of the contractor's certificate of registration.",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f8",
+      "topic": "bond-insurance",
+      "claim": "Insurance minimums: $50,000 property damage, $100,000 one person, $200,000 more than one person; a lapse suspends the registration. (RCW 18.27.050)",
+      "quote": "in the amount of fifty thousand dollars for injury or damages to property, and one hundred thousand dollars for injury or damage including death to any one person, and two hundred thousand dollars for injury or damage including death to more than one person. An expiration, cancellation, or revocation of the insurance policy or withdrawal of the insurer from the insurance policy automatically suspends the registration",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f9",
+      "topic": "recovery-fund",
+      "claim": "A homeowner suing on the bond for breach of contract has two years from substantial completion or abandonment (RCW 18.27.040).",
+      "quote": "Action upon the bond or deposit brought by a residential homeowner for breach of contract by a party to the construction contract shall be commenced by filing the summons and complaint with the clerk of the appropriate superior court within two years from the date the claimed contract work was substantially completed or abandoned, whichever occurred first.",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f10",
+      "topic": "recovery-fund",
+      "claim": "When claims exceed the bond, workers are paid first and breach-of-contract claims second; attorneys' fees come last.",
+      "quote": "claims shall be satisfied from the bond in the following order: (a) Employee labor and claims of laborers, including employee benefits; (b) Claims for breach of contract by a party to the construction contract; (c) Registered or licensed subcontractors, material, and equipment; (d) Taxes and contributions due the state of Washington; (e) Any court costs, interest, and attorneys' fees plaintiff may be entitled to recover.",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f11",
+      "topic": "recovery-fund",
+      "claim": "At least half the bond is kept for residential homeowners: claimants other than homeowners can take no more than one-half.",
+      "quote": "The total amount paid from a bond or deposit to claimants other than residential homeowners must not exceed one-half of the bond or deposit.",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f12",
+      "topic": "recovery-fund",
+      "claim": "Homeowner recovery program, from July 1, 2026 (RCW 18.27.410): after a final judgment on your primary residence and going against the bond first, apply within 90 days.",
+      "quote": "Beginning July 1, 2026, a person is eligible to recover from the homeowner recovery program, provided that each of the following conditions is satisfied: (i) The person is a claimant with a final judgment in a court of competent jurisdiction against a registered contractor for a claim brought under RCW 18.27.040 (3) on his or her primary residence. (iii) The claimant has proceeded against any existing bond covering the contractor; (v) An application for recovery under (b) of this subsection is made within 90 days after the conclusion of the civil action",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f13",
+      "topic": "recovery-fund",
+      "claim": "The program pays up to $25,000 per contractor per parcel, actual damages only (no attorneys' fees), in order of receipt; payments are discretionary and there can be a waitlist.",
+      "quote": "Payment from the account may not exceed $25,000 per contractor per parcel, or the amount unpaid on the judgment, whichever is less. Payment from the account for other costs related to or pursuant to civil proceedings, such as attorneys' fees, court costs, or punitive damages, is prohibited. The priority of payment for eligible applicants must be by the order of receipt by the department. The department shall create and maintain a waitlist for any eligible applications unpaid due to an insufficient account balance Payments under this section are discretionary.",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f14",
+      "topic": "unlicensed-consequences",
+      "claim": "An unregistered contractor can't sue in Washington courts to get paid for work that needed registration (RCW 18.27.080).",
+      "quote": "No person engaged in the business or acting in the capacity of a contractor may bring or maintain any action in any court of this state for the collection of compensation for the performance of any work or for breach of any contract for which registration is required under this chapter without alleging and proving that he or she was a duly registered contractor",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f15",
+      "topic": "exemption-threshold",
+      "claim": "Work under $500 in total on one project is exempt as casual or minor, but not if a bigger job is split into small contracts. (RCW 18.27.090)",
+      "quote": "Any work or operation on one undertaking or project by one or more contracts, the aggregate contract price of which for labor and materials and all other items is less than five hundred dollars, such work or operations being considered as of a casual, minor, or inconsequential nature. The exemption prescribed in this subsection does not apply in any instance wherein the work or construction is only a part of a larger or major operation, whether undertaken by the same or a different contractor, or in which a division of the operation is made into contracts of amounts less than five hundred dollars",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f16",
+      "topic": "owner-builder",
+      "claim": "Owners working on their own property don't register, unless they do the work to sell, demolish or lease it; an owner improving property held under twelve months to sell or lease isn't exempt either. (RCW 18.27.090)",
+      "quote": "Any person working on his or her own property, whether occupied by him or her or not, and any person working on his or her personal residence, whether owned by him or her or not but this exemption shall not apply to any person who performs the activities of a contractor on his or her own property for the purpose of selling, demolishing, or leasing the property; The exemption prescribed in this subsection does not apply to a person who performs the activities of a contractor for the purpose of leasing or selling improved property he or she has owned for less than twelve months",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f17",
+      "topic": "contract-rules",
+      "claim": "On work on four or fewer homes at $1,000 or more, the contractor must give a signed Notice to Customer before starting; without it they can't bring a lien claim (RCW 18.27.114).",
+      "quote": "For the repair, alteration, or construction of four or fewer residential units or accessory structures on such residential property when the bid or contract price totals one thousand dollars or more must provide the customer with the following disclosure statement prior to starting work on the project: No contractor subject to this section may bring or maintain any lien claim under chapter 60.04 RCW based on any contract to which this section applies without alleging and proving that the contractor has provided the customer with a copy of the disclosure statement",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f18",
+      "topic": "contract-rules",
+      "claim": "The notice itself warns that the bond might not cover your claim, that it isn't for your exclusive use, and that your property may be liened if subs or suppliers go unpaid.",
+      "quote": "THIS BOND OR DEPOSIT MIGHT NOT BE SUFFICIENT TO COVER A CLAIM THAT MIGHT ARISE FROM THE WORK DONE UNDER YOUR CONTRACT. This bond or deposit is not for your exclusive use because it covers all work performed by this contractor. YOUR PROPERTY MAY BE LIENED. If a supplier of materials used in your construction project or an employee or subcontractor of your contractor or subcontractors is not paid, your property may be liened to force payment and you could pay twice for the same work. FOR ADDITIONAL PROTECTION, YOU MAY REQUEST THE CONTRACTOR TO PROVIDE YOU WITH ORIGINAL \"LIEN RELEASE\" DOCUMENTS FROM EACH SUPPLIER OR SUBCONTRACTOR ON YOUR PROJECT.",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f19",
+      "topic": "contract-rules",
+      "claim": "The notice also points out that you can withhold a contractually defined percentage as retainage.",
+      "quote": "You may withhold a contractually defined percentage of your construction contract as retainage for a stated period of time to provide protection to you and help insure that your project will be completed as required by your contract.",
+      "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=18.27&full=true",
+      "readOn": "2026-11-13",
+      "method": "webfetch"
+    },
+    {
+      "id": "f20",
+      "topic": "trade-licensing",
+      "claim": "Electricians and plumbers are in the same Verify tool; the results page has Electrical and Plumbing filters.",
+      "quote": "Narrow your results: All results Only construction companies and tradespeople Construction companies Electrical Asbestos Plumbing Elevators Manufactured Home Installer",
+      "url": "https://secure.lni.wa.gov/verify/",
+      "readOn": "2026-11-13",
+      "method": "browser"
+    },
+    {
+      "id": "f21",
+      "topic": "lookup",
+      "claim": "The results page can filter to active registrations and to businesses with workplace safety or license violations.",
+      "quote": "Status Active license, registration Active workers' comp account Any violations? Workplace safety or health License violations",
+      "url": "https://secure.lni.wa.gov/verify/",
+      "readOn": "2026-11-13",
+      "method": "browser"
+    },
+    {
+      "id": "f22",
+      "topic": "lookup",
+      "claim": "Our walk: a two-word name search returned 1018 results; the record we opened listed two bonds, both Until Canceled, one of $12,000 received in 2002 and one of $30,000 received in 2025; the detail page has its own saveable address.",
+      "quote": "Showing 1-10 of 1018 results Bond $30,000.00 Received by L&I 01/31/2025 Expiration date Until Canceled $12,000.00 Received by L&I 02/21/2002 Expiration date Until Canceled",
+      "url": "https://secure.lni.wa.gov/verify/",
+      "readOn": "2026-11-13",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Bond claim priority between multiple homeowners",
+      "why": "The statute sets an order by claim type and a half-for-homeowners cap; it does not say how two homeowners split, so not stated."
+    },
+    {
+      "claim": "City business licenses (Seattle etc.)",
+      "why": "Not researched this round; the page stays on the state registration."
+    },
+    {
+      "claim": "Electrical and plumbing license rules (RCW 19.28, 18.106)",
+      "why": "Not read; the page only says they are in the same tool."
+    }
+  ],
+  "blockedSources": []
+}
