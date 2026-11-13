@@ -1,0 +1,34 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-11-13T14:15:17.387Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "orange county permits",
+    "orange county permit search"
+  ],
+  "keywords": [
+    {
+      "keyword": "orange county permits search by address",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 6,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-orange-county-ca/": 1
+      }
+    },
+    {
+      "keyword": "orange county permit search",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 26,
+      "pages": {
+        "https://www.beforeregret.com/guides/check-building-permits-orange-county-ca/": 1
+      }
+    }
+  ]
+}

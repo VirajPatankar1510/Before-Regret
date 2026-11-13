@@ -1,0 +1,42 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-13T14:16:10.843Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "wake county permits",
+    "wake county permit search"
+  ],
+  "keywords": [
+    {
+      "keyword": "wake county permits",
+      "search_volume": 118,
+      "metric": "market",
+      "broad_impressions": 295,
+      "kind": "seed"
+    },
+    {
+      "keyword": "wake county permits portal",
+      "search_volume": 177,
+      "metric": "market",
+      "broad_impressions": 177,
+      "kind": "related"
+    },
+    {
+      "keyword": "wake county building permits",
+      "search_volume": 22,
+      "metric": "market",
+      "broad_impressions": 22,
+      "kind": "related"
+    },
+    {
+      "keyword": "wake county permit search",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

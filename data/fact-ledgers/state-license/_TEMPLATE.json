@@ -1,0 +1,31 @@
+{
+  "_about": "Copy to data/fact-ledgers/state-license/<state-slug>.json BEFORE drafting. Every fact on the page is a quote here first, from a primary source opened on the read date. scripts/check-state-license-set.ts fails the page if it states a number or a long quote that no fact carries, or if fewer than 10 state-specific facts are recorded.",
+  "state": "<State name>",
+  "stateAbbrev": "<XX>",
+  "slug": "<state-slug>-contractor-license-lookup",
+  "officialLookupUrl": "https://<the board's own lookup page, opened on the read date>",
+  "licensingBodies": [
+    { "name": "<board name exactly as the state writes it>", "licenses": "<which trades or contractor types>", "lookupUrl": "https://..." }
+  ],
+  "demand": { "capture": "<topic-demand capture name>", "tier": "<1|2|3>", "relatedQueries": ["<first-party related queries that chose bank topics>"] },
+  "portalWalk": {
+    "date": "YYYY-MM-DD",
+    "searchedBy": ["license number", "business name"],
+    "quirks": ["<what we saw that trips people up>"],
+    "recordSections": ["<each section a record shows>"],
+    "screenshot": "public/images/<state-slug>-license-record.webp or a reason none was taken"
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "topic": "<who-is-licensed | lookup | exemption-threshold | unlicensed-consequences | recovery-fund | contract-rules | bond-insurance | trade-licensing | local-licensing | complaints | owner-builder | other>",
+      "claim": "<what the page will say, in plain words>",
+      "quote": "<the exact words read at the source>",
+      "url": "https://<primary source>",
+      "readOn": "YYYY-MM-DD",
+      "method": "browser | webfetch | pdf"
+    }
+  ],
+  "cut": [ { "claim": "<wanted to say>", "why": "<why not>" } ],
+  "blockedSources": []
+}

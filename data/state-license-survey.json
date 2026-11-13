@@ -1,0 +1,707 @@
+{
+  "about": "Phase 1 survey for the 50-state contractor-license set (docs/plans/state-contractor-license-plan.md). Every non-null field was read on the official page on checkedOn. Types: A statewide GC/residential license; B trades only; C registration; D local only; E mix.",
+  "rows": [
+    {
+      "state": "Alabama",
+      "bodies": [
+        "Home Builders Licensure Board",
+        "Alabama Licensing Board for General Contractors"
+      ],
+      "type": "E",
+      "typeQuote": "The mission of the State of Alabama Home Builders Licensure Board is to provide consumer protection by safeguarding the public's health, safety and welfare through the regulation of the residential construction and remodeling industries",
+      "sourceUrl": "https://hblb.alabama.gov/",
+      "lookupUrl": "https://alhobv7prod.glsuite.us/GLSuiteWeb/Clients/ALHOB/Public/LicenseeSearch.aspx",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "GC board site notes: \"Changes to Section 34-8-7 of the Code of Alabama will take effect October 1, 2026\". HBLB statute TBD."
+    },
+    {
+      "state": "Alaska",
+      "bodies": [
+        "Division of Corporations, Business and Professional Licensing (construction contractor program)"
+      ],
+      "type": "A",
+      "typeQuote": "General contractors that oversee new home construction or perform residential work greater than 25% of the value of a structure being altered must obtain a Residential Contractor license and/or a Residential Contractor Endorsement.",
+      "sourceUrl": "https://www.commerce.alaska.gov/web/cbpl/ProfessionalLicensing/ConstructionContractors.aspx",
+      "lookupUrl": "https://www.commerce.alaska.gov/CBP/Main/",
+      "law": "AS 08.18 (page cites AS 08.18.051(b))",
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Endorsement needs a 16-hour cold climate course and an exam."
+    },
+    {
+      "state": "Arizona",
+      "bodies": [
+        "Registrar of Contractors"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://roc.az.gov",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "Cloudflare check; owner sent homepage PDF 2026-11-13"
+    },
+    {
+      "state": "Arkansas",
+      "bodies": [
+        "Arkansas Contractors Licensing Board (Residential Committee for home builders)"
+      ],
+      "type": "A",
+      "typeQuote": "The Residential Committee was created in 1999 to license the builders of new homes in Arkansas to further protect the health, safety and welfare of Arkansans.",
+      "sourceUrl": "https://labor.arkansas.gov/licensing/arkansas-contractors-licensing-board/",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Site has a \"Find A Licensed Contractor\" link; lookup URL to open. Statute TBD."
+    },
+    {
+      "state": "California",
+      "bodies": [
+        "Contractors State License Board"
+      ],
+      "type": "A",
+      "typeQuote": "Look up a contractor license or Home Improvement Salesperson (HIS) registration to verify information, including complaint disclosure.",
+      "sourceUrl": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/CheckLicense.aspx",
+      "lookupUrl": "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/CheckLicense.aspx",
+      "law": "Cal. Bus. & Prof. Code \u00a7\u00a7 7000 ff.",
+      "checkedOn": "2026-11-13",
+      "status": "verified",
+      "notes": "Published #350."
+    },
+    {
+      "state": "Colorado",
+      "bodies": [
+        "Division of Professions and Occupations (trades)"
+      ],
+      "type": "B",
+      "typeQuote": null,
+      "sourceUrl": "https://dpo.colorado.gov/",
+      "lookupUrl": "https://apps2.colorado.gov/dora/licensing/Lookup/LicenseLookup.aspx",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Need a source on no statewide GC license; local licensing (e.g. Denver)."
+    },
+    {
+      "state": "Connecticut",
+      "bodies": [
+        "Department of Consumer Protection"
+      ],
+      "type": "C",
+      "typeQuote": "By law, all home improvement contractors and home improvement salespersons doing work in Connecticut must be registered with the Department of Consumer Protection.",
+      "sourceUrl": "https://portal.ct.gov/DCP/Trade-Practices-Division/Why-is-Home-Improvement-Registration-Important-to-Consumers",
+      "lookupUrl": "https://www.elicense.ct.gov/Lookup/LicenseLookup.aspx",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Statute TBD; Guaranty Fund amount to verify."
+    },
+    {
+      "state": "Delaware",
+      "bodies": [
+        "Division of Revenue (contractor business license)"
+      ],
+      "type": "C",
+      "typeQuote": "To Become a Delaware Contractor: Please complete a Resident Contractors Package or Non-Resident Contractors Package",
+      "sourceUrl": "https://revenue.delaware.gov/",
+      "lookupUrl": "https://revenue.delaware.gov/business-license-search/",
+      "law": "Del. Code tit. 30, ch. 25, \u00a7 2501",
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "A business (tax) license, not a test of skill; type C tentative. Trade licenses (electrical, plumbing) under the Division of Professional Regulation not yet checked."
+    },
+    {
+      "state": "Florida",
+      "bodies": [
+        "DBPR Construction Industry Licensing Board"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://myfloridalicense.com",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "Cloudflare check"
+    },
+    {
+      "state": "Georgia",
+      "bodies": [
+        "Secretary of State, Residential and General Contractors"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://sos.ga.gov",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "Cloudflare check"
+    },
+    {
+      "state": "Hawaii",
+      "bodies": [
+        "Professional & Vocational Licensing, Contractors License Board"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://cca.hawaii.gov/pvl",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "Cloudflare check"
+    },
+    {
+      "state": "Idaho",
+      "bodies": [
+        "Idaho Contractors Board (Division of Occupational and Professional Licenses)"
+      ],
+      "type": "C",
+      "typeQuote": "Search for a Registration (link text on the board page)",
+      "sourceUrl": "https://dopl.idaho.gov/con/",
+      "lookupUrl": "https://edopl.idaho.gov/OnlineServices/?link=PubSearch",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Registration, not a license; statute TBD."
+    },
+    {
+      "state": "Illinois",
+      "bodies": [
+        "Department of Financial and Professional Regulation (roofing contractors)"
+      ],
+      "type": "E",
+      "typeQuote": null,
+      "sourceUrl": "https://idfpr.illinois.gov/profs/roof.html",
+      "lookupUrl": "https://online-dfpr.micropact.com/lookup/licenselookup.aspx",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Statewide roofing license verified; GCs licensed locally (Chicago) needs an official City of Chicago source. Need the Roofing Industry Licensing Act cite (225 ILCS 335) read on ilga.gov."
+    },
+    {
+      "state": "Indiana",
+      "bodies": [],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": null,
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "in.gov unreachable (curl timeout; browser navigation denied/failed) on 2026-11-13. Owner screenshots needed: Professional Licensing Agency lookup and plumbing licensing page."
+    },
+    {
+      "state": "Iowa",
+      "bodies": [
+        "Department of Inspections, Appeals, & Licensing (Contractor Registration)",
+        "Plumbing & Mechanical Systems Board"
+      ],
+      "type": "E",
+      "typeQuote": "If your business provides any type of plumbing, mechanical, HVAC, refrigeration, sheet metal or hydronic systems services, you are required to obtain a license with the Plumbing & Mechanical Systems Board",
+      "sourceUrl": "https://dial.iowa.gov/licenses/building/contractors",
+      "lookupUrl": "https://laborportal.iwd.iowa.gov/iwd_portal/publicSearch/public",
+      "law": "Iowa Code chapter 91C",
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Registration ($50 fee) for contractors; trade licenses separate."
+    },
+    {
+      "state": "Kansas",
+      "bodies": [
+        "Attorney General (roofing contractor registration)"
+      ],
+      "type": "D",
+      "typeQuote": "No person shall engage in the business of or act in the capacity of a roofing contractor within this state without having a valid registration certificate as required by this act.",
+      "sourceUrl": "https://www.ksrevisor.gov/statutes/chapters/ch50/050_006_0123.html",
+      "lookupUrl": null,
+      "law": "K.S.A. 50-6,123",
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Also in 50-6,123(a)(2): an unregistered roofer can't bring a court claim related to the work. AG roofer search (ag.ks.gov) returns 403 'Access Denied' in curl AND the browser: lookup BLOCKED, owner screenshots needed. Need a source on no statewide GC license and local (Wichita / Johnson County) licensing."
+    },
+    {
+      "state": "Kentucky",
+      "bodies": [
+        "Department of Housing, Buildings and Construction"
+      ],
+      "type": "B",
+      "typeQuote": "licenses/certifies plumbers, electricians, boiler contractors, sprinkler and/or fire alarm contractors and building inspectors",
+      "sourceUrl": "https://dhbc.ky.gov/",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Trade licensing only on this page; need a source saying no statewide GC license, and the lookup URL."
+    },
+    {
+      "state": "Louisiana",
+      "bodies": [
+        "Louisiana State Licensing Board for Contractors"
+      ],
+      "type": "A",
+      "typeQuote": "Search by Contractor License Number (lookup link on the board site)",
+      "sourceUrl": "https://lslbc.gov/",
+      "lookupUrl": "https://arlspublic.lslbc.louisiana.gov/Public/DetailedSearch/ByNumber",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Search by name, number, city/town, parish. Statute TBD."
+    },
+    {
+      "state": "Maine",
+      "bodies": [
+        "Office of Professional and Occupational Regulation"
+      ],
+      "type": "B",
+      "typeQuote": null,
+      "sourceUrl": "https://www.maine.gov/pfr/professionallicensing/",
+      "lookupUrl": "http://www.pfr.maine.gov/almsonline/almsquery/welcome.aspx",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Need a source on no statewide GC license."
+    },
+    {
+      "state": "Maryland",
+      "bodies": [
+        "Maryland Home Improvement Commission"
+      ],
+      "type": "A",
+      "typeQuote": "The Maryland Home Improvement Commission licenses and regulates home improvement contractors and salespersons.",
+      "sourceUrl": "https://www.labor.maryland.gov/license/mhic/",
+      "lookupUrl": "https://www.dllr.state.md.us/cgi-bin/ElectronicLicensing/OP_search/OP_search.cgi?calling_app=HIC::HIC_qselect",
+      "law": "Md. Code, Business Regulation \u00a78-302 (page also cites \u00a78-409, 8-501)",
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Guaranty Fund: \"The Fund applies only to work done by licensed contractors.\""
+    },
+    {
+      "state": "Massachusetts",
+      "bodies": [
+        "Office of Consumer Affairs and Business Regulation, Home Improvement Contractor Program"
+      ],
+      "type": "E",
+      "typeQuote": "The HIC program requires home improvement contractors to register with the Commonwealth, processes consumer complaints against contractors, maintains an arbitration program for resolving disputes between homeowners and contractors, and compensates eligible homeowners up to $25,000 from the Guaranty Fund for unpaid judgments against contractors.",
+      "sourceUrl": "https://www.mass.gov/home-improvement-contractor-program",
+      "lookupUrl": "https://contractorhub.mass.gov/s/hic-contractor-search",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Registration (HIC) plus a separate Construction Supervisor License (to verify). Statute TBD."
+    },
+    {
+      "state": "Michigan",
+      "bodies": [
+        "LARA, Bureau of Construction Codes"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://www.michigan.gov/lara",
+      "lookupUrl": "https://aca-prod.accela.com/LARA/GeneralProperty/PropertyLookUp.aspx?isLicensee=Y&TabName=APO",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Lookup link \"Find / Verify a BCC Licensed Professional or Business\" found; residential builder page URL 404, find the right page."
+    },
+    {
+      "state": "Minnesota",
+      "bodies": [
+        "Department of Labor and Industry"
+      ],
+      "type": "A",
+      "typeQuote": "Any individual or company that contracts directly with an owner of residential real estate (one to four units) to provide work in more than one special skill must have a residential building contractor or residential remodeler license.",
+      "sourceUrl": "https://dli.mn.gov/business/residential-contractors/residential-contractor-licensing",
+      "lookupUrl": "https://www.dli.mn.gov/license-and-registration-lookup",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Roofer license is roofing only; remodeler = existing structures only. Statute TBD."
+    },
+    {
+      "state": "Mississippi",
+      "bodies": [
+        "Mississippi State Board of Contractors"
+      ],
+      "type": "A",
+      "typeQuote": "The Mississippi State Board of Public Contractors is the contractor licensing authority of the state",
+      "sourceUrl": "https://www.msboc.us/",
+      "lookupUrl": "http://search.msboc.us/ConsolidatedSearch.cfm",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Commercial and residential licenses. Statute TBD."
+    },
+    {
+      "state": "Missouri",
+      "bodies": [
+        "Office of Statewide Electrical Contractors (Division of Professional Registration)"
+      ],
+      "type": "D",
+      "typeQuote": null,
+      "sourceUrl": "https://pr.mo.gov/electricalcontractors.asp",
+      "lookupUrl": "https://mopro.mo.gov/license/s/license-search",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Type D tentative: need an official source saying Missouri has no statewide GC license, the electrical statute section, and the Kansas City / St. Louis local licensing pages."
+    },
+    {
+      "state": "Montana",
+      "bodies": [
+        "Department of Labor & Industry (Montana Contractor registration)"
+      ],
+      "type": "C",
+      "typeQuote": "Contractor Registration Search (link text on the department page)",
+      "sourceUrl": "https://erd.dli.mt.gov/work-comp-regulations/montana-contractor/",
+      "lookupUrl": "https://ebizws.mt.gov/PUBLICPORTAL/searchform?mylist=licenses",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Registration; statute TBD."
+    },
+    {
+      "state": "Nebraska",
+      "bodies": [
+        "Department of Labor (contractor registration)"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://dol.nebraska.gov/conreg",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "dol.nebraska.gov unreachable from our location (curl and browser)."
+    },
+    {
+      "state": "Nevada",
+      "bodies": [
+        "Nevada State Contractors Board"
+      ],
+      "type": "A",
+      "typeQuote": "Search the database of licensed contractors to ensure that a contractor you are considering working with is licensed and in good standing.",
+      "sourceUrl": "https://www.nvcontractorsboard.com/",
+      "lookupUrl": "https://app.nvcontractorsboard.com/Clients/NVSCB/Public/ContractorLicenseSearch/ContractorLicenseSearch.aspx",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Residential Recovery Fund; separate disciplinary search. Statute TBD."
+    },
+    {
+      "state": "New Hampshire",
+      "bodies": [
+        "Electricians' Board",
+        "Mechanical Licensing Board (plumbers, gas fitters)"
+      ],
+      "type": "B",
+      "typeQuote": "An active and valid New Hampshire Electrician license is required to work with 30 volts or higher.",
+      "sourceUrl": "https://www.oplc.nh.gov/find-board/electricians-board",
+      "lookupUrl": "https://licenses.oplc.nh.gov/s/search-license-permit-holder",
+      "law": "RSA 319-C",
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Mechanical board regulates plumber (trainee/journeyman/master) and fuel gas fitters; adopted 2021 codes effective July 1, 2024 (https://www.oplc.nh.gov/find-board/mechanical-licensing-board). Need a source on no statewide GC license."
+    },
+    {
+      "state": "New Jersey",
+      "bodies": [
+        "Division of Consumer Affairs, Regulated Business Section (Home Improvement Contractor Business)"
+      ],
+      "type": "C",
+      "typeQuote": "Verify a Contractor Business Registration (link on the HIC page)",
+      "sourceUrl": "https://www.njconsumeraffairs.gov/hic/",
+      "lookupUrl": "https://newjersey.mylicense.com/verification/",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Registration; need the requirement sentence and statute from the FAQ or law page."
+    },
+    {
+      "state": "New Mexico",
+      "bodies": [
+        "Regulation and Licensing Department, Construction Industries Division"
+      ],
+      "type": "A",
+      "typeQuote": null,
+      "sourceUrl": "https://www.rld.nm.gov/construction-industries/",
+      "lookupUrl": "https://www.rld.nm.gov/about-us/public-information-hub/verify-a-license/",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Page cites 13B-1/13B-15 (unclear); statute TBD."
+    },
+    {
+      "state": "New York",
+      "bodies": [
+        "None statewide; New York City Department of Consumer and Worker Protection (Home Improvement Contractor license)"
+      ],
+      "type": "D",
+      "typeQuote": "A person or business must have a Home Improvement Contractor license to do construction, repair, remodeling, or other home improvement work to any residential land or building in New York City.",
+      "sourceUrl": "https://www.nyc.gov/site/dca/businesses/license-checklist-home-improvement-contractor.page",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Need a state-level source and the county programs (Nassau, Suffolk, Westchester...)."
+    },
+    {
+      "state": "North Carolina",
+      "bodies": [
+        "Licensing Board for General Contractors"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://nclbgc.org",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "Cloudflare check"
+    },
+    {
+      "state": "North Dakota",
+      "bodies": [
+        "Secretary of State"
+      ],
+      "type": "A",
+      "typeQuote": "When the cost, value, or price of a job exceeds $4,000, the person doing the work must be licensed as a contractor in North Dakota",
+      "sourceUrl": "https://www.sos.nd.gov/business/licensing-registration/contractors",
+      "lookupUrl": null,
+      "law": "N.D.C.C. ch. 43-07",
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Search is via FirstStop; lookup URL to open."
+    },
+    {
+      "state": "Ohio",
+      "bodies": [
+        "Ohio Construction Industry Licensing Board"
+      ],
+      "type": "E",
+      "typeQuote": "While residential contractor regulation remains the responsibility of local jurisdictions, local building and health departments may also require state licensure for residential contractors at their discretion.",
+      "sourceUrl": "https://com.ohio.gov/divisions-and-programs/industrial-compliance/boards/ohio-construction-industry-licensing-board",
+      "lookupUrl": null,
+      "law": "Ohio Revised Code Chapter 4740",
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "State licenses electrical, HVAC, plumbing, hydronics, refrigeration (commercial). Lookup URL TBD."
+    },
+    {
+      "state": "Oklahoma",
+      "bodies": [
+        "Construction Industries Board"
+      ],
+      "type": "B",
+      "typeQuote": "General Contractors are not currently required to have a state license in Oklahoma for general contracting.",
+      "sourceUrl": "https://oklahoma.gov/cib.html",
+      "lookupUrl": "https://verifyroofing.cib.ok.gov/roofing/search",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Roofing registration search; electrical, mechanical, plumbing, inspectors licensed. Statute TBD."
+    },
+    {
+      "state": "Oregon",
+      "bodies": [
+        "Construction Contractors Board"
+      ],
+      "type": "A",
+      "typeQuote": "Contractors with a residential endorsement may work on residential and small commercial structures.",
+      "sourceUrl": "https://www.oregon.gov/ccb/Documents/Endorsement%20Chart.pdf",
+      "lookupUrl": "https://search.ccb.state.or.us/search/",
+      "law": "ORS chapter 701 (cited via the CCB; legislature site unreachable 2026-11-13)",
+      "checkedOn": "2026-11-13",
+      "status": "verified",
+      "notes": "Phase 2 done; ledger data/fact-ledgers/state-license/oregon.json."
+    },
+    {
+      "state": "Pennsylvania",
+      "bodies": [
+        "Office of Attorney General (home improvement contractor registration)"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://www.attorneygeneral.gov/protect-yourself/home-improvement/",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "attorneygeneral.gov returns 403 /blocked/ to curl and the browser. Statute (Home Improvement Consumer Protection Act) may be readable on the legislature site."
+    },
+    {
+      "state": "Rhode Island",
+      "bodies": [
+        "Contractors Registration and Licensing Board"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://crb.ri.gov",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "Cloudflare check"
+    },
+    {
+      "state": "South Carolina",
+      "bodies": [
+        "South Carolina Residential Builders Commission (Department of Labor, Licensing and Regulation)"
+      ],
+      "type": "A",
+      "typeQuote": "A person or firm who engages or offers to engage in the business of residential building or residential specialty contracting without first having registered with the commission or procured a license from the commission ... is guilty of a misdemeanor",
+      "sourceUrl": "https://www.scstatehouse.gov/code/t40c059.php",
+      "lookupUrl": null,
+      "law": "S.C. Code \u00a7 40-59-30",
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Code text read on the legislature site. Residential builder definition uses a five-thousand-dollar figure; specialty contractor over five hundred dollars; \u00a7 40-59-25 roofing-contract cancellation after an insurance denial. llr.sc.gov unreachable from our location (curl and browser): lookup BLOCKED, owner screenshots needed."
+    },
+    {
+      "state": "South Dakota",
+      "bodies": [
+        "State Electrical Commission",
+        "State Plumbing Commission (Department of Labor and Regulation)"
+      ],
+      "type": "B",
+      "typeQuote": "licenses all electricians within the state",
+      "sourceUrl": "https://dlr.sd.gov/electrical/",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Plumbing page: licenses 'expire annually' (https://dlr.sd.gov/plumbing/). Need the lookup URL, statute sections, and a source on no statewide GC license."
+    },
+    {
+      "state": "Tennessee",
+      "bodies": [
+        "Board for Licensing Contractors"
+      ],
+      "type": "A",
+      "typeQuote": "The current requirements for the licensure of contractors, home improvement contractors, limited licensed electricians, and limited licensed plumbers can be found in Tennessee Code Annotated, Title 62, Chapter 6.",
+      "sourceUrl": "https://www.tn.gov/commerce/regboards/contractors.html",
+      "lookupUrl": "https://www.tn.gov/commerce/regboards/contractors/consumer/verify.html",
+      "law": "Tenn. Code Ann. Title 62, Chapter 6",
+      "checkedOn": "2026-11-13",
+      "status": "verified",
+      "notes": ""
+    },
+    {
+      "state": "Texas",
+      "bodies": [
+        "Texas Department of Licensing and Regulation (trades)"
+      ],
+      "type": "B",
+      "typeQuote": null,
+      "sourceUrl": "https://www.tdlr.texas.gov/",
+      "lookupUrl": "https://www.tdlr.texas.gov/LicenseSearch/",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Need a source on no statewide GC license; plumbing is a separate board (TSBPE)."
+    },
+    {
+      "state": "Utah",
+      "bodies": [
+        "Division of Professional Licensing"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://dopl.utah.gov",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "Cloudflare check"
+    },
+    {
+      "state": "Vermont",
+      "bodies": [
+        "Secretary of State, Office of Professional Regulation (Residential Contractors)"
+      ],
+      "type": "C",
+      "typeQuote": "Registration for Residential Contractors is required as of April 1, 2023.",
+      "sourceUrl": "https://sos.vermont.gov/residential-contractors",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Lookup URL and statute TBD."
+    },
+    {
+      "state": "Virginia",
+      "bodies": [
+        "Board for Contractors (DPOR)"
+      ],
+      "type": "A",
+      "typeQuote": "Contractor licenses consist of two parts: the class of license (A, B, or C), which determines the monetary value of contracts/projects that may be performed, and the classification/specialty, which determines what type of work is allowed.",
+      "sourceUrl": "https://www.dpor.virginia.gov/Boards/Contractors",
+      "lookupUrl": "https://www.dpor.virginia.gov/LicenseLookup",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Statute TBD (Title 54.1, Chapter 11 likely; verify)."
+    },
+    {
+      "state": "Washington",
+      "bodies": [
+        "Department of Labor & Industries"
+      ],
+      "type": "C",
+      "typeQuote": "L&I regulates 63 specialties that each require contractor registration.",
+      "sourceUrl": "https://lni.wa.gov/licensing-permits/contractors/register-as-a-contractor/",
+      "lookupUrl": "https://secure.lni.wa.gov/verify/",
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Registration plus bond; electrical, plumbing etc. have extra licensing. Statute TBD."
+    },
+    {
+      "state": "West Virginia",
+      "bodies": [
+        "West Virginia Contractor Licensing Board (Division of Labor)"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://www.wvclboard.wv.gov/",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "labor.wv.gov links to wvclboard.wv.gov, which is unreachable from our location; code.wvlegislature.gov returns 403."
+    },
+    {
+      "state": "Wisconsin",
+      "bodies": [
+        "Department of Safety and Professional Services (Dwelling Contractor credential)"
+      ],
+      "type": null,
+      "typeQuote": null,
+      "sourceUrl": "https://dsps.wi.gov/",
+      "lookupUrl": null,
+      "law": null,
+      "checkedOn": "2026-11-13",
+      "status": "BLOCKED",
+      "notes": "dsps.wi.gov and docs.legis.wisconsin.gov unreachable from our location (curl and browser)."
+    },
+    {
+      "state": "Wyoming",
+      "bodies": [
+        "State Fire Marshal (electrical)"
+      ],
+      "type": "B",
+      "typeQuote": null,
+      "sourceUrl": "https://wsfm.wyo.gov/electrical-safety/licensing",
+      "lookupUrl": null,
+      "law": "Wyo. Stat. 35-9-127 (cited on page)",
+      "checkedOn": "2026-11-13",
+      "status": "partial",
+      "notes": "Need a source on no statewide GC license; lookup TBD."
+    }
+  ]
+}

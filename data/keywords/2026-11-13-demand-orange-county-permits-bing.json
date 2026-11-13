@@ -1,0 +1,28 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-13T14:15:17.387Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "orange county permits",
+    "orange county permit search"
+  ],
+  "keywords": [
+    {
+      "keyword": "orange county permits",
+      "search_volume": 430,
+      "metric": "market",
+      "broad_impressions": 430,
+      "kind": "seed"
+    },
+    {
+      "keyword": "orange county permit search",
+      "search_volume": 899,
+      "metric": "market",
+      "broad_impressions": 899,
+      "kind": "seed"
+    }
+  ]
+}

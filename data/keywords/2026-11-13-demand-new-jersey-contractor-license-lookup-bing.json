@@ -1,0 +1,28 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-13T14:17:48.547Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "new jersey contractor license lookup",
+    "new jersey contractor license"
+  ],
+  "keywords": [
+    {
+      "keyword": "new jersey contractor license lookup",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "new jersey contractor license",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

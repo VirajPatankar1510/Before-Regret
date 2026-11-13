@@ -1,0 +1,42 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-13T14:15:47.962Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "pinellas county permits",
+    "pinellas county permit search"
+  ],
+  "keywords": [
+    {
+      "keyword": "pinellas county permits",
+      "search_volume": 271,
+      "metric": "market",
+      "broad_impressions": 271,
+      "kind": "seed"
+    },
+    {
+      "keyword": "pinellas county building department permits",
+      "search_volume": 252,
+      "metric": "market",
+      "broad_impressions": 252,
+      "kind": "related"
+    },
+    {
+      "keyword": "pinellas county building permits",
+      "search_volume": 240,
+      "metric": "market",
+      "broad_impressions": 240,
+      "kind": "related"
+    },
+    {
+      "keyword": "pinellas county permit search",
+      "search_volume": 705,
+      "metric": "market",
+      "broad_impressions": 705,
+      "kind": "seed"
+    }
+  ]
+}

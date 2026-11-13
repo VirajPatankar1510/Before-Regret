@@ -1,0 +1,58 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-13T13:10:09.395Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "arizona contractor license",
+    "az contractor license lookup",
+    "arizona roc license",
+    "arizona handyman license"
+  ],
+  "keywords": [
+    {
+      "keyword": "arizona contractor license",
+      "search_volume": 17,
+      "metric": "market",
+      "broad_impressions": 998,
+      "kind": "seed"
+    },
+    {
+      "keyword": "arizona contractor license lookup",
+      "search_volume": 924,
+      "metric": "market",
+      "broad_impressions": 924,
+      "kind": "related"
+    },
+    {
+      "keyword": "az contractor license lookup",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "arizona roc license",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 483,
+      "kind": "seed"
+    },
+    {
+      "keyword": "arizona roc license lookup",
+      "search_volume": 483,
+      "metric": "market",
+      "broad_impressions": 483,
+      "kind": "related"
+    },
+    {
+      "keyword": "arizona handyman license",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

@@ -30,5 +30,6 @@ export const IMAGE_DIMENSIONS: Record<string, ImageDimensions> = {
   '/images/single-strand-aluminum-vs-copper-wiring-identification.webp': { width: 1600, height: 900 },
   '/images/fruitful-home-cover-lg.jpg': { width: 520, height: 832 },
   '/images/fruitful-home-cover.jpg': { width: 300, height: 480 },
+  '/images/oregon-ccb-record-history-sections.jpg': { width: 584, height: 152 },
   '/hero-bg.jpg': { width: 1895, height: 830 },
 };

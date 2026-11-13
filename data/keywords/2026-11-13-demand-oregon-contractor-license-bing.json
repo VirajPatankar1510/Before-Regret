@@ -1,0 +1,107 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-13T14:58:38.992Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "oregon contractor license",
+    "oregon ccb license lookup",
+    "oregon ccb",
+    "oregon handyman license"
+  ],
+  "keywords": [
+    {
+      "keyword": "oregon contractor license",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 941,
+      "kind": "seed"
+    },
+    {
+      "keyword": "oregon contractor license lookup",
+      "search_volume": 941,
+      "metric": "market",
+      "broad_impressions": 941,
+      "kind": "related"
+    },
+    {
+      "keyword": "oregon ccb license lookup",
+      "search_volume": 369,
+      "metric": "market",
+      "broad_impressions": 369,
+      "kind": "seed"
+    },
+    {
+      "keyword": "oregon ccb",
+      "search_volume": 3603,
+      "metric": "market",
+      "broad_impressions": 6423,
+      "kind": "seed"
+    },
+    {
+      "keyword": "ccb oregon",
+      "search_volume": 976,
+      "metric": "market",
+      "broad_impressions": 1550,
+      "kind": "related"
+    },
+    {
+      "keyword": "oregon ccb lookup",
+      "search_volume": 768,
+      "metric": "market",
+      "broad_impressions": 768,
+      "kind": "related"
+    },
+    {
+      "keyword": "oregon ccb license search",
+      "search_volume": 576,
+      "metric": "market",
+      "broad_impressions": 576,
+      "kind": "related"
+    },
+    {
+      "keyword": "ccb oregon official website",
+      "search_volume": 531,
+      "metric": "market",
+      "broad_impressions": 531,
+      "kind": "related"
+    },
+    {
+      "keyword": "oregon ccb login",
+      "search_volume": 511,
+      "metric": "market",
+      "broad_impressions": 511,
+      "kind": "related"
+    },
+    {
+      "keyword": "oregon ccb search",
+      "search_volume": 502,
+      "metric": "market",
+      "broad_impressions": 502,
+      "kind": "related"
+    },
+    {
+      "keyword": "ccb lookup oregon",
+      "search_volume": 452,
+      "metric": "market",
+      "broad_impressions": 452,
+      "kind": "related"
+    },
+    {
+      "keyword": "ccb oregon login",
+      "search_volume": 43,
+      "metric": "market",
+      "broad_impressions": 43,
+      "kind": "related"
+    },
+    {
+      "keyword": "oregon handyman license",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

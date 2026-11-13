@@ -1,0 +1,35 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-13T14:14:34.747Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "palm beach county permits",
+    "palm beach county permit search"
+  ],
+  "keywords": [
+    {
+      "keyword": "palm beach county permits",
+      "search_volume": 371,
+      "metric": "market",
+      "broad_impressions": 371,
+      "kind": "seed"
+    },
+    {
+      "keyword": "palm beach county building permits",
+      "search_volume": 247,
+      "metric": "market",
+      "broad_impressions": 247,
+      "kind": "related"
+    },
+    {
+      "keyword": "palm beach county permit search",
+      "search_volume": 1206,
+      "metric": "market",
+      "broad_impressions": 1206,
+      "kind": "seed"
+    }
+  ]
+}
