@@ -228,6 +228,21 @@
     word-break: break-all !important;
   }
 
+  /* Two exceptions (2026-11-14, found printing an advertiser's sample report):
+     - tel: and mailto: links already show their number or address as the link text, so the rule
+       above printed it twice ("(303) 619-7667 (tel:(303) 619-7667)").
+     - A sponsored listing's Website button points at /out/zip/<id> or /out/guide/<id> so the click
+       is counted, and that internal address is useless on paper. The card carries the business's
+       real address in data-print-url, and print shows that instead.
+     Same specificity as the rule above and declared after it, so these win. */
+  a[href^="tel:"]::after,
+  a[href^="mailto:"]::after {
+    content: none !important;
+  }
+  a[data-print-url]::after {
+    content: " (" attr(data-print-url) ")" !important;
+  }
+
   /* Forcing each major section onto a fresh page (break-before: page) was tried and reverted --
      measured on a real 10-page export it produced three near-empty pages (2%, 0% and 1% ink),
      because a section ending two lines into a page still consumed the rest of it. The structure

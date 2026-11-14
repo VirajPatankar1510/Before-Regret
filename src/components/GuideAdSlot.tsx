@@ -98,6 +98,7 @@ export const GuideAdVendorCard: React.FC<{ vendor: ActiveVendor }> = ({ vendor }
           // the commercial relationship, which the redirect doesn't change.
           <a
             href={vendor.purchaseId ? `/out/guide/${vendor.purchaseId}` : vendor.website}
+            data-print-url={vendor.website}
             target="_blank"
             rel="sponsored noopener noreferrer"
             className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700"

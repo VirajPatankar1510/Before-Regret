@@ -73,6 +73,7 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
           // raw URL stays as the fallback for an id that doesn't parse, so the link is never dead.
           <a
             href={Number.isFinite(Number(vendor.id)) ? `/out/zip/${Number(vendor.id)}` : vendor.website}
+            data-print-url={vendor.website}
             target="_blank"
             rel="sponsored noopener noreferrer"
             aria-label={`${vendor.businessName} website`}
@@ -91,7 +92,7 @@ interface SponsoredVendorCardsProps {
   vendors: SponsoredVendor[] | null | undefined;
 }
 
-// Up to MAX_SLOTS_PER_ZIP_TRADE (2) vendors can be attached to one spot -- see
+// Up to MAX_SLOTS_PER_ZIP_TRADE vendors (1 since 2026-11-01) can be attached to one spot -- see
 // CanonicalFinding.sponsoredVendors in types.ts for why. Renders nothing for an empty or missing
 // list, same principle as SponsoredVendorCard itself.
 export const SponsoredVendorCards: React.FC<SponsoredVendorCardsProps> = ({ vendors }) => {
