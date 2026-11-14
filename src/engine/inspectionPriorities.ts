@@ -228,9 +228,12 @@ export const PRIORITY_RULES: PriorityRule[] = [
     title: 'Identify the branch circuit wiring material',
     priority: 'high',
     eraBasis:
-      'Aluminum branch wiring was used in some US homes built roughly between 1965 and 1973. The Consumer Product Safety Commission has published on the associated fire risk at connection points.',
+      'Aluminum branch wiring was used in some US homes built roughly between 1965 and 1973. The Consumer Product Safety Commission has published on the associated fire risk at connection points. Its Publication 516 recognizes three permanent repairs (replacing the wiring with copper, the COPALUM method, or the AlumiConn connector) and recommends against pigtailing with ordinary twist-on connectors, which it treats as a temporary repair at best.',
     costToCheck: 'Usually included in a general inspection — ask them to note the wiring material. Dedicated electrician evaluation $150 – $350.',
-    typicalRepairCost: 'Remediation with approved connectors or pigtailing $2,000 – $8,000+',
+    // Was "Remediation with approved connectors or pigtailing" until 2026-11-14 -- read as if any pigtail is an
+    // acceptable fix. CPSC Publication 516 (June 2011, read 2026-11-14): only copper rewiring, COPALUM, or the
+    // AlumiConn connector are permanent repairs; twist-on connector pigtails are "Not a Recommended Repair".
+    typicalRepairCost: 'Have a qualified electrician assess the wiring and recommend a permanent repair: copper rewiring, COPALUM or AlumiConn, depending on the installation. Typically $2,000 – $8,000+, depending on the number of connections and the scope of work.',
     howToCheck:
       'Ask your inspector to record the branch circuit wiring material in writing, then confirm insurability with your insurance agent before your option period ends.',
   },

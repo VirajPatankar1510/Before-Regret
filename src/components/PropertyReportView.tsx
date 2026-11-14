@@ -16,6 +16,15 @@ interface PropertyReportViewProps {
   onNewSearch: () => void;
 }
 
+// Column span for the last tile of the 2-column (phone) / 4-column (sm and up) metrics grid, so the row it ends is full.
+const LAST_TILE_SPAN_SM: Record<number, string> = { 0: '', 1: 'sm:col-span-4', 2: 'sm:col-span-3', 3: 'sm:col-span-2' };
+function lastTileSpan(count: number): string {
+  const phone = count % 2 === 1 ? 'col-span-2' : '';
+  const sm = LAST_TILE_SPAN_SM[count % 4];
+  // A phone-width span of 2 must not leak into the 4-column layout when the sm row is already full.
+  return [phone, sm || (phone ? 'sm:col-span-1' : '')].filter(Boolean).join(' ');
+}
+
 export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, onNewSearch }) => {
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -163,8 +172,11 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
 
       {finding.metrics && finding.metrics.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-slate-200 border border-slate-200 rounded-xl overflow-hidden">
-          {finding.metrics.map((m) => (
-            <div key={m.label} className="bg-white px-3 py-3">
+          {finding.metrics.map((m, i, all) => (
+            // The grid shows its grey background through any empty cell, so a count that doesn't fill the last
+            // row (7 tiles on 4 columns) left a blank grey box (owner, 2026-11-14). The last tile stretches to
+            // fill its row instead. Class names are spelled out in full so Tailwind keeps them.
+            <div key={m.label} className={`bg-white px-3 py-3 ${i === all.length - 1 ? lastTileSpan(all.length) : ''}`}>
               <div className="text-[10px] uppercase tracking-wide text-slate-500 font-semibold leading-tight">{m.label}</div>
               <div className="text-base font-bold text-slate-900 mt-1 leading-tight tabular-nums">{m.value}</div>
               {m.comparison && <div className="text-[11px] text-slate-500 leading-snug mt-0.5">{m.comparison}</div>}
