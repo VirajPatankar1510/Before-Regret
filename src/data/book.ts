@@ -1,5 +1,10 @@
-// The book BeforeRegret publishes, and the single source of truth for every promo unit that
-// points at it. Verified against the live Amazon listing on 2026-09-04.
+// The book BeforeRegret promotes, and the single source of truth for every promo unit that
+// points at it.
+//
+// 2026-11-15: swapped from The Signs of a Fruitful Home (B0HHQSBR16) to the owner's Shri Yantra
+// book, B0DFKB6FG2, on the owner's request. Amazon refuses automated readers, so every field below
+// comes from the listing text the owner pasted in on 2026-11-15 (title, author, format). No ISBN
+// was in it, so none is stored.
 //
 // WHY A DATA FILE FOR ONE BOOK. The promo renders in six places -- the guide page and its
 // prerendered static twin, the homepage and its static twin, and the footer and its static twin
@@ -7,18 +12,16 @@
 // files (see StaticFooterLinks.tsx for the reasoning). Six copies of an ASIN is six chances for
 // five of them to go stale when an edition changes.
 //
-// EVERY FIELD BELOW IS A VERIFIED FACT FROM THE LISTING. No price is stored: Amazon shows a
-// different currency and figure per marketplace and changes both without notice, so any number
-// printed on the site would be wrong for most readers and eventually wrong for all of them.
-// The promo says "paperback and Kindle" and lets Amazon quote the price.
+// No price is stored: Amazon shows a different currency and figure per marketplace and changes
+// both without notice, so any number printed on the site would be wrong for most readers and
+// eventually wrong for all of them.
 
 export const BOOK = {
-  title: 'The Signs of a Fruitful Home',
-  subtitle: 'How to Read a House Before You Buy It',
-  author: 'Morgan Ellis',
-  isbn: '9798171758424',
-  url: 'https://www.amazon.com/dp/B0HHQSBR16',
-  formats: 'Paperback and Kindle',
+  title: 'Manifestation',
+  subtitle: 'Using the Most Powerful Yantra in This Universe',
+  author: 'Tathas Tu',
+  format: 'Paperback',
+  url: 'https://www.amazon.com/dp/B0DFKB6FG2',
 } as const;
 
 /**

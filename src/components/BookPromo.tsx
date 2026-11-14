@@ -1,168 +1,205 @@
 import React from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Check, Gift, Scissors } from 'lucide-react';
 import { BOOK, BOOK_CLICK_PATH, BOOK_LINK_REL } from '../data/book';
 
-// The promo card for the site's own book, rendered on every guide page and on the homepage.
-// A one-line footer variant existed alongside it and was removed on request 2026-09-04; the card
-// is now the only placement.
+// The promo card for the owner's book, rendered on every guide page and on the homepage.
 //
 // DELIBERATELY HOOK-FREE, AND DELIBERATELY A PLAIN <a>. Every other block that appears both in
 // the live app and in the prerendered HTML exists twice in this codebase -- Footer.tsx and
 // StaticFooterLinks.tsx, GuidePageView.tsx and prerender-guides.tsx's GuideStaticBody. That
 // duplication is intentional there, because those blocks need onNavigate, a client-only handler
-// with nothing to render statically.
+// with nothing to render statically. This one points off-site and holds no state, so the SAME
+// component is imported by the React tree and by renderToStaticMarkup in the prerender scripts,
+// and there is no twin to drift. Don't add interactivity unless a feature genuinely needs it.
 //
-// This one needs no handler at all: it points off-site, so there is no client-side routing to do
-// and no state to hold. That means the SAME component can be imported by the React tree and by
-// renderToStaticMarkup in the prerender scripts, and there is no twin to drift. If you add
-// interactivity here, you will have created a fourth pair of twins -- don't, unless the feature
-// genuinely requires it.
+// IMAGE IS SELF-HOSTED, NOT HOTLINKED. Amazon's own product images may not be used outside the
+// Product Advertising API, so the file in public/images is the book photo the owner supplied on
+// 2026-11-15 (the paperback on a wooden table, 1536x1024 original), resized to 720x480: enough for
+// a retina screen at the widest it renders (a phone-width card, ~340px). One file serves both the
+// card and the rail. It's webp with a jpg fallback, lazy, with explicit width/height so the card
+// doesn't reflow the page as it loads. It is landscape, so the card gives it a wide column on
+// desktop and the full width on a phone, where a flat portrait cover used to sit in a narrow column.
 //
-// COVER IMAGE IS SELF-HOSTED, NOT HOTLINKED. Amazon's own product images may not be used outside
-// the Product Advertising API, so the file in public/images is the author's cover supplied
-// directly. Resized from the 1250x2000, 412 KB original down to 300x480 -- roughly 2.3x the width
-// it actually renders at, which is enough for a retina screen and nothing more -- and served as
-// webp with a jpg fallback, matching Logo.tsx's <picture> pattern. 31 KB. It loads lazily and
-// carries explicit width/height, because this card sits below the fold on every page that
-// render it and an image without intrinsic dimensions reflows the page as it arrives.
-//
-// FRAMING. The card carried a "From the team behind BeforeRegret" label and a
-// "Paperback and Kindle - by Morgan Ellis" byline; both were removed on request 2026-09-04, so
-// the card is now title, subtitle, pitch and button. Nothing here asserts that the book is a
-// third-party pick either -- there is no "recommended" or "we like", and the aside is labelled as
-// a book for screen readers rather than as editorial. If a disclosure is ever wanted back, the
-// cheapest version is a two-word neutral badge in the slot the label used to occupy; the vendor
-// ad slot's "Ad" badge is the precedent. BOOK.author and BOOK.formats stay in src/data/book.ts as
-// the record of the listing even though nothing renders them now.
+// THE COPY (2026-11-15, owner asked for "hooks" and a salesperson's design). How it persuades:
+//   - a contrast hook (head vs wall) that names the one thing this book has that most
+//     manifestation books don't: a physical yantra you cut out;
+//   - specific, countable contents (7 worksheets, 9 chapters, several sizes), because specifics
+//     read as real and vague promises read as hype;
+//   - a bonus line, the value-stack;
+//   - a plain "View the book on Amazon" button (owner's wording) plus reassurance microcopy.
+// What it deliberately does NOT do, and why:
+//   - promise a result (money, love, health outcomes). This card sits on a site whose guides are
+//     held to primary sources, and a result claim is the one line that would undercut them;
+//   - repeat the listing's comparative claims ("more effective than a bracelet...");
+//   - fake urgency or scarcity. The owner has rejected fear-driven copy;
+//   - show a star rating. It changes without notice, and 4 ratings is thin social proof. If one
+//     is ever wanted, it needs the live count and a date.
+// Every content fact below is from the Amazon listing the owner pasted in on 2026-11-15.
 
-// The cover's alt text: what the picture shows, taken from the listing, and nothing else.
-//
-// It was alt="" until 2026-09-27, which is correct for a screen reader (the cover sits inside an
-// aria-hidden duplicate link, next to a visible title that already says the same thing) but Bing
-// Webmaster reports every empty alt as "missing" on every page this card renders on. A real
-// description costs a screen reader nothing here, because aria-hidden keeps it from being read.
-//
-// DELIBERATELY NO "Before Regret" IN IT. Asked for on 2026-09-27 to help the brand phrase rank;
-// declined for three reasons. The cover does not say it, and alt text describes the image. The
-// card's "From the team behind BeforeRegret" label was removed on the owner's request on
-// 2026-09-04, and the brand in the alt would put that tie back in a place nobody sees. And Google's
-// image guidance names keyword-filled alt text as spam, so it would risk more than it earns.
-const COVER_ALT = `Cover of ${BOOK.title}: ${BOOK.subtitle}`;
+// The photo's alt text: what the picture shows, and nothing else. Not alt="", because Bing
+// Webmaster reports an empty alt as missing; aria-hidden on the wrapping link keeps it silent.
+const COVER_ALT = `The paperback of ${BOOK.title}: ${BOOK.subtitle}, lying on a wooden table`;
 
-// The pitch. Drawn from the book's actual argument -- the three lists, and the twenty minutes a
-// viewing gives you -- not from marketing copy. Nothing here claims a result.
-const PITCH =
-  'A viewing gives you about twenty minutes, and most of it goes on the things you could change ' +
-  'later anyway: the paint, the counters, the fixtures. This book is about the other list — which ' +
-  'way the house faces, how the ground falls, where the water goes. The conditions no amount of ' +
-  'money will change after you sign.';
+// One <picture> for both placements.
+const BookPhoto: React.FC<{ className: string }> = ({ className }) => (
+  <picture>
+    <source srcSet="/images/manifestation-book-photo.webp" type="image/webp" />
+    <img
+      src="/images/manifestation-book-photo.jpg"
+      alt={COVER_ALT}
+      width={720}
+      height={480}
+      loading="lazy"
+      decoding="async"
+      className={className}
+    />
+  </picture>
+);
 
-// A narrow-column version of the pitch. The card's full paragraph is four lines in an 848px
-// content column and eleven in a 260px rail, which stops being a pitch and becomes a wall.
-const PITCH_SHORT =
-  'A viewing gives you twenty minutes, and most of it goes on things you could change later ' +
-  'anyway. This book is about the other list: the conditions no amount of money will change ' +
-  'after you sign.';
+const HOOK_LEAD = 'Most manifestation stays in your head.';
+const HOOK_TURN = 'This one goes on your wall.';
+
+const LEDE =
+  'Cut out the Shri Yantra printed inside, charge it with the mantras and rituals in the book, ' +
+  'and start your practice the same day.';
+
+const INSIDE = [
+  'A Shri Yantra in several sizes, ready to cut out',
+  'Step-by-step mantras, rituals and instructions for using the Yantra',
+  '7 worksheets with affirmations',
+  'A breathing technique to center yourself fast',
+];
+
+const BONUS = 'Bonus: the Kuber Yantra for wealth';
+
+const TRUST = `${BOOK.format} · 9 chapters · Beginner-friendly`;
+// The rail is 260px wide; the full line wraps mid-phrase there.
+const TRUST_SHORT = `${BOOK.format} · 9 chapters`;
+
+const CTA_LABEL = 'View the book on Amazon';
+
+// The pill that opens both units: the tangible thing, said first.
+const CutOutPill: React.FC<{ small?: boolean }> = ({ small }) => (
+  <span
+    className={`inline-flex items-center gap-1.5 rounded-full border border-amber-300/40 bg-amber-300/10 font-semibold text-amber-200 ${
+      small ? 'px-2.5 py-1 text-[11px]' : 'px-3 py-1 text-xs'
+    }`}
+  >
+    <Scissors className={small ? 'w-3 h-3' : 'w-3.5 h-3.5'} aria-hidden="true" />
+    Includes a cut-out Shri Yantra
+  </span>
+);
+
+const cardSurface =
+  'relative overflow-hidden border border-amber-300/25 bg-gradient-to-br from-[#0b1026] via-[#131938] to-[#22163d] text-white shadow-xl';
+
+// The soft gold glow behind the cover. Decorative only.
+const Glow: React.FC = () => (
+  <div
+    aria-hidden="true"
+    className="pointer-events-none absolute -top-24 -left-16 h-72 w-72 rounded-full bg-amber-400/20 blur-3xl"
+  />
+);
 
 // Right-rail skyscraper for guide pages, desktop only. The caller owns the sticky wrapper and the
-// breakpoint that hides it -- see GuidePageView.tsx -- so this component is just the unit.
-//
-// Uses its own 520x832 cover rather than the card's 300x480 one: the rail renders it at 260px, so
-// the smaller file would land at roughly 1.15x and read soft on a retina screen. Two files rather
-// than one srcset because the two placements are in different components with different widths,
-// and a shared srcset would have to carry a `sizes` string encoding both layouts -- more moving
-// parts than simply naming the right asset in each place.
+// breakpoint that hides it -- see GuideArticleLayout.tsx -- so this component is just the unit.
 export const BookPromoSkyscraper: React.FC = () => (
-  <aside
-    aria-label={`Book: ${BOOK.title}`}
-    className="bg-gradient-to-br from-amber-50/70 to-white border border-amber-200/70 rounded-2xl p-5 shadow-sm"
-  >
-    <a href={BOOK_CLICK_PATH} target="_blank" rel={BOOK_LINK_REL} aria-hidden="true" tabIndex={-1} className="block">
-      <picture>
-        <source srcSet="/images/fruitful-home-cover-lg.webp" type="image/webp" />
-        <img
-          src="/images/fruitful-home-cover-lg.jpg"
-          alt={COVER_ALT}
-          width={520}
-          height={832}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-auto shadow-md ring-1 ring-black/10"
-        />
-      </picture>
-    </a>
+  <aside aria-label={`Book: ${BOOK.title}`} className={`${cardSurface} rounded-2xl p-5`}>
+    <Glow />
+    <div className="relative">
+      <CutOutPill small />
 
-    <h2 className="mt-4 text-base font-extrabold text-slate-900 leading-snug">{BOOK.title}</h2>
-    <p className="mt-1 text-xs font-medium text-slate-600 leading-snug">{BOOK.subtitle}</p>
-    <p className="mt-3 text-xs text-slate-700 leading-relaxed">{PITCH_SHORT}</p>
+      <a href={BOOK_CLICK_PATH} target="_blank" rel={BOOK_LINK_REL} aria-hidden="true" tabIndex={-1} className="mt-4 block">
+        <BookPhoto className="w-full h-auto rounded-xl shadow-2xl shadow-black/60 ring-1 ring-amber-200/20" />
+      </a>
 
-    <a
-      href={BOOK_CLICK_PATH}
-      target="_blank"
-      rel={BOOK_LINK_REL}
-      className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors shadow-sm"
-    >
-      <span>View on Amazon</span>
-      <ArrowUpRight className="w-3.5 h-3.5" />
-    </a>
+      <h2 className="mt-4 text-lg font-extrabold leading-snug">
+        {HOOK_LEAD} <span className="text-amber-300">{HOOK_TURN}</span>
+      </h2>
+
+      <ul className="mt-3 space-y-1.5 text-xs text-slate-200">
+        {[INSIDE[0], INSIDE[1]].map((line) => (
+          <li key={line} className="flex gap-2">
+            <Check className="w-3.5 h-3.5 mt-0.5 shrink-0 text-amber-300" aria-hidden="true" />
+            <span>{line}</span>
+          </li>
+        ))}
+        <li className="flex gap-2 font-semibold text-amber-200">
+          <Gift className="w-3.5 h-3.5 mt-0.5 shrink-0" aria-hidden="true" />
+          <span>{BONUS}</span>
+        </li>
+      </ul>
+
+      <a
+        href={BOOK_CLICK_PATH}
+        target="_blank"
+        rel={BOOK_LINK_REL}
+        className="mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-300 hover:bg-amber-200 text-slate-950 font-bold text-xs transition-colors shadow-lg shadow-amber-500/20"
+      >
+        <span>{CTA_LABEL}</span>
+        <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
+      </a>
+      <p className="mt-2 text-center text-[11px] text-slate-400">{TRUST_SHORT}</p>
+    </div>
   </aside>
 );
 
 export const BookPromoCard: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <aside
-    aria-label={`Book: ${BOOK.title}`}
-    className={`bg-gradient-to-br from-amber-50/70 to-white border border-amber-200/70 rounded-3xl p-6 sm:p-8 shadow-sm ${className}`}
-  >
-    <div className="flex flex-col sm:flex-row sm:items-start gap-5 sm:gap-7">
-      {/* The cover links too: on a promo card the artwork is the thing a reader reaches for
-          first, and a picture that does nothing when clicked reads as broken. aria-hidden with
-          tabIndex -1 keeps it out of the tab order and off screen readers, so this does not
-          become a second identical link announced before the real one. */}
+  <aside aria-label={`Book: ${BOOK.title}`} className={`${cardSurface} rounded-3xl p-6 sm:p-8 ${className}`}>
+    <Glow />
+    <div className="relative flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
+      {/* The cover links too: on a promo card the artwork is what a reader reaches for first.
+          aria-hidden with tabIndex -1 keeps it from being a second identical link for screen
+          readers and keyboards. Full width on a phone; a fixed wide column beside the text from
+          the sm breakpoint up. */}
       <a
         href={BOOK_CLICK_PATH}
         target="_blank"
         rel={BOOK_LINK_REL}
         aria-hidden="true"
         tabIndex={-1}
-        // Flush left at every width. It was briefly centred while the card is stacked on a phone
-        // (2026-09-04) and reverted the same day on request.
-        className="shrink-0 self-start"
+        className="block w-full sm:w-64 lg:w-80 shrink-0 self-start sm:self-center"
       >
-        <picture>
-          <source srcSet="/images/fruitful-home-cover.webp" type="image/webp" />
-          <img
-            src="/images/fruitful-home-cover.jpg"
-            alt={COVER_ALT}
-            width={300}
-            height={480}
-            loading="lazy"
-            decoding="async"
-            // Square corners at both breakpoints. A printed cover has square corners, and rounding
-            // only one breakpoint would read as a bug rather than a choice. The shadow and hairline
-            // ring stay -- they are what separate a mostly-dark cover from the amber card behind it.
-            className="w-28 sm:w-32 h-auto shadow-md ring-1 ring-black/10"
-          />
-        </picture>
+        <BookPhoto className="w-full h-auto rounded-2xl shadow-2xl shadow-black/60 ring-1 ring-amber-200/20" />
       </a>
 
       <div className="min-w-0">
-        <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
-          {BOOK.title}
+        <CutOutPill />
+
+        <h2 className="mt-3 text-2xl lg:text-3xl font-extrabold leading-tight tracking-tight">
+          {HOOK_LEAD} <span className="text-amber-300">{HOOK_TURN}</span>
         </h2>
-        <p className="mt-1 text-sm sm:text-base font-medium text-slate-600">{BOOK.subtitle}</p>
 
-        <p className="mt-4 text-sm text-slate-700 leading-relaxed">{PITCH}</p>
+        <p className="mt-2 text-xs sm:text-sm text-slate-400">
+          {BOOK.title}: {BOOK.subtitle} · by {BOOK.author}
+        </p>
 
-        <div className="mt-6">
+        <p className="mt-4 text-sm sm:text-base text-slate-200 leading-relaxed">{LEDE}</p>
+
+        <ul className="mt-4 grid gap-y-2 text-sm text-slate-200">
+          {INSIDE.map((line) => (
+            <li key={line} className="flex gap-2">
+              <Check className="w-4 h-4 mt-0.5 shrink-0 text-amber-300" aria-hidden="true" />
+              <span>{line}</span>
+            </li>
+          ))}
+          <li className="flex gap-2 font-semibold text-amber-200">
+            <Gift className="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true" />
+            <span>{BONUS}</span>
+          </li>
+        </ul>
+
+        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3">
           <a
             href={BOOK_CLICK_PATH}
             target="_blank"
             rel={BOOK_LINK_REL}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-xl transition-colors shadow-sm"
+            className="inline-flex shrink-0 whitespace-nowrap items-center justify-center gap-2 px-6 py-3 rounded-xl bg-amber-300 hover:bg-amber-200 text-slate-950 font-bold text-sm transition-colors shadow-lg shadow-amber-500/20"
           >
-            <span>View on Amazon</span>
-            <ArrowUpRight className="w-4 h-4" />
+            <span>{CTA_LABEL}</span>
+            <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
           </a>
+          <span className="text-xs text-slate-400 whitespace-nowrap">{TRUST}</span>
         </div>
       </div>
     </div>
