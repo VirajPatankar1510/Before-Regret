@@ -1,0 +1,238 @@
+{
+ "state": "Texas",
+ "stateAbbrev": "TX",
+ "slug": "texas-contractor-license-lookup",
+ "type": "B",
+ "officialLookupUrl": "https://www.tdlr.texas.gov/LicenseSearch/",
+ "licensingBodies": [
+  {
+   "name": "Texas Department of Licensing and Regulation (TDLR)",
+   "licenses": "electricians, air conditioning and refrigeration contractors, and other trades; no general contractors",
+   "lookupUrl": "https://www.tdlr.texas.gov/LicenseSearch/"
+  },
+  {
+   "name": "Texas State Board of Plumbing Examiners (TSBPE)",
+   "licenses": "plumbers",
+   "lookupUrl": "https://vo.licensing.hpc.texas.gov/datamart/selSearchType.do"
+  }
+ ],
+ "demand": {
+  "capture": "2026-11-14-demand-texas-contractor-license-bing",
+  "tier": "2",
+  "relatedQueries": [
+   "tdlr license search",
+   "tdlr license search texas",
+   "texas contractor license lookup",
+   "tdlr texas license search"
+  ]
+ },
+ "portalWalk": {
+  "date": "2026-11-14",
+  "searchedBy": [
+   "license type + endorsement + business name (a franchise electrical brand, not named)"
+  ],
+  "quirks": [
+   "active licenses only",
+   "name search adds a trailing wildcard",
+   "one brand returned 8 separate contractor licenses",
+   "record URLs are shareable",
+   "discipline is in a separate Administrative Orders search covering about three fiscal years"
+  ],
+  "recordSections": [
+   "license number, expiration, type, status, original issue date, phone",
+   "DBA",
+   "master electrician and that license's number and expiration"
+  ],
+  "screenshot": "public/images/texas-tdlr-electrical-contractor-record.jpg (identifying fields replaced with [hidden] in our browser before capture)"
+ },
+ "facts": [
+  {
+   "id": "f1",
+   "topic": "who-is-licensed",
+   "claim": "The state agency for home builders, the Texas Residential Construction Commission, was abolished; its Act expired September 1, 2009.",
+   "quote": "The Legislature did not pass House Bill 2295 and the Commission was not continued in separate legislation. The Texas Residential Construction Commission was abolished and the Act expired on September 1, 2009. All records and property transferred to the Texas Comptroller of Public Accounts.",
+   "url": "https://www.sunset.texas.gov/reviews-and-reports/agencies/texas-residential-construction-commission",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f2",
+   "topic": "contract-rules",
+   "claim": "Property Code § 41.007(a): a home improvement contract on a homestead must still contain the commission registration number and complaint address if the contractor is required to register, plus a warning in at least 10-point bold.",
+   "quote": "Sec. 41.007. HOME IMPROVEMENT CONTRACT. (a) A contract for improvements to an existing residence described by Section 41.001(b)(3) must contain: (1) the contractor's certificate of registration number from the Texas Residential Construction Commission if the contractor is required to register as a builder with the commission; (3) the following warning conspicuously printed, stamped, or typed in a size equal to at least 10-point bold type or computer equivalent:",
+   "url": "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.41.htm",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f3",
+   "topic": "contract-rules",
+   "claim": "The required warning text.",
+   "quote": "IMPORTANT NOTICE: You and your contractor are responsible for meeting the terms and conditions of this contract. If you sign this contract and you fail to meet the terms and conditions of this contract, you may lose your legal ownership rights in your home. KNOW YOUR RIGHTS AND DUTIES UNDER THE LAW.",
+   "url": "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.41.htm",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f4",
+   "topic": "contract-rules",
+   "claim": "A violation of 41.007(a) is a deceptive act under the DTPA; an arbitration clause not in 10-point bold is not enforceable against the owner (41.007(c)-(d)).",
+   "quote": "A violation of Subsection (a) of this section is a false, misleading, or deceptive act or practice within the meaning of Section 17.46, Business & Commerce Code, and is actionable in a public or private suit brought under the provisions of the Deceptive Trade Practices-Consumer Protection Act (c) A provision of a contract for improvements to an existing residence described by Section 41.001(b)(3) that requires the parties to submit a dispute arising under the contract to binding arbitration must be conspicuously printed or typed in a size equal to at least 10-point bold type or the computer equivalent. (d) A provision described by Subsection (c) is not enforceable against the owner unless the requirements of Subsection (c) are met.",
+   "url": "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.41.htm",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f5",
+   "topic": "lookup",
+   "claim": "TDLR License Data Search covers active licenses only; if not found, call customer service; data updated 11/13/2026 06:01 when we looked.",
+   "quote": "TDLR License Data Search (Active Licenses only) If license not found, please contact Customer Service at 800-803-9202 Data last updated: 11/13/2026 06:01",
+   "url": "https://www.tdlr.texas.gov/LicenseSearch/",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f6",
+   "topic": "who-is-licensed",
+   "claim": "TDLR's license-type list includes Electricians, Air Conditioning Contractors, Mold Remediation Contractor, Solar Residential Retailer and Solar Residential Salesperson, Water Well Drillers; no general contractor or builder type (our reading of the full list, 2026-11-14).",
+   "quote": "Air Conditioning Contractors ... Electricians ... Mold Remediation Contractor ... Solar Residential Retailer Solar Residential Salesperson ... Water Well Drillers, Pump Installers",
+   "url": "https://www.tdlr.texas.gov/LicenseSearch/",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f7",
+   "topic": "lookup",
+   "claim": "Electrician license types in the search include Master Electrician, Journeyman Electrician, Residential Wireman and Electrical Contractor.",
+   "quote": "Master Electrician Journeyman Electrician Electrical Apprentice Master Sign Electrician Journeyman Sign Electrician Maintenance Electrician Residential Wireman Electrical Contractor",
+   "url": "https://www.tdlr.texas.gov/LicenseSearch/",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f8",
+   "topic": "lookup",
+   "claim": "Our walk: a name search adds a wildcard at the end; one franchise brand name returned 8 separate Electrical Contractor records, one per location.",
+   "quote": "Before wildcards: [MISTER SPARKY]After sanitize: [MISTER SPARKY%] Electrical Contractor 8 Records Found",
+   "url": "https://www.tdlr.texas.gov/LicenseSearch/",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f9",
+   "topic": "lookup",
+   "claim": "Our walk: a contractor record shows license number, expiration date, type, status, original issue date, phone, DBA, and the master electrician on the license with that person's own license number and expiration; no complaints, bond or insurance shown.",
+   "quote": "Electrical Contractor License #: Expiration Date: Type: EC License Status: Active Original License Issue Date: Phone: DBA: Master: License#: Expiration:",
+   "url": "https://www.tdlr.texas.gov/LicenseSearch/",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f10",
+   "topic": "trade-licensing",
+   "claim": "Occupations Code § 1305.151: electrical work needs a license.",
+   "quote": "Sec. 1305.151. LICENSE REQUIRED. Except as provided by Section 1305.003, a person or business may not perform or offer to perform electrical work or residential appliance installation unless the person or business holds an appropriate license issued or recognized under this chapter.",
+   "url": "https://statutes.capitol.texas.gov/Docs/OC/htm/OC.1305.htm",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f11",
+   "topic": "owner-builder",
+   "claim": "§ 1305.003(a)(6): an owner who lives in the home may do electrical work on it, unless a municipal ordinance specifically regulates that work.",
+   "quote": "(6) work not specifically regulated by a municipal ordinance that is performed in or on a dwelling by a person who owns and resides in the dwelling",
+   "url": "https://statutes.capitol.texas.gov/Docs/OC/htm/OC.1305.htm",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f12",
+   "topic": "local-licensing",
+   "claim": "§ 1305.201: cities and regions may require inspections, offer exams and issue municipal licenses, but may not make a state-licensed electrician take a municipal exam for work within the license.",
+   "quote": "This chapter does not prohibit a municipality or region from regulating electricians or residential appliance installers by: (1) enacting an ordinance requiring inspections; (2) offering examinations; (3) issuing municipal or regional licenses; (b) A municipality or region may not require a person to take a municipal or regional examination if that person holds the appropriate license issued under this chapter and is working within the scope of that license.",
+   "url": "https://statutes.capitol.texas.gov/Docs/OC/htm/OC.1305.htm",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f13",
+   "topic": "trade-licensing",
+   "claim": "§ 1302.251: air conditioning and refrigeration contracting needs a license, valid throughout the state.",
+   "quote": "Sec. 1302.251. LICENSE REQUIRED. (a) A person may not engage in air conditioning and refrigeration contracting unless the person holds an air conditioning and refrigeration contractor license under this subchapter or Subchapter G. (b) An air conditioning and refrigeration contractor license issued under this subchapter is valid throughout the state.",
+   "url": "https://statutes.capitol.texas.gov/Docs/OC/htm/OC.1302.htm",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f14",
+   "topic": "owner-builder",
+   "claim": "§ 1301.051: a property owner may do plumbing in their own homestead without a license; § 1301.351: otherwise plumbing needs a license and licensed supervision.",
+   "quote": "Sec. 1301.051. PLUMBING BY PROPERTY OWNER IN HOMESTEAD. A property owner is not required to be licensed under this chapter to perform plumbing in the property owner's homestead. Sec. 1301.351. LICENSE, ENDORSEMENT, OR REGISTRATION REQUIRED. (a) A person, other than a responsible master plumber, may not engage in plumbing unless: (1) the person holds the proper license, registration, or endorsement required by this chapter; and (2) the person's work is supervised and controlled by a person licensed under this chapter.",
+   "url": "https://statutes.capitol.texas.gov/Docs/OC/htm/OC.1301.htm",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f15",
+   "topic": "exemption-threshold",
+   "claim": "§ 1301.052: some rural plumbing is exempt, but not plumbing done with new construction, repair or remodeling.",
+   "quote": "A person is not required to be licensed under this chapter to perform plumbing, other than plumbing performed in conjunction with new construction, repair, or remodeling, on a property that is: (2) not connected to a public water system and is located outside a municipality;",
+   "url": "https://statutes.capitol.texas.gov/Docs/OC/htm/OC.1301.htm",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f16",
+   "topic": "trade-licensing",
+   "claim": "Plumbers are licensed by the Texas State Board of Plumbing Examiners; its Public License Search sits on a shared state platform and searches by name, license number, city or county.",
+   "quote": "Public License Search Search by Name Search by Name for a Specified License Type Search by License Number Search by City Search by County",
+   "url": "https://vo.licensing.hpc.texas.gov/datamart/selSearchType.do",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f17",
+   "topic": "complaints",
+   "claim": "TDLR's Administrative Orders search covers the current and past two fiscal years (September 1 to August 31); earliest available order date 8/1/2024.",
+   "quote": "This search covers Orders issued during the current and most recent past two fiscal years. TDLR's fiscal years begin on September 1st and end on August 31st of each year. Final Orders - (Note: The earliest available Order Date is 8/1/2024.)",
+   "url": "https://www.tdlr.texas.gov/cimsfo/fosearch.asp",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f18",
+   "topic": "local-licensing",
+   "claim": "Austin: general contractors, trade contractors and homeowners acting as contractors register with Building and Trade Contractor Services before any construction under a permit.",
+   "quote": "Before beginning any construction associated with a building permit and trade permit(s), trade contractors, general contractors, and homeowners acting as contractors must register as a Contractor with Building and Trade Contractor Services.",
+   "url": "https://www.austintexas.gov/development-services/contractor-registration",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f19",
+   "topic": "owner-builder",
+   "claim": "TDLR's exemptions page notes that municipal or regional rules may override the exemptions.",
+   "quote": "*NOTE: Municipal or regional regulations may override these exemptions, as outlined in Sec. 1305.201 of the Texas Electrical Safety and Licensing Act .",
+   "url": "https://www.tdlr.texas.gov/electricians/exemptions.htm",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  }
+ ],
+ "cut": [
+  {
+   "claim": "Austin's registration fee",
+   "why": "Only seen on a third-party site; not on the city page we read."
+  },
+  {
+   "claim": "Walking the TSBPE plumbing lookup",
+   "why": "Search form loaded but we did not run a search; complaint page behind Cloudflare."
+  }
+ ],
+ "blockedSources": [
+  {
+   "url": "https://tsbpe.texas.gov/file-a-complaint/",
+   "what": "TSBPE complaint page",
+   "how": "Cloudflare block, 2026-11-14"
+  }
+ ]
+}

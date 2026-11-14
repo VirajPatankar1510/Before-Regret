@@ -60,7 +60,7 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 40 | South Carolina | south-carolina-contractor-license-lookup | TODO | | | | | | |
 | 41 | South Dakota | south-dakota-contractor-license-lookup | TODO | | | | | | |
 | 42 | Tennessee | tennessee-contractor-license-lookup | TODO | | | | | | |
-| 43 | Texas | texas-contractor-license-lookup | TODO | | | | | | |
+| 43 | Texas | texas-contractor-license-lookup | LIVE #358 (2026-11-14) | Group 1 | tier 2 (2026-11-14-demand-texas-contractor-license) | 19 | 2.4% (vs CA) | 2026-12-19 | TDLR search walked 2026-11-14; no state GC license; TSBPE complaint page Cloudflare-blocked, no plumbing search run; image JPEG |
 | 44 | Utah | utah-contractor-license-lookup | TODO | | | | | | |
 | 45 | Vermont | vermont-contractor-license-lookup | TODO | | | | | | |
 | 46 | Virginia | virginia-contractor-license-lookup | TODO | | | | | | |
@@ -78,4 +78,6 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 2026-11-13 | Oregon: Phase 2 research and draft done, checker + publish dry run + quality gate pass; sent to owner for review | Checker and quality gate now accept ORS/RCW/NRS citations (state convention has no §). |
 | 2026-11-13 | Oregon published as #353 (commit 94dc36d): FAQs verified live, IndexNow 200, in sitemap | No inbound-link anchor in the library yet; the hub will link it. READ 2026-12-18. |
 | 2026-11-13 | Washington: Phase 2 research and draft done, all checks pass; sent to owner for review | |
+| 2026-11-14 | Texas published as #358 after a correctness pass (DBA wording fixed; unsourced "written request" line cut); 4 FAQs | READ 2026-12-19. |
 | 2026-11-13 | Washington published as #354 | READ 2026-12-18. |
+| 2026-11-14 | Texas: Phase 2 research and draft done; set checker (0 fails, worst 3.1%), publish dry run and quality gate pass; sent to owner for review | |

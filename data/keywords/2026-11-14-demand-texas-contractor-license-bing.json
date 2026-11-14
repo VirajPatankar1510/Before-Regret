@@ -1,0 +1,65 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-14T11:53:45.205Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "texas contractor license",
+    "texas contractor license lookup",
+    "tdlr license search",
+    "texas plumbing license lookup"
+  ],
+  "keywords": [
+    {
+      "keyword": "texas contractor license",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 397,
+      "kind": "seed"
+    },
+    {
+      "keyword": "texas contractor license lookup",
+      "search_volume": 397,
+      "metric": "market",
+      "broad_impressions": 397,
+      "kind": "related"
+    },
+    {
+      "keyword": "texas contractor license lookup",
+      "search_volume": 397,
+      "metric": "market",
+      "broad_impressions": 397,
+      "kind": "seed"
+    },
+    {
+      "keyword": "tdlr license search",
+      "search_volume": 1249,
+      "metric": "market",
+      "broad_impressions": 1713,
+      "kind": "seed"
+    },
+    {
+      "keyword": "tdlr license search texas",
+      "search_volume": 464,
+      "metric": "market",
+      "broad_impressions": 464,
+      "kind": "related"
+    },
+    {
+      "keyword": "tdlr texas license search",
+      "search_volume": 364,
+      "metric": "market",
+      "broad_impressions": 364,
+      "kind": "related"
+    },
+    {
+      "keyword": "texas plumbing license lookup",
+      "search_volume": 23,
+      "metric": "market",
+      "broad_impressions": 23,
+      "kind": "seed"
+    }
+  ]
+}

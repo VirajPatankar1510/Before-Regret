@@ -594,16 +594,17 @@
     {
       "state": "Texas",
       "bodies": [
-        "Texas Department of Licensing and Regulation (trades)"
+        "Texas Department of Licensing and Regulation (trades)",
+        "Texas State Board of Plumbing Examiners (plumbers)"
       ],
       "type": "B",
-      "typeQuote": null,
+      "typeQuote": "was abolished and the Act expired on September 1, 2009",
       "sourceUrl": "https://www.tdlr.texas.gov/",
       "lookupUrl": "https://www.tdlr.texas.gov/LicenseSearch/",
-      "law": null,
-      "checkedOn": "2026-11-13",
-      "status": "partial",
-      "notes": "Need a source on no statewide GC license; plumbing is a separate board (TSBPE)."
+      "law": "Occupations Code chapters 1301, 1302 and 1305; Property Code \u00a7 41.007",
+      "checkedOn": "2026-11-14",
+      "status": "verified",
+      "notes": "Phase 2 done; ledger data/fact-ledgers/state-license/texas.json. No state GC license (TRCC abolished 2009, Sunset Commission). Plumbing lookup on vo.licensing.hpc.texas.gov."
     },
     {
       "state": "Utah",
