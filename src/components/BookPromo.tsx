@@ -107,10 +107,10 @@ export const BookPromoSkyscraper: React.FC = () => (
   <aside aria-label={`Book: ${BOOK.title}`} className={`${cardSurface} rounded-2xl p-5`}>
     <Glow />
     <div className="relative">
-      <h2 className="font-serif text-xl font-semibold leading-snug text-amber-200 [text-wrap:balance]">
-        {BOOK.title}
+      <h2 className="font-serif text-xl font-semibold leading-snug text-amber-200 text-center [text-wrap:balance]">
+        {BOOK.title}.
       </h2>
-      <p className="mt-1 text-[11px] text-slate-400">by {BOOK.author}</p>
+      <p className="mt-1 text-center text-[11px] text-slate-400">by {BOOK.author}</p>
 
       <a href={BOOK_CLICK_PATH} target="_blank" rel={BOOK_LINK_REL} aria-hidden="true" tabIndex={-1} className="mt-4 block">
         <BookPhoto className="w-full h-auto rounded-xl shadow-2xl shadow-black/60 ring-1 ring-amber-200/20" />
@@ -154,12 +154,16 @@ export const BookPromoSkyscraper: React.FC = () => (
 export const BookPromoCard: React.FC<{ className?: string }> = ({ className = '' }) => (
   <aside aria-label={`Book: ${BOOK.title}`} className={`${cardSurface} rounded-3xl p-6 sm:p-8 ${className}`}>
     <Glow />
-    {/* The book's name is the card's heading and sits above the photo (owner, 2026-11-15): it is
+    {/* Centred, with a closing full stop on the displayed title only (owner, 2026-11-15). Justified
+        was asked for and tried the same day: it opened wide gaps between words on a phone and left
+        "universe." alone on a second line on desktop, so the title is centred with balanced lines
+        (text-wrap:balance) instead, which splits it into two even lines.
+        The book's name is the card's heading and sits above the photo (owner, 2026-11-15): it is
         the thing a reader has to remember to find it on Amazon. The hook below it is a styled
         paragraph, not a second heading. */}
-    <header className="relative border-b border-amber-300/20 pb-5 mb-6">
-      <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight tracking-tight text-amber-200 [text-wrap:balance]">
-        {BOOK.title}
+    <header className="relative border-b border-amber-300/20 pb-5 mb-6 text-center">
+      <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight tracking-tight text-amber-200 text-center [text-wrap:balance]">
+        {BOOK.title}.
       </h2>
       <p className="mt-1.5 text-sm text-slate-400">by {BOOK.author}</p>
     </header>
