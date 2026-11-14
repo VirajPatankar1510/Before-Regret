@@ -1,0 +1,87 @@
+{
+ "slug": "get-homeowners-insurance-knob-tube-wiring",
+ "readOn": "2026-11-14",
+ "facts": [
+  {
+   "id": "f1",
+   "claim": "Washington home inspection standard: the report describes the type(s) of branch wiring and flags potentially hazardous conductors for a licensed electrical contractor.",
+   "quote": "(a) Describe in the report the type and rating of primary service ... and the type(s) of branch wiring used. (d) Report, the presence of electrical conductors known to be potentially hazardous and that a licensed electrical contractor should further evaluate the types and methods of branch wiring used. WAC 308-408C-110",
+   "url": "https://app.leg.wa.gov/WAC/default.aspx?cite=308-408C&full=true",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f2",
+   "claim": "Berkeley's form #146: the electrician certifies good condition, no deterioration, proper overcurrent protection, no improper connections or splices; or not good condition; or disconnected; with state license number and class.",
+   "quote": "I certify that the existing knob-and-tube wiring is in good condition with no evidence of deterioration and with proper over-current protection and no improper connections or splices. The knob-and-tube wiring is not in good condition and may not be covered without repair or rewiring. The knob-and-tube wiring is disconnected and is not live or has been removed. State Lic #: Lic Class: Form #146 Last Revised 03/25/26",
+   "url": "https://berkeleyca.gov/sites/default/files/documents/146%20Knob%20and%20Tube%20Wiring%20Safety%20Report.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f3",
+   "claim": "EWEB form items: insulation integrity and adequate ampacity, 15 amp breakers or Type S fuses, disconnected, defects repaired, exposed splices protected; signed with license number. (Form dated October 2014.)",
+   "quote": "The insulation of the existing knob and tube wiring appears to be of adequate integrity, and the wire is of adequate ampacity for the current load. Circuits using knob and tube wiring are connected to circuit breakers or Type S fuses of 15 amp capacity or less. All knob and tube wiring has been disconnected from power and is no longer in use. Defects have been repaired. All exposed splices or connections are protected from insulation. License No.",
+   "url": "https://www.eweb.org/documents/contractor-developer/contractor-knob-and-tube-wiring-inspection-report.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f4",
+   "claim": "Snohomish PUD survey: conductor condition, improper connections, overloaded circuits; circuit table; journeyman electrician certifies circuits sized to the 60 degree column.",
+   "quote": "1. CONDITION OF CONDUCTOR(S) ADEQUATE? 2. ANY IMPROPER CONNECTIONS? 3. CIRCUITS PRESENTLY OVERLOADED? Circuit # Breaker or S-Type fuse? Amps. Wire Gauge I personally surveyed the above home’s wiring on (date) and certify that all circuits are sized in accordance with the 60° column of Table 310.15(B)(16) of the current NEC.",
+   "url": "https://www.snopud.com/wp-content/uploads/2021/08/1144_KnobTube_1016_web.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f5",
+   "claim": "Washington RCW 48.18.2901: an insurer that will not renew must mail written notice at least 60 days before expiration, with its actual reason.",
+   "quote": "Each insurer must renew any insurance policy subject to RCW 48.18.290 unless one of the following situations exists: (A) The insurer must deliver or mail written notice of nonrenewal to the named insured at least 60 days before the expiration date of the policy; and (B) The notice must include the insurer's actual reason for refusing to renew the policy.",
+   "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=48.18.2901",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f6",
+   "claim": "Washington RCW 48.18.290: cancellation needs at least 60 days written notice with the actual reason (non-payment: 10 days).",
+   "quote": "The insurer must deliver or mail written notice of cancellation to the named insured at least 60 days before the effective date of the cancellation; and (ii) The cancellation notice must include the insurer's actual reason for canceling the policy. If an insurer cancels a policy described under (a) or (b) of this subsection for nonpayment of premium, the insurer must deliver or mail the cancellation notice to the named insured at least 10 days before the effective date of the cancellation.",
+   "url": "https://app.leg.wa.gov/RCW/default.aspx?cite=48.18.290",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f7",
+   "claim": "Our report engine flags knob and tube as an insurance red flag for homes built through 1955 and asks for a written answer on whether any is energized.",
+   "quote": "insuranceRedFlag: 'Knob-and-tube wiring ... while it is still energized.' id: 'knob_and_tube', minYear: 1800, maxYear: 1955 ... Ask your inspector to confirm in writing whether any knob-and-tube is still energized, then confirm insurability with your insurance agent",
+   "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES knob_and_tube)",
+   "readOn": "2026-11-14",
+   "method": "repo"
+  },
+  {
+   "id": "e1",
+   "claim": "Our report engine's knob-and-tube rule: homes built through 1955; electrician evaluation $150 – $350; partial to whole-home rewire $8,000 – $30,000+; asks the inspector to confirm in writing whether any is still energized.",
+   "quote": "id: 'knob_and_tube', minYear: 1800, maxYear: 1955 ... Dedicated electrician evaluation $150 – $350. ... typicalRepairCost: 'Partial to whole-home rewire $8,000 – $30,000+' ... Ask your inspector to confirm in writing whether any knob-and-tube is still energized",
+   "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES knob_and_tube)",
+   "readOn": "2026-11-14",
+   "method": "repo"
+  }
+ ],
+ "blockedSources": [
+  {
+   "url": "https://www.nachi.org/sop.htm",
+   "what": "InterNACHI standards of practice",
+   "how": "Cloudflare check, 2026-11-14; not worked around"
+  },
+  {
+   "url": "https://www.tdhca.texas.gov/sites/default/files/community-affairs/wap/docs/WAP-BP-KnobTubeWiring.pdf",
+   "what": "Texas weatherization knob-and-tube best practice",
+   "how": "403 Access Denied in curl and browser, 2026-11-14"
+  },
+  {
+   "url": "https://stlouis-mo.gov/government/departments/public-safety/building/permits/electrical-permit-fees.cfm",
+   "what": "St. Louis electrical permit fees",
+   "how": "unreachable, 2026-11-14"
+  }
+ ]
+}

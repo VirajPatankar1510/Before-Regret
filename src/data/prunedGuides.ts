@@ -45,11 +45,12 @@
  * The survivor is the one with the best measured position or clicks, not the longest page.
  */
 export const MERGED_GUIDE_SLUGS: Readonly<Record<string, string>> = {
+  // RESTORED 2026-11-14, two slugs removed from this list: 'get-homeowners-insurance-knob-tube-wiring' (#16) and
+  // 'i-buy-house-knob-tube-wiring' (#22), rewritten from primary sources as part of the knob-and-tube cluster
+  // (scripts/publish-knob-and-tube-cluster.ts), each now answering a question #7 does not.
   // Knob and tube: six guides splitting one topic. Survivor ranks position 9; the 48-impression
   // alternative sits at position 71, so impressions alone would have picked the wrong one.
   'what-is-knob-and-tube-wiring': 'knob-tube-wiring-have-be-replaced-before-closing',
-  'get-homeowners-insurance-knob-tube-wiring': 'knob-tube-wiring-have-be-replaced-before-closing',
-  'i-buy-house-knob-tube-wiring': 'knob-tube-wiring-have-be-replaced-before-closing',
   'knob-tube-fuse-box-look-like': 'knob-tube-wiring-have-be-replaced-before-closing',
   'splice-romex-knob-tube-wiring': 'knob-tube-wiring-have-be-replaced-before-closing',
 

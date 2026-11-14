@@ -1,0 +1,111 @@
+{
+ "slug": "knob-and-tube-removal-cost-permits",
+ "readOn": "2026-11-14",
+ "facts": [
+  {
+   "id": "e1",
+   "claim": "Our report engine's knob-and-tube rule: homes built through 1955; electrician evaluation $150 – $350; partial to whole-home rewire $8,000 – $30,000+; asks the inspector to confirm in writing whether any is still energized.",
+   "quote": "id: 'knob_and_tube', minYear: 1800, maxYear: 1955 ... Dedicated electrician evaluation $150 – $350. ... typicalRepairCost: 'Partial to whole-home rewire $8,000 – $30,000+' ... Ask your inspector to confirm in writing whether any knob-and-tube is still energized",
+   "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES knob_and_tube)",
+   "readOn": "2026-11-14",
+   "method": "repo"
+  },
+  {
+   "id": "f1",
+   "claim": "LA County (unincorporated) 2026-27: $41.35 per permit issued; branch circuits $25.96 each for the first 10, $21.59 each for 11 to 40; service or panelboard up to 399 amps $58.35. Effective July 1, 2026.",
+   "quote": "Effective July 1, 2026 ... For issuing permits, each $ 41.35 ... For 15 or 20 ampere 120 volt lighting or general use receptacles: First 10 branch circuits, each $ 25.96 Each additional branch circuit from 11 to 40 inclusive $ 21.59 ... panelboards of 600 volts or less and not over 399 amperes in rating, each $ 58.35",
+   "url": "https://dpw.lacounty.gov/bsd/lib/fp/fees/County/2026-27%20County%20Electrical%20Code%20Fees.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f2",
+   "claim": "LA County: alterations to existing residential buildings use the branch circuit or unit fee schedule.",
+   "quote": "For other types of residential occupancies and alterations, additions and modifications to existing residential buildings, use BRANCH CIRCUIT FEE OR UNIT FEE SCHEDULE.",
+   "url": "https://dpw.lacounty.gov/bsd/lib/fp/fees/County/2026-27%20County%20Electrical%20Code%20Fees.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f3",
+   "claim": "LA County: plan checking fee is 70 percent of the electrical permit fee, minimum $164.02.",
+   "quote": "Plan Checking Fee: The fee shall be equal to seventy percent (70%) of the required electrical permit fee provided however, the minimum fee shall be $ 164.02",
+   "url": "https://dpw.lacounty.gov/bsd/lib/fp/fees/County/2026-27%20County%20Electrical%20Code%20Fees.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f4",
+   "claim": "LA County: investigation fee for work done without a required permit equals the permit fee but not less than $504.47; $252.23 for owner-builder one or two family dwellings.",
+   "quote": "Investigation fee for work done without a required permit shall be equal to the permit fee, but not less than $ 504.47 Exception: One or two family dwellings, when work is performed by owner-builder $ 252.23",
+   "url": "https://dpw.lacounty.gov/bsd/lib/fp/fees/County/2026-27%20County%20Electrical%20Code%20Fees.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f5",
+   "claim": "Boston: service upgrade permit $20 plus $0.25 per amp up to 240 volts; no service change: $20 plus $1 per fixture, plug or outlet.",
+   "quote": "When upgrading service or installing new service: $20 application fee, plus $0.25/amp up to 240 volts ... When there’s no change in service: $20 application fee, plus $1 for each fixture, plug, or outlet, and $5 for each approved meter.",
+   "url": "https://boston.gov/boston-permitting/permits/electrical-permits",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f6",
+   "claim": "Boston: only a licensed contractor can apply for an electrical permit.",
+   "quote": "Licensed contractors only You must be a licensed contractor to apply for this permit.",
+   "url": "https://boston.gov/boston-permitting/permits/electrical-permits",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f7",
+   "claim": "Iowa weatherization 2015: S-type fuses for knob and tube; rule of thumb 15 amp for 14-gauge, 20 amp for 12-gauge; if S-type fuses will not work because of overloaded circuits, a new service panel. (Iowa weatherization notice 15-01, 2015.)",
+   "quote": "Unless prohibited by local codes, S-type fuses must be installed in homes having knob and tube wiring, to provide over-current protection. If S-type fuses will not work because of overloaded circuits, a new service panel must be installed and the house brought up to code. A rule of thumb is to use 15 amp fuses for 14-gauge wire and 20 amp fuses for 12-gauge wire.",
+   "url": "https://hhs.iowa.gov/media/8391/download",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f8",
+   "claim": "EWEB form: the electrician repairs defects and installs 15-amp breakers or Type S fuses if appropriate; costs usually aren't reimbursed and vary between electricians. (EWEB form dated October 2014.)",
+   "quote": "Repair defects; Evaluate the fusing and install 15-AMP circuit breakers or Type S fuses, if appropriate; ... You are responsible for the costs. As costs vary significantly from electrician to electrician, you may want to compare costs before selecting an electrician.",
+   "url": "https://www.eweb.org/documents/contractor-developer/contractor-knob-and-tube-wiring-inspection-report.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f9",
+   "claim": "Our Census study (ACS 2020-2024): 11.74% of US homes, 16,880,456, were built before 1940; St. Louis city 57.9%, Kings County NY 47.0%, Suffolk County MA 45.6%.",
+   "quote": "\"housingUnits\": 143775355, \"builtBefore1940\": 16880456, \"shareBefore1940\": 0.1174 ... St. Louis city, Missouri share 0.579 ... Kings County, New York share 0.4704 ... Suffolk County, Massachusetts share 0.4561",
+   "url": "docs/data/oldest-housing-figures.json",
+   "readOn": "2026-11-14",
+   "method": "repo"
+  },
+  {
+   "id": "c1",
+   "claim": "Our calculation, LA County example: 15 new branch circuits plus one panel: 41.35 + 10 x 25.96 + 5 x 21.59 + 58.35 = $467.25 before any plan check; 5.8% of the $8,000 low end. Boston 200-amp service upgrade: 20 + 0.25 x 200 = $70; 100-amp: $45. Boston 60 openings, no service change: 20 + 60 = $80. Line items: $259.60 (10 x $25.96) and $107.95 (5 x $21.59).",
+   "quote": "41.35 + 259.60 + 107.95 + 58.35 = 467.25; 467.25 / 8000 = 5.8%; 20 + 0.25 x 200 = 70; 20 + 0.25 x 100 = 45; 20 + 60 x 1 = 80",
+   "url": "scripts/publish-knob-and-tube-cluster.ts (computed from the LA County and Boston schedules)",
+   "readOn": "2026-11-14",
+   "method": "calc"
+  }
+ ],
+ "blockedSources": [
+  {
+   "url": "https://www.nachi.org/sop.htm",
+   "what": "InterNACHI standards of practice",
+   "how": "Cloudflare check, 2026-11-14; not worked around"
+  },
+  {
+   "url": "https://www.tdhca.texas.gov/sites/default/files/community-affairs/wap/docs/WAP-BP-KnobTubeWiring.pdf",
+   "what": "Texas weatherization knob-and-tube best practice",
+   "how": "403 Access Denied in curl and browser, 2026-11-14"
+  },
+  {
+   "url": "https://stlouis-mo.gov/government/departments/public-safety/building/permits/electrical-permit-fees.cfm",
+   "what": "St. Louis electrical permit fees",
+   "how": "unreachable, 2026-11-14"
+  }
+ ]
+}

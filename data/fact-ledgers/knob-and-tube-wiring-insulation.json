@@ -1,0 +1,119 @@
+{
+ "slug": "knob-and-tube-wiring-insulation",
+ "readOn": "2026-11-14",
+ "facts": [
+  {
+   "id": "f1",
+   "claim": "California code 394.12(5): concealed knob and tube not used in hollow spaces insulated with loose, rolled or foamed-in-place insulation that envelops the conductors.",
+   "quote": "Concealed knob-and-tube shall not be used in: Hollow spaces of walls, ceilings, and attics where such spaces are insulated by loose, rolled, or foamed-in-place insulating material that envelops the conductors. [CEC §394.12(5)]",
+   "url": "https://berkeleyca.gov/sites/default/files/documents/146%20Knob%20and%20Tube%20Wiring%20Safety%20Report.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f2",
+   "claim": "California exception: a California-licensed electrical contractor surveys and certifies good condition, no deterioration, proper overcurrent protection, no improper connections or splices.",
+   "quote": "The wiring shall be surveyed by an electrical contractor licensed by the State of California. Certification shall be provided by the electrical contractor that the existing wiring is in good condition with no evidence of deterioration or improper over-current protection and no improper connections or splices.",
+   "url": "https://berkeleyca.gov/sites/default/files/documents/146%20Knob%20and%20Tube%20Wiring%20Safety%20Report.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f3",
+   "claim": "California exception: certification filed with the authority, copy to the owner; caution notices in English and Spanish at accessible areas; noncombustible insulation; no conductive material in or supporting the insulation.",
+   "quote": "The certification form shall be filed with the by the authority having jurisdiction for the enforcement of this code and a copy furnished to the property owner. All accessible areas in the building where insulation has been installed around knob-and-tube and shall be posted by the insulation contractor with a notice, clearly visible, stating that caution is required when entering these areas. The notice shall be printed in both English and Spanish. The insulation shall be noncombustible as defined in the California Building Code. The insulation shall not have any electrical conductive material as part of or supporting the insulation material.",
+   "url": "https://berkeleyca.gov/sites/default/files/documents/146%20Knob%20and%20Tube%20Wiring%20Safety%20Report.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f4",
+   "claim": "Berkeley's form #146 (revised 03/25/26) must be posted in the attic; attics with knob and tube may not be insulated unless a licensed electrical contractor's certification letter is submitted; the posted sign reads 'WARNING: Knob and Tube Wiring Use Caution When Entering Attic'.",
+   "quote": "Form #146 This form must be completed and signed with copies posted in the attic prior to inspection. Attics with knob-and-tube wiring may not be insulated, unless a certification letter from a licensed electrical contractor is submitted. WARNING: Knob and Tube Wiring Use Caution When Entering Attic Last Revised 03/25/26",
+   "url": "https://berkeleyca.gov/sites/default/files/documents/146%20Knob%20and%20Tube%20Wiring%20Safety%20Report.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f5",
+   "claim": "Menlo Park requires its Knob and Tube Certification Form before insulation is installed where knob and tube is to remain.",
+   "quote": "Where knob and tube wiring is to remain and insulation installed, whether new or replacement of existing insulation, a Knob and Tube Certification Form(PDF, 199KB) is required to be submitted to the Building Division for review and approval prior to the installation of the insulation.",
+   "url": "https://www.menlopark.gov/Government/Departments/Community-Development/Building/One-and-Two-Family-Homes-and-ADU-Permit-Information/Knob-and-Tube-Safety-Wiring-Requirements",
+   "readOn": "2026-11-14",
+   "method": "browser"
+  },
+  {
+   "id": "f6",
+   "claim": "Washington WAC 296-46B-394 allows loose or rolled insulation over existing knob and tube if a licensed electrical contractor surveys it and certifies in writing to the department.",
+   "quote": "Article 394 NEC does not prohibit the installation of loose or rolled thermal insulating material in spaces containing existing knob-and-tube wiring provided that all the following conditions are met: (1) The wiring must be surveyed by an appropriately licensed electrical contractor who must certify in writing to the department that the wiring is in good condition",
+   "url": "https://lawfilesext.leg.wa.gov/Law/WACArchive/2024/pdf/WAC%20296%20-%2046B%20CHAPTER/WAC%20296%20-%2046B-394.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f7",
+   "claim": "Washington: Class I insulation, flame spread 25 or less; no foam; circuits protected per the 60 degree column, by breakers or Type S fuses. In force since 1 April 2024 (effective 4/1/24).",
+   "quote": "The insulation must meet Class I specifications as identified in the Uniform Building Code, with a flame spread factor of 25 or less as tested using ASTM E84-81a. Foam insulation may not be used with knob-and-tube wiring. All knob-and-tube circuits must have overcurrent protection in compliance with NEC Table 310.16, 60 degree centigrade column. Overcurrent protection must be either circuit breakers or Type S fuses. WSR 24-05-085, § 296-46B-394, filed 2/21/24, effective 4/1/24.",
+   "url": "https://lawfilesext.leg.wa.gov/Law/WACArchive/2024/pdf/WAC%20296%20-%2046B%20CHAPTER/WAC%20296%20-%2046B-394.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f8",
+   "claim": "In the 60 degree column, 14-gauge copper is 15 amps and 12-gauge is 20 amps.",
+   "quote": "Table 310.15(B)(16) 60°C (140°F) Types TW, UF COPPER 14** 15 12** 20",
+   "url": "https://www.snopud.com/wp-content/uploads/2021/08/1144_KnobTube_1016_web.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f9",
+   "claim": "Snohomish County PUD's survey asks the electrician whether conductors are adequate, connections improper, circuits overloaded, and which areas (walls, ceilings, floors) are approved for insulating, initialled not checked.",
+   "quote": "1. CONDITION OF CONDUCTOR(S) ADEQUATE? 2. ANY IMPROPER CONNECTIONS? 3. CIRCUITS PRESENTLY OVERLOADED? Areas Approved For Insulating (Initials ONLY. Check marks are unacceptable) WALLS CEILINGS FLOORS ALL AREAS",
+   "url": "https://www.snopud.com/wp-content/uploads/2021/08/1144_KnobTube_1016_web.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f10",
+   "claim": "Iowa weatherization notice 15-01 (April 9, 2015): uncertified live knob and tube in attics gets a dam of unfaced fiberglass batts at least 14 inches wide, equivalent to R-38; a batt at least 6 inches wide below wiring above the joists.",
+   "quote": "Knob & tube wiring not certified as safe by a licensed electrician will have the wiring isolated. A dam that does not cover the top will be created to separate insulation from the wire path. If the wiring is above the joists, an un-faced fiberglass batt at least 6 inches wide must be installed below the wiring. A dam shall be created using un-faced fiberglass batts at least 14 inches in width and equivalent to an R-38 to prevent attic insulation from covering the wiring.",
+   "url": "https://hhs.iowa.gov/media/8391/download",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f11",
+   "claim": "Iowa 2015: sidewalls with active uncertified knob and tube are not insulated.",
+   "quote": "Sidewalls with active knob & tube wiring not certified as safe by a licensed electrician will not be insulated. IOWA WEATHERIZATION PROGRAM NOTICE 15-01 DATE: April 9, 2015",
+   "url": "https://hhs.iowa.gov/media/8391/download",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f12",
+   "claim": "A 1988 Department of Energy memo: the NEC applies only once state or local authorities adopt it; Massachusetts, Nebraska and Washington adopted modified approaches allowing insulation over knob and tube with inspection and safety procedures.",
+   "quote": "the National Electrical Code (NEC) and changes to it do not apply until adopted by State and/or local electrical code authorities; a number of States including Massachusetts, Nebraska and Washington, have looked at the issue and decided not to adopt the specific recommendations of the NEC on KTW. Instead, these States have adopted modified approaches which permit the continued installation of thermal insulation over KTW when certain inspection and safety procedures are followed. Date: October 21, 1988",
+   "url": "https://nascsp.org/wp-content/uploads/2018/02/1988-knob-and-tube-policy.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  }
+ ],
+ "blockedSources": [
+  {
+   "url": "https://www.nachi.org/sop.htm",
+   "what": "InterNACHI standards of practice",
+   "how": "Cloudflare check, 2026-11-14; not worked around"
+  },
+  {
+   "url": "https://www.tdhca.texas.gov/sites/default/files/community-affairs/wap/docs/WAP-BP-KnobTubeWiring.pdf",
+   "what": "Texas weatherization knob-and-tube best practice",
+   "how": "403 Access Denied in curl and browser, 2026-11-14"
+  },
+  {
+   "url": "https://stlouis-mo.gov/government/departments/public-safety/building/permits/electrical-permit-fees.cfm",
+   "what": "St. Louis electrical permit fees",
+   "how": "unreachable, 2026-11-14"
+  }
+ ]
+}

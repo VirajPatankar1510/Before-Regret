@@ -1,0 +1,647 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-14T09:17:56.040Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "knob and tube",
+    "aluminum wiring",
+    "unpermitted work",
+    "polybutylene pipe",
+    "eifs stucco"
+  ],
+  "keywords": [
+    {
+      "keyword": "polybutylene pipe",
+      "search_volume": 10,
+      "metric": "site",
+      "clicks": 2,
+      "position": 50
+    },
+    {
+      "keyword": "polybutylene pipes",
+      "search_volume": 4,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "can you get a mortgage wioth knob and tube electrical in teh houde",
+      "search_volume": 4,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "unpermitted work home buying risk",
+      "search_volume": 4,
+      "metric": "site",
+      "clicks": 0,
+      "position": 6
+    },
+    {
+      "keyword": "polybutylene pipe plumbing",
+      "search_volume": 3,
+      "metric": "site",
+      "clicks": 1,
+      "position": 37
+    },
+    {
+      "keyword": "will insurance companies cover polybutylene pipe fitting leaks that caused structural damage to the home",
+      "search_volume": 3,
+      "metric": "site",
+      "clicks": 1,
+      "position": 2
+    },
+    {
+      "keyword": "unpermitted work home buying risk",
+      "search_volume": 3,
+      "metric": "site",
+      "clicks": 0,
+      "position": 9
+    },
+    {
+      "keyword": "polybutylene pipes negotiation tips",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 6
+    },
+    {
+      "keyword": "is polybutylene pipe good",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 12
+    },
+    {
+      "keyword": "polybutylene pipes assessment",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 8
+    },
+    {
+      "keyword": "how to tell if you have polybutylene pipes",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 10
+    },
+    {
+      "keyword": "will foremost 360 insure as home with aluminum wiring if it has been pigtailed",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 1,
+      "position": 1
+    },
+    {
+      "keyword": "what insurance company will insure a home with some knob and tube wiring",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 7
+    },
+    {
+      "keyword": "how to choose unpermitted work home buying risk",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 7
+    },
+    {
+      "keyword": "will fha finance a home with knob and tube wiring",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 5
+    },
+    {
+      "keyword": "do lenders care if there’s knob and tube wiring",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "how bad is it to purchase a home with active knob and tube",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "how to choose unpermitted work home buying risk",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 8
+    },
+    {
+      "keyword": "unpermitted work home buying risk",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 8
+    },
+    {
+      "keyword": "are banks refusing mortgages for homes with knob and tube wiring",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 3
+    },
+    {
+      "keyword": "unpermitted work home buying risk tips",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 7
+    },
+    {
+      "keyword": "unpermitted work home buying risk",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 6
+    },
+    {
+      "keyword": "will insurance pay to replipe house with polybutylene pipe",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 1,
+      "position": 2
+    },
+    {
+      "keyword": "did they use that eifs stucco in 1975 and how can i tell if it is on my house",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 1,
+      "position": 1
+    },
+    {
+      "keyword": "knob and tube wiring twist splice",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 5
+    },
+    {
+      "keyword": "if a house still has some knob and tube will they be approved for mortgage",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "polybutylene pipe fittings",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 28
+    },
+    {
+      "keyword": "buying a house with knob and tube wiring",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "aluminum wiring exclusionin property insurance",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "does knob and tube wiring can you sell the cooper for money not home just the wire. again i'm not selling the house i'm just talking about the wire",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "does homeowners insurance cover knob and tube wiring in home missiouri",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "buying a house with knob and tube",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "will insurance companies redrum my coverage if i have knob and tube wiring",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 7
+    },
+    {
+      "keyword": "can a house with knob and tube wiring be financed",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "how can homeowners identify polybutylene pipes?",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 3
+    },
+    {
+      "keyword": "auto club insurance for home with aluminum wiring",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 2
+    },
+    {
+      "keyword": "polybutylene pipes problems",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 260
+    },
+    {
+      "keyword": "how to find out about unpermitted work in a house i want to buy",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 1
+    },
+    {
+      "keyword": "will insurance companies insures homes containing knob and tube wiring? real estate mortgae loans to buyers of housrs containing knob snd tube wiring?",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "polybutylene pipe evaluation",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 16
+    },
+    {
+      "keyword": "is branch circuit aluminum wiring ok for state farm home insurance",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "polybutylene pipe articles",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 29
+    },
+    {
+      "keyword": "is branch circuit aluminum wiring ok for state farm home insurance if the home was built in 2005",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "polybutylene pipe plumbing, fitting",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 26
+    },
+    {
+      "keyword": "polybutylene pipe characteristics, issues, freezing, piping, connection, heating, water supply, hot water supply, deterioration",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 8
+    },
+    {
+      "keyword": "will liberty insurancce insure a 1932 house that has some knob and tube wiring",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 3
+    },
+    {
+      "keyword": "can you get insurance on a home that has aluminum wiring",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "is aluminum wiring covered by insurance",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "does polybutylene pipes have red or blue lines on them",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "does fl insurance companies cover homes wotj single strand aluminum wiring",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 10
+    },
+    {
+      "keyword": "how to choose unpermitted work home buying risk measure sustainability explained near me",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "polybutylene pipes",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 7
+    },
+    {
+      "keyword": "google what does polybutylene pipes look like behind walls",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 5
+    },
+    {
+      "keyword": "what does insurance companies say about houses wired with aluminum wiring with extensions?",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "are houses insurable if they have aluminum wiring",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 3
+    },
+    {
+      "keyword": "can you sell a house with polybutylene pipes?",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 10
+    },
+    {
+      "keyword": "how to choose best unpermitted work home buying risk management",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "unpermitted work home buying risk",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 7
+    },
+    {
+      "keyword": "unpermitted work home buying buying guide",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "can you buy a house with knob and tube wiring",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "how to choose unpermitted work home buying risk recommendations",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "i bought a house with unpermitted work",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 5
+    },
+    {
+      "keyword": "how to choose unpermitted work home buying risk",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 8
+    },
+    {
+      "keyword": "show me a picture of a blue polybutylene pipe",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 8
+    },
+    {
+      "keyword": "pictures of polybutylene pipes in residential home",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 5
+    },
+    {
+      "keyword": "where are polybutylene pipes located in a condo",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "if buying a home in rio rancho with polybutylene pipes is there a way to find out if they were replaced",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "eifs stucco home inspection moisture meter before drilling",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "house has aluminum wiring will the lender advance the funds with no esa certificate",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 9
+    },
+    {
+      "keyword": "unpermitted work home buying risk alternatives",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 9
+    },
+    {
+      "keyword": "does 9213 bentridge have polybutylene pipes",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 3
+    },
+    {
+      "keyword": "does insurance cover aluminum wiring",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 4
+    },
+    {
+      "keyword": "polybutylene pipes",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 9
+    },
+    {
+      "keyword": "is there supplemental insurance available for homes that have polybutylene pipes?",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 5
+    },
+    {
+      "keyword": "best unpermitted work home buying risk",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 9
+    },
+    {
+      "keyword": "aluminum wiring exclusion",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 4
+    },
+    {
+      "keyword": "unpermitted work home buying risk zone pros and cons",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 10
+    },
+    {
+      "keyword": "insurance companies insure aluminum wiring",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 2
+    },
+    {
+      "keyword": "fha knob and tube wiring requirements",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 4
+    },
+    {
+      "keyword": "underwriting responses to 60 amp service, aluminum wiring and poly b piping",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 9
+    },
+    {
+      "keyword": "does insurance cover aluminum wiring",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 3
+    },
+    {
+      "keyword": "knob and tube wiring attic",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 6
+    },
+    {
+      "keyword": "what is knob and tube wiring in electrical systems diy dip powder nails",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 9
+    },
+    {
+      "keyword": "knob and tube",
+      "search_volume": 291,
+      "metric": "market",
+      "broad_impressions": 2615,
+      "kind": "seed"
+    },
+    {
+      "keyword": "knob and tube wiring",
+      "search_volume": 2218,
+      "metric": "market",
+      "broad_impressions": 2324,
+      "kind": "related"
+    },
+    {
+      "keyword": "what is knob and tube wiring",
+      "search_volume": 106,
+      "metric": "market",
+      "broad_impressions": 106,
+      "kind": "related"
+    },
+    {
+      "keyword": "aluminum wiring",
+      "search_volume": 170,
+      "metric": "market",
+      "broad_impressions": 170,
+      "kind": "seed"
+    },
+    {
+      "keyword": "unpermitted work",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "polybutylene pipe",
+      "search_volume": 843,
+      "metric": "market",
+      "broad_impressions": 843,
+      "kind": "seed"
+    },
+    {
+      "keyword": "eifs stucco",
+      "search_volume": 358,
+      "metric": "market",
+      "broad_impressions": 358,
+      "kind": "seed"
+    }
+  ]
+}

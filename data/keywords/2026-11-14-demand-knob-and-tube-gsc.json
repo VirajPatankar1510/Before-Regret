@@ -1,0 +1,572 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-11-14T09:17:56.040Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "knob and tube",
+    "aluminum wiring",
+    "unpermitted work",
+    "polybutylene pipe",
+    "eifs stucco"
+  ],
+  "keywords": [
+    {
+      "keyword": "eifs stucco evaluations",
+      "search_volume": 963,
+      "impressions": 963,
+      "clicks": 2,
+      "position": 38.1,
+      "pages": {
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 688,
+        "https://www.beforeregret.com/guides/buy-house-with-eifs-stucco/": 176,
+        "https://www.beforeregret.com/guides/eifs-vs-stucco-how-to-tell/": 96,
+        "https://www.beforeregret.com/guides/how-to-choose-eifs-stucco-inspector/": 3
+      }
+    },
+    {
+      "keyword": "should i buy a house with eifs stucco",
+      "search_volume": 108,
+      "impressions": 108,
+      "clicks": 0,
+      "position": 35.9,
+      "pages": {
+        "https://www.beforeregret.com/guides/buy-house-with-eifs-stucco/": 64,
+        "https://www.beforeregret.com/guides/eifs-vs-stucco-how-to-tell/": 41,
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 3
+      }
+    },
+    {
+      "keyword": "will homeowners insurance cover aluminum wiring",
+      "search_volume": 63,
+      "impressions": 63,
+      "clicks": 1,
+      "position": 32.2,
+      "pages": {
+        "https://www.beforeregret.com/guides/get-home-insurance-aluminum-wiring/": 63
+      }
+    },
+    {
+      "keyword": "knob and tube",
+      "search_volume": 31,
+      "impressions": 31,
+      "clicks": 0,
+      "position": 67.7,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 2,
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 10,
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/": 19
+      }
+    },
+    {
+      "keyword": "knob and tube wiring",
+      "search_volume": 29,
+      "impressions": 29,
+      "clicks": 0,
+      "position": 51.9,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 8,
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/": 21
+      }
+    },
+    {
+      "keyword": "eifs stucco",
+      "search_volume": 15,
+      "impressions": 15,
+      "clicks": 0,
+      "position": 62.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/eifs-vs-stucco-how-to-tell/": 15
+      }
+    },
+    {
+      "keyword": "knob and tube wiring to romex",
+      "search_volume": 11,
+      "impressions": 11,
+      "clicks": 0,
+      "position": 8.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 11
+      }
+    },
+    {
+      "keyword": "can you get homeowners insurance with polybutylene pipes",
+      "search_volume": 8,
+      "impressions": 8,
+      "clicks": 0,
+      "position": 26.1,
+      "pages": {
+        "https://www.beforeregret.com/guides/polybutylene-pipes-home-insurance/": 8
+      }
+    },
+    {
+      "keyword": "what is knob and tube wiring",
+      "search_volume": 7,
+      "impressions": 7,
+      "clicks": 0,
+      "position": 62.6,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 2,
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 4,
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "buying house with unpermitted work",
+      "search_volume": 6,
+      "impressions": 6,
+      "clicks": 0,
+      "position": 37.7,
+      "pages": {
+        "https://www.beforeregret.com/guides/find-unpermitted-work-before-buying/": 6
+      }
+    },
+    {
+      "keyword": "polybutylene pipes insurance",
+      "search_volume": 6,
+      "impressions": 6,
+      "clicks": 0,
+      "position": 65.8,
+      "pages": {
+        "https://www.beforeregret.com/guides/polybutylene-pipes-home-insurance/": 6
+      }
+    },
+    {
+      "keyword": "eifs stucco inspection",
+      "search_volume": 6,
+      "impressions": 6,
+      "clicks": 0,
+      "position": 23.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/buy-house-with-eifs-stucco/": 1,
+        "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/": 5
+      }
+    },
+    {
+      "keyword": "knob and tube electric",
+      "search_volume": 5,
+      "impressions": 5,
+      "clicks": 0,
+      "position": 75.2,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/": 5
+      }
+    },
+    {
+      "keyword": "what is knob and tube",
+      "search_volume": 5,
+      "impressions": 5,
+      "clicks": 0,
+      "position": 84.6,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 3,
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/": 2
+      }
+    },
+    {
+      "keyword": "what insurance companies cover polybutylene pipe",
+      "search_volume": 5,
+      "impressions": 5,
+      "clicks": 0,
+      "position": 42.6,
+      "pages": {
+        "https://www.beforeregret.com/guides/polybutylene-pipes-home-insurance/": 5
+      }
+    },
+    {
+      "keyword": "how to identify polybutylene pipes",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 68.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/spot-polybutylene-pipes-before-buying-house/": 4
+      }
+    },
+    {
+      "keyword": "polybutylene pipe insurance",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 75.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/polybutylene-pipes-home-insurance/": 4
+      }
+    },
+    {
+      "keyword": "what is eifs stucco",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 14.5,
+      "pages": {
+        "https://www.beforeregret.com/guides/eifs-vs-stucco-how-to-tell/": 4
+      }
+    },
+    {
+      "keyword": "knob and tube wiring explained",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 43.7,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1,
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 2
+      }
+    },
+    {
+      "keyword": "does homeowners insurance cover polybutylene pipe replacement",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 36.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/polybutylene-pipes-home-insurance/": 3
+      }
+    },
+    {
+      "keyword": "how do i know if my house has polybutylene pipes",
+      "search_volume": 3,
+      "impressions": 3,
+      "clicks": 0,
+      "position": 59.3,
+      "pages": {
+        "https://www.beforeregret.com/guides/spot-polybutylene-pipes-before-buying-house/": 3
+      }
+    },
+    {
+      "keyword": "what is knob and tube electrical wiring",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 82,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 1,
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "what is knob and tube wiring in a home",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 79,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 1,
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "whats knob and tube wiring",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 91,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 2
+      }
+    },
+    {
+      "keyword": "aluminum wiring insurance",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 26,
+      "pages": {
+        "https://www.beforeregret.com/guides/get-home-insurance-aluminum-wiring/": 2
+      }
+    },
+    {
+      "keyword": "aluminum wiring insurance manufactured home",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 26,
+      "pages": {
+        "https://www.beforeregret.com/guides/get-home-insurance-aluminum-wiring/": 2
+      }
+    },
+    {
+      "keyword": "how to identify polybutylene pipe",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 82,
+      "pages": {
+        "https://www.beforeregret.com/guides/spot-polybutylene-pipes-before-buying-house/": 2
+      }
+    },
+    {
+      "keyword": "can knob and tube wiring be used with circuit breakers",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 2,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "does knob and tube have a ground",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 63,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 1
+      }
+    },
+    {
+      "keyword": "does knob and tube wiring have to be replaced",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 67,
+      "pages": {
+        "https://www.beforeregret.com/guides/knob-tube-wiring-have-be-replaced-before-closing/": 1
+      }
+    },
+    {
+      "keyword": "how did knob and tube wiring work",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 56,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 1
+      }
+    },
+    {
+      "keyword": "how does knob and tube wiring work",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 3,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "how knob and tube wiring works",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 61,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 1
+      }
+    },
+    {
+      "keyword": "is knob and tube wiring illegal",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 3,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "knob and tube electrical",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 74,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "knob and tube electrical wiring",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 67,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 1
+      }
+    },
+    {
+      "keyword": "knob and tube outlet",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 67,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 1
+      }
+    },
+    {
+      "keyword": "knob and tube outlet box",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 15,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "knob and tube removal",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 2,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "knob and tube splice",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 1,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "knob and tube to romex",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 18,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "knob and tube vs cloth wiring",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 3,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "knob and tube vs romex",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 4,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "knob and tube wiring history",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 60,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 1
+      }
+    },
+    {
+      "keyword": "knob and tube wiring insulation",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 3,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "knob and tubes",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 69,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 1
+      }
+    },
+    {
+      "keyword": "what does knob and tube wire look like",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 41,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "what is knob and tube wiring in a house",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 83,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 1
+      }
+    },
+    {
+      "keyword": "what is knob and tube wiring?",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 82,
+      "pages": {
+        "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring": 1
+      }
+    },
+    {
+      "keyword": "why is knob and tube wiring dangerous",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 3,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "aluminum wiring insurance nj",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 53,
+      "pages": {
+        "https://www.beforeregret.com/guides/get-home-insurance-aluminum-wiring/": 1
+      }
+    },
+    {
+      "keyword": "can you insure a house with aluminum wiring",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 13,
+      "pages": {
+        "https://www.beforeregret.com/guides/get-home-insurance-aluminum-wiring/": 1
+      }
+    },
+    {
+      "keyword": "will homeowners insurance cover polybutylene pipe",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 77,
+      "pages": {
+        "https://www.beforeregret.com/guides/polybutylene-pipes-home-insurance/": 1
+      }
+    },
+    {
+      "keyword": "is eifs stucco",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 11,
+      "pages": {
+        "https://www.beforeregret.com/guides/eifs-vs-stucco-how-to-tell/": 1
+      }
+    }
+  ]
+}

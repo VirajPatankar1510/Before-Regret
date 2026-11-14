@@ -1,0 +1,103 @@
+{
+ "slug": "is-knob-and-tube-wiring-still-live",
+ "readOn": "2026-11-14",
+ "facts": [
+  {
+   "id": "f1",
+   "claim": "Washington home inspection standard: inspector describes the type(s) of branch wiring and reports conductors known to be potentially hazardous, referring them to a licensed electrical contractor.",
+   "quote": "(a) Describe in the report the type and rating of primary service, whether overhead or underground, voltage, amperage, over-current protection devices (fuses or breakers) and the type(s) of branch wiring used. (d) Report, the presence of electrical conductors known to be potentially hazardous and that a licensed electrical contractor should further evaluate the types and methods of branch wiring used.",
+   "url": "https://app.leg.wa.gov/WAC/default.aspx?cite=308-408C&full=true",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f2",
+   "claim": "Washington home inspectors are not required to insert testing devices into panels, activate de-energized circuits, operate breakers or remove fuses (WAC 308-408C-110).",
+   "quote": "(2) The inspector is not required to: (a) Insert any tool, probe or testing device into the main or subpanels. (b) Activate electrical systems or branch circuits that are not energized. (c) Operate circuit breakers, service disconnects or remove fuses. WAC 308-408C-110 Electrical system.",
+   "url": "https://app.leg.wa.gov/WAC/default.aspx?cite=308-408C&full=true",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f3",
+   "claim": "Washington inspectors verify operation, grounding and polarity of a representative number of receptacles.",
+   "quote": "(e) Verify (i) The operation of a representative number of accessible switches, receptacles and light fixtures in every room. (ii) The grounding and polarity of a representative number of receptacles in every room",
+   "url": "https://app.leg.wa.gov/WAC/default.aspx?cite=308-408C&full=true",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f4",
+   "claim": "Berkeley's form #146 gives an electrician three outcomes: good condition, not good condition, or disconnected and not live or removed.",
+   "quote": "I certify that the existing knob-and-tube wiring is in good condition with no evidence of deterioration and with proper over-current protection and no improper connections or splices. The knob-and-tube wiring is not in good condition and may not be covered without repair or rewiring. The knob-and-tube wiring is disconnected and is not live or has been removed. Form #146 Last Revised 03/25/26",
+   "url": "https://berkeleyca.gov/sites/default/files/documents/146%20Knob%20and%20Tube%20Wiring%20Safety%20Report.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f5",
+   "claim": "EWEB and partner utilities' 2014 form has the electrician check whether all knob and tube is disconnected from power, and whether circuits are on 15 amp breakers or Type S fuses.",
+   "quote": "All knob and tube wiring has been disconnected from power and is no longer in use. Circuits using knob and tube wiring are connected to circuit breakers or Type S fuses of 15 amp capacity or less. October, 2014",
+   "url": "https://www.eweb.org/documents/contractor-developer/contractor-knob-and-tube-wiring-inspection-report.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f6",
+   "claim": "Snohomish County PUD's survey lists circuits one by one: circuit number, breaker or S-type fuse, amps, wire gauge; signed by a journeyman electrician.",
+   "quote": "Identify below the panel location of circuits in the area(s) to be weatherized, the method used, the amperage, and wire size: Circuit # Breaker or S-Type fuse? Amps. Wire Gauge Name of Journeyman Electrician (Signature of Journeyman Electrician)",
+   "url": "https://www.snopud.com/wp-content/uploads/2021/08/1144_KnobTube_1016_web.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f7",
+   "claim": "Iowa 2015: live knob and tube not certified safe by an electrical contractor is not covered or surrounded by insulation.",
+   "quote": "Live knob and tube, not certified as safe by electrical contractor, will not be covered or surrounded. IOWA WEATHERIZATION PROGRAM NOTICE 15-01 DATE: April 9, 2015",
+   "url": "https://hhs.iowa.gov/media/8391/download",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f8",
+   "claim": "EWEB form: costs usually aren't reimbursed by the utility and vary by electrician; compare.",
+   "quote": "Costs incurred usually do not qualify for reimbursement from the utility, nor are they usually included in your insulation contractor’s proposal/contract. You are responsible for the costs. As costs vary significantly from electrician to electrician, you may want to compare costs before selecting an electrician.",
+   "url": "https://www.eweb.org/documents/contractor-developer/contractor-knob-and-tube-wiring-inspection-report.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "e1",
+   "claim": "Our report engine's knob-and-tube rule: homes built through 1955; electrician evaluation $150 – $350; partial to whole-home rewire $8,000 – $30,000+; asks the inspector to confirm in writing whether any is still energized.",
+   "quote": "id: 'knob_and_tube', minYear: 1800, maxYear: 1955 ... Dedicated electrician evaluation $150 – $350. ... typicalRepairCost: 'Partial to whole-home rewire $8,000 – $30,000+' ... Ask your inspector to confirm in writing whether any knob-and-tube is still energized",
+   "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES knob_and_tube)",
+   "readOn": "2026-11-14",
+   "method": "repo"
+  },
+  {
+   "id": "f9",
+   "claim": "Washington inspectors report fuse boxes and panels known to have inherent safety risks.",
+   "quote": "(h) Report on any service panel or subpanel, and fuse boxes known to have inherent safety risks based on either design or age.",
+   "url": "https://app.leg.wa.gov/WAC/default.aspx?cite=308-408C&full=true",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  }
+ ],
+ "blockedSources": [
+  {
+   "url": "https://www.nachi.org/sop.htm",
+   "what": "InterNACHI standards of practice",
+   "how": "Cloudflare check, 2026-11-14; not worked around"
+  },
+  {
+   "url": "https://www.tdhca.texas.gov/sites/default/files/community-affairs/wap/docs/WAP-BP-KnobTubeWiring.pdf",
+   "what": "Texas weatherization knob-and-tube best practice",
+   "how": "403 Access Denied in curl and browser, 2026-11-14"
+  },
+  {
+   "url": "https://stlouis-mo.gov/government/departments/public-safety/building/permits/electrical-permit-fees.cfm",
+   "what": "St. Louis electrical permit fees",
+   "how": "unreachable, 2026-11-14"
+  }
+ ]
+}

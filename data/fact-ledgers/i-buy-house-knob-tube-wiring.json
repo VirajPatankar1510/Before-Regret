@@ -1,0 +1,95 @@
+{
+ "slug": "i-buy-house-knob-tube-wiring",
+ "readOn": "2026-11-14",
+ "facts": [
+  {
+   "id": "f1",
+   "claim": "Our Census study (ACS 2020-2024): 16,880,456 of 143,775,355 US homes, 11.74%, were built before 1940; 25.64% before 1960. Source table B25034 (Year Structure Built), fetched 2026-10-09.",
+   "quote": "\"housingUnits\": 143775355, \"builtBefore1940\": 16880456, \"shareBefore1940\": 0.1174, \"shareBefore1960\": 0.2564",
+   "url": "docs/data/oldest-housing-figures.json",
+   "readOn": "2026-11-14",
+   "method": "repo"
+  },
+  {
+   "id": "f2",
+   "claim": "State shares built before 1940: District of Columbia 31.5%, Massachusetts 30.5%, New York 30.3%.",
+   "quote": "\"state\": \"District of Columbia\" ... \"share\": 0.3149 ... \"state\": \"Massachusetts\" ... \"share\": 0.3054 ... \"state\": \"New York\" ... \"share\": 0.3027",
+   "url": "docs/data/oldest-housing-figures.json",
+   "readOn": "2026-11-14",
+   "method": "repo"
+  },
+  {
+   "id": "f3",
+   "claim": "582 counties have at least 25% of homes built before 1940; 89 counties hold half of all pre-1940 homes.",
+   "quote": "\"countiesHoldingHalf\": 89, \"countiesAtLeast25pct\": 582",
+   "url": "docs/data/oldest-housing-figures.json",
+   "readOn": "2026-11-14",
+   "method": "repo"
+  },
+  {
+   "id": "e1",
+   "claim": "Our report engine's knob-and-tube rule: homes built through 1955; electrician evaluation $150 – $350; partial to whole-home rewire $8,000 – $30,000+; asks the inspector to confirm in writing whether any is still energized.",
+   "quote": "id: 'knob_and_tube', minYear: 1800, maxYear: 1955 ... Dedicated electrician evaluation $150 – $350. ... typicalRepairCost: 'Partial to whole-home rewire $8,000 – $30,000+' ... Ask your inspector to confirm in writing whether any knob-and-tube is still energized",
+   "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES knob_and_tube)",
+   "readOn": "2026-11-14",
+   "method": "repo"
+  },
+  {
+   "id": "f4",
+   "claim": "FHA, VA and Fannie Mae rules never name knob and tube (our #338 research; HUD 4000.1 full-text search: knob 0 hits).",
+   "quote": "Transmittal: Handbook 4000.1 ... full-text search of all 1,871 pages: 'knob' 0 hits",
+   "url": "data/fact-ledgers/mortgage-house-knob-and-tube-wiring.json (f1)",
+   "readOn": "2026-11-14",
+   "method": "repo"
+  },
+  {
+   "id": "f5",
+   "claim": "Washington home inspection standard: inspectors are not required to operate breakers or remove fuses.",
+   "quote": "(2) The inspector is not required to: (c) Operate circuit breakers, service disconnects or remove fuses. WAC 308-408C-110",
+   "url": "https://app.leg.wa.gov/WAC/default.aspx?cite=308-408C&full=true",
+   "readOn": "2026-11-14",
+   "method": "webfetch"
+  },
+  {
+   "id": "f6",
+   "claim": "Berkeley's form gives three electrician outcomes, including disconnected and not live.",
+   "quote": "The knob-and-tube wiring is disconnected and is not live or has been removed. Form #146",
+   "url": "https://berkeleyca.gov/sites/default/files/documents/146%20Knob%20and%20Tube%20Wiring%20Safety%20Report.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f7",
+   "claim": "Washington allows insulation over knob and tube only with a written survey by a licensed electrical contractor (WAC 296-46B-394).",
+   "quote": "The wiring must be surveyed by an appropriately licensed electrical contractor who must certify in writing to the department that the wiring is in good condition",
+   "url": "https://lawfilesext.leg.wa.gov/Law/WACArchive/2024/pdf/WAC%20296%20-%2046B%20CHAPTER/WAC%20296%20-%2046B-394.pdf",
+   "readOn": "2026-11-14",
+   "method": "pdf"
+  },
+  {
+   "id": "f8",
+   "claim": "Top 10 by share of homes built before 1940 (ACS 2020-2024): District of Columbia 31.5%, Massachusetts 30.5%, New York 30.3%, Rhode Island 30.1%, Pennsylvania 25.0%, Vermont 24.4%, Iowa 23.5%, Maine 22.9%, Illinois 20.2%, Connecticut 20.2%. Pennsylvania has 1,450,253 such homes; New York 2,598,944.",
+   "quote": "District of Columbia 0.3149 113693; Massachusetts 0.3054 925420; New York 0.3027 2598944; Rhode Island 0.3013 146414; Pennsylvania 0.2498 1450253; Vermont 0.2435 82559; Iowa 0.2354 338420; Maine 0.2287 171959; Illinois 0.2024 1104684; Connecticut 0.2021 311584",
+   "url": "docs/data/oldest-housing-figures.json (states, sorted by share)",
+   "readOn": "2026-11-14",
+   "method": "repo"
+  }
+ ],
+ "blockedSources": [
+  {
+   "url": "https://www.nachi.org/sop.htm",
+   "what": "InterNACHI standards of practice",
+   "how": "Cloudflare check, 2026-11-14; not worked around"
+  },
+  {
+   "url": "https://www.tdhca.texas.gov/sites/default/files/community-affairs/wap/docs/WAP-BP-KnobTubeWiring.pdf",
+   "what": "Texas weatherization knob-and-tube best practice",
+   "how": "403 Access Denied in curl and browser, 2026-11-14"
+  },
+  {
+   "url": "https://stlouis-mo.gov/government/departments/public-safety/building/permits/electrical-permit-fees.cfm",
+   "what": "St. Louis electrical permit fees",
+   "how": "unreachable, 2026-11-14"
+  }
+ ]
+}
