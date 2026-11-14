@@ -78,6 +78,6 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 2026-11-13 | Oregon: Phase 2 research and draft done, checker + publish dry run + quality gate pass; sent to owner for review | Checker and quality gate now accept ORS/RCW/NRS citations (state convention has no §). |
 | 2026-11-13 | Oregon published as #353 (commit 94dc36d): FAQs verified live, IndexNow 200, in sitemap | No inbound-link anchor in the library yet; the hub will link it. READ 2026-12-18. |
 | 2026-11-13 | Washington: Phase 2 research and draft done, all checks pass; sent to owner for review | |
-| 2026-11-14 | Texas published as #358 after a correctness pass (DBA wording fixed; unsourced "written request" line cut); 4 FAQs | READ 2026-12-19. |
 | 2026-11-13 | Washington published as #354 | READ 2026-12-18. |
 | 2026-11-14 | Texas: Phase 2 research and draft done; set checker (0 fails, worst 3.1%), publish dry run and quality gate pass; sent to owner for review | |
+| 2026-11-14 | Texas published as #358 after a correctness pass (DBA wording fixed; unsourced "written request" line cut); 4 FAQs | READ 2026-12-19. |
