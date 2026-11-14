@@ -38,7 +38,7 @@ import { BOOK, BOOK_CLICK_PATH, BOOK_LINK_REL } from '../data/book';
 
 // The photo's alt text: what the picture shows, and nothing else. Not alt="", because Bing
 // Webmaster reports an empty alt as missing; aria-hidden on the wrapping link keeps it silent.
-const COVER_ALT = `The paperback of ${BOOK.title}: ${BOOK.subtitle}, lying on a wooden table`;
+const COVER_ALT = `The paperback of ${BOOK.title}, lying on a wooden table`;
 
 // One <picture> for both placements.
 const BookPhoto: React.FC<{ className: string }> = ({ className }) => (
@@ -107,15 +107,22 @@ export const BookPromoSkyscraper: React.FC = () => (
   <aside aria-label={`Book: ${BOOK.title}`} className={`${cardSurface} rounded-2xl p-5`}>
     <Glow />
     <div className="relative">
-      <CutOutPill small />
+      <h2 className="font-serif text-xl font-semibold leading-snug text-amber-200 [text-wrap:balance]">
+        {BOOK.title}
+      </h2>
+      <p className="mt-1 text-[11px] text-slate-400">by {BOOK.author}</p>
 
       <a href={BOOK_CLICK_PATH} target="_blank" rel={BOOK_LINK_REL} aria-hidden="true" tabIndex={-1} className="mt-4 block">
         <BookPhoto className="w-full h-auto rounded-xl shadow-2xl shadow-black/60 ring-1 ring-amber-200/20" />
       </a>
 
-      <h2 className="mt-4 text-lg font-extrabold leading-snug">
+      <div className="mt-4">
+        <CutOutPill small />
+      </div>
+
+      <p className="mt-3 text-lg font-extrabold leading-snug">
         {HOOK_LEAD} <span className="text-amber-300">{HOOK_TURN}</span>
-      </h2>
+      </p>
 
       <ul className="mt-3 space-y-1.5 text-xs text-slate-200">
         {[INSIDE[0], INSIDE[1]].map((line) => (
@@ -147,6 +154,15 @@ export const BookPromoSkyscraper: React.FC = () => (
 export const BookPromoCard: React.FC<{ className?: string }> = ({ className = '' }) => (
   <aside aria-label={`Book: ${BOOK.title}`} className={`${cardSurface} rounded-3xl p-6 sm:p-8 ${className}`}>
     <Glow />
+    {/* The book's name is the card's heading and sits above the photo (owner, 2026-11-15): it is
+        the thing a reader has to remember to find it on Amazon. The hook below it is a styled
+        paragraph, not a second heading. */}
+    <header className="relative border-b border-amber-300/20 pb-5 mb-6">
+      <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight tracking-tight text-amber-200 [text-wrap:balance]">
+        {BOOK.title}
+      </h2>
+      <p className="mt-1.5 text-sm text-slate-400">by {BOOK.author}</p>
+    </header>
     <div className="relative flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
       {/* The cover links too: on a promo card the artwork is what a reader reaches for first.
           aria-hidden with tabIndex -1 keeps it from being a second identical link for screen
@@ -166,12 +182,8 @@ export const BookPromoCard: React.FC<{ className?: string }> = ({ className = ''
       <div className="min-w-0">
         <CutOutPill />
 
-        <h2 className="mt-3 text-2xl lg:text-3xl font-extrabold leading-tight tracking-tight">
+        <p className="mt-3 text-2xl lg:text-3xl font-extrabold leading-tight tracking-tight">
           {HOOK_LEAD} <span className="text-amber-300">{HOOK_TURN}</span>
-        </h2>
-
-        <p className="mt-2 text-xs sm:text-sm text-slate-400">
-          {BOOK.title}: {BOOK.subtitle} · by {BOOK.author}
         </p>
 
         <p className="mt-4 text-sm sm:text-base text-slate-200 leading-relaxed">{LEDE}</p>

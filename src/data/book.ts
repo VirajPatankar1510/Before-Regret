@@ -17,8 +17,8 @@
 // eventually wrong for all of them.
 
 export const BOOK = {
-  title: 'Manifestation',
-  subtitle: 'Using the Most Powerful Yantra in This Universe',
+  // The owner's exact wording, casing included (2026-11-15). It matches the listing's title.
+  title: 'Manifestation using the most powerful Yantra in this universe',
   author: 'Tathas Tu',
   format: 'Paperback',
   url: 'https://www.amazon.com/dp/B0DFKB6FG2',
