@@ -161,13 +161,15 @@ function describeHeating(tract: HousingProfile): { metricValue: string; nextStep
   if (electricShare >= 60) {
     return {
       metricValue: `${electricShare}% electric`,
-      nextStep: 'A heat pump or electric furnace is the more likely setup here than a gas furnace. If this home has a heat pump, ask its age -- they typically run 12-16 years, shorter than a gas furnace, and replacement is a four-figure cost. Also ask what the highest winter electricity bill has been.',
+      // Equipment age is already the report's HVAC priority item and a seller question; only the winter bill is new here.
+      nextStep: 'Most homes here heat with electricity, so ask the seller what the highest winter electricity bill has been.',
     };
   }
   if (gasShare >= 60) {
     return {
       metricValue: `${gasShare}% natural gas`,
-      nextStep: 'Ask the age of the furnace and when the flue and gas lines were last inspected. On older gas systems the flue liner and heat exchanger are the two items worth confirming specifically, since a cracked heat exchanger is both a safety issue and a full-replacement trigger.',
+      // No advice line: furnace age is already the report's HVAC priority item and seller question 6 (owner, 2026-11-14).
+      nextStep: '',
     };
   }
   return null;
@@ -289,7 +291,9 @@ export async function fetchNeighborhoodContextFinding(
         headline = `Median monthly ownership cost in this neighborhood is ${money(tract.medianOwnerCostWithMortgage)} -- ${money(Math.abs(delta))} ${delta > 0 ? 'above' : 'below'} the county median.`;
       }
       nextSteps.push(
-        `Homeowners with a mortgage in this neighborhood pay a median of ${money(tract.medianOwnerCostWithMortgage)} a month all-in -- the Census counts the mortgage, property taxes, insurance, utilities and fuel, not just the loan payment. It is a neighborhood figure, not this home's cost, but it is a useful check against a mortgage quote. Ask the seller for twelve months of actual tax and insurance bills for this specific property.`
+        // Owner, 2026-11-14: the box read as filler. The figure itself is already in the headline and the tile,
+        // so this keeps only the action: what the all-in figure covers, and the bills to ask for.
+        'Compare your mortgage quote with this neighborhood\'s all-in monthly cost, which includes property taxes, insurance and utilities, and ask the seller for the last twelve months of tax and insurance bills.'
       );
     }
 
@@ -321,7 +325,7 @@ export async function fetchNeighborhoodContextFinding(
     const heating = describeHeating(tract);
     if (heating) {
       metrics.push({ label: 'Primary heating fuel', value: heating.metricValue, comparison: 'of homes in this tract' });
-      nextSteps.push(heating.nextStep);
+      if (heating.nextStep) nextSteps.push(heating.nextStep);
     }
 
     // A finding with nothing computed in it isn't worth showing. Better to omit the section than
@@ -337,12 +341,11 @@ export async function fetchNeighborhoodContextFinding(
       summaryText: headline,
       whatWeFound: headline,
       metrics,
-      whyItMatters:
-        'These are Census Bureau survey figures for the census tract this address sits in -- roughly a neighborhood -- not facts about this house. The median home value is not an estimate or appraisal of this home. Housing age in the neighborhood shapes which issues are common here, and the all-in monthly owner cost is the figure buyers most often underestimate when budgeting from a mortgage quote alone.',
-      suggestedNextStep:
-        nextSteps.length > 0
-          ? nextSteps.join(' ')
-          : 'Use these figures as the baseline when judging whether this property is priced and configured typically for its immediate area.',
+      // Owner, 2026-11-14: the old "Why it matters" paragraph repeated the disclaimer three ways and the figures
+      // already on screen. One plain line under the grid replaces it; "Why it matters" is left empty and not rendered.
+      metricsNote: 'Census figures for this neighborhood (census tract), not measurements of this house.',
+      whyItMatters: '',
+      suggestedNextStep: nextSteps.join(' '),
       sourceAgency: 'U.S. Census Bureau, American Community Survey (5-Year Estimates)',
       lastUpdated: 'ACS 2023 5-year estimates (live query)',
     };

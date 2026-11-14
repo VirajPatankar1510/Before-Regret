@@ -185,11 +185,19 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         </div>
       )}
 
-      <div className="grid sm:grid-cols-2 gap-4 text-sm">
+      {finding.metricsNote && <p className="text-[11px] text-slate-500 leading-snug -mt-1">{finding.metricsNote}</p>}
+
+      {/* Either block may be empty (the neighborhood finding has no "Why it matters" since 2026-11-14), so each
+          renders only with content, and the two-column layout applies only when both do. */}
+      {(finding.whyItMatters || finding.suggestedNextStep || finding.sourceUrl) && (
+      <div className={`grid gap-4 text-sm ${finding.whyItMatters && (finding.suggestedNextStep || finding.sourceUrl) ? 'sm:grid-cols-2' : ''}`}>
+        {finding.whyItMatters && (
         <div>
           <div className="text-xs font-semibold text-slate-900">Why it matters</div>
           <p className="text-slate-600 leading-relaxed mt-0.5">{finding.whyItMatters}</p>
         </div>
+        )}
+        {(finding.suggestedNextStep || finding.sourceUrl) && (
         <div>
           <div className="text-xs font-semibold text-slate-900">What to do next</div>
           <p className="text-slate-600 leading-relaxed mt-0.5">
@@ -205,7 +213,9 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
             )}
           </p>
         </div>
+        )}
       </div>
+      )}
 
       <SponsoredVendorCards vendors={finding.sponsoredVendors} />
     </div>

@@ -52,6 +52,8 @@ export interface CanonicalFinding {
   suggestedNextStep: string;
   /** Scannable numeric breakdown rendered as a grid above the prose. See FindingMetric. */
   metrics?: FindingMetric[];
+  /** One short line printed under the metrics grid, e.g. what the figures are and aren't (2026-11-14). */
+  metricsNote?: string;
   actionItem?: ActionItem;
   lastUpdated?: string;
   sourceAgency?: string;
