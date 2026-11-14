@@ -113,8 +113,8 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
           </button>
         </div>
         <p className="text-sm text-slate-500 leading-relaxed">
-          For the seller or listing agent, based on the year you entered (<strong className="text-slate-800 font-semibold">{result.yearBuilt}</strong>)
-          and what is common for homes of that era here. Answers are not checked by Before Regret; get anything important in writing.
+          For the seller or listing agent, based on what is common for homes built around{' '}
+          <strong className="text-slate-800 font-semibold">{result.yearBuilt}</strong> here. Answers are not checked by Before Regret; get anything important in writing.
         </p>
       </div>
 

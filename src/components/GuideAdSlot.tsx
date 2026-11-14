@@ -65,19 +65,14 @@ export const GuideAdVendorCard: React.FC<{ vendor: ActiveVendor }> = ({ vendor }
         <div className="min-w-0">
           <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">{vendor.tradeCategory}</div>
           <div className="text-sm font-bold text-slate-900 mt-0.5">{vendor.businessName}</div>
-          {/* Disclosure deliberately outside the licenceNumber conditional -- see the same
-              block in SponsoredVendorCard.tsx for why. Short version: the licence-exempt trade
-              category has no number, and nesting the caveat inside the number meant those
-              placements carried no disclosure at all. */}
+          {/* The per-card "Paid placement... not verified by us" line was removed on 2026-11-14 at the
+              owner's request (see SponsoredVendorCard.tsx). The "Ad" badge on this box is now its ad
+              label; keep it. The full terms are on /disclaimer/. */}
           {vendor.licenceNumber && (
             <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
               Licence #{vendor.licenceNumber}
             </div>
           )}
-          <div className="text-[10px] text-slate-500 mt-0.5">
-            Paid placement. Details supplied by the advertiser and not verified by us --{' '}
-            <a href="/disclaimer/" className="underline hover:text-slate-700">check any licence yourself</a>.
-          </div>
         </div>
       </div>
       <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">

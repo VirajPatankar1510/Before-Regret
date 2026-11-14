@@ -123,7 +123,7 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
         </div>
         <p className="text-sm text-slate-500 leading-relaxed">
           What tends to matter most for a home built in <strong className="text-slate-800 font-semibold">{result.yearBuilt}</strong> in
-          this area, as the year you entered. Not findings about this house. Tick each one off as you go.
+          this area. Tick each one off as you go.
         </p>
       </div>
 
@@ -153,8 +153,8 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
 
       <p className="text-[11px] text-slate-400 leading-relaxed border-t border-slate-100 pt-4 mt-6">
         A budgeting guide built from published building-science norms for this construction era and region — not a home
-        inspection, a condition assessment, or an opinion of value. Year built is as you entered it and has not been
-        independently verified. Costs are typical ranges and vary by contractor and scope; confirm every item with an
+        inspection, a condition assessment, or an opinion of value. The year built is the one you gave us; we haven't
+        verified it. Costs are typical ranges and vary by contractor and scope; confirm every item with an
         appropriately licensed professional.
       </p>
     </div>

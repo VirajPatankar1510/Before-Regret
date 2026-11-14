@@ -131,7 +131,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   const county = report.propertyInfo?.county;
   const summaryBits = [
     typeLabel,
-    yearBuilt ? `built ${yearBuilt} (as entered)` : '',
+    yearBuilt ? `built ${yearBuilt}` : '',
     county ? (/\b(county|parish|borough)\b/i.test(county) ? county : `${county} County`) : '',
   ].filter(Boolean);
 

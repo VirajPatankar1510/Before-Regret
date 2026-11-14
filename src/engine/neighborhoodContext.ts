@@ -245,28 +245,31 @@ export async function fetchNeighborhoodContextFinding(
         // report would confidently state a wrong fact about their own house and label it verified.
         // Every version below now attributes the year to the reader, not to BeforeRegret, while
         // keeping the tract comparison itself stated as the fact it actually is.
+        // Owner, 2026-11-14: "year you entered" repeated across the report read as dodging
+        // accountability. The year is now said once, conditionally ("If it was built in 1970"), and
+        // the single "we haven't verified it" disclosure lives in the priorities footer.
         const subjectDelta = tract.medianYearBuilt - subjectYearBuilt;
         if (subjectDelta >= 15) {
           metrics.push({
-            label: 'As you entered, vs. nearby homes',
-            value: `You entered ${subjectYearBuilt}`,
+            label: 'Year built vs. nearby homes',
+            value: `Built ${subjectYearBuilt}`,
             comparison: `${subjectDelta} yrs older than typical here`,
           });
-          headline = `Using the year you entered (${subjectYearBuilt}), this home is about ${subjectDelta} years older than the typical home in its neighborhood (census tract).`;
+          headline = `If it was built in ${subjectYearBuilt}, this home is about ${subjectDelta} years older than the typical home in its neighborhood (census tract).`;
           nextSteps.push(
-            'If the year you entered is right, this home is materially older than its neighbors, so comparable sales nearby may be newer properties. Ask your agent whether the comps used were age-adjusted, and ask which of the home\'s systems have been updated rather than assuming they match its newer neighbors.'
+            'A home this much older than its neighbors may be valued against newer comparable sales nearby. Ask your agent whether the comps used were age-adjusted, and ask which of the home\'s systems have been updated rather than assuming they match its newer neighbors.'
           );
         } else if (subjectDelta <= -15) {
           metrics.push({
-            label: 'As you entered, vs. nearby homes',
-            value: `You entered ${subjectYearBuilt}`,
+            label: 'Year built vs. nearby homes',
+            value: `Built ${subjectYearBuilt}`,
             comparison: `${Math.abs(subjectDelta)} yrs newer than typical here`,
           });
-          headline = `Using the year you entered (${subjectYearBuilt}), this home is about ${Math.abs(subjectDelta)} years newer than the typical home in its neighborhood (census tract).`;
+          headline = `If it was built in ${subjectYearBuilt}, this home is about ${Math.abs(subjectDelta)} years newer than the typical home in its neighborhood (census tract).`;
         } else {
           metrics.push({
-            label: 'As you entered, vs. nearby homes',
-            value: `You entered ${subjectYearBuilt}`,
+            label: 'Year built vs. nearby homes',
+            value: `Built ${subjectYearBuilt}`,
             comparison: 'In line with typical homes here',
           });
         }

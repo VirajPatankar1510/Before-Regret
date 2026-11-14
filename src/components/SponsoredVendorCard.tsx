@@ -39,21 +39,18 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
             number to appear in the advertisement itself, and because a reader who wants to check
             the licence needs the number to check it with.
 
-            The "not verified by us" line is UNCONDITIONAL, and that is the point of this block's
-            shape. It used to be nested inside the licenceNumber check, which meant the two cases
-            with no number -- the licence-exempt trade categories (Chimney Sweep, Interior Designer) and placements sold
-            before the field existed -- rendered a business name and a phone number with no
-            disclosure of any kind on the card. The disclosure has to survive the absence of the
-            number, so it lives outside the conditional. Do not re-nest it. */}
+            The per-card "Paid placement. Details supplied by the advertiser and not verified by us"
+            line was removed on 2026-11-14 at the owner's request: it ran to four or five broken lines
+            on phones and in print, and read to advertisers as a warning about them. The disclosure
+            still stands without it: the SPONSORED pill above marks the card as a paid ad on every
+            card (with or without a licence number), the report footer says "Sponsored listings are
+            paid placements whose details we do not verify", and /disclaimer/ carries the full terms.
+            Do not remove the SPONSORED pill: it is now the card's only ad label. */}
         {vendor.licenceNumber && (
           <p className="text-[11px] text-slate-600 font-mono">
             Licence #{vendor.licenceNumber}
           </p>
         )}
-        <p className="text-[11px] text-slate-600">
-          Paid placement. Details supplied by the advertiser and not verified by us --{' '}
-          <a href="/disclaimer/" className="underline hover:text-slate-800">check any licence yourself</a>.
-        </p>
       </div>
       <div className="flex items-center gap-2 shrink-0">
         {/* vendor.id is the zip_ad_purchases row id (see fetchActiveZipVendors), which is what a
