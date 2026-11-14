@@ -1,0 +1,51 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-14T12:28:09.722Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "tennessee contractor license",
+    "tn contractor license lookup",
+    "tennessee home improvement license",
+    "tennessee handyman license"
+  ],
+  "keywords": [
+    {
+      "keyword": "tennessee contractor license",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 379,
+      "kind": "seed"
+    },
+    {
+      "keyword": "tennessee contractor license lookup",
+      "search_volume": 379,
+      "metric": "market",
+      "broad_impressions": 379,
+      "kind": "related"
+    },
+    {
+      "keyword": "tn contractor license lookup",
+      "search_volume": 63,
+      "metric": "market",
+      "broad_impressions": 63,
+      "kind": "seed"
+    },
+    {
+      "keyword": "tennessee home improvement license",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "tennessee handyman license",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

@@ -59,7 +59,7 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 39 | Rhode Island | rhode-island-contractor-license-lookup | TODO | | | | | | |
 | 40 | South Carolina | south-carolina-contractor-license-lookup | TODO | | | | | | |
 | 41 | South Dakota | south-dakota-contractor-license-lookup | TODO | | | | | | |
-| 42 | Tennessee | tennessee-contractor-license-lookup | TODO | | | | | | |
+| 42 | Tennessee | tennessee-contractor-license-lookup | LIVE #359 (2026-11-14) | Group 1 | tier 2 (2026-11-14-demand-tennessee-contractor-license) | 26 | 2.3% (vs CA, OR) | 2026-12-19 | Verify walked 2026-11-14 (headless: pane hidden); statute only on LexisNexis, board-cited sections used; discipline PDF downloads, not read; image JPEG |
 | 43 | Texas | texas-contractor-license-lookup | LIVE #358 (2026-11-14) | Group 1 | tier 2 (2026-11-14-demand-texas-contractor-license) | 19 | 2.4% (vs CA) | 2026-12-19 | TDLR search walked 2026-11-14; no state GC license; TSBPE complaint page Cloudflare-blocked, no plumbing search run; image JPEG |
 | 44 | Utah | utah-contractor-license-lookup | TODO | | | | | | |
 | 45 | Vermont | vermont-contractor-license-lookup | TODO | | | | | | |
@@ -81,3 +81,5 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 2026-11-13 | Washington published as #354 | READ 2026-12-18. |
 | 2026-11-14 | Texas: Phase 2 research and draft done; set checker (0 fails, worst 3.1%), publish dry run and quality gate pass; sent to owner for review | |
 | 2026-11-14 | Texas published as #358 after a correctness pass (DBA wording fixed; unsourced "written request" line cut); 4 FAQs | READ 2026-12-19. |
+| 2026-11-14 | Tennessee: Phase 2 research and draft done; set checker (0 fails, worst 3.1%), publish dry run and quality gate pass; sent to owner for review | |
+| 2026-11-14 | Tennessee published as #359 after a ledger read-through (6 overstated lines tightened, QA fact added); 4 FAQs | READ 2026-12-19. |

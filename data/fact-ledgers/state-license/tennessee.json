@@ -1,0 +1,303 @@
+{
+  "state": "Tennessee",
+  "stateAbbrev": "TN",
+  "slug": "tennessee-contractor-license-lookup",
+  "type": "A",
+  "officialLookupUrl": "https://search.cloud.commerce.tn.gov/",
+  "licensingBodies": [
+    {
+      "name": "Tennessee Board for Licensing Contractors",
+      "licenses": "contractors (projects $25,000+), home improvement contractors (9 counties, $3,000-$24,999), limited licensed electricians and plumbers",
+      "lookupUrl": "https://search.cloud.commerce.tn.gov/"
+    }
+  ],
+  "demand": {
+    "capture": "2026-11-14-demand-tennessee-contractor-license-bing",
+    "tier": "2",
+    "relatedQueries": [
+      "tennessee contractor license lookup",
+      "tn contractor license lookup"
+    ]
+  },
+  "portalWalk": {
+    "date": "2026-11-14",
+    "searchedBy": [
+      "board + license type filter only",
+      "organization name (a large homebuilder, not named)"
+    ],
+    "quirks": [
+      "expired and application-expired records are shown, not hidden",
+      "a name search spans every board (real estate results mixed in)",
+      "the record lists a dollar limit per classification plus an aggregate monetary limit",
+      "qualifying agents are in a separate dashboard",
+      "the record page renders blank in a hidden browser tab; read headlessly"
+    ],
+    "recordSections": [
+      "Summary: license number, type, board, status, expiration, original licensure date",
+      "Contact Information: main address (city, county)",
+      "Modifiers: classification limits and aggregate monetary limit"
+    ],
+    "screenshot": "public/images/tennessee-license-record-monetary-limit.jpg (Modifiers box only, which carries no name, number or address; captured headlessly because the in-app pane was hidden and React restored blanked text)"
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "topic": "who-is-licensed",
+      "claim": "The Board for Licensing Contractors dates from 1931 and licenses contractors, home improvement contractors, limited licensed electricians and limited licensed plumbers under Tennessee Code Annotated Title 62, Chapter 6.",
+      "quote": "The Board for Licensing Contractors was established in 1931 to regulate contractors in the State of Tennessee. The current requirements for the licensure of contractors, home improvement contractors, limited licensed electricians, and limited licensed plumbers can be found in Tennessee Code Annotated, Title 62, Chapter 6.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "topic": "exemption-threshold",
+      "claim": "A contractor license is needed for projects of $25,000 or more as a prime contractor; trade subcontractors (electrical, mechanical, plumbing, HVAC, roofing) need one when their portion is $25,000 or more; masonry at $100,000 or more.",
+      "quote": "A contractor’s license is required before contracting, including bidding, offering to engage, or negotiating a price, for projects of $25,000 or more when acting as a prime contractor, certain subcontractor, or construction manager/consultant. A prime contractor is one who bids or contracts directly with the owner. Subcontractors must be licensed when contracting directly with a contractor, not the owner, to perform electrical, mechanical, plumbing, HVAC, or roofing work when that portion of the project is $25,000 or more, including materials, equipment, and labor. Masonry subcontractors must be licensed when the masonry portion is $100,000 or more.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/contractor.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "topic": "lookup",
+      "claim": "The monetary limit is the dollar cap for each individual project or contract; no cap on the number of projects, but jobs may not be split into phases to get around it; 10% tolerance except on the BC-A/r license.",
+      "quote": "Monetary Limit The monetary limit is the total dollar amount for each individual project or contract. There is no limit on the number of projects a contractor may perform, so long as they are not split into phases to circumvent the law. There is a 10% tolerance for the monetary limit, except for the Restricted Residential Limited License (BC-A/r)",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/contractor.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "topic": "lookup",
+      "claim": "The limit is 10 times the lesser of working capital or net worth; a $150,000 limit needs $15,000 of each; unlimited needs $300,000 of each, plus experience.",
+      "quote": "Monetary limits are calculated as 10 times the lesser of working capital or net worth, plus required experience. As an example, a $150,000 limit requires $15,000 in both working capital and net worth. Because the limit is based on the lesser of the two, if working capital is $10,000 and net worth is $200,000, the monetary limit would be $100,000. To obtain an unlimited monetary limit, an applicant must show $300,000 in both working capital and net worth, plus required experience.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/contractor.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "topic": "who-is-licensed",
+      "claim": "The Restricted Residential Limited License (BC-A/r) covers residential work under $125,000 after a community-college course instead of the exams; the contract or permit value may not exceed the limit, which includes land cost and profit; no 10% tolerance; no joint ventures.",
+      "quote": "Restricted Residential Limited License (BC-A/r) Instead of taking the BC-A Residential Trade Exam and the Business & Law Exam, residential contractors who wish to perform work costing less than $125,000 (based on a financial statement) may complete a Limited License course through a Tennessee community college or vocational school. Contractors must still meet all other application requirements; only the examination requirement is waived. The contract or permit value may not exceed the monetary limit assigned to the license, which includes the contractor’s cost of land and profit. There is no 10% monetary tolerance, and joint ventures are not permitted under this license.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/contractor.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "topic": "who-is-licensed",
+      "claim": "Classification codes include Residential (BC-A), Commercial (BC-B), Industrial (BC-C), Res/SmCom BC-A,b(sm) for projects less than $750,000, Electrical (CE), Plumbing (CMC-A), HVAC (CMC-C), and masonry (LMC) for projects $100,000 or more.",
+      "quote": "Residential (BC-A)Commercial (BC-B)Industrial (BC-C)Res/Com/Ind (BC)Res/SmCom (BC-A,b(sm) - (Projects less than $750,000)Com/Ind (BC-B,C)Electrical (CE)*Full Mechanical -Plumbing & HVAC (CMC) Must be pre-approved*Plumbing (CMC-A) - Must be pre-approvedHVAC (CMC-C)**Fire Sprinkler (CMC-D)Licensed Masonry Contractor (LMC) - Projects $100,000 or more",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/contractor.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "topic": "bond-insurance",
+      "claim": "From July 1, 2026 a contractor may post a surety bond of at least 50% of the monetary limit instead of a CPA-reviewed or audited financial statement.",
+      "quote": "As of July 1, 2026, contractors may use the Board’s new Contractors’ Surety Bond option as an alternative to submitting a CPA-reviewed or CPA-audited financial statement. The surety bond must be in an amount equal to at least 50% of the monetary limit requested.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "topic": "bond-insurance",
+      "claim": "General liability insurance is required based on the monetary limit; workers compensation unless an exemption is proved; applicants with complaints or convictions must interview with the Board.",
+      "quote": "General Liability insurance is required based on your monetary limit. Workers’ Compensation insurance is also required, unless proof of exemption is provided. ... Please note that if you have complaints, convictions, or have previously bid where a license was required, you must interview with the Board.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/contractor.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "topic": "who-is-licensed",
+      "claim": "No reciprocity to work: an out-of-state license does not let a contractor operate in Tennessee.",
+      "quote": "You cannot operate in Tennessee with a license from another state.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/contractor.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f10",
+      "topic": "local-licensing",
+      "claim": "A home improvement license is required for residential remodeling from $3,000 to $24,999, only in the counties that adopted the law: Bradley, Davidson, Hamilton, Haywood, Knox, Marion, Robertson, Rutherford and Shelby. The definition (T.C.A. 62-6-501(4)(A)) covers driveways, pools, porches, garages, landscaping, fences, roofing and painting.",
+      "quote": "A Home Improvement license is required for residential remodeling projects from $3,000 to $24,999; however, this only applies to the counties adopting the law. Currently, this applies to the following counties: Bradley, Davidson, Hamilton, Haywood, Knox, Marion, Robertson, Rutherford, and Shelby. Home improvement is defined in T.C.A. 62-6-501(4)(A) and includes improvements, such as repair, replacement, remodeling, alterations, or additions to any land or residential building. This applies to construction or improvements of driveways, swimming pools, porches, garages, landscaping, fences, roofing, painting, and other improvements.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/home-improvement.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f11",
+      "topic": "bond-insurance",
+      "claim": "Home improvement licensees post a $10,000 surety bond (or cash/property bond or letter of credit) and carry general liability and workers compensation.",
+      "quote": "1. Surety Bond: In the amount of $10,000 (or other financial responsibility in the form of a cash or property bond, or an irrevocable Letter of Credit). 2. Photo ID and Social Security Number 3. Proof of Insurance: General Liability and Worker’s Compensation required",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/home-improvement.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f12",
+      "topic": "trade-licensing",
+      "claim": "The LLE license is only required where a municipality uses the state Division of Fire Prevention for permits or inspections, for electrical work under $25,000 per project; check the local government first (T.C.A. 62-6-102(d), 68-102-150).",
+      "quote": "The Limited Licensed Electrician (LLE) license is only required by electricians performing work in a municipality utilizing the Division of Fire Prevention for permits or inspections and covers work less than $25,000 per project. Always first check with your local government to see if they accept the LLE license or if they have a local licensing requirement for permits and inspections. The LLE license is issued to individuals passing the LLE trade exam. The LLE license requirements are defined in T.C.A. § 62-6-102(d) and § 68-102-150.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/lle.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f13",
+      "topic": "trade-licensing",
+      "claim": "The LLP license works the same way for plumbing under $25,000; general maintenance under $500 is exempt (T.C.A. 62-6-403).",
+      "quote": "The Limited Licensed Plumber (LLP) license is only required by plumbers performing work in a municipality utilizing the Division of Fire Prevention for permits or inspections and covers work less than $25,000 per project. Note that general maintenance work that is less than $500 is exempt from the LLP license. Always first check with your local government to see if they accept the LLP license or if they have a local licensing requirement for permits and inspections. The LLP license is issued to individuals passing the LLP trade exam. More information can be found in T.C.A. § 62-6-403.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/llp.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f14",
+      "topic": "owner-builder",
+      "claim": "An owner may build their own home without a license, one permit every two years, if not for sale, lease or rent (TCA 62-6-103, Rule 0680-1-.22); a homeowner should never pull the permit for a contractor; anyone paid over $25,000 by the owner is a prime and must be licensed.",
+      "quote": "Yes. A person who owns property is allowed one permit every two years to build their home as long as it is not for sale, lease, or rent (individual use). If they hire a contractor, the contractor is considered a \"prime\" and required to be licensed, as well as obtain the building permit for inspections. (TCA 62-6-103 and Rule 0680-1-.22) A homeowner should never obtain the permit on behalf of the contractor, as this could relieve the contractor from most liability and insurance requirements. In addition, the contracts should not be split into phases to circumvent the law. Anyone who is paid in excess of $25,000 by the owner is considered a prime and required to be licensed.",
+      "url": "https://support.commerce.tn.gov/hc/en-us/articles/208924888-Can-I-build-my-own-home-without-a-license",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f15",
+      "topic": "complaints",
+      "claim": "The department cannot give legal advice or get refunds; its jurisdiction is limited to discipline against the license; the Division of Consumer Affairs mediation program is an option.",
+      "quote": "Please be advised, this office cannot give legal advice or represent private individuals who seek refunds or reimbursements. Regulatory jurisdiction is limited to seeking discipline against a Respondent’s license. If you feel that you need legal assistance, you should consider contacting private legal counsel. You may also consider the Tennessee Division of Consumer Affairs mediation program.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/consumer/complaint.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f16",
+      "topic": "complaints",
+      "claim": "The Board cannot award judgments or order repairs, but Rule 0680-01-.27 treats failure to abide by a warranty, failure to respond to customer inquiries, and pulling a permit for an unlicensed contractor as misconduct.",
+      "quote": "Unfortunately, the Board cannot award judgments to consumers or require the contractor (Respondent) to make repairs - this requires taking them to civil court. However, filing a complaint offers protection to others in the future. ... Rule 0680-01-.27 MISCONDUCT. ... (2) Failure to abide by warranty agreement. (3) Pulling a building, electrical, plumbing, or like permit for a job in which an unlicensed contractor is acting as the general contractor or consenting to or allowing for a contractor’s license number to be utilized by an unlicensed contractor or improperly licensed contractor in the furtherance of unlicensed contracting. ... (7) Failure to respond to customer inquiries regarding completion of work and/or dissatisfaction with quality of work.",
+      "url": "https://support.commerce.tn.gov/hc/en-us/articles/360024038374-Warranty-FAQs",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f17",
+      "topic": "lookup",
+      "claim": "A qualifying agent (the person who passed the exams) can be on only one license as a full-time employee unless they hold majority ownership; the QA is not the license owner; the license is in the name and mode of the financial statement.",
+      "quote": "A Qualifying Agent can be listed on only one license as a full time employee. In order to be listed as a QA on a second company, they would need to hold a majority ownership of the second company. ... No, unless they are the owner of the entity providing the financial statement and insurance. The license is issued in the same name and mode of operation as the financial statement.",
+      "url": "https://support.commerce.tn.gov/hc/en-us/articles/115007760427-Qualifying-Agent-QA-FAQs",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f18",
+      "topic": "lookup",
+      "claim": "Qualifying agents are checked in a separate Tableau dashboard listing the agents associated with licensed contractors.",
+      "quote": "This public dashboard provides searchable Tennessee contractor and qualifying agent data, including license verification details and the qualifying agents associated with licensed contractors.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/consumer/verify-qa.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f19",
+      "topic": "lookup",
+      "claim": "Verify Public Search covers many boards (including Home Improvement, Home Inspectors and Limited Licensed Electricians) and updates daily.",
+      "quote": "Use this tool to look up a professional license, credential, permit, or registration for an individual or business. Search results update daily. ... Contractors and Ltd Licensed Plumbers | Contractors: Limited Licensed Electricians | ... | Home Improvement | Home Inspectors",
+      "url": "https://search.cloud.commerce.tn.gov/",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f20",
+      "topic": "lookup",
+      "claim": "Our walk: filtering by the contractors board and the Contractor type alone returned 62695 results (62,695), including Expired and Application Expired records with past expiration dates. The oldest dates on the first page were in the late 1990s (07/31/1999, 12/31/1998).",
+      "quote": "62695 results ... Contractor 39715 Expired 03/31/2020 ... Contractor Application Expired ... Contractor 40187 Active 07/31/2027 ... Contractor 40191 Expired 07/31/1999 ... Contractor 40653 Expired 12/31/1998",
+      "url": "https://search.cloud.commerce.tn.gov/search",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f21",
+      "topic": "lookup",
+      "claim": "Our walk: an organization-name search for a large homebuilder returned 4 results across two boards (Contractors and Real Estate), with filters for entity type, board, license type, status, state and county, and a \"Matched On: Name\" line.",
+      "quote": "Organization (4) Boards Contractors and Ltd Licensed Plumbers (2) Real Estate (2) License Types Contractor (2) ... Status Active (2) Applicant (1) Application Expired (1) ... 4 results ... Matched On: Name",
+      "url": "https://search.cloud.commerce.tn.gov/search",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f22",
+      "topic": "lookup",
+      "claim": "Our walk: a record shows license number, type, board, status, expiration date, original licensure date, a main address (city, county), a retrieval timestamp, and Modifiers: per-classification limits and the aggregate monetary limit. One record showed BC-A UNLIMITED and BC-b(sm) $750,000.00 with an UNLIMITED aggregate.",
+      "quote": "Retrieved on 11/14/2026 06:12 PM ... Summary License ... Contractor Contractors and Ltd Licensed Plumbers Status Active Expiration Date ... Original Licensure Date ... Contact Information Main Address ... Modifiers BC BC-A: UNLIMITED BC-b(sm): $750,000.00 Aggregate Limit Monetary Limit - Value: UNLIMITED",
+      "url": "https://search.cloud.commerce.tn.gov/search/C18961/detail",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f23",
+      "topic": "complaints",
+      "claim": "The board says Verify shows status, expiration dates and any public disciplinary actions, and a Disciplinary Action Report lists suspensions, revocations and fines.",
+      "quote": "Verify Public Search: Use this public tool to look up a professional license, credential, or registration for anindividual or business. You can check license status, view expiration dates, and see any public disciplinary actions. ... Disciplinary Action Report: View formal actions taken against professionals, including suspensions, revocations, fines, or other penalties for violations of laws or regulations.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/help-support.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f24",
+      "topic": "complaints",
+      "claim": "Discipline reports are monthly, one file per month for all regulatory boards; January to October 2026 were posted when we looked.",
+      "quote": "Regulatory Board Disciplinary Actions 2026 Jan Feb Mar Apr May Jun Jul Aug Sept Oct Nov Dec",
+      "url": "https://www.tn.gov/commerce/dar/rb.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f25",
+      "topic": "lookup",
+      "claim": "Since September 17, 2026 the department no longer mails license certificates; licensees print their own from CORE.",
+      "quote": "As of September 17, 2026, the Department is no longer mailing physical license certificates for any license issued by the Tennessee Board for Licensing Contractors. This includes all contractor licenses, home improvement contractor licenses, limited licensed plumber (LLP) licenses, and limited licensed electrician (LLE) licenses. Licensees may access and print a copy of their license within CORE.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    },
+    {
+      "id": "f26",
+      "topic": "lookup",
+      "claim": "The qualifying agent is the person designated to take the exams for the licensed entity; it may be an owner, full-time employee or officer.",
+      "quote": "The Qualifying Agent (QA) is the person designated to take the exam(s) for the entity obtaining the license and must register with the applicable exam provider. The QA may be an owner, full-time employee, or officer.",
+      "url": "https://www.tn.gov/commerce/regboards/contractors/license/get/contractor.html",
+      "readOn": "2026-11-14",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "What the monthly discipline PDF shows for contractors",
+      "why": "The PDF triggers a file download and curl was refused; not read."
+    },
+    {
+      "claim": "Statute text of T.C.A. 62-6-103 (unlicensed contractor recovery limits)",
+      "why": "Hosted only on LexisNexis, which asks for terms acceptance; only board-cited section numbers used."
+    },
+    {
+      "claim": "Meaning of the HRA modifier seen on one record",
+      "why": "No board source found explaining it."
+    },
+    {
+      "claim": "New-home warranty periods (47-2-314, 28-3-105)",
+      "why": "The FAQ wording on the limitation period is ambiguous; left out."
+    }
+  ],
+  "blockedSources": [
+    {
+      "url": "https://www.tn.gov/content/dam/tn/commerce/documents/regboards/dar/2026/DAR-10-2026.pdf",
+      "what": "October 2026 disciplinary action report",
+      "how": "Served as a file download; curl got a 118-byte refusal. Not worked around."
+    }
+  ]
+}

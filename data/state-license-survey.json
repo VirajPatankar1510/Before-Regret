@@ -585,11 +585,11 @@
       "type": "A",
       "typeQuote": "The current requirements for the licensure of contractors, home improvement contractors, limited licensed electricians, and limited licensed plumbers can be found in Tennessee Code Annotated, Title 62, Chapter 6.",
       "sourceUrl": "https://www.tn.gov/commerce/regboards/contractors.html",
-      "lookupUrl": "https://www.tn.gov/commerce/regboards/contractors/consumer/verify.html",
-      "law": "Tenn. Code Ann. Title 62, Chapter 6",
-      "checkedOn": "2026-11-13",
+      "lookupUrl": "https://search.cloud.commerce.tn.gov/",
+      "law": "Tenn. Code Ann. Title 62, Chapter 6 (board-cited: 62-6-103, 62-6-501(4)(A), 62-6-102(d), 62-6-403); Rule 0680-01-.27",
+      "checkedOn": "2026-11-14",
       "status": "verified",
-      "notes": ""
+      "notes": "Phase 2 done; ledger data/fact-ledgers/state-license/tennessee.json. Verify page redirects to search.cloud.commerce.tn.gov. Statute only on LexisNexis."
     },
     {
       "state": "Texas",
