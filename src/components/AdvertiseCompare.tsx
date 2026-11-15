@@ -95,15 +95,6 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
 ];
 
-const COMPARE_ROWS: Array<[string, string, string]> = [
-  ['Best for', 'Local trades that serve specific ZIP codes', 'Businesses that serve a wide area'],
-  ['Where it appears', 'Inside the property report for an address in your ZIP codes', 'On the article you choose, under its quick answer'],
-  ['Targeting', 'ZIP code and trade', 'The article; no location targeting'],
-  ['Price', '$29 for 3 ZIP codes', '$7.99 per article'],
-  ['Spots', slotsPerZipPhrase(), 'One advertiser per article'],
-  ['Duration', '30 days, no auto-renewal', '30 days, no auto-renewal'],
-];
-
 const EXAMPLE_REPORT_VENDOR = {
   id: 'example',
   zipCode: '00000',
@@ -332,46 +323,6 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               </li>
             ))}
           </ol>
-        </div>
-      </section>
-
-      {/* Side by side. */}
-      <section className="pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto rounded-3xl bg-white border border-home-linen shadow-sm p-6 sm:p-10">
-          <h2 className="font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Side by side</h2>
-          {/* A real table from sm: up; on a phone each row stacks, so the Topic Ads column is never
-              hidden off the side of a scroll box. Both built from COMPARE_ROWS. */}
-          <div className="mt-6 hidden sm:block">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wider">
-                  <th className="py-3 px-2 font-semibold text-slate-400"><span className="sr-only">Detail</span></th>
-                  <th className="py-3 px-2 font-bold text-home-moss">Report Ads</th>
-                  <th className="py-3 px-2 font-bold text-home-brass">Topic Ads</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-home-linen">
-                {COMPARE_ROWS.map(([k, r, t]) => (
-                  <tr key={k}>
-                    <th scope="row" className="py-3.5 px-2 text-left font-semibold text-slate-500 align-top">{k}</th>
-                    <td className="py-3.5 px-2 text-home-ink align-top">{r}</td>
-                    <td className="py-3.5 px-2 text-home-ink align-top">{t}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <dl className="mt-6 sm:hidden divide-y divide-home-linen">
-            {COMPARE_ROWS.map(([k, r, t]) => (
-              <div key={k} className="py-4 first:pt-0">
-                <dt className="text-xs font-bold uppercase tracking-wider text-slate-400">{k}</dt>
-                <dd className="mt-2 grid grid-cols-[6.5rem_1fr] gap-x-3 gap-y-1.5 text-sm">
-                  <span className="font-bold text-home-moss">Report Ads</span><span className="text-home-ink">{r}</span>
-                  <span className="font-bold text-home-brass">Topic Ads</span><span className="text-home-ink">{t}</span>
-                </dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </section>
 
