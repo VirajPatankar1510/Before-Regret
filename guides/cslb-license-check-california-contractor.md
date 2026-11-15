@@ -61,8 +61,6 @@ The record's disclaimer adds three more gaps. Only construction-related civil ju
 
 If you're a contractor, this page is what a careful client sees before signing. The record has a link to find out how to correct or update license information, and it is worth checking that your classifications, address and phone are current.
 
-If you'd also like home buyers to find you, you can list your business free in our [Find a Pro](/pros/) directory. Listings show the license number you enter. We don't verify it, so careful buyers will check it here, the same way.
-
 ## How we checked this
 
 - **What we did, on 10 November 2026:** ran CSLB's Check A License by business name and by license number in a browser, opened one active corporate record and its complaint disclosure definitions, and noted what each part of the record shows. The screenshot is cropped to the status section; we left out the business, the people named on it and the insurers.
