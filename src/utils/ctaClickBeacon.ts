@@ -5,7 +5,7 @@
 // Same rules as adClickBeacon.ts: a beacon, so the request survives the navigation the click starts;
 // best effort, never throws into the click handler. Only the page path is sent -- no query string,
 // no personal data.
-export type CtaId = 'guide_closing_report' | 'nav_free_report';
+export type CtaId = 'guide_closing_report' | 'nav_free_report' | 'nav_for_advertisers';
 
 /** Inspection Report Decoder usage events -- private, for us only (src/server/ctaClicksApi.ts). */
 export type DecoderEvent =

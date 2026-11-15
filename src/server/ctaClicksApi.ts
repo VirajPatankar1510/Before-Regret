@@ -13,6 +13,8 @@ import { DECODER_TERMS } from '../data/inspectionDecoderTerms.js';
 // measurement failure can never affect the page. Read with scripts/cta-click-report.ts.
 const CTAS = new Set([
   'guide_closing_report', 'nav_free_report',
+  // The header's single link since 2026-11-16 (owner): Guides, About, For businesses and Free Report removed.
+  'nav_for_advertisers',
   // Add-On Finder pitch demo (public/tools/add-on-finder/, 2026-11-12): did inspectors open it, and which view.
   'addon_demo_view_inspector', 'addon_demo_view_client',
 ]);
